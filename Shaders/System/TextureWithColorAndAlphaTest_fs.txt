@@ -1,0 +1,22 @@
+#version 330 core
+
+
+in vec2 v_uv;
+
+uniform sampler2D	imageSampler;
+uniform vec4		color;
+
+layout ( location = 0 ) out vec4 fragColor;
+
+
+void main ()
+{
+		vec4 sample = texture ( imageSampler, v_uv );
+		sample.a *= color.a;
+	
+		if ( sample.a < 0.01 )
+			discard;
+	
+		sample.rgb *= color.rgb;
+		fragColor = sample;
+}

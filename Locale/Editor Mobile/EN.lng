@@ -1,0 +1,84 @@
+hello~Hello~
+
+boobs~Boobs
+will safe world!~
+
+button1~Button1~
+
+button2~Button2~
+
+english~English~
+
+russian~Russian~
+
+Main menu->File~File~
+
+File->New~New~
+
+File->New (Hotkey)~Ctrl+N~
+
+File->Open~Open~
+
+File->Open (Hotkey)~Ctrl+O~
+
+File->Close~Close~
+
+File->Close (Hotkey)~Ctrl+W~
+
+File->Save~Save~
+
+File->Save (Hotkey)~Ctrl+S~
+
+File->Exit~Exit~
+
+File->Exit (Hotkey)~Ecs~
+
+Main menu->Create~Create~
+
+Create->Unit Actor~Unit actor~
+
+Create->Static mesh~Static mesh~
+
+Create->Skeletal mesh~Skeletal mesh~
+
+Create->Directed light~Directed light~
+
+Create->Spot~Spot light~
+
+Create->Bulp~Bulp~
+
+Main menu->Tools~Tools~
+
+Tools->Select~Select~
+
+Tools->Select (Hotkey)~Q~
+
+Tools->Move~Move~
+
+Tools->Move (Hotkey)~W~
+
+Tools->Rotate~Rotate~
+
+Tools->Rotate (Hotkey)~E~
+
+Tools->Scale~Scale~
+
+Tools->Scale (Hotkey)~R~
+
+Main menu->Utility~Utility~
+
+Utility->Particle system~Particle system~
+
+Utility->Animation graph~Animation graph~
+
+Main menu->Language~Language~
+
+Language->Русский~Русский~
+
+Language->English~English~
+
+OpenFile->OK~OK~
+
+OpenFile->Cancel~Cancel~
+
+TestButton~Button~

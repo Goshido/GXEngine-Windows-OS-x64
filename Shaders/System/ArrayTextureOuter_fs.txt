@@ -1,0 +1,49 @@
+#version 330 core
+
+
+in vec2 uv_coord;
+
+uniform sampler2DArray	arrayTexture;
+
+layout ( location = 0 ) out vec4 color;
+
+const vec4 transp = const vec4 ( 0.0, 0.0, 0.0, 0.5 );
+
+
+void main ()
+{
+	vec3 coord;
+
+	if ( uv_coord.x < 0.5 )
+	{
+		if ( uv_coord.y < 0.5 )
+		{
+			coord.xy = uv_coord.xy * 2.0;
+			coord.z = 0.0;
+		}
+		else
+		{
+			coord.x = uv_coord.x * 2.0;
+			coord.y = ( uv_coord.y - 0.5 ) * 2.0;
+			coord.z = 1.0;
+		}
+	}
+	else
+	{
+		if ( uv_coord.y < 0.5 )
+		{
+			coord.x = ( uv_coord.x - 0.5 ) * 2.0;
+			coord.y = uv_coord.y * 2.0;
+			coord.z = 2.0;
+		}
+		else
+		{
+			coord.x = ( uv_coord.x - 0.5 ) * 2.0;
+			coord.y = ( uv_coord.y - 0.5 ) * 2.0;
+			coord.z = 3.0;
+		}
+	}
+	
+
+	color = texture ( arrayTexture, coord ) - transp;
+}

@@ -1,0 +1,23 @@
+#version 330 core
+
+
+uniform float		fBlurH;
+uniform sampler2D	Texture;
+
+in vec2 uv_coord;
+
+layout ( location = 0 ) out vec4 color;
+
+void main ()
+{
+	vec4 sum = texture ( Texture, vec2 ( uv_coord.x - 4.0 * fBlurH, uv_coord.y ) ) * 0.05;
+	sum += texture ( Texture, vec2 ( uv_coord.x - 3.0 * fBlurH, uv_coord.y ) ) * 0.09;
+	sum += texture ( Texture, vec2 ( uv_coord.x - 2.0 * fBlurH, uv_coord.y ) ) * 0.12;
+	sum += texture ( Texture, vec2 ( uv_coord.x - fBlurH, uv_coord.y ) ) * 0.15;
+	sum += texture ( Texture, vec2 ( uv_coord.x, uv_coord.y ) ) * 0.16;
+	sum += texture ( Texture, vec2 ( uv_coord.x + fBlurH, uv_coord.y ) ) * 0.15;
+	sum += texture ( Texture, vec2 ( uv_coord.x + 2.0 * fBlurH, uv_coord.y ) ) * 0.12;
+	sum += texture ( Texture, vec2 ( uv_coord.x + 3.0 * fBlurH, uv_coord.y ) ) * 0.09;
+	sum += texture ( Texture, vec2 ( uv_coord.x + 4.0 * fBlurH, uv_coord.y ) ) * 0.05;
+	color = sum;
+}

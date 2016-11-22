@@ -1,0 +1,84 @@
+hello~Привет~
+
+boobs~Сиськи
+спасут мир!~
+
+button1~Кнопка1~
+
+button2~Кнопка2~
+
+english~Английский~
+
+russian~Русский~
+
+Main menu->File~Файл~
+
+File->New~Создать~
+
+File->New (Hotkey)~Ctrl+N~
+
+File->Open~Открыть~
+
+File->Open (Hotkey)~Ctrl+O~
+
+File->Close~Закрыть~
+
+File->Close (Hotkey)~Ctrl+W~
+
+File->Save~Сохранить~
+
+File->Save (Hotkey)~Ctrl+S~
+
+File->Exit~Выход~
+
+File->Exit (Hotkey)~Ecs~
+
+Main menu->Create~Создать~
+
+Create->Unit Actor~Единичный актор~
+
+Create->Static mesh~Статичный меш~
+
+Create->Skeletal mesh~Скелетный меш~
+
+Create->Directed light~Направленный источник света~
+
+Create->Spot~Фонарь~
+
+Create->Bulp~Лампочка~
+
+Main menu->Tools~Инструменты~
+
+Tools->Select~Выбрать~
+
+Tools->Select (Hotkey)~Q~
+
+Tools->Move~Переместить~
+
+Tools->Move (Hotkey)~W~
+
+Tools->Rotate~Повернуть~
+
+Tools->Rotate (Hotkey)~E~
+
+Tools->Scale~Масштабировать~
+
+Tools->Scale (Hotkey)~R~
+
+Main menu->Utility~Утилиты~
+
+Utility->Particle system~Система частиц~
+
+Utility->Animation graph~Анимационный граф~
+
+Main menu->Language~Язык~
+
+Language->Русский~Русский~
+
+Language->English~English~
+
+OpenFile->OK~OK~
+
+OpenFile->Cancel~Отмена~
+
+TestButton~Кнопка~

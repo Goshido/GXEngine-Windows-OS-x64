@@ -1,0 +1,14 @@
+#version 330 core
+
+
+#define GX_VERTEX_INDEX		0
+
+layout ( location = GX_VERTEX_INDEX ) in vec3 vertex;
+
+uniform mat4 mod_view_proj_mat;
+
+
+void main ()
+{
+	gl_Position = mod_view_proj_mat * vec4 ( vertex, 1.0 );
+}

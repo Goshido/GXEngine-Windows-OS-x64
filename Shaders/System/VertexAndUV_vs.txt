@@ -1,0 +1,19 @@
+#version 330 core
+
+
+#define GX_VERTEX_INDEX		0
+#define GX_UV_COORD_INDEX	1
+
+layout ( location = GX_VERTEX_INDEX ) in vec3 vertex;
+layout ( location = GX_UV_COORD_INDEX ) in vec2 uv;
+
+uniform mat4 mod_view_proj_mat;
+
+out vec2 v_uv;
+
+
+void main ()
+{
+	gl_Position = mod_view_proj_mat * vec4 ( vertex, 1.0 );
+	v_uv = uv;
+}

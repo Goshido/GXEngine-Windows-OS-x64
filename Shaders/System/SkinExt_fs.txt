@@ -1,0 +1,18 @@
+#version 330 core
+
+
+uniform sampler2D textureDiffuse;
+uniform sampler2D textureFiguration;
+
+in vec2 tc;
+
+layout ( location = 0 ) out vec4 DiffuseColor;
+layout ( location = 1 ) out vec4 FiguraterColor;
+
+void main ( void )
+{
+	vec2 o = tc;
+	o.y = 1 - o.y;
+	DiffuseColor = texture2D ( textureDiffuse, o );
+	FiguraterColor = texture2D ( textureFiguration, o );
+}

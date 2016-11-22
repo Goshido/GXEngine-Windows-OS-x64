@@ -1,0 +1,144 @@
+//version 1.0
+
+#include <GXEngine/GXUIButton.h>
+#include <GXEngine/GXUIMessage.h>
+#include <GXEngine/GXUICommon.h>
+
+
+GXUIButton::GXUIButton ( GXWidget* parent ):
+GXWidget ( parent )
+{
+	OnLeftMouseButton = 0;
+	handler = 0;
+
+	isPressed = GX_FALSE;
+	isDisabled = GX_FALSE;
+	isHighlighted = GX_FALSE;
+}
+
+GXUIButton::~GXUIButton ()
+{
+	//NOTHING
+}
+
+GXVoid GXUIButton::OnMessage ( GXUInt message, const GXVoid* data )
+{
+	switch ( message )
+	{
+		case GX_MSG_LMBDOWN:
+		{
+			if ( isDisabled ) return;
+
+			isPressed = GX_TRUE;
+
+			if ( renderer )
+				renderer->OnUpdate ();
+
+			if ( OnLeftMouseButton )
+			{
+				const GXVec2* position = (const GXVec2*)data;
+				OnLeftMouseButton ( handler, this, position->x, position->y, GX_MOUSE_BUTTON_DOWN );
+			}
+		}
+		break;
+
+		case GX_MSG_LMBUP:
+		{
+			if ( isDisabled ) return;
+
+			isPressed = GX_FALSE;
+
+			if ( renderer )
+				renderer->OnUpdate ();
+
+			if ( !OnLeftMouseButton ) return;
+
+			const GXVec2* position = (const GXVec2*)data;
+			OnLeftMouseButton ( handler, this, position->x, position->y, GX_MOUSE_BUTTON_UP );
+		}
+		break;
+
+		case GX_MSG_MOUSE_OVER:
+			if ( isDisabled ) return;
+
+			isHighlighted = GX_TRUE;
+
+			if ( renderer )
+				renderer->OnUpdate ();
+		break;
+
+		case GX_MSG_MOUSE_LEAVE:
+			if ( isDisabled ) return;
+
+			isHighlighted = GX_FALSE;
+			isPressed = GX_FALSE;
+
+			if ( renderer )
+				renderer->OnUpdate ();
+		break;
+
+		case GX_MSG_ENABLE:
+			if ( !isDisabled ) return;
+
+			isDisabled = GX_FALSE;
+			isHighlighted = GX_FALSE;
+
+			if ( renderer )
+				renderer->OnUpdate ();
+		break;
+
+		case GX_MSG_DISABLE:
+			if ( isDisabled ) return;
+
+			isDisabled = GX_TRUE;
+
+			if ( renderer )
+				renderer->OnUpdate ();
+		break;
+
+		case GX_MSG_REDRAW:
+			if ( renderer )
+				renderer->OnUpdate ();
+		break;
+
+		default:
+			GXWidget::OnMessage ( message, data );
+		break;
+	}
+}
+
+GXVoid GXUIButton::SetOnLeftMouseButtonCallback ( GXVoid* handler, PFNGXONMOUSEBUTTONPROC callback )
+{
+	this->handler = handler;
+	OnLeftMouseButton = callback;
+}
+
+GXVoid GXUIButton::Enable ()
+{
+	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_ENABLE, 0, 0 );
+}
+
+GXVoid GXUIButton::Disable ()
+{
+	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_DISABLE, 0, 0 );
+}
+
+GXVoid GXUIButton::Redraw ()
+{
+	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_REDRAW, 0, 0 );
+}
+
+GXBool GXUIButton::IsPressed ()
+{
+	return isPressed;
+}
+
+GXBool GXUIButton::IsHighlighted ()
+{
+	return isHighlighted;
+}
+
+GXBool GXUIButton::IsDisabled ()
+{
+	return isDisabled;
+}

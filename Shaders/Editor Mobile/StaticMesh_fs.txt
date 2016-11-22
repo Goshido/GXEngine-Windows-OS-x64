@@ -1,0 +1,42 @@
+#version 330 core
+
+
+smooth in vec2 v_uv;
+smooth in vec3 v_normal;
+smooth in vec3 v_tangent;
+smooth in vec3 v_bitangent;
+flat in vec4 v_objectHi;
+flat in vec4 v_objectLow;
+
+uniform sampler2D diffuseSampler;
+uniform sampler2D normalSampler;
+uniform sampler2D specularSampler;
+uniform sampler2D emissionSampler;
+
+layout ( location = 0 ) out vec4 outDiffuse;
+layout ( location = 1 ) out vec3 outNormal;
+layout ( location = 2 ) out vec4 outSpecular;
+layout ( location = 3 ) out vec3 outEmission;
+layout ( location = 4 ) out vec4 outObjectHi;
+layout ( location = 5 ) out vec4 outObjectLow;
+
+
+vec3 GetNormal ()
+{
+	mat3 tbn = mat3 ( v_tangent, v_bitangent, v_normal );
+
+	vec3 normalLocal = texture ( normalSampler, v_uv ).xyz * 2.0 - 1.0;
+	vec3 normalView = normalize ( tbn * normalLocal );
+
+	return normalView * 0.5 + 0.5;
+}
+
+void main ()
+{
+	outDiffuse = texture ( diffuseSampler, v_uv );
+	outNormal = GetNormal ();
+	outSpecular = texture ( specularSampler, v_uv );
+	outEmission = texture ( emissionSampler, v_uv ).rgb;
+	outObjectHi = v_objectHi;
+	outObjectLow = v_objectLow;
+}

@@ -1,0 +1,22 @@
+Debug/x64/*.pdb
+Debug/x64/*.ilk
+
+Projects/GXEngine/.vs
+Projects/GXEngine/Debug
+Projects/GXEngine/Generated Files
+Projects/GXEngine/x64
+Projects/GXEngine/*.sdf
+Projects/GXEngine/*.opendb
+Projects/GXEngine/*.db
+
+Projects/GXEngine Editor Mobile/.vs
+Projects/GXEngine Editor Mobile/Debug
+Projects/GXEngine Editor Mobile/Generated Files
+Projects/GXEngine Editor Mobile/x64
+Projects/GXEngine Editor Mobile/*.sdf
+Projects/GXEngine Editor Mobile/*.opendb
+Projects/GXEngine Editor Mobile/*.db
+
+3D Models
+Sounds
+Textures

@@ -1,0 +1,17 @@
+#version 330 core
+
+
+uniform sampler2D Texture;
+
+in vec2 uv_coord;
+
+layout ( location = 0 ) out vec4 color;
+
+
+void main ()
+{
+	//vec4 t = texture2D ( Texture, uv_coord );
+	//color = vec4 ( t.r, t.r, t.r, t.a );
+
+	color = texture2D ( Texture, uv_coord );
+}

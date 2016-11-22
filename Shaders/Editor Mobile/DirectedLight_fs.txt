@@ -1,0 +1,61 @@
+#version 330 core
+
+
+smooth in vec2 v_uv;
+
+uniform sampler2D diffuseSampler;
+uniform sampler2D normalSampler;
+uniform sampler2D specularSampler;
+uniform sampler2D emissionSampler;
+uniform sampler2D depthSampler;
+
+uniform vec3 toLightDirectionView;
+uniform mat4 inv_proj_mat;
+uniform vec3 color;
+uniform vec3 ambientColor;
+
+
+layout ( location = 0 ) out vec3 outColor;
+
+
+vec3 GetFragmentView ( in vec2 ndc, in float ndcDepth )
+{
+	vec4 normalizeCoordinates = vec4 ( ndc, ndcDepth, 1.0 );		//to cube [-1.0 1.0]^3
+	vec4 rawFragmentView = inv_proj_mat * normalizeCoordinates;		//need to scale by rawViewFragCoordinates.w
+	float invW = 1.0 / rawFragmentView.w;
+
+	return rawFragmentView.xyz * invW;
+}
+
+vec3 GetDiffuse ( in vec3 normalView )
+{
+	return color * max ( dot ( toLightDirectionView, normalView ), 0.0 );
+}
+
+vec3 GetSpecular ( in vec3 normalView, in vec3 fragmentView )
+{
+	vec4 specular = texture ( specularSampler, v_uv );
+	specular.a *= 255.0;
+
+	vec3 toObserverDirectionView = normalize ( -fragmentView );
+	vec3 mirroredDirectionView = reflect ( toLightDirectionView, normalView );
+
+	return pow ( max ( dot ( toObserverDirectionView, mirroredDirectionView ), 0.0 ), specular.a ) * specular.rgb * color;
+}
+
+void main ()
+{
+	//All calculation in view space!!!
+
+	vec2 ndc = v_uv * 2.0 - 1.0;
+	float ndcDepth = texture ( depthSampler, v_uv ).r * 2.0f - 1.0f;
+
+	if ( ndcDepth >= 1.0 )	//Very far point
+		discard;
+
+	vec3 normalView = texture ( normalSampler, v_uv ).xyz * 2.0 - 1.0;
+	vec3 albedo = texture ( diffuseSampler, v_uv ).rgb;
+	vec3 emission = texture ( emissionSampler, v_uv ).rgb;
+
+	outColor = albedo * ( ambientColor + GetDiffuse ( normalView ) ) + GetSpecular ( normalView, GetFragmentView ( ndc, ndcDepth ) ) + emission;
+}

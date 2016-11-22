@@ -1,0 +1,36 @@
+#ifndef EM_UI_BUTTON
+#define EM_UI_BUTTON
+
+
+#include "EMUI.h"
+#include <GXEngine/GXUIButton.h>
+
+
+class EMUIButton : public EMUI
+{
+	private:
+		GXUIButton*		widget;
+
+	public:
+		EMUIButton ( EMUI* parent );
+		virtual ~EMUIButton ();
+
+		virtual GXWidget* GetWidget ();
+		virtual GXVoid OnDrawMask ();
+
+		GXVoid Enable ();
+		GXVoid Disable ();
+
+		GXVoid Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height );
+
+		GXVoid SetCaption ( const GXWChar* caption );
+		GXVoid SetLayer ( GXFloat z );
+
+		GXVoid Show ();
+		GXVoid Hide ();
+
+		GXVoid SetOnLeftMouseButtonCallback ( GXVoid* handler, PFNGXONMOUSEBUTTONPROC callback );
+};
+
+
+#endif //EM_UI_BUTTON

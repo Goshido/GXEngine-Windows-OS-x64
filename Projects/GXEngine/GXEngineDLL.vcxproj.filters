@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\GXCommon">
+      <UniqueIdentifier>{c0b35d5f-b1cd-469d-a4bb-136826794e8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GXEngineDLL">
+      <UniqueIdentifier>{fde80563-6a1e-4bb5-99f5-c2244f93b9ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\FreeType">
+      <UniqueIdentifier>{c2d343f8-ec1e-4373-82d1-d9addd17301f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OGG/Vorbis">
+      <UniqueIdentifier>{2a66a95e-9af0-40a8-b211-69ac836ddbd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OpenAL">
+      <UniqueIdentifier>{4834858d-3668-47e7-83f1-de9efb27616e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\XInput">
+      <UniqueIdentifier>{a5bfb59f-a9f7-4211-ba53-17d771536d48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PhysX">
+      <UniqueIdentifier>{790193b3-2213-4526-af1b-4c05567280b5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Sources\GXCommon\GXBKELoader.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXBKESaver.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXBKEStructs.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXFileSystem.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXLogger.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXMath.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXMTRLoader.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXMTRSaver.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXMTRStructs.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXMutex.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshLoader.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshSaver.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXOBJLoader.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXThread.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXTime.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngineDLL\GXFreeType.cpp">
+      <Filter>Source Files\GXEngineDLL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngineDLL\GXOGGVorbis.cpp">
+      <Filter>Source Files\GXEngineDLL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngineDLL\GXOpenAL.cpp">
+      <Filter>Source Files\GXEngineDLL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngineDLL\GXPhysX.cpp">
+      <Filter>Source Files\GXEngineDLL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngineDLL\GXXInput.cpp">
+      <Filter>Source Files\GXEngineDLL</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Include\GXEngineDLL\GXEngineAPI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngineDLL\GXEngineDLL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngineDLL\GXFreeType.h">
+      <Filter>Header Files\FreeType</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngineDLL\GXOGGVorbis.h">
+      <Filter>Header Files\OGG/Vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngineDLL\GXOpenAL.h">
+      <Filter>Header Files\OpenAL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngineDLL\GXPhysX.h">
+      <Filter>Header Files\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngineDLL\GXXInput.h">
+      <Filter>Header Files\XInput</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

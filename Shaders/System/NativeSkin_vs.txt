@@ -1,0 +1,116 @@
+#version 330 core
+
+
+#define GX_VERTEX_INDEX			0
+#define GX_UV_COORD_INDEX		1
+#define GX_NORMAL_INDEX			2
+#define GX_TANGENT_INDEX		3
+#define GX_BITANGENT_INDEX		4
+#define GX_BONE_INDEX			5
+#define GX_WEIGHT_INDEX			6
+
+#define GX_MAX_BONES			80
+#define GX_MAX_BONES_FLOATS		7 * GX_MAX_BONES
+
+uniform mat4	mod_view_proj_mat;
+uniform mat4	mod_view_mat;
+uniform float	bones[ GX_MAX_BONES_FLOATS ];
+ 
+layout ( location = GX_VERTEX_INDEX )		in vec3 vertex;
+layout ( location = GX_UV_COORD_INDEX )		in vec2 uv;
+layout ( location = GX_NORMAL_INDEX )		in vec3 normal;
+layout ( location = GX_TANGENT_INDEX )		in vec3 tangent;
+layout ( location = GX_BITANGENT_INDEX )	in vec3 bitangent;
+layout ( location = GX_BONE_INDEX )			in vec4 indexes;
+layout ( location = GX_WEIGHT_INDEX )		in vec4 weights;
+
+out vec2 v_uv;
+out vec3 v_normal;
+out vec3 v_tangent;
+out vec3 v_bitangent;
+
+vec3 GXPointTransform ( in vec3 v, in int index )
+{
+	int i = index * 7;
+
+	//restore rotation component ( quaternion )
+	float x = bones[ i ];
+	float y = bones[ i + 1 ];
+	float z = bones[ i + 2 ];
+	float w = bones[ i + 3 ];
+	
+	//original code from DooM 3 SDK
+	float xxzz = x * x - z * z;
+	float wwyy = w * w - y * y;
+	float xw2 = x * w * 2.0;
+	float xy2 = x * y * 2.0;
+	float xz2 = x * z * 2.0;
+	float yw2 = y * w * 2.0;
+	float yz2 = y * z * 2.0;
+	float zw2 = z * w * 2.0;
+
+	return vec3 (
+					( xxzz + wwyy ) * v.x + ( xy2 + zw2 ) * v.y + ( xz2 - yw2 ) * v.z + bones[ i + 4 ],
+					( xy2 - zw2 ) * v.x + ( y * y + w * w - x * x - z * z ) * v.y + ( yz2 + xw2 ) * v.z + bones[ i + 5 ],
+					( xz2 + yw2 ) * v.x + ( yz2 - xw2 ) * v.y + ( wwyy - xxzz ) * v.z + bones[ i + 6 ] 
+				);
+}
+
+vec3 GXVectorTransform ( in vec3 v, in int index )
+{
+	int i = index * 7;
+
+	//restore rotation component ( quaternion )
+	float x = bones[ i ];
+	float y = bones[ i + 1 ];
+	float z = bones[ i + 2 ];
+	float w = bones[ i + 3 ];
+	
+	//original code from DooM 3 SDK
+	float xxzz = x * x - z * z;
+	float wwyy = w * w - y * y;
+	float xw2 = x * w * 2.0;
+	float xy2 = x * y * 2.0;
+	float xz2 = x * z * 2.0;
+	float yw2 = y * w * 2.0;
+	float yz2 = y * z * 2.0;
+	float zw2 = z * w * 2.0;
+
+	return vec3 (
+					( xxzz + wwyy ) * v.x + ( xy2 + zw2 ) * v.y + ( xz2 - yw2 ) * v.z,
+					( xy2 - zw2 ) * v.x + ( y * y + w * w - x * x - z * z ) * v.y + ( yz2 + xw2 ) * v.z,
+					( xz2 + yw2 ) * v.x + ( yz2 - xw2 ) * v.y + ( wwyy - xxzz ) * v.z
+				);
+}
+
+void main ()
+{
+	vec4 v4 = vec4 ( 0.0, 0.0, 0.0, 1.0 );
+	v4.xyz = GXPointTransform ( vertex, int ( indexes.x ) ) * weights.x +
+			 GXPointTransform ( vertex, int ( indexes.y ) ) * weights.y +
+			 GXPointTransform ( vertex, int ( indexes.z ) ) * weights.z +
+			 GXPointTransform ( vertex, int ( indexes.w ) ) * weights.w;
+	gl_Position = mod_view_proj_mat * v4;
+	
+	v_uv = uv;
+
+	mat3 m3 = mat3 ( mod_view_mat );
+
+	vec3 v3 =	GXVectorTransform ( normal, int ( indexes.x ) ) * weights.x +
+				GXVectorTransform ( normal, int ( indexes.y ) ) * weights.y +
+				GXVectorTransform ( normal, int ( indexes.z ) ) * weights.z +
+				GXVectorTransform ( normal, int ( indexes.w ) ) * weights.w;
+	v_normal = m3 * v3;
+	
+	v3 =	GXVectorTransform ( tangent, int ( indexes.x ) ) * weights.x +
+			GXVectorTransform ( tangent, int ( indexes.y ) ) * weights.y +
+			GXVectorTransform ( tangent, int ( indexes.z ) ) * weights.z +
+			GXVectorTransform ( tangent, int ( indexes.w ) ) * weights.w;
+	v_tangent = m3 * v3;
+
+	v3 =	GXVectorTransform ( bitangent, int ( indexes.x ) ) * weights.x +
+			GXVectorTransform ( bitangent, int ( indexes.y ) ) * weights.y +
+			GXVectorTransform ( bitangent, int ( indexes.z ) ) * weights.z +
+			GXVectorTransform ( bitangent, int ( indexes.w ) ) * weights.w;
+	v_bitangent = m3 * v3;
+}

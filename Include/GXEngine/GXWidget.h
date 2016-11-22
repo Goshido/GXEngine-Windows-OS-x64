@@ -1,0 +1,103 @@
+//version 1.0
+
+#ifndef GX_WIDGET
+#define GX_WIDGET
+
+
+#include <GXCommon/GXMath.h>
+
+
+class GXWidgetRenderer;
+class GXWidget
+{
+	friend class GXTouchSurface;
+	friend class GXWidgetIterator;
+
+	protected:
+		GXWidget*				next;
+		GXWidget*				prev;
+
+		GXWidget*				parent;
+		GXWidget*				childs;
+
+		GXBool					isVisible;
+		GXBool					isDraggable;
+		GXWidgetRenderer*		renderer;
+
+		GXAABB					boundsWorld;
+		GXAABB					boundsLocal;
+
+	public:
+		GXWidget ( GXWidget* parent );
+		virtual ~GXWidget ();
+
+		virtual GXVoid OnMessage ( GXUInt message, const GXVoid* data );
+
+		GXVoid Resize ( GXFloat x, GXFloat y, GXFloat width, GXFloat height );
+		const GXAABB& GetBoundsWorld ();
+		const GXAABB& GetBoundsLocal ();
+
+		GXVoid Show ();
+		GXVoid Hide ();
+		GXVoid ToForeground ();
+		GXBool IsVisible ();
+		GXBool IsDraggable ();
+
+		GXVoid SetRenderer ( GXWidgetRenderer* renderer );
+		GXWidgetRenderer* GetRenderer ();
+		GXWidget* FindWidget ( GXFloat x, GXFloat y );	//return child widget or itself. Never 0
+
+	protected:
+		GXVoid UpdateBoundsWorld ( const GXAABB &boundsLocal );
+		GXVoid OnDraw ();
+
+	private:
+		GXVoid AddChild ( GXWidget* child );
+		GXVoid RemoveChild ( GXWidget* child );
+		GXBool DoesChildExist ( GXWidget* child );
+};
+
+class GXWidgetIterator
+{
+	private:
+		GXWidget*	widget;
+
+	public:
+		GXWidgetIterator ();
+
+		GXWidget* Init ( GXWidget* widget );
+
+		GXWidget* GetNext ();
+		GXWidget* GetPrevious ();
+		GXWidget* GetParent ();
+		GXWidget* GetChilds ();
+};
+
+class GXWidgetRenderer
+{
+	friend class GXWidget;
+
+	private:
+		GXAABB		oldBounds;
+
+	protected:
+		GXWidget*	widget;
+
+	public:
+		GXWidgetRenderer ( GXWidget* widget );
+		virtual ~GXWidgetRenderer ();
+
+		GXVoid OnUpdate ();
+
+	protected:
+		virtual GXVoid OnRefresh ();
+		virtual GXVoid OnDraw ();
+		virtual GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height );
+		virtual GXVoid OnMoved ( GXFloat x, GXFloat y );
+
+	private:
+		GXBool IsResized ();
+		GXBool IsMoved ();
+};
+
+#endif //GX_WIDGET

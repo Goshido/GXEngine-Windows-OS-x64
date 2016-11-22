@@ -1,0 +1,48 @@
+#version 330 core
+
+
+#define NUM_TAPS	8
+
+const vec2 vMaxCoC = vec2 ( 5.0, 10.0 );
+const float radiusScale = 0.4;
+const float pi = 3.1415926;
+
+uniform sampler2D	preoutTexture;
+uniform sampler2D	downsampleTexture;
+uniform vec2		pixelSizeHigh;
+uniform vec2		pixelSizeLow;
+
+in vec2 uv_coord;
+
+layout ( location = 0 ) out vec4 color;
+
+void main ( void )
+{
+	vec2 poisson [ NUM_TAPS ];
+	poisson [ 0 ] = vec2 ( -0.326212, -0.40581 );
+	poisson [ 1 ] = vec2 ( 0.840144, 0.07358 );
+	poisson [ 2 ] = vec2 ( 0.695914, -0.457137 );
+	poisson [ 3 ] = vec2 ( -0.203345, 0.620716 );
+	poisson [ 4 ] = vec2 ( 0.96234, 0.194983 );
+	poisson [ 5 ] = vec2 ( 0.473434, 0.480026 );
+	poisson [ 6 ] = vec2 ( 0.519456, 0.767022 );
+	poisson [ 7 ] = vec2 ( 0.185461, -0.893124 );
+	
+	vec4 cOut = texture2D ( preoutTexture, uv_coord );
+	float centerDepth = cOut.a;
+	float discRadiusHigh = abs ( cOut.a * vMaxCoC.y - vMaxCoC.x );
+	float discRadiusLow = discRadiusHigh * radiusScale;
+	cOut = vec4 ( 0.0 );
+	for ( int t = 0; t < NUM_TAPS; t++ )
+	{
+		vec2 coordLow = uv_coord + ( pixelSizeLow * poisson [ t ] * discRadiusLow );
+		vec2 coordHigh = uv_coord + ( pixelSizeHigh * poisson [ t ] * discRadiusHigh );
+		vec4 tapLow = texture2D ( downsampleTexture, coordLow );
+		vec4 tapHigh = texture2D ( preoutTexture, coordHigh );
+		vec4 tap = mix ( tapHigh, tapLow, 1.0 - sin ( tapHigh.a * pi ) );
+		tap.a = ( tap.a >= centerDepth ) ? 1.0 : abs ( tap.a * 2.0 - 1.0 );
+		cOut.rgb += tap.rgb * tap.a;
+		cOut.a += tap.a;
+	}
+	color = cOut / cOut.a;
+}

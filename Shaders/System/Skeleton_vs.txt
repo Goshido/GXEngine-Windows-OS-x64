@@ -1,0 +1,16 @@
+#version 330 core
+
+
+#define VERTEX		0
+
+uniform mat4 mod_view_proj_mat;
+
+layout ( location = VERTEX ) in vec3 vertex;
+
+out vec3 fragcolor;
+
+void main ( void )
+{
+	gl_Position = mod_view_proj_mat * vec4 ( vertex, 1.0 );
+	fragcolor = vec3 ( 1.0, 1.0, 1.0 );
+}

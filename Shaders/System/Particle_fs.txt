@@ -1,0 +1,16 @@
+#version 330 core
+
+
+uniform sampler2D	textureID;
+uniform float		life_left;
+
+in vec2 uv_coord;
+
+layout ( location = 0 ) out vec4 color;
+
+void main ()
+{
+	vec4 sample = texture2D ( textureID, uv_coord );
+	sample.a *= clamp ( life_left, 0.0, 1.0 );
+	color = sample;
+}

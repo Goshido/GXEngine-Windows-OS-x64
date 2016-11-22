@@ -1,0 +1,15 @@
+#version 330 core
+
+
+uniform sampler2D texture;
+
+in vec2 uv_coord;
+
+layout ( location = 0 ) out vec4 color;
+
+void main ()
+{
+	vec4 sample = texture2D ( texture, uv_coord );
+	if ( sample.a < 0.05 ) discard;
+	color = sample;
+}

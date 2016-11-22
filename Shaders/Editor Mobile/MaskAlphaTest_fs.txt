@@ -1,0 +1,21 @@
+#version 330 core
+
+
+smooth in vec2 v_uv;
+flat in vec4 v_objectHi;
+flat in vec4 v_objectLow;
+
+uniform sampler2D alphaSampler;
+
+layout ( location = 0 ) out vec4 outObjectHi;
+layout ( location = 1 ) out vec4 outObjectLow;
+
+
+void main ()
+{
+	if ( texture ( alphaSampler, v_uv ).a < 0.03 )
+		discard;
+
+	outObjectHi = v_objectHi;
+	outObjectLow = v_objectLow;
+}

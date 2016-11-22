@@ -1,0 +1,15 @@
+#version 330 core
+
+
+in vec2 v_uv;
+
+uniform sampler2D	atlasSampler;
+uniform vec4		color;
+
+layout ( location = 0 ) out vec4 fragColor;
+
+
+void main ()
+{
+	fragColor = vec4 ( color.r, color.g, color.b, color.a * texture ( atlasSampler, v_uv ).r );
+}

@@ -1,0 +1,32 @@
+#version 330 core
+
+
+#define MAX_SAMPLES		8
+
+uniform sampler2D	preoutTexture;
+uniform sampler2D	depthTexture;
+uniform mat4		invViewProjMatrix;
+uniform mat4		lastFrameViewProjMatrix;	
+
+in vec2 uv_coord;
+
+layout ( location = 0 ) out vec4 color;
+
+void main ( void )
+{
+	vec4 h = vec4 ( uv_coord.x * 2.0 - 1.0, uv_coord.y * 2.0 - 1.0, texture2D ( depthTexture, uv_coord ).r, 1.0 );
+	vec4 d = invViewProjMatrix * h;
+	d /= d.w;
+
+	vec4 previosPos = lastFrameViewProjMatrix * d;
+	previosPos /= previosPos.w;
+
+	vec2 velocity = ( previosPos.xy - h.xy ) * 0.03;
+
+	vec4 accumulatorColor = texture2D ( preoutTexture, uv_coord );
+	vec2 uv_velocityCorrection = uv_coord;
+	for ( int i = 0; i < MAX_SAMPLES; i++, uv_velocityCorrection += velocity )
+		accumulatorColor += texture2D ( preoutTexture, uv_velocityCorrection );
+
+	color = accumulatorColor * 0.11111111; // 1.0 / ( MAX_SAMPLES + 1 )
+}
