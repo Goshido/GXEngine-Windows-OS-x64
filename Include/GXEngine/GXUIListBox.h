@@ -40,39 +40,39 @@ class GXUIListBox : public GXWidget
 
 	public:
 		GXUIListBox ( GXWidget* parent, PFNGXUILISTBOXITEMDESTRUCTORPROC itemDestructor );
-		virtual ~GXUIListBox ();
+		~GXUIListBox () override;
 
-		virtual GXVoid OnMessage ( GXUInt message, const GXVoid* data );
+		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
 
 		GXVoid AddItem ( GXVoid* itemData );
 		GXVoid AddItems ( GXVoid** itemData, GXUInt items );
 		GXVoid RemoveItem ( GXUInt itemIndex );
 		GXVoid RemoveAllItems ();
-		GXUIListBoxItem* GetItems ();
-		GXVoid* GetSelectedItem ();
-		GXUInt GetTotalItems ();
-		GXBool IsItemVisible ( GXUInt itemIndex );
-		GXFloat GetItemLocalOffsetY ( GXUInt itemIndex );	//From widget bottom edge
+		GXUIListBoxItem* GetItems () const;
+		GXVoid* GetSelectedItem () const;
+		GXUInt GetTotalItems () const;
+		GXBool IsItemVisible ( GXUInt itemIndex ) const;
+		GXFloat GetItemLocalOffsetY ( GXUInt itemIndex ) const;	//From widget bottom edge
 
 		GXVoid Redraw ();
 
 		GXVoid SetOnItemSelectedCallback ( GXVoid* handler, PFNGXUILISTBOXONITEMSELECTEDPROC callback );
 		GXVoid SetOnItemDoubleClickedCallback ( GXVoid* handler, PFNGXUILISTBOXONITEMDOUBLECLICKEDPROC callback );
 
-		GXFloat GetViewportOffset ();
-		GXFloat GetViewportSize ();
+		GXFloat GetViewportOffset () const;
+		GXFloat GetViewportSize () const;
 		GXVoid SetViewportOffset ( GXFloat offset );
 		GXVoid SetViewportOffsetImmediately ( GXFloat offset );
 
 		GXVoid SetItemHeight ( GXFloat height );
-		GXFloat GetItemHeight ();
+		GXFloat GetItemHeight () const;
 
 	private:
 		GXUIListBoxItem* FindItem ( const GXVec2 &mousePosition );
-		GXUIListBoxItem* GetHighlightedItem ();
+		GXUIListBoxItem* GetHighlightedItem () const;
 		GXBool ResetHighlight ( const GXVec2 &mousePosition );	//Return true if need render update
-		GXBool IsAbleToScroll ();
-		GXFloat GetTotalHeight ();
+		GXBool IsAbleToScroll () const;
+		GXFloat GetTotalHeight () const;
 };
 
 

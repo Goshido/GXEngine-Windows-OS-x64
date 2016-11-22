@@ -13,10 +13,10 @@ class EMUIButton : public EMUI
 
 	public:
 		EMUIButton ( EMUI* parent );
-		virtual ~EMUIButton ();
+		~EMUIButton () override;
 
-		virtual GXWidget* GetWidget ();
-		virtual GXVoid OnDrawMask ();
+		GXWidget* GetWidget () const override;
+		GXVoid OnDrawMask () override;
 
 		GXVoid Enable ();
 		GXVoid Disable ();

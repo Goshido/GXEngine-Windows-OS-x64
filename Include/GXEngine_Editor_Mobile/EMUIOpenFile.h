@@ -36,16 +36,16 @@ class EMUIOpenFile : public EMUI
 
 	public:
 		EMUIOpenFile ();
-		virtual ~EMUIOpenFile ();
+		~EMUIOpenFile () override;
 
-		virtual GXWidget* GetWidget ();
-		virtual GXVoid OnDrawMask ();
+		GXWidget* GetWidget () const override;
+		GXVoid OnDrawMask () override;
 
 		GXVoid Browse ( PFNEMONBROWSEFILEPROC callback );
 
 	private:
 		GXVoid UpdateDirectory ( const GXWChar* folder );
-		const GXWChar* GetRelativePath ();
+		const GXWChar* GetRelativePath () const;
 
 		static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFloat y, eGXMouseButtonState state );
 		static GXVoid GXCALL OnItemSelected ( GXVoid* handler, GXUIListBox* listBox, const GXVoid* item );

@@ -29,7 +29,7 @@ EMUI::~EMUI ()
 		em_UIElements = next;
 }
 
-GXWidget* EMUI::GetWidget ()
+GXWidget* EMUI::GetWidget () const
 {
 	return 0;
 }

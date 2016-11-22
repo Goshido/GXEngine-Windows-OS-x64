@@ -23,15 +23,15 @@ class GXUIStaticText : public GXWidget
 
 	public:
 		GXUIStaticText ( GXWidget* parent );
-		virtual ~GXUIStaticText ();
+		~GXUIStaticText () override;
 
-		virtual GXVoid OnMessage ( GXUInt message, const GXVoid* data );
+		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
 
 		GXVoid SetText ( const GXWChar* text );
 		GXVoid SetAlignment ( eGXUITextAlignment alignment );
 
-		const GXWChar* GetText ();
-		eGXUITextAlignment GetAlignment ();
+		const GXWChar* GetText () const;
+		eGXUITextAlignment GetAlignment () const;
 };
 
 

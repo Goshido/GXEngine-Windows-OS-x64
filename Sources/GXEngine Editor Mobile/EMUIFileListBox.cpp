@@ -73,17 +73,14 @@ class EMUIFileListBoxRenderer : public GXWidgetRenderer
 
 	public:
 		EMUIFileListBoxRenderer ( GXUIListBox* widget );
-		virtual ~EMUIFileListBoxRenderer ();
+		~EMUIFileListBoxRenderer () override;
 
-		virtual GXVoid OnRefresh ();
-		virtual GXVoid OnDraw ();
-		virtual GXVoid OnForeground ();
-
-		GXVoid SetLayer ( GXFloat z );
+		GXVoid OnRefresh () override;
+		GXVoid OnDraw () override;
 
 	protected:
-		virtual GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height );
-		virtual GXVoid OnMoved ( GXFloat x, GXFloat y );
+		GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
+		GXVoid OnMoved ( GXFloat x, GXFloat y ) override;
 };
 
 EMUIFileListBoxRenderer::EMUIFileListBoxRenderer ( GXUIListBox* widget ) :
@@ -94,7 +91,7 @@ GXWidgetRenderer ( widget )
 	GXLoadTexture ( EM_DEFAULT_FOLDER_ICON, folderIcon );
 	GXLoadTexture ( EM_DEFAULT_FILE_ICON, fileIcon );
 
-	surface = 0;
+	surface = nullptr;
 	const GXAABB& bounds = widget->GetBoundsWorld ();
 	OnResized ( 0.0f, 0.0f, (GXUShort)GXGetAABBWidth ( bounds ), (GXUShort)GXGetAABBHeight ( bounds ) );
 	EMSetHudSurfaceLocationWorld ( *surface, bounds, EMGetNextGUIForegroundZ (), gx_Core->GetRenderer ()->GetWidth (), gx_Core->GetRenderer ()->GetHeight () );
@@ -236,19 +233,6 @@ GXVoid EMUIFileListBoxRenderer::OnDraw ()
 	glEnable ( GL_DEPTH_TEST );
 }
 
-GXVoid EMUIFileListBoxRenderer::OnForeground ()
-{
-	SetLayer ( EMGetNextGUIForegroundZ () );
-}
-
-GXVoid EMUIFileListBoxRenderer::SetLayer ( GXFloat z )
-{
-	GXVec3 location;
-	surface->GetLocation ( location );
-	location.z = z;
-	surface->SetLocation ( location );
-}
-
 GXVoid EMUIFileListBoxRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
 {
 	GXSafeDelete ( surface );
@@ -270,7 +254,7 @@ GXVoid EMUIFileListBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
 EMUIFileListBox::EMUIFileListBox ( EMUI* parent ):
 EMUI ( parent )
 {
-	widget = new GXUIListBox ( parent ? parent->GetWidget () : 0, &EMUIFileListBox::ItemDestructor );
+	widget = new GXUIListBox ( parent ? parent->GetWidget () : nullptr, &EMUIFileListBox::ItemDestructor );
 	widget->Resize ( EM_DEFAULT_LEFT_BOTTOM_X * gx_ui_Scale, EM_DEFAULT_LEFT_BOTTOM_Y * gx_ui_Scale, EM_DEFAULT_WIDTH * gx_ui_Scale, EM_DEFAULT_HEIGHT * gx_ui_Scale );
 	widget->SetItemHeight ( EM_DEFAULT_ITEM_HEIGHT * gx_ui_Scale );
 	widget->SetRenderer ( new EMUIFileListBoxRenderer ( widget ) );
@@ -282,7 +266,7 @@ EMUIFileListBox::~EMUIFileListBox ()
 	delete widget;
 }
 
-GXWidget* EMUIFileListBox::GetWidget ()
+GXWidget* EMUIFileListBox::GetWidget () const
 {
 	return widget;
 }
@@ -330,7 +314,7 @@ GXVoid EMUIFileListBox::Redraw ()
 	widget->Redraw ();
 }
 
-const GXVoid* EMUIFileListBox::GetSelectedItem ()
+const GXVoid* EMUIFileListBox::GetSelectedItem () const
 {
 	return widget->GetSelectedItem ();
 }

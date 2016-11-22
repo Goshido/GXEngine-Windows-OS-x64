@@ -16,14 +16,14 @@
 		if ( ptr )				\
 		{						\
 			delete ptr;			\
-			ptr = 0;			\
+			ptr = nullptr;		\
 		}
 
 #define GXSafeFree(ptr)			\
 		if ( ptr )				\
 		{						\
 			free ( ptr );		\
-			ptr = 0;			\
+			ptr = nullptr;		\
 		}
 
 

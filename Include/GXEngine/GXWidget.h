@@ -34,17 +34,17 @@ class GXWidget
 		virtual GXVoid OnMessage ( GXUInt message, const GXVoid* data );
 
 		GXVoid Resize ( GXFloat x, GXFloat y, GXFloat width, GXFloat height );
-		const GXAABB& GetBoundsWorld ();
-		const GXAABB& GetBoundsLocal ();
+		const GXAABB& GetBoundsWorld () const;
+		const GXAABB& GetBoundsLocal () const;
 
 		GXVoid Show ();
 		GXVoid Hide ();
 		GXVoid ToForeground ();
-		GXBool IsVisible ();
-		GXBool IsDraggable ();
+		GXBool IsVisible () const;
+		GXBool IsDraggable () const;
 
 		GXVoid SetRenderer ( GXWidgetRenderer* renderer );
-		GXWidgetRenderer* GetRenderer ();
+		GXWidgetRenderer* GetRenderer () const;
 		GXWidget* FindWidget ( GXFloat x, GXFloat y );	//return child widget or itself. Never 0
 
 	protected:
@@ -54,7 +54,7 @@ class GXWidget
 	private:
 		GXVoid AddChild ( GXWidget* child );
 		GXVoid RemoveChild ( GXWidget* child );
-		GXBool DoesChildExist ( GXWidget* child );
+		GXBool DoesChildExist ( GXWidget* child ) const;
 };
 
 class GXWidgetIterator
@@ -64,6 +64,7 @@ class GXWidgetIterator
 
 	public:
 		GXWidgetIterator ();
+		~GXWidgetIterator ();
 
 		GXWidget* Init ( GXWidget* widget );
 

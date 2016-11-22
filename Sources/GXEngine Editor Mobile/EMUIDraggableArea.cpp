@@ -14,14 +14,14 @@ class EMUIDraggableAreaRenderer : public GXWidgetRenderer
 
 	public:
 		EMUIDraggableAreaRenderer ( GXUIDragableArea* draggableAreaWidget );
-		virtual ~EMUIDraggableAreaRenderer ();
+		~EMUIDraggableAreaRenderer () override;
 
-		virtual GXVoid OnRefresh ();
-		virtual GXVoid OnDraw ();
+		GXVoid OnRefresh () override;
+		GXVoid OnDraw () override;
 
 	protected:
-		virtual GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height );
-		virtual GXVoid OnMoved ( GXFloat x, GXFloat y );
+		GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
+		GXVoid OnMoved ( GXFloat x, GXFloat y ) override;
 };
 
 EMUIDraggableAreaRenderer::EMUIDraggableAreaRenderer ( GXUIDragableArea* draggableAreaWidget ):
@@ -108,7 +108,7 @@ GXVoid EMUIDraggableAreaRenderer::OnMoved ( GXFloat x, GXFloat y )
 EMUIDraggableArea::EMUIDraggableArea ( EMUI* parent ):
 EMUI ( parent )
 {
-	widget = new GXUIDragableArea ( parent ? parent->GetWidget () : 0 );
+	widget = new GXUIDragableArea ( parent ? parent->GetWidget () : nullptr );
 	widget->SetRenderer ( new EMUIDraggableAreaRenderer ( widget ) );
 }
 
@@ -118,7 +118,7 @@ EMUIDraggableArea::~EMUIDraggableArea ()
 	delete widget;
 }
 
-GXWidget* EMUIDraggableArea::GetWidget ()
+GXWidget* EMUIDraggableArea::GetWidget () const
 {
 	return widget;
 }

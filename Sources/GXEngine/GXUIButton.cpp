@@ -8,8 +8,8 @@
 GXUIButton::GXUIButton ( GXWidget* parent ):
 GXWidget ( parent )
 {
-	OnLeftMouseButton = 0;
-	handler = 0;
+	OnLeftMouseButton = nullptr;
+	handler = nullptr;
 
 	isPressed = GX_FALSE;
 	isDisabled = GX_FALSE;
@@ -115,30 +115,30 @@ GXVoid GXUIButton::SetOnLeftMouseButtonCallback ( GXVoid* handler, PFNGXONMOUSEB
 
 GXVoid GXUIButton::Enable ()
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_ENABLE, 0, 0 );
+	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_ENABLE, nullptr, 0 );
 }
 
 GXVoid GXUIButton::Disable ()
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_DISABLE, 0, 0 );
+	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_DISABLE, nullptr, 0 );
 }
 
 GXVoid GXUIButton::Redraw ()
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_REDRAW, 0, 0 );
+	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_REDRAW, nullptr, 0 );
 }
 
-GXBool GXUIButton::IsPressed ()
+GXBool GXUIButton::IsPressed () const
 {
 	return isPressed;
 }
 
-GXBool GXUIButton::IsHighlighted ()
+GXBool GXUIButton::IsHighlighted () const
 {
 	return isHighlighted;
 }
 
-GXBool GXUIButton::IsDisabled ()
+GXBool GXUIButton::IsDisabled () const
 {
 	return isDisabled;
 }

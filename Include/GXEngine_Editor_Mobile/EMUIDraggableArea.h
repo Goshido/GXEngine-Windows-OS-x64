@@ -13,10 +13,10 @@ class EMUIDraggableArea : public EMUI
 
 	public:
 		EMUIDraggableArea ( EMUI* parent );
-		virtual ~EMUIDraggableArea ();
+		~EMUIDraggableArea () override;
 
-		virtual GXWidget* GetWidget ();
-		virtual GXVoid OnDrawMask ();
+		GXWidget* GetWidget () const override;
+		GXVoid OnDrawMask () override;
 
 		GXVoid Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height );
 

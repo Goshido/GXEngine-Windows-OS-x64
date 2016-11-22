@@ -37,9 +37,9 @@
 
 
 EMUIOpenFile::EMUIOpenFile ():
-EMUI ( 0 )
+EMUI ( nullptr )
 {
-	mainPanel = new EMUIDraggableArea ( 0 );
+	mainPanel = new EMUIDraggableArea ( nullptr );
 	mainPanel->SetHeaderHeight ( EM_PANEL_HEADER_HEIGHT * gx_ui_Scale );
 	mainPanel->SetOnResizeCallback ( this, &EMUIOpenFile::OnResize );
 
@@ -87,7 +87,7 @@ EMUIOpenFile::~EMUIOpenFile ()
 	delete mainPanel;
 }
 
-GXWidget* EMUIOpenFile::GetWidget ()
+GXWidget* EMUIOpenFile::GetWidget () const
 {
 	return mainPanel->GetWidget ();
 }
@@ -108,7 +108,7 @@ GXVoid EMUIOpenFile::Browse ( PFNEMONBROWSEFILEPROC callback )
 
 GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
 {
-	GXWChar* path = 0;
+	GXWChar* path = nullptr;
 
 	if ( directoryInfo.absolutePath )
 	{
@@ -120,7 +120,7 @@ GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
 		GXWcsclone ( &path, rootDirectory );
 
 	GXUInt totalItems = 0;
-	EMUIFileListBoxItem* items = 0;
+	EMUIFileListBoxItem* items = nullptr;
 	GXUInt itemIndex = 0;
 
 	if ( GXGetDirectoryInfo ( directoryInfo, path ) )
@@ -199,7 +199,7 @@ GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
 	}
 }
 
-const GXWChar* EMUIOpenFile::GetRelativePath ()
+const GXWChar* EMUIOpenFile::GetRelativePath () const
 {
 	return directoryInfo.absolutePath + rootDirectoryPathOffset;
 }

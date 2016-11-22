@@ -54,19 +54,19 @@ GXVoid GXDynamicArray::SetValue ( GXUInt i, const GXVoid* element )
 	memcpy ( data + i * elementSize, element, elementSize );
 }
 
-const GXVoid* GXDynamicArray::GetValue ( GXUInt i )
+const GXVoid* GXDynamicArray::GetValue ( GXUInt i ) const
 {
 	if ( i >= numElements ) return 0;
 
 	return data + i * elementSize;
 }
 
-const GXVoid* GXDynamicArray::GetData ()
+const GXVoid* GXDynamicArray::GetData () const
 {
 	return data;
 }
 
-GXUInt GXDynamicArray::GetLength ()
+GXUInt GXDynamicArray::GetLength () const
 {
 	return numElements;
 }

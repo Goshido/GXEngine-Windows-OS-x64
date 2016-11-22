@@ -20,14 +20,14 @@ struct GXUIListBoxRawItem
 GXUIListBox::GXUIListBox ( GXWidget* parent, PFNGXUILISTBOXITEMDESTRUCTORPROC itemDestructor ):
 GXWidget ( parent )
 {
-	itemHead = itemTail = 0;
+	itemHead = itemTail = nullptr;
 	itemHeight = GX_UI_DEFAULT_ITEM_HEIGHT * gx_ui_Scale;
 	totalItems = 0;
 	DestroyItem = itemDestructor;
-	itemSelectedHandler = 0;
+	itemSelectedHandler = nullptr;
 	itemDoubleClickedHandler = 0;
-	OnItemSelected = 0;
-	OnItemDoubleClicked = 0;
+	OnItemSelected = nullptr;
+	OnItemDoubleClicked = nullptr;
 
 	viewportOffset = 0.0f;
 	viewportSize = 1.0f;
@@ -98,7 +98,7 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 		case GX_MSG_LMBDOWN:
 		{
 			GXUIListBoxItem* item = GetHighlightedItem ();
-			GXUIListBoxItem* selected = 0;
+			GXUIListBoxItem* selected = nullptr;
 			for ( selected = itemHead; selected; selected = selected->next )
 			{
 				if ( selected->isSelected )
@@ -139,7 +139,7 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 			item->data = *itemData;
 			item->isSelected = item->isHighlighted = GX_FALSE;
 
-			item->next = 0;
+			item->next = nullptr;
 			item->prev = itemTail;
 			if ( itemTail )
 				itemTail->next = item;
@@ -166,7 +166,7 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 
 				EMUIFileListBoxItem* itm = (EMUIFileListBoxItem*)p->data;
 
-				item->next = 0;
+				item->next = nullptr;
 				item->prev = itemTail;
 				if ( itemTail )
 					itemTail->next = item;
@@ -194,7 +194,7 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 				delete p;
 			}
 
-			itemTail = 0;
+			itemTail = nullptr;
 			totalItems = 0;
 
 			viewportOffset = 0.0f;
@@ -300,7 +300,7 @@ GXVoid GXUIListBox::AddItems ( GXVoid** itemData, GXUInt items )
 	}
 
 	p->data = itemData[ limit ];
-	p->next = 0;
+	p->next = nullptr;
 
 	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_LIST_BOX_ADD_ITEMS, &list, sizeof ( GXUIListBoxRawItem* ) );
 }
@@ -314,10 +314,10 @@ GXVoid GXUIListBox::RemoveItem ( GXUInt itemIndex )
 
 GXVoid GXUIListBox::RemoveAllItems ()
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_LIST_BOX_REMOVE_ALL_ITEMS, 0, 0 );
+	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_LIST_BOX_REMOVE_ALL_ITEMS, nullptr, 0 );
 }
 
-GXVoid* GXUIListBox::GetSelectedItem ()
+GXVoid* GXUIListBox::GetSelectedItem () const
 {
 	for ( GXUIListBoxItem* p = itemHead; p; p = p->next )
 	{
@@ -325,25 +325,25 @@ GXVoid* GXUIListBox::GetSelectedItem ()
 			return p->data;
 	}
 
-	return 0;
+	return nullptr;
 }
 
-GXUIListBoxItem* GXUIListBox::GetItems ()
+GXUIListBoxItem* GXUIListBox::GetItems () const
 {
 	return itemHead;
 }
 
-GXUInt GXUIListBox::GetTotalItems ()
+GXUInt GXUIListBox::GetTotalItems () const
 {
 	return totalItems;
 }
 
-GXFloat GXUIListBox::GetViewportOffset ()
+GXFloat GXUIListBox::GetViewportOffset () const
 {
 	return viewportOffset;
 }
 
-GXBool GXUIListBox::IsItemVisible ( GXUInt itemIndex )
+GXBool GXUIListBox::IsItemVisible ( GXUInt itemIndex ) const
 {
 	if ( itemIndex >= totalItems ) return GX_FALSE;
 
@@ -365,7 +365,7 @@ GXBool GXUIListBox::IsItemVisible ( GXUInt itemIndex )
 	return GXIsOverlapedAABBAABB ( item, viewport );
 }
 
-GXFloat GXUIListBox::GetItemLocalOffsetY ( GXUInt itemIndex )
+GXFloat GXUIListBox::GetItemLocalOffsetY ( GXUInt itemIndex ) const
 {
 	if ( itemIndex >= totalItems ) return FLT_MAX;
 
@@ -392,7 +392,7 @@ GXVoid GXUIListBox::SetOnItemDoubleClickedCallback ( GXVoid* handler, PFNGXUILIS
 	OnItemDoubleClicked = callback;
 }
 
-GXFloat GXUIListBox::GetViewportSize ()
+GXFloat GXUIListBox::GetViewportSize () const
 {
 	return viewportSize;
 }
@@ -416,7 +416,7 @@ GXVoid GXUIListBox::SetItemHeight ( GXFloat height )
 	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_LIST_BOX_SET_ITEM_HEIGHT, &height, sizeof ( GXFloat ) );
 }
 
-GXFloat GXUIListBox::GetItemHeight ()
+GXFloat GXUIListBox::GetItemHeight () const
 {
 	return itemHeight;
 }
@@ -439,10 +439,10 @@ GXUIListBoxItem* GXUIListBox::FindItem ( const GXVec2 &mousePosition )
 		p = p->next;
 	}
 
-	return 0;
+	return nullptr;
 }
 
-GXUIListBoxItem* GXUIListBox::GetHighlightedItem ()
+GXUIListBoxItem* GXUIListBox::GetHighlightedItem () const
 {
 	for ( GXUIListBoxItem* p = itemHead; p; p = p->next )
 	{
@@ -450,7 +450,7 @@ GXUIListBoxItem* GXUIListBox::GetHighlightedItem ()
 			return p;
 	}
 
-	return 0;
+	return nullptr;
 }
 
 GXBool GXUIListBox::ResetHighlight ( const GXVec2 &mousePosition )
@@ -476,12 +476,12 @@ GXBool GXUIListBox::ResetHighlight ( const GXVec2 &mousePosition )
 	return isNeedRenderUpdate;
 }
 
-GXBool GXUIListBox::IsAbleToScroll ()
+GXBool GXUIListBox::IsAbleToScroll () const
 {
 	return totalItems * itemHeight > GXGetAABBHeight ( boundsLocal );
 }
 
-GXFloat GXUIListBox::GetTotalHeight ()
+GXFloat GXUIListBox::GetTotalHeight () const
 {
 	GXFloat totalHeight = totalItems * itemHeight;
 	GXFloat viewportHeight = GXGetAABBHeight ( boundsLocal );

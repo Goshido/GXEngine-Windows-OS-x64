@@ -9,9 +9,9 @@
 
 GXFloat				gx_ui_Scale = 1.0f;
 
-GXTouchSurface*		gx_ui_TouchSurface = 0;
-GXMutex*			gx_ui_Mutex = 0;
-GXCircleBuffer*		gx_ui_MessageBuffer = 0;
+GXTouchSurface*		gx_ui_TouchSurface = nullptr;
+GXMutex*			gx_ui_Mutex = nullptr;
+GXCircleBuffer*		gx_ui_MessageBuffer = nullptr;
 
 #define GX_UI_MESSAGE_BUFFER_SIZE		1048576		//1 Mb
 
@@ -27,8 +27,8 @@ struct GXMessage
 
 GXTouchSurface::GXTouchSurface ()
 {
-	messages = lastMessage = 0;
-	widgetHead = widgetTail = mouseOverWidget = lockedWidget = 0;
+	messages = lastMessage = nullptr;
+	widgetHead = widgetTail = mouseOverWidget = lockedWidget = nullptr;
 
 	gx_ui_Mutex = new GXMutex ();
 	gx_ui_MessageBuffer = new GXCircleBuffer ( GX_UI_MESSAGE_BUFFER_SIZE );
@@ -40,7 +40,7 @@ GXTouchSurface::~GXTouchSurface ()
 	delete gx_ui_MessageBuffer;
 	DeleteWidgets ();
 	delete gx_ui_Mutex;
-	gx_ui_TouchSurface = 0;
+	gx_ui_TouchSurface = nullptr;
 }
 
 GXVoid GXTouchSurface::OnLeftMouseButtonDown ( const GXVec2 &position )
@@ -50,7 +50,7 @@ GXVoid GXTouchSurface::OnLeftMouseButtonDown ( const GXVec2 &position )
 	if ( lockedWidget )
 	{
 		SendMessage ( lockedWidget, GX_MSG_LMBDOWN, &position, sizeof ( GXVec2 ) );
-		SendMessage ( lockedWidget, GX_MSG_FOREGROUND, 0, 0 );
+		SendMessage ( lockedWidget, GX_MSG_FOREGROUND, nullptr, 0 );
 	}
 	else
 	{
@@ -58,7 +58,7 @@ GXVoid GXTouchSurface::OnLeftMouseButtonDown ( const GXVec2 &position )
 		if ( target )
 		{
 			SendMessage ( target, GX_MSG_LMBDOWN, &position, sizeof ( GXVec2 ) );
-			SendMessage ( target, GX_MSG_FOREGROUND, 0, 0 );
+			SendMessage ( target, GX_MSG_FOREGROUND, nullptr, 0 );
 		}
 	}
 }
@@ -150,7 +150,7 @@ GXVoid GXTouchSurface::OnDoubleClick ( const GXVec2 &position )
 	if ( lockedWidget )
 	{
 		SendMessage ( lockedWidget, GX_MSG_DOUBLE_CLICK, &position, sizeof ( GXVec2 ) );
-		SendMessage ( lockedWidget, GX_MSG_FOREGROUND, 0, 0 );
+		SendMessage ( lockedWidget, GX_MSG_FOREGROUND, nullptr, 0 );
 	}
 	else
 	{
@@ -158,7 +158,7 @@ GXVoid GXTouchSurface::OnDoubleClick ( const GXVec2 &position )
 		if ( target )
 		{
 			SendMessage ( target, GX_MSG_DOUBLE_CLICK, &position, sizeof ( GXVec2 ) );
-			SendMessage ( target, GX_MSG_FOREGROUND, 0, 0 );
+			SendMessage ( target, GX_MSG_FOREGROUND, nullptr, 0 );
 		}
 	}
 }
@@ -214,7 +214,7 @@ GXVoid GXTouchSurface::OnMouseMove ( const GXVec2 &position )
 GXVoid GXTouchSurface::SendMessage ( GXWidget* widget, GXUInt message, const GXVoid* data, GXUInt size )
 {
 	GXMessage* msg = (GXMessage*)gx_ui_MessageBuffer->Allocate ( sizeof ( GXMessage ) );
-	msg->next = 0;
+	msg->next = nullptr;
 	msg->widget = widget;
 	msg->message = message;
 	msg->data = gx_ui_MessageBuffer->Allocate ( size );
@@ -262,7 +262,7 @@ GXVoid GXTouchSurface::MoveWidgetToForeground ( GXWidget* widget )
 
 	UnRegisterWidget ( widget );
 	
-	widget->prev = 0;
+	widget->prev = nullptr;
 	widget->next = widgetHead;
 	widgetHead->prev = widget;
 	widgetHead = widget;
@@ -280,7 +280,7 @@ GXWidget* GXTouchSurface::GetLockedCursorWidget ()
 
 GXVoid GXTouchSurface::ReleaseCursor ()
 {
-	lockedWidget = 0;
+	lockedWidget = nullptr;
 }
 
 GXVoid GXTouchSurface::RegisterWidget ( GXWidget* widget )
@@ -344,7 +344,7 @@ GXWidget* GXTouchSurface::FindWidget ( GXFloat x, GXFloat y )
 
 	gx_ui_Mutex->Release ();
 
-	return 0;
+	return nullptr;
 }
 
 GXVoid GXTouchSurface::DrawWidgets ( GXWidget* widget )

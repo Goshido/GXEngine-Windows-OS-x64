@@ -9,16 +9,16 @@ class EMUIStaticText : public EMUI
 
 	public:
 		EMUIStaticText ( EMUI* parent );
-		virtual ~EMUIStaticText ();
+		~EMUIStaticText () override;
 
-		virtual GXWidget* GetWidget ();
-		virtual GXVoid OnDrawMask ();
+		GXWidget* GetWidget () const override;
+		GXVoid OnDrawMask () override;
 
 		GXVoid SetText ( const GXWChar* text );
-		const GXWChar* GetText ();
+		const GXWChar* GetText () const;
 
 		GXVoid SetAlingment ( eGXUITextAlignment alignment );
-		eGXUITextAlignment GetAlignment ();
+		eGXUITextAlignment GetAlignment () const;
 
 		GXVoid Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height );
 };

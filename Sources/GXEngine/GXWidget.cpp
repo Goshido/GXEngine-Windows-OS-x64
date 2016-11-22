@@ -11,15 +11,15 @@
 
 GXWidget::GXWidget ( GXWidget* parent )
 {
-	next = 0;
-	prev = 0;
+	next = nullptr;
+	prev = nullptr;
 
 	this->parent = parent;
-	childs = 0;
+	childs = nullptr;
 
 	isVisible = GX_TRUE;
 	isDraggable = GX_FALSE;
-	renderer = 0;
+	renderer = nullptr;
 
 	GXAABB defaultBoundsLocal;
 	GXSetAABBEmpty ( defaultBoundsLocal );
@@ -197,37 +197,37 @@ GXVoid GXWidget::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat widt
 	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_RESIZE, &newBounds, sizeof ( GXAABB ) );
 }
 
-const GXAABB& GXWidget::GetBoundsWorld ()
+const GXAABB& GXWidget::GetBoundsWorld () const
 {
 	return boundsWorld;
 }
 
-const GXAABB& GXWidget::GetBoundsLocal ()
+const GXAABB& GXWidget::GetBoundsLocal () const
 {
 	return boundsLocal;
 }
 
 GXVoid GXWidget::Show ()
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_SHOW, 0, 0 );
+	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_SHOW, nullptr, 0 );
 }
 
 GXVoid GXWidget::Hide ()
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_HIDE, 0, 0 );
+	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_HIDE, nullptr, 0 );
 }
 
 GXVoid GXWidget::ToForeground ()
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_FOREGROUND, 0, 0 );
+	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_FOREGROUND, nullptr, 0 );
 }
 
-GXBool GXWidget::IsVisible ()
+GXBool GXWidget::IsVisible () const
 {
 	return isVisible;
 }
 
-GXBool GXWidget::IsDraggable ()
+GXBool GXWidget::IsDraggable () const
 {
 	return isDraggable;
 }
@@ -237,7 +237,7 @@ GXVoid GXWidget::SetRenderer ( GXWidgetRenderer* renderer )
 	this->renderer = renderer;
 }
 
-GXWidgetRenderer* GXWidget::GetRenderer ()
+GXWidgetRenderer* GXWidget::GetRenderer () const
 {
 	return renderer;
 }
@@ -302,7 +302,7 @@ GXVoid GXWidget::AddChild ( GXWidget* child )
 	if ( DoesChildExist ( child ) ) return;
 
 	child->next = childs;
-	child->prev = 0;
+	child->prev = nullptr;
 
 	if ( childs )
 		childs->prev = child;
@@ -321,7 +321,7 @@ GXVoid GXWidget::RemoveChild ( GXWidget* child )
 		childs = child->next;
 }
 
-GXBool GXWidget::DoesChildExist ( GXWidget* child )
+GXBool GXWidget::DoesChildExist ( GXWidget* child ) const
 {
 	for ( GXWidget* p = childs; p; p = p->next )
 	{
@@ -336,7 +336,12 @@ GXBool GXWidget::DoesChildExist ( GXWidget* child )
 
 GXWidgetIterator::GXWidgetIterator ()
 {
-	widget = 0;
+	widget = nullptr;
+}
+
+GXWidgetIterator::~GXWidgetIterator ()
+{
+	// NOTHING
 }
 
 GXWidget* GXWidgetIterator::Init ( GXWidget* widget )
@@ -347,7 +352,7 @@ GXWidget* GXWidgetIterator::Init ( GXWidget* widget )
 
 GXWidget* GXWidgetIterator::GetNext ()
 {
-	if ( !widget ) return 0;
+	if ( !widget ) return nullptr;
 
 	widget = widget->next;
 	return widget;
@@ -355,7 +360,7 @@ GXWidget* GXWidgetIterator::GetNext ()
 
 GXWidget* GXWidgetIterator::GetPrevious ()
 {
-	if ( !widget ) return 0;
+	if ( !widget ) return nullptr;
 
 	widget = widget->prev;
 	return widget;

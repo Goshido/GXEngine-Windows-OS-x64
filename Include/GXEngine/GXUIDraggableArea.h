@@ -44,20 +44,20 @@ class GXUIDragableArea : public GXWidget
 
 	public:
 		GXUIDragableArea ( GXWidget* parent );
-		virtual ~GXUIDragableArea ();
+		~GXUIDragableArea () override;
 
-		virtual GXVoid OnMessage ( GXUInt message, const GXVoid* data );
+		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
 
 		GXVoid SetHeaderHeight ( GXFloat height );
-		GXFloat GetHeaderHeight ();
+		GXFloat GetHeaderHeight () const;
 
 		GXVoid SetBorderThickness ( GXFloat thickness );
-		GXFloat GetBorderThickness ();
+		GXFloat GetBorderThickness () const;
 
 		GXVoid SetOnResizeCallback ( GXVoid* handler, PFNGXUIDRAGABLEAREAONRESIZEPROC callback );
 
 	private:
-		GXUByte GetResizeMode ( const GXVec2 &mousePosition );
+		GXUByte GetResizeMode ( const GXVec2 &mousePosition ) const;
 		GXVoid UpdateAreas ();
 		GXVoid UpdateCursor ( const GXVec2 &mousePosition );
 };

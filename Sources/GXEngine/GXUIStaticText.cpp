@@ -12,7 +12,7 @@
 GXUIStaticText::GXUIStaticText ( GXWidget* parent ):
 GXWidget ( parent )
 {
-	text = 0;
+	text = nullptr;
 	alignment = GX_UI_DEFAULT_ALIGNMENT;
 }
 
@@ -69,12 +69,12 @@ GXVoid GXUIStaticText::SetAlignment ( eGXUITextAlignment alignment )
 	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_SET_TEXT_ALIGNMENT, &alignment, sizeof ( eGXUITextAlignment ) );
 }
 
-const GXWChar* GXUIStaticText::GetText ()
+const GXWChar* GXUIStaticText::GetText () const
 {
 	return text;
 }
 
-eGXUITextAlignment GXUIStaticText::GetAlignment ()
+eGXUITextAlignment GXUIStaticText::GetAlignment () const
 {
 	return alignment;
 }

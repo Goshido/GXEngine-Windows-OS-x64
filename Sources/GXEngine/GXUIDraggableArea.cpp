@@ -26,8 +26,8 @@ GXWidget ( parent )
 	borderThickness = GX_UI_DRAGGABLE_AREA_DEFAULT_BORDER_THICKNESS * gx_ui_Scale;
 	isDraggable = GX_TRUE;
 	memset ( &lastMousePosition, 0, sizeof ( GXVec2 ) );
-	OnResize = 0;
-	handler = 0;
+	OnResize = nullptr;
+	handler = nullptr;
 	resizeMode = GX_UI_DRAGGABLE_AREA_RESIZE_MODE_NONE;
 
 	standartArrow = LoadCursorW ( 0, IDC_ARROW );
@@ -348,7 +348,7 @@ GXVoid GXUIDragableArea::SetHeaderHeight ( GXFloat height )
 	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_MOVABLE_AREA_SET_HEADER_HEIGHT, &height, sizeof ( GXFloat ) );
 }
 
-GXFloat GXUIDragableArea::GetHeaderHeight ()
+GXFloat GXUIDragableArea::GetHeaderHeight () const
 {
 	return headerHeight;
 }
@@ -358,7 +358,7 @@ GXVoid GXUIDragableArea::SetBorderThickness ( GXFloat thickness )
 	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_MOVABLE_AREA_SET_BORDER_THICKNESS, &thickness, sizeof ( GXFloat ) );
 }
 
-GXFloat GXUIDragableArea::GetBorderThickness ()
+GXFloat GXUIDragableArea::GetBorderThickness () const
 {
 	return borderThickness;
 }
@@ -369,7 +369,7 @@ GXVoid GXUIDragableArea::SetOnResizeCallback ( GXVoid* handler, PFNGXUIDRAGABLEA
 	OnResize = callback;
 }
 
-GXUByte GXUIDragableArea::GetResizeMode ( const GXVec2 &mousePosition )
+GXUByte GXUIDragableArea::GetResizeMode ( const GXVec2 &mousePosition ) const
 {
 	GXVec3 mouse3D = GXCreateVec3 ( mousePosition.x, mousePosition.y, 0.0f );
 
@@ -436,7 +436,7 @@ GXVoid GXUIDragableArea::UpdateAreas ()
 
 GXVoid GXUIDragableArea::UpdateCursor ( const GXVec2 &mousePosition )
 {
-	const HCURSOR* cursor = 0;
+	const HCURSOR* cursor = nullptr;
 
 	switch ( GetResizeMode ( mousePosition ) )
 	{

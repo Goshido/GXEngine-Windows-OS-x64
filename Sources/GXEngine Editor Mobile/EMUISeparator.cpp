@@ -23,20 +23,20 @@ class EMUISeparatorRenderer : public GXWidgetRenderer
 
 	public:
 		EMUISeparatorRenderer ( GXWidget* widget );
-		virtual ~EMUISeparatorRenderer ();
+		~EMUISeparatorRenderer () override;
 
-		virtual GXVoid OnRefresh ();
-		virtual GXVoid OnDraw ();
+		GXVoid OnRefresh () override;
+		GXVoid OnDraw () override;
 
 	protected:
-		virtual GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height );
-		virtual GXVoid OnMoved ( GXFloat x, GXFloat y );
+		GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
+		GXVoid OnMoved ( GXFloat x, GXFloat y ) override;
 };
 
 EMUISeparatorRenderer::EMUISeparatorRenderer ( GXWidget* widget ):
 GXWidgetRenderer ( widget )
 {
-	surface = 0;
+	surface = nullptr;
 	const GXAABB& bounds = widget->GetBoundsWorld ();
 	OnResized ( 0.0f, 0.0f, (GXUShort)GXGetAABBWidth ( bounds ), (GXUShort)GXGetAABBHeight ( bounds ) );
 	EMSetHudSurfaceLocationWorld ( *surface, bounds, EMGetNextGUIForegroundZ (), gx_Core->GetRenderer ()->GetWidth (), gx_Core->GetRenderer ()->GetHeight () );
@@ -93,7 +93,7 @@ GXVoid EMUISeparatorRenderer::OnMoved ( GXFloat x, GXFloat y )
 EMUISeparator::EMUISeparator ( EMUI* parent ):
 EMUI ( parent )
 {
-	widget = new GXWidget ( parent ? parent->GetWidget () : 0 );
+	widget = new GXWidget ( parent ? parent->GetWidget () : nullptr );
 	widget->Resize ( EM_SEPARATOR_DEFAULT_BOTTOM_X * gx_ui_Scale, EM_SEPARATOR_DEFAULT_BOTTOM_Y * gx_ui_Scale, EM_SEPARATOR_DEFAULT_WIDHT * gx_ui_Scale, EM_SEPARATOR_DEFAULT_HEIGHT * gx_ui_Scale );
 	widget->SetRenderer ( new EMUISeparatorRenderer ( widget ) );
 }
@@ -104,7 +104,7 @@ EMUISeparator::~EMUISeparator ()
 	delete widget;
 }
 
-GXWidget* EMUISeparator::GetWidget ()
+GXWidget* EMUISeparator::GetWidget () const
 {
 	return widget;
 }

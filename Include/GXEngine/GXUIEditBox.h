@@ -22,6 +22,7 @@ class GXUIEditBox : public GXWidget
 		GXWChar*			text;
 		GXWChar*			workingBuffer;
 		GXUInt				textSymbols;
+		GXUInt				maxSymbols;
 
 		GXFloat				textLeftOffset;
 		GXFloat				textRightOffset;
@@ -37,34 +38,34 @@ class GXUIEditBox : public GXWidget
 
 	public:
 		GXUIEditBox ( GXWidget* parent );
-		virtual ~GXUIEditBox ();
+		~GXUIEditBox () override;
 
-		virtual GXVoid OnMessage ( GXUInt message, const GXVoid* data );
+		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
 
-		GXFloat GetCursorOffset ();
-		GXFloat GetSelectionBeginOffset ();
-		GXFloat GetSelectionEndOffset ();
+		GXFloat GetCursorOffset () const;
+		GXFloat GetSelectionBeginOffset () const;
+		GXFloat GetSelectionEndOffset () const;
 
 		GXVoid SetTextLeftOffset ( GXFloat offset );
-		GXFloat GetTextLeftOffset ();
+		GXFloat GetTextLeftOffset () const;
 
 		GXVoid SetTextRightOffset ( GXFloat offset );
-		GXFloat GetTextRightOffset ();
+		GXFloat GetTextRightOffset () const;
 
 		GXVoid SetText ( const GXWChar* text );
-		const GXWChar* GetText ();
+		const GXWChar* GetText () const;
 
 		GXVoid SetAlignment ( eGXUITextAlignment alignment );
-		eGXUITextAlignment GetAlignment ();
+		eGXUITextAlignment GetAlignment () const;
 
 		GXVoid SetFont ( const GXWChar* fontFile, GXUShort fontSize );
-		GXFont* GetFont ();
+		GXFont* GetFont () const;
 
 		GXBool IsActive ();
 
 	private:
-		GXInt GetSelectionPosition ( const GXVec2 &mousePosition );
-		GXFloat GetSelectionOffset ( GXUInt symbolIndex );
+		GXInt GetSelectionPosition ( const GXVec2 &mousePosition ) const;
+		GXFloat GetSelectionOffset ( GXUInt symbolIndex ) const;
 
 		GXVoid LockInput ();
 		GXVoid ReleaseInput ();
@@ -72,6 +73,8 @@ class GXUIEditBox : public GXWidget
 		GXVoid UpdateCursor ( GXInt newCursor );
 
 		GXVoid CopyText ();
+		GXVoid PasteText ( const GXWChar* text );
+		GXBool DeleteText ();
 
 		static GXVoid GXCALL OnEnd ( GXVoid* handler );
 		static GXVoid GXCALL OnHome ( GXVoid* handler );

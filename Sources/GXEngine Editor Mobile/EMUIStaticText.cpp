@@ -23,14 +23,14 @@ class EMUIStaticTextRenderer : public GXWidgetRenderer
 
 	public:
 		EMUIStaticTextRenderer ( GXUIStaticText* staticTextWidget );
-		virtual ~EMUIStaticTextRenderer ();
+		~EMUIStaticTextRenderer () override;
 
-		virtual GXVoid OnRefresh ();
-		virtual GXVoid OnDraw ();
+		GXVoid OnRefresh () override;
+		GXVoid OnDraw () override;
 
 	protected:
-		virtual GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height );
-		virtual GXVoid OnMoved ( GXFloat x, GXFloat y );
+		GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
+		GXVoid OnMoved ( GXFloat x, GXFloat y ) override;
 };
 
 EMUIStaticTextRenderer::EMUIStaticTextRenderer ( GXUIStaticText* staticTextWidget ):
@@ -115,7 +115,7 @@ GXVoid EMUIStaticTextRenderer::OnMoved ( GXFloat x, GXFloat y )
 EMUIStaticText::EMUIStaticText ( EMUI* parent ) :
 EMUI ( parent )
 {
-	widget = new GXUIStaticText ( parent ? parent->GetWidget () : 0 );
+	widget = new GXUIStaticText ( parent ? parent->GetWidget () : nullptr );
 	widget->SetRenderer ( new EMUIStaticTextRenderer ( widget ) );
 }
 
@@ -125,7 +125,7 @@ EMUIStaticText::~EMUIStaticText ()
 	delete widget;
 }
 
-GXWidget* EMUIStaticText::GetWidget ()
+GXWidget* EMUIStaticText::GetWidget () const
 {
 	return widget;
 }
@@ -140,7 +140,7 @@ GXVoid EMUIStaticText::SetText ( const GXWChar* text )
 	widget->SetText ( text );
 }
 
-const GXWChar* EMUIStaticText::GetText ()
+const GXWChar* EMUIStaticText::GetText () const
 {
 	return widget->GetText ();
 }
@@ -150,7 +150,7 @@ GXVoid EMUIStaticText::SetAlingment ( eGXUITextAlignment alignment )
 	widget->SetAlignment ( alignment );
 }
 
-eGXUITextAlignment EMUIStaticText::GetAlignment ()
+eGXUITextAlignment EMUIStaticText::GetAlignment () const
 {
 	return widget->GetAlignment ();
 }

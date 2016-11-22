@@ -53,19 +53,19 @@ class EMUIEditBoxRenderer : public GXWidgetRenderer
 
 	public:
 		EMUIEditBoxRenderer ( GXUIEditBox* widget );
-		virtual ~EMUIEditBoxRenderer ();
+		~EMUIEditBoxRenderer () override;
 
 	protected:
-		virtual GXVoid OnRefresh ();
-		virtual GXVoid OnDraw ();
-		virtual GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height );
-		virtual GXVoid OnMoved ( GXFloat x, GXFloat y );
+		GXVoid OnRefresh () override;
+		GXVoid OnDraw () override;
+		GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
+		GXVoid OnMoved ( GXFloat x, GXFloat y ) override;
 };
 
 EMUIEditBoxRenderer::EMUIEditBoxRenderer ( GXUIEditBox* widget ):
 GXWidgetRenderer ( widget )
 {
-	surface = 0;
+	surface = nullptr;
 	const GXAABB& bounds = widget->GetBoundsWorld ();
 	OnResized ( 0.0f, 0.0f, (GXUShort)GXGetAABBWidth ( bounds ), (GXUShort)GXGetAABBHeight ( bounds ) );
 	EMSetHudSurfaceLocationWorld ( *surface, bounds, EMGetNextGUIForegroundZ (), gx_Core->GetRenderer ()->GetWidth (), gx_Core->GetRenderer ()->GetHeight () );
@@ -216,7 +216,7 @@ GXVoid EMUIEditBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
 EMUIEditBox::EMUIEditBox ( EMUI* parent ):
 EMUI ( parent )
 {
-	widget = new GXUIEditBox ( parent ? parent->GetWidget () : 0 );
+	widget = new GXUIEditBox ( parent ? parent->GetWidget () : nullptr );
 	widget->SetRenderer ( new EMUIEditBoxRenderer ( widget ) );
 	widget->Resize ( EM_DEFAULT_BOTTOM_LEFT_X * gx_ui_Scale, EM_DEFAULT_BOTTOM_LEFT_Y * gx_ui_Scale, EM_DEFAULT_WIDTH * gx_ui_Scale, EM_DEFAULT_HEIGHT * gx_ui_Scale );
 	widget->SetFont ( EM_DEFAULT_FONT, (GXUShort)( EM_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
@@ -231,7 +231,7 @@ EMUIEditBox::~EMUIEditBox ()
 	delete widget;
 }
 
-GXWidget* EMUIEditBox::GetWidget ()
+GXWidget* EMUIEditBox::GetWidget () const
 {
 	return widget;
 }
@@ -246,7 +246,7 @@ GXVoid EMUIEditBox::SetText ( const GXWChar* text )
 	widget->SetText ( text );
 }
 
-const GXWChar* EMUIEditBox::GetText ()
+const GXWChar* EMUIEditBox::GetText () const
 {
 	return widget->GetText ();
 }
@@ -256,7 +256,7 @@ GXVoid EMUIEditBox::SetAlignment ( eGXUITextAlignment alignment )
 	widget->SetAlignment ( alignment );
 }
 
-eGXUITextAlignment EMUIEditBox::GetAlignment ()
+eGXUITextAlignment EMUIEditBox::GetAlignment () const
 {
 	return widget->GetAlignment ();
 }
@@ -266,7 +266,7 @@ GXVoid EMUIEditBox::SetFont ( const GXWChar* fontFile, GXUShort fontSize )
 	widget->SetFont ( fontFile, fontSize );
 }
 
-GXFont* EMUIEditBox::GetFont ()
+GXFont* EMUIEditBox::GetFont () const
 {
 	return widget->GetFont ();
 }

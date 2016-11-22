@@ -30,6 +30,8 @@
 #define GX_LEFT_ARROW						0x001C
 #define GX_RIGHT_ARROW						0x001D
 
+#define GX_TEXT_GROW_FACTOR					16
+
 
 struct GXUIEditBoxFontInfo
 {
@@ -42,8 +44,8 @@ struct GXUIEditBoxFontInfo
 GXUIEditBox::GXUIEditBox ( GXWidget* parent ) :
 GXWidget ( parent )
 {
-	text = workingBuffer = 0;
-	textSymbols = 0;
+	text = workingBuffer = nullptr;
+	textSymbols = maxSymbols = 0;
 	textLeftOffset = GX_UI_DEFAULT_TEXT_LEFT_OFFSET * gx_ui_Scale;
 	textRightOffset = GX_UI_DEFAULT_TEXT_RIGHT_OFFSET * gx_ui_Scale;
 	font = GXGetFont ( GX_UI_DEFAULT_FONT, (GXUShort)( GX_UI_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
@@ -66,16 +68,20 @@ GXVoid GXUIEditBox::OnMessage ( GXUInt message, const GXVoid* data )
 	{
 		case GX_MSG_SET_TEXT:
 		{
-			GXSafeFree ( workingBuffer );
 			textSymbols = GXWcslen ( (const GXWChar*)data );
 			GXUInt size = sizeof ( GXWChar ) * ( textSymbols + 1 );
-			workingBuffer = (GXWChar*)malloc ( size );
-			memset ( workingBuffer, 0, size );
+			if ( textSymbols > maxSymbols )
+			{
+				GXSafeFree ( text );
+				GXSafeFree ( workingBuffer );
 
-			GXSafeFree ( text );
-			text = (GXWChar*)malloc ( size );
+				text = (GXWChar*)malloc ( size );
+				workingBuffer = (GXWChar*)malloc ( size );
+
+				maxSymbols = textSymbols;
+			}
+
 			memcpy ( text, (const GXWChar*)data, size );
-
 			cursor = selection = 0;
 
 			if ( renderer )
@@ -84,13 +90,18 @@ GXVoid GXUIEditBox::OnMessage ( GXUInt message, const GXVoid* data )
 		break;
 
 		case GX_MSG_CLEAR_TEXT:
-			GXSafeFree ( text );
-			GXSafeFree ( workingBuffer );
+		{
+			if ( textSymbols == 0 )
+				break;
+
+			text[ 0 ] = 0;
+
 			textSymbols = 0;
 			cursor = selection = 0;
 
 			if ( renderer )
 				renderer->OnUpdate ();
+		}
 		break;
 
 		case GX_MSG_EDIT_BOX_SET_FONT:
@@ -116,37 +127,30 @@ GXVoid GXUIEditBox::OnMessage ( GXUInt message, const GXVoid* data )
 
 		case GX_MSG_LMBDOWN:
 		{
-			//TODO Захватить ввод с клавиатуры, если курсор в области виджета.
+			//Захватить ввод с клавиатуры, если курсор в области виджета.
 			//Освободить ввод с клавиатуры, если курсор не в области виджета,
 			//и отправить сообщение на нужный виджет.
 			//Поставить курсор в правильное место, если щелчок в области виджета.
 			//Если щелчок в области виджета и зажат Shift, то выделить область текста.
-			if ( textSymbols > 0 )
-			{
-				const GXVec2* pos = (const GXVec2*)data;
-				if ( GXIsOverlapedAABBVec3 ( boundsWorld, pos->x, pos->y, 0.0f ) )
-				{
-					LockInput ();
-					if ( GetKeyState ( VK_SHIFT ) & GX_UI_KEYSTATE_MASK )
-					{
-						//SHIFT is pressed
-						cursor = GetSelectionPosition ( *pos );
-					}
-					else
-					{
-						//SHIFT are not pressed
-						cursor = selection = GetSelectionPosition ( *pos );
-					}
-				}
-				else
-				{
-					ReleaseInput ();
-					gx_ui_TouchSurface->OnLeftMouseButtonDown ( *pos );
-				}
 
-				if ( renderer )
-					renderer->OnUpdate ();
+			const GXVec2* pos = (const GXVec2*)data;
+			GXInt lastCursor = cursor;
+			if ( GXIsOverlapedAABBVec3 ( boundsWorld, pos->x, pos->y, 0.0f ) )
+			{
+				LockInput ();
+				if ( GetKeyState ( VK_SHIFT ) & GX_UI_KEYSTATE_MASK )
+					cursor = GetSelectionPosition ( *pos );
+				else
+					cursor = selection = GetSelectionPosition ( *pos );
 			}
+			else
+			{
+				ReleaseInput ();
+				gx_ui_TouchSurface->OnLeftMouseButtonDown ( *pos );
+			}
+
+			if ( renderer )
+				renderer->OnUpdate ();
 		}
 		break;
 
@@ -236,13 +240,13 @@ GXVoid GXUIEditBox::OnMessage ( GXUInt message, const GXVoid* data )
 
 		case GX_MSG_ADD_SYMBOL:
 		{
-			const GXWChar* symbol = (const GXWChar*)data;
-
-			//TODO вставка обычного символа, END, HOME, стрелочки
+			//Вставка обычного символа, END, HOME, стрелочки
 			//Ctrl + V, Ctrl + C, Ctrl + X
 			//Shift + HOME, Shift + END.
 			//Del, Backspace
 			//Учёт выделенного текста.
+
+			const GXWChar* symbol = (const GXWChar*)data;
 
 			switch ( *symbol )
 			{
@@ -260,8 +264,12 @@ GXVoid GXUIEditBox::OnMessage ( GXUInt message, const GXVoid* data )
 							GXWChar* data = (GXWChar*)GlobalLock ( block );
 							if ( data )
 							{
-								//TODO вставить текст
+								DeleteText ();
+								PasteText ( data );
 								GlobalUnlock ( block );
+
+								if ( renderer )
+									renderer->OnUpdate ();
 							}
 						}
 
@@ -271,8 +279,11 @@ GXVoid GXUIEditBox::OnMessage ( GXUInt message, const GXVoid* data )
 				break;
 
 				case GX_CTRL_X:
+				{
 					CopyText ();
-					//TODO удалить выделенное
+					if ( DeleteText () && renderer )
+						renderer->OnUpdate ();
+				}
 				break;
 
 				case GX_CTRL_A:
@@ -296,11 +307,27 @@ GXVoid GXUIEditBox::OnMessage ( GXUInt message, const GXVoid* data )
 				break;
 
 				case GX_DEL:
-					//TODO удалить следующий символ
+				{
+					if ( cursor == selection && cursor == textSymbols )
+						break;
+					else if ( cursor == selection )
+						selection++;
+
+					if ( DeleteText () && renderer )
+						renderer->OnUpdate ();
+				}
 				break;
 
 				case GX_BACKSPACE:
-					//TODO удалить предыдущий символ
+				{
+					if ( cursor == selection && cursor == 0 )
+						break;
+					else if ( cursor == selection )
+						cursor--;
+
+					if ( DeleteText () && renderer )
+						renderer->OnUpdate ();
+				}
 				break;
 
 				case GX_LEFT_ARROW:
@@ -312,7 +339,17 @@ GXVoid GXUIEditBox::OnMessage ( GXUInt message, const GXVoid* data )
 				break;
 
 				default:
-					//TODO добавить символ
+				{
+					//Добавить символ
+					static GXWChar buffer[ 2 ] = { 0 };
+					buffer[ 0 ] = *symbol;
+
+					DeleteText ();
+					PasteText ( buffer );
+
+					if ( renderer )
+						renderer->OnUpdate ();
+				}
 				break;
 			}
 		}
@@ -348,17 +385,17 @@ GXVoid GXUIEditBox::OnMessage ( GXUInt message, const GXVoid* data )
 	}
 }
 
-GXFloat GXUIEditBox::GetCursorOffset ()
+GXFloat GXUIEditBox::GetCursorOffset () const
 {
 	return GetSelectionOffset ( cursor );
 }
 
-GXFloat GXUIEditBox::GetSelectionBeginOffset ()
+GXFloat GXUIEditBox::GetSelectionBeginOffset () const
 {
 	return GetSelectionOffset ( cursor > selection ? cursor : selection );
 }
 
-GXFloat GXUIEditBox::GetSelectionEndOffset ()
+GXFloat GXUIEditBox::GetSelectionEndOffset () const
 {
 	return GetSelectionOffset ( cursor < selection ? cursor : selection );
 }
@@ -368,7 +405,7 @@ GXVoid GXUIEditBox::SetTextLeftOffset ( GXFloat offset )
 	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_EDIT_BOX_SET_TEXT_LEFT_OFFSET, &offset, sizeof ( GXFloat ) );
 }
 
-GXFloat GXUIEditBox::GetTextLeftOffset ()
+GXFloat GXUIEditBox::GetTextLeftOffset () const
 {
 	return textLeftOffset;
 }
@@ -378,7 +415,7 @@ GXVoid GXUIEditBox::SetTextRightOffset ( GXFloat offset )
 	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_EDIT_BOX_SET_TEXT_RIGHT_OFFSET, &offset, sizeof ( GXFloat ) );
 }
 
-GXFloat GXUIEditBox::GetTextRightOffset ()
+GXFloat GXUIEditBox::GetTextRightOffset () const
 {
 	return textRightOffset;
 }
@@ -391,7 +428,7 @@ GXVoid GXUIEditBox::SetText ( const GXWChar* text )
 		gx_ui_TouchSurface->SendMessage ( this, GX_MSG_CLEAR_TEXT, 0, 0 );
 }
 
-const GXWChar* GXUIEditBox::GetText ()
+const GXWChar* GXUIEditBox::GetText () const
 {
 	return text;
 }
@@ -401,7 +438,7 @@ GXVoid GXUIEditBox::SetAlignment ( eGXUITextAlignment alignment)
 	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_SET_TEXT_ALIGNMENT, &alignment, sizeof ( eGXUITextAlignment ) );
 }
 
-eGXUITextAlignment GXUIEditBox::GetAlignment ()
+eGXUITextAlignment GXUIEditBox::GetAlignment () const
 {
 	return alignment;
 }
@@ -420,7 +457,7 @@ GXVoid GXUIEditBox::SetFont ( const GXWChar* fontFile, GXUShort fontSize )
 	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_EDIT_BOX_SET_FONT, &fi, sizeof ( GXUIEditBoxFontInfo ) );
 }
 
-GXFont* GXUIEditBox::GetFont ()
+GXFont* GXUIEditBox::GetFont () const
 {
 	return font;
 }
@@ -430,7 +467,7 @@ GXBool GXUIEditBox::IsActive ()
 	return gx_ui_TouchSurface->GetLockedCursorWidget () == this;
 }
 
-GXInt GXUIEditBox::GetSelectionPosition ( const GXVec2 &mousePosition )
+GXInt GXUIEditBox::GetSelectionPosition ( const GXVec2 &mousePosition ) const
 {
 	GXVec3 center;
 	GXGetAABBCenter ( center, boundsWorld );
@@ -476,7 +513,7 @@ GXInt GXUIEditBox::GetSelectionPosition ( const GXVec2 &mousePosition )
 	return 0;
 }
 
-GXFloat GXUIEditBox::GetSelectionOffset ( GXUInt symbolIndex )
+GXFloat GXUIEditBox::GetSelectionOffset ( GXUInt symbolIndex ) const
 {
 	if ( textSymbols == 0 ) return 0.0f;
 
@@ -585,6 +622,63 @@ GXVoid GXUIEditBox::CopyText ()
 	EmptyClipboard ();
 	SetClipboardData ( CF_UNICODETEXT, clipData );
 	CloseClipboard ();
+}
+
+GXVoid GXUIEditBox::PasteText ( const GXWChar* text )
+{
+	GXUInt numSymbols = GXWcslen ( text );
+	GXUInt totalSymbols = textSymbols + numSymbols;
+
+	if ( totalSymbols > maxSymbols )
+	{
+		GXUInt size = ( totalSymbols + GX_TEXT_GROW_FACTOR + 1 ) * sizeof ( GXWChar );
+
+		if ( maxSymbols == 0 )
+		{
+			this->text = (GXWChar*)malloc ( size );
+			workingBuffer = (GXWChar*)malloc ( size );
+
+			this->text[ 0 ] = 0;
+		}
+		else
+		{
+			free ( workingBuffer );
+			workingBuffer = (GXWChar*)malloc ( size );
+
+			GXWChar* newText = (GXWChar*)malloc ( size );
+			memcpy ( newText, this->text, ( textSymbols + 1 ) * sizeof ( GXWChar ) );
+			free ( this->text );
+			this->text = newText;
+		}
+
+		maxSymbols = totalSymbols + GX_TEXT_GROW_FACTOR;
+	}
+
+	memmove ( this->text + cursor + numSymbols, this->text + cursor, ( textSymbols + 1 - cursor ) * sizeof ( GXWChar ) );
+	memcpy ( this->text + cursor, text, numSymbols * sizeof ( GXWChar ) );
+
+	cursor = selection = cursor + numSymbols;
+	textSymbols += numSymbols;
+}
+
+GXBool GXUIEditBox::DeleteText ()
+{
+	if ( cursor == selection ) return GX_FALSE;
+
+	GXInt start = cursor;
+	GXInt end = selection;
+
+	if ( start > end )
+	{
+		start = selection;
+		end = cursor;
+	}
+
+	memmove ( text + start, text + end, ( textSymbols + 1 - end ) * sizeof ( GXWChar ) );
+	cursor = selection = start;
+	textSymbols -= end - start;
+
+	return GX_TRUE;
 }
 
 GXVoid GXCALL GXUIEditBox::OnEnd ( GXVoid* handler )

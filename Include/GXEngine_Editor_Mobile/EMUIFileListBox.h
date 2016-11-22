@@ -28,10 +28,10 @@ class EMUIFileListBox : public EMUI
 
 	public:
 		EMUIFileListBox ( EMUI* parent );
-		virtual ~EMUIFileListBox ();
+		~EMUIFileListBox () override;
 
-		virtual GXWidget* GetWidget ();
-		virtual GXVoid OnDrawMask ();
+		GXWidget* GetWidget () const override;
+		GXVoid OnDrawMask () override;
 
 		GXVoid Resize ( GXFloat leftBottomX, GXFloat leftBottomY, GXFloat width, GXFloat height );
 		GXVoid AddFolder ( const GXWChar* name );
@@ -39,7 +39,7 @@ class EMUIFileListBox : public EMUI
 		GXVoid AddItems ( const EMUIFileListBoxItem* itemArray, GXUInt items );
 		GXVoid Clear ();
 		GXVoid Redraw ();
-		const GXVoid* GetSelectedItem ();
+		const GXVoid* GetSelectedItem () const;
 		GXVoid SetOnItemSelectedCallback ( GXVoid* handler, PFNGXUILISTBOXONITEMSELECTEDPROC callback );
 		GXVoid SetOnItemDoubleClickedCallbak ( GXVoid* handler, PFNGXUILISTBOXONITEMDOUBLECLICKEDPROC callback );
 

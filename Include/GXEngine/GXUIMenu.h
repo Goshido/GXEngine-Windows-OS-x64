@@ -22,19 +22,19 @@ class GXUIMenu : public GXWidget
 
 	public:
 		GXUIMenu ( GXWidget* parent, GXVoid* menuHandler, PFNGXONSHOWSUBMENUPROC onShowSubmenu );
-		virtual ~GXUIMenu ();
+		~GXUIMenu () override;
 
-		virtual GXVoid OnMessage ( GXUInt message, const GXVoid* data );
+		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
 
 		GXVoid AddItem ();
 		GXVoid ResizeItem ( GXUByte item, GXFloat width );
-		GXUByte GetTotalItems ();
-		const GXAABB& GetItemBounds ( GXUByte item );
+		GXUByte GetTotalItems () const;
+		const GXAABB& GetItemBounds ( GXUByte item ) const;
 
 		GXVoid Redraw ();
 
-		GXBool IsItemPressed ( GXUByte item );
-		GXBool IsItemHighlighted ( GXUByte item );
+		GXBool IsItemPressed ( GXUByte item ) const;
+		GXBool IsItemHighlighted ( GXUByte item ) const;
 };
 
 //-----------------------------------------------------------------------------------
@@ -47,19 +47,19 @@ class GXUISubmenu : public GXWidget
 
 	public:
 		GXUISubmenu ( GXWidget* parent );
-		virtual ~GXUISubmenu ();
+		~GXUISubmenu () override;
 
-		virtual GXVoid OnMessage ( GXUInt message, const GXVoid* data );
+		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
 
 		GXVoid AddItem ( PFNGXONMENUITEMPROC callback );
 		GXVoid SetItemHeight ( GXFloat height );
-		GXUByte GetTotalItems ();
-		GXFloat GetItemHeight ();
+		GXUByte GetTotalItems () const;
+		GXFloat GetItemHeight () const;
 
 		GXVoid Redraw ();
 
-		GXBool IsItemPressed ( GXUByte item );
-		GXBool IsItemHighlighted ( GXUByte item );
+		GXBool IsItemPressed ( GXUByte item ) const;
+		GXBool IsItemHighlighted ( GXUByte item ) const;
 };
 
 

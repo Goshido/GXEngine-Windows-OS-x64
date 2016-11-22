@@ -33,9 +33,9 @@ class GXDynamicArray
 		virtual ~GXDynamicArray ();
 
 		GXVoid SetValue ( GXUInt i, const GXVoid* element );
-		const GXVoid* GetValue ( GXUInt i );
-		const GXVoid* GetData ();
-		GXUInt GetLength ();
+		const GXVoid* GetValue ( GXUInt i ) const;
+		const GXVoid* GetData () const;
+		GXUInt GetLength () const;
 
 		GXVoid Resize ( GXUInt numElements );
 };

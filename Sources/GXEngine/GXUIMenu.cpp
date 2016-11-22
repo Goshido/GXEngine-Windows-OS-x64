@@ -268,12 +268,12 @@ GXVoid GXUIMenu::ResizeItem ( GXUByte item, GXFloat width )
 	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_MENU_RESIZE_ITEM, &ri, sizeof ( GXUIMenuResizeItem ) );
 }
 
-GXUByte GXUIMenu::GetTotalItems ()
+GXUByte GXUIMenu::GetTotalItems () const
 {
 	return (GXUByte)items.GetLength ();
 }
 
-const GXAABB& GXUIMenu::GetItemBounds ( GXUByte item )
+const GXAABB& GXUIMenu::GetItemBounds ( GXUByte item ) const
 {
 	GXUIMenuItem* p = (GXUIMenuItem*)items.GetValue ( item );
 	return p->bounds;
@@ -284,13 +284,13 @@ GXVoid GXUIMenu::Redraw ()
 	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_REDRAW, 0, 0 );
 }
 
-GXBool GXUIMenu::IsItemPressed ( GXUByte item )
+GXBool GXUIMenu::IsItemPressed ( GXUByte item ) const
 {
 	GXUIMenuItem* p = (GXUIMenuItem*)items.GetValue ( item );
 	return p->isPressed;
 }
 
-GXBool GXUIMenu::IsItemHighlighted ( GXUByte item )
+GXBool GXUIMenu::IsItemHighlighted ( GXUByte item ) const
 {
 	GXUIMenuItem* p = (GXUIMenuItem*)items.GetValue ( item );
 	return p->isHighlighted;
@@ -566,12 +566,12 @@ GXVoid GXUISubmenu::SetItemHeight ( GXFloat height )
 	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_SUBMENU_SET_HEIGHT, &height, sizeof ( GXFloat ) );
 }
 
-GXUByte GXUISubmenu::GetTotalItems ()
+GXUByte GXUISubmenu::GetTotalItems () const
 {
 	return (GXUByte)items.GetLength ();
 }
 
-GXFloat GXUISubmenu::GetItemHeight ()
+GXFloat GXUISubmenu::GetItemHeight () const
 {
 	return itemHeight;
 }
@@ -581,13 +581,13 @@ GXVoid GXUISubmenu::Redraw ()
 	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_REDRAW, 0, 0 );
 }
 
-GXBool GXUISubmenu::IsItemPressed ( GXUByte item )
+GXBool GXUISubmenu::IsItemPressed ( GXUByte item ) const
 {
 	GXUISubmenuItem* i = (GXUISubmenuItem*)items.GetValue ( item );
 	return i->isPressed;
 }
 
-GXBool GXUISubmenu::IsItemHighlighted ( GXUByte item )
+GXBool GXUISubmenu::IsItemHighlighted ( GXUByte item ) const
 {
 	GXUISubmenuItem* i = (GXUISubmenuItem*)items.GetValue ( item );
 	return i->isHighlighted;

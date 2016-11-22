@@ -12,10 +12,10 @@ class EMUISeparator : public EMUI
 
 	public:
 		EMUISeparator ( EMUI* parent );
-		virtual ~EMUISeparator ();
+		~EMUISeparator () override;
 
-		virtual GXWidget* GetWidget ();
-		virtual GXVoid OnDrawMask ();
+		GXWidget* GetWidget () const override;
+		GXVoid OnDrawMask () override;
 
 		GXVoid Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height );
 };

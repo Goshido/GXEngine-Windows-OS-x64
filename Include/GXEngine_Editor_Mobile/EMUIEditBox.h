@@ -13,20 +13,20 @@ class EMUIEditBox : public EMUI
 
 	public:
 		EMUIEditBox ( EMUI* parent );
-		virtual ~EMUIEditBox ();
+		~EMUIEditBox () override;
 
-		virtual GXWidget* GetWidget ();
+		GXWidget* GetWidget () const override;
 
 		GXVoid Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height );
 
 		GXVoid SetText ( const GXWChar* text );
-		const GXWChar* GetText ();
+		const GXWChar* GetText () const;
 
 		GXVoid SetAlignment ( eGXUITextAlignment alignment );
-		eGXUITextAlignment GetAlignment ();
+		eGXUITextAlignment GetAlignment () const;
 
 		GXVoid SetFont ( const GXWChar* fontFile, GXUShort fontSize );
-		GXFont* GetFont ();
+		GXFont* GetFont () const;
 };
 
 

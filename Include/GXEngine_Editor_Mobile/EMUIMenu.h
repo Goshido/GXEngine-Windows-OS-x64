@@ -16,9 +16,9 @@ class EMUIMenu : public EMUI
 
 	public:
 		EMUIMenu ();
-		virtual ~EMUIMenu ();
+		~EMUIMenu () override;
 
-		virtual GXVoid OnDrawMask ();
+		GXVoid OnDrawMask () override;
 
 		GXVoid AddItem ( const GXWChar* caption );
 		GXVoid RenameItem ( GXUByte item, const GXWChar* caption );

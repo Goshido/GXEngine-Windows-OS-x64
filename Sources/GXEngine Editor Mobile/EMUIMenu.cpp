@@ -26,10 +26,10 @@ class EMUIMenuRenderer : public GXWidgetRenderer
 
 	public:
 		EMUIMenuRenderer ( GXUIMenu* widget, EMUIMenu* menu );
-		virtual ~EMUIMenuRenderer ();
+		~EMUIMenuRenderer () override;
 
-		virtual GXVoid OnRefresh ();
-		virtual GXVoid OnDraw ();
+		GXVoid OnRefresh () override;
+		GXVoid OnDraw () override;
 
 		GXVoid OnDrawMask ();
 
@@ -43,8 +43,8 @@ class EMUIMenuRenderer : public GXWidgetRenderer
 		GXFloat GetLayer ();
 
 	protected:
-		virtual GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height );
-		virtual GXVoid OnMoved ( GXFloat x, GXFloat y );
+		GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
+		GXVoid OnMoved ( GXFloat x, GXFloat y ) override;
 };
 
 EMUIMenuRenderer::EMUIMenuRenderer ( GXUIMenu* widget, EMUIMenu* menu ):
@@ -249,10 +249,10 @@ class EMUISubmenuRenderer : public GXWidgetRenderer
 
 	public:
 		EMUISubmenuRenderer ( GXUISubmenu* widget );
-		virtual ~EMUISubmenuRenderer ();
+		~EMUISubmenuRenderer () override;
 
-		virtual GXVoid OnRefresh ();
-		virtual GXVoid OnDraw ();
+		GXVoid OnRefresh () override;
+		GXVoid OnDraw () override;
 
 		GXVoid OnDrawMask ();
 
@@ -260,8 +260,8 @@ class EMUISubmenuRenderer : public GXWidgetRenderer
 		GXVoid RenameItem ( GXUByte item, const GXWChar* caption, const GXWChar* hotkey );
 
 	protected:
-		virtual GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height );
-		virtual GXVoid OnMoved ( GXFloat x, GXFloat y );
+		GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
+		GXVoid OnMoved ( GXFloat x, GXFloat y ) override;
 };
 
 EMUISubmenuRenderer::EMUISubmenuRenderer ( GXUISubmenu* widget ):
@@ -448,7 +448,7 @@ GXVoid EMUISubmenuRenderer::RenameItem ( GXUByte item, const GXWChar* caption, c
 	if ( hotkey )
 		GXWcsclone ( &p->hotkey, hotkey );
 	else
-		p->hotkey = 0;
+		p->hotkey = nullptr;
 }
 
 GXVoid EMUISubmenuRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
@@ -466,9 +466,9 @@ GXVoid EMUISubmenuRenderer::OnMoved ( GXFloat x, GXFloat y )
 //------------------------------------------------------------------------------------------
 
 EMUIMenu::EMUIMenu ():
-EMUI ( 0 ), submenuWidgets ( sizeof ( GXUISubmenu* ) )
+EMUI ( nullptr ), submenuWidgets ( sizeof ( GXUISubmenu* ) )
 {
-	menuWidget = new GXUIMenu ( 0, this, &OnShowSubmenu );
+	menuWidget = new GXUIMenu ( nullptr, this, &OnShowSubmenu );
 	menuWidget->SetRenderer ( new EMUIMenuRenderer ( menuWidget, this ) );
 	menuWidget->Resize ( 0.0f, 0.0f, gx_ui_Scale * 4.0f, gx_ui_Scale * 0.5f );
 }
@@ -515,7 +515,7 @@ GXVoid EMUIMenu::AddItem ( const GXWChar* caption )
 	GXFloat r = renderer->EstimateItemWidth ( caption );
 	menuWidget->ResizeItem ( total, r );
 
-	GXUISubmenu* submenu = new GXUISubmenu ( 0 );
+	GXUISubmenu* submenu = new GXUISubmenu ( nullptr );
 	submenu->SetRenderer ( new EMUISubmenuRenderer ( submenu ) );
 	submenu->Hide ();
 	submenu->Resize ( 0.0f, 0.0f, 8.0f * gx_ui_Scale, 0.5f * gx_ui_Scale );

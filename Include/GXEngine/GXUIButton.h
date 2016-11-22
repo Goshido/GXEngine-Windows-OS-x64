@@ -24,9 +24,9 @@ class GXUIButton : public GXWidget
 
 	public:
 		GXUIButton ( GXWidget* parent );
-		virtual ~GXUIButton ();
+		~GXUIButton () override;
 
-		virtual GXVoid OnMessage ( GXUInt message, const GXVoid* data );
+		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
 
 		GXVoid SetOnLeftMouseButtonCallback ( GXVoid* handler, PFNGXONMOUSEBUTTONPROC callback );
 
@@ -34,9 +34,9 @@ class GXUIButton : public GXWidget
 		GXVoid Disable ();
 		GXVoid Redraw ();
 
-		GXBool IsPressed ();
-		GXBool IsHighlighted ();
-		GXBool IsDisabled ();
+		GXBool IsPressed () const;
+		GXBool IsHighlighted () const;
+		GXBool IsDisabled () const;
 };
 
 
