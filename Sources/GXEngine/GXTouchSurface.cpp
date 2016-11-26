@@ -28,7 +28,7 @@ struct GXMessage
 GXTouchSurface::GXTouchSurface ()
 {
 	messages = lastMessage = nullptr;
-	widgetHead = widgetTail = mouseOverWidget = lockedWidget = nullptr;
+	widgetHead = widgetTail = mouseOverWidget = lockedWidget = defaultWidget = nullptr;
 
 	gx_ui_Mutex = new GXMutex ();
 	gx_ui_MessageBuffer = new GXCircleBuffer ( GX_UI_MESSAGE_BUFFER_SIZE );
@@ -258,7 +258,7 @@ GXVoid GXTouchSurface::DrawWidgets ()
 
 GXVoid GXTouchSurface::MoveWidgetToForeground ( GXWidget* widget )
 {
-	if ( !widget || widget == widgetHead || widget->parent ) return;
+	if ( !widget || widget == defaultWidget || widget == widgetHead || widget->parent ) return;
 
 	UnRegisterWidget ( widget );
 	
@@ -317,6 +317,11 @@ const GXVec2& GXTouchSurface::GetMousePosition ()
 	return mousePosition;
 }
 
+GXVoid GXTouchSurface::SetDefaultWidget ( GXWidget* widget )
+{
+	defaultWidget = widget;
+}
+
 GXVoid GXTouchSurface::DeleteWidgets ()
 {
 	while ( widgetHead )
@@ -344,7 +349,7 @@ GXWidget* GXTouchSurface::FindWidget ( GXFloat x, GXFloat y )
 
 	gx_ui_Mutex->Release ();
 
-	return nullptr;
+	return defaultWidget;
 }
 
 GXVoid GXTouchSurface::DrawWidgets ( GXWidget* widget )

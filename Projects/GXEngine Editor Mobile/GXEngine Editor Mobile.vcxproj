@@ -239,6 +239,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXUIButton.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIDraggableArea.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIEditBox.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXUIInput.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIListBox.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIMenu.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIStaticText.cpp" />
@@ -332,6 +333,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXUICommon.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIDraggableArea.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIEditBox.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXUIInput.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIListBox.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIMenu.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIMessage.h" />

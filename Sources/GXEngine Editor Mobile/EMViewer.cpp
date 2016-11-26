@@ -184,10 +184,7 @@ GXVoid GXCALL EMViewer::OnMouseMove ( GXInt win_x, GXInt win_y )
 		break;
 
 		default:
-		{
-			if ( em_Tool )
-				em_Tool->OnMouseMove ( mousePosition );
-		}
+			// NOTHING
 		break;
 	}
 
@@ -197,17 +194,12 @@ GXVoid GXCALL EMViewer::OnMouseMove ( GXInt win_x, GXInt win_y )
 GXVoid GXCALL EMViewer::OnMouseButton ( EGXInputMouseFlags mouseflags )
 {
 	em_vc_Me->isMMBPressed = mouseflags.mmb;
-
-	if ( em_Tool )
-		em_Tool->OnMouseButton ( mouseflags );
 }
 
 GXVoid GXCALL EMViewer::OnMouseWheel ( GXInt steps )
 {
 	if ( em_vc_Me->ResolveMode ( em_vc_Me->isAltPressed, em_vc_Me->isMMBPressed, GX_TRUE ) == EM_VIEWER_ZOOM_MODE )
 		em_vc_Me->OnZoom ( steps );
-	else if ( em_Tool )
-		em_Tool->OnMouseWheel ( steps );
 }
 
 GXVoid GXCALL EMViewer::OnAltDown ( GXVoid* handler )

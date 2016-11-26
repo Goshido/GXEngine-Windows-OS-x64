@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #include <GXEngine/GXWidget.h>
 #include <GXEngine/GXUIMessage.h>
@@ -9,7 +9,7 @@
 #define GX_WIDGET_RENDERER_RESIZE_EPSILON			0.25f
 
 
-GXWidget::GXWidget ( GXWidget* parent )
+GXWidget::GXWidget ( GXWidget* parent, GXBool isNeedRegister )
 {
 	next = nullptr;
 	prev = nullptr;
@@ -27,6 +27,9 @@ GXWidget::GXWidget ( GXWidget* parent )
 	GXAddVertexToAABB ( defaultBoundsLocal, 1.0f, 1.0f, 1.0f );
 	UpdateBoundsWorld ( defaultBoundsLocal );
 
+	isRegistered = isNeedRegister;
+	if ( !isRegistered ) return;
+
 	gx_ui_Mutex->Lock ();
 
 	if ( parent )
@@ -39,6 +42,8 @@ GXWidget::GXWidget ( GXWidget* parent )
 
 GXWidget::~GXWidget ()
 {
+	if ( !isRegistered ) return;
+
 	gx_ui_Mutex->Lock ();
 
 	if ( parent )

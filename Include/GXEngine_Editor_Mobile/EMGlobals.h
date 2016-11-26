@@ -8,7 +8,6 @@
 
 
 extern EMRenderer*	em_Renderer;
-extern EMTool*		em_Tool;
 
 
 #endif //EM_GLOBALS

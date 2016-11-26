@@ -46,8 +46,7 @@ GXVoid EMMoveTool::Delete ()
 
 GXVoid EMMoveTool::Bind ()
 {
-	em_Tool = this;
-	actor = 0;
+	actor = nullptr;
 	activeAxis = EM_MOVE_TOOL_ACTIVE_AXIS_UNKNOWN;
 	isLMBPressed = GX_FALSE;
 
@@ -72,7 +71,6 @@ GXVoid EMMoveTool::SetActor ( EMActor* actor )
 
 GXVoid EMMoveTool::UnBind ()
 {
-	em_Tool = 0;
 	em_Renderer->SetOnObjectCallback ( 0 );
 }
 

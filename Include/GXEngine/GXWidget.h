@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #ifndef GX_WIDGET
 #define GX_WIDGET
@@ -12,6 +12,9 @@ class GXWidget
 {
 	friend class GXTouchSurface;
 	friend class GXWidgetIterator;
+
+	private:
+		GXBool					isRegistered;
 
 	protected:
 		GXWidget*				next;
@@ -28,7 +31,7 @@ class GXWidget
 		GXAABB					boundsLocal;
 
 	public:
-		GXWidget ( GXWidget* parent );
+		GXWidget ( GXWidget* parent, GXBool isNeedRegister = GX_TRUE );
 		virtual ~GXWidget ();
 
 		virtual GXVoid OnMessage ( GXUInt message, const GXVoid* data );

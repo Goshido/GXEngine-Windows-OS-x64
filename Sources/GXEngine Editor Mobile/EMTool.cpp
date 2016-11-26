@@ -1,24 +1,52 @@
 #include <GXEngine_Editor_Mobile/EMTool.h>
+#include <GXEngine/GXTouchSurface.h>
+#include <GXEngine/GXGlobals.h>
 
 
-EMTool* em_Tool = 0;
+EMTool* EMTool::activeTool = nullptr;
+GXUIInput* EMTool::inputWidget = nullptr;
+GXInt EMTool::inputWidgetRef = 0;
 
 
 EMTool::EMTool ()
 {
-	actor = 0;
+	actor = nullptr;
+
+	inputWidgetRef++;
+	if ( !inputWidget )
+	{
+		inputWidget = new GXUIInput ( nullptr, GX_FALSE );
+
+		inputWidget->SetOnLeftMouseButtonDownCallback ( &EMTool::OnLMBDown );
+		inputWidget->SetOnLeftMouseButtonUpCallback ( &EMTool::OnLMBUp );
+
+		inputWidget->SetOnMiddleMouseButtonDownCallback ( &EMTool::OnMMBDown );
+		inputWidget->SetOnMiddleMouseButtonUpCallback ( &EMTool::OnMMBUp );
+
+		inputWidget->SetOnRightMouseButtonDownCallback ( &EMTool::OnRMBDown );
+		inputWidget->SetOnRightMouseButtonUpCallback ( &EMTool::OnRMBUp );
+
+		inputWidget->SetOnDoubleClickCallback ( &EMTool::OnDoubleClick );
+		inputWidget->SetOnMouseMoveCallback ( &EMTool::OnMouseMove );
+		inputWidget->SetOnMouseScrollCallback ( &EMTool::OnMouseScroll );
+
+		gx_Core->GetTouchSurface ()->SetDefaultWidget ( inputWidget );
+	}
 }
 
 EMTool::~EMTool ()
 {
-	if ( em_Tool == this )
-		UnBind ();
+	inputWidgetRef--;
+	if ( inputWidgetRef < 1 )
+	{
+		gx_Core->GetTouchSurface ()->SetDefaultWidget ( nullptr );
+		GXSafeDelete ( inputWidget );
+	}
 }
 
 GXVoid EMTool::Bind ()
 {
-	em_Tool = this;
-	actor = 0;
+	actor = nullptr;
 }
 
 GXVoid EMTool::SetActor ( EMActor* actor )
@@ -28,7 +56,7 @@ GXVoid EMTool::SetActor ( EMActor* actor )
 
 GXVoid EMTool::UnBind ()
 {
-	em_Tool = 0;
+	//NOTHING
 }
 
 GXVoid EMTool::OnViewerTransformChanged ()
@@ -64,4 +92,130 @@ GXVoid EMTool::OnMouseButton ( EGXInputMouseFlags mouseflags )
 GXVoid EMTool::OnMouseWheel ( GXInt steps )
 {
 	//NOTHING
+}
+
+GXVoid EMTool::OnDoubleClick ( const GXVec2 &mousePosition )
+{
+	//NOTHING
+}
+
+GXVoid GXCALL EMTool::SetActiveTool ( EMTool* tool )
+{
+	if ( activeTool == tool ) return;
+
+	activeTool = tool;
+
+	if ( inputWidget )
+		inputWidget->SetHandler ( activeTool );
+}
+
+GXVoid GXCALL EMTool::OnLMBDown ( GXVoid* handler, GXUIInput* widget, GXFloat x, GXFloat y )
+{
+	if ( !handler ) return;
+
+	EMTool* tool = (EMTool*)handler;
+
+	GXVec2 mousePosition = GXCreateVec2 ( x, y );
+	tool->OnMouseMove ( mousePosition );
+
+	EGXInputMouseFlags flags = { 0 };
+	flags.lmb = 1;
+	tool->OnMouseButton ( flags );
+}
+
+GXVoid GXCALL EMTool::OnLMBUp ( GXVoid* handler, GXUIInput* widget, GXFloat x, GXFloat y )
+{
+	if ( !handler ) return;
+
+	EMTool* tool = (EMTool*)handler;
+
+	GXVec2 mousePosition = GXCreateVec2 ( x, y );
+	tool->OnMouseMove ( mousePosition );
+
+	EGXInputMouseFlags flags = { 0 };
+	tool->OnMouseButton ( flags );
+}
+
+GXVoid GXCALL EMTool::OnMMBDown ( GXVoid* handler, GXUIInput* widget, GXFloat x, GXFloat y )
+{
+	if ( !handler ) return;
+
+	EMTool* tool = (EMTool*)handler;
+
+	GXVec2 mousePosition = GXCreateVec2 ( x, y );
+	tool->OnMouseMove ( mousePosition );
+
+	EGXInputMouseFlags flags = { 0 };
+	flags.mmb = 1;
+	tool->OnMouseButton ( flags );
+}
+
+GXVoid GXCALL EMTool::OnMMBUp ( GXVoid* handler, GXUIInput* widget, GXFloat x, GXFloat y )
+{
+	if ( !handler ) return;
+
+	EMTool* tool = (EMTool*)handler;
+
+	GXVec2 mousePosition = GXCreateVec2 ( x, y );
+	tool->OnMouseMove ( mousePosition );
+
+	EGXInputMouseFlags flags = { 0 };
+	tool->OnMouseButton ( flags );
+}
+
+GXVoid GXCALL EMTool::OnRMBDown ( GXVoid* handler, GXUIInput* widget, GXFloat x, GXFloat y )
+{
+	if ( !handler ) return;
+
+	EMTool* tool = (EMTool*)handler;
+
+	GXVec2 mousePosition = GXCreateVec2 ( x, y );
+	tool->OnMouseMove ( mousePosition );
+
+	EGXInputMouseFlags flags = { 0 };
+	flags.rmb = 1;
+	tool->OnMouseButton ( flags );
+}
+
+GXVoid GXCALL EMTool::OnRMBUp ( GXVoid* handler, GXUIInput* widget, GXFloat x, GXFloat y )
+{
+	if ( !handler ) return;
+
+	EMTool* tool = (EMTool*)handler;
+
+	GXVec2 mousePosition = GXCreateVec2 ( x, y );
+	tool->OnMouseMove ( mousePosition );
+
+	EGXInputMouseFlags flags = { 0 };
+	tool->OnMouseButton ( flags );
+}
+
+GXVoid GXCALL EMTool::OnDoubleClick ( GXVoid* handler, GXUIInput* widget, GXFloat x, GXFloat y )
+{
+	if ( !handler ) return;
+
+	EMTool* tool = (EMTool*)handler;
+	GXVec2 mousePosition = GXCreateVec2 ( x, y );
+	tool->OnDoubleClick ( mousePosition );
+}
+
+GXVoid GXCALL EMTool::OnMouseMove ( GXVoid* handler, GXUIInput* widget, GXFloat x, GXFloat y )
+{
+	if ( !handler ) return;
+
+	EMTool* tool = (EMTool*)handler;
+	GXVec2 mousePosition = GXCreateVec2 ( x, y );
+	tool->OnMouseMove ( mousePosition );
+}
+
+GXVoid GXCALL EMTool::OnMouseScroll ( GXVoid* handler, GXUIInput* widget, GXFloat x, GXFloat y, GXFloat scroll )
+{
+	if ( !handler ) return;
+
+	EMTool* tool = (EMTool*)handler;
+
+	GXVec2 mousePosition = GXCreateVec2 ( x, y );
+	tool->OnMouseMove ( mousePosition );
+
+	tool->OnMouseWheel ( (GXInt)scroll );
 }

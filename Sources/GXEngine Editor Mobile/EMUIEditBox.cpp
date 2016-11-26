@@ -80,12 +80,8 @@ EMUIEditBoxRenderer::~EMUIEditBoxRenderer ()
 	GXRemoveTexture ( background );
 }
 
-GXUInt ttt = 0;
-
 GXVoid EMUIEditBoxRenderer::OnRefresh ()
 {
-	GXLogW ( L"%i\n", ttt++ );
-
 	GXUIEditBox* editBoxWidget = (GXUIEditBox*)widget;
 	GXFont* font = editBoxWidget->GetFont ();
 	GXFloat width = (GXFloat)surface->GetWidth ();

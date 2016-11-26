@@ -14,18 +14,18 @@
 #include <GXEngine/GXCameraOrthographic.h>
 
 
-GXCameraOrthographic*	em_HudCamera = 0;
-EMUIButton*				em_Button1 = 0;
-EMUIButton*				em_Button2 = 0;
-EMUIButton*				em_Button3 = 0;
-EMUIMenu*				em_Menu = 0;
-EMUIOpenFile*			em_OpenFile = 0;
-EMUIDraggableArea*		em_DraggableArea = 0;
-EMUIEditBox*			em_EditBox = 0;
-EMDirectedLightActor*	em_DirectedLight = 0;
-EMUnitActor*			em_UnitActor = 0;
-EMMoveTool*				em_MoveTool = 0;
-EMViewer*				em_Viewer = 0;
+GXCameraOrthographic*	em_HudCamera = nullptr;
+EMUIButton*				em_Button1 = nullptr;
+EMUIButton*				em_Button2 = nullptr;
+EMUIButton*				em_Button3 = nullptr;
+EMUIMenu*				em_Menu = nullptr;
+EMUIOpenFile*			em_OpenFile = nullptr;
+EMUIDraggableArea*		em_DraggableArea = nullptr;
+EMUIEditBox*			em_EditBox = nullptr;
+EMDirectedLightActor*	em_DirectedLight = nullptr;
+EMUnitActor*			em_UnitActor = nullptr;
+EMMoveTool*				em_MoveTool = nullptr;
+EMViewer*				em_Viewer = nullptr;
 GXInt					em_MouseX = 0;
 GXInt					em_MouseY = 0;
 
@@ -166,14 +166,14 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 	GXLocale* locale = gx_Core->GetLocale ();
 	locale->SetLanguage ( GX_LANGUAGE_EN );
 
-	em_Button1 = new EMUIButton ( 0 );
+	em_Button1 = new EMUIButton ( nullptr );
 	em_Button1->SetOnLeftMouseButtonCallback ( 0, &EMOnButton );
 	em_Button1->Disable ();
 	em_Button1->Resize ( 100.0f, 100.0f, 4.0f * gx_ui_Scale, gx_ui_Scale );
 	em_Button1->SetLayer ( EMGetNextGUIForegroundZ () );
 	em_Button1->SetCaption ( locale->GetString ( L"russian" ) );
 
-	em_Button2 = new EMUIButton ( 0 );
+	em_Button2 = new EMUIButton ( nullptr );
 	em_Button2->SetOnLeftMouseButtonCallback ( 0, &EMOnButton );
 	em_Button2->Enable ();
 	em_Button2->Resize ( 100.0f + 4.2f * gx_ui_Scale, 100.0f, 4.0f * gx_ui_Scale, 0.5f * gx_ui_Scale );
@@ -213,7 +213,7 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 	em_Menu->SetLayer ( EMGetNextGUIForegroundZ () );
 	em_Menu->SetLocation ( 0.0f, h - gx_ui_Scale * 0.5f );
 	
-	em_DraggableArea = new EMUIDraggableArea ( 0 );
+	em_DraggableArea = new EMUIDraggableArea ( nullptr );
 	em_DraggableArea->SetHeaderHeight ( gx_ui_Scale * 2.0f );
 	em_DraggableArea->Resize ( 10.0f * gx_ui_Scale, 10.0f * gx_ui_Scale, 5.0f * gx_ui_Scale, 5.0f * gx_ui_Scale );
 
@@ -246,6 +246,8 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 	em_Viewer = new EMViewer ( &EMOnViewerTransformChanged );
 	em_Viewer->SetTarget ( em_UnitActor );
 	em_Viewer->CaptureInput ();
+
+	EMTool::SetActiveTool ( em_MoveTool );
 
 	ShowCursor ( 1 );
 }

@@ -282,6 +282,9 @@
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIEditBox.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXUIInput.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -622,6 +625,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIEditBox.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXUIInput.h">
+      <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

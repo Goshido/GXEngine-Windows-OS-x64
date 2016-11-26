@@ -19,6 +19,7 @@ class GXTouchSurface
 
 		GXWidget*		mouseOverWidget;
 		GXWidget*		lockedWidget;
+		GXWidget*		defaultWidget;
 
 		GXVec2			mousePosition;
 
@@ -51,6 +52,8 @@ class GXTouchSurface
 		GXVoid UnRegisterWidget ( GXWidget* widget );
 
 		const GXVec2& GetMousePosition ();
+
+		GXVoid SetDefaultWidget ( GXWidget* widget );
 
 	private:
 		GXVoid DeleteWidgets ();

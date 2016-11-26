@@ -6,6 +6,7 @@
 
 #include "GXWidget.h"
 
+
 class GXUIListBox;
 typedef GXVoid ( GXCALL* PFNGXUILISTBOXITEMDESTRUCTORPROC ) ( GXVoid* itemData );
 typedef GXVoid ( GXCALL* PFNGXUILISTBOXONITEMSELECTEDPROC ) ( GXVoid* handler, GXUIListBox* listBox, const GXVoid* item );
