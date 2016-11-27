@@ -5,12 +5,9 @@
 
 
 #include "GXCore.h"
-#include "GXCamera.h"
 #include "GXEngineSettings.h"
 
 
-extern GXCore*					gx_Core;
-extern GXCamera*				gx_ActiveCamera;
 extern GXEngineSettings			gx_EngineSettings;
 
 

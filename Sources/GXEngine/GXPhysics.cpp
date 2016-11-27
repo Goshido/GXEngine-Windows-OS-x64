@@ -3,8 +3,8 @@
 #include <GXEngine/GXPhysics.h>
 
 
-PFNGXPHYSICSCREATE	GXPhysicsCreate				= 0;
-PFNGXPHYSICSDESTROY	GXPhysicsDestroy			= 0;
+PFNGXPHYSICSCREATE	GXPhysicsCreate				= nullptr;
+PFNGXPHYSICSDESTROY	GXPhysicsDestroy			= nullptr;
 
 HMODULE				gx_GXEngineDLLModuleHandle	= 0;
 

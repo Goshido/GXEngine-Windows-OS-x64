@@ -411,8 +411,9 @@ GXVoid GXWidgetRenderer::OnUpdate ()
 
 		GXVec3 center;
 		GXGetAABBCenter ( center, boundsWorld );
-		center.x -= 0.5f * gx_Core->GetRenderer ()->GetWidth ();
-		center.y -= 0.5f * gx_Core->GetRenderer ()->GetHeight ();
+		GXRenderer* renderer = GXRenderer::GetInstance ();
+		center.x -= 0.5f * renderer->GetWidth ();
+		center.y -= 0.5f * renderer->GetHeight ();
 
 		OnResized ( center.x, center.y, width, height );
 		OnRefresh ();
@@ -421,8 +422,9 @@ GXVoid GXWidgetRenderer::OnUpdate ()
 	{
 		GXVec3 center;
 		GXGetAABBCenter ( center, widget->GetBoundsWorld () );
-		center.x -= 0.5f * gx_Core->GetRenderer ()->GetWidth ();
-		center.y -= 0.5f * gx_Core->GetRenderer ()->GetHeight ();
+		GXRenderer* renderer = GXRenderer::GetInstance ();
+		center.x -= 0.5f * renderer->GetWidth ();
+		center.y -= 0.5f * renderer->GetHeight ();
 		OnMoved ( center.x, center.y );
 	}
 	else

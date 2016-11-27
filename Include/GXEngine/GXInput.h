@@ -1,4 +1,4 @@
-//version 1.11
+//version 1.12
 
 #ifndef GX_INPUT
 #define GX_INPUT
@@ -128,6 +128,8 @@ class GXInput
 		static PFNGXMOUSEWHEELPROC		DoMouseWheel;
 		static EGXInputMouseFlags 		mouseflags;
 
+		static GXInput*					instance;
+
 	public:
 		GXInput ( GXCore* core );
 		~GXInput ();
@@ -164,14 +166,16 @@ class GXInput
 		GXVoid BindRightStickFunc ( PFNGXSTICKPROC callback );
 		GXVoid UnBindRightStickFunc ();
 
+		static GXInput* GXCALL GetInstance ();
+
 		static LRESULT CALLBACK InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam );
 
 	private:
 		static GXDword GXTHREADCALL InputLoop ( GXVoid* args );
 
-		static GXBool IsGamepadConnected ( GXDword gamepadID );
-		static GXVoid TestGamepadButton ( GXDword buttonFlag, GXUChar buttonID );
-		static GXVoid UpdateGamepad ();
+		static GXBool GXCALL IsGamepadConnected ( GXDword gamepadID );
+		static GXVoid GXCALL TestGamepadButton ( GXDword buttonFlag, GXUChar buttonID );
+		static GXVoid GXCALL UpdateGamepad ();
 };
 
 

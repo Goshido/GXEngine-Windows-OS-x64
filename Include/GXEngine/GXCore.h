@@ -1,4 +1,4 @@
-//version 1.9
+//version 1.10
 
 #ifndef GX_CORE
 #define GX_CORE
@@ -32,6 +32,8 @@ class GXCore
 		static PFNGXONGAMEINITPROC		OnGameInit;
 		static PFNGXONGAMECLOSEPROC		OnGameClose;
 
+		static GXCore*					instance;
+
 	public:
 		GXCore ( PFNGXONGAMEINITPROC onGameInit, PFNGXONGAMECLOSEPROC onGameClose, const GXWChar* gameName );
 		~GXCore ();
@@ -41,14 +43,16 @@ class GXCore
 
 		WNDPROC NotifyGetInputProc ();
 
-		GXRenderer* GetRenderer ();
-		GXPhysics* GetPhysics ();
-		GXInput* GetInput ();
-		GXSoundMixer* GetSoundMixer ();
-		GXNetServer* GetNetServer ();
-		GXNetClient* GetNetClient ();
-		GXTouchSurface* GetTouchSurface ();
-		GXLocale* GetLocale ();
+		GXRenderer* GetRenderer () const;
+		GXPhysics* GetPhysics () const;
+		GXInput* GetInput () const;
+		GXSoundMixer* GetSoundMixer () const;
+		GXNetServer* GetNetServer () const;
+		GXNetClient* GetNetClient () const;
+		GXTouchSurface* GetTouchSurface () const;
+		GXLocale* GetLocale () const;
+
+		static GXCore* GXCALL GetInstance ();
 
 	private:
 		GXVoid CheckMemoryLeak ();

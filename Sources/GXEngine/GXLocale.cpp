@@ -1,3 +1,5 @@
+//version 1.1
+
 #include <GXEngine/GXLocale.h>
 #include <GXCommon/GXAVLTree.h>
 #include <GXCommon/GXStrings.h>
@@ -87,10 +89,13 @@ GXInt GXCALL GXStringTree::Compare ( const GXVoid* a, const GXVoid* b )
 }
 
 //--------------------------------------------------------------------------------
+GXLocale* GXLocale::instance = nullptr;
 
 GXLocale::GXLocale ():
 storage ( sizeof ( GXStringTree* ) )
 {
+	instance = this;
+
 	language = GX_LANGUAGE_RU;
 
 	GXStringTree* node = 0;
@@ -108,6 +113,8 @@ GXLocale::~GXLocale ()
 		GXStringTree* tree = *( (GXStringTree**)storage.GetValue ( i ) );
 		GXSafeDelete ( tree );
 	}
+
+	instance = nullptr;
 }
 
 GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
@@ -183,14 +190,19 @@ GXVoid GXLocale::SetLanguage ( eGXLanguage language )
 	this->language = language;
 }
 
-eGXLanguage GXLocale::GetLanguage ()
+eGXLanguage GXLocale::GetLanguage () const
 {
 	return language;
 }
 
-const GXWChar* GXLocale::GetString ( const GXWChar* resName )
+const GXWChar* GXLocale::GetString ( const GXWChar* resName ) const
 {
 	GXStringTree* tree = *( (GXStringTree**)storage.GetValue ( (GXUInt)language ) );
 	if ( tree ) return tree->GetString ( resName );
 	return 0;
+}
+
+GXLocale* GXCALL GXLocale::GetInstance ()
+{
+	return instance;
 }

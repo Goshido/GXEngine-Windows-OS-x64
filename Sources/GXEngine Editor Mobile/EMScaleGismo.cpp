@@ -1,6 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMScaleGismo.h>
 #include <GXEngine/GXShaderStorage.h>
-#include <GXEngine/GXGlobals.h>
+#include <GXEngine/GXCamera.h>
 
 
 EMScaleGismo::EMScaleGismo ()
@@ -44,7 +44,7 @@ GXVoid EMScaleGismo::Draw ()
 
 	glUseProgram ( programs[ 0 ].program );
 
-	const GXMat4& view_proj_mat = gx_ActiveCamera->GetViewProjectionMatrix ();
+	const GXMat4& view_proj_mat = GXCamera::GetActiveCamera ()->GetViewProjectionMatrix ();
 	GXMat4 mod_view_proj_mat;
 	GXMulMat4Mat4 ( mod_view_proj_mat, mod_mat, view_proj_mat );
 

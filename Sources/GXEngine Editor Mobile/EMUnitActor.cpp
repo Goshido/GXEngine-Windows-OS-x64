@@ -1,5 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMUnitActor.h>
 #include <GXEngine_Editor_Mobile/EMGlobals.h>
+#include <GXEngine/GXCamera.h>
 #include <GXEngine/GXSamplerUtils.h>
 #include <GXEngine/GXShaderStorage.h>
 #include <GXEngine/GXTextureStorage.h>
@@ -50,8 +51,10 @@ GXVoid EMUnitActorMesh::Draw ()
 	GXMat4 mod_view_mat;
 	GXMat4 mod_view_proj_mat;
 
-	GXMulMat4Mat4 ( mod_view_mat, mod_mat, gx_ActiveCamera->GetViewMatrix () );
-	GXMulMat4Mat4 ( mod_view_proj_mat, mod_mat, gx_ActiveCamera->GetViewProjectionMatrix () );
+	GXCamera* activeCamera = GXCamera::GetActiveCamera ();
+
+	GXMulMat4Mat4 ( mod_view_mat, mod_mat, activeCamera->GetViewMatrix () );
+	GXMulMat4Mat4 ( mod_view_proj_mat, mod_mat, activeCamera->GetViewProjectionMatrix () );
 
 	glUseProgram ( programs[ 0 ].program );
 

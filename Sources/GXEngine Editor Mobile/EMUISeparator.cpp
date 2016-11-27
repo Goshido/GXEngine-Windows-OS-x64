@@ -1,6 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMUISeparator.h>
 #include <GXEngine/GXHudSurface.h>
-#include <GXEngine/GXGlobals.h>
+#include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXUICommon.h>
 #include <GXCommon/GXCommon.h>
 
@@ -39,7 +39,8 @@ GXWidgetRenderer ( widget )
 	surface = nullptr;
 	const GXAABB& bounds = widget->GetBoundsWorld ();
 	OnResized ( 0.0f, 0.0f, (GXUShort)GXGetAABBWidth ( bounds ), (GXUShort)GXGetAABBHeight ( bounds ) );
-	EMSetHudSurfaceLocationWorld ( *surface, bounds, EMGetNextGUIForegroundZ (), gx_Core->GetRenderer ()->GetWidth (), gx_Core->GetRenderer ()->GetHeight () );
+	GXRenderer* renderer = GXRenderer::GetInstance ();
+	EMSetHudSurfaceLocationWorld ( *surface, bounds, EMGetNextGUIForegroundZ (), renderer->GetWidth (), renderer->GetHeight () );
 	OnRefresh ();
 }
 

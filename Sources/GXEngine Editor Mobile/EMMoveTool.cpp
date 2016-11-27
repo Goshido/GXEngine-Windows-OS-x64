@@ -2,6 +2,8 @@
 #include <GXEngine_Editor_Mobile/EMGlobals.h>
 #include <GXEngine/GXShaderStorage.h>
 #include <GXEngine/GXShaderUtils.h>
+#include <GXEngine/GXCamera.h>
+#include <GXEngine/GXRenderer.h>
 #include <GXCommon/GXLogger.h>
 
 
@@ -78,7 +80,7 @@ GXVoid EMMoveTool::OnViewerTransformChanged ()
 {
 	GXVec3 deltaView ( 0.0f, 0.0f, 0.0f );
 	GXVec3 axisLocationView;
-	GXMulVec3Mat4AsPoint ( axisLocationView, startLocationWorld, gx_ActiveCamera->GetViewMatrix () );
+	GXMulVec3Mat4AsPoint ( axisLocationView, startLocationWorld, GXCamera::GetActiveCamera ()->GetViewMatrix () );
 
 	gismoScaleCorrector = GetScaleCorrector ( axisLocationView, deltaView );
 }
@@ -110,7 +112,7 @@ GXVoid EMMoveTool::OnDrawHudColorPass ()
 	GXSetMat4Scale ( scale_mat, gismoScaleCorrector, gismoScaleCorrector, gismoScaleCorrector );
 	GXMulMat4Mat4 ( mod_mat, gismoRotation, scale_mat );
 	GXSetMat4TranslateTo ( mod_mat, actorTransform.m41, actorTransform.m42, actorTransform.m43 );
-	GXMulMat4Mat4 ( mod_view_proj_mat, mod_mat, gx_ActiveCamera->GetViewProjectionMatrix () );
+	GXMulMat4Mat4 ( mod_view_proj_mat, mod_mat, GXCamera::GetActiveCamera ()->GetViewProjectionMatrix () );
 
 	glUniformMatrix4fv ( clr_mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.A );
 
@@ -162,7 +164,7 @@ GXVoid EMMoveTool::OnDrawHudMaskPass ()
 	GXSetMat4Scale ( scale_mat, gismoScaleCorrector, gismoScaleCorrector, gismoScaleCorrector );
 	GXMulMat4Mat4 ( mod_mat, gismoRotation, scale_mat );
 	GXSetMat4TranslateTo ( mod_mat, actorTransform.m41, actorTransform.m42, actorTransform.m43 );
-	GXMulMat4Mat4 ( mod_view_proj_mat, mod_mat, gx_ActiveCamera->GetViewProjectionMatrix () );
+	GXMulMat4Mat4 ( mod_view_proj_mat, mod_mat, GXCamera::GetActiveCamera ()->GetViewProjectionMatrix () );
 
 	glUniformMatrix4fv ( msk_mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.A );
 
@@ -264,7 +266,9 @@ GXVoid EMMoveTool::InitUniforms ()
 GXVoid EMMoveTool::SetMode ( GXUByte mode )
 {
 	this->mode = mode;
-	if ( !gx_ActiveCamera ) return;
+
+	GXCamera* activeCamera = GXCamera::GetActiveCamera ();
+	if ( !activeCamera ) return;
 
 	const GXMat4& actorTransform = actor->GetTransform ();
 	startLocationWorld = actorTransform.wv;
@@ -282,7 +286,7 @@ GXVoid EMMoveTool::SetMode ( GXUByte mode )
 	}
 
 	GXVec3 axisLocationView;
-	GXMulVec3Mat4AsPoint ( axisLocationView, startLocationWorld, gx_ActiveCamera->GetViewMatrix () );
+	GXMulVec3Mat4AsPoint ( axisLocationView, startLocationWorld, activeCamera->GetViewMatrix () );
 
 	GXVec3 axisDirectionView;
 	GetAxis ( axisDirectionView );
@@ -300,8 +304,10 @@ GXVoid EMMoveTool::OnMoveActor ()
 {
 	if ( activeAxis == EM_MOVE_TOOL_ACTIVE_AXIS_UNKNOWN ) return;
 
+	GXCamera* activeCamera = GXCamera::GetActiveCamera ();
+
 	GXVec3 axisLocationView;
-	GXMulVec3Mat4AsPoint ( axisLocationView, startLocationWorld, gx_ActiveCamera->GetViewMatrix () );
+	GXMulVec3Mat4AsPoint ( axisLocationView, startLocationWorld, activeCamera->GetViewMatrix () );
 
 	GXVec3 axisDirectionView;
 	GetAxis ( axisDirectionView );
@@ -316,7 +322,7 @@ GXVoid EMMoveTool::OnMoveActor ()
 
 	gismoScaleCorrector = GetScaleCorrector ( axisLocationView, deltaView );
 
-	GXMulVec3Mat4AsNormal ( deltaWorld, deltaView, gx_ActiveCamera->GetModelMatrix () );
+	GXMulVec3Mat4AsNormal ( deltaWorld, deltaView, activeCamera->GetModelMatrix () );
 	GXMat4 newTransform = actor->GetTransform ();
 	GXSumVec3Vec3 ( newTransform.wv, startLocationWorld, deltaWorld );
 
@@ -347,13 +353,13 @@ GXVoid EMMoveTool::GetAxis ( GXVec3& axisView )
 		break;
 	}
 
-	GXMulVec3Mat4AsNormal ( axisView, axisWorld, gx_ActiveCamera->GetViewMatrix () );
+	GXMulVec3Mat4AsNormal ( axisView, axisWorld, GXCamera::GetActiveCamera ()->GetViewMatrix () );
 }
 
 GXVoid EMMoveTool::GetRayPerspective ( GXVec3 &rayView )
 {
-	GXRenderer* renderer = gx_Core->GetRenderer ();
-	const GXMat4& proj_mat = gx_ActiveCamera->GetProjectionMatrix ();
+	GXRenderer* renderer = GXRenderer::GetInstance ();
+	const GXMat4& proj_mat = GXCamera::GetActiveCamera ()->GetProjectionMatrix ();
 
 	GXVec2 mouseCVV;
 	mouseCVV.x = ( mouseX / (GXFloat)renderer->GetWidth () ) * 2.0f - 1.0f;

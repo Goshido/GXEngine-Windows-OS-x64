@@ -63,6 +63,8 @@ class GXRenderer
 		static PFNGXONDELETERENDERABLEOBJECTSPROC	onDeleteRenderableObjectsFunc;
 		static GXBool								isRenderableObjectInited;
 
+		static GXRenderer*							instance;
+
 	public:
 		GXRenderer ( GXCore* core, const GXWChar* gameName, GXInt color_bits, GXInt depth_bits );
 		~GXRenderer ();
@@ -82,22 +84,24 @@ class GXRenderer
 		GXVoid SetOnInitRenderableObjectsFunc ( PFNGXONINITRENDERABLEOBJECTSPROC callback );
 		GXVoid SetOnDeleteRenderableObjectsFunc ( PFNGXONDELETERENDERABLEOBJECTSPROC callback );
 
-		GXUInt GetCurrentFPS ();
-		GXVoid GetSupportedResolutions ( GXRendererResolutions &out );
+		GXUInt GetCurrentFPS () const;
+		GXVoid GetSupportedResolutions ( GXRendererResolutions &out ) const;
 
-		GXInt GetWidth ();
-		GXInt GetHeight ();
-		static GXBool UpdateRendererSettings ();
-		static GXVoid ReSizeScene ( GXInt width, GXInt height );
+		GXInt GetWidth () const;
+		GXInt GetHeight () const;
+		static GXBool GXCALL UpdateRendererSettings ();
+		static GXVoid GXCALL ReSizeScene ( GXInt width, GXInt height );
+
+		static GXRenderer* GXCALL GetInstance ();
 
 	private:
 		static GXDword GXTHREADCALL RenderLoop ( GXVoid* args );
-		static GXVoid InitOpenGL ();
-		static GXBool DrawScene ();
-		static GXVoid Destroy ();
-		static GXBool MakeWindow ();
-		static GXVoid InitRenderableObjects ();
-		static GXVoid DeleteRenderableObjects ();
+		static GXVoid GXCALL InitOpenGL ();
+		static GXBool GXCALL DrawScene ();
+		static GXVoid GXCALL Destroy ();
+		static GXBool GXCALL MakeWindow ();
+		static GXVoid GXCALL InitRenderableObjects ();
+		static GXVoid GXCALL DeleteRenderableObjects ();
 };
 
 

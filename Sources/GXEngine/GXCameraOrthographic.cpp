@@ -1,4 +1,4 @@
-//version 1.4
+//version 1.5
 
 #include <GXEngine/GXCameraOrthographic.h>
 
@@ -14,6 +14,11 @@ GXCameraOrthographic::GXCameraOrthographic ( GXFloat width, GXFloat height, GXFl
 	view_proj_mat = proj_mat;
 
 	UpdateClipPlanes ();
+}
+
+GXCameraOrthographic::~GXCameraOrthographic ()
+{
+	//NOTHING
 }
 
 GXVoid GXCameraOrthographic::SetZnear ( GXFloat znear )
@@ -34,12 +39,12 @@ GXVoid GXCameraOrthographic::SetZfar ( GXFloat zfar )
 	UpdateClipPlanes ();
 }
 
-GXFloat GXCameraOrthographic::GetZnear ()
+GXFloat GXCameraOrthographic::GetZnear () const
 {
 	return znear;
 }
 
-GXFloat GXCameraOrthographic::GetZfar ()
+GXFloat GXCameraOrthographic::GetZfar () const
 {
 	return zfar;
 }

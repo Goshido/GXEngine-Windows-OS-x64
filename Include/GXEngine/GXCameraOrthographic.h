@@ -1,4 +1,4 @@
-//version 1.4
+//version 1.5
 
 #ifndef GX_CAMERA_ORHTOGRAPHIC
 #define GX_CAMERA_ORHTOGRAPHIC
@@ -15,12 +15,13 @@ class GXCameraOrthographic : public GXCamera
 
 	public:
 		GXCameraOrthographic ( GXFloat width, GXFloat height, GXFloat znear, GXFloat zfar );
+		~GXCameraOrthographic () override;
 
-		virtual GXVoid SetZnear ( GXFloat znear );
-		virtual GXVoid SetZfar	( GXFloat zfar );
+		GXVoid SetZnear ( GXFloat znear ) override;
+		GXVoid SetZfar	( GXFloat zfar ) override;
 
-		virtual GXFloat GetZnear ();
-		virtual GXFloat GetZfar ();
+		GXFloat GetZnear () const override;
+		GXFloat GetZfar () const override;
 
 		GXVoid SetProjection ( GXFloat width, GXFloat height, GXFloat znear, GXFloat zfar );
 };

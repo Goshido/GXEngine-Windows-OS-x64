@@ -45,8 +45,8 @@ GXVoid GXRendererResolutions::GetResolution ( GXUShort i, GXUShort &width, GXUSh
 
 //--------------------------------------------------------------------------------------------
 
-GXCore*									GXRenderer::core = 0;
-GXThread*								GXRenderer::thread = 0;
+GXCore*									GXRenderer::core = nullptr;
+GXThread*								GXRenderer::thread = nullptr;
 
 GXBool									GXRenderer::loopFlag = GX_TRUE;
 
@@ -64,20 +64,24 @@ GXInt									GXRenderer::colorsBits;
 GXInt									GXRenderer::depthBits;
 GXInt									GXRenderer::vsync;
 
-GXWChar*								GXRenderer::title = 0;
+GXWChar*								GXRenderer::title = nullptr;
 
 GXUInt									GXRenderer::currentFPS = 0;
 GXDouble								GXRenderer::accumulator = 0.0;
 GXDouble								GXRenderer::lastTime;
 
-PFNGXONFRAMEPROC						GXRenderer::onFrameFunc = 0;
-PFNGXONINITRENDERABLEOBJECTSPROC		GXRenderer::onInitRenderableObjectsFunc = 0;
-PFNGXONDELETERENDERABLEOBJECTSPROC		GXRenderer::onDeleteRenderableObjectsFunc = 0;
+PFNGXONFRAMEPROC						GXRenderer::onFrameFunc = nullptr;
+PFNGXONINITRENDERABLEOBJECTSPROC		GXRenderer::onInitRenderableObjectsFunc = nullptr;
+PFNGXONDELETERENDERABLEOBJECTSPROC		GXRenderer::onDeleteRenderableObjectsFunc = nullptr;
 GXBool									GXRenderer::isRenderableObjectInited = GX_FALSE;
+
+GXRenderer*								GXRenderer::instance = nullptr;
 
 
 GXRenderer::GXRenderer ( GXCore* core, const GXWChar* gameName, GXInt color_bits, GXInt depth_bits )
 {
+	instance = this;
+
 	isRenderableObjectInited = GX_FALSE;
 	hinst = GetModuleHandle ( 0 );
 	this->core = core;
@@ -269,7 +273,7 @@ GXVoid GXRenderer::SetOnDeleteRenderableObjectsFunc ( PFNGXONDELETERENDERABLEOBJ
 	this->onDeleteRenderableObjectsFunc = callback;
 }
 
-GXUInt GXRenderer::GetCurrentFPS ()
+GXUInt GXRenderer::GetCurrentFPS () const
 {
 	return currentFPS;
 }
@@ -288,7 +292,7 @@ GXInt GXResolutionCompare ( const GXVoid* a, const GXVoid* b )
 	return 0;
 }
 
-GXVoid GXRenderer::GetSupportedResolutions ( GXRendererResolutions &out )
+GXVoid GXRenderer::GetSupportedResolutions ( GXRendererResolutions &out ) const
 {
 	DEVMODEW dm;
 	dm.dmSize = sizeof ( dm );
@@ -337,29 +341,34 @@ GXVoid GXRenderer::GetSupportedResolutions ( GXRendererResolutions &out )
 	qsort ( out.wxh, out.total, 2 * sizeof ( GXUShort ), &GXResolutionCompare );
 }
 
-GXInt GXRenderer::GetWidth ()
+GXInt GXRenderer::GetWidth () const
 {
 	return width;
 }
 
-GXInt GXRenderer::GetHeight ()
+GXInt GXRenderer::GetHeight () const
 {
 	return height;
 }
 
-GXBool GXRenderer::UpdateRendererSettings ()
+GXBool GXCALL GXRenderer::UpdateRendererSettings ()
 {
 	isSettingsChanged = GX_TRUE;
 	return GX_TRUE;
 }
 
-GXVoid GXRenderer::ReSizeScene ( GXInt width, GXInt height  )
+GXVoid GXCALL GXRenderer::ReSizeScene ( GXInt width, GXInt height  )
 {
 	if ( height == 0 )
 		height = 1;
 
 	GXRenderer::width = width;
 	GXRenderer::height = height;
+}
+
+GXRenderer* GXCALL GXRenderer::GetInstance ()
+{
+	return instance;
 }
 
 GXDword GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* args )
@@ -398,7 +407,7 @@ GXDword GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* args )
 	return 0;
 }
 
-GXVoid GXRenderer::InitOpenGL ()
+GXVoid GXCALL GXRenderer::InitOpenGL ()
 {
 	glClearDepth ( 1.0f );
 	glEnable ( GL_DEPTH_TEST );
@@ -411,9 +420,9 @@ GXVoid GXRenderer::InitOpenGL ()
 GXUShort gx_renderer_fpsCounter = 0;
 GXDouble gx_renderer_fpsTimer = 0.0;
 
-GXBool GXRenderer::DrawScene ()
+GXBool GXCALL GXRenderer::DrawScene ()
 {
-	gx_Core->GetPhysics ()->DoSimulate ();
+	GXCore::GetInstance ()->GetPhysics ()->DoSimulate ();
 
 	GXDouble newtime = GXGetProcessorTicks ();
 	GXDouble delta = ( newtime - lastTime ) / GXGetProcessorTicksPerSecond ();
@@ -442,7 +451,7 @@ GXBool GXRenderer::DrawScene ()
 	return GX_FALSE;
 }
 
-GXVoid GXRenderer::Destroy ()
+GXVoid GXCALL GXRenderer::Destroy ()
 {
 	DeleteRenderableObjects ();
 	if ( isFullScreen )
@@ -490,7 +499,7 @@ GXVoid GXRenderer::Destroy ()
 	}
 }
 
-GXBool GXRenderer::MakeWindow ()
+GXBool GXCALL GXRenderer::MakeWindow ()
 {
 	GLuint PixelFomat;
 	WNDCLASSW wc;
@@ -667,7 +676,7 @@ GXBool GXRenderer::MakeWindow ()
 	return GX_TRUE;
 }
 
-GXVoid GXRenderer::InitRenderableObjects ()
+GXVoid GXCALL GXRenderer::InitRenderableObjects ()
 {	
 	if ( !onInitRenderableObjectsFunc ) return;
 
@@ -675,7 +684,7 @@ GXVoid GXRenderer::InitRenderableObjects ()
 	isRenderableObjectInited = GX_TRUE;
 }
 
-GXVoid GXRenderer::DeleteRenderableObjects ()
+GXVoid GXCALL GXRenderer::DeleteRenderableObjects ()
 {
 	if ( !onDeleteRenderableObjectsFunc ) return;
 

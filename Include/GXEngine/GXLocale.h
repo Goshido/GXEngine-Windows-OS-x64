@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #ifndef GX_LOCALE
 #define GX_LOCALE
@@ -16,8 +16,10 @@ enum eGXLanguage : GXShort
 class GXLocale
 {
 	private:
-		eGXLanguage		language;
-		GXDynamicArray	storage;
+		eGXLanguage			language;
+		GXDynamicArray		storage;
+
+		static GXLocale*	instance;
 
 	public:
 		GXLocale ();
@@ -26,9 +28,11 @@ class GXLocale
 		GXVoid LoadLanguage ( const GXWChar* fileName, eGXLanguage language );
 
 		GXVoid SetLanguage ( eGXLanguage language );
-		eGXLanguage GetLanguage ();
+		eGXLanguage GetLanguage () const;
 	
-		const GXWChar* GetString ( const GXWChar* resName );
+		const GXWChar* GetString ( const GXWChar* resName ) const;
+
+		static GXLocale* GXCALL GetInstance ();
 };
 
 

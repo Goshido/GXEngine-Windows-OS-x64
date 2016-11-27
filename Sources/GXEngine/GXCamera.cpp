@@ -1,7 +1,8 @@
-//version 1.8
+//version 1.9
 
 #include <GXEngine/GXCamera.h>
 
+GXCamera* GXCamera::activeCamera = nullptr;
 
 GXCamera::GXCamera ()
 {
@@ -18,44 +19,29 @@ GXCamera::GXCamera ()
 	UpdateClipPlanes ();
 }
 
-const GXMat4& GXCamera::GetViewProjectionMatrix ()
+GXCamera::~GXCamera ()
+{
+	//NOTHING
+}
+
+const GXMat4& GXCamera::GetViewProjectionMatrix () const
 {
 	return view_proj_mat;
 }
 
-const GXMat4& GXCamera::GetProjectionMatrix ()
+const GXMat4& GXCamera::GetProjectionMatrix () const
 {
 	return proj_mat;
 }
 
-const GXMat4& GXCamera::GetModelMatrix ()
+const GXMat4& GXCamera::GetModelMatrix () const
 {
 	return mod_mat;
 }
 
-const GXMat4& GXCamera::GetViewMatrix ()
+const GXMat4& GXCamera::GetViewMatrix () const
 {
 	return view_mat;
-}
-
-const GXMat4* GXCamera::GetViewProjectionMatrixPtr ()
-{
-	return &view_proj_mat;
-}
-
-const GXMat4* GXCamera::GetProjectionMatrixPtr ()
-{
-	return &proj_mat;
-}
-
-const GXMat4* GXCamera::GetModelMatrixPtr ()
-{
-	return &mod_mat;
-}
-
-const GXMat4* GXCamera::GetViewMatrixPtr ()
-{
-	return &view_mat;
 }
 
 GXVoid GXCamera::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
@@ -117,22 +103,17 @@ GXVoid GXCamera::SetModelMatrix ( const GXMat4 &matrix )
 	UpdateClipPlanes ();
 }
 
-GXVoid GXCamera::GetLocation ( GXVec3& outLocation )
+GXVoid GXCamera::GetLocation ( GXVec3& outLocation ) const
 {
 	memcpy ( &outLocation, trans_mat.wv.v, sizeof ( GXVec3 ) );
 }
 
-GXVec3* GXCamera::GetLocation ()
-{
-	return &trans_mat.wv;
-}
-
-GXVoid GXCamera::GetRotation ( GXMat4 &out )
+GXVoid GXCamera::GetRotation ( GXMat4 &out ) const
 {
 	out = rot_mat;
 }
 
-GXVoid GXCamera::GetRotation ( GXQuat &out )
+GXVoid GXCamera::GetRotation ( GXQuat &out ) const
 {
 	out = GXCreateQuat ( rot_mat );
 }
@@ -145,6 +126,16 @@ const GXProjectionClipPlanes& GXCamera::GetClipPlanesWorld ()
 GXBool GXCamera::IsObjectVisible ( const GXAABB objectBoundsWorld )
 {
 	return clipPlanesWorld.IsVisible ( objectBoundsWorld );
+}
+
+GXCamera* GXCALL GXCamera::GetActiveCamera ()
+{
+	return activeCamera;
+}
+
+GXVoid GXCALL GXCamera::SetActiveCamera ( GXCamera* camera )
+{
+	activeCamera = camera;
 }
 
 GXVoid GXCamera::UpdateClipPlanes ()

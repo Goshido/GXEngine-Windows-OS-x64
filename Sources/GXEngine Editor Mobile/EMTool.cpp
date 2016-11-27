@@ -1,6 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMTool.h>
 #include <GXEngine/GXTouchSurface.h>
-#include <GXEngine/GXGlobals.h>
+#include <GXCommon/GXCommon.h>
 
 
 EMTool* EMTool::activeTool = nullptr;
@@ -30,7 +30,7 @@ EMTool::EMTool ()
 		inputWidget->SetOnMouseMoveCallback ( &EMTool::OnMouseMove );
 		inputWidget->SetOnMouseScrollCallback ( &EMTool::OnMouseScroll );
 
-		gx_Core->GetTouchSurface ()->SetDefaultWidget ( inputWidget );
+		GXTouchSurface::GetInstance ()->SetDefaultWidget ( inputWidget );
 	}
 }
 
@@ -39,7 +39,7 @@ EMTool::~EMTool ()
 	inputWidgetRef--;
 	if ( inputWidgetRef < 1 )
 	{
-		gx_Core->GetTouchSurface ()->SetDefaultWidget ( nullptr );
+		GXTouchSurface::GetInstance ()->SetDefaultWidget ( nullptr );
 		GXSafeDelete ( inputWidget );
 	}
 }

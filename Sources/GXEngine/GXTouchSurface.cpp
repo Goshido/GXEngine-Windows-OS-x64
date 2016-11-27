@@ -25,8 +25,12 @@ struct GXMessage
 	GXUInt			size;
 };
 
+GXTouchSurface* GXTouchSurface::instance = nullptr;
+
 GXTouchSurface::GXTouchSurface ()
 {
+	instance = this;
+
 	messages = lastMessage = nullptr;
 	widgetHead = widgetTail = mouseOverWidget = lockedWidget = defaultWidget = nullptr;
 
@@ -41,6 +45,7 @@ GXTouchSurface::~GXTouchSurface ()
 	DeleteWidgets ();
 	delete gx_ui_Mutex;
 	gx_ui_TouchSurface = nullptr;
+	instance = nullptr;
 }
 
 GXVoid GXTouchSurface::OnLeftMouseButtonDown ( const GXVec2 &position )
@@ -320,6 +325,11 @@ const GXVec2& GXTouchSurface::GetMousePosition ()
 GXVoid GXTouchSurface::SetDefaultWidget ( GXWidget* widget )
 {
 	defaultWidget = widget;
+}
+
+GXTouchSurface* GXCALL GXTouchSurface::GetInstance ()
+{
+	return instance;
 }
 
 GXVoid GXTouchSurface::DeleteWidgets ()

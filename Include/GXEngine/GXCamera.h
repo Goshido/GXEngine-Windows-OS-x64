@@ -1,4 +1,4 @@
-//version 1.8
+//version 1.9
 
 #ifndef GX_CAMERA
 #define GX_CAMERA
@@ -9,6 +9,9 @@
 
 class GXCamera
 {
+	private:
+		static GXCamera*		activeCamera;
+
 	protected:
 		GXFloat					znear;
 		GXFloat					zfar;
@@ -24,16 +27,12 @@ class GXCamera
 
 	public:
 		GXCamera ();
+		virtual ~GXCamera ();
 
-		const GXMat4& GetViewProjectionMatrix ();
-		const GXMat4& GetProjectionMatrix ();
-		const GXMat4& GetModelMatrix ();
-		const GXMat4& GetViewMatrix ();
-
-		const GXMat4* GetViewProjectionMatrixPtr ();
-		const GXMat4* GetProjectionMatrixPtr ();
-		const GXMat4* GetModelMatrixPtr ();
-		const GXMat4* GetViewMatrixPtr ();
+		const GXMat4& GetViewProjectionMatrix () const;
+		const GXMat4& GetProjectionMatrix () const;
+		const GXMat4& GetModelMatrix () const;
+		const GXMat4& GetViewMatrix () const;
 
 		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
 		GXVoid SetLocation ( const GXVec3 &location );
@@ -44,11 +43,10 @@ class GXCamera
 
 		GXVoid SetModelMatrix ( const GXMat4 &matrix );
 
-		GXVoid GetLocation ( GXVec3& out );
-		GXVec3* GetLocation ();
+		GXVoid GetLocation ( GXVec3& out ) const;
 
-		GXVoid GetRotation ( GXMat4 &out );
-		GXVoid GetRotation ( GXQuat &out );
+		GXVoid GetRotation ( GXMat4 &out ) const;
+		GXVoid GetRotation ( GXQuat &out ) const;
 
 		const GXProjectionClipPlanes& GetClipPlanesWorld ();
 		GXBool IsObjectVisible ( const GXAABB objectBoundsWorld );
@@ -56,8 +54,11 @@ class GXCamera
 		virtual GXVoid SetZnear ( GXFloat znear ) = 0;
 		virtual GXVoid SetZfar	( GXFloat zfar ) = 0;
 
-		virtual GXFloat GetZnear () = 0;
-		virtual GXFloat GetZfar () = 0;
+		virtual GXFloat GetZnear () const = 0;
+		virtual GXFloat GetZfar () const = 0;
+
+		static GXCamera* GXCALL GetActiveCamera ();
+		static GXVoid GXCALL SetActiveCamera ( GXCamera* camera );
 
 	protected:
 		GXVoid UpdateClipPlanes ();

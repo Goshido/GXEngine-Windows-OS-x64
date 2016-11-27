@@ -1,5 +1,7 @@
 #include <GXEngine_Editor_Mobile/EMViewer.h>
 #include <GXEngine_Editor_Mobile/EMGlobals.h>
+#include <GXEngine/GXRenderer.h>
+#include <GXEngine/GXInput.h>
 #include <GXEngine/GXUICommon.h>
 
 
@@ -27,7 +29,8 @@ EMViewer::EMViewer ( PFNEMONVIEWERTRANSFORMCHANGEDPROC callback )
 	target = 0;
 	origin = GXCreateVec3 ( 2.0f, -1.0f, 0.0f );
 
-	camera = new GXCameraPerspective ( GXDegToRad ( 60.0f ), gx_Core->GetRenderer()->GetWidth () / (GXFloat)gx_Core->GetRenderer()->GetHeight (), 0.1f, 1000.0f );
+	GXRenderer* renderer = GXRenderer::GetInstance ();
+	camera = new GXCameraPerspective ( GXDegToRad ( 60.0f ), renderer->GetWidth () / (GXFloat)renderer->GetHeight (), 0.1f, 1000.0f );
 
 	UpdateCamera ();
 
@@ -53,7 +56,7 @@ GXVoid EMViewer::SetTarget ( EMActor* actor )
 
 GXVoid EMViewer::CaptureInput ()
 {
-	GXInput* input = gx_Core->GetInput ();
+	GXInput* input = GXInput::GetInstance ();
 
 	input->BindMouseButtonsFunc ( &OnMouseButton );
 	input->BindMouseWheelFunc ( &OnMouseWheel );
@@ -163,7 +166,7 @@ GXVoid GXCALL EMViewer::OnMouseMove ( GXInt win_x, GXInt win_y )
 {
 	GXVec2 mousePosition;
 	mousePosition.x = (GXFloat)win_x;
-	mousePosition.y = (GXFloat)( gx_Core->GetRenderer ()->GetHeight () - win_y );
+	mousePosition.y = (GXFloat)( GXRenderer::GetInstance ()->GetHeight () - win_y );
 
 	switch ( em_vc_Me->ResolveMode ( em_vc_Me->isAltPressed, em_vc_Me->isMMBPressed, GX_FALSE ) )
 	{

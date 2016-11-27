@@ -11,17 +11,19 @@ struct GXMessage;
 class GXTouchSurface
 {
 	private:
-		GXMessage*		messages;
-		GXMessage*		lastMessage;
+		GXMessage*					messages;
+		GXMessage*					lastMessage;
 
-		GXWidget*		widgetHead;
-		GXWidget*		widgetTail;
+		GXWidget*					widgetHead;
+		GXWidget*					widgetTail;
 
-		GXWidget*		mouseOverWidget;
-		GXWidget*		lockedWidget;
-		GXWidget*		defaultWidget;
+		GXWidget*					mouseOverWidget;
+		GXWidget*					lockedWidget;
+		GXWidget*					defaultWidget;
 
-		GXVec2			mousePosition;
+		GXVec2						mousePosition;
+
+		static GXTouchSurface*		instance;
 
 	public:
 		GXTouchSurface ();
@@ -54,6 +56,8 @@ class GXTouchSurface
 		const GXVec2& GetMousePosition ();
 
 		GXVoid SetDefaultWidget ( GXWidget* widget );
+
+		static GXTouchSurface* GXCALL GetInstance ();
 
 	private:
 		GXVoid DeleteWidgets ();

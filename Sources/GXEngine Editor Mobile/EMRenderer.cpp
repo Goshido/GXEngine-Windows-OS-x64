@@ -1,6 +1,7 @@
 #include <GXEngine_Editor_Mobile/EMRenderer.h>
 #include <GXEngine_Editor_Mobile/EMLight.h>
-#include <GXEngine/GXGlobals.h>
+#include <GXEngine/GXRenderer.h>
+#include <GXEngine/GXCamera.h>
 #include <GXEngine/GXTextureUtils.h>
 #include <GXEngine/GXSamplerUtils.h>
 #include <GXEngine/GXShaderUtils.h>
@@ -85,7 +86,8 @@ GXVoid EMRenderer::StartCommonPass ()
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::StartCommonPass::Error - Что-то не так с FBO (ошибка 0x%08x)\n" );
 
-	glViewport ( 0, 0, gx_Core->GetRenderer ()->GetWidth (), gx_Core->GetRenderer ()->GetHeight () );
+	GXRenderer* renderer = GXRenderer::GetInstance ();
+	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
 
 	glClearColor ( 0.0f, 0.0f, 0.0f, 0.0f );
 	glClearDepth ( 1.0f );
@@ -117,7 +119,8 @@ GXVoid EMRenderer::StartLightPass ()
 	glDepthMask ( GX_FALSE );
 	glStencilMask ( 0xFF );
 
-	glViewport ( 0, 0, gx_Core->GetRenderer ()->GetWidth (), gx_Core->GetRenderer ()->GetHeight () );
+	GXRenderer* renderer = GXRenderer::GetInstance ();
+	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
 
 	const GLenum buffers[] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers ( 1, buffers );
@@ -132,7 +135,7 @@ GXVoid EMRenderer::StartLightPass ()
 	glEnable ( GL_DEPTH_TEST );
 	glEnable ( GL_BLEND );
 
-	GXSetMat4Inverse ( inv_proj_mat, gx_ActiveCamera->GetProjectionMatrix () );
+	GXSetMat4Inverse ( inv_proj_mat, GXCamera::GetActiveCamera ()->GetProjectionMatrix () );
 
 	LightUp ();
 }
@@ -154,7 +157,8 @@ GXVoid EMRenderer::StartHudColorPass ()
 
 	glClear ( GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 
-	glViewport ( 0, 0, gx_Core->GetRenderer ()->GetWidth (), gx_Core->GetRenderer ()->GetHeight () );
+	GXRenderer* renderer = GXRenderer::GetInstance ();
+	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
 
 	const GLenum buffers[] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers ( 1, buffers );
@@ -184,7 +188,8 @@ GXVoid EMRenderer::StartHudMaskPass ()
 
 	glClear ( GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 
-	glViewport ( 0, 0, gx_Core->GetRenderer ()->GetWidth (), gx_Core->GetRenderer ()->GetHeight () );
+	GXRenderer* renderer = GXRenderer::GetInstance ();
+	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
 
 	const GLenum buffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 	glDrawBuffers ( 2, buffers );
@@ -225,7 +230,8 @@ GXVoid EMRenderer::PresentFrame ()
 
 	glDrawBuffer ( GL_BACK );
 
-	glViewport ( 0, 0, gx_Core->GetRenderer ()->GetWidth (), gx_Core->GetRenderer ()->GetHeight () );
+	GXRenderer* renderer = GXRenderer::GetInstance ();
+	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
 
 	glUseProgram ( screenQuadProgram.program );
 	glActiveTexture ( GL_TEXTURE0 );
@@ -254,8 +260,9 @@ GXVoid EMRenderer::GetObject ( GXUShort x, GXUShort y )
 
 GXVoid EMRenderer::CreateFBO ()
 {
-	GXInt width = gx_Core->GetRenderer ()->GetWidth ();
-	GXInt height = gx_Core->GetRenderer ()->GetHeight ();
+	GXRenderer* renderer = GXRenderer::GetInstance ();
+	GXInt width = renderer->GetWidth ();
+	GXInt height = renderer->GetHeight ();
 
 	GXGLTextureStruct ts;
 	ts.width = width;
@@ -398,7 +405,7 @@ GXVoid EMRenderer::LightUpByDirected ( EMDirectedLight* light )
 
 	GXVec3 toLightDirectionView;
 	const GXMat4& rotation = light->GetRotation ();
-	GXMulVec3Mat4AsNormal ( toLightDirectionView, rotation.zv, gx_ActiveCamera->GetViewMatrix () );
+	GXMulVec3Mat4AsNormal ( toLightDirectionView, rotation.zv, GXCamera::GetActiveCamera ()->GetViewMatrix () );
 	toLightDirectionView.x = -toLightDirectionView.x;
 	toLightDirectionView.y = -toLightDirectionView.y;
 	toLightDirectionView.z = -toLightDirectionView.z;
@@ -471,8 +478,9 @@ GXVoid EMRenderer::LightUpByBulp ( EMBulp* light )
 
 GXUPointer EMRenderer::SampleObject ()
 {
-	if ( mouseX < 0 || mouseX >= gx_Core->GetRenderer ()->GetWidth () ) return 0;
-	if ( mouseY < 0 || mouseY >= gx_Core->GetRenderer ()->GetHeight () ) return 0;
+	GXRenderer* renderer = GXRenderer::GetInstance ();
+	if ( mouseX < 0 || mouseX >= renderer->GetWidth () ) return 0;
+	if ( mouseY < 0 || mouseY >= renderer->GetHeight () ) return 0;
 
 	glBindFramebuffer ( GL_READ_FRAMEBUFFER, fbo );
 	glFramebufferTexture ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, objectTextures[ 0 ], 0 );

@@ -1,5 +1,5 @@
 #include <GXEngine_Editor_Mobile/EMUIMenu.h>
-#include <GXEngine/GXGlobals.h>
+#include <GXEngine/GXCamera.h>
 #include <GXEngine/GXHudSurface.h>
 #include <GXEngine/GXFontStorage.h>
 #include <GXEngine/GXTextureStorage.h>
@@ -149,7 +149,7 @@ GXVoid EMUIMenuRenderer::OnDraw ()
 GXVoid EMUIMenuRenderer::OnDrawMask ()
 {
 	GXMat4 mod_view_proj_mat;
-	GXMulMat4Mat4 ( mod_view_proj_mat, surface->GetModelMatrix (), gx_ActiveCamera->GetViewMatrix () );
+	GXMulMat4Mat4 ( mod_view_proj_mat, surface->GetModelMatrix (), GXCamera::GetActiveCamera ()->GetViewMatrix () );
 
 	const GXVAOInfo& surfaceVAOInfo = surface->GetMeshVAOInfo ();
 	
@@ -405,7 +405,7 @@ GXVoid EMUISubmenuRenderer::OnDraw ()
 GXVoid EMUISubmenuRenderer::OnDrawMask ()
 {
 	GXMat4 mod_view_proj_mat;
-	GXMulMat4Mat4 ( mod_view_proj_mat, surface->GetModelMatrix (), gx_ActiveCamera->GetViewMatrix () );
+	GXMulMat4Mat4 ( mod_view_proj_mat, surface->GetModelMatrix (), GXCamera::GetActiveCamera ()->GetViewMatrix () );
 
 	const GXVAOInfo& surfaceVAOInfo = surface->GetMeshVAOInfo ();
 	

@@ -2,7 +2,7 @@
 #include <GXCommon/GXCommon.h>
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXStrings.h>
-#include <GXEngine/GXGlobals.h>
+#include <GXEngine/GXLocale.h>
 
 
 #define EM_PANEL_LEFT_BOTTOM_X			7.6f
@@ -50,7 +50,7 @@ EMUI ( nullptr )
 	topSeparator = new EMUISeparator ( mainPanel );
 	fileListBox = new EMUIFileListBox ( mainPanel );
 
-	GXLocale* locale = gx_Core->GetLocale ();
+	GXLocale* locale = GXLocale::GetInstance ();
 
 	okButton->SetCaption ( locale->GetString ( EM_BTN_OK_TEXT ) );
 	okButton->SetOnLeftMouseButtonCallback ( this, &EMUIOpenFile::OnButton );

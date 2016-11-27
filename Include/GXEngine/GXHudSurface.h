@@ -1,4 +1,4 @@
-//version 1.16
+//version 1.17
 
 #ifndef GX_HUD_SURFACE
 #define GX_HUD_SURFACE

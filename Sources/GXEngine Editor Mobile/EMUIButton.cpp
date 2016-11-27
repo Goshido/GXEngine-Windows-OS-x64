@@ -1,10 +1,11 @@
 #include <GXEngine_Editor_Mobile/EMUIButton.h>
+#include <GXEngine/GXCamera.h>
 #include <GXEngine/GXHudSurface.h>
 #include <GXEngine/GXFontStorage.h>
 #include <GXEngine/GXTextureStorage.h>
 #include <GXEngine/GXShaderStorage.h>
 #include <GXEngine/GXSamplerUtils.h>
-#include <GXEngine/GXGlobals.h>
+#include <GXEngine/GXRenderer.h>
 #include <GXCommon/GXCommon.h>
 #include <GXCommon/GXStrings.h>
 
@@ -98,7 +99,8 @@ GXWidgetRenderer ( buttonWidget )
 	surface = nullptr;
 	const GXAABB& bounds = widget->GetBoundsWorld ();
 	OnResized ( 0.0f, 0.0f, (GXUShort)GXGetAABBWidth ( bounds ), (GXUShort)GXGetAABBHeight ( bounds ) );
-	EMSetHudSurfaceLocationWorld ( *surface, bounds, EMGetNextGUIForegroundZ (), gx_Core->GetRenderer ()->GetWidth (), gx_Core->GetRenderer ()->GetHeight () );
+	GXRenderer* renderer = GXRenderer::GetInstance ();
+	EMSetHudSurfaceLocationWorld ( *surface, bounds, EMGetNextGUIForegroundZ (), renderer->GetWidth (), renderer->GetHeight () );
 
 	OnRefresh ();
 
@@ -220,7 +222,7 @@ GXVoid EMUIButtonRenderer::OnDraw ()
 GXVoid EMUIButtonRenderer::OnDrawMask ()
 {
 	GXMat4 mod_view_proj_mat;
-	GXMulMat4Mat4 ( mod_view_proj_mat, surface->GetModelMatrix (), gx_ActiveCamera->GetViewMatrix () );
+	GXMulMat4Mat4 ( mod_view_proj_mat, surface->GetModelMatrix (), GXCamera::GetActiveCamera ()->GetViewMatrix () );
 
 	const GXVAOInfo& surfaceVAOInfo = surface->GetMeshVAOInfo ();
 	

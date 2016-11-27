@@ -1,4 +1,4 @@
-//version 1.2
+//version 1.3
 
 #include <GXEngine/GXSoundMixer.h>
 
@@ -11,15 +11,18 @@ extern GXMutex* gx_sound_mixer_Mutex;
 GXBool				GXSoundMixer::loopFlag = GX_TRUE;
 GXSoundChannel*		GXSoundMixer::channels = 0;
 
+GXSoundMixer* GXSoundMixer::instance = nullptr;
 
 GXSoundMixer::GXSoundMixer () :
 thread ( &Update, 0, GX_SUSPEND )
 {
+	instance = this;
+
 	loopFlag = GX_TRUE;
 
 	masterVolume = 1.0f;
 
-	channels = 0;
+	channels = nullptr;
 
 	gx_sound_mixer_Mutex = new GXMutex (); 
 }
@@ -27,6 +30,7 @@ thread ( &Update, 0, GX_SUSPEND )
 GXSoundMixer::~GXSoundMixer ()
 {
 	delete gx_sound_mixer_Mutex;
+	instance = nullptr;
 }
 
 GXVoid GXSoundMixer::SetListenerVelocity ( const GXVec3 &velocity )
@@ -114,6 +118,11 @@ GXVoid GXSoundMixer::SetMasterVolume ( GXFloat masterVolume )
 {
 	this->masterVolume = masterVolume;
 	GXAlListenerf ( AL_GAIN, masterVolume );	
+}
+
+GXSoundMixer* GXCALL GXSoundMixer::GetInstance ()
+{
+	return instance;
 }
 
 GXDword GXTHREADCALL GXSoundMixer::Update ( GXVoid* args )

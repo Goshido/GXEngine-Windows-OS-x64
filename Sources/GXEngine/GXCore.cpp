@@ -1,4 +1,4 @@
-//version 1.9
+//version 1.10
 
 #include <GXEngine/GXCore.h>
 #include <GXCommon/GXCFGLoader.h>
@@ -12,23 +12,27 @@
 #include <GXEngine/GXVAOStorage.h>
 
 
-GXInput*				GXCore::input = 0;
-GXRenderer*				GXCore::renderer = 0;
-GXPhysics*				GXCore::physics = 0;
-GXSoundMixer*			GXCore::soundMixer = 0;
-GXNetServer*			GXCore::server = 0;
-GXNetClient*			GXCore::client = 0;
-GXTouchSurface*			GXCore::touchSurface = 0;
-GXLocale*				GXCore::locale = 0;
+GXInput*				GXCore::input = nullptr;
+GXRenderer*				GXCore::renderer = nullptr;
+GXPhysics*				GXCore::physics = nullptr;
+GXSoundMixer*			GXCore::soundMixer = nullptr;
+GXNetServer*			GXCore::server = nullptr;
+GXNetClient*			GXCore::client = nullptr;
+GXTouchSurface*			GXCore::touchSurface = nullptr;
+GXLocale*				GXCore::locale = nullptr;
 
 GXBool					GXCore::loopFlag = GX_TRUE;
 
-PFNGXONGAMEINITPROC		GXCore::OnGameInit = 0;
-PFNGXONGAMECLOSEPROC	GXCore::OnGameClose = 0;
+PFNGXONGAMEINITPROC		GXCore::OnGameInit = nullptr;
+PFNGXONGAMECLOSEPROC	GXCore::OnGameClose = nullptr;
+
+GXCore*					GXCore::instance = nullptr;
 
 
 GXCore::GXCore ( PFNGXONGAMEINITPROC onGameInit, PFNGXONGAMECLOSEPROC onGameClose, const GXWChar* gameName )
 {
+	instance = this;
+
 	GXLogInit ();
 
 	if ( !onGameInit ) GXDebugBox ( L"GXCore::GXCore::Error - Не верна стартовая функция игры" );
@@ -147,44 +151,49 @@ WNDPROC GXCore::NotifyGetInputProc ()
 	return &input->InputProc;
 }
 
-GXRenderer* GXCore::GetRenderer ()
+GXRenderer* GXCore::GetRenderer () const
 {
 	return renderer;
 }
 
-GXPhysics* GXCore::GetPhysics ()
+GXPhysics* GXCore::GetPhysics () const
 {
 	return physics;
 }
 
-GXInput* GXCore::GetInput ()
+GXInput* GXCore::GetInput () const
 {
 	return input;
 }
 
-GXSoundMixer* GXCore::GetSoundMixer ()
+GXSoundMixer* GXCore::GetSoundMixer () const
 {
 	return soundMixer;
 }
 
-GXNetServer* GXCore::GetNetServer ()
+GXNetServer* GXCore::GetNetServer () const
 {
 	return server;
 }
 
-GXNetClient* GXCore::GetNetClient ()
+GXNetClient* GXCore::GetNetClient () const
 {
 	return client;
 }
 
-GXTouchSurface* GXCore::GetTouchSurface ()
+GXTouchSurface* GXCore::GetTouchSurface () const
 {
 	return touchSurface;
 }
 
-GXLocale* GXCore::GetLocale ()
+GXLocale* GXCore::GetLocale () const
 {
 	return locale;
+}
+
+GXCore* GXCALL GXCore::GetInstance ()
+{
+	return instance;
 }
 
 GXVoid GXCore::CheckMemoryLeak ()

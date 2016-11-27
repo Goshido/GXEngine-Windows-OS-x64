@@ -1,4 +1,4 @@
-//version 1.2
+//version 1.3
 
 #ifndef GX_SOUND_MIXER
 #define GX_SOUND_MIXER
@@ -18,6 +18,8 @@ class GXSoundMixer
 		GXFloat						masterVolume;
 
 		static GXSoundChannel*		channels;
+
+		static GXSoundMixer*		instance;
 
 	public:
 		GXSoundMixer ();
@@ -40,6 +42,8 @@ class GXSoundMixer
 		GXBool Shutdown ();
 
 		GXVoid SetMasterVolume ( GXFloat masterVolume );
+
+		static GXSoundMixer* GXCALL GetInstance ();
 
 	private:
 		static GXDword GXTHREADCALL Update ( GXVoid* args );

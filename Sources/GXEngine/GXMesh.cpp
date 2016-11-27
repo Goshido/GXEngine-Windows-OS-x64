@@ -1,7 +1,8 @@
-//version 1.8
+//version 1.9
 
 #include <GXEngine/GXMesh.h>
-#include <GXEngine/GXGlobals.h>
+#include <GXEngine/GXCamera.h>
+#include <GXCommon/GXCommon.h>
 
 
 GXMesh::GXMesh ()
@@ -190,7 +191,7 @@ const GXMat4& GXMesh::GetModelMatrix ()
 
 GXBool GXMesh::IsVisible ()
 {
-	return gx_ActiveCamera->IsObjectVisible ( boundsWorld );
+	return GXCamera::GetActiveCamera ()->IsObjectVisible ( boundsWorld );
 }
 
 GXVoid GXMesh::UpdateBounds ()

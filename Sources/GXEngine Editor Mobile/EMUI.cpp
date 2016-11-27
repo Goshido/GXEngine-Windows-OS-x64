@@ -1,5 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMUI.h>
 #include <GXEngine_Editor_Mobile/EMGlobals.h>
+#include <GXEngine/GXTouchSurface.h>
 #include <GXCommon/GXLogger.h>
 
 
@@ -48,7 +49,7 @@ GXVoid EMUI::ToForeground ()
 
 GXVoid GXCALL EMDrawUI ()
 {
-	gx_Core->GetTouchSurface ()->DrawWidgets ();
+	GXTouchSurface::GetInstance ()->DrawWidgets ();
 }
 
 GXVoid GXCALL EMDrawUIMasks ()

@@ -1,7 +1,7 @@
-//version 1.16
+//version 1.17
 
 #include <GXEngine/GXHudSurface.h>
-#include <GXEngine/GXGlobals.h>
+#include <GXEngine/GXCamera.h>
 #include <GXEngine/GXFontStorage.h>
 #include <GXEngine/GXShaderStorage.h>
 #include <GXEngine/GXTextureUtils.h>
@@ -452,7 +452,7 @@ GXUShort GXHudSurface::GetHeight ()
 
 GXVoid GXHudSurface::Draw ()
 {
-	const GXMat4& view_proj_mat = gx_ActiveCamera->GetViewProjectionMatrix ();
+	const GXMat4& view_proj_mat = GXCamera::GetActiveCamera ()->GetViewProjectionMatrix ();
 	GXMat4 mod_view_proj_mat;
 	GXMulMat4Mat4 ( mod_view_proj_mat, mod_mat, view_proj_mat );
 

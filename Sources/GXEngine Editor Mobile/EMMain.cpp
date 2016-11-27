@@ -10,6 +10,10 @@
 #include <GXEngine_Editor_Mobile/EMMoveTool.h>
 #include <GXEngine_Editor_Mobile/EMViewer.h>
 #include <GXEngine/GXGlobals.h>
+#include <GXEngine/GXLocale.h>
+#include <GXEngine/GXRenderer.h>
+#include <GXEngine/GXTouchSurface.h>
+#include <GXEngine/GXInput.h>
 #include <GXEngine/GXOpenGL.h>
 #include <GXEngine/GXCameraOrthographic.h>
 
@@ -37,7 +41,7 @@ GXVoid GXCALL EMOnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFlo
 
 	if ( button == em_Button1->GetWidget () )
 	{
-		GXLocale* locale = gx_Core->GetLocale ();
+		GXLocale* locale = GXLocale::GetInstance ();
 		locale->SetLanguage ( GX_LANGUAGE_RU );
 
 		em_Button1->SetCaption ( locale->GetString ( L"russian" ) );
@@ -48,7 +52,7 @@ GXVoid GXCALL EMOnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFlo
 	}
 	else if ( button == em_Button2->GetWidget () )
 	{
-		GXLocale* locale = gx_Core->GetLocale ();
+		GXLocale* locale = GXLocale::GetInstance ();
 		locale->SetLanguage ( GX_LANGUAGE_EN );
 
 		em_Button1->SetCaption ( locale->GetString ( L"russian" ) );
@@ -73,7 +77,7 @@ GXVoid GXCALL EMOnExit ( GXFloat x, GXFloat y, eGXMouseButtonState state )
 {
 	if ( state != GX_MOUSE_BUTTON_UP ) return;
 
-	gx_Core->Exit ();
+	GXCore::GetInstance ()->Exit ();
 	GXLogA ( "Завершение\n" );
 }
 
@@ -93,7 +97,7 @@ GXVoid GXCALL EMOnMoveTool ( GXFloat x, GXFloat y, eGXMouseButtonState state )
 GXVoid GXCALL EMOnMouseMove ( GXInt win_x, GXInt win_y )
 {
 	em_MouseX = win_x;
-	em_MouseY = gx_Core->GetRenderer ()->GetHeight () - win_y;
+	em_MouseY = GXRenderer::GetInstance ()->GetHeight () - win_y;
 }
 
 GXVoid GXCALL EMOnMouseButton ( EGXInputMouseFlags mouseflags )
@@ -128,9 +132,10 @@ GXVoid GXCALL EMOnOpenFile ( const GXWChar* filePath )
 
 GXBool GXCALL EMOnFrame ( GXFloat deltatime )
 {
-	gx_Core->GetTouchSurface ()->ExecuteMessages ();
+	GXTouchSurface::GetInstance ()->ExecuteMessages ();
 
-	gx_ActiveCamera = em_Viewer->GetCamera ();
+	GXCamera* viewerCamera = em_Viewer->GetCamera ();
+	GXCamera::SetActiveCamera ( viewerCamera );
 	em_Renderer->StartCommonPass ();
 	
 	em_UnitActor->OnDrawCommonPass ();
@@ -140,14 +145,15 @@ GXBool GXCALL EMOnFrame ( GXFloat deltatime )
 	em_Renderer->StartHudColorPass ();
 	em_MoveTool->OnDrawHudColorPass ();
 
-	gx_ActiveCamera = em_HudCamera;
+	GXCamera::SetActiveCamera ( em_HudCamera );
 	
 	EMDrawUI ();
 
 	em_Renderer->StartHudMaskPass ();
 	EMDrawUIMasks ();
 
-	gx_ActiveCamera = em_Viewer->GetCamera ();
+	GXCamera::SetActiveCamera ( viewerCamera );
+
 	em_MoveTool->OnDrawHudMaskPass ();
 
 	em_Renderer->PresentFrame ();
@@ -157,13 +163,14 @@ GXBool GXCALL EMOnFrame ( GXFloat deltatime )
 
 GXVoid GXCALL EMOnInitRenderableObjects ()
 {
-	GXFloat w = (GXFloat)gx_Core->GetRenderer ()->GetWidth ();
-	GXFloat h = (GXFloat)gx_Core->GetRenderer ()->GetHeight ();
+	GXRenderer* renderer = GXRenderer::GetInstance ();
+	GXFloat w = (GXFloat)renderer->GetWidth ();
+	GXFloat h = (GXFloat)renderer->GetHeight ();
 
 	em_Renderer = new EMRenderer ();
 	em_Renderer->SetOnObjectCallback ( &EMOnObject );
 
-	GXLocale* locale = gx_Core->GetLocale ();
+	GXLocale* locale = GXLocale::GetInstance ();
 	locale->SetLanguage ( GX_LANGUAGE_EN );
 
 	em_Button1 = new EMUIButton ( nullptr );
@@ -277,7 +284,7 @@ GXVoid GXCALL EMOnDeleteRenderableObjects ()
 
 GXVoid GXCALL EMExit ( GXVoid* handler )
 {
-	gx_Core->Exit ();
+	GXCore::GetInstance ()->Exit ();
 	GXLogW ( L"Завершение\n" );
 }
 
@@ -285,17 +292,17 @@ GXVoid GXCALL EMExit ( GXVoid* handler )
 
 GXVoid GXCALL EMOnInit ()
 {
-	GXRenderer* renderer = gx_Core->GetRenderer ();
+	GXRenderer* renderer = GXRenderer::GetInstance ();
 	renderer->SetOnInitRenderableObjectsFunc ( &EMOnInitRenderableObjects );
 	renderer->SetOnFrameFunc ( &EMOnFrame );
 	renderer->SetOnDeleteRenderableObjectsFunc ( &EMOnDeleteRenderableObjects );
 
-	GXLocale* locale = gx_Core->GetLocale ();
+	GXLocale* locale = GXLocale::GetInstance ();
 	locale->LoadLanguage ( L"Locale/Editor Mobile/RU.lng", GX_LANGUAGE_RU );
 	locale->LoadLanguage ( L"Locale/Editor Mobile/EN.lng", GX_LANGUAGE_EN );
 	locale->SetLanguage ( GX_LANGUAGE_RU );
 
-	GXInput* input = gx_Core->GetInput ();
+	GXInput* input = GXInput::GetInstance ();
 	input->BindKeyFunc ( &EMExit, 0, VK_ESCAPE, INPUT_UP );
 	input->BindMouseMoveFunc ( &EMOnMouseMove );
 	input->BindMouseButtonsFunc ( &EMOnMouseButton );
@@ -303,7 +310,7 @@ GXVoid GXCALL EMOnInit ()
 
 GXVoid GXCALL EMOnClose ()
 {
-	GXInput* input = gx_Core->GetInput ();
+	GXInput* input = GXInput::GetInstance ();
 	input->UnBindMouseMoveFunc ();
 	input->UnBindMouseButtonsFunc ();
 	input->UnBindKeyFunc ( VK_ESCAPE, INPUT_UP );

@@ -5,7 +5,7 @@
 #include <GXEngine/GXUICommon.h>
 #include <GXEngine/GXFontStorage.h>
 #include <GXEngine/GXHudSurface.h>
-#include <GXEngine/GXGlobals.h>
+#include <GXEngine/GXInput.h>
 #include <GXCommon/GXCommon.h>
 #include <GXCommon/GXStrings.h>
 
@@ -545,7 +545,7 @@ GXVoid GXUIEditBox::LockInput ()
 {
 	gx_ui_TouchSurface->LockCursor ( this );
 
-	GXInput* input = gx_Core->GetInput ();
+	GXInput* input = GXInput::GetInstance ();
 	input->BindKeyFunc ( &GXUIEditBox::OnBackspace, this, VK_BACK, INPUT_DOWN );
 	input->BindKeyFunc ( &GXUIEditBox::OnDel, this, VK_DELETE, INPUT_DOWN );
 	input->BindKeyFunc ( &GXUIEditBox::OnLeftArrow, this, VK_LEFT, INPUT_DOWN );
@@ -559,7 +559,7 @@ GXVoid GXUIEditBox::ReleaseInput ()
 {
 	gx_ui_TouchSurface->ReleaseCursor ();
 
-	GXInput* input = gx_Core->GetInput ();
+	GXInput* input = GXInput::GetInstance ();
 	input->UnBindKeyFunc ( VK_BACK, INPUT_DOWN );
 	input->UnBindKeyFunc ( VK_DELETE, INPUT_DOWN );
 	input->UnBindKeyFunc ( VK_LEFT, INPUT_DOWN );

@@ -1,4 +1,4 @@
-//verison 1.5
+//verison 1.6
 
 #ifndef GX_NETWORK
 #define GX_NETWORK
@@ -57,6 +57,8 @@ class GXNetServer
 		static PFNGXONSERVERPMESSAGETCPPROC			OnMessageTCP;
 		static PFNGXONSERVERPMESSAGEUDPPROC			OnMessageUDP;
 
+		static GXNetServer*							instance;
+
 	public:
 		GXNetServer ();
 		virtual ~GXNetServer ();
@@ -81,6 +83,8 @@ class GXNetServer
 
 		GXVoid SetOnMessageFuncTCP ( PFNGXONSERVERPMESSAGETCPPROC callback );
 		GXVoid SetOnMessageFuncUDP ( PFNGXONSERVERPMESSAGEUDPPROC callback );
+
+		static GXNetServer* GXCALL GetInstance ();
 
 	private:
 		static GXDword GXTHREADCALL ListenTCP ( GXVoid* arg );
@@ -107,6 +111,8 @@ class GXNetClient
 		static PFNGXONCLIENTMESSAGEPROC		OnMessageTCP;
 		static PFNGXONCLIENTMESSAGEPROC		OnMessageUDP;
 
+		static GXNetClient*					instance;
+
 	public:
 		GXNetClient ();
 		virtual ~GXNetClient ();
@@ -125,6 +131,8 @@ class GXNetClient
 
 		GXVoid SetOnMessageTCPFunc ( PFNGXONCLIENTMESSAGEPROC onMessageFunc );
 		GXVoid SetOnMessageUDPFunc ( PFNGXONCLIENTMESSAGEPROC onMessageFunc );
+
+		static GXNetClient* GXCALL GetInstance ();
 
 	private:
 		static GXDword GXTHREADCALL ReceiveTCP ( GXVoid* arg );

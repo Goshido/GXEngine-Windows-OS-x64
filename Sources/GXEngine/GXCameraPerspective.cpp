@@ -1,4 +1,4 @@
-//version 1.3
+//version 1.5
 
 #include <GXEngine/GXCameraPerspective.h>
 
@@ -14,6 +14,11 @@ GXCameraPerspective::GXCameraPerspective ( GXFloat fov_rad, GXFloat aspect_ratio
 	view_proj_mat = proj_mat;
 
 	UpdateClipPlanes ();
+}
+
+GXCameraPerspective::~GXCameraPerspective ()
+{
+	//NOTHING
 }
 
 GXVoid GXCameraPerspective::SetFov ( GXFloat fov_rad )
@@ -62,12 +67,12 @@ GXFloat GXCameraPerspective::GetAspectRatio ()
 	return aspect_ratio;
 }
 
-GXFloat GXCameraPerspective::GetZnear ()
+GXFloat GXCameraPerspective::GetZnear () const
 {
 	return znear;
 }
 
-GXFloat GXCameraPerspective::GetZfar ()
+GXFloat GXCameraPerspective::GetZfar () const
 {
 	return zfar;
 }
