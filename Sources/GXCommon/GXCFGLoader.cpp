@@ -6,8 +6,8 @@
 
 GXVoid GXCALL GXLoadCFG ( GXEngineConfiguration &out_config_info )
 {
-	GXVoid* buffer;
-	GXUInt size;
+	GXVoid* buffer = nullptr;
+	GXUInt size = 0;
 
 	if ( !GXLoadFile ( L"../../Config/GXEngine.cfg", &buffer, size, GX_TRUE ) )
 	{

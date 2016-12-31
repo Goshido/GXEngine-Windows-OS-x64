@@ -1,4 +1,4 @@
-//version 1.12
+//version 1.13
 
 #ifndef GX_RENDERER
 #define GX_RENDERER
@@ -29,11 +29,9 @@ class GXRendererResolutions
 		GXVoid GetResolution ( GXUShort i, GXUShort &width, GXUShort &height );	
 };
 
-class GXCore;
 class GXRenderer
 {	
 	private:
-		static GXCore*								core;
 		static GXThread*							thread;
 
 		static GXBool								loopFlag;
@@ -49,8 +47,6 @@ class GXRenderer
 		static GXInt								width;
 		static GXInt								height;
 		static GXInt								vsync;
-		static GXInt								colorsBits;
-		static GXInt								depthBits;
 
 		static GXWChar*								title;
 
@@ -66,7 +62,6 @@ class GXRenderer
 		static GXRenderer*							instance;
 
 	public:
-		GXRenderer ( GXCore* core, const GXWChar* gameName, GXInt color_bits, GXInt depth_bits );
 		~GXRenderer ();
 
 		GXVoid Start ();
@@ -75,8 +70,6 @@ class GXRenderer
 
 		GXVoid SetFullscreen ( GXBool enabled );
 		GXVoid SetVSync ( GXBool enabled );
-		GXVoid SetColorsBits ( GXInt bits );
-		GXVoid SetDepthBits ( GXInt bits );
 		GXVoid SetResolution ( GXInt width, GXInt height );
 		GXVoid SetWindowTitle ( const GXWChar* title );
 
@@ -87,6 +80,8 @@ class GXRenderer
 		GXUInt GetCurrentFPS () const;
 		GXVoid GetSupportedResolutions ( GXRendererResolutions &out ) const;
 
+		GXVoid SetWindowName ( const GXWChar* name );
+
 		GXInt GetWidth () const;
 		GXInt GetHeight () const;
 		static GXBool GXCALL UpdateRendererSettings ();
@@ -95,6 +90,8 @@ class GXRenderer
 		static GXRenderer* GXCALL GetInstance ();
 
 	private:
+		explicit GXRenderer ();
+
 		static GXDword GXTHREADCALL RenderLoop ( GXVoid* args );
 		static GXVoid GXCALL InitOpenGL ();
 		static GXBool GXCALL DrawScene ();

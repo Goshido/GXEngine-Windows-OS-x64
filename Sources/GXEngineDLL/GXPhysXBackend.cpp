@@ -1,7 +1,7 @@
-//version 1.9
+//version 1.10
 
 #include <GXEngineDLL/GXEngineDLL.h>
-#include <GXEngineDLL/GXPhysX.h>
+#include <GXEngineDLL/GXPhysXAdapter.h>
 #include <GXCommon/GXOBJLoader.h>
 #include <GXCommon/GXBKELoader.h>
 #include <GXCommon/GXPHGStructs.h>
@@ -216,7 +216,7 @@ static PxDefaultAllocator				gGXPhysicsAllocatorCallback;
 //----------------------------------------------------------------------
 
 
-class GXPhysicsBase : public GXPhysics
+class GXPhysXBackend: public GXPhysXAdapter
 {
 	private:
 		static GXBool									bIsSimulating;
@@ -228,7 +228,7 @@ class GXPhysicsBase : public GXPhysics
 		static PxControllerManager*						pControllerManager;
 		static PxVec3									gravity;
 		static PxTolerancesScale						toleranceScale;
-		static PLONPHYSICSPROC							OnPhysics;
+		static PLONPHYSXPROC							OnPhysics;
 		static HANDLE									hSimulateMutex;
 		static GXDouble									lastTime;
 		static GXDouble									accumulator;
@@ -249,13 +249,13 @@ class GXPhysicsBase : public GXPhysics
 		PxBatchQuery*									batchQuery;
 
 	public:
-		GXPhysicsBase ();
-		virtual ~GXPhysicsBase ();
+		GXPhysXBackend ();
+		virtual ~GXPhysXBackend ();
 
 		virtual GXBool IsSumulating ();
 
 		virtual GXBool SetLinearVelocity ( PxRigidDynamic* actor, PxVec3 &vel );
-		virtual GXVoid SetOnPhysicsFunc ( PLONPHYSICSPROC func );
+		virtual GXVoid SetOnPhysicsFunc ( PLONPHYSXPROC func );
 
 		virtual PxRigidDynamic* CreateRigidDynamic ( GXVoid* address, PxTransform& location );
 		virtual PxRigidStatic* CreateRigidStatic ( GXVoid* address, PxTransform &location );
@@ -292,21 +292,21 @@ class GXPhysicsBase : public GXPhysics
 		static PxFilterFlags FilterShader ( PxFilterObjectAttributes attributes0, PxFilterData filterData0, PxFilterObjectAttributes attributes1, PxFilterData filterData1, PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize );
 };
 
-GXBool							GXPhysicsBase::bIsSimulating;
-PxFoundation*					GXPhysicsBase::pFoundation;
-PxPhysics*						GXPhysicsBase::pPhysics;
-PxControllerManager*			GXPhysicsBase::pControllerManager;
-PxCooking*						GXPhysicsBase::pCooking;
-PxScene*						GXPhysicsBase::pScene;
-PxDefaultCpuDispatcher*			GXPhysicsBase::pCpuDispatcher;
-PxTolerancesScale				GXPhysicsBase::toleranceScale;
-PxVec3							GXPhysicsBase::gravity;
-PLONPHYSICSPROC					GXPhysicsBase::OnPhysics;
-HANDLE							GXPhysicsBase::hSimulateMutex;
-GXDouble						GXPhysicsBase::lastTime;
-GXDouble						GXPhysicsBase::accumulator = 0.0;
+GXBool							GXPhysXBackend::bIsSimulating;
+PxFoundation*					GXPhysXBackend::pFoundation;
+PxPhysics*						GXPhysXBackend::pPhysics;
+PxControllerManager*			GXPhysXBackend::pControllerManager;
+PxCooking*						GXPhysXBackend::pCooking;
+PxScene*						GXPhysXBackend::pScene;
+PxDefaultCpuDispatcher*			GXPhysXBackend::pCpuDispatcher;
+PxTolerancesScale				GXPhysXBackend::toleranceScale;
+PxVec3							GXPhysXBackend::gravity;
+PLONPHYSXPROC					GXPhysXBackend::OnPhysics;
+HANDLE							GXPhysXBackend::hSimulateMutex;
+GXDouble						GXPhysXBackend::lastTime;
+GXDouble						GXPhysXBackend::accumulator = 0.0;
 
-GXPhysicsBase::GXPhysicsBase ()
+GXPhysXBackend::GXPhysXBackend ()
 {
 	GXLogInit ();
 
@@ -318,7 +318,7 @@ GXPhysicsBase::GXPhysicsBase ()
 	if ( !( pFoundation = PxCreateFoundation ( PX_PHYSICS_VERSION, gGXPhysicsAllocatorCallback, gGXPhysicsErrorCallback ) ) )
 	{
 		GXDebugBox ( L"pFoundation не создано" );
-		GXLogW ( L"GXPhysicsBase::GXPhysicsBase::Error - pFoundation не создано\n" );
+		GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - pFoundation не создано\n" );
 	}
 
 	toleranceScale.length = GX_PHYSICS_TOLERANCE_LENGTH;
@@ -330,19 +330,19 @@ GXPhysicsBase::GXPhysicsBase ()
 	if ( !( pPhysics = PxCreatePhysics ( PX_PHYSICS_VERSION, *pFoundation, toleranceScale ) ) )
 	{
 		GXDebugBox ( L"pPhysics не создано" );
-		GXLogW ( L"GXPhysicsBase::GXPhysicsBase::Error - pPhysics не создано\n" );
+		GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - pPhysics не создано\n" );
 	}
 
 	if ( !PxInitExtensions ( *pPhysics ) )
 	{
 		GXDebugBox ( L"PxInitExtensions провалено" );
-		GXLogW ( L"GXPhysicsBase::GXPhysicsBase::Error - PxInitExtensions провалено\n" );
+		GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - PxInitExtensions провалено\n" );
 	}
 
 	if ( !( pCooking = PxCreateCooking ( PX_PHYSICS_VERSION, *pFoundation, PxCookingParams ( toleranceScale ) ) ) )
 	{
 		GXDebugBox ( L"pCooking не создано" );
-		GXLogW ( L"GXPhysicsBase::GXPhysicsBase::Error - pCooking не создано\n" );
+		GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - pCooking не создано\n" );
 	}
 
 	PxSceneDesc sceneDesc ( pPhysics->getTolerancesScale () );
@@ -352,7 +352,7 @@ GXPhysicsBase::GXPhysicsBase ()
 		if ( !( pCpuDispatcher = PxDefaultCpuDispatcherCreate ( GX_PHYSICS_NB_THREADS ) ) )
 		{
 			GXDebugBox ( L"pCpuDispatcher не создано" );
-			GXLogW ( L"GXPhysicsBase::GXPhysicsBase::Error - pCpuDispatcher не создано\n" );
+			GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - pCpuDispatcher не создано\n" );
 		}
 		else
 			sceneDesc.cpuDispatcher = pCpuDispatcher;
@@ -365,19 +365,19 @@ GXPhysicsBase::GXPhysicsBase ()
 	if ( !( pScene = pPhysics->createScene ( sceneDesc ) ) )
 	{
 		GXDebugBox ( L"pScene не создано" );
-		GXLogW ( L"GXPhysicsBase::GXPhysicsBase::Error - pScene не создано\n" );
+		GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - pScene не создано\n" );
 	}
 
 	if ( !( pControllerManager = PxCreateControllerManager ( *pScene ) ) )
 	{
 		GXDebugBox ( L"pControllerManager не создано" );
-		GXLogW ( L"GXPhysicsBase::GXPhysicsBase::Error - pControllerManager не создано\n" );
+		GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - pControllerManager не создано\n" );
 	}
 
 	if ( !PxInitVehicleSDK ( *pPhysics ) )
 	{
 		GXDebugBox ( L"PxInitVehicleSDK провалено" );
-		GXLogW ( L"GXPhysicsBase::GXPhysicsBase::Error - PxInitVehicleSDK провалено\n" );
+		GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - PxInitVehicleSDK провалено\n" );
 	}
 
 	PxVehicleSetBasisVectors ( PxVec3 ( 0.0f, 1.0f, 0.0f ), PxVec3 ( 0.0f, 0.0f, 1.0f ) );
@@ -445,7 +445,7 @@ GXPhysicsBase::GXPhysicsBase ()
 	hSimulateMutex = CreateMutexW ( 0, GX_FALSE, L"GX_PHYSICS_SIMULATE_MUTEX" );
 }
 
-GXPhysicsBase::~GXPhysicsBase ()
+GXPhysXBackend::~GXPhysXBackend ()
 {
 	if ( pvdConnection )
 		pvdConnection->release ();
@@ -465,24 +465,24 @@ GXPhysicsBase::~GXPhysicsBase ()
 	CloseHandle ( hSimulateMutex );
 }
 
-GXBool GXPhysicsBase::IsSumulating ()
+GXBool GXPhysXBackend::IsSumulating ()
 {
 	return bIsSimulating;
 }
 
-GXBool GXPhysicsBase::SetLinearVelocity ( PxRigidDynamic* actor, PxVec3 &vel )
+GXBool GXPhysXBackend::SetLinearVelocity ( PxRigidDynamic* actor, PxVec3 &vel )
 {
 	if ( bIsSimulating ) return GX_FALSE;
 	actor->setLinearVelocity ( vel );
 	return GX_TRUE;
 }
 
-GXVoid GXPhysicsBase::SetOnPhysicsFunc ( PLONPHYSICSPROC func )
+GXVoid GXPhysXBackend::SetOnPhysicsFunc ( PLONPHYSXPROC func )
 {
 	OnPhysics = func;
 }
 
-PxRigidDynamic* GXPhysicsBase::CreateRigidDynamic ( GXVoid* address, PxTransform& location )
+PxRigidDynamic* GXPhysXBackend::CreateRigidDynamic ( GXVoid* address, PxTransform& location )
 {
 	PxRigidDynamic* rigidDynamic = pPhysics->createRigidDynamic ( location );
 	rigidDynamic->setLinearDamping ( 0.001f );
@@ -490,14 +490,14 @@ PxRigidDynamic* GXPhysicsBase::CreateRigidDynamic ( GXVoid* address, PxTransform
 	return rigidDynamic;
 }
 
-PxRigidStatic* GXPhysicsBase::CreateRigidStatic ( GXVoid* address, PxTransform &location )
+PxRigidStatic* GXPhysXBackend::CreateRigidStatic ( GXVoid* address, PxTransform &location )
 {
 	PxRigidStatic* rigidStatic = pPhysics->createRigidStatic ( location );
 	rigidStatic->userData = address;
 	return rigidStatic;
 }
 
-PxVehicleDrive4W* GXPhysicsBase::CreateVehicle ( const GXVehicleInfo &info )
+PxVehicleDrive4W* GXPhysXBackend::CreateVehicle ( const GXVehicleInfo &info )
 {
 	if ( ( numVehicles + 1 ) > maxVehicles )
 		return 0;
@@ -686,7 +686,7 @@ PxVehicleDrive4W* GXPhysicsBase::CreateVehicle ( const GXVehicleInfo &info )
 	return vehicle;
 }
 
-GXVoid GXPhysicsBase::DeleteVehicle ( PxVehicleDrive4W* vehicle )
+GXVoid GXPhysXBackend::DeleteVehicle ( PxVehicleDrive4W* vehicle )
 {
 	GXUInt id = 0;
 	for ( ; id < maxVehicles; id++ )
@@ -705,34 +705,34 @@ GXVoid GXPhysicsBase::DeleteVehicle ( PxVehicleDrive4W* vehicle )
 	}
 }
 
-PxController* GXPhysicsBase::CreateCharacterController ( PxCapsuleControllerDesc desc )
+PxController* GXPhysXBackend::CreateCharacterController ( PxCapsuleControllerDesc desc )
 {
 	return pControllerManager->createController ( *pPhysics, pScene, desc );
 }
 
-GXVoid GXPhysicsBase::SetRigidActorOrigin ( PxRigidActor* actor, const GXVec3 &location, const GXQuat &rotation )
+GXVoid GXPhysXBackend::SetRigidActorOrigin ( PxRigidActor* actor, const GXVec3 &location, const GXQuat &rotation )
 {
 	GXQuat physXRotation;
 	GXQuatRehandCoordinateSystem ( physXRotation, rotation );
 	actor->setGlobalPose ( PxTransform ( PxVec3 ( location.x, location.y, location.z ), PxQuat ( physXRotation.x, physXRotation.y, physXRotation.z, physXRotation.w ) ) );
 }
 
-GXVoid GXPhysicsBase::AddActor ( PxActor &actor )
+GXVoid GXPhysXBackend::AddActor ( PxActor &actor )
 {
 	pScene->addActor ( actor );
 }
 
-GXVoid GXPhysicsBase::RemoveActor ( PxActor &actor )
+GXVoid GXPhysXBackend::RemoveActor ( PxActor &actor )
 {
 	pScene->removeActor ( actor );
 }
 
-PxMaterial* GXPhysicsBase::CreateMaterial ( GXFloat staticFriction, GXFloat dynamicFriction, GXFloat restitution )
+PxMaterial* GXPhysXBackend::CreateMaterial ( GXFloat staticFriction, GXFloat dynamicFriction, GXFloat restitution )
 {
 	return pPhysics->createMaterial ( staticFriction, dynamicFriction, restitution );
 }
 
-PxTriangleMesh* GXPhysicsBase::CreateTriangleMesh ( const GXWChar* bke_file_name )
+PxTriangleMesh* GXPhysXBackend::CreateTriangleMesh ( const GXWChar* bke_file_name )
 {
 	GXBakeInfo info;
 	GXLoadBKE ( bke_file_name, info );
@@ -767,7 +767,7 @@ PxTriangleMesh* GXPhysicsBase::CreateTriangleMesh ( const GXWChar* bke_file_name
 	GXBool status = pCooking->cookTriangleMesh ( meshDesc, writebuffer );
 	if( !status )
 	{
-		GXLogW ( L"GXPhysicsBase::CreateTriangleMesh::Error - Запекание файла %s провалено\n", info.fileName );
+		GXLogW ( L"GXPhysXBackend::CreateTriangleMesh::Error - Запекание файла %s провалено\n", info.fileName );
 		GXDebugBox ( L"Что-то не так с triangle mesh" );
 		return 0;
 	}
@@ -814,7 +814,7 @@ PxTriangleMesh* GXPhysicsBase::CreateTriangleMesh ( const GXWChar* bke_file_name
 	GXBool status = pCooking->cookTriangleMesh ( meshDesc, writebuffer );
 	if( !status )
 	{
-		GXLogW ( L"GXPhysicsBase::CreateTriangleMesh::Error - Запекание файла %s провалено\n", info.fileName );
+		GXLogW ( L"GXPhysXBackend::CreateTriangleMesh::Error - Запекание файла %s провалено\n", info.fileName );
 		GXDebugBox ( L"Что-то не так с triangle mesh" );
 		return 0;
 	}
@@ -834,7 +834,7 @@ PxTriangleMesh* GXPhysicsBase::CreateTriangleMesh ( const GXWChar* bke_file_name
 	*/
 }
 
-PxConvexMesh* GXPhysicsBase::CreateConvexMesh ( const GXWChar* bke_file_name )
+PxConvexMesh* GXPhysXBackend::CreateConvexMesh ( const GXWChar* bke_file_name )
 {
 	GXBakeInfo info;
 	GXLoadBKE ( bke_file_name, info );
@@ -873,7 +873,7 @@ PxConvexMesh* GXPhysicsBase::CreateConvexMesh ( const GXWChar* bke_file_name )
 	}
 	else
 	{
-		GXLogW ( L"GXPhysicsBase::CreateConvexMesh::Error - Запекание файла %s провалено\n", info.fileName );
+		GXLogW ( L"GXPhysXBackend::CreateConvexMesh::Error - Запекание файла %s провалено\n", info.fileName );
 		GXDebugBox ( L"Что-то не так с конвексом" );
 		return 0;
 	}
@@ -886,20 +886,20 @@ PxConvexMesh* GXPhysicsBase::CreateConvexMesh ( const GXWChar* bke_file_name )
 	return convexMesh;
 }
 
-PxParticleSystem* GXPhysicsBase::CreateParticleSystem ( GXUInt maxCountParticles, GXBool particleRestOffset )
+PxParticleSystem* GXPhysXBackend::CreateParticleSystem ( GXUInt maxCountParticles, GXBool particleRestOffset )
 {
 	if ( !pPhysics ) return 0;
 
 	return pPhysics->createParticleSystem ( maxCountParticles, particleRestOffset );
 }
 
-GXVoid GXPhysicsBase::AddParticleSystem ( PxParticleSystem &ps )
+GXVoid GXPhysXBackend::AddParticleSystem ( PxParticleSystem &ps )
 {
 	if ( !pScene ) return;
 	pScene->addActor ( ps );
 }
 
-GXVec3 GXPhysicsBase::GetGravityAcceleration ()
+GXVec3 GXPhysXBackend::GetGravityAcceleration ()
 {
 	GXVec3 g;
 	g.x = gravity.x;
@@ -908,17 +908,17 @@ GXVec3 GXPhysicsBase::GetGravityAcceleration ()
 	return g;
 }
 
-GXFloat GXPhysicsBase::GetSimulationDelay ()
+GXFloat GXPhysXBackend::GetSimulationDelay ()
 {
 	return (GXFloat)GX_PHYSICS_SIMULATE_DELAY;
 }
 
-GXFloat GXPhysicsBase::GetToleranceLength ()
+GXFloat GXPhysXBackend::GetToleranceLength ()
 {
 	return toleranceScale.length;
 }
 
-GXBool GXPhysicsBase::RaycastSingle ( const GXVec3 &start, const GXVec3 &direction, const GXFloat maxDistance, PxRaycastHit &hit )
+GXBool GXPhysXBackend::RaycastSingle ( const GXVec3 &start, const GXVec3 &direction, const GXFloat maxDistance, PxRaycastHit &hit )
 {
 	WaitForSingleObject ( hSimulateMutex, INFINITE );		
 	const PxSceneQueryFlags outputFlags = PxSceneQueryFlag::eDISTANCE | PxSceneQueryFlag::eIMPACT | PxSceneQueryFlag::eNORMAL;
@@ -938,7 +938,7 @@ GXBool GXPhysicsBase::RaycastSingle ( const GXVec3 &start, const GXVec3 &directi
 
 GXBool gx_physiscs_Flag = GX_TRUE;
 
-GXVoid GXPhysicsBase::DoSimulate ()
+GXVoid GXPhysXBackend::DoSimulate ()
 {
 	if ( gx_physiscs_Flag )
 	{
@@ -975,7 +975,7 @@ GXVoid GXPhysicsBase::DoSimulate ()
 			{
 				if ( activeTransforms [ i ].userData && activeTransforms [ i ].actor->isRigidBody () )
 				{
-					GXPhysicsActorState* renderObject = (GXPhysicsActorState*)activeTransforms [ i ].userData;
+					GXPhysXActorState* renderObject = (GXPhysXActorState*)activeTransforms [ i ].userData;
 					GXVec3 location = GXCreateVec3 ( activeTransforms [ i ].actor2World.p.x, activeTransforms [ i ].actor2World.p.y, activeTransforms [ i ].actor2World.p.z );
 
 					//PhysX - левосторонняя система координат. 
@@ -997,7 +997,7 @@ GXVoid GXPhysicsBase::DoSimulate ()
 				PxRigidDynamic* rigidVihicle = vehicles[ i ]->getRigidDynamicActor ();
 				GXUInt numShapes = rigidVihicle->getNbShapes ();
 				rigidVihicle->getShapes ( carShapes, numShapes );
-				GXPhysicsActorState* vehicle = (GXPhysicsActorState*)rigidVihicle->userData;
+				GXPhysXActorState* vehicle = (GXPhysXActorState*)rigidVihicle->userData;
 
 				for ( GXUInt shapeID = 0; shapeID < numShapes; shapeID++ )
 				{
@@ -1028,12 +1028,12 @@ GXVoid GXPhysicsBase::DoSimulate ()
 	bIsSimulating = GX_FALSE;
 }
 
-GXVoid GXPhysicsBase::ControlVehicle ( PxVehicleDrive4W* vehicle, GXUInt controlType, GXFloat value )
+GXVoid GXPhysXBackend::ControlVehicle ( PxVehicleDrive4W* vehicle, GXUInt controlType, GXFloat value )
 {
 	vehicle->mDriveDynData.setAnalogInput ( controlType, value );
 }
 
-PxConvexMesh* GXPhysicsBase::CreateCylinderConvex ( GXFloat width, GXFloat radius, GXUInt numCirclePoints )
+PxConvexMesh* GXPhysXBackend::CreateCylinderConvex ( GXFloat width, GXFloat radius, GXUInt numCirclePoints )
 {
 	#define  MAX_NUM_VERTS_IN_CIRCLE 8
 
@@ -1074,7 +1074,7 @@ PxConvexMesh* GXPhysicsBase::CreateCylinderConvex ( GXFloat width, GXFloat radiu
 	#undef MAX_NUM_VERTS_IN_CIRCLE
 }
 
-PxQueryHitType::Enum GXPhysicsBase::BatchQueryPreFilterShader ( PxFilterData filterData0, PxFilterData filterData1, const void* constantBlock, PxU32 constantBlockSize, PxHitFlags &filterFlags )
+PxQueryHitType::Enum GXPhysXBackend::BatchQueryPreFilterShader ( PxFilterData filterData0, PxFilterData filterData1, const void* constantBlock, PxU32 constantBlockSize, PxHitFlags &filterFlags )
 {
 	PX_UNUSED ( filterFlags );
 	PX_UNUSED ( constantBlockSize );
@@ -1087,7 +1087,7 @@ PxQueryHitType::Enum GXPhysicsBase::BatchQueryPreFilterShader ( PxFilterData fil
 	return PxQueryHitType::eNONE;
 }
 
-PxFilterFlags GXPhysicsBase::FilterShader ( PxFilterObjectAttributes attributes0, PxFilterData filterData0, PxFilterObjectAttributes attributes1, PxFilterData filterData1, PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize )
+PxFilterFlags GXPhysXBackend::FilterShader ( PxFilterObjectAttributes attributes0, PxFilterData filterData0, PxFilterObjectAttributes attributes1, PxFilterData filterData1, PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize )
 {
 	PX_UNUSED ( constantBlock );
 	PX_UNUSED ( constantBlockSize );
@@ -1110,12 +1110,12 @@ PxFilterFlags GXPhysicsBase::FilterShader ( PxFilterObjectAttributes attributes0
 
 //----------------------------------------------------------------------
 
-GXDLLEXPORT GXPhysics* GXCALL GXPhysicsCreate ()
+GXDLLEXPORT GXPhysXAdapter* GXCALL GXPhysXCreate ()
 {
-	return new GXPhysicsBase ();
+	return new GXPhysXBackend ();
 }
 
-GXDLLEXPORT GXVoid GXCALL GXPhysicsDestroy ( GXPhysics* physics )
+GXDLLEXPORT GXVoid GXCALL GXPhysXDestroy ( GXPhysXAdapter* physics )
 {
 	GXSafeDelete ( physics );
 }

@@ -54,15 +54,6 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXMath.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXCommon\GXMTRLoader.cpp">
-      <Filter>Source Files\GXCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXCommon\GXMTRSaver.cpp">
-      <Filter>Source Files\GXCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXCommon\GXMTRStructs.cpp">
-      <Filter>Source Files\GXCommon</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\GXMutex.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
@@ -93,11 +84,14 @@
     <ClCompile Include="..\..\Sources\GXEngineDLL\GXOpenAL.cpp">
       <Filter>Source Files\GXEngineDLL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngineDLL\GXPhysX.cpp">
-      <Filter>Source Files\GXEngineDLL</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngineDLL\GXXInput.cpp">
       <Filter>Source Files\GXEngineDLL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngineDLL\GXPhysXBackend.cpp">
+      <Filter>Source Files\GXEngineDLL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXMemory.cpp">
+      <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -116,11 +110,11 @@
     <ClInclude Include="..\..\Include\GXEngineDLL\GXOpenAL.h">
       <Filter>Header Files\OpenAL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngineDLL\GXPhysX.h">
-      <Filter>Header Files\PhysX</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXEngineDLL\GXXInput.h">
       <Filter>Header Files\XInput</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngineDLL\GXPhysXAdapter.h">
+      <Filter>Header Files\PhysX</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

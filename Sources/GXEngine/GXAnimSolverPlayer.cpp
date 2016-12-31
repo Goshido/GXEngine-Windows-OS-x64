@@ -14,7 +14,7 @@ class GXBoneFinderNode : public GXAVLTreeNode
 	public:
 		GXBoneFinderNode ( const GXUTF8* boneName, GXUShort boneIndex );
 	
-		virtual const GXVoid* GetKey ();
+		const GXVoid* GetKey () const override;
 
 		static GXInt GXCALL Compare ( const GXVoid* a, const GXVoid* b );
 };
@@ -25,7 +25,7 @@ GXBoneFinderNode::GXBoneFinderNode ( const GXUTF8* boneName, GXUShort boneIndex 
 	this->boneIndex = boneIndex;
 }
 
-const GXVoid* GXBoneFinderNode::GetKey ()
+const GXVoid* GXBoneFinderNode::GetKey () const
 {
 	return boneName;
 }

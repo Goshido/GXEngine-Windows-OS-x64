@@ -1,4 +1,4 @@
-//version 1.1
+//version 1.2
 
 #ifndef GX_AVL_TREE
 #define GX_AVL_TREE
@@ -18,7 +18,7 @@ class GXAVLTreeNode
 		GXAVLTreeNode ();
 		virtual ~GXAVLTreeNode ();
 	
-		virtual const GXVoid* GetKey () = 0;
+		virtual const GXVoid* GetKey () const = 0;
 };
 
 
@@ -37,21 +37,21 @@ class GXAVLTree
 		GXBool						isAutoClean;
 
 	public:
-		GXUInt GetTotalNodes ();
+		GXUInt GetTotalNodes () const;
 
 	protected:
 		GXAVLTree ( PFNGXAVLTREECOMPAREPROC compareFunc, GXBool isAutoClean = GX_TRUE );
 		virtual ~GXAVLTree ();
 
-		const GXAVLTreeNode* FindByKey ( const GXVoid* key );
+		const GXAVLTreeNode* FindByKey ( const GXVoid* key ) const;
 		GXVoid Add ( GXAVLTreeNode* node );
 		
-		GXVoid DoPrefix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args );
-		GXVoid DoInfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args );
-		GXVoid DoPostfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args );
+		GXVoid DoPrefix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const;
+		GXVoid DoInfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const;
+		GXVoid DoPostfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const;
 
 	private:
-		GXUInt GetHeight ( GXAVLTreeNode* node );
+		GXUInt GetHeight ( GXAVLTreeNode* node ) const;
 		GXInt GetBalance ( GXAVLTreeNode* node );
 
 		GXAVLTreeNode* LeftRotate ( GXAVLTreeNode* father );

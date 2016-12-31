@@ -1,18 +1,22 @@
-//version 1.12
+//version 1.13
 
 #include <GXEngine/GXRenderer.h>
-#include <GXEngine/GXCore.h>
-#include <GXEngine/GXGlobals.h>
 #include <GXEngine/GXOpenGL.h>
-#include <GXEngine/GXShaderStorage.h>
-#include <GXEngine/GXTextureStorage.h>
+#include <GXEngine/GXPhysXFrontend.h>
 #include <GXEngine/GXResource.h>
 #include <GXEngine/GXUICommon.h>
+#include <GXEngine/GXInput.h>
+#include <GXEngine/GXEngineSettings.h>
 #include <GXCommon/GXTime.h>
 #include <GXCommon/GXStrings.h>
 
 
 #define GX_WINDOW_OPENGL_CLASS	L"GX_RENDERER_CLASS"
+#define GX_DEFAULT_WINDOW_NAME	L"GXEngine"
+
+#define GX_DEFAULT_COLOR_BITS	32
+#define GX_DEFAULT_DEPTH_BITS	24
+#define GX_DEFAULT_STENCIL_BITS	8
 
 
 GXRendererResolutions::GXRendererResolutions ()
@@ -45,23 +49,20 @@ GXVoid GXRendererResolutions::GetResolution ( GXUShort i, GXUShort &width, GXUSh
 
 //--------------------------------------------------------------------------------------------
 
-GXCore*									GXRenderer::core = nullptr;
 GXThread*								GXRenderer::thread = nullptr;
 
 GXBool									GXRenderer::loopFlag = GX_TRUE;
 
-HWND									GXRenderer::hwnd;
-HINSTANCE								GXRenderer::hinst;
-HGLRC									GXRenderer::hglRC;
-HDC										GXRenderer::hDC;
+HWND									GXRenderer::hwnd = (HWND)INVALID_HANDLE_VALUE;
+HINSTANCE								GXRenderer::hinst = (HINSTANCE)INVALID_HANDLE_VALUE;
+HGLRC									GXRenderer::hglRC = (HGLRC)INVALID_HANDLE_VALUE;
+HDC										GXRenderer::hDC = (HDC)INVALID_HANDLE_VALUE;
 
 GXBool									GXRenderer::isFullScreen;
 GXBool									GXRenderer::isSettingsChanged;
 
 GXInt									GXRenderer::width;
 GXInt									GXRenderer::height;
-GXInt									GXRenderer::colorsBits;
-GXInt									GXRenderer::depthBits;
 GXInt									GXRenderer::vsync;
 
 GXWChar*								GXRenderer::title = nullptr;
@@ -78,34 +79,6 @@ GXBool									GXRenderer::isRenderableObjectInited = GX_FALSE;
 GXRenderer*								GXRenderer::instance = nullptr;
 
 
-GXRenderer::GXRenderer ( GXCore* core, const GXWChar* gameName, GXInt color_bits, GXInt depth_bits )
-{
-	instance = this;
-
-	isRenderableObjectInited = GX_FALSE;
-	hinst = GetModuleHandle ( 0 );
-	this->core = core;
-
-	isFullScreen = !gx_EngineSettings.windowed;
-
-	width = gx_EngineSettings.rendererWidth;
-	height = gx_EngineSettings.rendererHeight;
-
-	colorsBits = color_bits;
-	depthBits = depth_bits;
-	vsync = ( gx_EngineSettings.vSync ) ? 1 : 0;
-
-	GXWcsclone ( &title, gameName );
-
-	currentFPS = 0;
-	lastTime = GXGetProcessorTicks ();
-	accumulator = 0.0;
-
-	isSettingsChanged = GX_FALSE;
-	loopFlag = GX_TRUE;
-	thread = new GXThread ( &RenderLoop, 0, GX_SUSPEND );
-}
-
 GXRenderer::~GXRenderer ()
 {
 	if ( isFullScreen )
@@ -119,6 +92,8 @@ GXRenderer::~GXRenderer ()
 
 	GXSafeFree ( title );
 	delete thread;
+
+	instance = nullptr;
 }
 
 GXVoid GXRenderer::Start ()
@@ -193,11 +168,6 @@ GXVoid GXRenderer::SetFullscreen ( GXBool enabled )
 	}
 }
 
-GXVoid GXRenderer::SetColorsBits ( GXInt bits )
-{
-	colorsBits = bits;
-}
-
 GXVoid GXRenderer::SetVSync ( GXBool enabled )
 {
 	GXInt t = enabled ? 1 : 0;
@@ -205,11 +175,6 @@ GXVoid GXRenderer::SetVSync ( GXBool enabled )
 
 	vsync = t;
 	wglSwapIntervalEXT ( vsync );
-}
-
-GXVoid GXRenderer::SetDepthBits ( GXInt bits )
-{
-	depthBits = bits;
 }
 
 GXVoid GXRenderer::SetResolution ( GXInt width, GXInt height )
@@ -341,6 +306,16 @@ GXVoid GXRenderer::GetSupportedResolutions ( GXRendererResolutions &out ) const
 	qsort ( out.wxh, out.total, 2 * sizeof ( GXUShort ), &GXResolutionCompare );
 }
 
+GXVoid GXRenderer::SetWindowName ( const GXWChar* name )
+{
+	GXSafeFree ( title );
+	GXWcsclone ( &title, name );
+
+	if ( hwnd == (HWND)INVALID_HANDLE_VALUE ) return;
+
+	SetWindowTextW ( hwnd, title );
+}
+
 GXInt GXRenderer::GetWidth () const
 {
 	return width;
@@ -368,7 +343,33 @@ GXVoid GXCALL GXRenderer::ReSizeScene ( GXInt width, GXInt height  )
 
 GXRenderer* GXCALL GXRenderer::GetInstance ()
 {
+	if ( !instance )
+		instance = new GXRenderer ();
+
 	return instance;
+}
+
+GXRenderer::GXRenderer ()
+{
+	isRenderableObjectInited = GX_FALSE;
+	hinst = GetModuleHandle ( 0 );
+
+	isFullScreen = !gx_EngineSettings.windowed;
+
+	width = gx_EngineSettings.rendererWidth;
+	height = gx_EngineSettings.rendererHeight;
+
+	vsync = ( gx_EngineSettings.vSync ) ? 1 : 0;
+
+	currentFPS = 0;
+	lastTime = GXGetProcessorTicks ();
+	accumulator = 0.0;
+
+	isSettingsChanged = GX_FALSE;
+	loopFlag = GX_TRUE;
+	thread = new GXThread ( &RenderLoop, 0, GX_SUSPEND );
+
+	SetWindowName ( GX_DEFAULT_WINDOW_NAME );
 }
 
 GXDword GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* args )
@@ -422,7 +423,7 @@ GXDouble gx_renderer_fpsTimer = 0.0;
 
 GXBool GXCALL GXRenderer::DrawScene ()
 {
-	GXCore::GetInstance ()->GetPhysics ()->DoSimulate ();
+	GXGetPhysXInstance ()->DoSimulate ();
 
 	GXDouble newtime = GXGetProcessorTicks ();
 	GXDouble delta = ( newtime - lastTime ) / GXGetProcessorTicksPerSecond ();
@@ -474,28 +475,28 @@ GXVoid GXCALL GXRenderer::Destroy ()
 			GXLogW ( L"GXRenderer::Destroy::Error - Удаление контекста редеринга провалено\n" );
 		}
 
-		hglRC = NULL;
+		hglRC = (HGLRC)INVALID_HANDLE_VALUE;
 	}
 
 	if ( hDC && !DeleteDC ( hDC ) )
 	{
 		GXDebugBox ( L"Освобождение контекста устройства провалено" );
 		GXLogW ( L"GXRenderer::Destroy::Error - Освобождение контекста устройства провалено\n" );
-		hDC = 0;
+		hDC = (HDC)INVALID_HANDLE_VALUE;
 	}
 
 	if ( hwnd && !DestroyWindow ( hwnd ) )
 	{
 		GXDebugBox ( L"Освобождение HWND провалено" );
 		GXLogW ( L"GXRenderer::Destroy::Error - Освобождение HWND провалено\n" );
-		hwnd = 0;
+		hwnd = (HWND)INVALID_HANDLE_VALUE;
 	}
 
 	if ( !UnregisterClassW ( GX_WINDOW_OPENGL_CLASS, hinst ) )
 	{
 		GXDebugBox ( L"Снятие регистрации класса окна провалено" );
 		GXLogW ( L"GXRenderer::Destroy::Error - Снятие регистрации класса окна провалено\n" );
-		hinst = 0;
+		hinst = (HINSTANCE)INVALID_HANDLE_VALUE;
 	}
 }
 
@@ -510,7 +511,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 	wc.hInstance = hinst;
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
 	wc.lpszClassName = GX_WINDOW_OPENGL_CLASS;
-	wc.lpfnWndProc = core->NotifyGetInputProc ();
+	wc.lpfnWndProc = &GXInput::InputProc;
 	wc.hCursor = LoadCursorW ( 0, IDC_ARROW );
 	wc.hIcon = LoadIconW ( hinst, MAKEINTRESOURCE ( GX_RID_EXE_MAINICON ) );
 
@@ -527,7 +528,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 	dm.dmFields = DM_PELSHEIGHT | DM_PELSWIDTH | DM_BITSPERPEL;
 	if ( isFullScreen )
 	{
-		dm.dmBitsPerPel = colorsBits;
+		dm.dmBitsPerPel = GX_DEFAULT_COLOR_BITS;
 		dm.dmPelsHeight = height;
 		dm.dmPelsWidth = width;
 		if ( ChangeDisplaySettingsW ( &dm, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL )
@@ -557,7 +558,9 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 		}
 	}
 
-	if ( !( hwnd = CreateWindowExW ( dwExStyle, GX_WINDOW_OPENGL_CLASS, title, dwStyle, 0, 0, width, height, 0, 0, hinst, 0 ) ) )
+	hwnd = CreateWindowExW ( dwExStyle, GX_WINDOW_OPENGL_CLASS, title, dwStyle, 0, 0, width, height, 0, 0, hinst, 0 );
+
+	if ( !hwnd )
 	{
 		GXDebugBox ( L"При создании окна произошла ошибка" );
 		GXLogW ( L"GXRenderer::MakeWindow::Error - При создании окна произошла ошибка\n" );
@@ -580,9 +583,9 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 	memset ( &pfd, 0, sizeof ( pfd ) );
 	pfd.nSize = sizeof ( PIXELFORMATDESCRIPTOR );
 	pfd.nVersion = 1;
-	pfd.cColorBits = colorsBits;
-	pfd.cDepthBits = depthBits;
-	pfd.cStencilBits = 8;
+	pfd.cColorBits = GX_DEFAULT_COLOR_BITS;
+	pfd.cDepthBits = GX_DEFAULT_DEPTH_BITS;
+	pfd.cStencilBits = GX_DEFAULT_STENCIL_BITS;
 	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL |	PFD_DOUBLEBUFFER; 
 	pfd.iPixelType = PFD_TYPE_RGBA;
 	pfd.iLayerType = PFD_MAIN_PLANE;

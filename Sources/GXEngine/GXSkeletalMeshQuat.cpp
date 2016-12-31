@@ -1,4 +1,4 @@
-//version 1.2
+//version 1.3
 
 #include <GXEngine/GXSkeletalMeshQuat.h>
 #include <GXCommon/GXAVLTree.h>
@@ -15,7 +15,7 @@ class GXBoneKeeperNode : public GXAVLTreeNode
 	public:
 		GXBoneKeeperNode ( const GXUTF8* boneName, GXUShort boneIndex );
 	
-		virtual const GXVoid* GetKey ();
+		const GXVoid* GetKey () const override;
 
 		static GXInt GXCALL Compare ( const GXVoid* a, const GXVoid* b );
 };
@@ -26,7 +26,7 @@ GXBoneKeeperNode::GXBoneKeeperNode ( const GXUTF8* boneName, GXUShort boneIndex 
 	this->boneIndex = boneIndex;
 }
 
-const GXVoid* GXBoneKeeperNode::GetKey ()
+const GXVoid* GXBoneKeeperNode::GetKey () const
 {
 	return boneName;
 }
@@ -45,9 +45,9 @@ class GXBoneKeeper : public GXAVLTree
 
 	public:
 		GXBoneKeeper ( const GXSkeletalMeshInfoExt &skmInfo );
-		virtual ~GXBoneKeeper ();
+		~GXBoneKeeper () override;
 
-		GXUShort FindBoneIndex ( const GXUTF8* boneName );
+		GXUShort FindBoneIndex ( const GXUTF8* boneName ) const;
 };
 
 GXBoneKeeper::GXBoneKeeper ( const GXSkeletalMeshInfoExt &skmInfo ) :
@@ -66,7 +66,7 @@ GXBoneKeeper::~GXBoneKeeper ()
 	free ( cacheFriendlyNodes );
 }
 
-GXUShort GXBoneKeeper::FindBoneIndex ( const GXChar* boneName )
+GXUShort GXBoneKeeper::FindBoneIndex ( const GXChar* boneName ) const
 {
 	const GXBoneKeeperNode* node = (const GXBoneKeeperNode*)FindByKey ( boneName );
 
@@ -80,8 +80,8 @@ GXUShort GXBoneKeeper::FindBoneIndex ( const GXChar* boneName )
 
 GXSkeletalMeshQuat::GXSkeletalMeshQuat ()
 {
-	keeper = 0;
-	animSolver = 0;
+	keeper = nullptr;
+	animSolver = nullptr;
 	memset ( &skmInfo, 0, sizeof ( GXSkeletalMeshInfoExt ) );
 }
 
@@ -190,8 +190,8 @@ GXVoid GXSkeletalMeshQuat::InitPose ()
 	{
 		for ( GXUInt i = 0; i < skmInfo.numBones; i++ )
 		{
-			const GXQuat* rot = 0;
-			const GXVec3* loc = 0;
+			const GXQuat* rot = nullptr;
+			const GXVec3* loc = nullptr;
 
 			animSolver->GetBone ( skmInfo.boneNames + i * GX_BONE_NAME_SIZE, &rot, &loc );
 

@@ -4,7 +4,6 @@
 
 #include "EMRenderer.h"
 #include "EMTool.h"
-#include <GXEngine/GXGlobals.h>
 
 
 extern EMRenderer*	em_Renderer;

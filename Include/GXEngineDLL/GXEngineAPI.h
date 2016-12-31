@@ -1,13 +1,13 @@
-//version 1.1
+//version 1.2
 
 #ifndef GX_ENGINE_API
 #define GX_ENGINE_API
 
 
-#include "GXPhysX.h"
+#include "GXPhysXAdapter.h"
 
-typedef GXPhysics* ( GXCALL* PFNGXPHYSICSCREATE ) ();
-typedef GXVoid ( GXCALL* PFNGXPHYSICSDESTROY ) ( GXPhysics* physics );
+typedef GXPhysXAdapter* ( GXCALL* PFNGXPHYSXCREATE ) ();
+typedef GXVoid ( GXCALL* PFNGXPHYSXDESTROY ) ( GXPhysXAdapter* physics );
 
 //--------------------------------------------------------------------------------------------------
 

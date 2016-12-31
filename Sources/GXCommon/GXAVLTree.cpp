@@ -1,4 +1,4 @@
-//vesrion 1.1
+//vesrion 1.2
 
 #include <GXCommon/GXAVLTree.h>
 #include <GXCommon/GXStrings.h>
@@ -17,7 +17,7 @@ GXAVLTreeNode::~GXAVLTreeNode ()
 
 //----------------------------------------------------------------------------------------------
 
-GXUInt GXAVLTree::GetTotalNodes ()
+GXUInt GXAVLTree::GetTotalNodes () const
 {
 	return totalNodes;
 }
@@ -26,7 +26,7 @@ GXAVLTree::GXAVLTree ( PFNGXAVLTREECOMPAREPROC compareFunc, GXBool isAutoClean )
 {
 	Compare = compareFunc;
 	this->isAutoClean = isAutoClean;
-	root = 0;
+	root = nullptr;
 	totalNodes = 0;
 }
 
@@ -36,7 +36,7 @@ GXAVLTree::~GXAVLTree ()
 		DeleteTree ( root );
 }
 
-const GXAVLTreeNode* GXAVLTree::FindByKey ( const GXVoid* key )
+const GXAVLTreeNode* GXAVLTree::FindByKey ( const GXVoid* key ) const
 {
 	GXAVLTreeNode* p = root;
 
@@ -63,7 +63,7 @@ GXVoid GXAVLTree::Add ( GXAVLTreeNode* node )
 	totalNodes++;
 }
 
-GXVoid GXAVLTree::DoPrefix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args )
+GXVoid GXAVLTree::DoPrefix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const
 {
 	if ( !root ) return;
 
@@ -72,7 +72,7 @@ GXVoid GXAVLTree::DoPrefix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC
 	DoPrefix ( root->right, iterator, args );
 }
 
-GXVoid GXAVLTree::DoInfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args )
+GXVoid GXAVLTree::DoInfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const
 {
 	if ( !root ) return;
 
@@ -81,7 +81,7 @@ GXVoid GXAVLTree::DoInfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC 
 	DoInfix ( root->right, iterator, args );
 }
 
-GXVoid GXAVLTree::DoPostfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args )
+GXVoid GXAVLTree::DoPostfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const
 {
 	if ( !root ) return;
 
@@ -90,7 +90,7 @@ GXVoid GXAVLTree::DoPostfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPRO
 	iterator ( root, args );
 }
 
-GXUInt GXAVLTree::GetHeight ( GXAVLTreeNode* node )
+GXUInt GXAVLTree::GetHeight ( GXAVLTreeNode* node ) const
 {
 	return node ? node->height : 0;
 }

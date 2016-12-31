@@ -1,4 +1,4 @@
-//version 1.9
+//version 1.10
 
 #ifndef GX_PHYSX
 #define GX_PHYSX
@@ -11,17 +11,17 @@
 #define GX_PHYSICS_GRAVITY_FACTOR		-9.81f
 
 
-typedef GXVoid ( GXCALL* PLONPHYSICSPROC ) ( GXFloat deltatime );
+typedef GXVoid ( GXCALL* PLONPHYSXPROC ) ( GXFloat deltatime );
 
 
 using namespace physx;
 
 //----------------------------------------------------------------------
 
-class GXPhysicsActorState
+class GXPhysXActorState
 {
 	public:
-		virtual ~GXPhysicsActorState (){ /*PURE VIRTUAL*/ };
+		virtual ~GXPhysXActorState (){ /*PURE VIRTUAL*/ };
 
 		virtual GXVoid SetPivotOrigin ( const GXVec3 &location, const GXQuat &rotation ) = 0;
 		virtual GXVoid SetShapeOrigin ( GXUShort shapeID, const GXVec3 &location, const GXQuat &rotation ) = 0;
@@ -56,7 +56,7 @@ class GXPhysicsActorState
 
 struct GXVehicleInfo
 {
-	GXPhysicsActorState*		renderCarAddress;
+	GXPhysXActorState*			renderCarAddress;
 
 	GXVec3						spawnLocation;
 	GXQuat						spawnRotation;
@@ -107,15 +107,15 @@ struct GXVehicleInfo
 
 //----------------------------------------------------------------------
 
-class GXPhysics
+class GXPhysXAdapter
 {
 	public:
-		virtual ~GXPhysics (){ /*Pure Virtual*/ };
+		virtual ~GXPhysXAdapter (){ /*Pure Virtual*/ };
 
 		virtual GXBool IsSumulating () = 0;
 
 		virtual GXBool SetLinearVelocity ( PxRigidDynamic* actor, PxVec3 &vel ) = 0;
-		virtual GXVoid SetOnPhysicsFunc ( PLONPHYSICSPROC func ) = 0;
+		virtual GXVoid SetOnPhysicsFunc ( PLONPHYSXPROC func ) = 0;
 
 		virtual PxRigidDynamic* CreateRigidDynamic ( GXVoid* address, PxTransform &location ) = 0;
 		virtual PxRigidStatic* CreateRigidStatic ( GXVoid* address, PxTransform &location ) = 0;

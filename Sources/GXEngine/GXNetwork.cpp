@@ -166,20 +166,6 @@ PFNGXONSERVERPMESSAGEUDPPROC		GXNetServer::OnMessageUDP = nullptr;
 GXNetServer*						GXNetServer::instance = nullptr;
 
 
-GXNetServer::GXNetServer ()
-{
-	instance = this;
-
-	listenerTCP = listenerUDP = INVALID_SOCKET;
-	numClientsTCP = 0;
-	OnMessageTCP = 0;
-	OnMessageUDP = 0;
-	OnNewConnectionTCP = 0;
-	OnDisconnect = 0;
-
-	threadTCP = threadUDP = 0;
-}
-
 GXNetServer::~GXNetServer ()
 {
 	if ( !DestroyTCP () )
@@ -440,7 +426,22 @@ GXVoid GXNetServer::SetOnMessageFuncUDP ( PFNGXONSERVERPMESSAGEUDPPROC callback 
 
 GXNetServer* GXCALL GXNetServer::GetInstance ()
 {
+	if ( !instance )
+		instance = new GXNetServer ();
+
 	return instance;
+}
+
+GXNetServer::GXNetServer ()
+{
+	listenerTCP = listenerUDP = INVALID_SOCKET;
+	numClientsTCP = 0;
+	OnMessageTCP = nullptr;
+	OnMessageUDP = nullptr;
+	OnNewConnectionTCP = nullptr;
+	OnDisconnect = nullptr;
+
+	threadTCP = threadUDP = nullptr;
 }
 
 GXDword GXTHREADCALL GXNetServer::ListenTCP ( GXVoid* arg )
@@ -585,16 +586,6 @@ PFNGXONCLIENTMESSAGEPROC	GXNetClient::OnMessageTCP = nullptr;
 PFNGXONCLIENTMESSAGEPROC	GXNetClient::OnMessageUDP = nullptr;
 
 GXNetClient*				GXNetClient::instance = nullptr;
-
-
-GXNetClient::GXNetClient ()
-{
-	instance = this;
-
-	socketTCP = socketUDP = INVALID_SOCKET;
-	threadTCP = threadUDP = 0;
-	OnMessageTCP = OnMessageUDP = 0;
-}
 
 GXNetClient::~GXNetClient ()
 {
@@ -806,7 +797,19 @@ GXVoid GXNetClient::SetOnMessageUDPFunc ( PFNGXONCLIENTMESSAGEPROC onMessageFunc
 
 GXNetClient* GXCALL GXNetClient::GetInstance ()
 {
+	if ( !instance )
+		instance = new GXNetClient ();
+
 	return instance;
+}
+
+GXNetClient::GXNetClient ()
+{
+	instance = this;
+
+	socketTCP = socketUDP = INVALID_SOCKET;
+	threadTCP = threadUDP = nullptr;
+	OnMessageTCP = OnMessageUDP = nullptr;
 }
 
 GXChar gx_networkClientBufferTCP[ GX_SOCKET_BUFFER_SIZE ] = { 0 };

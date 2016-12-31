@@ -1,4 +1,4 @@
-//version 1.3
+//version 1.4
 
 #ifndef GX_SOUND_MIXER
 #define GX_SOUND_MIXER
@@ -22,7 +22,6 @@ class GXSoundMixer
 		static GXSoundMixer*		instance;
 
 	public:
-		GXSoundMixer ();
 		~GXSoundMixer ();
 
 		GXVoid SetListenerVelocity ( const GXVec3 &velocity );
@@ -46,6 +45,8 @@ class GXSoundMixer
 		static GXSoundMixer* GXCALL GetInstance ();
 
 	private:
+		explicit GXSoundMixer ();
+
 		static GXDword GXTHREADCALL Update ( GXVoid* args );
 
 };

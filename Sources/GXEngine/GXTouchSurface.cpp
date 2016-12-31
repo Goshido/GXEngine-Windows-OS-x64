@@ -27,18 +27,6 @@ struct GXMessage
 
 GXTouchSurface* GXTouchSurface::instance = nullptr;
 
-GXTouchSurface::GXTouchSurface ()
-{
-	instance = this;
-
-	messages = lastMessage = nullptr;
-	widgetHead = widgetTail = mouseOverWidget = lockedWidget = defaultWidget = nullptr;
-
-	gx_ui_Mutex = new GXMutex ();
-	gx_ui_MessageBuffer = new GXCircleBuffer ( GX_UI_MESSAGE_BUFFER_SIZE );
-	gx_ui_TouchSurface = this;
-}
-
 GXTouchSurface::~GXTouchSurface ()
 {
 	delete gx_ui_MessageBuffer;
@@ -329,7 +317,22 @@ GXVoid GXTouchSurface::SetDefaultWidget ( GXWidget* widget )
 
 GXTouchSurface* GXCALL GXTouchSurface::GetInstance ()
 {
+	if ( !instance )
+		instance = new GXTouchSurface ();
+
 	return instance;
+}
+
+GXTouchSurface::GXTouchSurface ()
+{
+	instance = this;
+
+	messages = lastMessage = nullptr;
+	widgetHead = widgetTail = mouseOverWidget = lockedWidget = defaultWidget = nullptr;
+
+	gx_ui_Mutex = new GXMutex ();
+	gx_ui_MessageBuffer = new GXCircleBuffer ( GX_UI_MESSAGE_BUFFER_SIZE );
+	gx_ui_TouchSurface = this;
 }
 
 GXVoid GXTouchSurface::DeleteWidgets ()

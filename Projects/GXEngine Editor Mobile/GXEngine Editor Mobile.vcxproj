@@ -209,9 +209,9 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXCameraOrthographic.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXCameraPerspective.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXCore.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXEngineSettings.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXFont.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXFontStorage.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngine\GXGlobals.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXHudSurface.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXInput.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXLocale.cpp" />
@@ -219,7 +219,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXNetwork.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXOGGSoundProvider.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXOpenGL.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngine\GXPhysics.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXPhysXFrontend.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXRenderer.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSamplerUtils.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXShaderStorage.cpp" />
@@ -296,7 +296,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXEngineSettings.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXFont.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXFontStorage.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXGlobals.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXHudSurface.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXIdealParticles.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXInput.h" />
@@ -309,7 +308,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXOGGSoundProvider.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXOpenGL.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXParticleSystem.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXPhysics.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXPhysXFrontend.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXRealParticles.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXRenderer.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXResource.h" />

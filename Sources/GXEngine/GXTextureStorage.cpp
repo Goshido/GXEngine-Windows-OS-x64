@@ -2,9 +2,10 @@
 
 #include <GXEngine/GXTextureStorage.h>
 #include <GXEngine/GXTextureUtils.h>
-#include <GXEngine/GXGlobals.h>
 #include <GXCommon/GXImageLoader.h>
 #include <GXCommon/GXStrings.h>
+#include <GXCommon/GXFileSystem.h>
+#include <GXEngine/GXEngineSettings.h>
 #include <cstdio>
 
 

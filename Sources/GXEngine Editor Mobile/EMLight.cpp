@@ -1,5 +1,4 @@
 #include <GXEngine_Editor_Mobile/EMLight.h>
-#include <GXEngine/GXGlobals.h>
 #include <GXEngine/GXShaderStorage.h>
 #include <GXEngine/GXShaderUtils.h>
 

@@ -1,4 +1,4 @@
-//version 1.1
+//version 1.2
 
 #ifndef GX_LOCALE
 #define GX_LOCALE
@@ -22,7 +22,6 @@ class GXLocale
 		static GXLocale*	instance;
 
 	public:
-		GXLocale ();
 		~GXLocale ();
 
 		GXVoid LoadLanguage ( const GXWChar* fileName, eGXLanguage language );
@@ -33,6 +32,9 @@ class GXLocale
 		const GXWChar* GetString ( const GXWChar* resName ) const;
 
 		static GXLocale* GXCALL GetInstance ();
+
+	private:
+		explicit GXLocale ();
 };
 
 

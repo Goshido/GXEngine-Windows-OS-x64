@@ -1,12 +1,12 @@
-//version 1.1
+//version 1.2
 
 #include <GXEngine/GXWidget.h>
+#include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXUIMessage.h>
 #include <GXEngine/GXUICommon.h>
-#include <GXEngine/GXGlobals.h>
 
 
-#define GX_WIDGET_RENDERER_RESIZE_EPSILON			0.25f
+#define GX_WIDGET_RENDERER_RESIZE_EPSILON 0.25f
 
 
 GXWidget::GXWidget ( GXWidget* parent, GXBool isNeedRegister )

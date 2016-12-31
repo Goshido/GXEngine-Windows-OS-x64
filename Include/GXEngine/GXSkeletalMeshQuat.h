@@ -1,4 +1,4 @@
-//version 1.2
+//version 1.3
 
 #ifndef GX_SKELETAL_MESH_QUAT
 #define GX_SKELETAL_MESH_QUAT
@@ -10,7 +10,7 @@
 #include <GXEngine/GXSkeletalMeshStorage.h>
 
 
-#define GX_MAX_BONES_FLOATS			MAX_BONES * 7		//Так как одна кость это GXQuat + GXVec3, то MAX_BONES_FLOATS = MAX_BONES * 7
+#define GX_MAX_BONES_FLOATS MAX_BONES * 7		//Так как одна кость это GXQuat + GXVec3, то MAX_BONES_FLOATS = MAX_BONES * 7
 
 class GXBoneKeeper;
 class GXSkeletalMeshQuat : public GXMesh

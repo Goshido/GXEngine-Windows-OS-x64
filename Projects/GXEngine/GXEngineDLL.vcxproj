@@ -25,9 +25,7 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXFileSystem.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXLogger.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXMath.cpp" />
-    <ClCompile Include="..\..\Sources\GXCommon\GXMTRLoader.cpp" />
-    <ClCompile Include="..\..\Sources\GXCommon\GXMTRSaver.cpp" />
-    <ClCompile Include="..\..\Sources\GXCommon\GXMTRStructs.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXMemory.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXMutex.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshSaver.cpp" />
@@ -38,7 +36,7 @@
     <ClCompile Include="..\..\Sources\GXEngineDLL\GXFreeType.cpp" />
     <ClCompile Include="..\..\Sources\GXEngineDLL\GXOGGVorbis.cpp" />
     <ClCompile Include="..\..\Sources\GXEngineDLL\GXOpenAL.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngineDLL\GXPhysX.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngineDLL\GXPhysXBackend.cpp" />
     <ClCompile Include="..\..\Sources\GXEngineDLL\GXXInput.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -47,7 +45,7 @@
     <ClInclude Include="..\..\Include\GXEngineDLL\GXFreeType.h" />
     <ClInclude Include="..\..\Include\GXEngineDLL\GXOGGVorbis.h" />
     <ClInclude Include="..\..\Include\GXEngineDLL\GXOpenAL.h" />
-    <ClInclude Include="..\..\Include\GXEngineDLL\GXPhysX.h" />
+    <ClInclude Include="..\..\Include\GXEngineDLL\GXPhysXAdapter.h" />
     <ClInclude Include="..\..\Include\GXEngineDLL\GXXInput.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

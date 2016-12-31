@@ -9,7 +9,7 @@
 #include <GXEngine_Editor_Mobile/EMGlobals.h>
 #include <GXEngine_Editor_Mobile/EMMoveTool.h>
 #include <GXEngine_Editor_Mobile/EMViewer.h>
-#include <GXEngine/GXGlobals.h>
+#include <GXEngine/GXCore.h>
 #include <GXEngine/GXLocale.h>
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXTouchSurface.h>

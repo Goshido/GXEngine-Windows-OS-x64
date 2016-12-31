@@ -1,7 +1,6 @@
-//version 1.24
+//version 1.25
 
 #include <GXCommon/GXMath.h>
-#include <math.h>
 #include <cstdlib>
 #include <cfloat>
 #include <cwchar>

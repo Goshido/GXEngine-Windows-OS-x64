@@ -83,8 +83,7 @@ PFNGLSAMPLERPARAMETERFPROC			glSamplerParameterf			= 0;
 
 GXVoid GXCALL GXOpenGLInit ()
 {
-	wglCreateContextAttribsARB = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC> ( wglGetProcAddress ( "wglCreateContextAttribsARB" ) );
-
+	OPENGL_GET_PROC ( PFNWGLCREATECONTEXTATTRIBSARBPROC,	wglCreateContextAttribsARB	);
 	OPENGL_GET_PROC ( PFNWGLSWAPINTERVALEXTPROC,			wglSwapIntervalEXT			);
 	OPENGL_GET_PROC ( PFNGLGETSHADERIVPROC,					glGetShaderiv				);
 	OPENGL_GET_PROC ( PFNGLGETPROGRAMIVPROC,				glGetProgramiv				);

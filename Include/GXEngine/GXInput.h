@@ -1,4 +1,4 @@
-//version 1.12
+//version 1.13
 
 #ifndef GX_INPUT
 #define GX_INPUT
@@ -81,7 +81,7 @@ union EGXInputMouseFlags
 		GXUChar rmb 		: 1;
 		GXUChar reserved 	: 5;
 	};
-	GXUChar allflags;
+	GXUByte allflags;
 };
 
 typedef GXVoid ( GXCALL* PFNGXTYPEPROC ) ( GXWChar symbol, GXVoid* handler );
@@ -93,11 +93,9 @@ typedef GXVoid ( GXCALL* PFNGXSTICKPROC ) ( GXFloat x, GXFloat y );
 typedef GXVoid ( GXCALL* PFNGXTRIGGERPROC ) ( GXFloat value );
 
 
-class GXCore;
 class GXInput
 {
 	private:
-		static GXCore*					core;
 		static GXThread*				thread;
 
 		static GXBool					loopFlag;
@@ -131,7 +129,6 @@ class GXInput
 		static GXInput*					instance;
 
 	public:
-		GXInput ( GXCore* core );
 		~GXInput ();
 
 		GXVoid Start ();
@@ -171,6 +168,8 @@ class GXInput
 		static LRESULT CALLBACK InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam );
 
 	private:
+		explicit GXInput ();
+
 		static GXDword GXTHREADCALL InputLoop ( GXVoid* args );
 
 		static GXBool GXCALL IsGamepadConnected ( GXDword gamepadID );

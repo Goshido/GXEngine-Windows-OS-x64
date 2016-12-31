@@ -13,20 +13,6 @@ GXSoundChannel*		GXSoundMixer::channels = 0;
 
 GXSoundMixer* GXSoundMixer::instance = nullptr;
 
-GXSoundMixer::GXSoundMixer () :
-thread ( &Update, 0, GX_SUSPEND )
-{
-	instance = this;
-
-	loopFlag = GX_TRUE;
-
-	masterVolume = 1.0f;
-
-	channels = nullptr;
-
-	gx_sound_mixer_Mutex = new GXMutex (); 
-}
-
 GXSoundMixer::~GXSoundMixer ()
 {
 	delete gx_sound_mixer_Mutex;
@@ -122,7 +108,24 @@ GXVoid GXSoundMixer::SetMasterVolume ( GXFloat masterVolume )
 
 GXSoundMixer* GXCALL GXSoundMixer::GetInstance ()
 {
+	if ( !instance )
+		instance = new GXSoundMixer ();
+
 	return instance;
+}
+
+GXSoundMixer::GXSoundMixer () :
+thread ( &Update, 0, GX_SUSPEND )
+{
+	instance = this;
+
+	loopFlag = GX_TRUE;
+
+	masterVolume = 1.0f;
+
+	channels = nullptr;
+
+	gx_sound_mixer_Mutex = new GXMutex (); 
 }
 
 GXDword GXTHREADCALL GXSoundMixer::Update ( GXVoid* args )

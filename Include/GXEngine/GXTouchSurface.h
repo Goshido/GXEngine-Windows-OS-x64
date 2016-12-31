@@ -26,7 +26,6 @@ class GXTouchSurface
 		static GXTouchSurface*		instance;
 
 	public:
-		GXTouchSurface ();
 		~GXTouchSurface ();
 
 		GXVoid OnLeftMouseButtonDown ( const GXVec2 &position );
@@ -60,6 +59,8 @@ class GXTouchSurface
 		static GXTouchSurface* GXCALL GetInstance ();
 
 	private:
+		explicit GXTouchSurface ();
+
 		GXVoid DeleteWidgets ();
 		GXWidget* FindWidget ( GXFloat x, GXFloat y );
 		GXVoid DrawWidgets ( GXWidget* widget );

@@ -60,8 +60,7 @@ class GXNetServer
 		static GXNetServer*							instance;
 
 	public:
-		GXNetServer ();
-		virtual ~GXNetServer ();
+		~GXNetServer ();
 
 		GXBool CreateTCP ( GXUShort port );
 		GXBool CreateUDP ( GXUShort port );
@@ -87,6 +86,8 @@ class GXNetServer
 		static GXNetServer* GXCALL GetInstance ();
 
 	private:
+		explicit GXNetServer ();
+
 		static GXDword GXTHREADCALL ListenTCP ( GXVoid* arg );
 		
 		static GXDword GXTHREADCALL ServeClientTCP ( GXVoid* arg );
@@ -114,8 +115,7 @@ class GXNetClient
 		static GXNetClient*					instance;
 
 	public:
-		GXNetClient ();
-		virtual ~GXNetClient ();
+		~GXNetClient ();
 
 		GXBool ConnectTCP ( const GXChar* url, GXUShort port );
 		GXBool DeployUDP ( const GXChar* url, GXUShort port );
@@ -135,6 +135,8 @@ class GXNetClient
 		static GXNetClient* GXCALL GetInstance ();
 
 	private:
+		explicit GXNetClient ();
+
 		static GXDword GXTHREADCALL ReceiveTCP ( GXVoid* arg );
 		static GXDword GXTHREADCALL ReceiveUDP ( GXVoid* arg );
 };

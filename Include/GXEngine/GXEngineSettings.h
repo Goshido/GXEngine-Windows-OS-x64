@@ -24,5 +24,6 @@ struct GXEngineSettings
 	GXBool			motionBlur;
 };
 
+extern GXEngineSettings gx_EngineSettings;
 
 #endif //GX_ENGINE_SETTINGS

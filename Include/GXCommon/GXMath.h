@@ -1,10 +1,11 @@
-//version 1.24
+//version 1.25
 
 #ifndef GX_MATH
 #define GX_MATH
 
 
 #include "GXTypes.h"
+#include <math.h>
 
 
 #define GX_MATH_TWO_PI	6.2831853f

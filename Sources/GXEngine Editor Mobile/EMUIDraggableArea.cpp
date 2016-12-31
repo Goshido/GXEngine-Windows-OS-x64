@@ -1,6 +1,5 @@
 #include <GXEngine_Editor_Mobile/EMUIDraggableArea.h>
 #include <GXEngine/GXHudSurface.h>
-#include <GXEngine/GXGlobals.h>
 #include <GXEngine/GXUICommon.h>
 #include <GXEngine/GXTextureStorage.h>
 

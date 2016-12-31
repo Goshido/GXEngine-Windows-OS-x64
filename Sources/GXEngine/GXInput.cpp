@@ -1,11 +1,11 @@
-//version 1.12
+//version 1.13
 
 #include <GXEngine/GXInput.h>
 #include <GXEngine/GXCore.h>
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXTouchSurface.h>
-#include <GXCommon/GXLogger.h>
 #include <GXEngineDLL/GXEngineAPI.h>
+#include <GXCommon/GXLogger.h>
 #include <Windowsx.h>
 
 
@@ -63,27 +63,26 @@ GXBool GXCALL GXXInputDestroy ()
 }
 
 //--------------------------------------------------------------------------------------------------
-GXCore*					GXInput::core = nullptr;
 GXThread*				GXInput::thread = nullptr;
 GXBool					GXInput::keysMask[ GX_INPUT_TOTAL_KEYBOARD_KEYS ];
 PFNGXKEYPROC			GXInput::KeysMapping[ GX_INPUT_TOTAL_KEYBOARD_KEYS ];
 GXVoid*					GXInput::keysHandlers[ GX_INPUT_TOTAL_KEYBOARD_KEYS ];
-PFNGXTYPEPROC			GXInput::OnType;
+PFNGXTYPEPROC			GXInput::OnType = nullptr;
 GXWChar					GXInput::symbol;
-GXVoid*					GXInput::onTypeHandler;
+GXVoid*					GXInput::onTypeHandler = nullptr;
 XINPUT_STATE			GXInput::gamepadState[ 2 ];
 GXUChar					GXInput::currentGamepadState;
 PFNGXKEYPROC			GXInput::GamepadKeysMapping[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2 ];
 GXByte					GXInput::gamepadKeysMask[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2 ];
 GXVoid*					GXInput::gamepadKeysHandlers[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2 ];
-PFNGXTRIGGERPROC		GXInput::DoLeftTrigger;
-PFNGXTRIGGERPROC		GXInput::DoRightTrigger;
-PFNGXSTICKPROC			GXInput::DoLeftStick;
-PFNGXSTICKPROC			GXInput::DoRightStick;
-GXBool					GXInput::loopFlag;
-PFNGXMOUSEMOVEPROC		GXInput::DoMouseMoving;
-PFNGXMOUSEBUTTONSPROC	GXInput::DoMouseButtons;
-PFNGXMOUSEWHEELPROC		GXInput::DoMouseWheel;
+PFNGXTRIGGERPROC		GXInput::DoLeftTrigger = nullptr;
+PFNGXTRIGGERPROC		GXInput::DoRightTrigger = nullptr;
+PFNGXSTICKPROC			GXInput::DoLeftStick = nullptr;
+PFNGXSTICKPROC			GXInput::DoRightStick = nullptr;
+GXBool					GXInput::loopFlag = false;
+PFNGXMOUSEMOVEPROC		GXInput::DoMouseMoving = nullptr;
+PFNGXMOUSEBUTTONSPROC	GXInput::DoMouseButtons = nullptr;
+PFNGXMOUSEWHEELPROC		GXInput::DoMouseWheel = nullptr;
 EGXInputMouseFlags		GXInput::mouseflags;
 GXInput*				GXInput::instance = nullptr;
 
@@ -95,43 +94,9 @@ enum eGXInputDevice
 	XBOX_CONTROLLER
 };
 
-eGXInputDevice			gx_inputActiveDevice = KEYBOARD;
+eGXInputDevice gx_inputActiveDevice = KEYBOARD;
 
 
-GXInput::GXInput ( GXCore* core )
-{
-	instance = this;
-	this->core = core;
-	for ( GXInt i = 0; i < GX_INPUT_TOTAL_KEYBOARD_KEYS; i++ )
-	{
-		keysMask[ i ] = GX_FALSE;
-		KeysMapping[ i ] = 0;
-	}
-
-	OnType = 0;
-	symbol = 0;
-	onTypeHandler = 0;
-	
-	mouseflags.allflags = 0;
-	DoMouseMoving = 0;
-	DoMouseButtons = 0;
-	DoMouseWheel = 0;
-
-	for ( GXInt i = 0; i < GX_INPUT_TOTAL_GAMEPAD_KEYS; i++ )
-	{
-		GamepadKeysMapping[ i << 1 ] = GamepadKeysMapping [ ( i << 1 ) + 1 ] = 0;
-		gamepadKeysMask[ i << 1 ] = gamepadKeysMask[ ( i << 1 ) + 1 ] = GX_FALSE;
-	}
-
-	DoLeftStick = DoRightStick = 0;
-	DoLeftTrigger = DoRightTrigger = 0;
-	currentGamepadState = 0;
-	gamepadState[ 0 ].Gamepad.wButtons = gamepadState[ 1 ].Gamepad.wButtons = 0;
-	GXXInputInit ();
-
-	loopFlag = GX_TRUE;
-	thread = new GXThread ( &InputLoop, 0, GX_SUSPEND );
-}
 
 GXInput::~GXInput ()
 {
@@ -275,6 +240,9 @@ GXVoid GXInput::UnBindRightStickFunc ()
 
 GXInput* GXCALL GXInput::GetInstance ()
 {
+	if ( !instance )
+		instance = new GXInput ();
+
 	return instance;
 }
 
@@ -480,6 +448,39 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 	}
 
 	return DefWindowProc ( hwnd, msg, wParam, lParam );
+}
+
+GXInput::GXInput ()
+{
+	for ( GXInt i = 0; i < GX_INPUT_TOTAL_KEYBOARD_KEYS; i++ )
+	{
+		keysMask[ i ] = GX_FALSE;
+		KeysMapping[ i ] = 0;
+	}
+
+	OnType = nullptr;
+	symbol = 0;
+	onTypeHandler = nullptr;
+	
+	mouseflags.allflags = 0;
+	DoMouseMoving = nullptr;
+	DoMouseButtons = nullptr;
+	DoMouseWheel = nullptr;
+
+	for ( GXInt i = 0; i < GX_INPUT_TOTAL_GAMEPAD_KEYS; i++ )
+	{
+		GamepadKeysMapping[ i << 1 ] = GamepadKeysMapping [ ( i << 1 ) + 1 ] = 0;
+		gamepadKeysMask[ i << 1 ] = gamepadKeysMask[ ( i << 1 ) + 1 ] = GX_FALSE;
+	}
+
+	DoLeftStick = DoRightStick = nullptr;
+	DoLeftTrigger = DoRightTrigger = nullptr;
+	currentGamepadState = 0;
+	gamepadState[ 0 ].Gamepad.wButtons = gamepadState[ 1 ].Gamepad.wButtons = 0;
+	GXXInputInit ();
+
+	loopFlag = GX_TRUE;
+	thread = new GXThread ( &InputLoop, nullptr, GX_SUSPEND );
 }
 
 GXDword GXTHREADCALL GXInput::InputLoop ( GXVoid* args )
