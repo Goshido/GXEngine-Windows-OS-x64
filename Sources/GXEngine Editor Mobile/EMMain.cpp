@@ -3,10 +3,11 @@
 #include <GXEngine_Editor_Mobile/EMUIMenu.h>
 #include <GXEngine_Editor_Mobile/EMUIDraggableArea.h>
 #include <GXEngine_Editor_Mobile/EMUIOpenFile.h>
+#include <GXEngine_Editor_Mobile/EMUIPopup.h>
 #include <GXEngine_Editor_Mobile/EMUIEditBox.h>
 #include <GXEngine_Editor_Mobile/EMDirectedLightActor.h>
 #include <GXEngine_Editor_Mobile/EMUnitActor.h>
-#include <GXEngine_Editor_Mobile/EMGlobals.h>
+#include <GXEngine_Editor_Mobile/EMRenderer.h>
 #include <GXEngine_Editor_Mobile/EMMoveTool.h>
 #include <GXEngine_Editor_Mobile/EMViewer.h>
 #include <GXEngine/GXCore.h>
@@ -18,6 +19,9 @@
 #include <GXEngine/GXCameraOrthographic.h>
 
 
+#define EM_WINDOW_NAME L"GXEditor Mobile"
+
+
 GXCameraOrthographic*	em_HudCamera = nullptr;
 EMUIButton*				em_Button1 = nullptr;
 EMUIButton*				em_Button2 = nullptr;
@@ -25,11 +29,11 @@ EMUIButton*				em_Button3 = nullptr;
 EMUIMenu*				em_Menu = nullptr;
 EMUIOpenFile*			em_OpenFile = nullptr;
 EMUIDraggableArea*		em_DraggableArea = nullptr;
+EMUIPopup*				em_Popup = nullptr;
 EMUIEditBox*			em_EditBox = nullptr;
 EMDirectedLightActor*	em_DirectedLight = nullptr;
 EMUnitActor*			em_UnitActor = nullptr;
 EMMoveTool*				em_MoveTool = nullptr;
-EMViewer*				em_Viewer = nullptr;
 GXInt					em_MouseX = 0;
 GXInt					em_MouseY = 0;
 
@@ -49,6 +53,8 @@ GXVoid GXCALL EMOnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFlo
 
 		em_Button1->Disable ();
 		em_Button2->Enable ();
+
+		em_Popup->Show ();
 	}
 	else if ( button == em_Button2->GetWidget () )
 	{
@@ -103,7 +109,7 @@ GXVoid GXCALL EMOnMouseMove ( GXInt win_x, GXInt win_y )
 GXVoid GXCALL EMOnMouseButton ( EGXInputMouseFlags mouseflags )
 {
 	if ( mouseflags.lmb )
-		em_Renderer->GetObject ( em_MouseX, em_MouseY );
+		EMRenderer::GetInstance ()->GetObject ( em_MouseX, em_MouseY );
 }
 
 GXVoid GXCALL EMOnObject ( GXUPointer object )
@@ -130,45 +136,54 @@ GXVoid GXCALL EMOnOpenFile ( const GXWChar* filePath )
 
 //-----------------------------------------------------------------------------
 
+GXVoid GXCALL EMOnPopupItem ()
+{
+	GXLogW ( L"EMOnPopupItem::Info - Атата\n" );
+}
+
+//-----------------------------------------------------------------------------
+
 GXBool GXCALL EMOnFrame ( GXFloat deltatime )
 {
 	GXTouchSurface::GetInstance ()->ExecuteMessages ();
 
-	GXCamera* viewerCamera = em_Viewer->GetCamera ();
+	GXCamera* viewerCamera = EMViewer::GetInstance ()->GetCamera ();
 	GXCamera::SetActiveCamera ( viewerCamera );
-	em_Renderer->StartCommonPass ();
+
+	EMRenderer* renderer = EMRenderer::GetInstance ();
+	renderer->StartCommonPass ();
 	
 	em_UnitActor->OnDrawCommonPass ();
 	
-	em_Renderer->StartLightPass ();
+	renderer->StartLightPass ();
 	
-	em_Renderer->StartHudColorPass ();
+	renderer->StartHudColorPass ();
 	em_MoveTool->OnDrawHudColorPass ();
 
 	GXCamera::SetActiveCamera ( em_HudCamera );
 	
 	EMDrawUI ();
 
-	em_Renderer->StartHudMaskPass ();
+	renderer->StartHudMaskPass ();
 	EMDrawUIMasks ();
 
 	GXCamera::SetActiveCamera ( viewerCamera );
 
 	em_MoveTool->OnDrawHudMaskPass ();
 
-	em_Renderer->PresentFrame ();
+	renderer->PresentFrame ();
 
 	return GX_TRUE;
 }
 
 GXVoid GXCALL EMOnInitRenderableObjects ()
 {
-	GXRenderer* renderer = GXRenderer::GetInstance ();
-	GXFloat w = (GXFloat)renderer->GetWidth ();
-	GXFloat h = (GXFloat)renderer->GetHeight ();
+	GXRenderer* engineRenderer = GXRenderer::GetInstance ();
+	GXFloat w = (GXFloat)engineRenderer->GetWidth ();
+	GXFloat h = (GXFloat)engineRenderer->GetHeight ();
 
-	em_Renderer = new EMRenderer ();
-	em_Renderer->SetOnObjectCallback ( &EMOnObject );
+	EMRenderer* editorRenderer = EMRenderer::GetInstance ();
+	editorRenderer->SetOnObjectCallback ( &EMOnObject );
 
 	GXLocale* locale = GXLocale::GetInstance ();
 	locale->SetLanguage ( GX_LANGUAGE_EN );
@@ -237,6 +252,15 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 
 	em_OpenFile = new EMUIOpenFile ();
 
+	em_Popup = new EMUIPopup ( nullptr );
+	em_Popup->AddItem ( L"New", nullptr );
+	em_Popup->AddItem ( L"Open", nullptr );
+	em_Popup->AddItem ( L"Close", nullptr );
+	em_Popup->AddItem ( L"Save", nullptr );
+	em_Popup->AddItem ( L"Save as", &EMOnPopupItem );
+	em_Popup->AddItem ( L"Exit", nullptr );
+	em_Popup->SetLocation ( 20.0f, 500.0f );
+
 	GXMat4 transfrom;
 	GXSetMat4Identity ( transfrom );
 	em_UnitActor = new EMUnitActor ( L"Unit actor 01", transfrom );
@@ -250,9 +274,11 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 	em_MoveTool->SetLocalMode ();
 
 	em_HudCamera = new GXCameraOrthographic ( w, h, EM_UI_HUD_CAMERA_NEAR_Z, EM_UI_HUD_CAMERA_FAR_Z );
-	em_Viewer = new EMViewer ( &EMOnViewerTransformChanged );
-	em_Viewer->SetTarget ( em_UnitActor );
-	em_Viewer->CaptureInput ();
+	
+	EMViewer* viewer = EMViewer::GetInstance ();
+	viewer->SetOnViewerTransformChangedCallback ( &EMOnViewerTransformChanged );
+	viewer->SetTarget ( em_UnitActor );
+	viewer->CaptureInput ();
 
 	EMTool::SetActiveTool ( em_MoveTool );
 
@@ -271,13 +297,15 @@ GXVoid GXCALL EMOnDeleteRenderableObjects ()
 	GXSafeDelete ( em_EditBox );
 	GXSafeDelete ( em_DraggableArea );
 	GXSafeDelete ( em_OpenFile );
+	GXSafeDelete ( em_Popup );
 	GXSafeDelete ( em_HudCamera );
 
 	em_MoveTool->UnBind ();
 	em_MoveTool->Delete ();
 	em_MoveTool->OnDrawHudColorPass ();
 
-	GXSafeDelete ( em_Renderer );
+	delete EMViewer::GetInstance ();
+	delete EMRenderer::GetInstance ();
 }
 
 //-------------------------------------------------------------------
@@ -296,6 +324,7 @@ GXVoid GXCALL EMOnInit ()
 	renderer->SetOnInitRenderableObjectsFunc ( &EMOnInitRenderableObjects );
 	renderer->SetOnFrameFunc ( &EMOnFrame );
 	renderer->SetOnDeleteRenderableObjectsFunc ( &EMOnDeleteRenderableObjects );
+	renderer->SetWindowName ( EM_WINDOW_NAME );
 
 	GXLocale* locale = GXLocale::GetInstance ();
 	locale->LoadLanguage ( L"Locale/Editor Mobile/RU.lng", GX_LANGUAGE_RU );

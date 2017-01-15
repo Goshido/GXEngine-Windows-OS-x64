@@ -41,13 +41,12 @@ GXCore::~GXCore ()
 	GXLogDestroy ();
 }
 
-GXVoid GXCore::Start ( PFNGXONGAMEINITPROC onGameInit, PFNGXONGAMECLOSEPROC onGameClose, const GXWChar* gameName )
+GXVoid GXCore::Start ( PFNGXONGAMEINITPROC onGameInit, PFNGXONGAMECLOSEPROC onGameClose )
 {
 	GXSoundMixer* soundMixer = GXSoundMixer::GetInstance ();
 	soundMixer->Start ();
 
 	GXRenderer* renderer = GXRenderer::GetInstance ();
-	renderer->SetWindowName ( gameName );
 	renderer->Start ();
 
 	GXInput* input = GXInput::GetInstance ();

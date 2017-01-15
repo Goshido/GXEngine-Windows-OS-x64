@@ -256,7 +256,7 @@ GXVoid GXUIMenu::OnMessage ( GXUInt message, const GXVoid* data )
 
 GXVoid GXUIMenu::AddItem ()
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_MENU_ADD_ITEM, 0, 0 );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_MENU_ADD_ITEM, 0, 0 );
 }
 
 GXVoid GXUIMenu::ResizeItem ( GXUByte item, GXFloat width )
@@ -265,7 +265,7 @@ GXVoid GXUIMenu::ResizeItem ( GXUByte item, GXFloat width )
 	ri.item = item;
 	ri.width = width;
 
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_MENU_RESIZE_ITEM, &ri, sizeof ( GXUIMenuResizeItem ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_MENU_RESIZE_ITEM, &ri, sizeof ( GXUIMenuResizeItem ) );
 }
 
 GXUByte GXUIMenu::GetTotalItems () const
@@ -281,7 +281,7 @@ const GXAABB& GXUIMenu::GetItemBounds ( GXUByte item ) const
 
 GXVoid GXUIMenu::Redraw ()
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_REDRAW, 0, 0 );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_REDRAW, 0, 0 );
 }
 
 GXBool GXUIMenu::IsItemPressed ( GXUByte item ) const
@@ -558,12 +558,12 @@ GXVoid GXUISubmenu::OnMessage ( GXUInt message, const GXVoid* data )
 
 GXVoid GXUISubmenu::AddItem ( PFNGXONMENUITEMPROC callback )
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_SUBMENU_ADD_ITEM, &callback, sizeof ( PFNGXONMENUITEMPROC ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_SUBMENU_ADD_ITEM, &callback, sizeof ( PFNGXONMENUITEMPROC ) );
 }
 
 GXVoid GXUISubmenu::SetItemHeight ( GXFloat height )
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_SUBMENU_SET_HEIGHT, &height, sizeof ( GXFloat ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_SUBMENU_SET_HEIGHT, &height, sizeof ( GXFloat ) );
 }
 
 GXUByte GXUISubmenu::GetTotalItems () const
@@ -578,7 +578,7 @@ GXFloat GXUISubmenu::GetItemHeight () const
 
 GXVoid GXUISubmenu::Redraw ()
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_REDRAW, 0, 0 );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_REDRAW, 0, 0 );
 }
 
 GXBool GXUISubmenu::IsItemPressed ( GXUByte item ) const

@@ -146,7 +146,7 @@ GXVoid GXUIEditBox::OnMessage ( GXUInt message, const GXVoid* data )
 			else
 			{
 				ReleaseInput ();
-				gx_ui_TouchSurface->OnLeftMouseButtonDown ( *pos );
+				GXTouchSurface::GetInstance ()->OnLeftMouseButtonDown ( *pos );
 			}
 
 			if ( renderer )
@@ -402,7 +402,7 @@ GXFloat GXUIEditBox::GetSelectionEndOffset () const
 
 GXVoid GXUIEditBox::SetTextLeftOffset ( GXFloat offset )
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_EDIT_BOX_SET_TEXT_LEFT_OFFSET, &offset, sizeof ( GXFloat ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_EDIT_BOX_SET_TEXT_LEFT_OFFSET, &offset, sizeof ( GXFloat ) );
 }
 
 GXFloat GXUIEditBox::GetTextLeftOffset () const
@@ -412,7 +412,7 @@ GXFloat GXUIEditBox::GetTextLeftOffset () const
 
 GXVoid GXUIEditBox::SetTextRightOffset ( GXFloat offset )
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_EDIT_BOX_SET_TEXT_RIGHT_OFFSET, &offset, sizeof ( GXFloat ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_EDIT_BOX_SET_TEXT_RIGHT_OFFSET, &offset, sizeof ( GXFloat ) );
 }
 
 GXFloat GXUIEditBox::GetTextRightOffset () const
@@ -423,9 +423,9 @@ GXFloat GXUIEditBox::GetTextRightOffset () const
 GXVoid GXUIEditBox::SetText ( const GXWChar* text )
 {
 	if ( text )
-		gx_ui_TouchSurface->SendMessage ( this, GX_MSG_SET_TEXT, text, ( GXWcslen ( text ) + 1 ) * sizeof ( GXWChar ) );
+		GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_SET_TEXT, text, ( GXWcslen ( text ) + 1 ) * sizeof ( GXWChar ) );
 	else
-		gx_ui_TouchSurface->SendMessage ( this, GX_MSG_CLEAR_TEXT, 0, 0 );
+		GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_CLEAR_TEXT, 0, 0 );
 }
 
 const GXWChar* GXUIEditBox::GetText () const
@@ -435,7 +435,7 @@ const GXWChar* GXUIEditBox::GetText () const
 
 GXVoid GXUIEditBox::SetAlignment ( eGXUITextAlignment alignment)
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_SET_TEXT_ALIGNMENT, &alignment, sizeof ( eGXUITextAlignment ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_SET_TEXT_ALIGNMENT, &alignment, sizeof ( eGXUITextAlignment ) );
 }
 
 eGXUITextAlignment GXUIEditBox::GetAlignment () const
@@ -454,7 +454,7 @@ GXVoid GXUIEditBox::SetFont ( const GXWChar* fontFile, GXUShort fontSize )
 	memcpy ( fi.fontFile, fontFile, size );
 	fi.size = fontSize;
 
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_EDIT_BOX_SET_FONT, &fi, sizeof ( GXUIEditBoxFontInfo ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_EDIT_BOX_SET_FONT, &fi, sizeof ( GXUIEditBoxFontInfo ) );
 }
 
 GXFont* GXUIEditBox::GetFont () const
@@ -464,7 +464,7 @@ GXFont* GXUIEditBox::GetFont () const
 
 GXBool GXUIEditBox::IsActive ()
 {
-	return gx_ui_TouchSurface->GetLockedCursorWidget () == this;
+	return GXTouchSurface::GetInstance ()->GetLockedCursorWidget () == this;
 }
 
 GXInt GXUIEditBox::GetSelectionPosition ( const GXVec2 &mousePosition ) const
@@ -543,7 +543,7 @@ GXFloat GXUIEditBox::GetSelectionOffset ( GXUInt symbolIndex ) const
 
 GXVoid GXUIEditBox::LockInput ()
 {
-	gx_ui_TouchSurface->LockCursor ( this );
+	GXTouchSurface::GetInstance ()->LockCursor ( this );
 
 	GXInput* input = GXInput::GetInstance ();
 	input->BindKeyFunc ( &GXUIEditBox::OnBackspace, this, VK_BACK, INPUT_DOWN );
@@ -557,7 +557,7 @@ GXVoid GXUIEditBox::LockInput ()
 
 GXVoid GXUIEditBox::ReleaseInput ()
 {
-	gx_ui_TouchSurface->ReleaseCursor ();
+	GXTouchSurface::GetInstance ()->ReleaseCursor ();
 
 	GXInput* input = GXInput::GetInstance ();
 	input->UnBindKeyFunc ( VK_BACK, INPUT_DOWN );
@@ -684,40 +684,40 @@ GXBool GXUIEditBox::DeleteText ()
 GXVoid GXCALL GXUIEditBox::OnEnd ( GXVoid* handler )
 {
 	static const GXWChar symbol = GX_END;
-	gx_ui_TouchSurface->SendMessage ( (GXWidget*)handler, GX_MSG_ADD_SYMBOL, &symbol, sizeof ( GXWChar ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( (GXWidget*)handler, GX_MSG_ADD_SYMBOL, &symbol, sizeof ( GXWChar ) );
 }
 
 GXVoid GXCALL GXUIEditBox::OnHome ( GXVoid* handler )
 {
 	static const GXWChar symbol = GX_HOME;
-	gx_ui_TouchSurface->SendMessage ( (GXWidget*)handler, GX_MSG_ADD_SYMBOL, &symbol, sizeof ( GXWChar ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( (GXWidget*)handler, GX_MSG_ADD_SYMBOL, &symbol, sizeof ( GXWChar ) );
 }
 
 GXVoid GXCALL GXUIEditBox::OnDel ( GXVoid* handler )
 {
 	static const GXWChar symbol = GX_DEL;
-	gx_ui_TouchSurface->SendMessage ( (GXWidget*)handler, GX_MSG_ADD_SYMBOL, &symbol, sizeof ( GXWChar ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( (GXWidget*)handler, GX_MSG_ADD_SYMBOL, &symbol, sizeof ( GXWChar ) );
 }
 
 GXVoid GXCALL GXUIEditBox::OnBackspace ( GXVoid* handler )
 {
 	static const GXWChar symbol = GX_BACKSPACE;
-	gx_ui_TouchSurface->SendMessage ( (GXWidget*)handler, GX_MSG_ADD_SYMBOL, &symbol, sizeof ( GXWChar ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( (GXWidget*)handler, GX_MSG_ADD_SYMBOL, &symbol, sizeof ( GXWChar ) );
 }
 
 GXVoid GXCALL GXUIEditBox::OnLeftArrow ( GXVoid* handler )
 {
 	static const GXWChar symbol = GX_LEFT_ARROW;
-	gx_ui_TouchSurface->SendMessage ( (GXWidget*)handler, GX_MSG_ADD_SYMBOL, &symbol, sizeof ( GXWChar ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( (GXWidget*)handler, GX_MSG_ADD_SYMBOL, &symbol, sizeof ( GXWChar ) );
 }
 
 GXVoid GXCALL GXUIEditBox::OnRightArrow ( GXVoid* handler )
 {
 	static const GXWChar symbol = GX_RIGHT_ARROW;
-	gx_ui_TouchSurface->SendMessage ( (GXWidget*)handler, GX_MSG_ADD_SYMBOL, &symbol, sizeof ( GXWChar ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( (GXWidget*)handler, GX_MSG_ADD_SYMBOL, &symbol, sizeof ( GXWChar ) );
 }
 
 GXVoid GXCALL GXUIEditBox::OnType ( GXWChar symbol, GXVoid* handler )
 {
-	gx_ui_TouchSurface->SendMessage ( (GXWidget*)handler, GX_MSG_ADD_SYMBOL, &symbol, sizeof ( GXWChar ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( (GXWidget*)handler, GX_MSG_ADD_SYMBOL, &symbol, sizeof ( GXWChar ) );
 }

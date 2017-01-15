@@ -71,7 +71,7 @@ class GXRenderer
 		GXVoid SetFullscreen ( GXBool enabled );
 		GXVoid SetVSync ( GXBool enabled );
 		GXVoid SetResolution ( GXInt width, GXInt height );
-		GXVoid SetWindowTitle ( const GXWChar* title );
+		GXVoid SetWindowName ( const GXWChar* name );
 
 		GXVoid SetOnFrameFunc ( PFNGXONFRAMEPROC callback );
 		GXVoid SetOnInitRenderableObjectsFunc ( PFNGXONINITRENDERABLEOBJECTSPROC callback );
@@ -79,8 +79,6 @@ class GXRenderer
 
 		GXUInt GetCurrentFPS () const;
 		GXVoid GetSupportedResolutions ( GXRendererResolutions &out ) const;
-
-		GXVoid SetWindowName ( const GXWChar* name );
 
 		GXInt GetWidth () const;
 		GXInt GetHeight () const;

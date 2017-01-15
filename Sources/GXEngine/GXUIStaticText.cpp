@@ -59,14 +59,14 @@ GXVoid GXUIStaticText::OnMessage ( GXUInt message, const GXVoid* data )
 GXVoid GXUIStaticText::SetText ( const GXWChar* text )
 {
 	if ( text )
-		gx_ui_TouchSurface->SendMessage ( this, GX_MSG_SET_TEXT, text, ( GXWcslen ( text ) + 1 ) * sizeof ( GXWChar ) );
+		GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_SET_TEXT, text, ( GXWcslen ( text ) + 1 ) * sizeof ( GXWChar ) );
 	else
-		gx_ui_TouchSurface->SendMessage ( this, GX_MSG_CLEAR_TEXT, 0, 0 );
+		GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_CLEAR_TEXT, 0, 0 );
 }
 
 GXVoid GXUIStaticText::SetAlignment ( eGXUITextAlignment alignment )
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_SET_TEXT_ALIGNMENT, &alignment, sizeof ( eGXUITextAlignment ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_SET_TEXT_ALIGNMENT, &alignment, sizeof ( eGXUITextAlignment ) );
 }
 
 const GXWChar* GXUIStaticText::GetText () const

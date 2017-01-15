@@ -12,7 +12,7 @@ class EMUIDraggableArea : public EMUI
 		GXUIDragableArea*	widget;
 
 	public:
-		EMUIDraggableArea ( EMUI* parent );
+		explicit EMUIDraggableArea ( EMUI* parent );
 		~EMUIDraggableArea () override;
 
 		GXWidget* GetWidget () const override;

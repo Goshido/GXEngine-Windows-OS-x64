@@ -12,7 +12,7 @@ class EMUIButton : public EMUI
 		GXUIButton*		widget;
 
 	public:
-		EMUIButton ( EMUI* parent );
+		explicit EMUIButton ( EMUI* parent );
 		~EMUIButton () override;
 
 		GXWidget* GetWidget () const override;

@@ -196,6 +196,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIFileListBox.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIMenu.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIOpenFile.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIPopup.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUISeparator.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIStaticText.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUnitActor.cpp" />
@@ -242,6 +243,8 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXUIInput.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIListBox.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIMenu.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXUIMenuExt.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXUIPopup.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIStaticText.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXVAOStorage.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXWidget.cpp" />
@@ -335,13 +338,14 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXUIInput.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIListBox.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIMenu.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXUIMenuExt.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIMessage.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXUIPopup.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIStaticText.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXVAOStorage.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXWidget.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMActor.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMDirectedLightActor.h" />
-    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMGlobals.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMLight.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMain.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMoveTool.h" />
@@ -356,6 +360,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIFileListBox.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIMenu.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIOpenFile.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIPopup.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUISeparator.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIStaticText.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUnitActor.h" />

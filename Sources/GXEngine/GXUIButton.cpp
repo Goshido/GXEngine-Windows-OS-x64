@@ -115,17 +115,17 @@ GXVoid GXUIButton::SetOnLeftMouseButtonCallback ( GXVoid* handler, PFNGXONMOUSEB
 
 GXVoid GXUIButton::Enable ()
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_ENABLE, nullptr, 0 );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_ENABLE, nullptr, 0 );
 }
 
 GXVoid GXUIButton::Disable ()
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_DISABLE, nullptr, 0 );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_DISABLE, nullptr, 0 );
 }
 
 GXVoid GXUIButton::Redraw ()
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_REDRAW, nullptr, 0 );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_REDRAW, nullptr, 0 );
 }
 
 GXBool GXUIButton::IsPressed () const

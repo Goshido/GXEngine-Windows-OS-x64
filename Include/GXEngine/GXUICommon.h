@@ -22,8 +22,7 @@ typedef GXVoid ( GXCALL* PFNGXONMOUSEMOVEPROC ) ( GXFloat x, GXFloat y );
 
 extern GXFloat gx_ui_Scale;		//rough pixels in centimeter
 
-extern GXTouchSurface*	gx_ui_TouchSurface;
-extern GXMutex*	gx_ui_Mutex;
+extern GXMutex* gx_ui_Mutex;
 extern GXCircleBuffer* gx_ui_MessageBuffer;
 
 

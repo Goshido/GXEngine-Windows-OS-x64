@@ -49,8 +49,9 @@ class EMRenderer
 		GXInt						mouseY;
 		PFNEMRENDERERONOBJECTPROC	OnObject;
 
+		static EMRenderer*			instance;
+
 	public:
-		EMRenderer ();
 		~EMRenderer ();
 
 		GXVoid StartCommonPass ();
@@ -65,7 +66,11 @@ class EMRenderer
 		GXVoid SetOnObjectCallback ( PFNEMRENDERERONOBJECTPROC callback );
 		GXVoid GetObject ( GXUShort x, GXUShort y );
 
+		static EMRenderer* GetInstance ();
+
 	private:
+		explicit EMRenderer ();
+
 		GXVoid CreateFBO ();
 		GXVoid CreateScreenQuad ();
 		GXVoid InitDirectedLightShader ();

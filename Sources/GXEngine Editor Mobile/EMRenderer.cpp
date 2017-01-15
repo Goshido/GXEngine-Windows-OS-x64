@@ -12,23 +12,8 @@
 #define EM_OBJECT_HI_INDEX		14
 #define EM_OBJECT_LOW_INDEX		15
 
-EMRenderer* em_Renderer = 0;
 
-
-EMRenderer::EMRenderer ()
-{
-	memset ( objectMask, 0, 8 * sizeof ( GXUByte ) );
-	mouseX = mouseY = -1;
-	OnObject = 0;
-
-	GXSetMat4Identity ( inv_proj_mat );
-
-	CreateScreenQuad ();
-	CreateFBO ();
-	InitDirectedLightShader ();
-
-	SetObjectMask ( 0 );
-}
+EMRenderer* EMRenderer::instance = nullptr;
 
 EMRenderer::~EMRenderer ()
 {
@@ -60,6 +45,8 @@ EMRenderer::~EMRenderer ()
 	GXRemoveShaderProgram ( directedLightProgram );
 
 	glDeleteSamplers ( 1, &screenSampler );
+
+	instance = nullptr;
 }
 
 GXVoid EMRenderer::StartCommonPass ()
@@ -256,6 +243,29 @@ GXVoid EMRenderer::GetObject ( GXUShort x, GXUShort y )
 {
 	mouseX = x;
 	mouseY = y;
+}
+
+EMRenderer* EMRenderer::GetInstance ()
+{
+	if ( !instance )
+		instance = new EMRenderer ();
+
+	return instance;
+}
+
+EMRenderer::EMRenderer ()
+{
+	memset ( objectMask, 0, 8 * sizeof ( GXUByte ) );
+	mouseX = mouseY = -1;
+	OnObject = nullptr;
+
+	GXSetMat4Identity ( inv_proj_mat );
+
+	CreateScreenQuad ();
+	CreateFBO ();
+	InitDirectedLightShader ();
+
+	SetObjectMask ( 0 );
 }
 
 GXVoid EMRenderer::CreateFBO ()

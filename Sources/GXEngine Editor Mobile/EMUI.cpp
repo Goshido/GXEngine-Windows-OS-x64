@@ -1,20 +1,20 @@
 #include <GXEngine_Editor_Mobile/EMUI.h>
-#include <GXEngine_Editor_Mobile/EMGlobals.h>
+#include <GXEngine_Editor_Mobile/EMRenderer.h>
 #include <GXEngine/GXTouchSurface.h>
 #include <GXCommon/GXLogger.h>
 
 
-#define EM_UI_FOREGROUND_STEP		0.0001f
+#define EM_UI_FOREGROUND_STEP 0.0001f
 
 
-EMUI*		em_UIElements = 0;
-GXFloat		em_UIForegroundZ = 99.9999f;
+static EMUI* em_UIElements = nullptr;
+static GXFloat em_UIForegroundZ = 99.9999f;
 
 
 EMUI::EMUI ( EMUI* parent )
 {
 	this->parent = parent;
-	prev = 0;
+	prev = nullptr;
 	next = em_UIElements;
 	if ( em_UIElements )
 		em_UIElements->prev = this;
@@ -32,7 +32,7 @@ EMUI::~EMUI ()
 
 GXWidget* EMUI::GetWidget () const
 {
-	return 0;
+	return nullptr;
 }
 
 GXVoid EMUI::OnDrawMask ()
@@ -54,7 +54,7 @@ GXVoid GXCALL EMDrawUI ()
 
 GXVoid GXCALL EMDrawUIMasks ()
 {
-	em_Renderer->SetObjectMask ( 0x00000000 );
+	EMRenderer::GetInstance ()->SetObjectMask ( 0x00000000 );
 
 	for ( EMUI* ui = em_UIElements; ui; ui = ui->next )
 		ui->OnDrawMask ();

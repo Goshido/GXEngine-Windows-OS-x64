@@ -3,7 +3,7 @@
 #include <GXEngine/GXUIListBox.h>
 #include <GXEngine/GXUICommon.h>
 #include <GXEngine/GXUIMessage.h>
-#include <GXEngine_Editor_Mobile/EMUIFileListBox.h>
+#include <GXEngine_Editor_Mobile/EMUIFileListBox.h>		// TODO fix this!!
 #include <float.h>
 
 
@@ -267,7 +267,7 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 
 		case GX_MSG_REDRAW:
 		{
-			const GXVec2& position = gx_ui_TouchSurface->GetMousePosition ();
+			const GXVec2& position = GXTouchSurface::GetInstance ()->GetMousePosition ();
 			OnMessage ( GX_MSG_MOUSE_MOVE, &position );
 		}
 		break;
@@ -280,7 +280,7 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 
 GXVoid GXUIListBox::AddItem ( GXVoid* itemData )
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_LIST_BOX_ADD_ITEM, &itemData, sizeof ( GXVoid* ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_LIST_BOX_ADD_ITEM, &itemData, sizeof ( GXVoid* ) );
 }
 
 GXVoid GXUIListBox::AddItems ( GXVoid** itemData, GXUInt items )
@@ -302,19 +302,19 @@ GXVoid GXUIListBox::AddItems ( GXVoid** itemData, GXUInt items )
 	p->data = itemData[ limit ];
 	p->next = nullptr;
 
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_LIST_BOX_ADD_ITEMS, &list, sizeof ( GXUIListBoxRawItem* ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_LIST_BOX_ADD_ITEMS, &list, sizeof ( GXUIListBoxRawItem* ) );
 }
 
 GXVoid GXUIListBox::RemoveItem ( GXUInt itemIndex )
 {
 	if ( itemIndex >= totalItems ) return;
 
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_LIST_BOX_REMOVE_ITEM, &itemIndex, sizeof ( GXUInt ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_LIST_BOX_REMOVE_ITEM, &itemIndex, sizeof ( GXUInt ) );
 }
 
 GXVoid GXUIListBox::RemoveAllItems ()
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_LIST_BOX_REMOVE_ALL_ITEMS, nullptr, 0 );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_LIST_BOX_REMOVE_ALL_ITEMS, nullptr, 0 );
 }
 
 GXVoid* GXUIListBox::GetSelectedItem () const
@@ -377,7 +377,7 @@ GXFloat GXUIListBox::GetItemLocalOffsetY ( GXUInt itemIndex ) const
 
 GXVoid GXUIListBox::Redraw ()
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_REDRAW, 0, 0 );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_REDRAW, 0, 0 );
 }
 
 GXVoid GXUIListBox::SetOnItemSelectedCallback ( GXVoid* handler, PFNGXUILISTBOXONITEMSELECTEDPROC callback )
@@ -399,7 +399,7 @@ GXFloat GXUIListBox::GetViewportSize () const
 
 GXVoid GXUIListBox::SetViewportOffset ( GXFloat offset )
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_LIST_BOX_SET_VIEWPORT_OFFSET, &offset, sizeof ( GXFloat ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_LIST_BOX_SET_VIEWPORT_OFFSET, &offset, sizeof ( GXFloat ) );
 }
 
 GXVoid GXUIListBox::SetViewportOffsetImmediately ( GXFloat offset )
@@ -413,7 +413,7 @@ GXVoid GXUIListBox::SetViewportOffsetImmediately ( GXFloat offset )
 
 GXVoid GXUIListBox::SetItemHeight ( GXFloat height )
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_LIST_BOX_SET_ITEM_HEIGHT, &height, sizeof ( GXFloat ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_LIST_BOX_SET_ITEM_HEIGHT, &height, sizeof ( GXFloat ) );
 }
 
 GXFloat GXUIListBox::GetItemHeight () const

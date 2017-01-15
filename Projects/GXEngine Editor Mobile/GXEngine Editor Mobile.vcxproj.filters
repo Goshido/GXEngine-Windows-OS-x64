@@ -285,6 +285,15 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXEngineSettings.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXUIPopup.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIPopup.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXUIMenuExt.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -390,9 +399,6 @@
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMDirectedLightActor.h">
-      <Filter>Header Files\GXEngine Editor Mobile</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMGlobals.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMLight.h">
@@ -624,6 +630,15 @@
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXPhysXFrontend.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXUIPopup.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIPopup.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXUIMenuExt.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
   </ItemGroup>

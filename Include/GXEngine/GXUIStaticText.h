@@ -18,8 +18,8 @@ enum eGXUITextAlignment : GXUByte
 class GXUIStaticText : public GXWidget
 {
 	private:
-		GXWChar*					text;
-		eGXUITextAlignment	alignment;
+		GXWChar*				text;
+		eGXUITextAlignment		alignment;
 
 	public:
 		GXUIStaticText ( GXWidget* parent );

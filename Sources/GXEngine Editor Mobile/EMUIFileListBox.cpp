@@ -72,7 +72,7 @@ class EMUIFileListBoxRenderer : public GXWidgetRenderer
 		GXTexture			folderIcon;
 
 	public:
-		EMUIFileListBoxRenderer ( GXUIListBox* widget );
+		explicit EMUIFileListBoxRenderer ( GXUIListBox* widget );
 		~EMUIFileListBoxRenderer () override;
 
 		GXVoid OnRefresh () override;

@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #ifndef GX_MEMORY
 #define GX_MEMORY
@@ -30,11 +30,11 @@ class GXDynamicArray
 
 	public:
 		GXDynamicArray ( GXUInt elementSize );
-		virtual ~GXDynamicArray ();
+		~GXDynamicArray ();
 
 		GXVoid SetValue ( GXUInt i, const GXVoid* element );
-		const GXVoid* GetValue ( GXUInt i ) const;
-		const GXVoid* GetData () const;
+		GXVoid* GetValue ( GXUInt i ) const;
+		GXVoid* GetData () const;
 		GXUInt GetLength () const;
 
 		GXVoid Resize ( GXUInt numElements );

@@ -216,11 +216,14 @@ GXVoid GXRenderer::SetResolution ( GXInt width, GXInt height )
 	}
 }
 
-GXVoid GXRenderer::SetWindowTitle ( const GXWChar* title )
+GXVoid GXRenderer::SetWindowName ( const GXWChar* name )
 {
-	GXSafeFree ( this->title );
-	GXWcsclone ( &this->title, title );
-	SetWindowTextW ( hwnd, this->title );
+	GXSafeFree ( title );
+	GXWcsclone ( &title, name );
+
+	if ( hwnd == (HWND)INVALID_HANDLE_VALUE ) return;
+
+	SetWindowTextW ( hwnd, title );
 }
 
 GXVoid GXRenderer::SetOnFrameFunc ( PFNGXONFRAMEPROC callback )
@@ -304,16 +307,6 @@ GXVoid GXRenderer::GetSupportedResolutions ( GXRendererResolutions &out ) const
 	temp.Cleanup ();
 
 	qsort ( out.wxh, out.total, 2 * sizeof ( GXUShort ), &GXResolutionCompare );
-}
-
-GXVoid GXRenderer::SetWindowName ( const GXWChar* name )
-{
-	GXSafeFree ( title );
-	GXWcsclone ( &title, name );
-
-	if ( hwnd == (HWND)INVALID_HANDLE_VALUE ) return;
-
-	SetWindowTextW ( hwnd, title );
 }
 
 GXInt GXRenderer::GetWidth () const

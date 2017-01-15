@@ -31,16 +31,22 @@ class EMViewer
 
 		GXVec2								mousePosition;
 
+		static EMViewer*					instance;
+
 	public:
-		EMViewer ( PFNEMONVIEWERTRANSFORMCHANGEDPROC callback );
 		~EMViewer ();
 
 		GXVoid SetTarget ( EMActor* actor );
+		GXVoid SetOnViewerTransformChangedCallback ( PFNEMONVIEWERTRANSFORMCHANGEDPROC callback );
 		GXVoid CaptureInput ();
 		GXCamera* GetCamera ();
 		GXVoid UpdateMouse ( const GXVec2 &position );
 
+		static EMViewer* GetInstance ();
+
 	private:
+		explicit EMViewer ();
+
 		GXVoid OnPan ( const GXVec2& mouseDelta );
 		GXVoid OnRotate ( const GXVec2& mouseDelta );
 		GXVoid OnZoom ( GXInt mouseWheelSteps );

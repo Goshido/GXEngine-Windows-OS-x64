@@ -31,7 +31,7 @@ class GXWidget
 		GXAABB					boundsLocal;
 
 	public:
-		GXWidget ( GXWidget* parent, GXBool isNeedRegister = GX_TRUE );
+		explicit GXWidget ( GXWidget* parent, GXBool isNeedRegister = GX_TRUE );
 		virtual ~GXWidget ();
 
 		virtual GXVoid OnMessage ( GXUInt message, const GXVoid* data );
@@ -66,7 +66,7 @@ class GXWidgetIterator
 		GXWidget*	widget;
 
 	public:
-		GXWidgetIterator ();
+		explicit GXWidgetIterator ();
 		~GXWidgetIterator ();
 
 		GXWidget* Init ( GXWidget* widget );
@@ -88,7 +88,7 @@ class GXWidgetRenderer
 		GXWidget*	widget;
 
 	public:
-		GXWidgetRenderer ( GXWidget* widget );
+		explicit GXWidgetRenderer ( GXWidget* widget );
 		virtual ~GXWidgetRenderer ();
 
 		GXVoid OnUpdate ();

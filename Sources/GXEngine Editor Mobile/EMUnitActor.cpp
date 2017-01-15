@@ -1,5 +1,5 @@
 #include <GXEngine_Editor_Mobile/EMUnitActor.h>
-#include <GXEngine_Editor_Mobile/EMGlobals.h>
+#include <GXEngine_Editor_Mobile/EMRenderer.h>
 #include <GXEngine/GXCamera.h>
 #include <GXEngine/GXSamplerUtils.h>
 #include <GXEngine/GXShaderStorage.h>
@@ -152,7 +152,7 @@ EMUnitActor::~EMUnitActor ()
 
 GXVoid EMUnitActor::OnDrawCommonPass ()
 {
-	em_Renderer->SetObjectMask ( (GXUPointer)this );
+	EMRenderer::GetInstance ()->SetObjectMask ( (GXUPointer)this );
 	mesh->Draw ();
 }
 

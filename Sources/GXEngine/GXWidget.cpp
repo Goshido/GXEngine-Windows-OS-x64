@@ -35,7 +35,7 @@ GXWidget::GXWidget ( GXWidget* parent, GXBool isNeedRegister )
 	if ( parent )
 		parent->AddChild ( this );
 	else
-		gx_ui_TouchSurface->RegisterWidget ( this );
+		GXTouchSurface::GetInstance ()->RegisterWidget ( this );
 
 	gx_ui_Mutex->Release ();
 }
@@ -49,7 +49,7 @@ GXWidget::~GXWidget ()
 	if ( parent )
 		parent->RemoveChild ( this );
 	else
-		gx_ui_TouchSurface->UnRegisterWidget ( this );
+		GXTouchSurface::GetInstance ()->UnRegisterWidget ( this );
 
 	gx_ui_Mutex->Release ();
 }
@@ -181,7 +181,7 @@ GXVoid GXWidget::OnMessage ( GXUInt message, const GXVoid* data )
 			}
 			else
 			{
-				gx_ui_TouchSurface->MoveWidgetToForeground ( this );
+				GXTouchSurface::GetInstance ()->MoveWidgetToForeground ( this );
 			}
 		}
 		break;
@@ -199,7 +199,7 @@ GXVoid GXWidget::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat widt
 	GXAddVertexToAABB ( newBounds, bottomLeftX, bottomLeftY, -10.0f );
 	GXAddVertexToAABB ( newBounds, bottomLeftX + width, bottomLeftY + height, 10.0f );
 
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_RESIZE, &newBounds, sizeof ( GXAABB ) );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_RESIZE, &newBounds, sizeof ( GXAABB ) );
 }
 
 const GXAABB& GXWidget::GetBoundsWorld () const
@@ -214,17 +214,17 @@ const GXAABB& GXWidget::GetBoundsLocal () const
 
 GXVoid GXWidget::Show ()
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_SHOW, nullptr, 0 );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_SHOW, nullptr, 0 );
 }
 
 GXVoid GXWidget::Hide ()
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_HIDE, nullptr, 0 );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_HIDE, nullptr, 0 );
 }
 
 GXVoid GXWidget::ToForeground ()
 {
-	gx_ui_TouchSurface->SendMessage ( this, GX_MSG_FOREGROUND, nullptr, 0 );
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_FOREGROUND, nullptr, 0 );
 }
 
 GXBool GXWidget::IsVisible () const

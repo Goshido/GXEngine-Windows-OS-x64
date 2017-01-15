@@ -20,7 +20,7 @@ class GXCore
 	public:
 		~GXCore ();
 
-		GXVoid Start ( PFNGXONGAMEINITPROC onGameInit, PFNGXONGAMECLOSEPROC onGameClose, const GXWChar* gameName );
+		GXVoid Start ( PFNGXONGAMEINITPROC onGameInit, PFNGXONGAMECLOSEPROC onGameClose );
 		GXVoid Exit ();
 
 		static GXCore* GXCALL GetInstance ();

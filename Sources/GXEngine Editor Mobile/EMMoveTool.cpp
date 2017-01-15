@@ -1,5 +1,5 @@
 #include <GXEngine_Editor_Mobile/EMMoveTool.h>
-#include <GXEngine_Editor_Mobile/EMGlobals.h>
+#include <GXEngine_Editor_Mobile/EMRenderer.h>
 #include <GXEngine/GXShaderStorage.h>
 #include <GXEngine/GXShaderUtils.h>
 #include <GXEngine/GXCamera.h>
@@ -52,7 +52,7 @@ GXVoid EMMoveTool::Bind ()
 	activeAxis = EM_MOVE_TOOL_ACTIVE_AXIS_UNKNOWN;
 	isLMBPressed = GX_FALSE;
 
-	em_Renderer->SetOnObjectCallback ( &OnObject );
+	EMRenderer::GetInstance ()->SetOnObjectCallback ( &OnObject );
 }
 
 GXVoid EMMoveTool::SetActor ( EMActor* actor )
@@ -73,7 +73,7 @@ GXVoid EMMoveTool::SetActor ( EMActor* actor )
 
 GXVoid EMMoveTool::UnBind ()
 {
-	em_Renderer->SetOnObjectCallback ( 0 );
+	EMRenderer::GetInstance ()->SetOnObjectCallback ( 0 );
 }
 
 GXVoid EMMoveTool::OnViewerTransformChanged ()
@@ -168,15 +168,16 @@ GXVoid EMMoveTool::OnDrawHudMaskPass ()
 
 	glUniformMatrix4fv ( msk_mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.A );
 
-	em_Renderer->SetObjectMask ( (GXUPointer)( &xAxisMask ) );
+	EMRenderer* renderer = EMRenderer::GetInstance ();
+	renderer->SetObjectMask ( (GXUPointer)( &xAxisMask ) );
 	glBindVertexArray ( xAxisMask.vao );
 	glDrawArrays ( GL_TRIANGLES, 0, xAxisMask.numVertices );
 
-	em_Renderer->SetObjectMask ( (GXUPointer)( &yAxisMask ) );
+	renderer->SetObjectMask ( (GXUPointer)( &yAxisMask ) );
 	glBindVertexArray ( yAxisMask.vao );
 	glDrawArrays ( GL_TRIANGLES, 0, yAxisMask.numVertices );
 
-	em_Renderer->SetObjectMask ( (GXUPointer)( &zAxisMask ) );
+	renderer->SetObjectMask ( (GXUPointer)( &zAxisMask ) );
 	glBindVertexArray ( zAxisMask.vao );
 	glDrawArrays ( GL_TRIANGLES, 0, zAxisMask.numVertices );
 
@@ -198,7 +199,7 @@ GXVoid EMMoveTool::OnMouseButton ( EGXInputMouseFlags mouseflags )
 	if ( mouseflags.lmb ) 
 	{
 		isLMBPressed = GX_TRUE;
-		em_Renderer->GetObject ( mouseX, mouseY );
+		EMRenderer::GetInstance ()->GetObject ( mouseX, mouseY );
 	}
 	else if ( isLMBPressed && !mouseflags.lmb )
 	{

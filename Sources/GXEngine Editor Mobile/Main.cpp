@@ -7,7 +7,7 @@
 int wmain ( int argc, LPWSTR commandline )
 {
 	GXCore* core = GXCore::GetInstance ();
-	core->Start ( &EMOnInit, &EMOnClose, L"GXEngine Editor Mobile" );
+	core->Start ( &EMOnInit, &EMOnClose );
 	delete core;
 
 	return 0;
@@ -18,7 +18,7 @@ int wmain ( int argc, LPWSTR commandline )
 int WINAPI wWinMain ( HINSTANCE hinst, HINSTANCE hprev, LPWSTR cmdLine, int mode )
 {
 	GXCore* core = GXCore::GetInstance ();
-	core->Start ( &EMOnInit, &EMOnClose, L"GXEngine Editor Mobile" );
+	core->Start ( &EMOnInit, &EMOnClose );
 	delete core;
 
 	return 0;

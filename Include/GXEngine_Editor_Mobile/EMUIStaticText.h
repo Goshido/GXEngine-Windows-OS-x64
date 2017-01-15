@@ -1,3 +1,7 @@
+#ifndef EM_UI_STATIC_TEXT
+#define EM_UI_STATIC_TEXT
+
+
 #include "EMUI.h"
 #include <GXEngine/GXUIStaticText.h>
 
@@ -8,7 +12,7 @@ class EMUIStaticText : public EMUI
 		GXUIStaticText*		widget;
 
 	public:
-		EMUIStaticText ( EMUI* parent );
+		explicit EMUIStaticText ( EMUI* parent );
 		~EMUIStaticText () override;
 
 		GXWidget* GetWidget () const override;
@@ -22,3 +26,6 @@ class EMUIStaticText : public EMUI
 
 		GXVoid Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height );
 };
+
+
+#endif //EM_UI_STATIC_TEXT
