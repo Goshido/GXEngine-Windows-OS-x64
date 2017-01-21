@@ -91,13 +91,8 @@ GXWidgetRenderer ( widget )
 	GXLoadTexture ( EM_DEFAULT_FOLDER_ICON, folderIcon );
 	GXLoadTexture ( EM_DEFAULT_FILE_ICON, fileIcon );
 
-	surface = nullptr;
-	const GXAABB& bounds = widget->GetBoundsWorld ();
-	OnResized ( 0.0f, 0.0f, (GXUShort)GXGetAABBWidth ( bounds ), (GXUShort)GXGetAABBHeight ( bounds ) );
-	GXRenderer* renderer = GXRenderer::GetInstance ();
-	EMSetHudSurfaceLocationWorld ( *surface, bounds, EMGetNextGUIForegroundZ (), renderer->GetWidth (), renderer->GetHeight () );
-
-	OnRefresh ();
+	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
+	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ), GX_FALSE );
 }
 
 EMUIFileListBoxRenderer::~EMUIFileListBoxRenderer ()

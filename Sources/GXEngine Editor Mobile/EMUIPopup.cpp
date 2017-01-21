@@ -1,7 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMUIPopup.h>
 #include <GXEngine/GXUICommon.h>
 #include <GXEngine/GXFontStorage.h>
-#include <GXEngine/GXHudSurface.h>
 #include <GXCommon/GXStrings.h>
 
 
@@ -109,8 +108,8 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
 	ii.overlayType = GX_SIMPLE_REPLACE;
 	ii.insertX = 1.0f + 0.1f;
 	ii.insertY = 1.0f + 0.1f;
-	ii.insertWidth = itemWidth - 2.0f;
-	ii.insertHeight = totalHeight - 2.0f;
+	ii.insertWidth = itemWidth - 2.0f - 0.2f;
+	ii.insertHeight = totalHeight - 2.0f - 0.2f;
 	
 	surface->AddImage ( ii );
 

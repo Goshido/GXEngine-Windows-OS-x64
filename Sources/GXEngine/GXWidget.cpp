@@ -4,6 +4,7 @@
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXUIMessage.h>
 #include <GXEngine/GXUICommon.h>
+#include <GXCommon/GXLogger.h>
 
 
 #define GX_WIDGET_RENDERER_RESIZE_EPSILON 0.25f
@@ -196,8 +197,8 @@ GXVoid GXWidget::OnMessage ( GXUInt message, const GXVoid* data )
 GXVoid GXWidget::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height )
 {
 	GXAABB newBounds;
-	GXAddVertexToAABB ( newBounds, bottomLeftX, bottomLeftY, -10.0f );
-	GXAddVertexToAABB ( newBounds, bottomLeftX + width, bottomLeftY + height, 10.0f );
+	GXAddVertexToAABB ( newBounds, bottomLeftX, bottomLeftY, -1.0f );
+	GXAddVertexToAABB ( newBounds, bottomLeftX + width, bottomLeftY + height, 1.0f );
 
 	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_RESIZE, &newBounds, sizeof ( GXAABB ) );
 }
@@ -373,7 +374,7 @@ GXWidget* GXWidgetIterator::GetPrevious ()
 
 GXWidget* GXWidgetIterator::GetParent ()
 {
-	if ( !widget ) return 0;
+	if ( !widget ) return nullptr;
 
 	widget = widget->parent;
 	return widget;
@@ -381,7 +382,7 @@ GXWidget* GXWidgetIterator::GetParent ()
 
 GXWidget* GXWidgetIterator::GetChilds ()
 {
-	if ( !widget ) return 0;
+	if ( !widget ) return nullptr;
 
 	widget = widget->childs;
 	return widget;

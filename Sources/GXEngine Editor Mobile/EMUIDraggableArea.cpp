@@ -8,7 +8,6 @@ class EMUIDraggableAreaRenderer : public GXWidgetRenderer
 {
 	private:
 		GXHudSurface*		surface;
-		GXFloat				layer;
 		GXTexture			background;
 
 	public:
@@ -26,12 +25,9 @@ class EMUIDraggableAreaRenderer : public GXWidgetRenderer
 EMUIDraggableAreaRenderer::EMUIDraggableAreaRenderer ( GXUIDragableArea* draggableAreaWidget ):
 GXWidgetRenderer ( draggableAreaWidget )
 {
-	GXUShort w = (GXUShort)( gx_ui_Scale * 10.0f );
-	GXUShort h = (GXUShort)( gx_ui_Scale * 7.0f );
-
-	surface = new GXHudSurface ( w, h, GX_FALSE );
 	GXLoadTexture ( L"Textures/Editor Mobile/Default Diffuse.tex", background );
-	layer = EMGetNextGUIForegroundZ ();
+	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
+	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ), GX_FALSE );
 }
 
 EMUIDraggableAreaRenderer::~EMUIDraggableAreaRenderer ()
@@ -92,14 +88,18 @@ GXVoid EMUIDraggableAreaRenderer::OnDraw ()
 
 GXVoid EMUIDraggableAreaRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
 {
+	GXVec3 location;
+	surface->GetLocation ( location );
 	delete surface;
 	surface = new GXHudSurface ( width, height, GX_FALSE );
-	surface->SetLocation ( x, y, layer );
+	surface->SetLocation ( x, y, location.z );
 }
 
 GXVoid EMUIDraggableAreaRenderer::OnMoved ( GXFloat x, GXFloat y )
 {
-	surface->SetLocation ( x, y, layer );
+	GXVec3 location;
+	surface->GetLocation ( location );
+	surface->SetLocation ( x, y, location.z );
 }
 
 //---------------------------------------------------------------

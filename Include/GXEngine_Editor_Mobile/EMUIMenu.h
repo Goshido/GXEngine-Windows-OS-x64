@@ -1,38 +1,27 @@
-#ifndef EM_UI_MENU
-#define EM_UI_MENU
+#ifndef EM_MENU_EXT
+#define EM_MENU_EXT
 
 
 #include "EMUI.h"
+#include "EMUIPopup.h"
 #include <GXEngine/GXUIMenu.h>
 
 
 class EMUIMenu : public EMUI
 {
-	friend class EMUIMenuRenderer;
-
 	private:
-		GXUIMenu*		menuWidget;
-		GXDynamicArray	submenuWidgets;
+		GXUIMenu*	widget;
 
 	public:
-		EMUIMenu ();
+		explicit EMUIMenu ( EMUI* parent );
 		~EMUIMenu () override;
 
-		GXVoid OnDrawMask () override;
+		GXWidget* GetWidget () const override;
 
-		GXVoid AddItem ( const GXWChar* caption );
-		GXVoid RenameItem ( GXUByte item, const GXWChar* caption );
-
-		GXVoid AddSubitem ( GXUByte item, const GXWChar* caption, const GXWChar* hotkey, PFNGXONMENUITEMPROC onMouseButton );
-		GXVoid RenameSubitem ( GXUByte item, GXUByte subitem, const GXWChar* caption, const GXWChar* hotkey );
-
-		GXVoid SetLocation ( GXFloat x, GXFloat y );
-		GXVoid SetLayer ( GXFloat z );
-
-	private:
-		GXVoid OnChangeLayer ( GXFloat z );
-		static GXVoid GXCALL OnShowSubmenu ( GXVoid* menuHandler, GXUByte item );
+		GXVoid AddItem ( const GXWChar* name, EMUIPopup* popup );
+		GXVoid SetLocation ( GXFloat leftBottomX, GXFloat leftBottomY );
+		GXFloat GetHeight () const;
 };
 
 
-#endif //EM_UI_MENU
+#endif //EM_MENU_EXT

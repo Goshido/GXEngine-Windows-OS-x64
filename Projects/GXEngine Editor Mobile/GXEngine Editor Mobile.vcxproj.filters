@@ -192,9 +192,6 @@
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIButton.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIMenu.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUnitActor.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
@@ -249,9 +246,6 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXUIDraggableArea.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine\GXUIMenu.cpp">
-      <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIOpenFile.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
@@ -291,8 +285,11 @@
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIPopup.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine\GXUIMenuExt.cpp">
+    <ClCompile Include="..\..\Sources\GXEngine\GXUIMenu.cpp">
       <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIMenu.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -426,9 +423,6 @@
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIButton.h">
-      <Filter>Header Files\GXEngine Editor Mobile</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIMenu.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUnitActor.h">
@@ -599,9 +593,6 @@
     <ClInclude Include="..\..\Include\GXEngine\GXUIDraggableArea.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXUIMenu.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIOpenFile.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
@@ -638,8 +629,11 @@
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIPopup.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXUIMenuExt.h">
+    <ClInclude Include="..\..\Include\GXEngine\GXUIMenu.h">
       <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIMenu.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

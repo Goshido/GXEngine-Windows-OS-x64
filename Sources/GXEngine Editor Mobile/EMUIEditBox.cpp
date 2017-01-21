@@ -53,7 +53,7 @@ class EMUIEditBoxRenderer : public GXWidgetRenderer
 		GXTexture			background;
 
 	public:
-		EMUIEditBoxRenderer ( GXUIEditBox* widget );
+		explicit EMUIEditBoxRenderer ( GXUIEditBox* widget );
 		~EMUIEditBoxRenderer () override;
 
 	protected:
@@ -66,14 +66,9 @@ class EMUIEditBoxRenderer : public GXWidgetRenderer
 EMUIEditBoxRenderer::EMUIEditBoxRenderer ( GXUIEditBox* widget ):
 GXWidgetRenderer ( widget )
 {
-	surface = nullptr;
-	const GXAABB& bounds = widget->GetBoundsWorld ();
-	OnResized ( 0.0f, 0.0f, (GXUShort)GXGetAABBWidth ( bounds ), (GXUShort)GXGetAABBHeight ( bounds ) );
-	GXRenderer* renderer = GXRenderer::GetInstance ();
-	EMSetHudSurfaceLocationWorld ( *surface, bounds, EMGetNextGUIForegroundZ (), renderer->GetWidth (), renderer->GetHeight () );
 	GXLoadTexture ( EM_DEFAULT_BACKGROUND, background );
-
-	OnRefresh ();
+	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
+	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ), GX_FALSE );
 }
 
 EMUIEditBoxRenderer::~EMUIEditBoxRenderer ()

@@ -82,7 +82,6 @@ class EMUIButtonRenderer : public GXWidgetRenderer
 		GXVoid OnDrawMask ();
 
 		GXVoid SetCaption ( const GXWChar* caption );
-		GXVoid SetLayer ( GXFloat z );
 
 	protected:
 		GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
@@ -96,13 +95,8 @@ GXWidgetRenderer ( buttonWidget )
 	GXWcsclone ( &caption, EM_DEFAULT_CAPTION );
 	GXLoadTexture ( L"Textures/System/Default_Diffuse.tga", background );
 
-	surface = nullptr;
-	const GXAABB& bounds = widget->GetBoundsWorld ();
-	OnResized ( 0.0f, 0.0f, (GXUShort)GXGetAABBWidth ( bounds ), (GXUShort)GXGetAABBHeight ( bounds ) );
-	GXRenderer* renderer = GXRenderer::GetInstance ();
-	EMSetHudSurfaceLocationWorld ( *surface, bounds, EMGetNextGUIForegroundZ (), renderer->GetWidth (), renderer->GetHeight () );
-
-	OnRefresh ();
+	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
+	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ), GX_FALSE );
 
 	GXGLSamplerStruct ss;
 	ss.anisotropy = 16.0f;
@@ -253,14 +247,6 @@ GXVoid EMUIButtonRenderer::SetCaption ( const GXWChar* caption )
 		caption = 0;
 }
 
-GXVoid EMUIButtonRenderer::SetLayer ( GXFloat z )
-{
-	GXVec3 location;
-	surface->GetLocation ( location );
-	location.z = z;
-	surface->SetLocation ( location );
-}
-
 GXVoid EMUIButtonRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
 {
 	GXSafeDelete ( surface );
@@ -323,13 +309,6 @@ GXVoid EMUIButton::SetCaption ( const GXWChar* caption )
 {
 	EMUIButtonRenderer* renderer = (EMUIButtonRenderer*)widget->GetRenderer ();
 	renderer->SetCaption ( caption );
-	widget->Redraw ();
-}
-
-GXVoid EMUIButton::SetLayer ( GXFloat z )
-{
-	EMUIButtonRenderer* renderer = (EMUIButtonRenderer*)widget->GetRenderer ();
-	renderer->SetLayer ( z );
 	widget->Redraw ();
 }
 

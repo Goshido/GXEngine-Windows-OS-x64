@@ -22,7 +22,7 @@ class EMUI
 		EMUI*	parent;
 
 	public:
-		EMUI ( EMUI* parent );
+		explicit EMUI ( EMUI* parent );
 		virtual ~EMUI ();
 
 		virtual GXWidget* GetWidget () const;
@@ -34,8 +34,6 @@ class EMUI
 
 GXVoid GXCALL EMDrawUI ();
 GXVoid GXCALL EMDrawUIMasks ();
-GXFloat GXCALL EMGetNextGUIForegroundZ ();
-GXVoid GXCALL EMSetHudSurfaceLocationWorld ( GXHudSurface &surface, const GXAABB &widgetBoundsWorld, GXFloat z, GXInt viewportWidth, GXInt viewportHeight );
 
 
 #endif //EM_UI

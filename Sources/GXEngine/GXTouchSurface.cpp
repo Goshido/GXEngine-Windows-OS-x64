@@ -1,4 +1,4 @@
-//version 1.1
+//version 1.2
 
 #include <GXEngine/GXTouchSurface.h>
 #include <GXEngine/GXUIMessage.h>
@@ -202,28 +202,41 @@ GXVoid GXTouchSurface::OnMouseMove ( const GXVec2 &position )
 	SendMessage ( target, GX_MSG_MOUSE_MOVE, &position, sizeof ( GXVec2 ) );
 }
 
-GXVoid GXTouchSurface::SendMessage ( GXWidget* widget, GXUInt message, const GXVoid* data, GXUInt size )
+GXVoid GXTouchSurface::SendMessage ( GXWidget* widget, GXUInt message, const GXVoid* data, GXUInt size, eGXTransmissionType type )
 {
-	GXMessage* msg = (GXMessage*)gx_ui_MessageBuffer->Allocate ( sizeof ( GXMessage ) );
-	msg->next = nullptr;
-	msg->widget = widget;
-	msg->message = message;
-	msg->data = gx_ui_MessageBuffer->Allocate ( size );
-	if ( size )
-		memcpy ( msg->data, data, size );
-	msg->size = size;
-
-	gx_ui_Mutex->Lock ();
-
-	if ( !messages )
-		messages = lastMessage = msg;
-	else
+	switch ( type )
 	{
-		lastMessage->next = msg;
-		lastMessage = msg;
-	}
+		case eGXTransmissionType::GX_TRANSMISSION_DIRECT:
+		{
+			GXMessage* msg = (GXMessage*)gx_ui_MessageBuffer->Allocate ( sizeof ( GXMessage ) );
+			msg->next = nullptr;
+			msg->widget = widget;
+			msg->message = message;
+			msg->data = gx_ui_MessageBuffer->Allocate ( size );
+			if ( size )
+				memcpy ( msg->data, data, size );
+			msg->size = size;
 
-	gx_ui_Mutex->Release ();
+			gx_ui_Mutex->Lock ();
+
+			if ( !messages )
+				messages = lastMessage = msg;
+			else
+			{
+				lastMessage->next = msg;
+				lastMessage = msg;
+			}
+
+			gx_ui_Mutex->Release ();
+		}
+		break;
+
+		case eGXTransmissionType::GX_TRANSMISSION_BROADCAST:
+		{
+			BroadcastMessage ( widget, widgetHead, message, data, size );
+		}
+		break;
+	}
 }
 
 GXVoid GXTouchSurface::ExecuteMessages ()
@@ -328,6 +341,44 @@ GXTouchSurface::GXTouchSurface ()
 
 	gx_ui_Mutex = new GXMutex ();
 	gx_ui_MessageBuffer = new GXCircleBuffer ( GX_UI_MESSAGE_BUFFER_SIZE );
+}
+
+GXVoid GXTouchSurface::BroadcastMessage ( GXWidget* sourceWidget, GXWidget* rootWidget, GXUInt message, const GXVoid* data, GXUInt size )
+{
+	if ( !rootWidget ) return;
+
+	GXWidgetIterator iterator;
+
+	iterator.Init ( rootWidget );
+	GXWidget* childs = iterator.GetChilds ();
+	BroadcastMessage ( sourceWidget, childs, message, data, size );
+
+	iterator.Init ( rootWidget );
+	GXWidget* brothers = iterator.GetNext ();
+	BroadcastMessage ( sourceWidget, brothers, message, data, size );
+
+	if ( sourceWidget == rootWidget ) return;
+
+	GXMessage* msg = (GXMessage*)gx_ui_MessageBuffer->Allocate ( sizeof ( GXMessage ) );
+	msg->next = nullptr;
+	msg->widget = rootWidget;
+	msg->message = message;
+	msg->data = gx_ui_MessageBuffer->Allocate ( size );
+	if ( size )
+		memcpy ( msg->data, data, size );
+	msg->size = size;
+
+	gx_ui_Mutex->Lock ();
+
+	if ( !messages )
+		messages = lastMessage = msg;
+	else
+	{
+		lastMessage->next = msg;
+		lastMessage = msg;
+	}
+
+	gx_ui_Mutex->Release ();
 }
 
 GXVoid GXTouchSurface::DeleteWidgets ()

@@ -19,7 +19,6 @@ class EMUIStaticTextRenderer : public GXWidgetRenderer
 	private:
 		GXHudSurface*		surface;
 		GXFont*				font;
-		GXFloat				layer;
 
 	public:
 		EMUIStaticTextRenderer ( GXUIStaticText* staticTextWidget );
@@ -36,9 +35,9 @@ class EMUIStaticTextRenderer : public GXWidgetRenderer
 EMUIStaticTextRenderer::EMUIStaticTextRenderer ( GXUIStaticText* staticTextWidget ):
 GXWidgetRenderer ( staticTextWidget )
 {
-	surface = new GXHudSurface ( (GXUShort)( EM_STATIC_TEXT_DEFAULT_WIDTH * gx_ui_Scale ), (GXUShort)( EM_STATIC_TEXT_DEFAULT_HEIGHT * gx_ui_Scale ), GX_FALSE );
+	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
+	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ), GX_FALSE );
 	font = GXGetFont ( EM_STATIC_TEXT_DEFAULT_FONT, (GXUShort)( EM_STATIC_TEXT_DEFAULT_TEXT_SIZE * gx_ui_Scale ) );
-	layer = EMGetNextGUIForegroundZ ();
 }
 
 EMUIStaticTextRenderer::~EMUIStaticTextRenderer ()
@@ -100,14 +99,18 @@ GXVoid EMUIStaticTextRenderer::OnDraw ()
 
 GXVoid EMUIStaticTextRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
 {
+	GXVec3 location;
+	surface->GetLocation ( location );
 	delete surface;
 	surface = new GXHudSurface ( width, height, GX_FALSE );
-	surface->SetLocation ( x, y, layer );
+	surface->SetLocation ( x, y, location.z );
 }
 
 GXVoid EMUIStaticTextRenderer::OnMoved ( GXFloat x, GXFloat y )
 {
-	surface->SetLocation ( x, y, layer );
+	GXVec3 location;
+	surface->GetLocation ( location );
+	surface->SetLocation ( x, y, location.z );
 }
 
 //------------------------------------------------------------------------------

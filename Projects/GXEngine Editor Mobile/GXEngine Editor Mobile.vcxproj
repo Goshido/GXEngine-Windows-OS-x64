@@ -243,7 +243,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXUIInput.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIListBox.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIMenu.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngine\GXUIMenuExt.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIPopup.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIStaticText.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXVAOStorage.cpp" />
@@ -338,7 +337,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXUIInput.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIListBox.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIMenu.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXUIMenuExt.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIMessage.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIPopup.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIStaticText.h" />

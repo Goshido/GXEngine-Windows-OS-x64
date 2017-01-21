@@ -24,7 +24,6 @@ class EMUIButton : public EMUI
 		GXVoid Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height );
 
 		GXVoid SetCaption ( const GXWChar* caption );
-		GXVoid SetLayer ( GXFloat z );
 
 		GXVoid Show ();
 		GXVoid Hide ();

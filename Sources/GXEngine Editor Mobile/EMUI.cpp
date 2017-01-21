@@ -4,11 +4,11 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define EM_UI_FOREGROUND_STEP 0.0001f
+//#define EM_UI_FOREGROUND_STEP 0.0001f
 
 
 static EMUI* em_UIElements = nullptr;
-static GXFloat em_UIForegroundZ = 99.9999f;
+//static GXFloat em_UIForegroundZ = 99.9999f;
 
 
 EMUI::EMUI ( EMUI* parent )
@@ -59,7 +59,7 @@ GXVoid GXCALL EMDrawUIMasks ()
 	for ( EMUI* ui = em_UIElements; ui; ui = ui->next )
 		ui->OnDrawMask ();
 }
-
+/*
 GXFloat GXCALL EMGetNextGUIForegroundZ ()
 {
 	//em_UIForegroundZ -= EM_UI_FOREGROUND_STEP;
@@ -80,3 +80,4 @@ GXVoid GXCALL EMSetHudSurfaceLocationWorld ( GXHudSurface &surface, const GXAABB
 
 	surface.SetLocation ( locationWorld );
 }
+*/

@@ -29,7 +29,11 @@ EMUIButton*				em_Button3 = nullptr;
 EMUIMenu*				em_Menu = nullptr;
 EMUIOpenFile*			em_OpenFile = nullptr;
 EMUIDraggableArea*		em_DraggableArea = nullptr;
-EMUIPopup*				em_Popup = nullptr;
+EMUIPopup*				em_FilePopup = nullptr;
+EMUIPopup*				em_CreatePopup = nullptr;
+EMUIPopup*				em_ToolsPopup = nullptr;
+EMUIPopup*				em_UtilityPopup = nullptr;
+EMUIPopup*				em_LanguagePopup = nullptr;
 EMUIEditBox*			em_EditBox = nullptr;
 EMDirectedLightActor*	em_DirectedLight = nullptr;
 EMUnitActor*			em_UnitActor = nullptr;
@@ -53,8 +57,6 @@ GXVoid GXCALL EMOnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFlo
 
 		em_Button1->Disable ();
 		em_Button2->Enable ();
-
-		em_Popup->Show ();
 	}
 	else if ( button == em_Button2->GetWidget () )
 	{
@@ -79,10 +81,8 @@ GXVoid GXCALL EMOnSave ( GXFloat x, GXFloat y, eGXMouseButtonState state )
 		GXLogW ( L"EMOnSave::Info - Just worked\n" );
 }
 
-GXVoid GXCALL EMOnExit ( GXFloat x, GXFloat y, eGXMouseButtonState state )
+GXVoid GXCALL EMOnExit ()
 {
-	if ( state != GX_MOUSE_BUTTON_UP ) return;
-
 	GXCore::GetInstance ()->Exit ();
 	GXLogA ( "Завершение\n" );
 }
@@ -134,12 +134,6 @@ GXVoid GXCALL EMOnOpenFile ( const GXWChar* filePath )
 	GXLogW ( L"EMOnOpenFile::Info - Файл: %s\n", filePath );
 }
 
-//-----------------------------------------------------------------------------
-
-GXVoid GXCALL EMOnPopupItem ()
-{
-	GXLogW ( L"EMOnPopupItem::Info - Атата\n" );
-}
 
 //-----------------------------------------------------------------------------
 
@@ -192,48 +186,50 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 	em_Button1->SetOnLeftMouseButtonCallback ( 0, &EMOnButton );
 	em_Button1->Disable ();
 	em_Button1->Resize ( 100.0f, 100.0f, 4.0f * gx_ui_Scale, gx_ui_Scale );
-	em_Button1->SetLayer ( EMGetNextGUIForegroundZ () );
 	em_Button1->SetCaption ( locale->GetString ( L"russian" ) );
 
 	em_Button2 = new EMUIButton ( nullptr );
 	em_Button2->SetOnLeftMouseButtonCallback ( 0, &EMOnButton );
 	em_Button2->Enable ();
 	em_Button2->Resize ( 100.0f + 4.2f * gx_ui_Scale, 100.0f, 4.0f * gx_ui_Scale, 0.5f * gx_ui_Scale );
-	em_Button2->SetLayer ( EMGetNextGUIForegroundZ () );
 	em_Button2->SetCaption ( locale->GetString ( L"english" ) );
+
+	em_FilePopup = new EMUIPopup ( nullptr );
+	em_FilePopup->AddItem ( locale->GetString ( L"File->New" ), nullptr );
+	em_FilePopup->AddItem ( locale->GetString ( L"File->Open" ), nullptr );
+	em_FilePopup->AddItem ( locale->GetString ( L"File->Close" ), nullptr );
+	em_FilePopup->AddItem ( locale->GetString ( L"File->Save" ), nullptr );
+	em_FilePopup->AddItem ( locale->GetString ( L"File->Exit" ), &EMOnExit );
 	
-	em_Menu = new EMUIMenu ();
-	em_Menu->AddItem ( locale->GetString ( L"Main menu->File" ) );
-	em_Menu->AddSubitem ( 0, locale->GetString ( L"File->New" ), locale->GetString ( L"File->New (Hotkey)" ), &EMOnSave );
-	em_Menu->AddSubitem ( 0, locale->GetString ( L"File->Open" ), locale->GetString ( L"File->Open (Hotkey)" ), &EMOnExit );
-	em_Menu->AddSubitem ( 0, locale->GetString ( L"File->Close" ), locale->GetString ( L"File->Close (Hotkey)" ), &EMOnExit );
-	em_Menu->AddSubitem ( 0, locale->GetString ( L"File->Save" ), locale->GetString ( L"File->Save (Hotkey)" ), &EMOnSave );
-	em_Menu->AddSubitem ( 0, locale->GetString ( L"File->Exit" ), locale->GetString ( L"File->Exit (Hotkey)" ), &EMOnExit );
+	em_CreatePopup = new EMUIPopup ( nullptr );
+	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Unit Actor" ), nullptr );
+	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Static mesh" ), nullptr );
+	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Skeletal mesh" ), nullptr );
+	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Directed light" ), nullptr );
+	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Spot" ), nullptr );
+	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Bulp" ), nullptr );
 
-	em_Menu->AddItem ( locale->GetString ( L"Main menu->Create" ) );
-	em_Menu->AddSubitem ( 1, locale->GetString ( L"Create->Unit Actor" ), 0, &EMOnDummy );
-	em_Menu->AddSubitem ( 1, locale->GetString ( L"Create->Static mesh" ), 0, &EMOnDummy );
-	em_Menu->AddSubitem ( 1, locale->GetString ( L"Create->Skeletal mesh" ), 0, &EMOnDummy );
-	em_Menu->AddSubitem ( 1, locale->GetString ( L"Create->Directed light" ), 0, &EMOnDummy );
-	em_Menu->AddSubitem ( 1, locale->GetString ( L"Create->Spot" ), 0, &EMOnDummy );
-	em_Menu->AddSubitem ( 1, locale->GetString ( L"Create->Bulp" ), 0, &EMOnDummy );
+	em_ToolsPopup = new EMUIPopup ( nullptr );
+	em_ToolsPopup->AddItem ( locale->GetString ( L"Tools->Select" ), nullptr );
+	em_ToolsPopup->AddItem ( locale->GetString ( L"Tools->Move" ), nullptr );
+	em_ToolsPopup->AddItem ( locale->GetString ( L"Tools->Rotate" ), nullptr );
+	em_ToolsPopup->AddItem ( locale->GetString ( L"Tools->Scale" ), nullptr );
 
-	em_Menu->AddItem ( locale->GetString ( L"Main menu->Tools" ) );
-	em_Menu->AddSubitem ( 2, locale->GetString ( L"Tools->Select" ), locale->GetString ( L"Tools->Select (Hotkey)" ), &EMOnDummy );
-	em_Menu->AddSubitem ( 2, locale->GetString ( L"Tools->Move" ), locale->GetString ( L"Tools->Move (Hotkey)" ), &EMOnMoveTool );
-	em_Menu->AddSubitem ( 2, locale->GetString ( L"Tools->Rotate" ), locale->GetString ( L"Tools->Rotate (Hotkey)" ), &EMOnDummy );
-	em_Menu->AddSubitem ( 2, locale->GetString ( L"Tools->Scale" ), locale->GetString ( L"Tools->Scale (Hotkey)" ), &EMOnDummy );
+	em_UtilityPopup = new EMUIPopup ( nullptr );
+	em_UtilityPopup->AddItem ( locale->GetString ( L"Utility->Particle system" ), nullptr );
+	em_UtilityPopup->AddItem ( locale->GetString ( L"Utility->Animation graph" ), nullptr );
 
-	em_Menu->AddItem ( locale->GetString ( L"Main menu->Utility" ) );
-	em_Menu->AddSubitem ( 3, locale->GetString ( L"Utility->Particle system" ), 0, &EMOnDummy );
-	em_Menu->AddSubitem ( 3, locale->GetString ( L"Utility->Animation graph" ), 0, &EMOnDummy );
+	em_LanguagePopup = new EMUIPopup ( nullptr );
+	em_LanguagePopup->AddItem ( locale->GetString ( L"Language->Русский" ), nullptr );
+	em_LanguagePopup->AddItem ( locale->GetString ( L"Language->English" ), nullptr );
 
-	em_Menu->AddItem ( locale->GetString ( L"Main menu->Language" ) );
-	em_Menu->AddSubitem ( 4, locale->GetString ( L"Language->Русский" ), 0, &EMOnDummy );
-	em_Menu->AddSubitem ( 4, locale->GetString ( L"Language->English" ), 0, &EMOnDummy );
-
-	em_Menu->SetLayer ( EMGetNextGUIForegroundZ () );
-	em_Menu->SetLocation ( 0.0f, h - gx_ui_Scale * 0.5f );
+	em_Menu = new EMUIMenu ( nullptr );
+	em_Menu->SetLocation ( 0.0f, h - 1.0f - em_Menu->GetHeight () );
+	em_Menu->AddItem ( locale->GetString ( L"Main menu->File" ), em_FilePopup );
+	em_Menu->AddItem ( locale->GetString ( L"Main menu->Create" ), em_CreatePopup );
+	em_Menu->AddItem ( locale->GetString ( L"Main menu->Tools" ), em_ToolsPopup );
+	em_Menu->AddItem ( locale->GetString ( L"Main menu->Utility" ), em_UtilityPopup );
+	em_Menu->AddItem ( locale->GetString ( L"Main menu->Language" ), em_LanguagePopup );
 	
 	em_DraggableArea = new EMUIDraggableArea ( nullptr );
 	em_DraggableArea->SetHeaderHeight ( gx_ui_Scale * 2.0f );
@@ -242,8 +238,7 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 	em_Button3 = new EMUIButton ( em_DraggableArea );
 	em_Button3->Enable ();
 	em_Button3->Resize ( 0.2f * gx_ui_Scale, 0.2f * gx_ui_Scale, 3.0f * gx_ui_Scale, 0.8f * gx_ui_Scale );
-	em_Button3->SetOnLeftMouseButtonCallback ( 0, &EMOnButton );
-	em_Button3->SetLayer ( EMGetNextGUIForegroundZ () );
+	em_Button3->SetOnLeftMouseButtonCallback ( nullptr, &EMOnButton );
 	em_Button3->SetCaption ( locale->GetString ( L"TestButton" ) );
 
 	em_EditBox = new EMUIEditBox ( em_DraggableArea );
@@ -251,15 +246,6 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 	em_EditBox->Resize ( 10.0f, 60.0f, 4.5f * gx_ui_Scale, 0.6f * gx_ui_Scale );
 
 	em_OpenFile = new EMUIOpenFile ();
-
-	em_Popup = new EMUIPopup ( nullptr );
-	em_Popup->AddItem ( L"New", nullptr );
-	em_Popup->AddItem ( L"Open", nullptr );
-	em_Popup->AddItem ( L"Close", nullptr );
-	em_Popup->AddItem ( L"Save", nullptr );
-	em_Popup->AddItem ( L"Save as", &EMOnPopupItem );
-	em_Popup->AddItem ( L"Exit", nullptr );
-	em_Popup->SetLocation ( 20.0f, 500.0f );
 
 	GXMat4 transfrom;
 	GXSetMat4Identity ( transfrom );
@@ -297,7 +283,11 @@ GXVoid GXCALL EMOnDeleteRenderableObjects ()
 	GXSafeDelete ( em_EditBox );
 	GXSafeDelete ( em_DraggableArea );
 	GXSafeDelete ( em_OpenFile );
-	GXSafeDelete ( em_Popup );
+	GXSafeDelete ( em_FilePopup );
+	GXSafeDelete ( em_CreatePopup );
+	GXSafeDelete ( em_ToolsPopup );
+	GXSafeDelete ( em_UtilityPopup );
+	GXSafeDelete ( em_LanguagePopup );
 	GXSafeDelete ( em_HudCamera );
 
 	em_MoveTool->UnBind ();

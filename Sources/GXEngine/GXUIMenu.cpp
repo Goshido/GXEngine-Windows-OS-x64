@@ -2,140 +2,106 @@
 
 #include <GXEngine/GXUIMenu.h>
 #include <GXEngine/GXUIMessage.h>
+#include <GXEngine/GXUICommon.h>
+#include <GXCommon/GXStrings.h>
+
+
+#define GX_ANY_HEIGHT 1.0f
 
 
 struct GXUIMenuItem
 {
+	GXWChar*	name;
 	GXAABB		bounds;
-	GXBool		isPressed;
-	GXBool		isHighlighted;
+	GXUIPopup*	popup;
 };
 
-struct GXUIMenuResizeItem
-{
-	GXUByte		item;
-	GXFloat		width;
-};
+//-----------------------------------------------------------------
 
-GXUIMenu::GXUIMenu (  GXWidget* parent, GXVoid* menuHandler, PFNGXONSHOWSUBMENUPROC onShowSubmenu ):
+GXUIMenu::GXUIMenu ( GXWidget* parent ):
 GXWidget ( parent ), items ( sizeof ( GXUIMenuItem ) )
 {
-	this->menuHandler = menuHandler;
-	OnShowSubmenu = onShowSubmenu;
+	selectedItemIndex = highlightedItemIndex = GX_UI_MENU_INVALID_INDEX;
 }
 
 GXUIMenu::~GXUIMenu ()
 {
-	//NOTHING
+	GXUInt totalItems = items.GetLength ();
+	GXUIMenuItem* itemStorage = (GXUIMenuItem*)items.GetData ();
+
+	for ( GXUByte i = 0; i < totalItems; i++ )
+		GXSafeFree ( itemStorage[ i ].name );
 }
 
 GXVoid GXUIMenu::OnMessage ( GXUInt message, const GXVoid* data )
 {
 	switch ( message )
 	{
-		case GX_MSG_RESIZE:
+		case GX_MSG_MENY_ADD_ITEM:
 		{
-			GXUInt total = items.GetLength ();
+			const GXUIMenuItem* item = (const GXUIMenuItem*)data;
+			GXFloat itemWidth = GXGetAABBWidth ( item->bounds );
 
-			if ( total == 0 )
+			GXUIMenuItem newItem;
+			if ( item->name )
+				GXWcsclone ( &newItem.name, item->name );
+			else
+				newItem.name = nullptr;
+
+			newItem.popup = item->popup;
+			GXAABB newBoundsLocal;
+			GXAddVertexToAABB ( newBoundsLocal, boundsLocal.min );
+
+			GXUInt totalItems = items.GetLength ();
+			if ( totalItems > 0 )
 			{
-				GXWidget::OnMessage ( message, data );
+				GXAddVertexToAABB ( newItem.bounds, boundsWorld.max.x, boundsWorld.min.y, -1.0f );
+				GXAddVertexToAABB ( newItem.bounds, boundsWorld.max.x + itemWidth, boundsWorld.max.y, 1.0f );
 
-				if ( renderer )
-					renderer->OnUpdate ();
-
-				return;
-			}
-
-			const GXAABB* b = (const GXAABB*)data;
-
-			GXUIMenuItem* item = (GXUIMenuItem*)items.GetValue ( 0 );
-			GXVec2 delta = GXCreateVec2 ( b->min.x - item->bounds.min.x, b->min.y - item->bounds.min.y );
-
-			for ( GXUInt i = 0; i < total; i++ )
-			{
-				GXUIMenuItem* item = (GXUIMenuItem*)items.GetValue ( i );
-				item->bounds.min.x += delta.x;
-				item->bounds.min.y += delta.y;
-
-				item->bounds.max.x += delta.x;
-				item->bounds.max.y += delta.y;
-			}
-
-			GXAABB bounds;
-			GXSetAABBEmpty ( bounds );
-			GXAddVertexToAABB ( bounds, item->bounds.min.x, item->bounds.min.y, item->bounds.min.z );
-
-			if ( total > 1 )
-				item = (GXUIMenuItem*)items.GetValue ( total - 1 );
-
-			GXAddVertexToAABB ( bounds, item->bounds.max.x, item->bounds.max.y, item->bounds.max.z );
-
-			UpdateBoundsWorld ( bounds );
-
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		case GX_MSG_MENU_ADD_ITEM:
-		{
-			GXUIMenuItem item;
-			item.isHighlighted = GX_FALSE;
-			item.isPressed = GX_FALSE;
-			GXSetAABBEmpty ( item.bounds );
-
-			GXUInt total = items.GetLength ();
-			if ( total == 0 )
-			{
-				GXAddVertexToAABB ( item.bounds, boundsLocal.min.x, boundsLocal.min.y, boundsLocal.min.z );
-				GXAddVertexToAABB ( item.bounds, boundsLocal.min.x + gx_ui_Scale * 1.5f, boundsLocal.max.y, boundsLocal.max.z );
-
-				UpdateBoundsWorld ( item.bounds );
+				GXUIMenuItem* itemStorage = (GXUIMenuItem*)items.GetData ();
+				GXAddVertexToAABB ( newBoundsLocal, boundsLocal.min.x + newItem.bounds.max.x - itemStorage[ 0 ].bounds.min.x, boundsLocal.max.y, boundsLocal.max.z );
 			}
 			else
 			{
-				GXUIMenuItem* last = (GXUIMenuItem*)items.GetValue ( total - 1 );
-				GXAddVertexToAABB ( item.bounds, last->bounds.max.x, last->bounds.min.y, last->bounds.min.z );
-				GXAddVertexToAABB ( item.bounds, last->bounds.max.x + gx_ui_Scale * 1.5f, boundsLocal.max.y, last->bounds.max.z );
+				GXAddVertexToAABB ( newItem.bounds, boundsWorld.min.x, boundsWorld.min.y, -1.0f );
+				GXAddVertexToAABB ( newItem.bounds, boundsWorld.min.x + itemWidth, boundsWorld.max.y, 1.0f );
 
-				GXUIMenuItem* first = (GXUIMenuItem*)items.GetValue ( 0 );
-				GXAABB bounds;
-				GXSetAABBEmpty ( bounds );
-				GXAddVertexToAABB ( bounds, first->bounds.min.x, first->bounds.min.y, first->bounds.min.z );
-				GXAddVertexToAABB ( bounds, item.bounds.max.x, item.bounds.max.y, item.bounds.max.z );
-
-				UpdateBoundsWorld ( bounds );
+				GXAddVertexToAABB ( newBoundsLocal, boundsLocal.min.x + itemWidth, boundsLocal.max.y, boundsLocal.max.z );
 			}
 
-			items.SetValue ( total, &item );
-
-			if ( renderer )
-				renderer->OnUpdate ();
+			items.SetValue ( totalItems, &newItem );
+			GXWidget::OnMessage ( GX_MSG_RESIZE, &newBoundsLocal );
 		}
 		break;
 
-		case GX_MSG_MENU_RESIZE_ITEM:
+		case GX_MSG_LMBDOWN:
 		{
-			const GXUIMenuResizeItem* ri = (const GXUIMenuResizeItem*)data;
+			GXUIMenuItem* itemStorage = (GXUIMenuItem*)items.GetData ();
 
-			GXUByte total = (GXUByte)items.GetLength ();
-			if ( total < ri->item + 1 ) return;
-
-			GXUIMenuItem* p = (GXUIMenuItem*)items.GetValue ( ri->item );
-			GXFloat delta = ri->width - ( p->bounds.max.x - p->bounds.min.x );
-
-			p->bounds.max.x += delta;
-
-			for ( GXUByte i = ri->item + 1; i < total; i++ )
+			if ( highlightedItemIndex == selectedItemIndex )
 			{
-				p = (GXUIMenuItem*)items.GetValue ( i );
-				p->bounds.min.x += delta;
-				p->bounds.max.x += delta;
-			}
+				if ( itemStorage[ highlightedItemIndex ].popup )
+					itemStorage[ highlightedItemIndex ].popup->Hide ();
 
-			p = (GXUIMenuItem*)items.GetValue ( total - 1 );
-			boundsLocal.max.x = p->bounds.max.x;
+				selectedItemIndex = GX_UI_MENU_INVALID_INDEX;
+			}
+			else
+			{
+				if ( selectedItemIndex != GX_UI_MENU_INVALID_INDEX && itemStorage[ selectedItemIndex ].popup )
+					itemStorage[ selectedItemIndex ].popup->Hide ();
+
+				GXUIMenuItem* item = itemStorage + highlightedItemIndex;
+
+				if ( item->popup )
+				{
+					GXFloat popupWidth = GXGetAABBWidth ( item->popup->GetBoundsLocal () );
+					GXFloat popupHeight = GXGetAABBHeight ( item->popup->GetBoundsLocal () );
+					item->popup->Resize ( item->bounds.min.x, item->bounds.min.y - popupHeight, popupWidth, popupHeight );
+					item->popup->Show ();
+				}
+
+				selectedItemIndex = highlightedItemIndex;
+			}
 
 			if ( renderer )
 				renderer->OnUpdate ();
@@ -146,408 +112,78 @@ GXVoid GXUIMenu::OnMessage ( GXUInt message, const GXVoid* data )
 		{
 			const GXVec2* pos = (const GXVec2*)data;
 
-			GXUByte total = (GXUByte)items.GetLength ();
-			if ( total == 0 ) return;
+			GXUIMenuItem* itemStorage = (GXUIMenuItem*)items.GetData ();
+			GXUByte totalItems = (GXUByte)items.GetLength ();
+			GXUByte mouseoverItemIndex = 0;
+			for ( ; mouseoverItemIndex < totalItems; mouseoverItemIndex++ )
+				if ( GXIsOverlapedAABBVec3 ( itemStorage[ mouseoverItemIndex ].bounds, pos->x, pos->y, 0.0f ) ) break;
 
-			GXUIMenuItem* itemMouseOver = 0;
-			GXUByte itemIndex = 0xFF;
-
-			for ( GXUByte i = 0; i < total; i++ )
+			if ( highlightedItemIndex != mouseoverItemIndex )
 			{
-				GXUIMenuItem* item = (GXUIMenuItem*)items.GetValue ( i );
-				if ( GXIsOverlapedAABBVec3 ( item->bounds, pos->x, pos->y, 0.0f ) )
-				{
-					itemIndex = i;
-					itemMouseOver = item;
-					break;
-				}
-			}
-
-			if ( itemMouseOver->isHighlighted ) return;
-
-			itemMouseOver->isHighlighted = GX_TRUE;
-			
-			if ( itemIndex != 0 )
-			{
-				GXUIMenuItem* item = (GXUIMenuItem*)items.GetValue ( itemIndex - 1 );
-				item->isHighlighted = GX_FALSE;
-				item->isPressed = GX_FALSE;
-			}
-
-			if ( itemIndex < total - 1 )
-			{
-				GXUIMenuItem* item = (GXUIMenuItem*)items.GetValue ( itemIndex + 1 );
-				item->isHighlighted = GX_FALSE;
-				item->isPressed = GX_FALSE;
-			}
-
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		case GX_MSG_MOUSE_LEAVE:
-		{
-			GXUByte total = (GXUByte)items.GetLength ();
-			if ( total == 0 ) return;
-
-			for ( GXUByte i = 0; i < total; i++ )
-			{
-				GXUIMenuItem* item = (GXUIMenuItem*)items.GetValue ( i );
-				item->isHighlighted = GX_FALSE;
-				item->isPressed = GX_FALSE;
-			}
-
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		case GX_MSG_REDRAW:
-			if ( renderer )
-				renderer->OnUpdate ();
-		break;
-
-		case GX_MSG_LMBDOWN:
-		{
-			GXUByte total = (GXUByte)items.GetLength ();
-			if ( total == 0 ) return;
-
-			for ( GXUByte i = 0; i < total; i++ )
-			{
-				GXUIMenuItem* item = (GXUIMenuItem*)items.GetValue ( i );
-				if ( item->isHighlighted )
-				{
-					item->isPressed = GX_TRUE;
-					OnShowSubmenu ( menuHandler, i );
-					break;
-				}
-			}
-
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		case GX_MSG_LMBUP:
-		{
-			GXUByte total = (GXUByte)items.GetLength ();
-			if ( total == 0 ) return;
-
-			for ( GXUByte i = 0; i < total; i++ )
-			{
-				GXUIMenuItem* item = (GXUIMenuItem*)items.GetValue ( i );
-				if ( item->isHighlighted )
-				{
-					item->isPressed = GX_FALSE;
-					break;
-				}
-			}
-
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		default:
-		break;
-	}
-}
-
-GXVoid GXUIMenu::AddItem ()
-{
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_MENU_ADD_ITEM, 0, 0 );
-}
-
-GXVoid GXUIMenu::ResizeItem ( GXUByte item, GXFloat width )
-{
-	GXUIMenuResizeItem ri;
-	ri.item = item;
-	ri.width = width;
-
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_MENU_RESIZE_ITEM, &ri, sizeof ( GXUIMenuResizeItem ) );
-}
-
-GXUByte GXUIMenu::GetTotalItems () const
-{
-	return (GXUByte)items.GetLength ();
-}
-
-const GXAABB& GXUIMenu::GetItemBounds ( GXUByte item ) const
-{
-	GXUIMenuItem* p = (GXUIMenuItem*)items.GetValue ( item );
-	return p->bounds;
-}
-
-GXVoid GXUIMenu::Redraw ()
-{
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_REDRAW, 0, 0 );
-}
-
-GXBool GXUIMenu::IsItemPressed ( GXUByte item ) const
-{
-	GXUIMenuItem* p = (GXUIMenuItem*)items.GetValue ( item );
-	return p->isPressed;
-}
-
-GXBool GXUIMenu::IsItemHighlighted ( GXUByte item ) const
-{
-	GXUIMenuItem* p = (GXUIMenuItem*)items.GetValue ( item );
-	return p->isHighlighted;
-}
-
-//--------------------------------------------------------------------------
-
-struct GXUISubmenuItem
-{
-	GXAABB						bounds;
-	PFNGXONMENUITEMPROC			OnMouseButton;
-	GXBool						isPressed;
-	GXBool						isHighlighted;
-};
-
-GXUISubmenu::GXUISubmenu ( GXWidget* parent ):
-GXWidget ( parent ), items ( sizeof ( GXUISubmenuItem ) )
-{
-	itemHeight = 0.5f * gx_ui_Scale;
-}
-
-GXUISubmenu::~GXUISubmenu ()
-{
-	//NOTHING
-}
-
-GXVoid GXUISubmenu::OnMessage ( GXUInt message, const GXVoid* data )
-{
-	switch ( message )
-	{
-		case GX_MSG_RESIZE:
-		{
-			GXUByte total = items.GetLength ();
-			if ( total == 0 )
-			{
-				const GXAABB* newBounds = (const GXAABB*)data;
-				itemHeight = newBounds->max.y - newBounds->min.y;
-
-				GXWidget::OnMessage ( message, data );
-
+				highlightedItemIndex = mouseoverItemIndex;
 				if ( renderer )
 					renderer->OnUpdate ();
-
-				return;
 			}
-
-			const GXAABB* b = (const GXAABB*)data;
-
-			GXUISubmenuItem* bottomItem = (GXUISubmenuItem*)items.GetValue ( total - 1 );
-			GXVec2 delta = GXCreateVec2 ( b->min.x - bottomItem->bounds.min.x, b->min.y - bottomItem->bounds.min.y );
-
-			for ( GXUByte i = 0; i < total; i++ )
-			{
-				GXUISubmenuItem* item = (GXUISubmenuItem*)items.GetValue ( i );
-				item->bounds.min.x += delta.x;
-				item->bounds.min.y += delta.y;
-
-				item->bounds.max.x += delta.x;
-				item->bounds.max.y += delta.y;
-			}
-
-			GXAABB bounds;
-			GXSetAABBEmpty ( bounds );
-			GXAddVertexToAABB ( bounds, bottomItem->bounds.min.x, bottomItem->bounds.min.y, bottomItem->bounds.min.z );
-
-			if ( total > 1 )
-			{
-				GXUISubmenuItem* topItem = (GXUISubmenuItem*)items.GetValue ( 0 );
-				GXAddVertexToAABB ( bounds, topItem->bounds.max.x, topItem->bounds.max.y, topItem->bounds.max.z );
-			}
-			else
-				GXAddVertexToAABB ( bounds, bottomItem->bounds.max.x, bottomItem->bounds.max.y, bottomItem->bounds.max.z );
-
-			UpdateBoundsWorld ( bounds );
-
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		case GX_MSG_SUBMENU_ADD_ITEM:
-		{
-			GXUISubmenuItem item;
-			item.isHighlighted = item.isPressed = GX_FALSE;
-			item.OnMouseButton = *( (PFNGXONMENUITEMPROC*)data );
-
-			GXUByte total = (GXUByte)items.GetLength ();
-			if ( total == 0 )
-			{
-				GXAddVertexToAABB ( item.bounds, boundsLocal.min.x, boundsLocal.min.y, boundsLocal.min.z );
-				GXAddVertexToAABB ( item.bounds, boundsLocal.max.x, boundsLocal.max.y, boundsLocal.max.z );
-			}
-			else
-			{
-				GXUISubmenuItem* i = (GXUISubmenuItem*)items.GetValue ( total - 1 );
-				GXAddVertexToAABB ( item.bounds, i->bounds.min.x, i->bounds.min.y - itemHeight, i->bounds.min.z );
-				GXAddVertexToAABB ( item.bounds, i->bounds.max.x, i->bounds.min.y, i->bounds.max.z );
-				
-				GXAABB bounds = boundsLocal;
-				bounds.min.x = item.bounds.min.x;
-				bounds.min.y = item.bounds.min.y;
-
-				UpdateBoundsWorld ( bounds );
-			}
-
-			items.SetValue ( total, &item );
-
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		case GX_MSG_SUBMENU_SET_HEIGHT:
-		{
-			const GXFloat* height = (const GXFloat*)data;
-			itemHeight = *height;
-
-			GXAABB bounds = boundsLocal;
-
-			GXUByte total = (GXUByte)items.GetLength ();
-			if ( total == 0 )
-			{
-				bounds.max.y = bounds.min.y + itemHeight;
-				UpdateBoundsWorld ( bounds );
-				return;
-			}
-
-			GXFloat y = bounds.min.y;
-			for ( GXUByte i = 0; i < total; i++ )
-			{
-				GXUISubmenuItem* item = (GXUISubmenuItem*)items.GetValue ( total - i - 1 );
-				item->bounds.min.y = y;
-				y += itemHeight;
-				item->bounds.max.y = y;
-			}
-
-			GXUISubmenuItem* topItem = (GXUISubmenuItem*)items.GetValue ( 0 );
-			bounds.max.y = topItem->bounds.max.y;
-			UpdateBoundsWorld ( bounds );
-
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		case GX_MSG_MOUSE_MOVE:
-		{
-			GXUByte total = (GXUByte)items.GetLength ();
-			if ( total == 0 ) return;
-
-			const GXVec2* pos = (const GXVec2*)data;
-
-			GXUISubmenuItem* itemMouseOver = 0;
-			GXUByte itemIndex;
-
-			for ( itemIndex = 0; itemIndex < total; itemIndex++ )
-			{
-				GXUISubmenuItem* item = (GXUISubmenuItem*)items.GetValue ( itemIndex );
-				if ( GXIsOverlapedAABBVec3 ( item->bounds, pos->x, pos->y, 0.0f ) )
-				{
-					itemMouseOver = item;
-					break;
-				}
-			}
-
-			if ( itemMouseOver->isHighlighted ) return;
-
-			itemMouseOver->isHighlighted = GX_TRUE;
-			
-			if ( itemIndex != 0 )
-			{
-				GXUISubmenuItem* item = (GXUISubmenuItem*)items.GetValue ( itemIndex - 1 );
-				item->isHighlighted = GX_FALSE;
-				item->isPressed = GX_FALSE;
-			}
-
-			if ( itemIndex < total - 1 )
-			{
-				GXUISubmenuItem* item = (GXUISubmenuItem*)items.GetValue ( itemIndex + 1 );
-				item->isHighlighted = GX_FALSE;
-				item->isPressed = GX_FALSE;
-			}
-
-			if ( renderer )
-				renderer->OnUpdate ();
 		}
 		break;
 
 		case GX_MSG_MOUSE_LEAVE:
 		{
-			Hide ();
-
-			GXUByte total = (GXUByte)items.GetLength ();
-			if ( total == 0 ) return;
-
-			for ( GXUByte i = 0; i < total; i++ )
-			{
-				GXUISubmenuItem* item = (GXUISubmenuItem*)items.GetValue ( i );
-				item->isHighlighted = GX_FALSE;
-				item->isPressed = GX_FALSE;
-			}
-
+			highlightedItemIndex = GX_UI_MENU_INVALID_INDEX;
 			if ( renderer )
 				renderer->OnUpdate ();
 		}
 		break;
 
-		case GX_MSG_LMBDOWN:
+		case GX_MSG_RESIZE:
 		{
-			GXUByte total = (GXUByte)items.GetLength ();
-			if ( total == 0 ) return;
+			const GXAABB* bounds = (const GXAABB*)data;
 
-			for ( GXUByte i = 0; i < total; i++ )
+			GXUByte totalItems = (GXUByte)items.GetLength ();
+			GXVec2 locationDelta = GXCreateVec2 ( bounds->min.x - boundsLocal.min.x, bounds->min.y - boundsLocal.min.y );
+			GXAABB newBoundsLocal;
+
+			if ( totalItems > 0 )
 			{
-				GXUISubmenuItem* item = (GXUISubmenuItem*)items.GetValue ( i );
-				if ( item->isHighlighted )
+				GXFloat heightDelta = GXGetAABBHeight ( boundsLocal ) - GXGetAABBHeight ( *bounds );
+				GXUIMenuItem* itemStorage = (GXUIMenuItem*)items.GetData ();
+
+				for ( GXUByte i = 0; i < totalItems; i++ )
 				{
-					item->isPressed = GX_TRUE;
-					break;
+					GXUIMenuItem* currentItem = itemStorage + i;
+
+					currentItem->bounds.min.x += locationDelta.x;
+					currentItem->bounds.max.x += locationDelta.x;
+
+					currentItem->bounds.min.y += locationDelta.y;
+					currentItem->bounds.max.y += locationDelta.y + heightDelta;
 				}
+
+				GXAddVertexToAABB ( newBoundsLocal, bounds->min.x, bounds->min.y, -1.0f );
+				GXAddVertexToAABB ( newBoundsLocal, bounds->min.x + itemStorage[ totalItems ].bounds.max.x - itemStorage[ 0 ].bounds.min.x, bounds->min.y + itemStorage[ totalItems ].bounds.max.y - itemStorage[ 0 ].bounds.min.y, 1.0f );
+			}
+			else
+			{
+				newBoundsLocal = *bounds;
 			}
 
-			if ( renderer )
-				renderer->OnUpdate ();
+			GXWidget::OnMessage ( message, &newBoundsLocal );
 		}
 		break;
 
-		case GX_MSG_LMBUP:
+		case GX_MSG_POPUP_CLOSED:
 		{
-			Hide ();
+			if ( selectedItemIndex == GX_UI_MENU_INVALID_INDEX ) break;
 
-			GXUByte total = (GXUByte)items.GetLength ();
-			if ( total == 0 ) return;
-
-			for ( GXUByte i = 0; i < total; i++ )
+			const GXUIPopup** popup = (const GXUIPopup**)data;
+			GXUIMenuItem* itemStorage = (GXUIMenuItem*)items.GetData ();
+			if ( itemStorage[ selectedItemIndex ].popup == *popup )
 			{
-				GXUISubmenuItem* item = (GXUISubmenuItem*)items.GetValue ( i );
-				if ( item->isHighlighted )
-				{
-					item->isPressed = GX_FALSE;
-					if ( item->OnMouseButton )
-					{
-						const GXVec2* pos = (const GXVec2*)data;
-						item->OnMouseButton ( pos->x, pos->y, GX_MOUSE_BUTTON_UP );
-					}
-					break;
-				}
+				selectedItemIndex = GX_UI_MENU_INVALID_INDEX;
+				if ( renderer )
+					renderer->OnUpdate ();
 			}
-
-			if ( renderer )
-				renderer->OnUpdate ();
 		}
-		break;
-
-		case GX_MSG_REDRAW:
-			if ( renderer )
-				renderer->OnUpdate ();
 		break;
 
 		default:
@@ -556,39 +192,57 @@ GXVoid GXUISubmenu::OnMessage ( GXUInt message, const GXVoid* data )
 	}
 }
 
-GXVoid GXUISubmenu::AddItem ( PFNGXONMENUITEMPROC callback )
+GXVoid GXUIMenu::AddItem ( const GXWChar* name, GXFloat itemWidth, GXUIPopup* popup )
 {
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_SUBMENU_ADD_ITEM, &callback, sizeof ( PFNGXONMENUITEMPROC ) );
+	if ( !name ) return;
+
+	GXUIMenuItem item;
+
+	GXUInt size = ( GXWcslen ( name ) + 1 ) * sizeof ( GXWChar );
+	item.name = (GXWChar*)gx_ui_MessageBuffer->Allocate ( size );
+	memcpy ( item.name, name, size );
+	GXAddVertexToAABB ( item.bounds, 0.0f, 0.0f, -1.0f );
+	GXAddVertexToAABB ( item.bounds, itemWidth, GX_ANY_HEIGHT, 1.0f );
+	item.popup = popup;
+
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_MENY_ADD_ITEM, &item, sizeof ( GXUIMenuItem ) );
 }
 
-GXVoid GXUISubmenu::SetItemHeight ( GXFloat height )
-{
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_SUBMENU_SET_HEIGHT, &height, sizeof ( GXFloat ) );
-}
-
-GXUByte GXUISubmenu::GetTotalItems () const
+GXUByte GXUIMenu::GetTotalItems () const
 {
 	return (GXUByte)items.GetLength ();
 }
 
-GXFloat GXUISubmenu::GetItemHeight () const
+const GXWChar* GXUIMenu::GetItemName ( GXUByte itemIndex ) const
 {
-	return itemHeight;
+	if ( itemIndex >= (GXUByte)items.GetLength () ) return nullptr;
+
+	GXUIMenuItem* itemStorage = (GXUIMenuItem*)items.GetData ();
+	return itemStorage[ itemIndex ].name;
 }
 
-GXVoid GXUISubmenu::Redraw ()
+GXFloat GXUIMenu::GetItemOffset ( GXUByte itemIndex ) const
 {
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_REDRAW, 0, 0 );
+	if ( itemIndex >= (GXUByte)items.GetLength () ) return -1.0f;
+
+	GXUIMenuItem* itemStorage = (GXUIMenuItem*)items.GetData ();
+	return itemStorage[ itemIndex ].bounds.min.x - boundsWorld.min.x;
 }
 
-GXBool GXUISubmenu::IsItemPressed ( GXUByte item ) const
+GXFloat GXUIMenu::GetItemWidth ( GXUByte itemIndex ) const
 {
-	GXUISubmenuItem* i = (GXUISubmenuItem*)items.GetValue ( item );
-	return i->isPressed;
+	if ( itemIndex >= (GXUByte)items.GetLength () ) return 0.0f;
+
+	GXUIMenuItem* itemStorage = (GXUIMenuItem*)items.GetData ();
+	return GXGetAABBWidth ( itemStorage[ itemIndex ].bounds );
 }
 
-GXBool GXUISubmenu::IsItemHighlighted ( GXUByte item ) const
+GXUByte GXUIMenu::GetSelectedItemIndex () const
 {
-	GXUISubmenuItem* i = (GXUISubmenuItem*)items.GetValue ( item );
-	return i->isHighlighted;
+	return selectedItemIndex;
+}
+
+GXUByte GXUIMenu::GetHighlightedItemIndex () const
+{
+	return highlightedItemIndex;
 }

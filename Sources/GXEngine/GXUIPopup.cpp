@@ -134,6 +134,9 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 				if ( itemStorage[ selectedItemIndex ].action )
 					itemStorage[ selectedItemIndex ].action ();
 
+				GXUIPopup* pointer = this;
+				GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_POPUP_CLOSED, &pointer, sizeof ( GXUIPopup* ), eGXTransmissionType::GX_TRANSMISSION_BROADCAST );
+
 				selectedItemIndex = GX_UI_POPUP_INVALID_INDEX;
 				if ( renderer )
 					renderer->OnUpdate ();
@@ -170,6 +173,9 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 				if ( renderer )
 					renderer->OnUpdate ();
 			}
+
+			GXUIPopup* pointer = this;
+			GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_POPUP_CLOSED, &pointer, sizeof ( GXUIPopup* ), eGXTransmissionType::GX_TRANSMISSION_BROADCAST );
 
 			Hide ();
 		}

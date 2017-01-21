@@ -1,66 +1,38 @@
 //version 1.0
 
-#ifndef GX_UI_MENU
-#define GX_UI_MENU
+#ifndef GX_UI_MENU_EXT
+#define GX_UI_MENU_EXT
 
 
-#include "GXWidget.h"
-#include "GXUICommon.h"
-#include <GXCommon/GXMemory.h>
+#include "GXUIPopup.h"
 
 
-typedef GXVoid ( GXCALL* PFNGXONSHOWSUBMENUPROC ) ( GXVoid* menuHandler, GXUByte item );
-typedef GXVoid ( GXCALL* PFNGXONMENUITEMPROC ) ( GXFloat x, GXFloat y, eGXMouseButtonState state );
+#define GX_UI_MENU_INVALID_INDEX 0xFF
 
 
 class GXUIMenu : public GXWidget
 {
 	private:
-		GXDynamicArray			items;
-		GXVoid*					menuHandler;
-		PFNGXONSHOWSUBMENUPROC	OnShowSubmenu;
+		GXDynamicArray		items;
+		GXUByte				selectedItemIndex;
+		GXUByte				highlightedItemIndex;
 
 	public:
-		GXUIMenu ( GXWidget* parent, GXVoid* menuHandler, PFNGXONSHOWSUBMENUPROC onShowSubmenu );
+		explicit GXUIMenu ( GXWidget* parent );
 		~GXUIMenu () override;
 
 		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
 
-		GXVoid AddItem ();
-		GXVoid ResizeItem ( GXUByte item, GXFloat width );
+		GXVoid AddItem ( const GXWChar* name, GXFloat itemWidth, GXUIPopup* popup );
+
 		GXUByte GetTotalItems () const;
-		const GXAABB& GetItemBounds ( GXUByte item ) const;
+		const GXWChar* GetItemName ( GXUByte itemIndex ) const;
+		GXFloat GetItemOffset ( GXUByte itemIndex ) const;
+		GXFloat GetItemWidth ( GXUByte itemIndex ) const;
 
-		GXVoid Redraw ();
-
-		GXBool IsItemPressed ( GXUByte item ) const;
-		GXBool IsItemHighlighted ( GXUByte item ) const;
-};
-
-//-----------------------------------------------------------------------------------
-
-class GXUISubmenu : public GXWidget
-{
-	private:
-		GXDynamicArray		items;
-		GXFloat				itemHeight;
-
-	public:
-		GXUISubmenu ( GXWidget* parent );
-		~GXUISubmenu () override;
-
-		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
-
-		GXVoid AddItem ( PFNGXONMENUITEMPROC callback );
-		GXVoid SetItemHeight ( GXFloat height );
-		GXUByte GetTotalItems () const;
-		GXFloat GetItemHeight () const;
-
-		GXVoid Redraw ();
-
-		GXBool IsItemPressed ( GXUByte item ) const;
-		GXBool IsItemHighlighted ( GXUByte item ) const;
+		GXUByte GetSelectedItemIndex () const;
+		GXUByte GetHighlightedItemIndex () const;
 };
 
 
-#endif //GX_UI_MENU
+#endif //GX_UI_MENU_EXT
