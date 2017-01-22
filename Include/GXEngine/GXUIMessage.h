@@ -44,7 +44,8 @@
 #define GX_MSG_POPUP_ENABLE_ITEM					36				//GXUByte						item index
 #define GX_MSG_POPUP_DISABLE_ITEM					37				//GXUByte						item index
 #define GX_MSG_POPUP_CLOSED							38				//GXUIPopup*					closed popup
-#define GX_MSG_MENY_ADD_ITEM						39				//GXUIMenuExtItem				see GXUIMenuExtItem
+#define GX_MSG_POPUP_SHOW							39				//GXWidget*						owner widget
+#define GX_MSG_MENY_ADD_ITEM						40				//GXUIMenuExtItem				see GXUIMenuExtItem
 
 
 #endif //GX_UI_MESSAGE

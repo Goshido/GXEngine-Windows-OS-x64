@@ -25,7 +25,7 @@ class EMUIPopup : public EMUI
 
 		GXVoid SetLocation ( GXFloat x, GXFloat y );
 
-		GXVoid Show ();
+		GXVoid Show ( EMUI* owner );
 };
 
 

@@ -21,6 +21,7 @@ GXWidget ( parent ), items ( sizeof ( GXUIPopupItem ) )
 {
 	selectedItemIndex = GX_UI_POPUP_INVALID_INDEX;
 	itemHeight = gx_ui_Scale * GX_DEFAULT_HEIGHT;
+	owner = nullptr;
 }
 
 GXUIPopup::~GXUIPopup ()
@@ -126,6 +127,14 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 		}
 		break;
 
+		case GX_MSG_POPUP_SHOW:
+		{
+			GXWidget** owner = (GXWidget**)data;
+			this->owner = *owner;
+			GXWidget::Show ();
+		}
+		break;
+
 		case GX_MSG_LMBUP:
 		{
 			if ( selectedItemIndex != GX_UI_POPUP_INVALID_INDEX )
@@ -134,8 +143,11 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 				if ( itemStorage[ selectedItemIndex ].action )
 					itemStorage[ selectedItemIndex ].action ();
 
-				GXUIPopup* pointer = this;
-				GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_POPUP_CLOSED, &pointer, sizeof ( GXUIPopup* ), eGXTransmissionType::GX_TRANSMISSION_BROADCAST );
+				if ( owner )
+				{
+					GXUIPopup* pointer = this;
+					GXTouchSurface::GetInstance ()->SendMessage ( owner, GX_MSG_POPUP_CLOSED, &pointer, sizeof ( GXUIPopup* ) );
+				}
 
 				selectedItemIndex = GX_UI_POPUP_INVALID_INDEX;
 				if ( renderer )
@@ -174,8 +186,11 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 					renderer->OnUpdate ();
 			}
 
-			GXUIPopup* pointer = this;
-			GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_POPUP_CLOSED, &pointer, sizeof ( GXUIPopup* ), eGXTransmissionType::GX_TRANSMISSION_BROADCAST );
+			if ( owner )
+			{
+				GXUIPopup* pointer = this;
+				GXTouchSurface::GetInstance ()->SendMessage ( owner, GX_MSG_POPUP_CLOSED, &pointer, sizeof ( GXUIPopup* ) );
+			}
 
 			Hide ();
 		}
@@ -262,4 +277,9 @@ GXFloat GXUIPopup::GetItemHeight () const
 GXFloat GXUIPopup::GetItemWidth () const
 {
 	return GXGetAABBWidth ( boundsLocal );
+}
+
+GXVoid GXUIPopup::Show ( GXWidget* owner )
+{
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_POPUP_SHOW, &owner, sizeof ( GXWidget* ) );
 }

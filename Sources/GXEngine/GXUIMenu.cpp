@@ -97,7 +97,7 @@ GXVoid GXUIMenu::OnMessage ( GXUInt message, const GXVoid* data )
 					GXFloat popupWidth = GXGetAABBWidth ( item->popup->GetBoundsLocal () );
 					GXFloat popupHeight = GXGetAABBHeight ( item->popup->GetBoundsLocal () );
 					item->popup->Resize ( item->bounds.min.x, item->bounds.min.y - popupHeight, popupWidth, popupHeight );
-					item->popup->Show ();
+					item->popup->Show ( this );
 				}
 
 				selectedItemIndex = highlightedItemIndex;

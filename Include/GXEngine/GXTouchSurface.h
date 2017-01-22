@@ -7,12 +7,6 @@
 #include "GXWidget.h"
 
 
-enum eGXTransmissionType : GXUByte
-{
-	GX_TRANSMISSION_DIRECT,
-	GX_TRANSMISSION_BROADCAST
-};
-
 struct GXMessage;
 class GXTouchSurface
 {
@@ -45,7 +39,7 @@ class GXTouchSurface
 		GXVoid OnScroll ( const GXVec2 &position, GXFloat scroll );
 		GXVoid OnMouseMove ( const GXVec2 &position );
 
-		GXVoid SendMessage ( GXWidget* widget, GXUInt message, const GXVoid* data, GXUInt size, eGXTransmissionType type = eGXTransmissionType::GX_TRANSMISSION_DIRECT );
+		GXVoid SendMessage ( GXWidget* widget, GXUInt message, const GXVoid* data, GXUInt size );
 		GXVoid ExecuteMessages ();
 
 		GXVoid DrawWidgets ();
@@ -66,8 +60,6 @@ class GXTouchSurface
 
 	private:
 		explicit GXTouchSurface ();
-
-		GXVoid BroadcastMessage ( GXWidget* sourceWidget, GXWidget* rootWidget, GXUInt message, const GXVoid* data, GXUInt size );
 
 		GXVoid DeleteWidgets ();
 		GXWidget* FindWidget ( GXFloat x, GXFloat y );

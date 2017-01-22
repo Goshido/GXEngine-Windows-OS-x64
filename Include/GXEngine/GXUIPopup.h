@@ -20,6 +20,7 @@ class GXUIPopup : public GXWidget
 		GXDynamicArray		items;
 		GXUByte				selectedItemIndex;
 		GXFloat				itemHeight;
+		GXWidget*			owner;
 
 	public:
 		explicit GXUIPopup ( GXWidget* parent );
@@ -40,6 +41,8 @@ class GXUIPopup : public GXWidget
 		GXFloat GetItemHeight () const;
 
 		GXFloat GetItemWidth () const;
+
+		GXVoid Show ( GXWidget* owner );
 };
 
 

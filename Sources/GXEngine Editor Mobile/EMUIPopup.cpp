@@ -243,7 +243,7 @@ GXVoid EMUIPopup::SetLocation ( GXFloat x, GXFloat y )
 	widget->Resize ( x, y, EM_DEFAULT_ITEM_WIDTH * gx_ui_Scale, EM_ANY_HEIGHT );
 }
 
-GXVoid EMUIPopup::Show ()
+GXVoid EMUIPopup::Show ( EMUI* owner )
 {
-	widget->Show ();
+	widget->Show ( owner->GetWidget () );
 }
