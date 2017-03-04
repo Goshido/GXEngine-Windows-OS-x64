@@ -58,8 +58,8 @@ GXVoid EMUnitActorMesh::Draw ()
 
 	glUseProgram ( programs[ 0 ].program );
 
-	glUniformMatrix4fv ( mod_view_matLocation, 1, GL_FALSE, mod_view_mat.A );
-	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.A );
+	glUniformMatrix4fv ( mod_view_matLocation, 1, GL_FALSE, mod_view_mat.arr );
+	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );
 
 	glActiveTexture ( GL_TEXTURE0 );
 	glBindSampler ( 0, sampler );

@@ -1,4 +1,4 @@
-//version 1.25
+//version 1.26
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -24,7 +24,9 @@ union GXVec2
 		GXFloat u;
 		GXFloat v;
 	};
-	GXFloat _v[ 2 ];
+	GXFloat arr[ 2 ];
+
+	GXVoid operator = ( const GXVec2 &vector );
 };
 
 GXVec2 GXCALL GXCreateVec2 ( GXFloat component_1, GXFloat component_2 );
@@ -54,15 +56,13 @@ struct GXVec3
 			GXFloat yaw_rad;
 			GXFloat roll_rad;
 		};
-		GXFloat v[ 3 ];
+		GXFloat arr[ 3 ];
 	};
 	 
 	GXVec3 ();
-	GXVec3 ( GXFloat component_1, GXFloat component_2, GXFloat component_3 );
-	GXVec3 operator * ( GXFloat &factor );
-	GXVec3 operator + ( GXVec3 &V );
-	GXVec3 operator - ( GXVec3 &V );
-	GXVoid operator = ( const GXVec3 &V );
+	explicit GXVec3 ( GXFloat component_1, GXFloat component_2, GXFloat component_3 );
+
+	GXVoid operator = ( const GXVec3 &vector );
 };
 
 GXVec3 GXCALL GXCreateVec3 ( GXFloat component_1, GXFloat component_2, GXFloat component_3 );
@@ -97,16 +97,14 @@ struct GXVec4
 			GXFloat b;
 			GXFloat a;
 		};
-		GXFloat v[ 4 ];
+		GXFloat arr[ 4 ];
 	};
 
 	GXVec4 ();
-	GXVec4 ( GXVec3& V, GXFloat component_4 );
-	GXVec4 ( GXFloat component_1, GXFloat component_2, GXFloat component_3, GXFloat component_4 );
-	GXVec4 operator * ( GXFloat& factor );
-	GXVec4 operator + ( GXVec4& V );
-	GXVec4 operator - ( GXVec4& V );
-	GXVoid operator = ( const GXVec4& V );
+	explicit GXVec4 ( GXVec3& vector, GXFloat component_4 );
+	explicit GXVec4 ( GXFloat component_1, GXFloat component_2, GXFloat component_3, GXFloat component_4 );
+
+	GXVoid operator = ( const GXVec4& vector );
 };
 
 GXVec4 GXCALL GXCreateVec4 ( GXFloat component_1, GXFloat component_2, GXFloat component_3, GXFloat component_4 );
@@ -114,6 +112,7 @@ GXVec4 GXCALL GXCreateVec4 ( GXFloat component_1, GXFloat component_2, GXFloat c
 //-------------------------------------------------------------
 
 struct GXMat4;
+struct GXMat3;
 
 typedef GXVec4 GXQuat;
 
@@ -140,7 +139,7 @@ struct GXMat4
 {
 	union
 	{
-		GXFloat A[ 16 ];
+		GXFloat arr[ 16 ];
 		GXFloat m[ 4 ][ 4 ];
 		struct
 		{
@@ -159,11 +158,13 @@ struct GXMat4
 	};
 
 	GXMat4 ();
-	GXMat4 ( GXFloat* v16 );
-	GXVoid operator = ( const GXMat4& M );
-	const GXMat4 &SetRotation ( const GXQuat &q );
-	const GXMat4 &SetOrigin ( const GXVec3 &origin );
-	const GXMat4 &From ( const GXQuat &quat, const GXVec3 &origin );
+	
+	GXVoid SetRotation ( const GXQuat &q );
+	GXVoid SetOrigin ( const GXVec3 &origin );
+	GXVoid From ( const GXQuat &quat, const GXVec3 &origin );
+	GXVoid From ( const GXMat3 &rotation, const GXVec3 &origin );
+
+	GXVoid operator = ( const GXMat4& matrix );
 };
 
 GXVoid GXCALL GXSetMat4Identity ( GXMat4 &M );
@@ -196,14 +197,39 @@ GXVoid GXCALL GXGetRayPerspective ( GXVec3 &rayView, const GXMat4 &proj_mat, con
 
 struct GXMat3
 {
-	GXFloat A[ 9 ];
+	union 
+	{
+			float arr[9];
+			float m[3][3];
+		struct 
+		{
+			float m11, m12, m13;
+			float m21, m22, m23;
+			float m31, m32, m33;
+		};
+		struct 
+		{
+			GXVec3 xv;
+			GXVec3 yv;
+			GXVec3 zv;
+		};
+	};
+
 	GXMat3 ();
-	GXMat3 ( GXMat4& M );
-	GXMat3 operator ~ ();
-	GXVoid operator = ( GXMat3& M );
+
+	GXVoid operator = ( const GXMat3 &matrix );
 };
 
-GXVoid GXCALL GXTransponseMat3 ( GXMat3& out, GXMat3& a );
+GXVoid GXCALL GXSetMat3Transponse ( GXMat3 &out, GXMat3 &a );
+GXVoid GXCALL GXSetMat3FromMat4 ( GXMat3 &out, const GXMat4 &m );
+GXVoid GXCALL GXSetMat3Identity ( GXMat3 &out);
+GXVoid GXCALL GXSetMat3Inverse ( GXMat3 &out, const GXMat3 &m );
+GXVoid GXCALL GXSetMat3Zero ( GXMat3 &out );
+GXVoid GXCALL GXMulMat3Mat3 ( GXMat3 &out, const GXMat3 &a, const GXMat3 &b );
+GXVoid GXCALL GXMulVec3Mat3 ( GXVec3 &out, const GXVec3 &v, const GXMat3 &m );
+GXVoid GXCALL GXMulMat3Scalar ( GXMat3 &out, const GXMat3 &m, float a);
+GXVoid GXCALL GXSumMat3Mat3 ( GXMat3 &out, const GXMat3 &a, const GXMat3 &b);
+GXVoid GXCALL GXSubMat3Mat3 ( GXMat3 &out, const GXMat3 &a, const GXMat3 &b);
 
 //-------------------------------------------------------------
 
@@ -215,6 +241,8 @@ struct GXAABB
 	GXVec3	max;
 
 	GXAABB ();
+
+	GXVoid operator = ( const GXAABB &aabb );
 };
 
 GXVoid GXCALL GXSetAABBEmpty ( GXAABB &inOut );
@@ -231,11 +259,11 @@ GXFloat GXCALL GXGetAABBSphereRadius ( const GXAABB &bounds );
 
 //-------------------------------------------------------------
 
-enum eGXPlaneClassifyVertex
+enum class eGXPlaneClassifyVertex
 {
-	GX_CLASSIFY_IN_FRONT,
-	GX_CLASSIFY_BEHIND,
-	GX_CLASSIFY_ON
+	InFront,
+	Behind,
+	On
 };
 
 struct GXPlane
@@ -243,13 +271,18 @@ struct GXPlane
 	GXFloat a;
 	GXFloat b;
 	GXFloat c;
-
 	GXFloat d;
+
+	GXVoid From ( const GXVec3 &a, const GXVec3 &b, const GXVec3 &c );
+	GXVoid FromLineToPoint ( const GXVec3 &lineStart, const GXVec3 &lineEnd, const GXVec3 &point );
+
+	GXVoid operator = ( const GXPlane &plane );
 };
 
 eGXPlaneClassifyVertex GXCALL GXPlaneClassifyVertex ( const GXPlane &plane, const GXVec3 &vertex );
 eGXPlaneClassifyVertex GXCALL GXPlaneClassifyVertex ( const GXPlane &plane, GXFloat x, GXFloat y, GXFloat z );
 GXVoid GXCALL GXNormalizePlane ( GXPlane &inOut );
+GXVoid GXCALL GXFlipPlane ( GXPlane &inOut );
 
 //-------------------------------------------------------------
 
@@ -264,6 +297,8 @@ class GXProjectionClipPlanes
 
 		GXVoid From ( const GXMat4 &src );			//Normals will be directed inside view volume
 		GXBool IsVisible ( const GXAABB &bounds );	//Trivial invisibility test
+
+		GXVoid operator = ( const GXProjectionClipPlanes &clipPlanes );
 
 	private:
 		GXUByte	PlaneTest ( GXFloat x, GXFloat y, GXFloat z );

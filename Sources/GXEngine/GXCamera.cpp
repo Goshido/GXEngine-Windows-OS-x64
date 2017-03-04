@@ -105,7 +105,7 @@ GXVoid GXCamera::SetModelMatrix ( const GXMat4 &matrix )
 
 GXVoid GXCamera::GetLocation ( GXVec3& outLocation ) const
 {
-	memcpy ( &outLocation, trans_mat.wv.v, sizeof ( GXVec3 ) );
+	outLocation = trans_mat.wv;
 }
 
 GXVoid GXCamera::GetRotation ( GXMat4 &out ) const

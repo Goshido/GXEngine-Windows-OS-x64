@@ -23,8 +23,8 @@ EMMoveTool::EMMoveTool ()
 {
 	mode = EM_MOVE_TOOL_LOCAL_MODE;
 
-	memset ( startLocationWorld.v, 0, sizeof ( GXVec3 ) );
-	memset ( deltaWorld.v, 0, sizeof ( GXVec3 ) );
+	memset ( &startLocationWorld, 0, sizeof ( GXVec3 ) );
+	memset ( &deltaWorld, 0, sizeof ( GXVec3 ) );
 	GXSetMat4Identity ( gismoRotation );
 
 	memset ( &xAxis, 0, sizeof ( GXVAOInfo ) );
@@ -114,7 +114,7 @@ GXVoid EMMoveTool::OnDrawHudColorPass ()
 	GXSetMat4TranslateTo ( mod_mat, actorTransform.m41, actorTransform.m42, actorTransform.m43 );
 	GXMulMat4Mat4 ( mod_view_proj_mat, mod_mat, GXCamera::GetActiveCamera ()->GetViewProjectionMatrix () );
 
-	glUniformMatrix4fv ( clr_mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.A );
+	glUniformMatrix4fv ( clr_mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );
 
 	glDisable ( GL_BLEND );
 
@@ -166,7 +166,7 @@ GXVoid EMMoveTool::OnDrawHudMaskPass ()
 	GXSetMat4TranslateTo ( mod_mat, actorTransform.m41, actorTransform.m42, actorTransform.m43 );
 	GXMulMat4Mat4 ( mod_view_proj_mat, mod_mat, GXCamera::GetActiveCamera ()->GetViewProjectionMatrix () );
 
-	glUniformMatrix4fv ( msk_mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.A );
+	glUniformMatrix4fv ( msk_mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );
 
 	EMRenderer* renderer = EMRenderer::GetInstance ();
 	renderer->SetObjectMask ( (GXUPointer)( &xAxisMask ) );

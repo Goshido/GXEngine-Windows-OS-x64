@@ -1,4 +1,4 @@
-//version 1.9
+//version 1.10
 
 #ifndef GX_MESH
 #define GX_MESH
@@ -35,7 +35,6 @@ class GXMesh : public GXDrawable
 		GXMesh ();
 		virtual ~GXMesh ();
 
-		virtual GXVoid SetLocation ( GXFloat* Loc );
 		virtual GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
 		virtual GXVoid SetLocation ( const GXVec3 &loc );
 
@@ -49,7 +48,6 @@ class GXMesh : public GXDrawable
 		virtual GXVoid SetScale ( GXFloat* Scl );
 		virtual GXVoid SetScale ( const GXVec3 &scale );
 
-		virtual GXVoid GetLocation ( GXFloat* Loc );
 		virtual GXVoid GetLocation ( GXFloat* x, GXFloat* y, GXFloat* z );
 		virtual GXVoid GetLocation ( GXVec3 &loc );
 

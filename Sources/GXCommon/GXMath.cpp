@@ -1,10 +1,14 @@
-//version 1.25
+//version 1.26
 
 #include <GXCommon/GXMath.h>
 #include <cstdlib>
 #include <cfloat>
 #include <cwchar>
 
+GXVoid GXVec2::operator = ( const GXVec2 &vector )
+{
+	memcpy ( this, &vector, sizeof ( GXVec2 ) );
+}
 
 GXVec2 GXCALL GXCreateVec2 ( GXFloat component_1, GXFloat component_2 )
 {
@@ -34,36 +38,9 @@ GXVec3::GXVec3 ( GXFloat component_1, GXFloat component_2, GXFloat component_3 )
 	z = component_3;
 }
 
-GXVec3 GXVec3::operator * ( GXFloat& factor )
+GXVoid GXVec3::operator = ( const GXVec3 &vector )
 {
-	GXVec3 ans;
-	ans.x = x * factor;
-	ans.y = y * factor;
-	ans.z = z * factor;
-	return ans;
-}
-
-GXVec3 GXVec3::operator + ( GXVec3& V )
-{
-	GXVec3 ans;
-	ans.x = x + V.x;
-	ans.y = y + V.y;
-	ans.z = z + V.z;
-	return ans;
-}
-
-GXVec3 GXVec3::operator - ( GXVec3& V )
-{
-	GXVec3 ans;
-	ans.x = x - V.x;
-	ans.y = y - V.y;
-	ans.z = z - V.z;
-	return ans;
-}
-
-GXVoid GXVec3::operator = ( const GXVec3 &V )
-{
-	memcpy ( v, V.v, sizeof ( GXVec3 ) );
+	memcpy ( this, &vector, sizeof ( GXVec3 ) );
 }
 
 //----------------------------------------------------------------------------
@@ -156,9 +133,9 @@ GXVec4::GXVec4 ()
 	//NOTHING
 }
 
-GXVec4::GXVec4 ( GXVec3& V, GXFloat component_4 )
+GXVec4::GXVec4 ( GXVec3& vector, GXFloat component_4 )
 {
-	memcpy ( v, V.v, sizeof ( GXVec3 ) );
+	memcpy ( arr, vector.arr, 3 * sizeof ( GXFloat ) );
 	w = component_4;
 }
 
@@ -170,39 +147,9 @@ GXVec4::GXVec4 ( GXFloat component_1, GXFloat component_2, GXFloat component_3, 
 	w = component_4;
 }
 
-GXVec4 GXVec4::operator * ( GXFloat& factor )
+GXVoid GXVec4::operator = ( const GXVec4 &vector )
 {
-	GXVec4 ans;
-	ans.x = x * factor;
-	ans.y = y * factor;
-	ans.z = z * factor;
-	ans.w = w * factor;
-	return ans;
-}
-
-GXVec4 GXVec4::operator + ( GXVec4& V )
-{
-	GXVec4 ans;
-	ans.x = x + V.x;
-	ans.y = y + V.y;
-	ans.z = z + V.z;
-	ans.w = w + V.w;
-	return ans;
-}
-
-GXVec4 GXVec4::operator - ( GXVec4& V )
-{
-	GXVec4 ans;
-	ans.x = x - V.x;
-	ans.y = y - V.y;
-	ans.z = z - V.z;
-	ans.w = w - V.w;
-	return ans;
-}
-
-GXVoid GXVec4::operator = ( const GXVec4 &V )
-{
-	memcpy ( v, V.v, sizeof ( GXVec4 ) );
+	memcpy ( this, &vector, sizeof ( GXVec4 ) );
 }
 
 GXVec4 GXCALL GXCreateVec4 ( GXFloat component_1, GXFloat component_2, GXFloat component_3, GXFloat component_4 )
@@ -214,20 +161,10 @@ GXVec4 GXCALL GXCreateVec4 ( GXFloat component_1, GXFloat component_2, GXFloat c
 
 GXMat4::GXMat4 ()
 {
-	memset ( A, 0, sizeof ( GXMat4 ) );
+	memset ( arr, 0, 16 * sizeof ( GXFloat ) );
 }
 
-GXMat4::GXMat4 ( GXFloat* v16 )
-{
-	memcpy ( this->A, v16, 16*sizeof ( GXFloat ) );
-}
-
-GXVoid GXMat4::operator = ( const GXMat4& M )
-{
-	memcpy ( this->A, M.A, 16 * sizeof ( GXFloat ) );
-}
-
-const GXMat4 &GXMat4::SetRotation ( const GXQuat& q )
+GXVoid GXMat4::SetRotation ( const GXQuat& q )
 {
 	GXFloat	wx, wy, wz;
 	GXFloat	xx, yy, yz;
@@ -261,23 +198,36 @@ const GXMat4 &GXMat4::SetRotation ( const GXQuat& q )
 	m[ 2 ][ 0 ] = xz - wy;
 	m[ 2 ][ 1 ] = yz + wx;
 	m[ 2 ][ 2 ] = 1.0f - ( xx + yy );
-
-	return *this;
 }
 
-const GXMat4 &GXMat4::SetOrigin ( const GXVec3& origin )
+GXVoid GXMat4::SetOrigin ( const GXVec3 &origin )
 { 
-	memcpy ( A + 12, origin.v, sizeof ( GXVec3 ) );
-	return *this;
+	wv = origin;
 }
 
-const GXMat4 &GXMat4::From ( const GXQuat &quat, const GXVec3 &origin )
+GXVoid GXMat4::From ( const GXQuat &quat, const GXVec3 &origin )
 {
 	SetRotation ( quat );
 	SetOrigin ( origin );
 	m14 = m24 = m34 = 0.0f;
 	m44 = 1.0f;
-	return *this;
+}
+
+GXVoid GXMat4::From ( const GXMat3 &rotation, const GXVec3 &origin )
+{
+	xv = rotation.xv;
+	yv = rotation.yv;
+	zv = rotation.zv;
+
+	wv = origin;
+
+	m14 = m24 = m34 = 0.0f;
+	m44 = 1.0f;
+}
+
+void GXMat4::operator = ( const GXMat4& matrix )
+{
+	memcpy ( this, &matrix, sizeof ( GXMat4 ) );
 }
 
 GXVoid GXCALL GXSetMat4Identity ( GXMat4 &out )
@@ -344,7 +294,7 @@ GXVoid GXCALL GXSetMat4TranslateTo ( GXMat4 &out, GXFloat x, GXFloat y, GXFloat 
 
 GXVoid GXCALL GXSetMat4TranslateTo ( GXMat4 &out, const GXVec3 &location )
 {
-	memcpy ( out.wv.v, location.v, sizeof ( GXVec3 ) );
+	out.wv = location;
 }
 
 GXVoid GXCALL GXSetMat4RotationX ( GXMat4 &out, GXFloat angle )
@@ -644,37 +594,143 @@ GXVoid GXCALL GXGetRayPerspective ( GXVec3 &rayView, const GXMat4 &proj_mat, con
 
 GXMat3::GXMat3 ()
 {
-	memset ( A, 0, sizeof ( GXMat3 ) );
+	GXSetMat3Zero ( *this );
 }
 
-GXMat3::GXMat3 ( GXMat4& M )
+GXVoid GXMat3::operator = ( const GXMat3 &matrix )
 {
-	memcpy ( A, M.A, 3 * sizeof ( GXFloat ) );
-	memcpy ( A + 3, M.A + 4, 3 * sizeof ( GXFloat ) );
-	memcpy ( A + 6, M.A + 8, 3 * sizeof ( GXFloat ) );
+	memcpy ( this, &matrix, sizeof ( GXMat3 ) );
 }
 
-GXMat3 GXMat3::operator ~ ()
+GXVoid GXCALL GXSetMat3Transponse ( GXMat3 &out, GXMat3 &a )
 {
-	GXMat3 ans;
-	ans.A [ 3 ] = A [ 1 ]; ans.A [ 1 ]	= A [ 3 ];  
-	ans.A [ 6 ] = A [ 2 ]; ans.A [ 2 ]	= A [ 6 ]; 
-	ans.A [ 7 ] = A [ 5 ]; ans.A [ 5 ]	= A [ 7 ]; 
-	ans.A [ 0 ] = A [ 0 ]; ans.A [ 4 ] = A [ 4 ]; ans.A [ 8 ] = A [ 8 ];
-	return ans;	
+	out.m11 = a.m11;
+	out.m12 = a.m21;
+	out.m13 = a.m31;
+
+	out.m21 = a.m12;
+	out.m22 = a.m22;
+	out.m23 = a.m32;
+
+	out.m31 = a.m13;
+	out.m32 = a.m23;
+	out.m33 = a.m33;
 }
 
-GXVoid GXMat3::operator = ( GXMat3& M )
+GXVoid GXCALL GXSetMat3FromMat4 ( GXMat3 &out, const GXMat4 &m )
 {
-	memcpy ( this->A, M.A, 9 * sizeof ( GXFloat ) );
+	out.m11 = m.m11;
+	out.m12 = m.m12;
+	out.m13 = m.m13;
+
+	out.m21 = m.m21;
+	out.m22 = m.m22;
+	out.m23 = m.m23;
+
+	out.m31 = m.m31;
+	out.m32 = m.m32;
+	out.m33 = m.m33;
 }
 
-GXVoid GXCALL GXTransponseMat3 ( GXMat3& out, GXMat3& a )
+GXVoid GXCALL GXSetMat3Identity ( GXMat3 &out )
 {
-	out.A [ 3 ] = a.A [ 1 ]; out.A [ 1 ] = a.A [ 3 ];
-	out.A [ 6 ] = a.A [ 2 ]; out.A [ 2 ] = a.A [ 6 ];
-	out.A [ 7 ] = a.A [ 5 ]; out.A [ 5 ] = a.A [ 7 ];
-	out.A [ 0 ] = a.A [ 0 ]; out.A [ 4 ] = a.A [ 4 ]; out.A [ 8 ] = a.A [ 8 ];
+	out.m11 = out.m22 = out.m33 = 1.0f;
+	out.m12 = out.m13 = 0.0f;
+	out.m21 = out.m23 = 0.0f;
+	out.m31 = out.m32 = 0.0f;
+}
+
+GXVoid GXCALL GXSetMat3Inverse ( GXMat3 &out, const GXMat3 &m )
+{
+	float determinant = m.m11 * ( m.m22 * m.m33 - m.m32 * m.m23 );
+	determinant -= m.m12 * ( m.m21 * m.m33 - m.m31 * m.m23 );
+	determinant += m.m13 * ( m.m21 * m.m32 - m.m31 * m.m22 );
+
+	float invDeterminant = 1.0f / determinant;
+
+	out.m11 = invDeterminant * ( m.m22 * m.m33 - m.m32 * m.m23 );
+	out.m12 = invDeterminant * ( m.m13 * m.m32 - m.m33 * m.m12 );
+	out.m13 = invDeterminant * ( m.m12 * m.m23 - m.m22 * m.m13 );
+
+	out.m21 = invDeterminant * ( m.m23 * m.m31 - m.m33 * m.m21 );
+	out.m22 = invDeterminant * ( m.m11 * m.m33 - m.m31 * m.m13 );
+	out.m23 = invDeterminant * ( m.m13 * m.m21 - m.m23 * m.m11 );
+
+	out.m31 = invDeterminant * ( m.m21 * m.m32 - m.m31 * m.m22 );
+	out.m32 = invDeterminant * ( m.m12 * m.m31 - m.m32 * m.m11 );
+	out.m33 = invDeterminant * ( m.m11 * m.m22 - m.m21 * m.m12 );
+}
+
+GXVoid GXCALL GXSetMat3Zero ( GXMat3 &out )
+{
+	memset ( &out, 0, sizeof ( GXMat3 ) );
+}
+
+GXVoid GXCALL GXMulMat3Mat3 ( GXMat3 &out, const GXMat3 &a, const GXMat3 &b )
+{
+	out.m11 = a.m11 * b.m11 + a.m12 * b.m21 + a.m13 * b.m31;
+	out.m12 = a.m11 * b.m12 + a.m12 * b.m22 + a.m13 * b.m32;
+	out.m13 = a.m11 * b.m13 + a.m12 * b.m23 + a.m13 * b.m33;
+
+	out.m21 = a.m21 * b.m11 + a.m22 * b.m21 + a.m23 * b.m31;
+	out.m22 = a.m21 * b.m12 + a.m22 * b.m22 + a.m23 * b.m32;
+	out.m23 = a.m21 * b.m13 + a.m22 * b.m23 + a.m23 * b.m33;
+
+	out.m31 = a.m31 * b.m11 + a.m32 * b.m21 + a.m33 * b.m31;
+	out.m32 = a.m31 * b.m12 + a.m32 * b.m22 + a.m33 * b.m32;
+	out.m33 = a.m31 * b.m13 + a.m32 * b.m23 + a.m33 * b.m33;
+}
+
+GXVoid GXCALL GXMulVec3Mat3 ( GXVec3 &out, const GXVec3 &v, const GXMat3 &m )
+{
+	out.x = v.x * m.m11 + v.y * m.m21 + v.z * m.m31;
+	out.y = v.x * m.m12 + v.y * m.m22 + v.z * m.m32;
+	out.z = v.x * m.m13 + v.y * m.m23 + v.z * m.m33;
+}
+
+GXVoid GXCALL GXMulMat3Scalar ( GXMat3 &out, const GXMat3 &m, float a )
+{
+	out.m11 = m.m11 * a;
+	out.m12 = m.m12 * a;
+	out.m13 = m.m13 * a;
+
+	out.m21 = m.m21 * a;
+	out.m22 = m.m22 * a;
+	out.m23 = m.m23 * a;
+
+	out.m31 = m.m31 * a;
+	out.m32 = m.m32 * a;
+	out.m33 = m.m33 * a;
+}
+
+GXVoid GXCALL GXSumMat3Mat3 ( GXMat3 &out, const GXMat3 &a, const GXMat3 &b )
+{
+	out.m11 = a.m11 + b.m11;
+	out.m12 = a.m12 + b.m12;
+	out.m13 = a.m13 + b.m13;
+
+	out.m21 = a.m21 + b.m21;
+	out.m22 = a.m22 + b.m22;
+	out.m23 = a.m23 + b.m23;
+
+	out.m31 = a.m31 + b.m31;
+	out.m32 = a.m32 + b.m32;
+	out.m33 = a.m33 + b.m33;
+}
+
+GXVoid GXCALL GXSubMat3Mat3 ( GXMat3 &out, const GXMat3 &a, const GXMat3 &b )
+{
+	out.m11 = a.m11 - b.m11;
+	out.m12 = a.m12 - b.m12;
+	out.m13 = a.m13 - b.m13;
+
+	out.m21 = a.m21 - b.m21;
+	out.m22 = a.m22 - b.m22;
+	out.m23 = a.m23 - b.m23;
+
+	out.m31 = a.m31 - b.m31;
+	out.m32 = a.m32 - b.m32;
+	out.m33 = a.m33 - b.m33;
 }
 
 //----------------------------------------------------------------------------
@@ -699,10 +755,10 @@ GXQuat GXCALL GXCreateQuat ( const GXMat4 &mat )
 		t = trace + 1.0f;
 		s = 1.0f / sqrtf ( t ) * 0.5f;
 
-		v.v[ 3 ] = s * t;
-		v.v[ 0 ] = ( mat.m[ 2 ][ 1 ] - mat.m[ 1 ][ 2 ] ) * s;
-		v.v[ 1 ] = ( mat.m[ 0 ][ 2 ] - mat.m[ 2 ][ 0 ] ) * s;
-		v.v[ 2 ] = ( mat.m[ 1 ][ 0 ] - mat.m[ 0 ][ 1 ] ) * s;
+		v.arr[ 3 ] = s * t;
+		v.arr[ 0 ] = ( mat.m[ 2 ][ 1 ] - mat.m[ 1 ][ 2 ] ) * s;
+		v.arr[ 1 ] = ( mat.m[ 0 ][ 2 ] - mat.m[ 2 ][ 0 ] ) * s;
+		v.arr[ 2 ] = ( mat.m[ 1 ][ 0 ] - mat.m[ 0 ][ 1 ] ) * s;
 	}
 	else
 	{
@@ -720,10 +776,10 @@ GXQuat GXCALL GXCreateQuat ( const GXMat4 &mat )
 		t = ( mat.m[ i ][ i ] - ( mat.m[ j ][ j ] + mat.m[ k ][ k ] ) ) + 1.0f;
 		s = 1.0f / sqrtf ( t ) * 0.5f;
 
-		v.v[ i ] = s * t;
-		v.v[ 3 ] = ( mat.m[ k ][ j ] - mat.m[ j ][ k ] ) * s;
-		v.v[ j ] = ( mat.m[ j ][ i ] + mat.m[ i ][ j ] ) * s;
-		v.v[ k ] = ( mat.m[ k ][ i ] + mat.m[ i ][ k ] ) * s;
+		v.arr[ i ] = s * t;
+		v.arr[ 3 ] = ( mat.m[ k ][ j ] - mat.m[ j ][ k ] ) * s;
+		v.arr[ j ] = ( mat.m[ j ][ i ] + mat.m[ i ][ j ] ) * s;
+		v.arr[ k ] = ( mat.m[ k ][ i ] + mat.m[ i ][ k ] ) * s;
 	}
 
 	return v;
@@ -921,6 +977,11 @@ GXAABB::GXAABB ()
 	max = GXVec3 ( FLT_MIN, FLT_MIN, FLT_MIN );
 }
 
+GXVoid GXAABB::operator = ( const GXAABB &aabb )
+{
+	memcpy ( this, &aabb, sizeof ( GXAABB ) );
+}
+
 GXFloat GXCALL GXGetAABBWidth ( const GXAABB &bounds )
 {
 	if ( bounds.vertices < 2 ) 
@@ -1069,22 +1130,65 @@ GXFloat GXCALL GXGetAABBSphereRadius ( const GXAABB &bounds )
 
 //------------------------------------------------------------------
 
+GXVoid GXPlane::From ( const GXVec3 &a, const GXVec3 &b, const GXVec3 &c )
+{
+	GXVec3 ab ( b.x - a.x, b.y - a.y, b.z - a.z );
+	GXVec3 ac ( c.x - a.x, c.y - a.y, c.z - a.z );
+
+	GXVec3 normal;
+	GXCrossVec3Vec3 ( normal, ab, ac );
+	GXNormalizeVec3 ( normal );
+
+	this->a = normal.x;
+	this->b = normal.y;
+	this->c = normal.z;
+	this->d = -GXDotVec3Fast ( normal, a );
+}
+
+GXVoid GXPlane::FromLineToPoint ( const GXVec3 &lineStart, const GXVec3 &lineEnd, const GXVec3 &point )
+{
+	GXVec3 startToPoint;
+	GXSubVec3Vec3 ( startToPoint, point, lineStart );
+
+	GXVec3 startToEnd;
+	GXSubVec3Vec3 ( startToEnd, lineEnd, lineStart );
+
+	GXVec3 tempCross;
+	GXCrossVec3Vec3 ( tempCross, startToEnd, startToPoint );
+
+	GXVec3 normal;
+	GXCrossVec3Vec3 ( normal, tempCross, startToEnd );
+
+	a = normal.x;
+	b = normal.y;
+	c = normal.z;
+	d = -a * lineStart.x - b * lineStart.y - c * lineStart.z;
+
+	if ( GXPlaneClassifyVertex ( *this, point ) != eGXPlaneClassifyVertex::InFront )
+		GXFlipPlane( *this );
+}
+
+GXVoid GXPlane::operator = ( const GXPlane &plane )
+{
+	memcpy ( this, &plane, sizeof ( GXPlane ) );
+}
+
 eGXPlaneClassifyVertex GXCALL GXPlaneClassifyVertex ( const GXPlane &plane, const GXVec3 &vertex )
 {
 	GXFloat test = plane.a * vertex.x + plane.b * vertex.y + plane.c * vertex.z + plane.d;
 
-	if ( test < 0.0f ) return GX_CLASSIFY_BEHIND;
-	if ( test > 0.0f ) return GX_CLASSIFY_IN_FRONT;
-	return GX_CLASSIFY_ON;
+	if ( test < 0.0f ) return eGXPlaneClassifyVertex::Behind;
+	if ( test > 0.0f ) return eGXPlaneClassifyVertex::InFront;
+	return eGXPlaneClassifyVertex::On;
 }
 
 eGXPlaneClassifyVertex GXCALL GXPlaneClassifyVertex ( const GXPlane &plane, GXFloat x, GXFloat y, GXFloat z )
 {
 	GXFloat test = plane.a * x + plane.b * y + plane.c * z + plane.d;
 
-	if ( test < 0.0f ) return GX_CLASSIFY_BEHIND;
-	if ( test > 0.0f ) return GX_CLASSIFY_IN_FRONT;
-	return GX_CLASSIFY_ON;
+	if ( test < 0.0f ) return eGXPlaneClassifyVertex::Behind;
+	if ( test > 0.0f ) return eGXPlaneClassifyVertex::InFront;
+	return eGXPlaneClassifyVertex::On;
 }
 
 GXVoid GXCALL GXNormalizePlane ( GXPlane &inOut )
@@ -1095,6 +1199,14 @@ GXVoid GXCALL GXNormalizePlane ( GXPlane &inOut )
 	inOut.b /= length;
 	inOut.c /= length;
 	inOut.d /= length;
+}
+
+GXVoid GXCALL GXFlipPlane(GXPlane& inOut)
+{
+    inOut.a = -inOut.a;
+    inOut.b = -inOut.b;
+    inOut.c = -inOut.c;
+    inOut.d = -inOut.d;
 }
 
 //------------------------------------------------------------------
@@ -1164,13 +1276,18 @@ GXBool GXProjectionClipPlanes::IsVisible ( const GXAABB &bounds )
 	return ( flags > 0 ) ? GX_FALSE : GX_TRUE;
 }
 
+GXVoid GXProjectionClipPlanes::operator = ( const GXProjectionClipPlanes &clipPlanes )
+{
+	memcpy ( this, &clipPlanes, sizeof ( GXProjectionClipPlanes ) );
+}
+
 GXUByte	GXProjectionClipPlanes::PlaneTest ( GXFloat x, GXFloat y, GXFloat z )
 {
 	GXUByte flags = 0;
 
 	for ( GXUByte i = 0; i < 6; i++ )
 	{
-		if ( GXPlaneClassifyVertex ( planes[ i ], x, y, z ) == GX_CLASSIFY_BEHIND )
+		if ( GXPlaneClassifyVertex ( planes[ i ], x, y, z ) == eGXPlaneClassifyVertex::Behind )
 			flags |= (GXUByte)( 1 << i );
 	}
 

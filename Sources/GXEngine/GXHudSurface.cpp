@@ -130,8 +130,8 @@ GXVoid GXHudSurface::AddImage ( const GXImageInfo &imageInfo )
 	glBindSampler ( 0, imageSampler );
 	glBindTexture ( GL_TEXTURE_2D, imageInfo.texture.texObj );
 
-	glUniformMatrix4fv ( img_mod_view_proj_matLocation, 1, GL_FALSE, imageModProjMat.A );
-	glUniform4fv ( img_colorLocation, 1, imageInfo.color.v );
+	glUniformMatrix4fv ( img_mod_view_proj_matLocation, 1, GL_FALSE, imageModProjMat.arr );
+	glUniform4fv ( img_colorLocation, 1, imageInfo.color.arr );
 
 	GLboolean isBlend;
 	glGetBooleanv ( GL_BLEND, &isBlend );
@@ -228,8 +228,8 @@ GXVoid GXHudSurface::AddLine ( const GXLineInfo &lineInfo )
 	GXMat4 imageModProjMat;
 	GXMulMat4Mat4 ( imageModProjMat, imageModMat, imageProjMat );
 
-	glUniform4fv ( line_colorLocation, 1, lineInfo.color.v );
-	glUniformMatrix4fv ( line_mod_view_proj_matLocation, 1, GX_FALSE, imageModProjMat.A );
+	glUniform4fv ( line_colorLocation, 1, lineInfo.color.arr );
+	glUniformMatrix4fv ( line_mod_view_proj_matLocation, 1, GX_FALSE, imageModProjMat.arr );
 
 	switch ( lineInfo.overlayType )
 	{
@@ -368,8 +368,8 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
 		GXSetMat4TranslateTo ( mv, x, y, 5.0f );
 		GXMulMat4Mat4 ( mvp, mv, imageProjMat );
 
-		glUniformMatrix4fv ( txt_mod_view_proj_matLocation, 1, GL_FALSE, mvp.A );
-		glUniform4fv ( txt_colorLocation, 1, penInfo.color.v );
+		glUniformMatrix4fv ( txt_mod_view_proj_matLocation, 1, GL_FALSE, mvp.arr );
+		glUniform4fv ( txt_colorLocation, 1, penInfo.color.arr );
 		glBindTexture ( GL_TEXTURE_2D, info.atlas );
 
 		switch ( penInfo.overlayType )
@@ -464,8 +464,8 @@ GXVoid GXHudSurface::Draw ()
 
 	GXVec4 color ( 1.0f, 1.0f, 1.0f, 1.0f );
 
-	glUniform4fv ( img_colorLocation, 1, color.v );
-	glUniformMatrix4fv ( img_mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.A );
+	glUniform4fv ( img_colorLocation, 1, color.arr );
+	glUniformMatrix4fv ( img_mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );
 
 	glActiveTexture ( GL_TEXTURE0 );
 	glBindTexture ( GL_TEXTURE_2D, texObj );

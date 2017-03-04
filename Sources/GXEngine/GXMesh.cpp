@@ -1,4 +1,4 @@
-//version 1.9
+//version 1.10
 
 #include <GXEngine/GXMesh.h>
 #include <GXEngine/GXCamera.h>
@@ -34,15 +34,6 @@ GXMesh::~GXMesh ()
 		GXRemoveTexture ( textures[ i ] );
 
 	GXSafeFree ( textures );
-}
-
-GXVoid GXMesh::SetLocation ( GXFloat* Loc )
-{
-	memcpy ( trans_mat.wv.v, Loc, sizeof ( GXVec3 ) );
-	trans_mat.ww = 1.0;
-	GXMulMat4Mat4 ( mod_mat, scale_rot_mat, trans_mat );
-
-	UpdateBounds ();
 }
 
 GXVoid GXMesh::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
@@ -131,11 +122,6 @@ GXVoid GXMesh::SetScale ( const GXVec3 &scale )
 	GXMulMat4Mat4 ( mod_mat, scale_rot_mat, trans_mat );
 
 	UpdateBounds ();
-}
-
-GXVoid GXMesh::GetLocation ( GXFloat* Loc )
-{
-	memcpy ( Loc, trans_mat.wv.v, sizeof ( GXVec3 ) );
 }
 
 GXVoid GXMesh::GetLocation ( GXFloat* x, GXFloat* y, GXFloat* z )

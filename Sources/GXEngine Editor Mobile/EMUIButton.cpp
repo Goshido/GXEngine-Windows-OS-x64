@@ -222,7 +222,7 @@ GXVoid EMUIButtonRenderer::OnDrawMask ()
 	
 	glUseProgram ( maskProgram.program );
 
-	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.A );
+	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );
 	glActiveTexture ( GL_TEXTURE0 );
 	glBindTexture ( GL_TEXTURE_2D, surface->GetTexture () );
 	glBindSampler ( 0, maskSampler );
