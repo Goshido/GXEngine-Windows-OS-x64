@@ -2,6 +2,7 @@
 
 #include <GXEngine/GXSkeletalMeshStorage.h>
 #include <GXCommon/GXStrings.h>
+#include <GXCommon/GXMemory.h>
 
 
 class GXSkeletalMeshUnit

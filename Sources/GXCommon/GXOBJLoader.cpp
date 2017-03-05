@@ -4,6 +4,7 @@
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXLogger.h>
 #include <GXCommon/GXStrings.h>
+#include <GXCommon/GXMemory.h>
 
 
 GXInt	gx_objloader_Index = 0;

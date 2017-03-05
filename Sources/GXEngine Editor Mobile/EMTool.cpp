@@ -1,6 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMTool.h>
 #include <GXEngine/GXTouchSurface.h>
-#include <GXCommon/GXCommon.h>
+#include <GXCommon/GXMemory.h>
 
 
 EMTool* EMTool::activeTool = nullptr;

@@ -247,6 +247,27 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXUIStaticText.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXVAOStorage.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXWidget.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXFirework.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXGravity.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXParticle.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleAnchoredSpring.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleBungee.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleBuoyancy.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleCable.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleContact.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleContactResolver.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleDrag.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleFakeSpring.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleForceRegistry.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleGravity.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleLink.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleRod.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleWorld.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXPhysicsEngine.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleSpring.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXRigidBody.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXSpring.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXWorld.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXAVLTree.h" />
@@ -363,6 +384,31 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIStaticText.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUnitActor.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMViewer.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXFirework.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXForceGenerator.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXGravity.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXParticle.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXParticleAnchoredSpring.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXParticleBungee.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXParticleBuoyancy.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXParticleCable.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXParticleContact.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXParticleContactGenerator.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXParticleContactResolver.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXParticleDrag.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXParticleFakeSpring.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXParticleForceGenerator.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXParticleForceRegistry.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXParticleGravity.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXParticleLink.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXParticleRod.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXParticleWorld.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXPhysicsEngine.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXParticleSpring.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXRigidBody.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXSpring.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXTorqueGenerator.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXWorld.h" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="..\..\Sources\GXEngine\GXRecource.res" />

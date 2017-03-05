@@ -26,7 +26,7 @@ class GXCore
 		static GXCore* GXCALL GetInstance ();
 
 	private:
-		explicit GXCore ();
+		GXCore ();
 		GXVoid CheckMemoryLeak ();
 };
 

@@ -1,7 +1,7 @@
 //version 1.6
 
 #include <GXEngine/GXNetwork.h>
-#include <GXCommon/GXCommon.h>
+#include <GXCommon/GXMemory.h>
 
 
 GXBool		gx_net_wsaLibraryServer = GX_FALSE;

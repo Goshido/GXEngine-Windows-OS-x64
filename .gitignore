@@ -18,6 +18,8 @@ Projects/GXEngine Editor Mobile/*.sdf
 Projects/GXEngine Editor Mobile/*.opendb
 Projects/GXEngine Editor Mobile/*.db
 
-3D Models
-Sounds
-Textures
+3D Models/System/Cache
+
+Textures/Editor Mobile/Cache
+Textures/New folder/Editor Mobile/Cache
+GXEngine/Textures/System/Cache

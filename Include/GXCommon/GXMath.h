@@ -1,4 +1,4 @@
-//version 1.26
+//version 1.27
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -125,8 +125,9 @@ GXVoid GXCALL GXSetQuatRotationAxis ( GXQuat &out, const GXVec3 &axis, GXFloat a
 GXVoid GXCALL GXQuatRehandCoordinateSystem ( GXQuat &out, const GXQuat &src );
 GXVoid GXCALL GXQuatToEulerAngles ( GXVec3 &out_rad, const GXQuat &q );	//TODO
 
-GXVoid GXCALL GXMulQuatQuat ( GXQuat& out, const GXQuat &a, const GXQuat &b );
-GXVoid GXCALL GXSumQuatQuat ( GXQuat& out, const GXQuat &a, const GXQuat &b );
+GXVoid GXCALL GXMulQuatQuat ( GXQuat &out, const GXQuat &a, const GXQuat &b );
+GXVoid GXCALL GXSumQuatQuat ( GXQuat &out, const GXQuat &a, const GXQuat &b );
+GXVoid GXCALL GXSumQuatVec3Scaled ( GXQuat &out, const GXQuat &q, const GXVec3 &v, GXFloat s );
 GXVoid GXCALL GXSubQuatQuat ( GXQuat &out, const GXQuat &a, const GXQuat &b );
 GXVoid GXCALL GXQuatSLerp ( GXQuat &out, const GXQuat &a, const GXQuat &b, GXFloat k );
 GXVoid GXCALL GXInverseQuat ( GXQuat &out, const GXQuat &q );
@@ -159,9 +160,9 @@ struct GXMat4
 
 	GXMat4 ();
 	
-	GXVoid SetRotation ( const GXQuat &q );
+	GXVoid SetRotation ( const GXQuat &quaternion );
 	GXVoid SetOrigin ( const GXVec3 &origin );
-	GXVoid From ( const GXQuat &quat, const GXVec3 &origin );
+	GXVoid From ( const GXQuat &quaternion, const GXVec3 &origin );
 	GXVoid From ( const GXMat3 &rotation, const GXVec3 &origin );
 
 	GXVoid operator = ( const GXMat4& matrix );
@@ -199,8 +200,8 @@ struct GXMat3
 {
 	union 
 	{
-			float arr[9];
-			float m[3][3];
+		float arr[9];
+		float m[3][3];
 		struct 
 		{
 			float m11, m12, m13;
@@ -216,6 +217,8 @@ struct GXMat3
 	};
 
 	GXMat3 ();
+
+	GXVoid From ( const GXQuat &quaternion );
 
 	GXVoid operator = ( const GXMat3 &matrix );
 };
@@ -310,6 +313,8 @@ GXFloat GXCALL GXDegToRad ( GXFloat degrees );
 GXVoid GXCALL GXColorToVec4 ( GXVec4 &out, GXUChar r, GXUChar g, GXUChar b, GXUChar a );
 GXVoid GXCALL GXConvert3DSMaxToGXEngine ( GXVec3 &gx_out, GXFloat max_x, GXFloat max_y, GXFloat max_z );
 GXFloat GXCALL GXRandomNormalize ();
+GXFloat GXCALL GXRandomBetween ( GXFloat from, GXFloat to );
+GXVoid GXCALL GXRandomBetween ( GXVec3 &out, const GXVec3 &from, const GXVec3 &to );
 GXVoid GXCALL GXGetTangentBitangent ( GXVec3 &outTangent, GXVec3 &outBitangent, GXUByte vertexID, const GXUByte* vertices, GXUInt vertexStride, const GXUByte* uvs, GXUInt uvStride );
 
 GXFloat GXCALL GXClampf ( GXFloat value, GXFloat minValue, GXFloat maxValue );

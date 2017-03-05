@@ -5,6 +5,7 @@
 #include <GXEngine/GXShaderStorage.h>
 #include <GXEngine/GXTextureStorage.h>
 #include <GXCommon/GXStrings.h>
+#include <GXCommon/GXMemory.h>
 
 
 #define EM_DIFFUSE		0

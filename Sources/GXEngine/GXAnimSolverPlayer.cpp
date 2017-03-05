@@ -2,6 +2,7 @@
 
 #include <GXEngine/GXAnimSolverPlayer.h>
 #include <GXCommon/GXAVLTree.h>
+#include <GXCommon/GXMemory.h>
 #include <new>
 
 

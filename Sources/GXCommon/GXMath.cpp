@@ -1,4 +1,4 @@
-//version 1.26
+//version 1.27
 
 #include <GXCommon/GXMath.h>
 #include <cstdlib>
@@ -164,40 +164,31 @@ GXMat4::GXMat4 ()
 	memset ( arr, 0, 16 * sizeof ( GXFloat ) );
 }
 
-GXVoid GXMat4::SetRotation ( const GXQuat& q )
+GXVoid GXMat4::SetRotation ( const GXQuat& quaternion )
 {
-	GXFloat	wx, wy, wz;
-	GXFloat	xx, yy, yz;
-	GXFloat	xy, xz, zz;
-	GXFloat	x2, y2, z2;
+	GXFloat xx = quaternion.x * quaternion.x;
+	GXFloat xy = quaternion.x * quaternion.y;
+	GXFloat xz = quaternion.x * quaternion.z;
+	GXFloat xw = quaternion.x * quaternion.w;
 
-	x2 = q.x + q.x;
-	y2 = q.y + q.y;
-	z2 = q.z + q.z;
+	GXFloat yy = quaternion.y * quaternion.y;
+	GXFloat yz = quaternion.y * quaternion.z;
+	GXFloat yw = quaternion.y * quaternion.w;
 
-	xx = q.x * x2;
-	xy = q.x * y2;
-	xz = q.x * z2;
+	GXFloat zz = quaternion.z * quaternion.z;
+	GXFloat zw = quaternion.z * quaternion.w;
 
-	yy = q.y * y2;
-	yz = q.y * z2;
-	zz = q.z * z2;
+	m11 = 1.0f - 2.0f * ( yy + zz );
+	m12 = 2.0f * ( xy - zw );
+	m13 = 2.0f * ( xz + yw );
 
-	wx = q.w * x2;
-	wy = q.w * y2;
-	wz = q.w * z2;
+	m21 = 2.0f * ( xy + zw );
+	m22 = 1.0f - 2.0f * ( xx + zz );
+	m23 = 2.0f * ( yz - xw );
 
-	m[ 0 ][ 0 ] = 1.0f - ( yy + zz );
-	m[ 0 ][ 1 ] = xy - wz;
-	m[ 0 ][ 2 ] = xz + wy;
-
-	m[ 1 ][ 0 ] = xy + wz;
-	m[ 1 ][ 1 ] = 1.0f - ( xx + zz );
-	m[ 1 ][ 2 ] = yz - wx;
-
-	m[ 2 ][ 0 ] = xz - wy;
-	m[ 2 ][ 1 ] = yz + wx;
-	m[ 2 ][ 2 ] = 1.0f - ( xx + yy );
+	m31 = 2.0f * ( xz - yw );
+	m32 = 2.0f * ( yz + xw );
+	m33 = 1.0f - 2.0f * ( xx + yy );
 }
 
 GXVoid GXMat4::SetOrigin ( const GXVec3 &origin )
@@ -205,9 +196,9 @@ GXVoid GXMat4::SetOrigin ( const GXVec3 &origin )
 	wv = origin;
 }
 
-GXVoid GXMat4::From ( const GXQuat &quat, const GXVec3 &origin )
+GXVoid GXMat4::From ( const GXQuat &quaternion, const GXVec3 &origin )
 {
-	SetRotation ( quat );
+	SetRotation ( quaternion );
 	SetOrigin ( origin );
 	m14 = m24 = m34 = 0.0f;
 	m44 = 1.0f;
@@ -597,6 +588,33 @@ GXMat3::GXMat3 ()
 	GXSetMat3Zero ( *this );
 }
 
+GXVoid GXMat3::From ( const GXQuat &quaternion )
+{
+	GXFloat xx = quaternion.x * quaternion.x;
+	GXFloat xy = quaternion.x * quaternion.y;
+	GXFloat xz = quaternion.x * quaternion.z;
+	GXFloat xw = quaternion.x * quaternion.w;
+
+	GXFloat yy = quaternion.y * quaternion.y;
+	GXFloat yz = quaternion.y * quaternion.z;
+	GXFloat yw = quaternion.y * quaternion.w;
+
+	GXFloat zz = quaternion.z * quaternion.z;
+	GXFloat zw = quaternion.z * quaternion.w;
+
+	m11 = 1.0f - 2.0f * ( yy + zz );
+	m12 = 2.0f * ( xy - zw );
+	m13 = 2.0f * ( xz + yw );
+
+	m21 = 2.0f * ( xy + zw );
+	m22 = 1.0f - 2.0f * ( xx + zz );
+	m23 = 2.0f * ( yz - xw );
+
+	m31 = 2.0f * ( xz - yw );
+	m32 = 2.0f * ( yz + xw );
+	m33 = 1.0f - 2.0f * ( xx + yy );
+}
+
 GXVoid GXMat3::operator = ( const GXMat3 &matrix )
 {
 	memcpy ( this, &matrix, sizeof ( GXMat3 ) );
@@ -820,13 +838,7 @@ GXVoid GXCALL GXSetQuatRotationAxis ( GXQuat &out, GXFloat x, GXFloat y, GXFloat
 
 GXVoid GXCALL GXSetQuatRotationAxis ( GXQuat &out, const GXVec3 &axis, GXFloat angle )
 {
-	GXFloat sn = sinf ( angle * 0.5f );
-	GXFloat cs = cosf ( angle * 0.5f );
-
-	out.x = axis.x * sn;
-	out.y = axis.y * sn;
-	out.z = axis.z * sn;
-	out.w = cs;
+	GXSetQuatRotationAxis ( out, axis.x, axis.y, axis.z, angle );
 }
 
 GXVoid GXCALL GXMulQuatQuat ( GXQuat &out, const GXQuat &a, const GXQuat &b )
@@ -854,6 +866,18 @@ GXVoid GXCALL GXSumQuatQuat ( GXQuat& out, const GXQuat &a, const GXQuat &b )
 	out.y = a.y + b.y;
 	out.z = a.z + b.z;
 	out.w = a.w + b.w;
+}
+
+GXVoid GXCALL GXSumQuatVec3Scaled ( GXQuat &out, const GXQuat &q, const GXVec3 &v, GXFloat s )
+{
+	GXQuat qs ( v.x * s, v.y * s, v.z * s, 0.0f );
+	GXQuat q1;
+	GXMulQuatQuat ( q1, qs, q );
+
+	out.x = q1.x * 0.5f;
+	out.y = q1.y * 0.5f;
+	out.z = q1.z * 0.5f;
+	out.w = q1.w * 0.5f;
 }
 
 GXVoid GXCALL GXSubQuatQuat ( GXQuat &out, const GXQuat &a, const GXQuat &b )
@@ -1327,6 +1351,19 @@ GXFloat GXCALL GXRandomNormalize ()
 	return rand () * INV_RAND_MAX;
 
 	#undef INV_RAND_MAX
+}
+
+GXFloat GXCALL GXRandomBetween ( GXFloat from, GXFloat to )
+{
+	GXFloat delta = to - from;
+	return from + delta * GXRandomNormalize ();
+}
+
+GXVoid GXCALL GXRandomBetween ( GXVec3 &out, const GXVec3 &from, const GXVec3 &to )
+{
+	out.x = GXRandomBetween ( from.x, to.x );
+	out.y = GXRandomBetween ( from.y, to.y );
+	out.z = GXRandomBetween ( from.z, to.z );
 }
 
 GXVoid GXCALL GXGetTangentBitangent ( GXVec3 &outTangent, GXVec3 &outBitangent, GXUByte vertexID, const GXUByte* vertices, GXUInt vertexStride, const GXUByte* uvs, GXUInt uvStride )

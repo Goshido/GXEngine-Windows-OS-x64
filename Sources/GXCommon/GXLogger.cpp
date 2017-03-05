@@ -2,7 +2,7 @@
 
 #include <GXCommon/GXLogger.h>
 #include <GXCommon/GXMutex.h>
-#include <GXCommon/GXCommon.h>
+#include <GXCommon/GXMemory.h>
 #include <stdio.h>
 
 

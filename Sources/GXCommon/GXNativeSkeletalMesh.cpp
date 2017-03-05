@@ -3,6 +3,7 @@
 #include <GXCommon/GXNativeSkeletalMesh.h>
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXLogger.h>
+#include <GXCommon/GXMemory.h>
 
 
 GXSkeletalMeshData::GXSkeletalMeshData ()

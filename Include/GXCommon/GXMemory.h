@@ -5,7 +5,22 @@
 
 
 #include <GXCommon/GXTypes.h>
+#include <string>
 
+
+#define GXSafeDelete(ptr)		\
+		if ( ptr )				\
+		{						\
+			delete ptr;			\
+			ptr = nullptr;		\
+		}
+
+#define GXSafeFree(ptr)			\
+		if ( ptr )				\
+		{						\
+			free ( ptr );		\
+			ptr = nullptr;		\
+		}
 
 class GXCircleBuffer
 {

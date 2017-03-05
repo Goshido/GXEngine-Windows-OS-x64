@@ -2,7 +2,7 @@
 
 #include <GXEngine/GXMesh.h>
 #include <GXEngine/GXCamera.h>
-#include <GXCommon/GXCommon.h>
+#include <GXCommon/GXMemory.h>
 
 
 GXMesh::GXMesh ()

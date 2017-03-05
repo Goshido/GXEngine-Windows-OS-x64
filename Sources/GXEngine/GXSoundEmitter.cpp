@@ -2,6 +2,7 @@
 
 #include <GXEngine/GXSoundEmitter.h>
 #include <GXCommon/GXMutex.h>
+#include <GXCommon/GXMemory.h>
 
 
 GXMutex* gx_sound_mixer_Mutex = 0;

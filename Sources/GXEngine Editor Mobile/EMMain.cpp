@@ -17,9 +17,12 @@
 #include <GXEngine/GXInput.h>
 #include <GXEngine/GXOpenGL.h>
 #include <GXEngine/GXCameraOrthographic.h>
+#include <GXPhysics/GXFirework.h>
 
 
 #define EM_WINDOW_NAME L"GXEditor Mobile"
+#define EM_DEFAULT_PARTICLE_RESOLUTION 4
+#define EM_DEFAULT_PARTICLE_SIZE 0.1f
 
 
 GXCameraOrthographic*	em_HudCamera = nullptr;
@@ -40,6 +43,8 @@ EMUnitActor*			em_UnitActor = nullptr;
 EMMoveTool*				em_MoveTool = nullptr;
 GXInt					em_MouseX = 0;
 GXInt					em_MouseY = 0;
+GXHudSurface*			em_ParticleSurface = nullptr;
+GXTexture				em_ParticleTexture;
 
 
 GXVoid GXCALL EMOnOpenFile ( const GXWChar* filePath );
@@ -137,6 +142,32 @@ GXVoid GXCALL EMOnOpenFile ( const GXWChar* filePath )
 
 //-----------------------------------------------------------------------------
 
+GXVoid GXCALL EMOnDisplayParticle ( const GXVec3& location, GXFloat age )
+{
+	em_ParticleSurface->SetLocation ( location );
+	
+	GXImageInfo ii;
+	ii.texture = em_ParticleTexture;
+	ii.overlayType = GX_SIMPLE_REPLACE;
+	ii.insertWidth = 30.0f;
+	ii.insertHeight = 30.0f;
+	ii.insertX = 0.0f;
+	ii.insertY = 0.0f;
+	ii.color = GXCreateVec4 ( 1.0f, 1.0f, 1.0f, age );
+	em_ParticleSurface->AddImage ( ii );
+
+	em_ParticleSurface->Draw ();
+}
+
+//-----------------------------------------------------------------------------
+
+GXVoid GXCALL EMOnStartFirework ()
+{
+	GXInitFireworkDemo ( &EMOnDisplayParticle );
+}
+
+//-----------------------------------------------------------------------------
+
 GXBool GXCALL EMOnFrame ( GXFloat deltatime )
 {
 	GXTouchSurface::GetInstance ()->ExecuteMessages ();
@@ -152,6 +183,10 @@ GXBool GXCALL EMOnFrame ( GXFloat deltatime )
 	renderer->StartLightPass ();
 	
 	renderer->StartHudColorPass ();
+
+	if ( GXIsFireworkDemoStarted () )
+		GXUpdateFirework ( deltatime );
+
 	em_MoveTool->OnDrawHudColorPass ();
 
 	GXCamera::SetActiveCamera ( em_HudCamera );
@@ -203,7 +238,7 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 	
 	em_CreatePopup = new EMUIPopup ( nullptr );
 	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Unit Actor" ), nullptr );
-	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Static mesh" ), nullptr );
+	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Firework" ), &EMOnStartFirework );
 	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Skeletal mesh" ), nullptr );
 	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Directed light" ), nullptr );
 	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Spot" ), nullptr );
@@ -268,11 +303,18 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 
 	EMTool::SetActiveTool ( em_MoveTool );
 
+	em_ParticleSurface = new GXHudSurface ( EM_DEFAULT_PARTICLE_RESOLUTION, EM_DEFAULT_PARTICLE_RESOLUTION, GX_FALSE );
+	em_ParticleSurface->SetScale ( EM_DEFAULT_PARTICLE_SIZE, EM_DEFAULT_PARTICLE_SIZE, 1.0f );
+	GXLoadTexture ( L"Textures/System/Default_Diffuse.tga", em_ParticleTexture );
+
 	ShowCursor ( 1 );
 }
 
 GXVoid GXCALL EMOnDeleteRenderableObjects ()
 {
+	GXSafeDelete ( em_ParticleSurface );
+	GXRemoveTexture ( em_ParticleTexture );
+
 	GXSafeDelete ( em_UnitActor );
 	GXSafeDelete ( em_DirectedLight );
 

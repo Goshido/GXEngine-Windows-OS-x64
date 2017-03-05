@@ -2,6 +2,7 @@
 
 #include <GXCommon/GXCFGLoader.h>
 #include <GXCommon/GXFileSystem.h>
+#include <GXCommon/GXMemory.h>
 
 
 GXVoid GXCALL GXLoadCFG ( GXEngineConfiguration &out_config_info )
