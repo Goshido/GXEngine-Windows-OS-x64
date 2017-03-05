@@ -779,6 +779,12 @@
     <ClInclude Include="..\..\Include\GXPhysics\GXWorld.h">
       <Filter>Header Files\GXPhysics</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\GXPhysics\GXContact.h">
+      <Filter>Header Files\GXPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPhysics\GXCollisionData.h">
+      <Filter>Header Files\GXPhysics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="..\..\Sources\GXEngine\GXRecource.res">

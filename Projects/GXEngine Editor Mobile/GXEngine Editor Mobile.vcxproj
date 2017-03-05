@@ -384,6 +384,8 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIStaticText.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUnitActor.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMViewer.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXCollisionData.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXContact.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXFirework.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXForceGenerator.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXGravity.h" />
