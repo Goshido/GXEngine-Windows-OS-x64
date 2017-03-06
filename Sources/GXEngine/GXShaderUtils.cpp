@@ -3,6 +3,7 @@
 #include <GXEngine/GXShaderUtils.h>
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXStrings.h>
+#include <GXCommon/GXMemory.h>
 
 
 GLint GXCALL GXShaderCompilationStatus ( GLuint shader, const GXWChar* fileName )

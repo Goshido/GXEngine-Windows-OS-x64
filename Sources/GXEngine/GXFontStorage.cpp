@@ -4,6 +4,7 @@
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXLogger.h>
+#include <GXCommon/GXMemory.h>
 
 
 class GXFontUnit

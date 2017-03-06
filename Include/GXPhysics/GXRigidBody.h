@@ -43,6 +43,7 @@ class GXRigidBody
 		GXBool HasFiniteMass () const;
 
 		GXVoid TranslatePointToWorld ( GXVec3 &out, const GXVec3 &pointLocal );
+		const GXMat4& GetTransform ();
 
 		GXVoid AddForce ( const GXVec3 &forceWorld );
 		GXVoid AddForceAtPointLocal ( const GXVec3 &forceWorld, const GXVec3 &pointLocal );

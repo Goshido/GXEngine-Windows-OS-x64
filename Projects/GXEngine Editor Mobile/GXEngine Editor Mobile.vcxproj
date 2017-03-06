@@ -247,6 +247,10 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXUIStaticText.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXVAOStorage.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXWidget.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXBoxShape.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXCollisionData.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXCollisionDetector.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXContact.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXFirework.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXGravity.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXParticle.cpp" />
@@ -265,7 +269,10 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXPhysics\GXParticleWorld.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXPhysicsEngine.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXParticleSpring.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXPlaneShape.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXRigidBody.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXShape.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXSphereShape.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXSpring.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXWorld.cpp" />
   </ItemGroup>
@@ -384,7 +391,9 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIStaticText.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUnitActor.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMViewer.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXBoxShape.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXCollisionData.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXCollisionDetector.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXContact.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXFirework.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXForceGenerator.h" />
@@ -407,7 +416,10 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXPhysics\GXParticleWorld.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXPhysicsEngine.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXParticleSpring.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXPlaneShape.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXRigidBody.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXShape.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXSphereShape.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXSpring.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXTorqueGenerator.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXWorld.h" />

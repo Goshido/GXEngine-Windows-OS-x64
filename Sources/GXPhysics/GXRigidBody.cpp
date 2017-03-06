@@ -46,6 +46,11 @@ GXVoid GXRigidBody::TranslatePointToWorld ( GXVec3 &out, const GXVec3 &pointLoca
 	GXMulVec3Mat4AsPoint ( out, pointLocal, transform );
 }
 
+const GXMat4& GXRigidBody::GetTransform ()
+{
+	return transform;
+}
+
 GXVoid GXRigidBody::AddForce ( const GXVec3 &forceWorld )
 {
 	GXSumVec3Vec3 ( totalForce, totalForce, forceWorld );

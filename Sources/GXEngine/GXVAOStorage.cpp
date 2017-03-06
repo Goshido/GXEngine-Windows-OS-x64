@@ -7,6 +7,7 @@
 #include <GXCommon/GXNativeStaticMeshSaver.h>
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXStrings.h>
+#include <GXCommon/GXMemory.h>
 
 
 struct GXVAOUnit

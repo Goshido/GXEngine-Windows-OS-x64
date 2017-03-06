@@ -1,6 +1,7 @@
 //version 1.2
 
 #include <GXEngine/GXSoundProvider.h>
+#include <GXCommon/GXMemory.h>
 
 
 GXSoundTrack*	gx_strgSoundTracks = 0;

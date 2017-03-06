@@ -69,11 +69,25 @@ GXVoid GXCALL GXSumVec3Vec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b )
 	out.z = a.z + b.z;
 }
 
+GXVoid GXCALL GXSumVec3ScaledVec3 ( GXVec3 &out, const GXVec3 &a, GXFloat s, const GXVec3 &b )
+{
+	out.x = a.x + s * b.x;
+	out.y = a.y + s * b.y;
+	out.z = a.z + s * b.z;
+}
+
 GXVoid GXCALL GXSubVec3Vec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b )
 {
 	out.x = a.x - b.x;
 	out.y = a.y - b.y;
 	out.z = a.z - b.z;
+}
+
+GXVoid GXCALL GXSubVec3ScaledVec3 ( GXVec3 &out, const GXVec3 &a, GXFloat s, const GXVec3 &b )
+{
+	out.x = a.x - s * b.x;
+	out.y = a.y - s * b.y;
+	out.z = a.z - s * b.z;
 }
 
 GXVoid GXCALL GXMulVec3Vec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b )
@@ -107,11 +121,30 @@ GXFloat GXCALL GXLengthVec3 ( const GXVec3 &v )
 	return sqrtf ( v.x * v.x + v.y * v.y + v.z * v.z );
 }
 
+GXFloat GXCALL GXSquareLengthVec3 ( const GXVec3 &v )
+{
+	return v.x * v.x + v.y * v.y + v.z * v.z;
+}
+
 GXFloat GXCALL GXDistanceVec3Vec3 ( const GXVec3 &a, const GXVec3 &b )
 {
 	GXVec3 diff;
 	GXSubVec3Vec3 ( diff, a, b );
 	return GXLengthVec3 ( diff );
+}
+
+GXFloat GXCALL GXSquareDistanceVec3Vec3 ( const GXVec3 &a, const GXVec3 &b )
+{
+	GXVec3 diff;
+	GXSubVec3Vec3 ( diff, a, b );
+	return GXSquareLengthVec3 ( diff );
+}
+
+GXVoid GXCALL GXReverseVec3 ( GXVec3 &inOut )
+{
+	inOut.x = -inOut.x;
+	inOut.y = -inOut.y;
+	inOut.z = -inOut.z;
 }
 
 GXVoid GXCALL GXProjectVec3Vec3 ( GXVec3 &projection, const GXVec3 &vector, const GXVec3 &unitVector )

@@ -3,6 +3,7 @@
 #include <GXEngine/GXSkeletalMeshQuat.h>
 #include <GXCommon/GXAVLTree.h>
 #include <GXCommon/GXStrings.h>
+#include <GXCommon/GXMemory.h>
 #include <new>
 
 

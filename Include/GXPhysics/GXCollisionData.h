@@ -10,8 +10,29 @@
 class GXCollisionData
 {
 	private:
+		GXContact*		contactArray;
+
 		GXContact*		contacts;
-		GXUInt			contactLeft;
+		GXUInt			contactsLeft;
+		GXUInt			contactCount;
+
+		GXFloat			friction;
+		GXFloat			restitution;
+		GXFloat			tolerance;
+
+	public:
+		GXBool HasMoreContacts () const;
+		GXVoid Reset ( GXUInt maxContacts );
+		GXVoid AddContacts ( GXUInt count );
+
+		GXContact* GetContactsBegin () const;
+		const GXContact* GetAllContacts () const;
+		GXUInt GetTotalContacts () const;
+		GXUInt GetContactsLeft () const;
+
+		GXFloat GetFriction () const;
+		GXFloat GetRestitution () const;
+		GXFloat GetTolerance () const;
 };
 
 

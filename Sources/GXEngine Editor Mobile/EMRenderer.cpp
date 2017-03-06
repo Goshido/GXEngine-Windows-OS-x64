@@ -420,14 +420,14 @@ GXVoid EMRenderer::LightUpByDirected ( EMDirectedLight* light )
 	toLightDirectionView.y = -toLightDirectionView.y;
 	toLightDirectionView.z = -toLightDirectionView.z;
 
-	glUniform3fv ( dl_lightDirectionViewLocation, 1, toLightDirectionView.v );
-	glUniformMatrix4fv ( dl_inv_proj_matLocation, 1, GL_FALSE, inv_proj_mat.A );
+	glUniform3fv ( dl_lightDirectionViewLocation, 1, toLightDirectionView.arr );
+	glUniformMatrix4fv ( dl_inv_proj_matLocation, 1, GL_FALSE, inv_proj_mat.arr );
 
 	const GXVec3& color = light->GetColor ();
-	glUniform3fv ( dl_colorLocation, 1, color.v );
+	glUniform3fv ( dl_colorLocation, 1, color.arr );
 
 	const GXVec3& ambientColor = light->GetAmbientColor ();
-	glUniform3fv ( dl_ambientColorLocation, 1, ambientColor.v );
+	glUniform3fv ( dl_ambientColorLocation, 1, ambientColor.arr );
 
 	glActiveTexture ( GL_TEXTURE0 );
 	glBindTexture ( GL_TEXTURE_2D, diffuseTexture );
