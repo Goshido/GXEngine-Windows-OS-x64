@@ -1,9 +1,11 @@
 //version 1.0
 
 #include <GXPhysics/GXCollisionDetector.h>
+#include <GXCommon/GXLogger.h>
 
 
-#define TRY_AXIS_EPSILON	0.0001f
+#define TRY_AXIS_EPSILON		0.0001f
+#define CONTACT_POINT_EPSILON	0.0001f
 
 
 GXUInt GXCollisionDetector::CheckSphereAndSphere ( const GXSphereShape &sphereA, const GXSphereShape &sphereB, GXCollisionData* collisionData )
@@ -245,11 +247,68 @@ GXUInt GXCollisionDetector::CheckBoxAndBox ( const GXBoxShape &boxA, const GXBox
 
 	if ( best == 0xFFFFFF ) return 0;
 
-	// TODO
-
 	if ( best < 3 )
 	{
+		FillPointFaceBoxBox ( boxA, boxB, toCentre, collisionData, best, pen );
+		collisionData->AddContacts ( 1 );
+		return 1;
+	}
+	else if ( best < 6 )
+	{
+		GXReverseVec3 ( toCentre );
+		FillPointFaceBoxBox ( boxA, boxB, toCentre, collisionData, best - 3, pen );
+		collisionData->AddContacts ( 1 );
+		return 1;
+	}
+	else
+	{
+		best -= 6;
+		GXUInt oneAxisIndex = best / 3;
+		GXUInt twoAxisIndex = best % 3;
 
+		GXVec3 oneAxis = GetAxis ( transformA, oneAxisIndex );
+		GXVec3 twoAxis = GetAxis ( transformB, twoAxisIndex );
+
+		GXVec3 axis;
+		GXCrossVec3Vec3 ( axis, oneAxis, twoAxis );
+		GXNormalizeVec3 ( axis );
+
+		if ( GXDotVec3Fast ( axis, toCentre ) > 0.0f )
+			GXReverseVec3 ( axis );
+
+		GXVec3 ptOnOneEdge ( boxA.GetWidth () * 0.5f, boxA.GetHeight () * 0.5f, boxA.GetDepth () * 0.5f );
+		GXVec3 ptOnTwoEdge ( boxB.GetWidth () * 0.5f, boxB.GetHeight () * 0.5f, boxB.GetDepth () * 0.5f );
+
+		for ( GXUInt i = 0; i < 3; i++ )
+		{
+			if ( i == oneAxisIndex )
+				ptOnOneEdge.arr[ i ] = 0.0f;
+			else if ( GXDotVec3Fast ( GetAxis ( transformA, i ), axis ) > 0.0f )
+				ptOnOneEdge.arr[ i ] = -ptOnOneEdge.arr[ i ];
+
+			if ( i == twoAxisIndex )
+				ptOnTwoEdge.arr[ i ] = 0.0f;
+			else if ( GXDotVec3Fast ( GetAxis ( transformB, i ), axis ) < 0.0f )
+				ptOnTwoEdge.arr[ i ] = -ptOnTwoEdge.arr[ i ];
+		}
+
+		GXVec3 onOneEdge;
+		GXVec3 onTwoEdge;
+
+		GXMulVec3Mat4AsPoint ( onOneEdge, ptOnOneEdge, transformA );
+		GXMulVec3Mat4AsPoint ( onTwoEdge, ptOnTwoEdge, transformB );
+
+		GXVec3 vertex = ContactPoint ( onOneEdge, oneAxis, ptOnOneEdge.arr[ oneAxisIndex ], onTwoEdge, twoAxis, ptOnTwoEdge.arr[ twoAxisIndex ], bestSingleAxis > 2 );
+
+		GXContact* contact = collisionData->GetContactsBegin ();
+
+		contact->SetPenetration ( pen );
+		contact->SetNormal ( axis );
+		contact->SetContactPoint ( vertex );
+		contact->SetData ( *boxA.GetRigidBody (), boxB.GetRigidBody (), collisionData->GetFriction (), collisionData->GetRestitution () );
+
+		collisionData->AddContacts ( 1 );
+		return 1;
 	}
 
 	return 0;
@@ -302,28 +361,87 @@ GXVoid GXCollisionDetector::FillPointFaceBoxBox ( const GXBoxShape &one, const G
 	GXContact* contact = collisionData->GetContactsBegin ();
 
 	const GXMat4& transformOne = one.GetTransformWorld ();
-	GXVec3 normal;
-	switch ( best )
-	{
-		case 0:
-			normal = transformOne.xv;
-		break;
-
-		case 1:
-			normal = transformOne.yv;
-		break;
-
-		case 2:
-			normal = transformOne.zv;
-		break;
-	}
+	const GXMat4& transformTwo = two.GetTransformWorld ();
+	GXVec3 normal = GetAxis ( transformOne, best );
 
 	if ( GXDotVec3Fast ( normal, toCentre ) > 0.0f )
 		GXReverseVec3 ( normal );
 
-	GXFloat w = two.GetWidth () * 0.5f;
-	GXFloat h = two.GetHeight () * 0.5f;
-	GXFloat d = two.GetDepth () * 0.5f;
+	GXVec3 vertex ( two.GetWidth () * 0.5f, two.GetHeight () * 0.5f, two.GetDepth () * 0.5f );
+	if ( GXDotVec3Fast ( transformTwo.xv, normal ) < 0.0f )
+		vertex.x = -vertex.x;
 
-	// TODO
+	if ( GXDotVec3Fast ( transformTwo.yv, normal ) < 0.0f )
+		vertex.y = -vertex.y;
+
+	if ( GXDotVec3Fast ( transformTwo.zv, normal ) < 0.0f )
+		vertex.z = -vertex.z;
+
+	contact->SetNormal ( normal );
+	contact->SetPenetration ( pen );
+
+	GXVec3 contactPoint;
+	GXMulVec3Mat4AsPoint ( contactPoint, vertex, transformTwo );
+	contact->SetContactPoint ( contactPoint );
+
+	contact->SetData ( *one.GetRigidBody (), two.GetRigidBody (), collisionData->GetFriction (), collisionData->GetRestitution () );
+}
+
+const GXVec3& GXCollisionDetector::GetAxis ( const GXMat4 &transform, GXUInt index )
+{
+	switch ( index )
+	{
+		case 0:
+		return transform.xv;
+
+		case 1:
+		return transform.yv;
+
+		case 2:
+		return transform.zv;
+
+		default:
+			GXLogW ( L"GXCollisionDetector::GetAxis::Warning - Wnong index %i\n", index );
+		break;
+	}
+
+	return transform.wv;
+}
+
+GXVec3 GXCollisionDetector::ContactPoint ( const GXVec3 &pOne, const GXVec3 &dOne, GXFloat oneSize, const GXVec3 &pTwo, const GXVec3 &dTwo, GXFloat twoSize, GXBool useOne )
+{
+	GXFloat smOne = GXSquareLengthVec3 ( dOne );
+	GXFloat smTwo = GXSquareLengthVec3 ( dTwo );
+	GXFloat dpOneTwo = GXDotVec3Fast ( dTwo, dOne );
+
+	GXVec3 toSt;
+	GXSubVec3Vec3 ( toSt, pOne, pTwo );
+	GXFloat dpStaOne = GXDotVec3Fast ( dOne, toSt );
+	GXFloat dpStaTwo = GXDotVec3Fast ( dTwo, toSt );
+
+	GXFloat denom = smOne * smTwo - dpOneTwo * dpOneTwo;
+
+	if ( fabsf ( denom ) < CONTACT_POINT_EPSILON )
+		return useOne ? pOne : pTwo;
+
+	GXFloat mua = ( dpOneTwo * dpStaTwo - smTwo * dpStaOne ) / denom;
+	GXFloat mub = ( smOne * dpStaTwo - dpOneTwo * dpStaOne ) / denom;
+
+	if ( mua > oneSize || mua < -oneSize || mub > twoSize || mub < -twoSize )
+		return useOne ? pOne : pTwo;
+	else
+	{
+		GXVec3 cOne;
+		GXVec3 cTwo;
+
+		GXSumVec3ScaledVec3 ( cOne, pOne, mua, dOne );
+		GXSumVec3ScaledVec3 ( cTwo, pTwo, mub, dTwo );
+
+		GXMulVec3Scalar ( cOne, cOne, 0.5f );
+		GXMulVec3Scalar ( cTwo, cTwo, 0.5f );
+
+		GXVec3 ans;
+		GXSumVec3Vec3 ( ans, cOne, cTwo );
+		return ans;
+	}
 }
