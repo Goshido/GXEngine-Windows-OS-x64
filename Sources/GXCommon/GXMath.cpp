@@ -671,7 +671,7 @@ GXVoid GXMat3::operator = ( const GXMat3 &matrix )
 	memcpy ( this, &matrix, sizeof ( GXMat3 ) );
 }
 
-GXVoid GXCALL GXSetMat3Transponse ( GXMat3 &out, GXMat3 &a )
+GXVoid GXCALL GXSetMat3Transponse ( GXMat3 &out, const GXMat3 &a )
 {
 	out.m11 = a.m11;
 	out.m12 = a.m21;
@@ -733,6 +733,20 @@ GXVoid GXCALL GXSetMat3Inverse ( GXMat3 &out, const GXMat3 &m )
 GXVoid GXCALL GXSetMat3Zero ( GXMat3 &out )
 {
 	memset ( &out, 0, sizeof ( GXMat3 ) );
+}
+
+GXVoid GXCALL GXSetMat3SkewSymmetric ( GXMat3 &out, const GXVec3 &base )
+{
+	out.m11 = out.m22 = out.m33 = 0.0f;
+
+	out.m12 = base.z;
+	out.m13 = -base.y;
+
+	out.m21 = -base.z;
+	out.m23 = base.x;
+
+	out.m31 = base.y;
+	out.m32 = -base.x;
 }
 
 GXVoid GXCALL GXMulMat3Mat3 ( GXMat3 &out, const GXMat3 &a, const GXMat3 &b )

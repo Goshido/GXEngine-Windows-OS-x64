@@ -12,6 +12,7 @@ class GXPhysicsEngine
 	private:
 		static GXPhysicsEngine*	instance;
 		GXVec3					gravity;
+		GXFloat					sleepEpsilon;
 
 	public:
 		~GXPhysicsEngine ();
@@ -19,6 +20,9 @@ class GXPhysicsEngine
 
 		GXVoid SetGravity ( GXFloat x, GXFloat y, GXFloat z );
 		const GXVec3& GetGravity () const;
+
+		GXVoid SetSleepEpsilon ( GXFloat epsilon );
+		GXFloat GetSleepEpsilon () const;
 
 	private:
 		GXPhysicsEngine ();

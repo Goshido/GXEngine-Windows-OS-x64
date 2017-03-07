@@ -3,14 +3,24 @@
 #include <GXPhysics/GXContactResolver.h>
 
 
-
-
-
 GXVoid GXContactResolver::ResolveContacts ( GXContact* contactArray, GXUInt numContacts, GXFloat deltaTime )
 {
 	if ( numContacts == 0 ) return;
+	if ( !IsValid () ) return;
+	
+	PrepareContacts ( contactArray, numContacts, deltaTime );
+	AdjustPositions ( contactArray, numContacts, deltaTime );
+	AdjustVelocities ( contactArray, numContacts, deltaTime );
+}
 
-	//TODO
+GXVoid GXContactResolver::SetPositionEpsilon ( GXFloat epsilon )
+{
+	positionEpsilon = epsilon;
+}
+
+GXVoid GXContactResolver::SetVelocityEpsilon ( GXFloat epsilon )
+{
+	velocityEpsilon = epsilon;
 }
 
 GXVoid GXContactResolver::PrepareContacts ( GXContact* contactArray, GXUInt numContacts, GXFloat deltaTime )
@@ -49,6 +59,97 @@ GXVoid GXContactResolver::AdjustPositions ( GXContact* contacts, GXUInt numConta
 
 		contacts[ index ].MatchAwakeState ();
 
-		// TODO
+		contacts[ index ].ApplyPositionChange ( linearChange, angularChange, max );
+
+		for ( i = 0; i < numContacts; i++ )
+		{
+			for ( GXUByte b = 0; b < 2; b++ )
+			{
+				if ( contacts[ i ].GetRigidBody ( b ) )
+				{
+					for ( GXUByte d = 0; d < 2; d++ )
+					{
+						if ( contacts[ i ].GetRigidBody ( b ) == contacts[ index ].GetRigidBody ( d ) )
+						{
+							GXVec3 alpha;
+							GXCrossVec3Vec3 ( alpha, angularChange[ d ], contacts[ i ].GetRelativeContactPosition ( b ) );
+							GXSumVec3Vec3 ( deltaPosition, linearChange[ d ], alpha );
+
+							GXFloat penetration = contacts[ i ].GetPenetration ();
+							penetration += GXDotVec3Fast ( deltaPosition, contacts[ i ].GetNormal () ) * ( b ? 1.0f : -1.0f );
+							contacts[ i ].SetPenetration ( penetration );
+						}
+					}
+				}
+			}
+		}
+
+		positionIterationsUsed++;
 	}
+}
+
+GXVoid GXContactResolver::AdjustVelocities ( GXContact* contacts, GXUInt numContacts, GXFloat deltaTime )
+{
+	GXVec3 velocityChange[ 2 ];
+	GXVec3 rotationChange[ 2 ];
+	GXVec3 deltaVel;
+
+	velocityIterationsUsed = 0;
+	while ( velocityIterationsUsed < velocityIterations )
+	{
+		GXFloat max = velocityEpsilon;
+
+		GXUInt index = numContacts;
+		for ( GXUInt i = 0; i < numContacts; i++ )
+		{
+			if ( contacts[ i ].GetDesiredDeltaVelocity () > max )
+			{
+				max = contacts[ i ].GetDesiredDeltaVelocity ();
+				index = i;
+			}
+		}
+
+		if ( index == numContacts ) break;
+
+		contacts[ index ].MatchAwakeState ();
+		contacts[ index ].ApplyVelocityChange ( velocityChange, rotationChange );
+
+		for ( GXUInt i = 0; i < numContacts; i++ )
+		{
+			for ( GXUInt b = 0; b < 2; b++ )
+			{
+				if ( contacts[ i ].GetRigidBody ( b ) )
+				{
+					for ( GXUInt d = 0; d < 2; d++ )
+					{
+						if ( contacts[ i ].GetRigidBody ( b ) == contacts[ index ].GetRigidBody ( d ) )
+						{
+							GXVec3 alpha;
+							GXCrossVec3Vec3 ( alpha, rotationChange[ d ], contacts[ i ].GetRelativeContactPosition ( b ) );
+							GXSumVec3Vec3 ( deltaVel, velocityChange[ d ], alpha );
+
+							GXMat3 betta;
+							GXSetMat3Transponse ( betta, contacts[ i ].GetContactToWorldTransform () );
+
+							GXVec3 gamma;
+							GXMulVec3Mat3 ( gamma, deltaVel, betta );
+
+							GXVec3 contactVelocity;
+							GXSumVec3ScaledVec3 ( contactVelocity, contacts[ i ].GetContactVelocity (), ( b ? -1.0f : 1.0f ), gamma );
+
+							contacts[ i ].SetContactVelocity ( contactVelocity );
+							contacts[ i ].CalculateDesiredDeltaVelocity ( deltaTime );
+						}
+					}
+				}
+			}
+		}
+
+		velocityIterationsUsed++;
+	}
+}
+
+GXBool GXContactResolver::IsValid () const
+{
+	return velocityIterations > 0 && positionIterations > 0 && positionEpsilon >= 0.0f && velocityEpsilon >= 0.0f;
 }

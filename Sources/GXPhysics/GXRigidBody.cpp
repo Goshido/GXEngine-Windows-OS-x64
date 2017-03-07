@@ -1,6 +1,8 @@
 //version 1.0
 
 #include <GXPhysics/GXRigidBody.h>
+#include <GXPhysics/GXPhysicsEngine.h>
+
 
 GXVoid GXRigidBody::CalculateCachedData ()
 {
@@ -61,6 +63,11 @@ const GXVec3& GXRigidBody::GetLinearVelocity () const
 	return linearVelocity;
 }
 
+GXVoid GXRigidBody::AddLinearVelocity ( const GXVec3 &velocity )
+{
+	GXSumVec3Vec3 ( linearVelocity, linearVelocity, velocity );
+}
+
 GXVoid GXRigidBody::SetAngularVelocity ( const GXVec3 velocity )
 {
 	angularVelocity = velocity;
@@ -69,6 +76,11 @@ GXVoid GXRigidBody::SetAngularVelocity ( const GXVec3 velocity )
 const GXVec3& GXRigidBody::GetAngularVelocity () const
 {
 	return angularVelocity;
+}
+
+GXVoid GXRigidBody::AddAngularVelocity ( const GXVec3 &velocity )
+{
+	GXSumVec3Vec3 ( angularVelocity, angularVelocity, velocity );
 }
 
 GXFloat GXRigidBody::GetMass () const
@@ -104,6 +116,14 @@ const GXMat4& GXRigidBody::GetTransform ()
 GXVoid GXRigidBody::SetAwake ()
 {
 	isAwake = GX_TRUE;
+	motion = GXPhysicsEngine::GetInstance ()->GetSleepEpsilon () * 2.0f;
+}
+
+GXVoid GXRigidBody::SetSleep ()
+{
+	isAwake = GX_FALSE;
+	linearVelocity = GXCreateVec3 ( 0.0f, 0.0f, 0.0f );
+	angularVelocity = GXCreateVec3 ( 0.0f, 0.0f, 0.0f );
 }
 
 GXBool GXRigidBody::IsAwake () const
@@ -114,6 +134,14 @@ GXBool GXRigidBody::IsAwake () const
 GXVoid GXRigidBody::AddForce ( const GXVec3 &forceWorld )
 {
 	GXSumVec3Vec3 ( totalForce, totalForce, forceWorld );
+}
+
+GXVoid GXRigidBody::SetCanSleep ( GXBool isCanSleep )
+{
+	canSleep = isCanSleep;
+
+	if ( !canSleep && !isAwake )
+		SetAwake ();
 }
 
 GXVoid GXRigidBody::AddForceAtPointLocal ( const GXVec3 &forceWorld, const GXVec3 &pointLocal )
@@ -139,32 +167,36 @@ GXVoid GXRigidBody::AddForceAtPointWorld ( const GXVec3 &forceWorld, const GXVec
 
 GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 {
-	lastFrameAcceleration = acceleration;
+	if ( !isAwake ) return;
 
-	GXVec3 forceFactor;
-	GXMulVec3Scalar ( forceFactor, totalForce, invMass );
-	GXSumVec3Vec3 ( lastFrameAcceleration, lastFrameAcceleration, forceFactor );
+	GXSumVec3ScaledVec3 ( lastFrameAcceleration, acceleration, invMass, totalForce );
 
 	GXVec3 angularAcceleration;
 	GXMulVec3Mat3 ( angularAcceleration, totalTorque, invInertiaTensorWorld );
 
-	GXVec3 linearVelocityDelta;
-	GXMulVec3Scalar ( linearVelocityDelta, lastFrameAcceleration, deltaTime );
-	GXSumVec3Vec3 ( linearVelocity, linearVelocity, linearVelocityDelta );
-
-	GXVec3 angularVelocityDelta;
-	GXMulVec3Scalar ( angularVelocityDelta, angularAcceleration, deltaTime );
-	GXSumVec3Vec3 ( angularVelocity, angularVelocity, angularVelocityDelta );
+	GXSumVec3ScaledVec3 ( linearVelocity, linearVelocity, deltaTime, lastFrameAcceleration );
+	GXSumVec3ScaledVec3 ( angularVelocity, angularVelocity, deltaTime, angularAcceleration );
 
 	GXMulVec3Scalar ( linearVelocity, linearVelocity, powf ( linearDamping, deltaTime ) );
 	GXMulVec3Scalar ( angularVelocity, angularVelocity, powf ( angularDamping, deltaTime ) );
 
-	GXVec3 locationDelta;
-	GXMulVec3Scalar ( locationDelta, linearVelocity, deltaTime );
-	GXSumVec3Vec3 ( location, location, locationDelta );
-
+	GXSumVec3ScaledVec3 ( location, location, deltaTime, linearVelocity );
 	GXSumQuatScaledVec3 ( rotation, rotation, deltaTime, angularVelocity );
 
 	CalculateCachedData ();
 	ClearAccumulators ();
+
+	if ( canSleep )
+	{
+		GXFloat currentMotion = GXDotVec3Fast ( linearVelocity, linearVelocity ) + GXDotVec3Fast ( angularVelocity, angularVelocity );
+		GXFloat bias = powf ( 0.5f, deltaTime );
+
+		motion = bias * motion + ( 1.0f - bias ) * currentMotion;
+		GXFloat sleepEpsilon = GXPhysicsEngine::GetInstance ()->GetSleepEpsilon ();
+
+		if ( motion < sleepEpsilon )
+			SetSleep ();
+		else if ( motion > 10 * sleepEpsilon )
+			motion = 10 * sleepEpsilon;
+	}
 }

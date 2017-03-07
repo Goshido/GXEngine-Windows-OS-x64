@@ -28,6 +28,7 @@ class GXContact
 		GXVoid SetData ( GXRigidBody &bodyA, GXRigidBody* bodyB, GXFloat friction, GXFloat restitution );
 
 		GXVoid SetNormal ( const GXVec3 &normal );
+		const GXVec3& GetNormal () const;
 		GXVoid SetContactPoint ( const GXVec3 &point );
 		GXVoid SetPenetration ( GXFloat penetration );
 		GXFloat GetPenetration () const;
@@ -39,16 +40,20 @@ class GXContact
 		GXFloat GetDesiredDeltaVelocity () const;
 		GXVoid SetRelativeContactPosition ( GXUByte index, const GXVec3 &position );
 		const GXVec3& GetRelativeContactPosition ( GXUByte index ) const;
+		GXRigidBody* GetRigidBody ( GXUByte index );
 
 		GXVoid CalculateInternals ( GXFloat deltaTime );
+		GXVoid CalculateDesiredDeltaVelocity ( GXFloat deltaTime );
 		GXVoid MatchAwakeState ();
 		GXVoid ApplyPositionChange ( GXVec3 linearChange[ 2 ], GXVec3 angularChange[ 2 ], GXFloat penetration );
+		GXVoid ApplyVelocityChange ( GXVec3 velocityChange[ 2 ], GXVec3 rotationChange[ 2 ] );
 
 	private:
 		GXVoid SwapBodies ();
 		GXVoid CalculateContactBasis ();
 		GXVoid CalculateLocalVelocity ( GXVec3 &out, GXUInt bodyIndex, GXFloat deltaTime );
-		GXVoid CalculateDesiredDeltaVelocity ( GXFloat deltaTime );
+		GXVec3 CalculateFrictionlessImpulse ();
+		GXVec3 CalculateFrictionImpulse ();
 };
 
 

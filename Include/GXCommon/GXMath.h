@@ -230,11 +230,12 @@ struct GXMat3
 	GXVoid operator = ( const GXMat3 &matrix );
 };
 
-GXVoid GXCALL GXSetMat3Transponse ( GXMat3 &out, GXMat3 &a );
+GXVoid GXCALL GXSetMat3Transponse ( GXMat3 &out, const GXMat3 &a );
 GXVoid GXCALL GXSetMat3FromMat4 ( GXMat3 &out, const GXMat4 &m );
 GXVoid GXCALL GXSetMat3Identity ( GXMat3 &out);
 GXVoid GXCALL GXSetMat3Inverse ( GXMat3 &out, const GXMat3 &m );
 GXVoid GXCALL GXSetMat3Zero ( GXMat3 &out );
+GXVoid GXCALL GXSetMat3SkewSymmetric ( GXMat3 &out, const GXVec3 &base );
 GXVoid GXCALL GXMulMat3Mat3 ( GXMat3 &out, const GXMat3 &a, const GXMat3 &b );
 GXVoid GXCALL GXMulVec3Mat3 ( GXVec3 &out, const GXVec3 &v, const GXMat3 &m );
 GXVoid GXCALL GXMulMat3Scalar ( GXMat3 &out, const GXMat3 &m, float a);

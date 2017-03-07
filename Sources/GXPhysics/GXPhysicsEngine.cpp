@@ -3,9 +3,11 @@
 #include <GXPhysics/GXPhysicsEngine.h>
 
 
-#define DEFAULT_GRAVITY_X	0.0f
-#define DEFAULT_GRAVITY_Y	-9.8f
-#define DEFAULT_GRAVITY_Z	0.0f
+#define DEFAULT_GRAVITY_X		0.0f
+#define DEFAULT_GRAVITY_Y		-9.8f
+#define DEFAULT_GRAVITY_Z		0.0f
+
+#define DEFAULT_SLEEP_EPSILON	0.1f
 
 
 GXPhysicsEngine* GXPhysicsEngine::instance = nullptr;
@@ -33,7 +35,18 @@ const GXVec3& GXPhysicsEngine::GetGravity () const
 	return gravity;
 }
 
+GXVoid GXPhysicsEngine::SetSleepEpsilon ( GXFloat epsilon )
+{
+	sleepEpsilon = epsilon;
+}
+
+GXFloat GXPhysicsEngine::GetSleepEpsilon () const
+{
+	return sleepEpsilon;
+}
+
 GXPhysicsEngine::GXPhysicsEngine ()
 {
 	SetGravity ( DEFAULT_GRAVITY_X, DEFAULT_GRAVITY_Y, DEFAULT_GRAVITY_Z );
+	SetSleepEpsilon ( DEFAULT_SLEEP_EPSILON );
 }

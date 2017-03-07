@@ -10,17 +10,25 @@
 class GXContactResolver
 {
 	private:
+		GXFloat		positionEpsilon;
 		GXUInt		positionIterations;
 		GXUInt		positionIterationsUsed;
 
-		GXFloat		positionEpsilon;
+		GXFloat		velocityEpsilon;
+		GXUInt		velocityIterations;
+		GXUInt		velocityIterationsUsed;
 
 	public:
 		GXVoid ResolveContacts ( GXContact* contactArray, GXUInt numContacts, GXFloat deltaTime );
 
+		GXVoid SetPositionEpsilon ( GXFloat epsilon );
+		GXVoid SetVelocityEpsilon ( GXFloat epsilon );
+
 	private:
 		GXVoid PrepareContacts ( GXContact* contactArray, GXUInt numContacts, GXFloat deltaTime );
 		GXVoid AdjustPositions ( GXContact* contacts, GXUInt numContacts, GXFloat deltaTime );
+		GXVoid AdjustVelocities ( GXContact* contacts, GXUInt numContacts, GXFloat deltaTime );
+		GXBool IsValid () const;
 };
 
 

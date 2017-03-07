@@ -25,7 +25,10 @@ class GXRigidBody
 
 		GXFloat		linearDamping;
 		GXFloat		angularDamping;
+
+		GXFloat		motion;
 		GXBool		isAwake;
+		GXBool		canSleep;
 
 		GXVec3		acceleration;
 		GXVec3		lastFrameAcceleration;
@@ -48,9 +51,11 @@ class GXRigidBody
 
 		GXVoid SetLinearVelocity ( const GXVec3 &velocity );
 		const GXVec3& GetLinearVelocity () const;
+		GXVoid AddLinearVelocity ( const GXVec3 &velocity );
 
 		GXVoid SetAngularVelocity ( const GXVec3 velocity );
 		const GXVec3& GetAngularVelocity () const;
+		GXVoid AddAngularVelocity ( const GXVec3 &velocity );
 		
 		GXFloat GetMass () const;
 		GXFloat GetInverseMass () const;
@@ -62,12 +67,13 @@ class GXRigidBody
 		const GXMat4& GetTransform ();
 
 		GXVoid SetAwake ();
+		GXVoid SetSleep ();
 		GXBool IsAwake () const;
+		GXVoid SetCanSleep ( GXBool isCanSleep );
 
 		GXVoid AddForce ( const GXVec3 &forceWorld );
 		GXVoid AddForceAtPointLocal ( const GXVec3 &forceWorld, const GXVec3 &pointLocal );
 		GXVoid AddForceAtPointWorld ( const GXVec3 &forceWorld, const GXVec3 &pointWorld );
-
 
 		GXVoid Integrate ( GXFloat deltaTime );
 };

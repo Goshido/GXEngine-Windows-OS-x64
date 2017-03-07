@@ -21,6 +21,11 @@ GXVoid GXContact::SetNormal ( const GXVec3 &normal )
 	this->normal = normal;
 }
 
+const GXVec3& GXContact::GetNormal () const
+{
+	return normal;
+}
+
 GXVoid GXContact::SetContactPoint ( const GXVec3 &point )
 {
 	this->point = point;
@@ -83,6 +88,17 @@ const GXVec3& GXContact::GetRelativeContactPosition ( GXUByte index ) const
 	return relativeContactPositions[ index ];
 }
 
+GXRigidBody* GXContact::GetRigidBody ( GXUByte index )
+{
+	if ( index > 1 )
+	{
+		GXLogW ( L"GXContact::GetRigidBody::Error - Wrong index %i\n", index );
+		return nullptr;
+	}
+
+	return bodies[ index ];
+}
+
 GXVoid GXContact::CalculateInternals ( GXFloat deltaTime )
 {
 	if ( !bodies[ 0 ] )
@@ -106,6 +122,32 @@ GXVoid GXContact::CalculateInternals ( GXFloat deltaTime )
 	}
 
 	CalculateDesiredDeltaVelocity ( deltaTime );
+}
+
+GXVoid GXContact::CalculateDesiredDeltaVelocity ( GXFloat deltaTime )
+{
+	GXFloat velocityFromAcc = 0.0f;
+
+	if ( bodies[ 0 ]->IsAwake () )
+	{
+		GXVec3 alpha;
+		GXMulVec3Scalar ( alpha, bodies[ 0 ]->GetLastFrameAcceleration (), deltaTime );
+		velocityFromAcc += GXDotVec3Fast ( alpha, normal );
+	}
+
+	if ( bodies[ 1 ] && bodies[ 1 ]->IsAwake () )
+	{
+		GXVec3 alpha;
+		GXMulVec3Scalar ( alpha, bodies[ 1 ]->GetLastFrameAcceleration (), deltaTime );
+		velocityFromAcc -= GXDotVec3Fast ( alpha, normal );
+	}
+
+	GXFloat thisRestitution = restitution;
+
+	if ( fabsf ( contactVelocity.x ) < DEFAILT_VELOCITY_LIMIT )
+		thisRestitution = 0.0f;
+
+	desiredDeltaVelocity = -contactVelocity.x - thisRestitution * ( contactVelocity.x - velocityFromAcc );
 }
 
 GXVoid GXContact::MatchAwakeState ()
@@ -207,6 +249,39 @@ GXVoid GXContact::ApplyPositionChange ( GXVec3 linearChange[ 2 ], GXVec3 angular
 	}
 }
 
+GXVoid GXContact::ApplyVelocityChange ( GXVec3 velocityChange[ 2 ], GXVec3 rotationChange[ 2 ] )
+{
+	GXVec3 impulseContact;
+
+	if ( friction == 0.0f )
+		impulseContact = CalculateFrictionlessImpulse ();
+	else
+		impulseContact = CalculateFrictionImpulse ();
+
+	GXVec3 impulse;
+	GXMulVec3Mat3 ( impulse, impulseContact, contactToWorld );
+
+	GXVec3 impulsiveTorque;
+	GXCrossVec3Vec3 ( impulsiveTorque, relativeContactPositions[ 0 ], impulse );
+
+	GXMulVec3Mat3 ( rotationChange[ 0 ], impulsiveTorque, bodies[ 0 ]->GetInverseInertiaTensorWorld () );
+	GXMulVec3Scalar ( velocityChange[ 0 ], impulse, bodies[ 0 ]->GetInverseMass () );
+
+	bodies[ 0 ]->AddLinearVelocity ( velocityChange[ 0 ] );
+	bodies[ 0 ]->AddAngularVelocity ( rotationChange[ 0 ] );
+
+	if ( bodies[ 1 ] )
+	{
+		GXCrossVec3Vec3 ( impulsiveTorque, impulse, relativeContactPositions[ 1 ] );
+
+		GXMulVec3Mat3 ( rotationChange[ 1 ], impulsiveTorque, bodies[ 0 ]->GetInverseInertiaTensorWorld () );
+		GXMulVec3Scalar ( velocityChange[ 1 ], impulse, -bodies[ 0 ]->GetInverseMass () );
+
+		bodies[ 1 ]->AddLinearVelocity ( velocityChange[ 1 ] );
+		bodies[ 1 ]->AddAngularVelocity ( rotationChange[ 1 ] );
+	}
+}
+
 GXVoid GXContact::SwapBodies ()
 {
 	GXReverseVec3 ( normal );
@@ -279,28 +354,91 @@ GXVoid GXContact::CalculateLocalVelocity ( GXVec3 &out, GXUInt bodyIndex, GXFloa
 	GXSumVec3Vec3 ( out, contactVelocity, accVelocity );
 }
 
-GXVoid GXContact::CalculateDesiredDeltaVelocity ( GXFloat deltaTime )
+GXVec3 GXContact::CalculateFrictionlessImpulse ()
 {
-	GXFloat velocityFromAcc = 0.0f;
+	GXVec3 alpha;
+	GXCrossVec3Vec3 ( alpha, relativeContactPositions[ 0 ], normal );
 
-	if ( bodies[ 0 ]->IsAwake () )
+	GXVec3 betta;
+	GXMulVec3Mat3 ( betta, alpha, bodies[ 0 ]->GetInverseInertiaTensorWorld () );
+
+	GXVec3 deltaVelWorld;
+	GXCrossVec3Vec3 ( deltaVelWorld, betta, relativeContactPositions[ 0 ] );
+
+	GXFloat deltaVelocity = GXDotVec3Fast ( deltaVelWorld, normal ) + bodies[ 0 ]->GetInverseMass ();
+
+	if ( bodies[ 1 ] )
 	{
-		GXVec3 alpha;
-		GXMulVec3Scalar ( alpha, bodies[ 0 ]->GetLastFrameAcceleration (), deltaTime );
-		velocityFromAcc += GXDotVec3Fast ( alpha, normal );
+		GXCrossVec3Vec3 ( alpha, relativeContactPositions[ 1 ], normal );
+		GXMulVec3Mat3 ( betta, alpha, bodies[ 1 ]->GetInverseInertiaTensorWorld () );
+		GXCrossVec3Vec3 ( deltaVelWorld, betta, relativeContactPositions[ 1 ] );
+
+		deltaVelocity = GXDotVec3Fast ( deltaVelWorld, normal ) + bodies[ 1 ]->GetInverseMass ();
 	}
 
-	if ( bodies[ 1 ] && bodies[ 1 ]->IsAwake () )
+	return GXVec3 ( desiredDeltaVelocity / deltaVelocity, 0.0f, 0.0f );
+}
+
+GXVec3 GXContact::CalculateFrictionImpulse ()
+{
+	GXFloat inverseMass = bodies[ 0 ]->GetInverseMass ();
+
+	GXMat3 impulseToTorque;
+	GXSetMat3SkewSymmetric ( impulseToTorque, relativeContactPositions[ 0 ] );
+	
+	GXMat3 alpha;
+	GXMulMat3Mat3 ( alpha, impulseToTorque, bodies[ 0 ]->GetInverseInertiaTensorWorld () );
+	GXMat3 betta;
+	GXMulMat3Mat3 ( betta, alpha, impulseToTorque );
+
+	GXMat3 deltaVelWorld;
+	GXMulMat3Scalar ( deltaVelWorld, betta, -1.0f );
+
+	if ( bodies[ 1 ] )
 	{
-		GXVec3 alpha;
-		GXMulVec3Scalar ( alpha, bodies[ 1 ]->GetLastFrameAcceleration (), deltaTime );
-		velocityFromAcc -= GXDotVec3Fast ( alpha, normal );
+		inverseMass += bodies[ 1 ]->GetInverseMass ();
+
+		GXSetMat3SkewSymmetric ( impulseToTorque, relativeContactPositions[ 1 ] );
+	
+		GXMulMat3Mat3 ( alpha, impulseToTorque, bodies[ 1 ]->GetInverseInertiaTensorWorld () );
+		GXMulMat3Mat3 ( betta, alpha, impulseToTorque );
+
+		GXMat3 deltaVelWorld2;
+		GXMulMat3Scalar ( deltaVelWorld2, betta, -1.0f );
+
+		GXSumMat3Mat3 ( deltaVelWorld, deltaVelWorld, deltaVelWorld2 );
 	}
 
-	GXFloat thisRestitution = restitution;
+	
+	GXMulMat3Mat3 ( alpha, contactToWorld, deltaVelWorld );
+	GXSetMat3Transponse ( betta, contactToWorld );
+	GXMat3 deltaVelocity;
+	GXMulMat3Mat3 ( deltaVelocity, alpha, betta );
 
-	if ( fabsf ( contactVelocity.x ) < DEFAILT_VELOCITY_LIMIT )
-		thisRestitution = 0.0f;
+	deltaVelocity.m11 += inverseMass;
+	deltaVelocity.m22 += inverseMass;
+	deltaVelocity.m33 += inverseMass;
 
-	desiredDeltaVelocity = -contactVelocity.x - thisRestitution * ( contactVelocity.x - velocityFromAcc );
+	GXMat3 impulseMatrix;
+	GXSetMat3Inverse ( impulseMatrix, deltaVelocity );
+
+	GXVec3 velKill ( desiredDeltaVelocity, -contactVelocity.y, -contactVelocity.z );
+
+	GXVec3 impulseContact;
+	GXMulVec3Mat3 ( impulseContact, velKill, impulseMatrix );
+	
+	GXFloat planarImpulse = sqrtf ( impulseContact.y * impulseContact.y + impulseContact.z * impulseContact.z );
+
+	if ( planarImpulse > impulseContact.x * friction )
+	{
+		impulseContact.y /= planarImpulse;
+		impulseContact.z /= planarImpulse;
+		impulseContact.x = deltaVelocity.m11 + deltaVelocity.m21 * friction * impulseContact.y + deltaVelocity.m31 * friction * impulseContact.z;
+		
+		impulseContact.x = desiredDeltaVelocity / impulseContact.x;
+		impulseContact.y *= friction * impulseContact.x;
+		impulseContact.z *= friction * impulseContact.x;
+	}
+
+	return impulseContact;
 }
