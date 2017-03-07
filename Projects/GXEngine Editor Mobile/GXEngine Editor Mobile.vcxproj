@@ -251,6 +251,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXPhysics\GXCollisionData.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXCollisionDetector.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXContact.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXContactResolver.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXFirework.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXGravity.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXParticle.cpp" />
@@ -395,6 +396,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXPhysics\GXCollisionData.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXCollisionDetector.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXContact.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXContactResolver.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXFirework.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXForceGenerator.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXGravity.h" />

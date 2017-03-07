@@ -26,6 +26,51 @@ GXVoid GXRigidBody::SetInertiaTensor ( const GXMat3 &inertiaTensor )
 	GXSetMat3Inverse ( invInertiaTensorLocal, inertiaTensor );
 }
 
+const GXMat3& GXRigidBody::GetInverseInertiaTensorWorld () const
+{
+	return invInertiaTensorWorld;
+}
+
+GXVoid GXRigidBody::SetLocation ( const GXVec3 &location )
+{
+	this->location = location;
+}
+
+const GXVec3& GXRigidBody::GetLocation () const
+{
+	return location;
+}
+
+GXVoid GXRigidBody::SetRotaton ( const GXQuat &rotation )
+{
+	this->rotation = rotation;
+}
+
+const GXQuat& GXRigidBody::GetRotation () const
+{
+	return rotation;
+}
+
+GXVoid GXRigidBody::SetLinearVelocity ( const GXVec3 &velocity )
+{
+	linearVelocity = velocity;
+}
+
+const GXVec3& GXRigidBody::GetLinearVelocity () const
+{
+	return linearVelocity;
+}
+
+GXVoid GXRigidBody::SetAngularVelocity ( const GXVec3 velocity )
+{
+	angularVelocity = velocity;
+}
+
+const GXVec3& GXRigidBody::GetAngularVelocity () const
+{
+	return angularVelocity;
+}
+
 GXFloat GXRigidBody::GetMass () const
 {
 	return mass;
@@ -41,6 +86,11 @@ GXBool GXRigidBody::HasFiniteMass () const
 	return invMass >= 0.0f;
 }
 
+const GXVec3& GXRigidBody::GetLastFrameAcceleration () const
+{
+	return lastFrameAcceleration;
+}
+
 GXVoid GXRigidBody::TranslatePointToWorld ( GXVec3 &out, const GXVec3 &pointLocal )
 {
 	GXMulVec3Mat4AsPoint ( out, pointLocal, transform );
@@ -49,6 +99,16 @@ GXVoid GXRigidBody::TranslatePointToWorld ( GXVec3 &out, const GXVec3 &pointLoca
 const GXMat4& GXRigidBody::GetTransform ()
 {
 	return transform;
+}
+
+GXVoid GXRigidBody::SetAwake ()
+{
+	isAwake = GX_TRUE;
+}
+
+GXBool GXRigidBody::IsAwake () const
+{
+	return isAwake;
 }
 
 GXVoid GXRigidBody::AddForce ( const GXVec3 &forceWorld )
@@ -103,9 +163,8 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 	GXMulVec3Scalar ( locationDelta, linearVelocity, deltaTime );
 	GXSumVec3Vec3 ( location, location, locationDelta );
 
-	GXSumQuatVec3Scaled ( rotation, rotation, angularVelocity, deltaTime );
+	GXSumQuatScaledVec3 ( rotation, rotation, deltaTime, angularVelocity );
 
 	CalculateCachedData ();
 	ClearAccumulators ();
 }
-

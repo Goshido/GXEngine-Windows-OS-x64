@@ -36,18 +36,38 @@ class GXRigidBody
 	public:
 		GXVoid CalculateCachedData ();
 		GXVoid ClearAccumulators ();
+
 		GXVoid SetInertiaTensor ( const GXMat3 &inertiaTensor );
+		const GXMat3& GetInverseInertiaTensorWorld () const;
+
+		GXVoid SetLocation ( const GXVec3 &location );
+		const GXVec3& GetLocation () const;
+
+		GXVoid SetRotaton ( const GXQuat &rotation );
+		const GXQuat& GetRotation () const;
+
+		GXVoid SetLinearVelocity ( const GXVec3 &velocity );
+		const GXVec3& GetLinearVelocity () const;
+
+		GXVoid SetAngularVelocity ( const GXVec3 velocity );
+		const GXVec3& GetAngularVelocity () const;
 		
 		GXFloat GetMass () const;
 		GXFloat GetInverseMass () const;
 		GXBool HasFiniteMass () const;
 
+		const GXVec3& GetLastFrameAcceleration () const;
+
 		GXVoid TranslatePointToWorld ( GXVec3 &out, const GXVec3 &pointLocal );
 		const GXMat4& GetTransform ();
+
+		GXVoid SetAwake ();
+		GXBool IsAwake () const;
 
 		GXVoid AddForce ( const GXVec3 &forceWorld );
 		GXVoid AddForceAtPointLocal ( const GXVec3 &forceWorld, const GXVec3 &pointLocal );
 		GXVoid AddForceAtPointWorld ( const GXVec3 &forceWorld, const GXVec3 &pointWorld );
+
 
 		GXVoid Integrate ( GXFloat deltaTime );
 };

@@ -82,7 +82,8 @@ GXFloat GXCALL GXDistanceVec3Vec3 ( const GXVec3 &a, const GXVec3 &b );
 GXFloat GXCALL GXSquareDistanceVec3Vec3 ( const GXVec3 &a, const GXVec3 &b );
 GXVoid GXCALL GXReverseVec3 ( GXVec3 &inOut );
 GXVoid GXCALL GXProjectVec3Vec3 ( GXVec3 &projection, const GXVec3 &vector, const GXVec3 &unitVector );
-
+GXVoid GXCALL GXMakeOrthonormalBasis ( GXVec3 &baseX, GXVec3 &adjustedY, GXVec3 &adjustedZ ); //baseX - correct direction, adjustedY - desirable, adjustedZ - calculated.
+ 
 //-------------------------------------------------------------
 
 struct GXVec4
@@ -133,7 +134,7 @@ GXVoid GXCALL GXQuatToEulerAngles ( GXVec3 &out_rad, const GXQuat &q );	//TODO
 
 GXVoid GXCALL GXMulQuatQuat ( GXQuat &out, const GXQuat &a, const GXQuat &b );
 GXVoid GXCALL GXSumQuatQuat ( GXQuat &out, const GXQuat &a, const GXQuat &b );
-GXVoid GXCALL GXSumQuatVec3Scaled ( GXQuat &out, const GXQuat &q, const GXVec3 &v, GXFloat s );
+GXVoid GXCALL GXSumQuatScaledVec3 ( GXQuat &out, const GXQuat &q, GXFloat s, const GXVec3 &v );
 GXVoid GXCALL GXSubQuatQuat ( GXQuat &out, const GXQuat &a, const GXQuat &b );
 GXVoid GXCALL GXQuatSLerp ( GXQuat &out, const GXQuat &a, const GXQuat &b, GXFloat k );
 GXVoid GXCALL GXInverseQuat ( GXQuat &out, const GXQuat &q );

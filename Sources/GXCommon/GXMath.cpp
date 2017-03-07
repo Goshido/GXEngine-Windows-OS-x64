@@ -1,6 +1,7 @@
 //version 1.27
 
 #include <GXCommon/GXMath.h>
+#include <GXCommon/GXLogger.h>
 #include <cstdlib>
 #include <cfloat>
 #include <cwchar>
@@ -157,6 +158,23 @@ GXVoid GXCALL GXProjectVec3Vec3 ( GXVec3 &projection, const GXVec3 &vector, cons
 	projection.x = unitVector.x * factor;
 	projection.y = unitVector.y * factor;
 	projection.z = unitVector.z * factor;
+}
+
+GXVoid GXCALL GXMakeOrthonormalBasis ( GXVec3 &baseX, GXVec3 &adjustedY, GXVec3 &adjustedZ )
+{
+	GXCrossVec3Vec3 ( adjustedZ, baseX, adjustedY );
+
+	if ( GXSquareLengthVec3 ( adjustedZ ) == 0.0f )
+	{
+		GXLogW ( L"GXMakeOrthonormalBasis::Error - Can't make this!\n" );
+		return;
+	}
+
+	GXCrossVec3Vec3 ( adjustedY, adjustedZ, baseX );
+
+	GXNormalizeVec3 ( baseX );
+	GXNormalizeVec3 ( adjustedY );
+	GXNormalizeVec3 ( adjustedZ );
 }
 
 //----------------------------------------------------------------------------------------
@@ -901,7 +919,7 @@ GXVoid GXCALL GXSumQuatQuat ( GXQuat& out, const GXQuat &a, const GXQuat &b )
 	out.w = a.w + b.w;
 }
 
-GXVoid GXCALL GXSumQuatVec3Scaled ( GXQuat &out, const GXQuat &q, const GXVec3 &v, GXFloat s )
+GXVoid GXCALL GXSumQuatScaledVec3 ( GXQuat &out, const GXQuat &q, GXFloat s, const GXVec3 &v )
 {
 	GXQuat qs ( v.x * s, v.y * s, v.z * s, 0.0f );
 	GXQuat q1;

@@ -381,6 +381,9 @@
     <ClCompile Include="..\..\Sources\GXPhysics\GXBoxShape.cpp">
       <Filter>Source Files\GXPhysics</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPhysics\GXContactResolver.cpp">
+      <Filter>Source Files\GXPhysics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -819,6 +822,9 @@
       <Filter>Header Files\GXPhysics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXPhysics\GXBoxShape.h">
+      <Filter>Header Files\GXPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPhysics\GXContactResolver.h">
       <Filter>Header Files\GXPhysics</Filter>
     </ClInclude>
   </ItemGroup>
