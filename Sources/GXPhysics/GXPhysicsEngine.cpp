@@ -8,6 +8,7 @@
 #define DEFAULT_GRAVITY_Z		0.0f
 
 #define DEFAULT_SLEEP_EPSILON	0.1f
+#define DEFAULT_TIME_STEP		0.0155f
 
 #define MAX_CONTACTS			16384
 #define WORLD_ITERATIONS		50
@@ -48,6 +49,16 @@ GXFloat GXPhysicsEngine::GetSleepEpsilon () const
 	return sleepEpsilon;
 }
 
+GXVoid GXPhysicsEngine::SetTimeStep ( GXFloat step )
+{
+	timeStep = step;
+}
+
+GXFloat GXPhysicsEngine::GetTimeStep () const
+{
+	return timeStep;
+}
+
 GXWorld& GXPhysicsEngine::GetWorld ()
 {
 	return world;
@@ -55,12 +66,21 @@ GXWorld& GXPhysicsEngine::GetWorld ()
 
 GXVoid GXPhysicsEngine::RunSimulateLoop ( GXFloat deltaTime )
 {
-	world.RunPhysics ( deltaTime );
+	GXFloat time = deltaTime;
+	while ( time > timeStep )
+	{
+		world.RunPhysics ( timeStep );
+		time -= timeStep;
+	}
+
+	if ( time > 0.0f )
+		world.RunPhysics ( time );
 }
 
 GXPhysicsEngine::GXPhysicsEngine ()
 : world ( MAX_CONTACTS, WORLD_ITERATIONS )
 {
 	SetGravity ( DEFAULT_GRAVITY_X, DEFAULT_GRAVITY_Y, DEFAULT_GRAVITY_Z );
+	SetTimeStep ( DEFAULT_TIME_STEP );
 	SetSleepEpsilon ( DEFAULT_SLEEP_EPSILON );
 }

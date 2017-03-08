@@ -176,7 +176,6 @@ GXVoid GXWorld::ClearForceGeneratorRegistrations ()
 
 GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 {
-
 	// We do not do anything unless 2 rigid bodies were registered
 	if ( !bodies || !bodies->next ) return;
 

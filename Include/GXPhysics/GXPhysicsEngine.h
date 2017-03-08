@@ -11,9 +11,11 @@ class GXPhysicsEngine
 {
 	private:
 		static GXPhysicsEngine*	instance;
+
+		GXWorld					world;
 		GXVec3					gravity;
 		GXFloat					sleepEpsilon;
-		GXWorld					world;
+		GXFloat					timeStep;
 
 	public:
 		~GXPhysicsEngine ();
@@ -24,6 +26,9 @@ class GXPhysicsEngine
 
 		GXVoid SetSleepEpsilon ( GXFloat epsilon );
 		GXFloat GetSleepEpsilon () const;
+
+		GXVoid SetTimeStep ( GXFloat step );
+		GXFloat GetTimeStep () const;
 
 		GXWorld& GetWorld ();
 

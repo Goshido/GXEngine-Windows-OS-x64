@@ -26,6 +26,27 @@ GXVoid GXBoxShape::CalculateInertiaTensor ( GXFloat mass )
 	inertialTensor.m31 = inertialTensor.m32 = 0.0f;
 }
 
+GXVoid GXBoxShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const
+{
+	GXBoxShapeVertices v;
+	GetVecticesWorld ( v );
+
+	GXUByte index = 0;
+	GXFloat projection = -FLT_MIN;
+
+	for ( GXUByte i = 0; i < 8; i++ )
+	{
+		GXFloat p = GXDotVec3Fast ( direction, v.vertices[ i ] );
+		if ( p > projection )
+		{
+			projection = p;
+			index = i;
+		}
+	}
+
+	point = v.vertices[ index ];
+}
+
 GXFloat GXBoxShape::GetWidth () const
 {
 	return width;

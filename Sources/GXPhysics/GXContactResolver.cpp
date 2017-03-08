@@ -1,6 +1,7 @@
 //version 1.0
 
 #include <GXPhysics/GXContactResolver.h>
+#include <GXCommon/GXLogger.h>
 
 
 #define DEFAULT_POSITION_EPSILON	0.01f
@@ -109,6 +110,8 @@ GXVoid GXContactResolver::AdjustPositions ( GXContact* contacts, GXUInt numConta
 
 		positionIterationsUsed++;
 	}
+
+	GXLogW ( L"GXContactResolver::AdjustPositions::Info - Iterations %i/%i\n", positionIterationsUsed, positionIterations );
 }
 
 GXVoid GXContactResolver::AdjustVelocities ( GXContact* contacts, GXUInt numContacts, GXFloat deltaTime )
@@ -170,6 +173,8 @@ GXVoid GXContactResolver::AdjustVelocities ( GXContact* contacts, GXUInt numCont
 
 		velocityIterationsUsed++;
 	}
+
+	GXLogW ( L"GXContactResolver::AdjustVelocities::Info - Iterations %i/%i\n", velocityIterationsUsed, velocityIterations );
 }
 
 GXBool GXContactResolver::IsValid () const

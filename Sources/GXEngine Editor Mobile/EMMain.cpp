@@ -149,6 +149,9 @@ GXVoid GXCALL EMStartBoxFallingSimulation ()
 
 	GXRigidBody& body = em_PhysicsBoxActor->GetRigidBody ();
 	body.SetLocation ( 0.0f, 10.0f, 15.0f );
+	GXQuat rot;
+	GXSetQuatFromAxisAngle ( rot, GXCreateVec3 ( 0.0f, 0.0f, 1.0f ), 0.0f );
+	body.SetRotaton ( rot );
 	body.SetLinearVelocity ( GXCreateVec3 ( 0.0f, 0.0f, 0.0f ) );
 	body.SetAngularVelocity ( GXCreateVec3 ( 0.0f, 0.0f, 10.0f ) );
 	body.ClearAccumulators ();
@@ -292,11 +295,11 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 
 	EMTool::SetActiveTool ( em_MoveTool );
 
-	em_PhysicsBoxActor = new EMPhysicsDrivenActor ( eEMPhysicsDrivenActorType::Box );
+	em_PhysicsBoxActor = new EMPhysicsDrivenActor ( eGXShapeType::Box );
 	GXRigidBody& body = em_PhysicsBoxActor->GetRigidBody ();
 	body.SetLocation ( 0.0f, 10.0f, 15.0f );
 
-	em_PhysicsPlaneActor = new EMPhysicsDrivenActor ( eEMPhysicsDrivenActorType::Plane );
+	em_PhysicsPlaneActor = new EMPhysicsDrivenActor ( eGXShapeType::Plane );
 
 	GXWorld& world = GXPhysicsEngine::GetInstance ()->GetWorld ();
 	world.RegisterRigidBody ( body );

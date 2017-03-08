@@ -3,8 +3,8 @@
 
 
 #include <GXPhysics/GXRigidBody.h>
+#include <GXPhysics/GXShape.h>
 #include <GXEngine/GXMesh.h>
-
 
 enum class eEMPhysicsDrivenActorType
 {
@@ -20,7 +20,7 @@ class EMPhysicsDrivenActor
 		GXRigidBody*	rigidBody;
 
 	public:
-		EMPhysicsDrivenActor ( eEMPhysicsDrivenActorType type );
+		EMPhysicsDrivenActor ( eGXShapeType type );
 		~EMPhysicsDrivenActor ();
 
 		GXRigidBody& GetRigidBody ();

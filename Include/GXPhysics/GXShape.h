@@ -39,6 +39,8 @@ class GXShape
 		virtual GXVoid CalculateInertiaTensor ( GXFloat mass ) = 0;
 		const GXMat3& GetInertialTensor () const;
 
+		virtual GXVoid GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const = 0;
+
 		GXVoid SetFriction ( GXFloat friction );
 		GXFloat GetFriction () const;
 

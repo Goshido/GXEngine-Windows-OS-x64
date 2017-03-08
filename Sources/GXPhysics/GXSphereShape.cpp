@@ -21,3 +21,10 @@ GXVoid GXSphereShape::CalculateInertiaTensor ( GXFloat mass )
 	inertialTensor.m21 = inertialTensor.m23 = 0.0f;
 	inertialTensor.m31 = inertialTensor.m32 = 0.0f;
 }
+
+GXVoid GXSphereShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const
+{
+	GXVec3 d = direction;
+	GXNormalizeVec3 ( d );
+	GXSumVec3ScaledVec3 ( point, transformWorld.wv, radius, d );
+}

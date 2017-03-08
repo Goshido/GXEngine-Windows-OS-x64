@@ -137,13 +137,13 @@ GXVoid EMPhysicsDrivenActorMesh::InitUniforms ()
 
 //------------------------------------------------------------
 
-EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eEMPhysicsDrivenActorType type )
+EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
 {
 	rigidBody = new GXRigidBody ();
 
 	switch ( type )
 	{
-		case eEMPhysicsDrivenActorType::Box:
+		case eGXShapeType::Box:
 		{
 			mesh = new EMPhysicsDrivenActorMesh ();
 			GXBoxShape* box = new GXBoxShape ( rigidBody, 1.0f, 1.0f, 1.0f );
@@ -151,7 +151,7 @@ EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eEMPhysicsDrivenActorType type )
 		}
 		break;
 
-		case eEMPhysicsDrivenActorType::Plane:
+		case eGXShapeType::Plane:
 		{
 			mesh = nullptr;
 
@@ -159,14 +159,14 @@ EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eEMPhysicsDrivenActorType type )
 			plane.a = 0.0f;
 			plane.b = 1.0f;
 			plane.c = 0.0f;
-			plane.d = 2.0f;
+			plane.d = -2.0f;
 
 			GXPlaneShape* p = new GXPlaneShape ( nullptr, plane );
 			rigidBody->SetShape ( *p );
 		}
 		break;
 
-		case eEMPhysicsDrivenActorType::Sphere:
+		case eGXShapeType::Sphere:
 		{
 			mesh = new EMPhysicsDrivenActorMesh ();
 			GXSphereShape* p = new GXSphereShape ( rigidBody, 0.5f );

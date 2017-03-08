@@ -10,6 +10,7 @@
 #include "GXCollisionData.h"
 
 
+struct GXSupportPoint;
 class GXCollisionDetector
 {
 	public:
@@ -20,6 +21,8 @@ class GXCollisionDetector
 		GXUInt CheckBoxAndSphere ( const GXBoxShape &box, const GXSphereShape &sphere, GXCollisionData &collisionData );
 		GXUInt CheckBoxAndBox ( const GXBoxShape &boxA, const GXBoxShape &boxB, GXCollisionData &collisionData );
 
+		GXVoid CheckViaGJK ( const GXShape &shapeA, const GXShape &shapeB, GXCollisionData &collisionData );
+
 	private:
 		GXBool TryAxis ( const GXBoxShape &boxA, const GXBoxShape &boxB, GXVec3 axis, const GXVec3 &toCentre, GXUInt index, GXFloat smallestPenetration, GXUInt &smallestCase );
 		GXFloat PenetrationOnAxis ( const GXBoxShape &one, const GXBoxShape &two, const GXVec3 &axis, const GXVec3 &toCentre );
@@ -27,6 +30,8 @@ class GXCollisionDetector
 		GXVoid FillPointFaceBoxBox ( const GXBoxShape &one, const GXBoxShape &two, const GXVec3 &toCentre, GXCollisionData &collisionData, GXUInt best, GXFloat pen );
 		const GXVec3& GetAxis ( const GXMat4 &transform, GXUInt index );
 		GXVec3 ContactPoint ( const GXVec3 &pOne, const GXVec3 &dOne, GXFloat oneSize, const GXVec3 &pTwo, const GXVec3 &dTwo, GXFloat twoSize, GXBool useOne );
+
+		GXVoid CalculateSupportPoint ( GXSupportPoint &supportPoint, const GXShape &shapeA, const GXShape &shapeB, const GXVec3 &direction );
 };
 
 

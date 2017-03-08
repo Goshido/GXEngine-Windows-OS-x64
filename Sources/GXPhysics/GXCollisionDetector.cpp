@@ -8,6 +8,35 @@
 #define CONTACT_POINT_EPSILON	0.0001f
 
 
+struct GXSupportPoint
+{
+	GXVec3		difference;
+
+	GXVec3		extremeA;
+	GXVec3		extremeB;
+
+	GXVoid operator = ( const GXSupportPoint &point );
+};
+
+GXVoid GXSupportPoint::operator = ( const GXSupportPoint &point )
+{
+	memcpy ( this, &point, sizeof ( GXSupportPoint ) );
+}
+
+//------------------------------------------------------------------------------------------
+
+struct GXSimplex
+{
+	GXSupportPoint		a;
+	GXSupportPoint		b;
+	GXSupportPoint		c;
+	GXSupportPoint		d;
+
+	GXUByte				numPoints;
+};
+
+//------------------------------------------------------------------------------------------
+
 GXUInt GXCollisionDetector::CheckSphereAndSphere ( const GXSphereShape &sphereA, const GXSphereShape &sphereB, GXCollisionData &collisionData )
 {
 	if ( !collisionData.HasMoreContacts () ) return 0;
@@ -314,6 +343,43 @@ GXUInt GXCollisionDetector::CheckBoxAndBox ( const GXBoxShape &boxA, const GXBox
 	return 0;
 }
 
+GXVoid GXCollisionDetector::CheckViaGJK ( const GXShape &shapeA, const GXShape &shapeB, GXCollisionData &collisionData )
+{
+	GXSimplex simplex;
+	simplex.numPoints = 2;
+
+	GXVec3 direction ( 0.0f, 1.0f, 0.0f );
+	CalculateSupportPoint ( simplex.b, shapeA, shapeB, direction );
+
+	direction = GXCreateVec3 ( -simplex.b.difference.x, -simplex.b.difference.y, -simplex.b.difference.z );
+	CalculateSupportPoint ( simplex.a, shapeA, shapeB, direction );
+
+	GXBool loopFlag = GX_TRUE;
+	while ( loopFlag )
+	{
+		switch ( simplex.numPoints )
+		{
+			case 2:
+			{
+				// TODO
+			}
+			break;
+
+			case 3:
+			{
+				// TODO
+			}
+			break;
+
+			case 4:
+			{
+				// TODO
+			}
+			break;
+		}
+	}
+}
+
 GXBool GXCollisionDetector::TryAxis ( const GXBoxShape &boxA, const GXBoxShape &boxB, GXVec3 axis, const GXVec3 &toCentre, GXUInt index, GXFloat smallestPenetration, GXUInt &smallestCase )
 {
 	if ( GXSquareLengthVec3 ( axis ) < TRY_AXIS_EPSILON ) return GX_TRUE;
@@ -444,4 +510,12 @@ GXVec3 GXCollisionDetector::ContactPoint ( const GXVec3 &pOne, const GXVec3 &dOn
 		GXSumVec3Vec3 ( ans, cOne, cTwo );
 		return ans;
 	}
+}
+
+GXVoid GXCollisionDetector::CalculateSupportPoint ( GXSupportPoint &supportPoint, const GXShape &shapeA, const GXShape &shapeB, const GXVec3 &direction )
+{
+	shapeA.GetExtremePoint ( supportPoint.extremeA, direction );
+	GXVec3 invDirection ( -direction.x, -direction.y, -direction.z );
+	shapeB.GetExtremePoint ( supportPoint.extremeB, invDirection );
+	GXSubVec3Vec3 ( supportPoint.difference, supportPoint.extremeA, supportPoint.extremeB );
 }

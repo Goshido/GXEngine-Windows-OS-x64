@@ -15,7 +15,9 @@ class GXSphereShape : public GXShape
 	public:
 		GXSphereShape ( GXRigidBody* body, GXFloat radius );
 		GXFloat GetRadius () const;
+
 		GXVoid CalculateInertiaTensor ( GXFloat mass ) override;
+		GXVoid GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const override;
 };
 
 
