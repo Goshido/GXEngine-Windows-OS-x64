@@ -297,55 +297,7 @@
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIMenu.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXParticle.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXFirework.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXPhysics\GXPhysicsEngine.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleForceRegistry.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleGravity.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleDrag.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleSpring.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleAnchoredSpring.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleBungee.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleBuoyancy.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleFakeSpring.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleContact.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleContactResolver.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleLink.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleCable.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleRod.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXParticleWorld.cpp">
       <Filter>Source Files\GXPhysics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXPhysics\GXRigidBody.cpp">
@@ -383,6 +335,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXPhysics\GXContactResolver.cpp">
       <Filter>Source Files\GXPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMPhysicsDrivenActor.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -728,61 +683,7 @@
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIMenu.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXParticle.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXFirework.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXPhysics\GXPhysicsEngine.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXParticleForceGenerator.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXParticleForceRegistry.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXParticleGravity.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXParticleDrag.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXParticleSpring.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXParticleAnchoredSpring.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXParticleBungee.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXParticleBuoyancy.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXParticleFakeSpring.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXParticleContact.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXParticleContactResolver.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXParticleLink.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXParticleCable.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXParticleRod.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXParticleWorld.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXParticleContactGenerator.h">
       <Filter>Header Files\GXPhysics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXPhysics\GXRigidBody.h">
@@ -826,6 +727,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\GXPhysics\GXContactResolver.h">
       <Filter>Header Files\GXPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPhysics\GXContactsGenerator.h">
+      <Filter>Header Files\GXPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMPhysicsDrivenActor.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

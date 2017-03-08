@@ -2,11 +2,28 @@
 
 #include <GXPhysics/GXBoxShape.h>
 
-GXBoxShape::GXBoxShape ( GXFloat width, GXFloat height, GXFloat depth )
+GXBoxShape::GXBoxShape ( GXRigidBody* body, GXFloat width, GXFloat height, GXFloat depth )
+: GXShape ( eGXShapeType::Box, body )
 {
 	this->width = width;
 	this->height = height;
 	this->depth = depth;
+}
+
+GXVoid GXBoxShape::CalculateInertiaTensor ( GXFloat mass )
+{
+	GXFloat factor = mass * 0.08333f;
+	GXFloat ww = width * width;
+	GXFloat hh = height * height;
+	GXFloat dd = depth * depth;
+
+	inertialTensor.m11 = factor * ( hh + dd );
+	inertialTensor.m22 = factor * ( ww + dd );
+	inertialTensor.m33 = factor * ( ww + hh );
+
+	inertialTensor.m12 = inertialTensor.m13 = 0.0f;
+	inertialTensor.m21 = inertialTensor.m23 = 0.0f;
+	inertialTensor.m31 = inertialTensor.m32 = 0.0f;
 }
 
 GXFloat GXBoxShape::GetWidth () const

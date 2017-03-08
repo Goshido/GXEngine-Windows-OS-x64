@@ -19,10 +19,15 @@ class GXContactResolver
 		GXUInt		velocityIterationsUsed;
 
 	public:
+		GXContactResolver ( GXUInt iterations );
+
 		GXVoid ResolveContacts ( GXContact* contactArray, GXUInt numContacts, GXFloat deltaTime );
 
 		GXVoid SetPositionEpsilon ( GXFloat epsilon );
 		GXVoid SetVelocityEpsilon ( GXFloat epsilon );
+
+		GXVoid SetVelocityIterations ( GXUInt iterations );
+		GXVoid SetPositionIterations ( GXUInt iterations );
 
 	private:
 		GXVoid PrepareContacts ( GXContact* contactArray, GXUInt numContacts, GXFloat deltaTime );

@@ -4,20 +4,46 @@
 #define GX_SHAPE
 
 
-#include "GXRigidBody.h"
+#include <GXCommon/GXMath.h>
 
 
+enum class eGXShapeType
+{
+	Sphere,
+	Box,
+	Plane
+};
+
+class GXRigidBody;
 class GXShape
 {
 	protected:
+		eGXShapeType	type;
 		GXRigidBody*	body;
 		GXMat4			transformRigidBody;
 		GXMat4			transformWorld;
+		GXMat3			inertialTensor;
+
+		GXFloat			friction;
+		GXFloat			restitution;
 
 	public:
+		GXShape ( eGXShapeType type, GXRigidBody* body );
+
+		eGXShapeType GetType () const;
+
 		const GXMat4& GetTransformWorld () const;
 		GXVoid CalculateCacheData ();
 		GXRigidBody* GetRigidBody () const;
+
+		virtual GXVoid CalculateInertiaTensor ( GXFloat mass ) = 0;
+		const GXMat3& GetInertialTensor () const;
+
+		GXVoid SetFriction ( GXFloat friction );
+		GXFloat GetFriction () const;
+
+		GXVoid SetRestitution ( GXFloat restitution );
+		GXFloat GetRestitution () const;
 };
 
 

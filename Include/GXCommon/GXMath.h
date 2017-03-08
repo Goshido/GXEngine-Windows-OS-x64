@@ -328,5 +328,8 @@ GXVoid GXCALL GXGetTangentBitangent ( GXVec3 &outTangent, GXVec3 &outBitangent, 
 GXFloat GXCALL GXClampf ( GXFloat value, GXFloat minValue, GXFloat maxValue );
 GXUInt GXCALL GXClampi ( GXInt value, GXInt minValue, GXInt maxValue );
 
+GXFloat GXCALL GXMinf ( GXFloat a, GXFloat b );
+GXFloat GXCALL GXMaxf ( GXFloat a, GXFloat b );
+
 
 #endif //GX_MATH

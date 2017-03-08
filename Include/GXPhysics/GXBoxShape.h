@@ -20,7 +20,9 @@ class GXBoxShape : public GXShape
 		GXFloat depth;
 
 	public:
-		GXBoxShape ( GXFloat width, GXFloat height, GXFloat depth );
+		GXBoxShape ( GXRigidBody* body, GXFloat width, GXFloat height, GXFloat depth );
+
+		GXVoid CalculateInertiaTensor ( GXFloat mass ) override;
 
 		GXFloat GetWidth () const;
 		GXFloat GetHeight () const;

@@ -1,14 +1,27 @@
 //version 1.0
 
 #include <GXPhysics/GXCollisionData.h>
+#include <GXCommon/GXMemory.h>
 
+
+GXCollisionData::GXCollisionData ( GXUInt maxContacts )
+{
+	this->maxContacts = maxContacts;
+	contactArray = (GXContact*)malloc ( maxContacts * sizeof ( GXContact ) );
+	Reset ();
+}
+
+GXCollisionData::~GXCollisionData ()
+{
+	free ( contactArray );
+}
 
 GXBool GXCollisionData::HasMoreContacts () const
 {
 	return contactsLeft > 0;
 }
 
-GXVoid GXCollisionData::Reset ( GXUInt maxContacts )
+GXVoid GXCollisionData::Reset ()
 {
 	contactsLeft = maxContacts;
 	contactCount = 0;
@@ -27,7 +40,7 @@ GXContact* GXCollisionData::GetContactsBegin () const
 	return contacts;
 }
 
-const GXContact* GXCollisionData::GetAllContacts () const
+GXContact* GXCollisionData::GetAllContacts () const
 {
 	return contactArray;
 }

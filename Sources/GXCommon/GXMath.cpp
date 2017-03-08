@@ -1513,3 +1513,13 @@ GXUInt GXCALL GXClampi ( GXInt value, GXInt minValue, GXInt maxValue )
 {
 	return ( value < minValue ) ? minValue : ( value > maxValue ) ? maxValue : value;
 }
+
+GXFloat GXCALL GXMinf ( GXFloat a, GXFloat b )
+{
+	return a < b ? a : b;
+}
+
+GXFloat GXCALL GXMaxf ( GXFloat a, GXFloat b )
+{
+	return a > b ? a : b;
+}

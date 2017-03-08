@@ -15,18 +15,22 @@ class GXCollisionData
 		GXContact*		contacts;
 		GXUInt			contactsLeft;
 		GXUInt			contactCount;
+		GXUInt			maxContacts;
 
 		GXFloat			friction;
 		GXFloat			restitution;
 		GXFloat			tolerance;
 
 	public:
+		GXCollisionData ( GXUInt maxContacts );
+		~GXCollisionData ();
+
 		GXBool HasMoreContacts () const;
-		GXVoid Reset ( GXUInt maxContacts );
+		GXVoid Reset ();
 		GXVoid AddContacts ( GXUInt count );
 
 		GXContact* GetContactsBegin () const;
-		const GXContact* GetAllContacts () const;
+		GXContact* GetAllContacts () const;
 		GXUInt GetTotalContacts () const;
 		GXUInt GetContactsLeft () const;
 

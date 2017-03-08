@@ -5,17 +5,45 @@
 
 
 #include "GXRigidBody.h"
+#include "GXCollisionDetector.h"
+#include "GXContactResolver.h"
+#include "GXCollisionData.h"
+#include "GXForceGenerator.h"
 
 
-struct GXBodyRegistration;
+struct GXRigidBodyRegistration;
+struct GXContactGeneratorsRegistration;
+struct GXForceGeneratorsRegistration;
 class GXWorld
 {
-	GXBodyRegistration* bodies;
+	private:
+		GXBool								isCalculateIterations;
+
+		GXRigidBodyRegistration*			bodies;
+		GXContactGeneratorsRegistration*	contactGenerators;
+		GXForceGeneratorsRegistration*		forceGenerators;
+
+		GXContactResolver					contactResolver;
+		GXCollisionDetector					collisionDetector;
+		GXCollisionData						collisions;
 
 	public:
-		GXVoid BeginFrame ();
+		GXWorld ( GXUInt maxContacts, GXUInt iterations = 0 );
+		~GXWorld ();
+
+		GXVoid RegisterRigidBody ( GXRigidBody &body );
+		GXVoid UnregisterRigidBody ( GXRigidBody &body );
+		GXVoid ClearRigidBodyRegistrations ();
+
+		GXVoid RegisterForceGenerator ( GXRigidBody &body, GXForceGenerator &generator );
+		GXVoid UnregisterForceGenerator ( GXRigidBody &body, GXForceGenerator &generator );
+		GXVoid ClearForceGeneratorRegistrations ();
+
 		GXVoid RunPhysics ( GXFloat deltaTime );
 
+	private:
+		GXRigidBodyRegistration* FindRigidBodyRegistration ( GXRigidBody &body );
+		GXForceGeneratorsRegistration* FindForceGeneratorRegistration ( GXRigidBody &body, GXForceGenerator &generator );
 };
 
 

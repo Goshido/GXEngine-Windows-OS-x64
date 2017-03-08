@@ -6,6 +6,7 @@
 
 #include <GXCommon/GXMath.h>
 #include "GXRigidBody.h"
+#include "GXShape.h"
 
 
 class GXContact
@@ -25,7 +26,7 @@ class GXContact
 		GXVec3			relativeContactPositions[ 2 ];
 
 	public:
-		GXVoid SetData ( GXRigidBody &bodyA, GXRigidBody* bodyB, GXFloat friction, GXFloat restitution );
+		GXVoid SetData ( const GXShape &bodyA, const GXShape* bodyB );
 
 		GXVoid SetNormal ( const GXVec3 &normal );
 		const GXVec3& GetNormal () const;

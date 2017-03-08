@@ -3,6 +3,12 @@
 #include <GXPhysics/GXContactResolver.h>
 
 
+GXContactResolver::GXContactResolver ( GXUInt iterations )
+{
+	SetVelocityIterations ( iterations );
+	SetPositionIterations ( iterations );
+}
+
 GXVoid GXContactResolver::ResolveContacts ( GXContact* contactArray, GXUInt numContacts, GXFloat deltaTime )
 {
 	if ( numContacts == 0 ) return;
@@ -21,6 +27,16 @@ GXVoid GXContactResolver::SetPositionEpsilon ( GXFloat epsilon )
 GXVoid GXContactResolver::SetVelocityEpsilon ( GXFloat epsilon )
 {
 	velocityEpsilon = epsilon;
+}
+
+GXVoid GXContactResolver::SetVelocityIterations ( GXUInt iterations )
+{
+	velocityIterations = iterations;
+}
+
+GXVoid GXContactResolver::SetPositionIterations ( GXUInt iterations )
+{
+	positionIterations = iterations;
 }
 
 GXVoid GXContactResolver::PrepareContacts ( GXContact* contactArray, GXUInt numContacts, GXFloat deltaTime )

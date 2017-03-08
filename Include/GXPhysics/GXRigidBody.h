@@ -7,6 +7,7 @@
 #include <GXCommon/GXMath.h>
 
 
+class GXShape;
 class GXRigidBody
 {
 	private:
@@ -36,13 +37,18 @@ class GXRigidBody
 		GXMat4		transform;
 		GXMat3		invInertiaTensorWorld;
 
+		GXShape*	shape;
+
 	public:
+		GXRigidBody ();
+
 		GXVoid CalculateCachedData ();
 		GXVoid ClearAccumulators ();
 
 		GXVoid SetInertiaTensor ( const GXMat3 &inertiaTensor );
 		const GXMat3& GetInverseInertiaTensorWorld () const;
 
+		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
 		GXVoid SetLocation ( const GXVec3 &location );
 		const GXVec3& GetLocation () const;
 
@@ -57,9 +63,19 @@ class GXRigidBody
 		const GXVec3& GetAngularVelocity () const;
 		GXVoid AddAngularVelocity ( const GXVec3 &velocity );
 		
+		GXVoid SetMass ( GXFloat mass );
 		GXFloat GetMass () const;
 		GXFloat GetInverseMass () const;
 		GXBool HasFiniteMass () const;
+
+		GXVoid SetLinearDamping ( GXFloat damping );
+		GXFloat GetLinearDamping () const;
+
+		GXVoid SetAngularDamping ( GXFloat damping );
+		GXFloat GetAngularDamping () const;
+
+		GXVoid SetShape ( GXShape &shape );
+		GXShape& GetShape ();
 
 		const GXVec3& GetLastFrameAcceleration () const;
 

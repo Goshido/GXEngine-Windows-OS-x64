@@ -13,12 +13,12 @@
 class GXCollisionDetector
 {
 	public:
-		GXUInt CheckSphereAndSphere ( const GXSphereShape &sphereA, const GXSphereShape &sphereB, GXCollisionData* collisionData );
-		GXUInt CheckSphereAndHalfSpace ( const GXSphereShape &sphere, const GXPlaneShape &plane, GXCollisionData* collisionData );
-		GXUInt CheckSphereAndTruePlane ( const GXSphereShape &sphere, const GXPlaneShape &plane, GXCollisionData* collisionData );
-		GXUInt CheckBoxAndHalfSpace ( const GXBoxShape &box, const GXPlaneShape &plane, GXCollisionData* collisionData );
-		GXUInt CheckBoxAndSphere ( const GXBoxShape &box, const GXSphereShape &sphere, GXCollisionData* collisionData );
-		GXUInt CheckBoxAndBox ( const GXBoxShape &boxA, const GXBoxShape &boxB, GXCollisionData* collisionData );
+		GXUInt CheckSphereAndSphere ( const GXSphereShape &sphereA, const GXSphereShape &sphereB, GXCollisionData &collisionData );
+		GXUInt CheckSphereAndHalfSpace ( const GXSphereShape &sphere, const GXPlaneShape &plane, GXCollisionData &collisionData );
+		GXUInt CheckSphereAndTruePlane ( const GXSphereShape &sphere, const GXPlaneShape &plane, GXCollisionData &collisionData );
+		GXUInt CheckBoxAndHalfSpace ( const GXBoxShape &box, const GXPlaneShape &plane, GXCollisionData &collisionData );
+		GXUInt CheckBoxAndSphere ( const GXBoxShape &box, const GXSphereShape &sphere, GXCollisionData &collisionData );
+		GXUInt CheckBoxAndBox ( const GXBoxShape &boxA, const GXBoxShape &boxB, GXCollisionData &collisionData );
 
 	private:
 		GXBool TryAxis ( const GXBoxShape &boxA, const GXBoxShape &boxB, GXVec3 axis, const GXVec3 &toCentre, GXUInt index, GXFloat smallestPenetration, GXUInt &smallestCase );

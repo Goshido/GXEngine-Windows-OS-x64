@@ -4,7 +4,7 @@
 #define GX_PHYSICS_ENGINE
 
 
-#include <GXCommon/GXMath.h>
+#include "GXWorld.h"
 
 
 class GXPhysicsEngine
@@ -13,6 +13,7 @@ class GXPhysicsEngine
 		static GXPhysicsEngine*	instance;
 		GXVec3					gravity;
 		GXFloat					sleepEpsilon;
+		GXWorld					world;
 
 	public:
 		~GXPhysicsEngine ();
@@ -23,6 +24,10 @@ class GXPhysicsEngine
 
 		GXVoid SetSleepEpsilon ( GXFloat epsilon );
 		GXFloat GetSleepEpsilon () const;
+
+		GXWorld& GetWorld ();
+
+		GXVoid RunSimulateLoop ( GXFloat deltaTime );
 
 	private:
 		GXPhysicsEngine ();

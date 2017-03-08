@@ -8,9 +8,9 @@
 #define CONTACT_POINT_EPSILON	0.0001f
 
 
-GXUInt GXCollisionDetector::CheckSphereAndSphere ( const GXSphereShape &sphereA, const GXSphereShape &sphereB, GXCollisionData* collisionData )
+GXUInt GXCollisionDetector::CheckSphereAndSphere ( const GXSphereShape &sphereA, const GXSphereShape &sphereB, GXCollisionData &collisionData )
 {
-	if ( !collisionData->HasMoreContacts () ) return 0;
+	if ( !collisionData.HasMoreContacts () ) return 0;
 
 	const GXMat4& transformA = sphereA.GetTransformWorld ();
 	const GXMat4& transformB = sphereB.GetTransformWorld ();
@@ -26,7 +26,7 @@ GXUInt GXCollisionDetector::CheckSphereAndSphere ( const GXSphereShape &sphereA,
 	GXVec3 normal;
 	GXMulVec3Scalar ( normal, midline, 1.0f / size );
 
-	GXContact* contact = collisionData->GetContactsBegin ();
+	GXContact* contact = collisionData.GetContactsBegin ();
 	contact->SetNormal ( normal );
 
 	GXVec3 contactPoint;
@@ -34,15 +34,15 @@ GXUInt GXCollisionDetector::CheckSphereAndSphere ( const GXSphereShape &sphereA,
 	contact->SetContactPoint ( contactPoint );
 
 	contact->SetPenetration ( radiusSum - size );
-	contact->SetData ( *sphereA.GetRigidBody (), sphereB.GetRigidBody (), collisionData->GetFriction (), collisionData->GetRestitution () );
+	contact->SetData ( sphereA, &sphereB );
 
-	collisionData->AddContacts ( 1 );
+	collisionData.AddContacts ( 1 );
 	return 1;
 }
 
-GXUInt GXCollisionDetector::CheckSphereAndHalfSpace ( const GXSphereShape &sphere, const GXPlaneShape &plane, GXCollisionData* collisionData )
+GXUInt GXCollisionDetector::CheckSphereAndHalfSpace ( const GXSphereShape &sphere, const GXPlaneShape &plane, GXCollisionData &collisionData )
 {
-	if ( !collisionData->HasMoreContacts () ) return 0;
+	if ( !collisionData.HasMoreContacts () ) return 0;
 
 	const GXMat4& sphereTransform = sphere.GetTransformWorld ();
 	GXVec3 position = sphereTransform.wv;
@@ -55,7 +55,7 @@ GXUInt GXCollisionDetector::CheckSphereAndHalfSpace ( const GXSphereShape &spher
 
 	if ( ballDistance >= 0 ) return 0;
 
-	GXContact* contact = collisionData->GetContactsBegin ();
+	GXContact* contact = collisionData.GetContactsBegin ();
 
 	contact->SetNormal ( planeNormal );
 	contact->SetPenetration ( -ballDistance );
@@ -64,15 +64,15 @@ GXUInt GXCollisionDetector::CheckSphereAndHalfSpace ( const GXSphereShape &spher
 	GXSubVec3ScaledVec3 ( contactPoint, position, ballDistance + sphere.GetRadius (), planeNormal );
 	contact->SetContactPoint ( contactPoint );
 
-	contact->SetData ( *sphere.GetRigidBody (), nullptr, collisionData->GetFriction (), collisionData->GetRestitution () );
+	contact->SetData ( sphere, nullptr );
 
-	collisionData->AddContacts ( 1 );
+	collisionData.AddContacts ( 1 );
 	return 1;
 }
 
-GXUInt GXCollisionDetector::CheckSphereAndTruePlane ( const GXSphereShape &sphere, const GXPlaneShape &plane, GXCollisionData* collisionData )
+GXUInt GXCollisionDetector::CheckSphereAndTruePlane ( const GXSphereShape &sphere, const GXPlaneShape &plane, GXCollisionData &collisionData )
 {
-	if ( !collisionData->HasMoreContacts () ) return 0;
+	if ( !collisionData.HasMoreContacts () ) return 0;
 
 	const GXMat4& sphereTransform = sphere.GetTransformWorld ();
 	GXPlane p = plane.GetPlane ();
@@ -95,7 +95,7 @@ GXUInt GXCollisionDetector::CheckSphereAndTruePlane ( const GXSphereShape &spher
 
 	penetration += sphereRadius;
 
-	GXContact* contact = collisionData->GetContactsBegin ();
+	GXContact* contact = collisionData.GetContactsBegin ();
 	contact->SetNormal ( normal );
 	contact->SetPenetration ( penetration );
 
@@ -103,20 +103,20 @@ GXUInt GXCollisionDetector::CheckSphereAndTruePlane ( const GXSphereShape &spher
 	GXSubVec3ScaledVec3 ( contactPoint, sphereTransform.wv, centerDistance, planeNormal );
 	contact->SetContactPoint ( contactPoint );
 
-	contact->SetData ( *sphere.GetRigidBody (), nullptr, collisionData->GetFriction (), collisionData->GetRestitution () );
+	contact->SetData ( sphere, nullptr );
 	
-	collisionData->AddContacts ( 1 );
+	collisionData.AddContacts ( 1 );
 	return 1;
 }
 
-GXUInt GXCollisionDetector::CheckBoxAndHalfSpace ( const GXBoxShape &box, const GXPlaneShape &plane, GXCollisionData* collisionData )
+GXUInt GXCollisionDetector::CheckBoxAndHalfSpace ( const GXBoxShape &box, const GXPlaneShape &plane, GXCollisionData &collisionData )
 {
-	if ( !collisionData->HasMoreContacts () ) return 0;
+	if ( !collisionData.HasMoreContacts () ) return 0;
 
 	GXBoxShapeVertices boxVertices;
 	box.GetVecticesWorld ( boxVertices );
 
-	GXContact* contact = collisionData->GetContactsBegin ();
+	GXContact* contact = collisionData.GetContactsBegin ();
 	GXUInt contactsUsed = 0;
 
 	GXPlane p = plane.GetPlane ();
@@ -135,20 +135,20 @@ GXUInt GXCollisionDetector::CheckBoxAndHalfSpace ( const GXBoxShape &box, const 
 			contact->SetContactPoint ( contactPoint );
 			contact->SetPenetration ( p.d - vertexDistance );
 
-			contact->SetData ( *box.GetRigidBody (), nullptr, collisionData->GetFriction (), collisionData->GetRestitution () );
+			contact->SetData ( box, nullptr );
 
 			contact++;
 			contactsUsed++;
 
-			if ( contactsUsed == collisionData->GetContactsLeft () ) break;
+			if ( contactsUsed == collisionData.GetContactsLeft () ) break;
 		}
 	}
 
-	collisionData->AddContacts ( contactsUsed );
+	collisionData.AddContacts ( contactsUsed );
 	return contactsUsed;
 }
 
-GXUInt GXCollisionDetector::CheckBoxAndSphere ( const GXBoxShape &box, const GXSphereShape &sphere, GXCollisionData* collisionData )
+GXUInt GXCollisionDetector::CheckBoxAndSphere ( const GXBoxShape &box, const GXSphereShape &sphere, GXCollisionData &collisionData )
 {
 	const GXMat4& sphereTransform = sphere.GetTransformWorld ();
 	GXMat4 transformToBoxSpace;
@@ -177,7 +177,7 @@ GXUInt GXCollisionDetector::CheckBoxAndSphere ( const GXBoxShape &box, const GXS
 	GXVec3 closestPointWorld;
 	GXMulVec3Mat4AsPoint ( closestPointWorld, closestPoint, box.GetTransformWorld () );
 
-	GXContact* contact = collisionData->GetContactsBegin ();
+	GXContact* contact = collisionData.GetContactsBegin ();
 
 	GXVec3 contactNormal;
 	GXSubVec3Vec3 ( contactNormal, closestPointWorld, sphereTransform.wv );
@@ -187,13 +187,13 @@ GXUInt GXCollisionDetector::CheckBoxAndSphere ( const GXBoxShape &box, const GXS
 	contact->SetContactPoint ( closestPointWorld );
 	contact->SetPenetration ( radius - sqrtf ( squareDistance ) );
 
-	contact->SetData ( *box.GetRigidBody (), sphere.GetRigidBody (), collisionData->GetFriction (), collisionData->GetRestitution () );
+	contact->SetData ( box, &sphere );
 
-	collisionData->AddContacts ( 1 );
+	collisionData.AddContacts ( 1 );
 	return 1;
 }
 
-GXUInt GXCollisionDetector::CheckBoxAndBox ( const GXBoxShape &boxA, const GXBoxShape &boxB, GXCollisionData* collisionData )
+GXUInt GXCollisionDetector::CheckBoxAndBox ( const GXBoxShape &boxA, const GXBoxShape &boxB, GXCollisionData &collisionData )
 {
 	const GXMat4& transformA = boxA.GetTransformWorld ();
 	const GXMat4& transformB = boxB.GetTransformWorld ();
@@ -249,15 +249,15 @@ GXUInt GXCollisionDetector::CheckBoxAndBox ( const GXBoxShape &boxA, const GXBox
 
 	if ( best < 3 )
 	{
-		FillPointFaceBoxBox ( boxA, boxB, toCentre, collisionData, best, pen );
-		collisionData->AddContacts ( 1 );
+		FillPointFaceBoxBox ( boxA, boxB, toCentre, &collisionData, best, pen );
+		collisionData.AddContacts ( 1 );
 		return 1;
 	}
 	else if ( best < 6 )
 	{
 		GXReverseVec3 ( toCentre );
-		FillPointFaceBoxBox ( boxA, boxB, toCentre, collisionData, best - 3, pen );
-		collisionData->AddContacts ( 1 );
+		FillPointFaceBoxBox ( boxA, boxB, toCentre, &collisionData, best - 3, pen );
+		collisionData.AddContacts ( 1 );
 		return 1;
 	}
 	else
@@ -300,14 +300,14 @@ GXUInt GXCollisionDetector::CheckBoxAndBox ( const GXBoxShape &boxA, const GXBox
 
 		GXVec3 vertex = ContactPoint ( onOneEdge, oneAxis, ptOnOneEdge.arr[ oneAxisIndex ], onTwoEdge, twoAxis, ptOnTwoEdge.arr[ twoAxisIndex ], bestSingleAxis > 2 );
 
-		GXContact* contact = collisionData->GetContactsBegin ();
+		GXContact* contact = collisionData.GetContactsBegin ();
 
 		contact->SetPenetration ( pen );
 		contact->SetNormal ( axis );
 		contact->SetContactPoint ( vertex );
-		contact->SetData ( *boxA.GetRigidBody (), boxB.GetRigidBody (), collisionData->GetFriction (), collisionData->GetRestitution () );
+		contact->SetData ( boxA, &boxB );
 
-		collisionData->AddContacts ( 1 );
+		collisionData.AddContacts ( 1 );
 		return 1;
 	}
 
@@ -384,7 +384,7 @@ GXVoid GXCollisionDetector::FillPointFaceBoxBox ( const GXBoxShape &one, const G
 	GXMulVec3Mat4AsPoint ( contactPoint, vertex, transformTwo );
 	contact->SetContactPoint ( contactPoint );
 
-	contact->SetData ( *one.GetRigidBody (), two.GetRigidBody (), collisionData->GetFriction (), collisionData->GetRestitution () );
+	contact->SetData ( one, &two );
 }
 
 const GXVec3& GXCollisionDetector::GetAxis ( const GXMat4 &transform, GXUInt index )

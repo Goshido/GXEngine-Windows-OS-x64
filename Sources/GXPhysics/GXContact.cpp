@@ -8,12 +8,22 @@
 #define DEFAULT_ANGULAR_LIMIT		0.2f
 
 
-GXVoid GXContact::SetData ( GXRigidBody &bodyA, GXRigidBody* bodyB, GXFloat friction, GXFloat restitution )
+GXVoid GXContact::SetData ( const GXShape &bodyA, const GXShape* bodyB )
 {
-	bodies[ 0 ] = &bodyA;
-	bodies[ 1 ] = bodyB;
-	this->friction = friction;
-	this->restitution = restitution;
+	bodies[ 0 ] = bodyA.GetRigidBody ();
+
+	if ( bodyB )
+	{
+		bodies[ 1 ] = bodyB->GetRigidBody ();
+		friction = GXMinf ( bodyA.GetFriction (), bodyB->GetFriction () );
+		restitution = GXMinf ( bodyA.GetRestitution (), bodyB->GetRestitution () );
+	}
+	else
+	{
+		bodies[ 1 ] = nullptr;
+		friction = bodyA.GetFriction ();
+		restitution = bodyA.GetRestitution ();
+	}
 }
 
 GXVoid GXContact::SetNormal ( const GXVec3 &normal )

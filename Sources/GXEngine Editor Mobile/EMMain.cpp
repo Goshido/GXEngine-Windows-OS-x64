@@ -10,6 +10,7 @@
 #include <GXEngine_Editor_Mobile/EMRenderer.h>
 #include <GXEngine_Editor_Mobile/EMMoveTool.h>
 #include <GXEngine_Editor_Mobile/EMViewer.h>
+#include <GXEngine_Editor_Mobile/EMPhysicsDrivenActor.h>
 #include <GXEngine/GXCore.h>
 #include <GXEngine/GXLocale.h>
 #include <GXEngine/GXRenderer.h>
@@ -17,7 +18,7 @@
 #include <GXEngine/GXInput.h>
 #include <GXEngine/GXOpenGL.h>
 #include <GXEngine/GXCameraOrthographic.h>
-#include <GXPhysics/GXFirework.h>
+#include <GXPhysics/GXPhysicsEngine.h>
 
 
 #define EM_WINDOW_NAME L"GXEditor Mobile"
@@ -45,6 +46,7 @@ GXInt					em_MouseX = 0;
 GXInt					em_MouseY = 0;
 GXHudSurface*			em_ParticleSurface = nullptr;
 GXTexture				em_ParticleTexture;
+EMPhysicsDrivenActor*	em_PhysicsActor = nullptr;
 
 
 GXVoid GXCALL EMOnOpenFile ( const GXWChar* filePath );
@@ -161,13 +163,6 @@ GXVoid GXCALL EMOnDisplayParticle ( const GXVec3& location, GXFloat age )
 
 //-----------------------------------------------------------------------------
 
-GXVoid GXCALL EMOnStartFirework ()
-{
-	GXInitFireworkDemo ( &EMOnDisplayParticle );
-}
-
-//-----------------------------------------------------------------------------
-
 GXBool GXCALL EMOnFrame ( GXFloat deltatime )
 {
 	GXTouchSurface::GetInstance ()->ExecuteMessages ();
@@ -183,9 +178,6 @@ GXBool GXCALL EMOnFrame ( GXFloat deltatime )
 	renderer->StartLightPass ();
 	
 	renderer->StartHudColorPass ();
-
-	if ( GXIsFireworkDemoStarted () )
-		GXUpdateFirework ( deltatime );
 
 	em_MoveTool->OnDrawHudColorPass ();
 
@@ -238,7 +230,6 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 	
 	em_CreatePopup = new EMUIPopup ( nullptr );
 	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Unit Actor" ), nullptr );
-	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Firework" ), &EMOnStartFirework );
 	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Skeletal mesh" ), nullptr );
 	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Directed light" ), nullptr );
 	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Spot" ), nullptr );
@@ -307,11 +298,19 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 	em_ParticleSurface->SetScale ( EM_DEFAULT_PARTICLE_SIZE, EM_DEFAULT_PARTICLE_SIZE, 1.0f );
 	GXLoadTexture ( L"Textures/System/Default_Diffuse.tga", em_ParticleTexture );
 
+	em_PhysicsActor = new EMPhysicsDrivenActor ( eEMPhysicsDrivenActorType::Box );
+	GXRigidBody& body = em_PhysicsActor->GetRigidBody ();
+	body.SetLocation ( 0.0f, 10.0f, 15.0f );
+
+	GXWorld& world = GXPhysicsEngine::GetInstance ()->GetWorld ();
+	world.RegisterRigidBody ( body );
+
 	ShowCursor ( 1 );
 }
 
 GXVoid GXCALL EMOnDeleteRenderableObjects ()
 {
+	GXSafeDelete ( em_PhysicsActor );
 	GXSafeDelete ( em_ParticleSurface );
 	GXRemoveTexture ( em_ParticleTexture );
 
@@ -338,6 +337,7 @@ GXVoid GXCALL EMOnDeleteRenderableObjects ()
 
 	delete EMViewer::GetInstance ();
 	delete EMRenderer::GetInstance ();
+	delete GXPhysicsEngine::GetInstance ();
 }
 
 //-------------------------------------------------------------------

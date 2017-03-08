@@ -1,8 +1,56 @@
 //version 1.0
 
 #include <GXPhysics/GXRigidBody.h>
+#include <GXPhysics/GXShape.h>
 #include <GXPhysics/GXPhysicsEngine.h>
 
+
+#define DEFAULT_MASS				1.0f
+
+#define DEFAULT_LOCATION_X			0.0f
+#define DEFAULT_LOCATION_Y			0.0f
+#define DEFAULT_LOCATION_Z			0.0f
+
+#define DEFAULT_ROTATION_AXIS_X		0.0f
+#define DEFAULT_ROTATION_AXIS_Y		0.0f
+#define DEFAULT_ROTATION_AXIS_Z		1.0f
+#define DEFAULT_ROTATION_ANGLE		0.0f
+
+#define DEFAULT_LINEAR_VELOCITY_X	0.0f
+#define DEFAULT_LINEAR_VELOCITY_Y	0.0f
+#define DEFAULT_LINEAR_VELOCITY_Z	0.0f
+
+#define DEFAULT_ANGULAR_VELOCITY_X	0.0f
+#define DEFAULT_ANGULAR_VELOCITY_Y	0.0f
+#define DEFAULT_ANGULAR_VELOCITY_Z	0.0f
+
+#define DEFALUT_LINEAR_DAMPING		0.995f
+#define DEFAULT_ANGULAR_DAMPING		0.995f
+
+
+GXRigidBody::GXRigidBody ()
+{
+	SetMass ( DEFAULT_MASS );
+
+	GXVec3 vec ( DEFAULT_LOCATION_X, DEFAULT_LOCATION_Y, DEFAULT_LOCATION_Z );
+	SetLocation ( vec );
+
+	GXQuat rotation;
+	vec = GXCreateVec3 ( DEFAULT_ROTATION_AXIS_X, DEFAULT_ROTATION_AXIS_Y, DEFAULT_ROTATION_AXIS_Z );
+	GXSetQuatRotationAxis ( rotation, vec, DEFAULT_ROTATION_ANGLE );
+	SetRotaton ( rotation );
+
+	vec = GXCreateVec3 ( DEFAULT_LINEAR_VELOCITY_X, DEFAULT_LINEAR_VELOCITY_Y, DEFAULT_LINEAR_VELOCITY_Z );
+	SetLinearVelocity ( vec );
+
+	vec = GXCreateVec3 ( DEFAULT_ANGULAR_VELOCITY_X, DEFAULT_ANGULAR_VELOCITY_Y, DEFAULT_ANGULAR_VELOCITY_Z );
+	SetAngularVelocity ( vec );
+
+	SetLinearDamping ( DEFALUT_LINEAR_DAMPING );
+	SetAngularDamping ( DEFAULT_ANGULAR_DAMPING );
+
+	acceleration = GXPhysicsEngine::GetInstance ()->GetGravity ();
+}
 
 GXVoid GXRigidBody::CalculateCachedData ()
 {
@@ -26,11 +74,17 @@ GXVoid GXRigidBody::ClearAccumulators ()
 GXVoid GXRigidBody::SetInertiaTensor ( const GXMat3 &inertiaTensor )
 {
 	GXSetMat3Inverse ( invInertiaTensorLocal, inertiaTensor );
+	CalculateCachedData ();
 }
 
 const GXMat3& GXRigidBody::GetInverseInertiaTensorWorld () const
 {
 	return invInertiaTensorWorld;
+}
+
+GXVoid GXRigidBody::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
+{
+	location = GXCreateVec3 ( x, y, z );
 }
 
 GXVoid GXRigidBody::SetLocation ( const GXVec3 &location )
@@ -83,6 +137,12 @@ GXVoid GXRigidBody::AddAngularVelocity ( const GXVec3 &velocity )
 	GXSumVec3Vec3 ( angularVelocity, angularVelocity, velocity );
 }
 
+GXVoid GXRigidBody::SetMass ( GXFloat mass )
+{
+	this->mass = mass;
+	invMass = 1.0f / mass;
+}
+
 GXFloat GXRigidBody::GetMass () const
 {
 	return mass;
@@ -97,6 +157,37 @@ GXBool GXRigidBody::HasFiniteMass () const
 {
 	return invMass >= 0.0f;
 }
+
+GXVoid GXRigidBody::SetLinearDamping ( GXFloat damping )
+{
+	linearDamping = damping;
+}
+
+GXFloat GXRigidBody::GetLinearDamping () const
+{
+	return linearDamping;
+}
+
+GXVoid GXRigidBody::SetAngularDamping ( GXFloat damping )
+{
+	angularDamping = damping;
+}
+
+GXFloat GXRigidBody::GetAngularDamping () const
+{
+	return angularDamping;
+}
+
+GXVoid GXRigidBody::SetShape ( GXShape &shape )
+{
+	this->shape = &shape;
+}
+
+GXShape& GXRigidBody::GetShape ()
+{
+	return *shape;
+}
+
 
 const GXVec3& GXRigidBody::GetLastFrameAcceleration () const
 {
