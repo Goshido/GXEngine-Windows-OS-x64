@@ -203,9 +203,9 @@ GXLocale* GXCALL GXLocale::GetInstance ()
 GXLocale::GXLocale ():
 storage ( sizeof ( GXStringTree* ) )
 {
-	language = GX_LANGUAGE_RU;
+	language = eGXLanguage::Russian;
 
 	GXStringTree* node = nullptr;
-	storage.SetValue ( (GXUInt)GX_LANGUAGE_RU, &node );
-	storage.SetValue ( (GXUInt)GX_LANGUAGE_EN, &node );
+	storage.SetValue ( (GXUInt)eGXLanguage::Russian, &node );
+	storage.SetValue ( (GXUInt)eGXLanguage::English, &node );
 }

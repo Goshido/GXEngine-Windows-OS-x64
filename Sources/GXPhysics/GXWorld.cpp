@@ -180,17 +180,12 @@ GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 	// We do not do anything unless 2 rigid bodies were registered
 	if ( !bodies || !bodies->next ) return;
 
-	for ( GXRigidBodyRegistration* p = bodies; p; p = p->next )
-	{
-		p->body->ClearAccumulators ();
-		p->body->CalculateCachedData ();
-	}
-
 	for ( GXForceGeneratorsRegistration* p = forceGenerators; p; p = p->next )
 		p->generator->UpdateForce ( *p->body, deltaTime );
 
 	for ( GXRigidBodyRegistration* p = bodies; p; p = p->next )
 		p->body->Integrate ( deltaTime );
+	
 
 	GXContact* nextContact = collisions.GetContactsBegin ();
 
@@ -199,7 +194,7 @@ GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 		reg->generator->AddContact ( collisions );
 		if ( !collisions.HasMoreContacts () ) break;
 	}
-
+	
 	for ( GXRigidBodyRegistration* p = bodies; p->next; p = p->next )
 	{
 		for ( GXRigidBodyRegistration* q = p->next; q; q = q->next )
@@ -263,14 +258,19 @@ GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 			}
 		}
 	}
-
+	
 	if ( isCalculateIterations )
 	{
 		GXUInt numIterations = collisions.GetTotalContacts () * 4;
 		contactResolver.SetPositionIterations ( numIterations );
 		contactResolver.SetVelocityIterations ( numIterations );
 	}
-
+	
+	if ( collisions.GetTotalContacts () > 0 )
+	{
+		GXLogW ( L"GXWorld::RunPhysics::Info - Contacts %i\n", collisions.GetTotalContacts () );
+	}
+	
 	contactResolver.ResolveContacts ( collisions.GetAllContacts (), collisions.GetTotalContacts (), deltaTime );
 	collisions.Reset ();
 }

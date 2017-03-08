@@ -9,7 +9,8 @@
 enum class eEMPhysicsDrivenActorType
 {
 	Box,
-	Plane
+	Plane,
+	Sphere
 };
 
 class EMPhysicsDrivenActor

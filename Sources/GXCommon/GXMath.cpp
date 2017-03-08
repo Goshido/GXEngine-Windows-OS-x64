@@ -868,10 +868,31 @@ GXQuat GXCALL GXCreateQuat ( const GXMat4 &mat )
 	return v;
 }
 
-GXVoid GXCALL GXQuatRehandCoordinateSystem ( GXQuat &out, const GXQuat &src )
+GXVoid GXCALL GXSetQuatIdentity ( GXQuat &out )
 {
-	out = src;
-	out.w = -src.w;
+	out.x = out.y = out.z = 0.0f;
+	out.w = 1.0f;
+}
+
+GXVoid GXCALL GXSetQuatFromAxisAngle ( GXQuat &out, GXFloat x, GXFloat y, GXFloat z, GXFloat angle )
+{
+	GXFloat sn = sinf ( angle * 0.5f );
+	GXFloat cs = cosf ( angle * 0.5f );
+
+	out.x = x * sn;
+	out.y = y * sn;
+	out.z = z * sn;
+	out.w = cs;
+}
+
+GXVoid GXCALL GXSetQuatFromAxisAngle ( GXQuat &out, const GXVec3 &axis, GXFloat angle )
+{
+	GXSetQuatFromAxisAngle ( out, axis.x, axis.y, axis.z, angle );
+}
+
+GXVoid GXCALL GXQuatRehandCoordinateSystem ( GXQuat &inOut )
+{
+	inOut.w = -inOut.w;
 }
 
 GXVoid GXCALL GXQuatToEulerAngles ( GXVec3 &out_rad, const GXQuat &q )
@@ -884,26 +905,28 @@ GXVoid GXCALL GXQuatToEulerAngles ( GXVec3 &out_rad, const GXQuat &q )
 	out_rad.z = atan2f ( 2.0f * ( q.x * q.w + q.y * q.z ), 1.0f - 2.0f * ( factor + q.w * q.w ) );
 }
 
-GXVoid GXCALL GXSetQuatIdentity ( GXQuat &out )
+GXVoid GXCALL GXQuatToAxisAngle ( GXVec3 &axis, GXFloat &angle, const GXQuat quaternion )
 {
-	out.x = out.y = out.z = 0.0f;
-	out.w = 1.0f;
-}
+	GXQuat q = quaternion;
+	if ( q.w > 1.0f )
+		GXNormalizeQuat ( q );
 
-GXVoid GXCALL GXSetQuatRotationAxis ( GXQuat &out, GXFloat x, GXFloat y, GXFloat z, GXFloat angle )
-{
-	GXFloat sn = sinf ( angle * 0.5f );
-	GXFloat cs = cosf ( angle * 0.5f );
+	angle = 2.0f * acosf(q.w);
+	GXFloat s = sqrtf( 1.0f - q.w * q.w );
 
-	out.x = x * sn;
-	out.y = y * sn;
-	out.z = z * sn;
-	out.w = cs;
-}
-
-GXVoid GXCALL GXSetQuatRotationAxis ( GXQuat &out, const GXVec3 &axis, GXFloat angle )
-{
-	GXSetQuatRotationAxis ( out, axis.x, axis.y, axis.z, angle );
+	if ( s < 0.001 ) 
+	{
+		axis.x = q.x;
+		axis.y = q.y;
+		axis.z = q.z;
+	} 
+	else 
+	{
+		GXFloat factor = 1.0f / s;
+		axis.x = q.x * factor;
+		axis.y = q.y * factor;
+		axis.z = q.z * factor;
+	}
 }
 
 GXVoid GXCALL GXMulQuatQuat ( GXQuat &out, const GXQuat &a, const GXQuat &b )
@@ -939,10 +962,10 @@ GXVoid GXCALL GXSumQuatScaledVec3 ( GXQuat &out, const GXQuat &q, GXFloat s, con
 	GXQuat q1;
 	GXMulQuatQuat ( q1, qs, q );
 
-	out.x = q1.x * 0.5f;
-	out.y = q1.y * 0.5f;
-	out.z = q1.z * 0.5f;
-	out.w = q1.w * 0.5f;
+	out.x = q.x + q1.x * 0.5f;
+	out.y = q.y + q1.y * 0.5f;
+	out.z = q.z + q1.z * 0.5f;
+	out.w = q.w + q1.w * 0.5f;
 }
 
 GXVoid GXCALL GXSubQuatQuat ( GXQuat &out, const GXQuat &a, const GXQuat &b )
@@ -1043,16 +1066,16 @@ GXVoid GXCALL GXInverseQuat ( GXQuat &out, const GXQuat &q )
 	}
 }
 
-GXVoid GXCALL GXNormalizeQuat ( GXQuat &out, const GXQuat &q )
+GXVoid GXCALL GXNormalizeQuat ( GXQuat &inOut )
 {
-	GXFloat len = sqrtf ( q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w );
+	GXFloat len = sqrtf ( inOut.x * inOut.x + inOut.y * inOut.y + inOut.z * inOut.z + inOut.w * inOut.w );
 	if ( len )
 	{
 		GXFloat ilength = 1.0f / len;
-		out.x *= ilength;
-		out.y *= ilength;
-		out.z *= ilength;
-		out.w *= ilength;
+		inOut.x *= ilength;
+		inOut.y *= ilength;
+		inOut.z *= ilength;
+		inOut.w *= ilength;
 	}
 }
 

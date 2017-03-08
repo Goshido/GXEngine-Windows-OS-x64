@@ -3,6 +3,7 @@
 #include <GXPhysics/GXRigidBody.h>
 #include <GXPhysics/GXShape.h>
 #include <GXPhysics/GXPhysicsEngine.h>
+#include <GXCommon/GXMemory.h>
 
 
 #define DEFAULT_MASS				1.0f
@@ -37,7 +38,7 @@ GXRigidBody::GXRigidBody ()
 
 	GXQuat rotation;
 	vec = GXCreateVec3 ( DEFAULT_ROTATION_AXIS_X, DEFAULT_ROTATION_AXIS_Y, DEFAULT_ROTATION_AXIS_Z );
-	GXSetQuatRotationAxis ( rotation, vec, DEFAULT_ROTATION_ANGLE );
+	GXSetQuatFromAxisAngle ( rotation, vec, DEFAULT_ROTATION_ANGLE );
 	SetRotaton ( rotation );
 
 	vec = GXCreateVec3 ( DEFAULT_LINEAR_VELOCITY_X, DEFAULT_LINEAR_VELOCITY_Y, DEFAULT_LINEAR_VELOCITY_Z );
@@ -50,10 +51,20 @@ GXRigidBody::GXRigidBody ()
 	SetAngularDamping ( DEFAULT_ANGULAR_DAMPING );
 
 	acceleration = GXPhysicsEngine::GetInstance ()->GetGravity ();
+
+	ClearAccumulators ();
+
+	shape = nullptr;
+}
+
+GXRigidBody::~GXRigidBody ()
+{
+	GXSafeDelete ( shape );
 }
 
 GXVoid GXRigidBody::CalculateCachedData ()
 {
+	GXNormalizeQuat ( rotation );
 	transform.From ( rotation, location );
 
 	GXMat3 localToWorld;
@@ -63,6 +74,8 @@ GXVoid GXRigidBody::CalculateCachedData ()
 	GXMat3 transform1;
 	GXMulMat3Mat3 ( transform1, worldToLocal, invInertiaTensorLocal );
 	GXMulMat3Mat3 ( invInertiaTensorWorld, transform1, localToWorld );
+
+	shape->CalculateCacheData ();
 }
 
 GXVoid GXRigidBody::ClearAccumulators ()
@@ -181,6 +194,8 @@ GXFloat GXRigidBody::GetAngularDamping () const
 GXVoid GXRigidBody::SetShape ( GXShape &shape )
 {
 	this->shape = &shape;
+	shape.CalculateInertiaTensor ( mass );
+	SetInertiaTensor ( shape.GetInertialTensor () );
 }
 
 GXShape& GXRigidBody::GetShape ()
@@ -273,9 +288,9 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 
 	GXSumVec3ScaledVec3 ( location, location, deltaTime, linearVelocity );
 	GXSumQuatScaledVec3 ( rotation, rotation, deltaTime, angularVelocity );
-
-	CalculateCachedData ();
+	
 	ClearAccumulators ();
+	CalculateCachedData ();
 
 	if ( canSleep )
 	{

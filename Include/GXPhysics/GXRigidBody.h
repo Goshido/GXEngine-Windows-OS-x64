@@ -41,6 +41,7 @@ class GXRigidBody
 
 	public:
 		GXRigidBody ();
+		~GXRigidBody ();
 
 		GXVoid CalculateCachedData ();
 		GXVoid ClearAccumulators ();

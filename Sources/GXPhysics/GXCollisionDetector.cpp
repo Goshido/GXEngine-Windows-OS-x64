@@ -249,14 +249,14 @@ GXUInt GXCollisionDetector::CheckBoxAndBox ( const GXBoxShape &boxA, const GXBox
 
 	if ( best < 3 )
 	{
-		FillPointFaceBoxBox ( boxA, boxB, toCentre, &collisionData, best, pen );
+		FillPointFaceBoxBox ( boxA, boxB, toCentre, collisionData, best, pen );
 		collisionData.AddContacts ( 1 );
 		return 1;
 	}
 	else if ( best < 6 )
 	{
 		GXReverseVec3 ( toCentre );
-		FillPointFaceBoxBox ( boxA, boxB, toCentre, &collisionData, best - 3, pen );
+		FillPointFaceBoxBox ( boxA, boxB, toCentre, collisionData, best - 3, pen );
 		collisionData.AddContacts ( 1 );
 		return 1;
 	}
@@ -356,9 +356,9 @@ GXFloat GXCollisionDetector::TransformToAxis ( const GXBoxShape &box, const GXVe
 	return  ans + d * fabsf ( GXDotVec3Fast ( axis, transform.zv ) );
 }
 
-GXVoid GXCollisionDetector::FillPointFaceBoxBox ( const GXBoxShape &one, const GXBoxShape &two, const GXVec3 &toCentre, GXCollisionData* collisionData, GXUInt best, GXFloat pen )
+GXVoid GXCollisionDetector::FillPointFaceBoxBox ( const GXBoxShape &one, const GXBoxShape &two, const GXVec3 &toCentre, GXCollisionData &collisionData, GXUInt best, GXFloat pen )
 {
-	GXContact* contact = collisionData->GetContactsBegin ();
+	GXContact* contact = collisionData.GetContactsBegin ();
 
 	const GXMat4& transformOne = one.GetTransformWorld ();
 	const GXMat4& transformTwo = two.GetTransformWorld ();

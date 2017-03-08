@@ -44,9 +44,8 @@ EMUnitActor*			em_UnitActor = nullptr;
 EMMoveTool*				em_MoveTool = nullptr;
 GXInt					em_MouseX = 0;
 GXInt					em_MouseY = 0;
-GXHudSurface*			em_ParticleSurface = nullptr;
-GXTexture				em_ParticleTexture;
-EMPhysicsDrivenActor*	em_PhysicsActor = nullptr;
+EMPhysicsDrivenActor*	em_PhysicsBoxActor = nullptr;
+EMPhysicsDrivenActor*	em_PhysicsPlaneActor = nullptr;
 
 
 GXVoid GXCALL EMOnOpenFile ( const GXWChar* filePath );
@@ -57,7 +56,7 @@ GXVoid GXCALL EMOnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFlo
 	if ( button == em_Button1->GetWidget () )
 	{
 		GXLocale* locale = GXLocale::GetInstance ();
-		locale->SetLanguage ( GX_LANGUAGE_RU );
+		locale->SetLanguage ( eGXLanguage::Russian );
 
 		em_Button1->SetCaption ( locale->GetString ( L"russian" ) );
 		em_Button2->SetCaption ( locale->GetString ( L"english" ) );
@@ -68,7 +67,7 @@ GXVoid GXCALL EMOnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFlo
 	else if ( button == em_Button2->GetWidget () )
 	{
 		GXLocale* locale = GXLocale::GetInstance ();
-		locale->SetLanguage ( GX_LANGUAGE_EN );
+		locale->SetLanguage ( eGXLanguage::English );
 
 		em_Button1->SetCaption ( locale->GetString ( L"russian" ) );
 		em_Button2->SetCaption ( locale->GetString ( L"english" ) );
@@ -144,21 +143,16 @@ GXVoid GXCALL EMOnOpenFile ( const GXWChar* filePath )
 
 //-----------------------------------------------------------------------------
 
-GXVoid GXCALL EMOnDisplayParticle ( const GXVec3& location, GXFloat age )
+GXVoid GXCALL EMStartBoxFallingSimulation ()
 {
-	em_ParticleSurface->SetLocation ( location );
-	
-	GXImageInfo ii;
-	ii.texture = em_ParticleTexture;
-	ii.overlayType = GX_SIMPLE_REPLACE;
-	ii.insertWidth = 30.0f;
-	ii.insertHeight = 30.0f;
-	ii.insertX = 0.0f;
-	ii.insertY = 0.0f;
-	ii.color = GXCreateVec4 ( 1.0f, 1.0f, 1.0f, age );
-	em_ParticleSurface->AddImage ( ii );
+	GXLogW ( L"EMStartBoxFallingSimulation::Info - Started\n" );
 
-	em_ParticleSurface->Draw ();
+	GXRigidBody& body = em_PhysicsBoxActor->GetRigidBody ();
+	body.SetLocation ( 0.0f, 10.0f, 15.0f );
+	body.SetLinearVelocity ( GXCreateVec3 ( 0.0f, 0.0f, 0.0f ) );
+	body.SetAngularVelocity ( GXCreateVec3 ( 0.0f, 0.0f, 10.0f ) );
+	body.ClearAccumulators ();
+	body.SetAwake ();
 }
 
 //-----------------------------------------------------------------------------
@@ -167,14 +161,17 @@ GXBool GXCALL EMOnFrame ( GXFloat deltatime )
 {
 	GXTouchSurface::GetInstance ()->ExecuteMessages ();
 
+	GXPhysicsEngine::GetInstance ()->RunSimulateLoop ( deltatime );
+
 	GXCamera* viewerCamera = EMViewer::GetInstance ()->GetCamera ();
 	GXCamera::SetActiveCamera ( viewerCamera );
 
 	EMRenderer* renderer = EMRenderer::GetInstance ();
 	renderer->StartCommonPass ();
-	
+
 	em_UnitActor->OnDrawCommonPass ();
-	
+	em_PhysicsBoxActor->Draw ();
+
 	renderer->StartLightPass ();
 	
 	renderer->StartHudColorPass ();
@@ -207,7 +204,7 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 	editorRenderer->SetOnObjectCallback ( &EMOnObject );
 
 	GXLocale* locale = GXLocale::GetInstance ();
-	locale->SetLanguage ( GX_LANGUAGE_EN );
+	locale->SetLanguage ( eGXLanguage::Russian );
 
 	em_Button1 = new EMUIButton ( nullptr );
 	em_Button1->SetOnLeftMouseButtonCallback ( 0, &EMOnButton );
@@ -230,6 +227,7 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 	
 	em_CreatePopup = new EMUIPopup ( nullptr );
 	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Unit Actor" ), nullptr );
+	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Box falling" ), &EMStartBoxFallingSimulation );
 	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Skeletal mesh" ), nullptr );
 	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Directed light" ), nullptr );
 	em_CreatePopup->AddItem ( locale->GetString ( L"Create->Spot" ), nullptr );
@@ -294,25 +292,23 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 
 	EMTool::SetActiveTool ( em_MoveTool );
 
-	em_ParticleSurface = new GXHudSurface ( EM_DEFAULT_PARTICLE_RESOLUTION, EM_DEFAULT_PARTICLE_RESOLUTION, GX_FALSE );
-	em_ParticleSurface->SetScale ( EM_DEFAULT_PARTICLE_SIZE, EM_DEFAULT_PARTICLE_SIZE, 1.0f );
-	GXLoadTexture ( L"Textures/System/Default_Diffuse.tga", em_ParticleTexture );
-
-	em_PhysicsActor = new EMPhysicsDrivenActor ( eEMPhysicsDrivenActorType::Box );
-	GXRigidBody& body = em_PhysicsActor->GetRigidBody ();
+	em_PhysicsBoxActor = new EMPhysicsDrivenActor ( eEMPhysicsDrivenActorType::Box );
+	GXRigidBody& body = em_PhysicsBoxActor->GetRigidBody ();
 	body.SetLocation ( 0.0f, 10.0f, 15.0f );
+
+	em_PhysicsPlaneActor = new EMPhysicsDrivenActor ( eEMPhysicsDrivenActorType::Plane );
 
 	GXWorld& world = GXPhysicsEngine::GetInstance ()->GetWorld ();
 	world.RegisterRigidBody ( body );
+	world.RegisterRigidBody ( em_PhysicsPlaneActor->GetRigidBody () );
 
 	ShowCursor ( 1 );
 }
 
 GXVoid GXCALL EMOnDeleteRenderableObjects ()
 {
-	GXSafeDelete ( em_PhysicsActor );
-	GXSafeDelete ( em_ParticleSurface );
-	GXRemoveTexture ( em_ParticleTexture );
+	GXSafeDelete ( em_PhysicsBoxActor );
+	GXSafeDelete ( em_PhysicsPlaneActor );
 
 	GXSafeDelete ( em_UnitActor );
 	GXSafeDelete ( em_DirectedLight );
@@ -359,9 +355,9 @@ GXVoid GXCALL EMOnInit ()
 	renderer->SetWindowName ( EM_WINDOW_NAME );
 
 	GXLocale* locale = GXLocale::GetInstance ();
-	locale->LoadLanguage ( L"Locale/Editor Mobile/RU.lng", GX_LANGUAGE_RU );
-	locale->LoadLanguage ( L"Locale/Editor Mobile/EN.lng", GX_LANGUAGE_EN );
-	locale->SetLanguage ( GX_LANGUAGE_RU );
+	locale->LoadLanguage ( L"Locale/Editor Mobile/RU.lng", eGXLanguage::Russian );
+	locale->LoadLanguage ( L"Locale/Editor Mobile/EN.lng", eGXLanguage::English );
+	locale->SetLanguage ( eGXLanguage::Russian );
 
 	GXInput* input = GXInput::GetInstance ();
 	input->BindKeyFunc ( &EMExit, 0, VK_ESCAPE, INPUT_UP );

@@ -3,10 +3,17 @@
 #include <GXPhysics/GXContactResolver.h>
 
 
+#define DEFAULT_POSITION_EPSILON	0.01f
+#define DEFAULT_VELOCITY_EPSILON	0.01f
+
+
 GXContactResolver::GXContactResolver ( GXUInt iterations )
 {
 	SetVelocityIterations ( iterations );
 	SetPositionIterations ( iterations );
+
+	SetPositionEpsilon ( DEFAULT_POSITION_EPSILON );
+	SetVelocityEpsilon ( DEFAULT_VELOCITY_EPSILON );
 }
 
 GXVoid GXContactResolver::ResolveContacts ( GXContact* contactArray, GXUInt numContacts, GXFloat deltaTime )

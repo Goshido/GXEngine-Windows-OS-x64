@@ -126,11 +126,12 @@ typedef GXVec4 GXQuat;
 GXQuat GXCALL GXCreateQuat ( const GXMat4 &mat );
 
 GXVoid GXCALL GXSetQuatIdentity ( GXQuat &out );
-GXVoid GXCALL GXSetQuatRotationAxis ( GXQuat &out, GXFloat x, GXFloat y, GXFloat z, GXFloat angle );
-GXVoid GXCALL GXSetQuatRotationAxis ( GXQuat &out, const GXVec3 &axis, GXFloat angle );
+GXVoid GXCALL GXSetQuatFromAxisAngle ( GXQuat &out, GXFloat x, GXFloat y, GXFloat z, GXFloat angle );
+GXVoid GXCALL GXSetQuatFromAxisAngle ( GXQuat &out, const GXVec3 &axis, GXFloat angle );
 
-GXVoid GXCALL GXQuatRehandCoordinateSystem ( GXQuat &out, const GXQuat &src );
+GXVoid GXCALL GXQuatRehandCoordinateSystem ( GXQuat &inOut );
 GXVoid GXCALL GXQuatToEulerAngles ( GXVec3 &out_rad, const GXQuat &q );	//TODO
+GXVoid GXCALL GXQuatToAxisAngle ( GXVec3 &axis, GXFloat &angle, const GXQuat quaternion );
 
 GXVoid GXCALL GXMulQuatQuat ( GXQuat &out, const GXQuat &a, const GXQuat &b );
 GXVoid GXCALL GXSumQuatQuat ( GXQuat &out, const GXQuat &a, const GXQuat &b );
@@ -138,7 +139,7 @@ GXVoid GXCALL GXSumQuatScaledVec3 ( GXQuat &out, const GXQuat &q, GXFloat s, con
 GXVoid GXCALL GXSubQuatQuat ( GXQuat &out, const GXQuat &a, const GXQuat &b );
 GXVoid GXCALL GXQuatSLerp ( GXQuat &out, const GXQuat &a, const GXQuat &b, GXFloat k );
 GXVoid GXCALL GXInverseQuat ( GXQuat &out, const GXQuat &q );
-GXVoid GXCALL GXNormalizeQuat ( GXQuat &out, GXQuat &q );
+GXVoid GXCALL GXNormalizeQuat ( GXQuat &inOut );
 GXVoid GXCALL GXQuatTransform ( GXVec3 &out, const GXQuat &q, const GXVec3 &v );
 
 //-------------------------------------------------------------

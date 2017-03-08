@@ -5,7 +5,7 @@
 GXSphereShape::GXSphereShape ( GXRigidBody* body, GXFloat radius )
 : GXShape ( eGXShapeType::Sphere, body )
 {
-	this->radius;
+	this->radius = radius;
 }
 
 GXFloat GXSphereShape::GetRadius () const

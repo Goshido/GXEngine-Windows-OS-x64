@@ -15,6 +15,9 @@ GXShape::GXShape ( eGXShapeType type, GXRigidBody* body )
 
 	SetFriction ( DEFAULT_FRICTION );
 	SetRestitution ( DEFAULT_RESTITUTION );
+
+	GXSetMat4Identity ( transformRigidBody );
+	GXSetMat4Identity ( transformWorld );
 }
 
 eGXShapeType GXShape::GetType () const
@@ -29,7 +32,9 @@ const GXMat4& GXShape::GetTransformWorld () const
 
 GXVoid GXShape::CalculateCacheData ()
 {
-	GXMulMat4Mat4 ( transformWorld, transformRigidBody, body->GetTransform () );
+	if ( !body ) return;
+	const GXMat4& matrix = body->GetTransform ();
+	GXMulMat4Mat4 ( transformWorld, transformRigidBody, matrix );
 }
 
 GXRigidBody* GXShape::GetRigidBody () const

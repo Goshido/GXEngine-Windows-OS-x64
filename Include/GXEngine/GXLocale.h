@@ -7,10 +7,10 @@
 #include <GXCommon/GXMemory.h>
 
 
-enum eGXLanguage : GXShort
+enum class eGXLanguage : GXShort
 {
-	GX_LANGUAGE_EN = 0,
-	GX_LANGUAGE_RU = 1
+	English,
+	Russian
 };
 
 class GXLocale

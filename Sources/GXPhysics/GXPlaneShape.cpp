@@ -16,7 +16,7 @@ const GXPlane& GXPlaneShape::GetPlane () const
 
 GXVoid GXPlaneShape::CalculateInertiaTensor ( GXFloat /*mass*/ )
 {
-	inertialTensor.m11 = inertialTensor.m22 = inertialTensor.m33 = FLT_MAX;
+	inertialTensor.m11 = inertialTensor.m22 = inertialTensor.m33 = 300.0f;
 
 	inertialTensor.m12 = inertialTensor.m13 = 0.0f;
 	inertialTensor.m21 = inertialTensor.m23 = 0.0f;

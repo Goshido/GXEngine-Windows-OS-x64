@@ -1,7 +1,11 @@
 #include <GXEngine_Editor_Mobile/EMPhysicsDrivenActor.h>
 #include <GXEngine/GXSamplerUtils.h>
 #include <GXEngine/GXCamera.h>
+#include <GXPhysics/GXBoxShape.h>
+#include <GXPhysics/GXPlaneShape.h>
+#include <GXPhysics/GXSphereShape.h>
 #include <GXCommon/GXMemory.h>
+#include <GXCommon/GXLogger.h>
 
 
 #define EM_DIFFUSE		0
@@ -102,7 +106,7 @@ GXVoid EMPhysicsDrivenActorMesh::Load3DModel ()
 	GXGetVAOFromNativeStaticMesh ( vaoInfo, L"3D Models/Editor Mobile/Unit Cube.stm" );
 
 	AllocateTextures ( 4 );
-	GXLoadTexture ( L"Textures/Editor Mobile/Default Diffuse.tex", textures[ EM_DIFFUSE ] );
+	GXLoadTexture ( L"Textures/Editor Mobile/gui_file_icon.png", textures[ EM_DIFFUSE ] );
 	GXLoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", textures[ EM_NORMAL ] );
 	GXLoadTexture ( L"Textures/Editor Mobile/Default Specular.tex", textures[ EM_SPECULAR ] );
 	GXLoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", textures[ EM_EMISSION ] );
@@ -135,18 +139,41 @@ GXVoid EMPhysicsDrivenActorMesh::InitUniforms ()
 
 EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eEMPhysicsDrivenActorType type )
 {
+	rigidBody = new GXRigidBody ();
+
 	switch ( type )
 	{
 		case eEMPhysicsDrivenActorType::Box:
+		{
 			mesh = new EMPhysicsDrivenActorMesh ();
+			GXBoxShape* box = new GXBoxShape ( rigidBody, 1.0f, 1.0f, 1.0f );
+			rigidBody->SetShape ( *box );
+		}
 		break;
 
 		case eEMPhysicsDrivenActorType::Plane:
+		{
 			mesh = nullptr;
+
+			GXPlane plane;
+			plane.a = 0.0f;
+			plane.b = 1.0f;
+			plane.c = 0.0f;
+			plane.d = 2.0f;
+
+			GXPlaneShape* p = new GXPlaneShape ( nullptr, plane );
+			rigidBody->SetShape ( *p );
+		}
+		break;
+
+		case eEMPhysicsDrivenActorType::Sphere:
+		{
+			mesh = new EMPhysicsDrivenActorMesh ();
+			GXSphereShape* p = new GXSphereShape ( rigidBody, 0.5f );
+			rigidBody->SetShape ( *p );
+		}
 		break;
 	}
-	
-	rigidBody = new GXRigidBody ();
 }
 
 EMPhysicsDrivenActor::~EMPhysicsDrivenActor ()
@@ -165,7 +192,10 @@ GXVoid EMPhysicsDrivenActor::Draw ()
 	if ( !mesh ) return;
 
 	mesh->SetLocation ( rigidBody->GetLocation () );
-	mesh->SetRotation ( rigidBody->GetRotation () );
+
+	GXQuat rot = rigidBody->GetRotation ();
+	GXQuatRehandCoordinateSystem ( rot );
+	mesh->SetRotation ( rot );
 
 	mesh->Draw ();
 }
