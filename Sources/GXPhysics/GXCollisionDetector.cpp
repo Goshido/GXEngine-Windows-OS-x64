@@ -4,8 +4,12 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define TRY_AXIS_EPSILON		0.0001f
-#define CONTACT_POINT_EPSILON	0.0001f
+#define TRY_AXIS_EPSILON				0.0001f
+#define CONTACT_POINT_EPSILON			0.0001f
+#define DEFAULT_MINKOWSKI_EPSILON		0.001f
+#define DEFAULT_MAX_EPA_ITERATIONS		35
+#define DEFAULT_MIN_EPA_DOT_DISTANCE	0.001f
+#define DEFAULT_EDGE_EPSILON			1.0e-3f
 
 
 struct GXSupportPoint
@@ -33,7 +37,38 @@ struct GXSimplex
 	GXSupportPoint		d;
 
 	GXUByte				numPoints;
+
+	GXSimplex ();
+	GXVoid PushPoint ( const GXSupportPoint &point );
+	GXVoid Reset ();
+	GXBool DotTestWithAO ( const GXVec3 &v );
 };
+
+GXSimplex::GXSimplex ()
+{
+	numPoints = 0;
+}
+
+GXVoid GXSimplex::PushPoint ( const GXSupportPoint &point )
+{
+	d = c;
+	c = b;
+	b = a;
+	a = point;
+
+	numPoints++;
+}
+
+GXVoid GXSimplex::Reset ()
+{
+	numPoints = 0;
+}
+
+GXBool GXSimplex::DotTestWithAO ( const GXVec3 &v )
+{
+	GXVec3 ao ( -a.difference.x, -a.difference.y, -a.difference.z );
+	return GXDotVec3Fast ( v, ao ) > 0.0f;
+}
 
 //------------------------------------------------------------------------------------------
 
@@ -346,38 +381,178 @@ GXUInt GXCollisionDetector::CheckBoxAndBox ( const GXBoxShape &boxA, const GXBox
 GXVoid GXCollisionDetector::CheckViaGJK ( const GXShape &shapeA, const GXShape &shapeB, GXCollisionData &collisionData )
 {
 	GXSimplex simplex;
-	simplex.numPoints = 2;
 
+	GXSupportPoint a;
 	GXVec3 direction ( 0.0f, 1.0f, 0.0f );
-	CalculateSupportPoint ( simplex.b, shapeA, shapeB, direction );
+	CalculateSupportPoint ( a, shapeA, shapeB, direction );
 
-	direction = GXCreateVec3 ( -simplex.b.difference.x, -simplex.b.difference.y, -simplex.b.difference.z );
-	CalculateSupportPoint ( simplex.a, shapeA, shapeB, direction );
+	simplex.PushPoint ( a );
 
-	GXBool loopFlag = GX_TRUE;
-	while ( loopFlag )
+	direction = GXCreateVec3 ( -simplex.a.difference.x, -simplex.a.difference.y, -simplex.a.difference.z );
+	
+	GXBool isLoop = GX_TRUE;
+	GXBool isIntersected = GX_FALSE;
+
+	while ( isLoop )
 	{
+		CalculateSupportPoint ( a, shapeA, shapeB, direction );
+
+		if ( GXDotVec3Fast ( a.difference, direction ) < 0.0f )
+		{
+			isLoop = GX_FALSE;
+			isIntersected = GX_FALSE;
+			continue;
+		}
+
+		simplex.PushPoint ( a );
+
 		switch ( simplex.numPoints )
 		{
 			case 2:
 			{
-				// TODO
+				GXVec3 ab;
+				GXSubVec3Vec3 ( ab, simplex.b.difference, simplex.a.difference );
+
+				GXVec3 crossABxAO;
+				GXCrossVec3Vec3 ( crossABxAO, ab, GXCreateVec3 ( -simplex.a.difference.x, -simplex.a.difference.y, -simplex.a.difference.z ) );
+
+				GXCrossVec3Vec3 ( direction, crossABxAO, ab );
 			}
 			break;
 
 			case 3:
 			{
-				// TODO
+				GXSupportPoint a = simplex.a;
+				GXSupportPoint b = simplex.b;
+				GXSupportPoint c = simplex.c;
+
+				GXVec3 ab;
+				GXVec3 ac;
+				GXVec3 crossABxAC;
+
+				GXSubVec3Vec3 ( ab, b.difference, a.difference );
+				GXSumVec3Vec3 ( ac, c.difference, a.difference );
+				GXCrossVec3Vec3 ( crossABxAC, ac, ac );
+
+				GXVec3 v;
+				GXCrossVec3Vec3 ( v, ab, crossABxAC );
+
+				if ( simplex.DotTestWithAO ( v ) )
+				{
+					// origin is outside the triangle, near the edge ab
+					// reset the simplex to the line ab and continue
+					// search direction is perpendicular to ab and parallel to ao
+
+					simplex.a = a;
+					simplex.b = b;
+					simplex.numPoints = 2;
+
+					GXVec3 crossABxAO;
+					GXCrossVec3Vec3 ( crossABxAO, ab, GXCreateVec3 ( -a.difference.x, -a.difference.y, -a.difference.z ) );
+					GXCrossVec3Vec3 ( direction, crossABxAO, ab );
+
+					continue;
+				}
+
+				GXCrossVec3Vec3 ( v, crossABxAC, ac );
+				if ( simplex.DotTestWithAO ( v ) )
+				{
+					// origin is outside the triangle, near the edge ac
+					// reset the simplex to the line ac and continue
+					// search direction is perpendicular to ac and parallel to ao
+
+					simplex.a = a;
+					simplex.b = c;
+					simplex.numPoints = 2;
+
+					GXVec3 crossACxAO;
+					GXCrossVec3Vec3 ( crossACxAO, ac, GXCreateVec3 ( -a.difference.x, -a.difference.y, -a.difference.z ) );
+					GXCrossVec3Vec3 ( direction, crossACxAO, ac );
+
+					continue;
+				}
+
+				// origin is within the triangular prism defined by the triangle
+				// determine if it is above or below
+				if ( simplex.DotTestWithAO ( crossABxAC ) )
+				{
+					// origin is above the triangle, so the simplex is not modified,
+					// the search direction is the triangle's face normal
+
+					direction = crossABxAC;
+					continue;
+				}
+
+				// origin is below the triangle, so the simplex is rewound the oposite direction
+				// the search direction is the new triangle's face normal
+
+				simplex.a = a;
+				simplex.b = c;
+				simplex.c = b;
+				simplex.numPoints = 3;
+
+				direction = GXCreateVec3 ( -crossABxAC.x, -crossABxAC.y, -crossABxAC.z );
 			}
 			break;
 
 			case 4:
 			{
-				// TODO
+				GXSupportPoint a = simplex.a;
+				GXSupportPoint b = simplex.b;
+				GXSupportPoint c = simplex.c;
+				GXSupportPoint d = simplex.d;
+
+				GXVec3 ab;
+				GXSubVec3Vec3 ( ab, b.difference, a.difference );
+
+				GXVec3 ac;
+				GXSubVec3Vec3 ( ac, c.difference, a.difference );
+
+				GXVec3 cross;
+				GXCrossVec3Vec3 ( cross, ab, ac );
+
+				if ( simplex.DotTestWithAO ( cross ) )
+				{
+					ModifySimplex ( simplex, direction );
+					continue;
+				}
+
+				GXVec3 ad;
+				GXSubVec3Vec3 ( ad, d.difference, a.difference );
+				GXCrossVec3Vec3 ( cross, ac, ad );
+				if ( simplex.DotTestWithAO ( cross ) )
+				{
+					simplex.a = a;
+					simplex.b = c;
+					simplex.c = d;
+					simplex.numPoints = 3;
+
+					ModifySimplex ( simplex, direction );
+					continue;
+				}
+
+				GXCrossVec3Vec3 ( cross, ad, ab );
+				if ( simplex.DotTestWithAO ( cross ) )
+				{
+					simplex.a = a;
+					simplex.b = d;
+					simplex.c = b;
+					simplex.numPoints = 3;
+
+					ModifySimplex ( simplex, direction );
+					continue;
+				}
+
+				isIntersected = true;
+				isLoop = false;
 			}
 			break;
 		}
 	}
+
+	if ( !isIntersected ) return;
+
+	// TODO
 }
 
 GXBool GXCollisionDetector::TryAxis ( const GXBoxShape &boxA, const GXBoxShape &boxB, GXVec3 axis, const GXVec3 &toCentre, GXUInt index, GXFloat smallestPenetration, GXUInt &smallestCase )
@@ -518,4 +693,54 @@ GXVoid GXCollisionDetector::CalculateSupportPoint ( GXSupportPoint &supportPoint
 	GXVec3 invDirection ( -direction.x, -direction.y, -direction.z );
 	shapeB.GetExtremePoint ( supportPoint.extremeB, invDirection );
 	GXSubVec3Vec3 ( supportPoint.difference, supportPoint.extremeA, supportPoint.extremeB );
+}
+
+GXVoid GXCollisionDetector::ModifySimplex ( GXSimplex &simplex, GXVec3 &direction )
+{
+	GXSupportPoint a = simplex.a;
+	GXSupportPoint b = simplex.b;
+	GXSupportPoint c = simplex.c;
+
+	GXVec3 ab;
+	GXVec3 ac;
+	GXVec3 ao ( -a.difference.x, -a.difference.y, -a.difference.z );
+	GXSubVec3Vec3 ( ab, b.difference, a.difference );
+	GXSubVec3Vec3 ( ac, c.difference, a.difference );
+
+	GXVec3 crossABxAC;
+	GXCrossVec3Vec3 ( crossABxAC, ab, ac );
+
+	GXVec3 v;
+	GXCrossVec3Vec3 ( v, ab, crossABxAC );
+	if ( simplex.DotTestWithAO ( v ) )
+	{
+		simplex.a = a;
+		simplex.b = b;
+		simplex.numPoints = 2;
+
+		GXVec3 crossABxAO;
+		GXCrossVec3Vec3 ( crossABxAO, ab, ao );
+		GXCrossVec3Vec3 ( direction, crossABxAO, ab );
+		return;
+	}
+
+	GXCrossVec3Vec3 ( v, crossABxAC, ac );
+	if ( simplex.DotTestWithAO ( v ) ) 
+	{
+		simplex.a = a;
+		simplex.b = c;
+		simplex.numPoints = 2;
+
+		GXVec3 crossACxAO;
+		GXCrossVec3Vec3 ( crossACxAO, ac, ao );
+		GXCrossVec3Vec3 ( direction, crossACxAO, ac );
+		return;
+	}
+
+	simplex.a = a;
+	simplex.b = b;
+	simplex.c = c;
+	simplex.numPoints = 3;
+
+	direction = crossABxAC;
 }

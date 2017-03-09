@@ -11,6 +11,7 @@
 
 
 struct GXSupportPoint;
+struct GXSimplex;
 class GXCollisionDetector
 {
 	public:
@@ -32,6 +33,7 @@ class GXCollisionDetector
 		GXVec3 ContactPoint ( const GXVec3 &pOne, const GXVec3 &dOne, GXFloat oneSize, const GXVec3 &pTwo, const GXVec3 &dTwo, GXFloat twoSize, GXBool useOne );
 
 		GXVoid CalculateSupportPoint ( GXSupportPoint &supportPoint, const GXShape &shapeA, const GXShape &shapeB, const GXVec3 &direction );
+		GXVoid ModifySimplex ( GXSimplex &simplex, GXVec3 &direction );
 };
 
 
