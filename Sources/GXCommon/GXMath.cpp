@@ -1060,7 +1060,7 @@ GXVoid GXCALL GXInverseQuat ( GXQuat &out, const GXQuat &q )
 	}
 	else
 	{
-		wprintf ( L"Îøèáêà GXInverseQuat\n" );
+		wprintf ( L"ÎøèáêEGXInverseQuat\n" );
 		out.x = out.y = out.z = 0.0f;
 		out.w = 1.0f;
 	}
@@ -1545,4 +1545,27 @@ GXFloat GXCALL GXMinf ( GXFloat a, GXFloat b )
 GXFloat GXCALL GXMaxf ( GXFloat a, GXFloat b )
 {
 	return a > b ? a : b;
+}
+
+GXVoid GXCALL GXGetBarycentricCoords ( GXVec3 &out, const GXVec3 &point, const GXVec3 &a, const GXVec3 &b, const GXVec3 &c )
+{
+	GXVec3 v0;
+	GXVec3 v1;
+	GXVec3 v2;
+
+	GXSubVec3Vec3 ( v0, b, a );
+	GXSubVec3Vec3 ( v1, c, a );
+	GXSubVec3Vec3 ( v2, point, a );
+
+	GXFloat d00 = GXDotVec3Fast ( v0, v0 );
+	GXFloat d01 = GXDotVec3Fast ( v0, v1 );
+	GXFloat d11 = GXDotVec3Fast ( v1, v1 );
+	GXFloat d20 = GXDotVec3Fast ( v2, v0 );
+	GXFloat d21 = GXDotVec3Fast ( v2, v1 );
+
+	GXFloat denom = 1.0f / ( d00 * d11 - d01 * d01 );
+
+	out.y = ( d11 * d20 - d01 * d21 ) * denom;
+	out.z = ( d00 * d21 - d01 * d20 ) * denom;
+	out.x = 1.0f - out.y - out.z;
 }

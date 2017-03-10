@@ -74,7 +74,7 @@ GXVoid GXCALL GXSubVec3Vec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b );
 GXVoid GXCALL GXSubVec3ScaledVec3 ( GXVec3 &out, const GXVec3 &a, GXFloat s, const GXVec3 &b );
 GXVoid GXCALL GXMulVec3Vec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b );
 GXVoid GXCALL GXMulVec3Scalar ( GXVec3 &out, const GXVec3 &v, GXFloat factor );
-GXFloat GXCALL GXDotVec3Fast ( const GXVec3 &a, const GXVec3 &b );	//Вектора должны быль единичными
+GXFloat GXCALL GXDotVec3Fast ( const GXVec3 &a, const GXVec3 &b );	//Вектора доЃEыZ быЃE единичыZЃE
 GXVoid GXCALL GXCrossVec3Vec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b );
 GXFloat GXCALL GXLengthVec3 ( const GXVec3 &v );
 GXFloat GXCALL GXSquareLengthVec3 ( const GXVec3 &v );
@@ -331,6 +331,8 @@ GXUInt GXCALL GXClampi ( GXInt value, GXInt minValue, GXInt maxValue );
 
 GXFloat GXCALL GXMinf ( GXFloat a, GXFloat b );
 GXFloat GXCALL GXMaxf ( GXFloat a, GXFloat b );
+
+GXVoid GXCALL GXGetBarycentricCoords ( GXVec3 &out, const GXVec3 &point, const GXVec3 &a, const GXVec3 &b, const GXVec3 &c );
 
 
 #endif //GX_MATH

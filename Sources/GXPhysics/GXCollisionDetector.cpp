@@ -72,6 +72,317 @@ GXBool GXSimplex::DotTestWithAO ( const GXVec3 &v )
 
 //------------------------------------------------------------------------------------------
 
+struct GXTriangle
+{
+	GXSupportPoint	points[ 3 ];
+	GXVec3			normal;
+
+	GXTriangle ();
+	GXTriangle ( const GXSupportPoint &a, const GXSupportPoint &b, const GXSupportPoint &c );
+
+	GXVoid Init ( const GXSupportPoint &a, const GXSupportPoint &b, const GXSupportPoint &c );
+};
+
+GXTriangle::GXTriangle ()
+{
+	memset ( points, 0, 3 * sizeof ( GXSupportPoint ) );
+}
+
+GXTriangle::GXTriangle ( const GXSupportPoint &a, const GXSupportPoint &b, const GXSupportPoint &c )
+{
+	Init ( a, b, c );
+}
+
+GXVoid GXTriangle::Init ( const GXSupportPoint &a, const GXSupportPoint &b, const GXSupportPoint &c )
+{
+	points[ 0 ] = a;
+	points[ 1 ] = b;
+	points[ 2 ] = c;
+}
+
+//------------------------------------------------------------------------------------------
+
+struct GXTriangleNode
+{
+	GXTriangleNode*	next;
+	GXTriangleNode*	prev;
+
+	GXTriangle*		triangle;
+};
+
+struct GXTriangleVector
+{
+	GXTriangleNode*	head;
+	GXTriangleNode*	tail;
+
+	GXTriangleVector ();
+
+	GXVoid PushBack ( GXTriangle &triangle );
+	GXVoid Remove ( GXTriangle &triangle );
+	GXTriangleNode* Find ( GXTriangle &triangle );
+	GXTriangle& operator [] ( GXUInt index );
+};
+
+GXTriangleVector::GXTriangleVector ()
+{
+	head = nullptr;
+	tail = nullptr;
+}
+
+GXVoid GXTriangleVector::PushBack ( GXTriangle &triangle )
+{
+	GXTriangleNode* node;
+	node->triangle = &triangle;
+	node->next = nullptr;
+
+	if ( !tail )
+	{
+		tail = node;
+		node->prev = nullptr;
+		head = tail;
+	}
+	else
+	{
+		tail->next = node;
+		node->prev = tail;
+		tail = node;
+	}
+}
+
+GXVoid GXTriangleVector::Remove ( GXTriangle &triangle )
+{
+	GXTriangleNode* node = Find ( triangle );
+	if ( !node )
+	{
+		GXLogW ( L"GXTriangleVector::Remove::Error - Can't find triangle!" );
+		return;
+	}
+
+	if ( head == node )
+	{
+		if ( !node->next )
+		{
+			head = tail = nullptr;
+		}
+		else
+		{
+			head = node->next;
+			head->prev = nullptr;
+		}
+
+		delete node;
+	}
+	else if ( tail == node )
+	{
+		tail = node->prev;
+		tail->next = nullptr;
+
+		delete node;
+	}
+	else
+	{
+		node->prev->next = node->next;
+		node->next->prev = node->prev;
+
+		delete node;
+	}
+}
+
+GXTriangleNode* GXTriangleVector::Find ( GXTriangle &triangle )
+{
+	for ( GXTriangleNode* p = head; p; p = p->next )
+	{
+		if ( p->triangle == &triangle )
+			return p;
+	}
+
+	return nullptr;
+}
+
+GXTriangle& GXTriangleVector::operator [] ( GXUInt index )
+{
+	GXUInt i = 0;
+	for ( GXTriangleNode* p = head; p; p = p->next )
+	{
+		if ( i == index )
+			return *p->triangle;
+
+		i++;
+	}
+
+	GXLogW ( L"GXTriangleVector::Error - Triangle with %i index does not exist\n", index );
+	return GXTriangle ();
+}
+
+//------------------------------------------------------------------------------------------
+
+struct GXEdge
+{
+	GXSupportPoint		points[ 2 ];
+
+	GXEdge ();
+	GXEdge ( const GXSupportPoint &a, const GXSupportPoint &b );
+};
+
+GXEdge::GXEdge ()
+{
+	memset ( points, 0, 2 * sizeof ( GXSupportPoint ) );
+}
+
+GXEdge::GXEdge ( const GXSupportPoint &a, const GXSupportPoint &b )
+{
+	points[ 0 ] = a;
+	points[ 1 ] = b;
+}
+
+//------------------------------------------------------------------------------------------
+
+struct GXEdgeNode
+{
+	GXEdgeNode*		next;
+	GXEdgeNode*		prev;
+
+	GXEdge*			edge;
+};
+
+struct GXEdgeVector
+{
+	GXEdgeNode*		head;
+	GXEdgeNode*		tail;
+
+	GXEdgeVector ();
+
+	GXVoid PushBack ( GXEdge &edge );
+	GXVoid Remove ( GXEdge &edge );
+	GXVoid Clear ();
+	GXEdgeNode* Find ( GXEdge &edge );
+	GXEdge& operator [] ( GXUInt index );
+
+	GXVoid AddEdgeWithChecking ( const GXSupportPoint &edgeStart, const GXSupportPoint &edgeEnd );
+};
+
+GXEdgeVector::GXEdgeVector ()
+{
+	head = nullptr;
+	tail = nullptr;
+}
+
+GXVoid GXEdgeVector::PushBack ( GXEdge &edge )
+{
+	GXEdgeNode* node;
+	node->edge = &edge;
+	node->next = nullptr;
+
+	if ( !tail )
+	{
+		tail = node;
+		node->prev = nullptr;
+		head = tail;
+	}
+	else
+	{
+		tail->next = node;
+		node->prev = tail;
+		tail = node;
+	}
+}
+
+GXVoid GXEdgeVector::Remove ( GXEdge &edge )
+{
+	GXEdgeNode* node = Find ( edge );
+	if ( !node )
+	{
+		GXLogW ( L"GXEdgeVector::Remove::Error - Can't find edge!" );
+		return;
+	}
+
+	if ( head == node )
+	{
+		if ( !node->next )
+		{
+			head = tail = nullptr;
+		}
+		else
+		{
+			head = node->next;
+			head->prev = nullptr;
+		}
+
+		delete node;
+	}
+	else if ( tail == node )
+	{
+		tail = node->prev;
+		tail->next = nullptr;
+
+		delete node;
+	}
+	else
+	{
+		node->prev->next = node->next;
+		node->next->prev = node->prev;
+
+		delete node;
+	}
+}
+
+GXVoid GXEdgeVector::Clear ()
+{
+	while ( head )
+	{
+		GXEdgeNode* node = head;
+		head = head->next;
+		delete node;
+	}
+}
+
+GXEdgeNode* GXEdgeVector::Find ( GXEdge &edge )
+{
+	for ( GXEdgeNode* p = head; p; p = p->next )
+	{
+		if ( p->edge == &edge )
+			return p;
+	}
+
+	return nullptr;
+}
+
+GXEdge& GXEdgeVector::operator [] ( GXUInt index )
+{
+	GXUInt i = 0;
+	for ( GXEdgeNode* p = head; p; p = p->next )
+	{
+		if ( i == index )
+			return *p->edge;
+
+		i++;
+	}
+
+	GXLogW ( L"GXEdgeVector::Error - Edge with %i index does not exist\n", index );
+	return GXEdge ();
+}
+
+GXVoid GXEdgeVector::AddEdgeWithChecking ( const GXSupportPoint &edgeStart, const GXSupportPoint &edgeEnd )
+{
+	for (GXEdgeNode* p = head; p; p = p->next )
+	{
+		GXEdge* edge = p->edge;
+
+		GXBool testA = GXDistanceVec3Vec3 ( edge->points[ 0 ].difference, edgeEnd.difference ) < DEFAULT_EDGE_EPSILON;
+		GXBool testB = GXDistanceVec3Vec3 ( edge->points[ 1 ].difference, edgeStart.difference ) < DEFAULT_EDGE_EPSILON;
+
+		if (testA && testB)
+		{
+			Remove(*edge);
+			return;
+		}
+	}
+
+	PushBack ( GXEdge ( edgeStart, edgeEnd ) );
+}
+
+//------------------------------------------------------------------------------------------
+
 GXUInt GXCollisionDetector::CheckSphereAndSphere ( const GXSphereShape &sphereA, const GXSphereShape &sphereB, GXCollisionData &collisionData )
 {
 	if ( !collisionData.HasMoreContacts () ) return 0;
@@ -552,7 +863,70 @@ GXVoid GXCollisionDetector::CheckViaGJK ( const GXShape &shapeA, const GXShape &
 
 	if ( !isIntersected ) return;
 
-	// TODO
+	GXTriangleVector triangles;
+	GXEdgeVector edges;
+
+	triangles.PushBack ( GXTriangle ( simplex.a, simplex.b, simplex.c ) );
+	triangles.PushBack ( GXTriangle ( simplex.a, simplex.c, simplex.d ) );
+	triangles.PushBack ( GXTriangle ( simplex.a, simplex.d, simplex.b ) );
+	triangles.PushBack ( GXTriangle ( simplex.b, simplex.d, simplex.c ) );
+
+	GXInt iteration = 0;
+
+	while ( GX_TRUE )
+	{
+		iteration++;
+
+		if ( iteration > DEFAULT_MAX_EPA_ITERATIONS )
+		{
+			GXLogW ( L"GXCollisionDetector::CheckViaGJK::Warning - Max EPA iterations %i", iteration );
+			return;
+		}
+
+		GXFloat minDotDistance = FLT_MAX;
+		GXUByte nearFace = 0;
+
+		for ( GXUByte i = 0; i < 4; i++ )
+		{
+			GXTriangle& triangle = triangles[ i ];
+			float dotDistance = GXDotVec3Fast ( triangle.normal, triangle.points[ 0 ].difference );
+			if ( dotDistance < minDotDistance )
+			{
+				nearFace = i;
+				minDotDistance = dotDistance;
+			}
+		}
+
+		// Now we know that triangle with index "nearFace" is the closest to the origin
+		GXTriangle& closestTriangle = triangles[ nearFace ];
+
+		// Find support point in normal direction of the closest triangle
+		CalculateSupportPoint ( a, shapeA, shapeB, closestTriangle.normal );
+		float newDotDistance = GXDotVec3Fast ( closestTriangle.normal, a.difference );
+		float difference = newDotDistance - minDotDistance;
+
+		if (difference < DEFAULT_MIN_EPA_DOT_DISTANCE)
+		{
+			GXLogW( L"EPA: exit growth: iteration %i, distance %f\n", iteration, difference );
+			GetContacts ( closestTriangle, shapeA, shapeB, collisionData );
+			return;
+		}
+
+		for (GXTriangleNode* p = triangles.head; p; p = p->next )
+		{
+			GXTriang* triangle = p->triangle;
+			if (simpleWindingCheck(triangle, a.difference))
+			{
+				addEdgeWithChecking(edges, triangle.points[0], triangle.points[1]);
+				addEdgeWithChecking(edges, triangle.points[1], triangle.points[2]);
+				addEdgeWithChecking(edges, triangle.points[2], triangle.points[0]);
+
+				trianglesToDelete.push_back(i);
+			}
+		}
+
+		// TODO
+	}
 }
 
 GXBool GXCollisionDetector::TryAxis ( const GXBoxShape &boxA, const GXBoxShape &boxB, GXVec3 axis, const GXVec3 &toCentre, GXUInt index, GXFloat smallestPenetration, GXUInt &smallestCase )
@@ -743,4 +1117,41 @@ GXVoid GXCollisionDetector::ModifySimplex ( GXSimplex &simplex, GXVec3 &directio
 	simplex.numPoints = 3;
 
 	direction = crossABxAC;
+}
+
+GXVoid GXCollisionDetector::GetContacts ( GXTriangle &triangle, const GXShape &shapeA, const GXShape &shapeB, GXCollisionData &collisionData )
+{
+	GXFloat distanceFromOrigin = GXDotVec3Fast ( triangle.normal, triangle.points[ 0 ].difference );
+
+	GXVec3 barycentricCoords;
+	GXVec3 point;
+	GXMulVec3Scalar ( point, triangle.normal, distanceFromOrigin );
+
+	GXGetBarycentricCoords ( barycentricCoords, point, triangle.points[0].difference, triangle.points[1].difference, triangle.points[2].difference );
+
+	if ( fabsf ( barycentricCoords.x ) > 1.0f || fabsf ( barycentricCoords.y ) > 1.0f || fabs ( barycentricCoords.z ) > 1.0f)
+		return;
+
+	GXVec3 v1;
+	GXMulVec3Scalar ( v1, triangle.points[0].extremeA, barycentricCoords.x );
+
+	GXVec3 v2;
+	GXMulVec3Scalar ( v2, triangle.points[1].extremeA, barycentricCoords.y );
+
+	GXVec3 v3;
+	GXMulVec3Scalar ( v3, triangle.points[2].extremeA, barycentricCoords.z );
+
+	GXContact* contact = collisionData.GetContactsBegin ();
+
+	GXVec3 location;
+	GXSumVec3Vec3(location, v1, v2);
+	GXSumVec3Vec3(location, location, v3);
+
+	contact->SetContactPoint ( location );
+	contact->SetNormal ( GXCreateVec3 ( -triangle.normal.x, -triangle.normal.y, -triangle.normal.z ) );
+	contact->SetPenetration ( distanceFromOrigin );
+
+	contact->SetData ( shapeA, &shapeB );
+	
+	collisionData.AddContacts ( 1 );
 }
