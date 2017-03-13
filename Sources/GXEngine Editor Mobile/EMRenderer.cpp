@@ -39,6 +39,9 @@ EMRenderer::~EMRenderer ()
 	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
 	glDeleteFramebuffers ( 1, &fbo );
 
+	if ( sourceFbo )
+		glDeleteFramebuffers ( 1, &sourceFbo );
+
 	GXRemoveVAO ( screenQuadVAO );
 
 	GXRemoveShaderProgram ( screenQuadProgram );
@@ -71,7 +74,7 @@ GXVoid EMRenderer::StartCommonPass ()
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
-		GXLogW ( L"EMRenderer::StartCommonPass::Error - ×òî-òî íå òàê ñ FBO (îøèáêà 0x%08x)\n" );
+		GXLogW ( L"EMRenderer::StartCommonPass::Error - ×òî-òî ûD òàEEFBO (úIèáE 0x%08x)\n" );
 
 	GXRenderer* renderer = GXRenderer::GetInstance ();
 	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
@@ -114,7 +117,7 @@ GXVoid EMRenderer::StartLightPass ()
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
-		GXLogW ( L"EMRenderer::StartLightPass::Error - ×òî-òî íå òàê ñ FBO (îøèáêà 0x%08x)\n" );
+		GXLogW ( L"EMRenderer::StartLightPass::Error - ×òî-òî ûD òàEEFBO (úIèáE 0x%08x)\n" );
 
 	glClear ( GL_COLOR_BUFFER_BIT );
 
@@ -129,6 +132,9 @@ GXVoid EMRenderer::StartLightPass ()
 
 GXVoid EMRenderer::StartHudColorPass ()
 {
+	if ( combineHudTarget != outTexture )
+		CopyTexureToCombineTexture ( combineHudTarget );
+
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, outTexture, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
@@ -152,7 +158,7 @@ GXVoid EMRenderer::StartHudColorPass ()
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
-		GXLogW ( L"EMRenderer::StartHudDepthDependentPass::Error - ×òî-òî íå òàê ñ FBO (îøèáêà 0x%08x)\n" );
+		GXLogW ( L"EMRenderer::StartHudDepthDependentPass::Error - ×òî-òî ûD òàEEFBO (úIèáE 0x%08x)\n" );
 
 	glEnable ( GL_BLEND );
 	glEnable ( GL_DEPTH_TEST );
@@ -183,7 +189,7 @@ GXVoid EMRenderer::StartHudMaskPass ()
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
-		GXLogW ( L"EMRenderer::StartHudDepthDependentPass::Error - ×òî-òî íå òàê ñ FBO (îøèáêà 0x%08x)\n" );
+		GXLogW ( L"EMRenderer::StartHudDepthDependentPass::Error - ×òî-òî ûD òàEEFBO (úIèáE 0x%08x)\n" );
 
 	glDisable ( GL_BLEND );
 	glEnable ( GL_DEPTH_TEST );
@@ -204,7 +210,40 @@ GXVoid EMRenderer::SetObjectMask ( GXUPointer object )
 	glVertexAttrib4Nub ( EM_OBJECT_LOW_INDEX, objectMask[ 4 ], objectMask[ 5 ], objectMask[ 6 ], objectMask[ 7 ] );
 }
 
-GXVoid EMRenderer::PresentFrame ()
+GXVoid EMRenderer::CombineHudWithTarget ( eEMRenderTarget target )
+{
+	if ( target == eEMRenderTarget::Depth )
+		GXLogW ( L"EMRenderer::CombineHudWithTarget::Warnin - Can't combine HUD with depth target" );
+
+	switch ( target )
+	{
+		case eEMRenderTarget::Albedo:
+			combineHudTarget = diffuseTexture;
+		break;
+
+		case eEMRenderTarget::Normal:
+			combineHudTarget = normalTexture;
+		break;
+
+		case eEMRenderTarget::Specular:
+			combineHudTarget = specularTexture;
+		break;
+
+		case eEMRenderTarget::Emission:
+			combineHudTarget = emissionTexture;
+		break;
+
+		case eEMRenderTarget::Depth:
+			GXLogW ( L"EMRenderer::CombineHudWithTarget::Warnin - Can't combine HUD with depth target" );
+		break;
+
+		case eEMRenderTarget::Combine:
+			combineHudTarget = outTexture;
+		break;
+	}
+}
+
+GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 {
 	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
 	glDisable ( GL_DEPTH_TEST );
@@ -222,7 +261,35 @@ GXVoid EMRenderer::PresentFrame ()
 
 	glUseProgram ( screenQuadProgram.program );
 	glActiveTexture ( GL_TEXTURE0 );
-	glBindTexture ( GL_TEXTURE_2D, outTexture );
+
+	switch ( target )
+	{
+		case eEMRenderTarget::Albedo:
+			glBindTexture ( GL_TEXTURE_2D, diffuseTexture );
+		break;
+
+		case eEMRenderTarget::Normal:
+			glBindTexture ( GL_TEXTURE_2D, normalTexture );
+		break;
+
+		case eEMRenderTarget::Specular:
+			glBindTexture ( GL_TEXTURE_2D, specularTexture );
+		break;
+
+		case eEMRenderTarget::Emission:
+			glBindTexture ( GL_TEXTURE_2D, emissionTexture );
+		break;
+
+		case eEMRenderTarget::Depth:
+			glBindTexture ( GL_TEXTURE_2D, depthStencilTexture );
+		break;
+
+		case eEMRenderTarget::Combine:
+			glBindTexture ( GL_TEXTURE_2D, outTexture );
+		break;
+	}
+
+	
 	glBindSampler ( 0, screenSampler );
 
 	glBindVertexArray ( screenQuadVAO.vao );
@@ -266,6 +333,7 @@ EMRenderer::EMRenderer ()
 	InitDirectedLightShader ();
 
 	SetObjectMask ( 0 );
+	CombineHudWithTarget ( eEMRenderTarget::Combine );
 }
 
 GXVoid EMRenderer::CreateFBO ()
@@ -332,9 +400,11 @@ GXVoid EMRenderer::CreateFBO ()
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
-		GXLogW ( L"EMRenderer::CreateFBO::Error - ×òî-òî íå òàê ñ FBO (îøèáêà 0x%08X)\n", (GXUInt)status );
+		GXLogW ( L"EMRenderer::CreateFBO::Error - ×òî-òî ûD òàEEFBO (úIèáE 0x%08X)\n", (GXUInt)status );
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
+
+	sourceFbo = 0;
 
 	glDrawBuffer ( GL_BACK );
 }
@@ -484,6 +554,37 @@ GXVoid EMRenderer::LightUpBySpot ( EMSpotlight* light )
 GXVoid EMRenderer::LightUpByBulp ( EMBulp* light )
 {
 	//TODO
+}
+
+GXVoid EMRenderer::CopyTexureToCombineTexture ( GLuint texture )
+{
+	if ( sourceFbo == 0 )
+		glGenFramebuffers ( 1, &sourceFbo );
+
+	const GLenum buffers[] = { GL_COLOR_ATTACHMENT0 };
+
+	
+
+	glBindFramebuffer ( GL_READ_FRAMEBUFFER, sourceFbo );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, 0 );
+	glDrawBuffers ( 1, buffers );
+
+	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+
+	glBindFramebuffer ( GL_DRAW_FRAMEBUFFER, fbo );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, outTexture, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
+	glDrawBuffers ( 1, buffers );
+
+	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+
+	GXInt width = GXRenderer::GetInstance ()->GetWidth ();
+	GXInt heingt = GXRenderer::GetInstance ()->GetHeight ();
 }
 
 GXUPointer EMRenderer::SampleObject ()

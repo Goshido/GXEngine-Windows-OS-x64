@@ -200,7 +200,10 @@ GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 		{
 			GXShape& shapeA = p->body->GetShape ();
 			GXShape& shapeB = q->body->GetShape ();
-			switch ( shapeA.GetType () )
+
+			collisionDetector.CheckViaGJK ( shapeA, shapeB, collisions );
+
+			/*switch ( shapeA.GetType () )
 			{
 				case eGXShapeType::Box:
 				{
@@ -254,7 +257,7 @@ GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 					}
 				}
 				break;
-			}
+			}*/
 		}
 	}
 	

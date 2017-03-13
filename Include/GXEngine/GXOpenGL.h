@@ -78,6 +78,7 @@ extern PFNGLDELETESAMPLERSPROC				glDeleteSamplers;
 extern PFNGLBINDSAMPLERPROC					glBindSampler;
 extern PFNGLSAMPLERPARAMETERIPROC			glSamplerParameteri;
 extern PFNGLSAMPLERPARAMETERFPROC			glSamplerParameterf;
+extern PFNGLBLITFRAMEBUFFERPROC				glBlitFramebuffer;
 
 
 GXVoid GXCALL GXOpenGLInit ();

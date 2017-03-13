@@ -90,7 +90,7 @@ GXVoid GXCALL EMOnSave ( GXFloat x, GXFloat y, eGXMouseButtonState state )
 GXVoid GXCALL EMOnExit ()
 {
 	GXCore::GetInstance ()->Exit ();
-	GXLogA ( "Завершение\n" );
+	GXLogA ( "ЗавершеыGе\n" );
 }
 
 GXVoid GXCALL EMOnDummy ( GXFloat x, GXFloat y, eGXMouseButtonState state )
@@ -123,7 +123,7 @@ GXVoid GXCALL EMOnObject ( GXUPointer object )
 	if ( !object ) return;
 
 	EMActor* actor = (EMActor*)object;
-	GXLogW ( L"EMOnObject::Info - Объект %s (адрес 0x%016X)\n", actor->GetName (), object );
+	GXLogW ( L"EMOnObject::Info - ОбъекЃE%s (адреЃE0x%016X)\n", actor->GetName (), object );
 }
 
 //-----------------------------------------------------------------------------
@@ -137,7 +137,7 @@ GXVoid GXCALL EMOnViewerTransformChanged ()
 
 GXVoid GXCALL EMOnOpenFile ( const GXWChar* filePath )
 {
-	GXLogW ( L"EMOnOpenFile::Info - Файл: %s\n", filePath );
+	GXLogW ( L"EMOnOpenFile::Info - ФайЃE %s\n", filePath );
 }
 
 
@@ -174,6 +174,7 @@ GXBool GXCALL EMOnFrame ( GXFloat deltatime )
 
 	em_UnitActor->OnDrawCommonPass ();
 	em_PhysicsBoxActor->Draw ();
+	em_PhysicsPlaneActor->Draw ();
 
 	renderer->StartLightPass ();
 	
@@ -192,7 +193,7 @@ GXBool GXCALL EMOnFrame ( GXFloat deltatime )
 
 	em_MoveTool->OnDrawHudMaskPass ();
 
-	renderer->PresentFrame ();
+	renderer->PresentFrame ( eEMRenderTarget::Combine );
 
 	return GX_TRUE;
 }
@@ -269,7 +270,7 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 	em_Button3->SetCaption ( locale->GetString ( L"TestButton" ) );
 
 	em_EditBox = new EMUIEditBox ( em_DraggableArea );
-	em_EditBox->SetText ( L"Привет Сиськи" );
+	em_EditBox->SetText ( L"Приве, Сиськи" );
 	em_EditBox->Resize ( 10.0f, 60.0f, 4.5f * gx_ui_Scale, 0.6f * gx_ui_Scale );
 
 	em_OpenFile = new EMUIOpenFile ();
@@ -295,15 +296,19 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 
 	EMTool::SetActiveTool ( em_MoveTool );
 
-	em_PhysicsBoxActor = new EMPhysicsDrivenActor ( eGXShapeType::Box );
+	em_PhysicsBoxActor = new EMPhysicsDrivenActor ( eGXShapeType::Sphere );
 	GXRigidBody& body = em_PhysicsBoxActor->GetRigidBody ();
 	body.SetLocation ( 0.0f, 10.0f, 15.0f );
 
-	em_PhysicsPlaneActor = new EMPhysicsDrivenActor ( eGXShapeType::Plane );
+	em_PhysicsPlaneActor = new EMPhysicsDrivenActor ( eGXShapeType::Polygon );
+	body = em_PhysicsPlaneActor->GetRigidBody ();
+	body.SetLocation ( 0.0f, 0.0f, 15.0f );
 
 	GXWorld& world = GXPhysicsEngine::GetInstance ()->GetWorld ();
-	world.RegisterRigidBody ( body );
+	world.RegisterRigidBody ( em_PhysicsBoxActor->GetRigidBody () );
 	world.RegisterRigidBody ( em_PhysicsPlaneActor->GetRigidBody () );
+
+	EMRenderer::GetInstance ()->CombineHudWithTarget ( eEMRenderTarget::Normal );
 
 	ShowCursor ( 1 );
 }
@@ -344,7 +349,7 @@ GXVoid GXCALL EMOnDeleteRenderableObjects ()
 GXVoid GXCALL EMExit ( GXVoid* handler )
 {
 	GXCore::GetInstance ()->Exit ();
-	GXLogW ( L"Завершение\n" );
+	GXLogW ( L"ЗавершеыGе\n" );
 }
 
 //-------------------------------------------------------------------

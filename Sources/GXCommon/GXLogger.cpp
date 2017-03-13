@@ -88,7 +88,7 @@ GXVoid GXCALL GXSeeError ( LPTSTR lpszFunction, GXBool isDebugBox )
 						0, NULL 
 					);
 
-	swprintf_s ( gx_logger_lpDisplayBuf, 120, L"%s вывалилась с ошибкой %d: %s", lpszFunction, dw, lpMsgBuf );
+	swprintf_s ( gx_logger_lpDisplayBuf, 120, L"%s вываБEБEсь БEъIибБEБE%d: %s", lpszFunction, dw, lpMsgBuf );
 
 	if ( isDebugBox )
 	{

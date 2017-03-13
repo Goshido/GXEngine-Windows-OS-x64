@@ -1,4 +1,4 @@
-//version 1.27
+//version 1.28
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -12,6 +12,7 @@
 #define GX_MATH_TWO_PI	6.2831853f
 #define GX_MATH_PI		3.1415927f
 #define GX_MATH_HALFPI	1.5707963f
+
 
 union GXVec2
 {
@@ -258,6 +259,7 @@ struct GXAABB
 };
 
 GXVoid GXCALL GXSetAABBEmpty ( GXAABB &inOut );
+GXVoid GXCALL GXSetAABBTransformed ( GXAABB &out, const GXAABB &bounds, const GXMat4 &transform );
 GXVoid GXCALL GXAddVertexToAABB ( GXAABB &inOut, const GXVec3 &vertex );
 GXVoid GXCALL GXAddVertexToAABB ( GXAABB &inOut, GXFloat x, GXFloat y, GXFloat z );
 GXBool GXCALL GXIsOverlapedAABBAABB ( const GXAABB& a, const GXAABB& b );

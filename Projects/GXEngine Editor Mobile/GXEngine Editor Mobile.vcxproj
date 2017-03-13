@@ -218,14 +218,14 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXInput.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXLocale.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXMesh.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXMeshGeometry.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXNetwork.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXOGGSoundProvider.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXOpenGL.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXPhysXFrontend.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXRenderer.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSamplerUtils.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngine\GXShaderStorage.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngine\GXShaderUtils.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXShaderProgram.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSkeletalMesh.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSkeletalMeshQuat.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSkeletalMeshStorage.cpp" />
@@ -235,6 +235,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXSoundMixer.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSoundProvider.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSoundStorage.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXTextureDuplicator.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTextureStorage.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTextureUtils.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTouchSurface.cpp" />
@@ -256,6 +257,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXPhysics\GXGravity.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXPhysicsEngine.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXPlaneShape.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXPolygonShape.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXRigidBody.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXShape.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXSphereShape.cpp" />
@@ -319,6 +321,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXLocale.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMenu.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMesh.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXMeshGeometry.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMotionBlurEffect.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXNetwork.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXOGGSoundProvider.h" />
@@ -329,8 +332,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXRenderer.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXResource.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSamplerUtils.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXShaderStorage.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXShaderUtils.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXShaderProgram.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSkeletalMesh.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSkeletalMeshQuat.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSkeletalMeshStorage.h" />
@@ -340,6 +342,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXSoundMixer.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSoundProvider.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSoundStorage.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXTextureDuplicator.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTextureOuter.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTextureStorage.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTextureUtils.h" />
@@ -388,6 +391,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXPhysics\GXGravity.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXPhysicsEngine.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXPlaneShape.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXPolygonShape.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXRigidBody.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXShape.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXSphereShape.h" />

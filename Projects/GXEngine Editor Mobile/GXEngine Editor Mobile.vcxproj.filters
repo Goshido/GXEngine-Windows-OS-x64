@@ -144,9 +144,6 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXSamplerUtils.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine\GXShaderUtils.cpp">
-      <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXSkeletalMesh.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
@@ -229,9 +226,6 @@
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXTextureStorage.cpp">
-      <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine\GXShaderStorage.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXHudSurface.cpp">
@@ -338,6 +332,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMPhysicsDrivenActor.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPhysics\GXPolygonShape.cpp">
+      <Filter>Source Files\GXPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXTextureDuplicator.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXShaderProgram.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXMeshGeometry.cpp">
+      <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -545,12 +551,6 @@
     <ClInclude Include="..\..\Include\GXEngine\GXSamplerUtils.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXShaderStorage.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXShaderUtils.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXSkeletalMesh.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
@@ -733,6 +733,18 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMPhysicsDrivenActor.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPhysics\GXPolygonShape.h">
+      <Filter>Header Files\GXPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXTextureDuplicator.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXShaderProgram.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXMeshGeometry.h">
+      <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

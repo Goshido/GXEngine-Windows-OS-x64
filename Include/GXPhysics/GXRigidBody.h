@@ -30,6 +30,7 @@ class GXRigidBody
 		GXFloat		motion;
 		GXBool		isAwake;
 		GXBool		canSleep;
+		GXBool		isKinematic;
 
 		GXVec3		acceleration;
 		GXVec3		lastFrameAcceleration;
@@ -87,6 +88,10 @@ class GXRigidBody
 		GXVoid SetSleep ();
 		GXBool IsAwake () const;
 		GXVoid SetCanSleep ( GXBool isCanSleep );
+
+		GXVoid EnableKinematic ();
+		GXVoid DisableKinematic ();
+		GXBool IsKinematic () const;
 
 		GXVoid AddForce ( const GXVec3 &forceWorld );
 		GXVoid AddForceAtPointLocal ( const GXVec3 &forceWorld, const GXVec3 &pointLocal );

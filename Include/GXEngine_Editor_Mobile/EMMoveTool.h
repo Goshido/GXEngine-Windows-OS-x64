@@ -5,7 +5,7 @@
 #include "EMTool.h"
 #include <GXEngine/GXInput.h>
 #include <GXEngine/GXVAOStorage.h>
-#include <GXEngine/GXShaderStorage.h>
+#include <GXEngine/GXShaderProgram.h>
 
 
 class EMMoveTool : public EMTool

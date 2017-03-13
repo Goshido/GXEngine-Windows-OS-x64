@@ -32,7 +32,7 @@ GXVoid GXBoxShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) co
 	GetVecticesWorld ( v );
 
 	GXUByte index = 0;
-	GXFloat projection = -FLT_MIN;
+	GXFloat projection = -FLT_MAX;
 
 	for ( GXUByte i = 0; i < 8; i++ )
 	{

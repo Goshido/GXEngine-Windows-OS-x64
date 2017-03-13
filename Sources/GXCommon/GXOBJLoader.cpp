@@ -344,7 +344,7 @@ GXInt GXCALL GXLoadOBJ ( const GXWChar* fileName, GXOBJPoint** points )
 {
 	if ( !GXLoadFile ( fileName, (GXVoid**)&gx_objloader_ObjSource, gx_objloader_FileSize, GX_TRUE ) )
 	{
-		GXLogW ( L"GXLoadOBJ::Error - Не могу загрузит файл %s\n", fileName );
+		GXLogW ( L"GXLoadOBJ::Error - НЃEЃEгу загрузит файл %s\n", fileName );
 		return 0;
 	}
 

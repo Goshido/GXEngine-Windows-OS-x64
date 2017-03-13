@@ -12,8 +12,8 @@ GXVoid GXCALL GXLoadCFG ( GXEngineConfiguration &out_config_info )
 
 	if ( !GXLoadFile ( L"../../Config/GXEngine.cfg", &buffer, size, GX_TRUE ) )
 	{
-		GXDebugBox ( L"GXLoadCFG::Error - не могу загрузить файл" );
-		GXLogW ( L"GXLoadCFG::Error - не могу загрузить файл %s", L"../../Config/GXEngine.cfg\n" );
+		GXDebugBox ( L"GXLoadCFG::Error - Cant't load file" );
+		GXLogW ( L"GXLoadCFG::Error - Can't load file %s\n", L"../../Config/GXEngine.cfg\n" );
 	}
 
 	memcpy ( &out_config_info, buffer, size );

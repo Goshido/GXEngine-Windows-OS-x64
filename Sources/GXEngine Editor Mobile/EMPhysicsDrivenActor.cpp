@@ -4,6 +4,7 @@
 #include <GXPhysics/GXBoxShape.h>
 #include <GXPhysics/GXPlaneShape.h>
 #include <GXPhysics/GXSphereShape.h>
+#include <GXPhysics/GXPolygonShape.h>
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXLogger.h>
 
@@ -173,6 +174,16 @@ EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
 			rigidBody->SetShape ( *p );
 		}
 		break;
+
+		case eGXShapeType::Polygon:
+		{
+			mesh = new EMPhysicsDrivenActorMesh ();
+			//GXPolygonShape* p = new GXPolygonShape ( nullptr, 30.0f, 30.0f );
+
+			GXBoxShape* box = new GXBoxShape ( rigidBody, 100.0f, 1.0f, 100.0f );
+			rigidBody->SetShape ( *box );
+			rigidBody->EnableKinematic ();
+		}
 	}
 }
 
@@ -191,7 +202,10 @@ GXVoid EMPhysicsDrivenActor::Draw ()
 {
 	if ( !mesh ) return;
 
+	GXBoxShape& s = (GXBoxShape&)rigidBody->GetShape ();
+
 	mesh->SetLocation ( rigidBody->GetLocation () );
+	mesh->SetScale ( s.GetWidth (), s.GetHeight (), s.GetDepth () );
 
 	GXQuat rot = rigidBody->GetRotation ();
 	GXQuatRehandCoordinateSystem ( rot );

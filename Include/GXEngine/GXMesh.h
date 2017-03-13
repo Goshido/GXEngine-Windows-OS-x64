@@ -7,8 +7,7 @@
 #include "GXDrawable.h"
 #include "GXVAOStorage.h"
 #include "GXTextureStorage.h"
-#include "GXShaderStorage.h"
-#include "GXShaderUtils.h"
+#include "GXShaderProgram.h"
 #include <GXCommon/GXMath.h>
 
 
@@ -22,12 +21,6 @@ class GXMesh : public GXDrawable
 		GXMat4				scale_mat;
 		GXMat4				scale_rot_mat;
 		GXMat4				mod_mat;
-
-		GXUByte				numPrograms;
-		GXShaderProgram*	programs;
-
-		GXUByte				numTextures;
-		GXTexture*			textures;
 
 		GXAABB				boundsWorld;
 
@@ -66,8 +59,7 @@ class GXMesh : public GXDrawable
 		virtual GXBool IsVisible ();
 
 	protected:
-		virtual GXVoid Load3DModel () = 0;
-		virtual GXVoid InitUniforms () = 0;
+		virtual GXVoid InitGraphicResources () = 0;
 		GXVoid UpdateBounds ();
 		GXVoid AllocateShaderPrograms ( GXUByte numPrograms );
 		GXVoid AllocateTextures ( GXUByte numTextures );

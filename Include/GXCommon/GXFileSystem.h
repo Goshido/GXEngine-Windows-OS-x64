@@ -29,6 +29,7 @@ GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUInt &siz
 GXBool GXCALL GXWriteToFile ( const GXWChar* fileName, const GXVoid* buffer, GXUInt size );
 GXBool GXCALL GXDoesFileExist ( const GXWChar* fileName );
 GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar* directory );
+GXVoid GXCALL GXGetFilePath ( GXWChar** path, const GXWChar fullFileName );
 
 class GXWriteStream
 {

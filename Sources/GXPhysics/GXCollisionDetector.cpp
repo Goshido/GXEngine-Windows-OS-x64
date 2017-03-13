@@ -131,7 +131,7 @@ GXTriangleVector::GXTriangleVector ()
 
 GXVoid GXTriangleVector::PushBack ( GXTriangle &triangle )
 {
-	GXTriangleNode* node;
+	GXTriangleNode* node = new GXTriangleNode;
 	node->triangle = &triangle;
 	node->next = nullptr;
 
@@ -211,7 +211,7 @@ GXTriangle& GXTriangleVector::operator [] ( GXUInt index )
 	}
 
 	GXLogW ( L"GXTriangleVector::Error - Triangle with %i index does not exist\n", index );
-	return GXTriangle ();
+	return *head->triangle;
 }
 
 //------------------------------------------------------------------------------------------
@@ -269,7 +269,7 @@ GXEdgeVector::GXEdgeVector ()
 
 GXVoid GXEdgeVector::PushBack ( GXEdge &edge )
 {
-	GXEdgeNode* node;
+	GXEdgeNode* node = new GXEdgeNode ();
 	node->edge = &edge;
 	node->next = nullptr;
 
@@ -359,7 +359,7 @@ GXEdge& GXEdgeVector::operator [] ( GXUInt index )
 	}
 
 	GXLogW ( L"GXEdgeVector::Error - Edge with %i index does not exist\n", index );
-	return GXEdge ();
+	return *head->edge;
 }
 
 GXVoid GXEdgeVector::AddEdgeWithChecking ( const GXSupportPoint &edgeStart, const GXSupportPoint &edgeEnd )
@@ -861,7 +861,15 @@ GXVoid GXCollisionDetector::CheckViaGJK ( const GXShape &shapeA, const GXShape &
 		}
 	}
 
-	if ( !isIntersected ) return;
+	
+
+	if ( !isIntersected )
+	{
+		///GXLogW ( L"GJK - Not Intersected\n ");
+		return;
+	}
+
+	//GXLogW ( L"GJK - Not Intersected\n ");
 
 	GXTriangleVector triangles;
 	GXEdgeVector edges;
@@ -879,7 +887,7 @@ GXVoid GXCollisionDetector::CheckViaGJK ( const GXShape &shapeA, const GXShape &
 
 		if ( iteration > DEFAULT_MAX_EPA_ITERATIONS )
 		{
-			GXLogW ( L"GXCollisionDetector::CheckViaGJK::Warning - Max EPA iterations %i", iteration );
+			//GXLogW ( L"GXCollisionDetector::CheckViaGJK::Warning - Max EPA iterations %i\n", iteration );
 			return;
 		}
 
@@ -914,18 +922,26 @@ GXVoid GXCollisionDetector::CheckViaGJK ( const GXShape &shapeA, const GXShape &
 
 		for (GXTriangleNode* p = triangles.head; p; p = p->next )
 		{
-			GXTriang* triangle = p->triangle;
-			if (simpleWindingCheck(triangle, a.difference))
+			GXTriangle* triangle = p->triangle;
+			if (SimpleWindingCheck ( *triangle, a.difference ) )
 			{
-				addEdgeWithChecking(edges, triangle.points[0], triangle.points[1]);
-				addEdgeWithChecking(edges, triangle.points[1], triangle.points[2]);
-				addEdgeWithChecking(edges, triangle.points[2], triangle.points[0]);
+				edges.AddEdgeWithChecking ( triangle->points[0], triangle->points[1] );
+				edges.AddEdgeWithChecking ( triangle->points[1], triangle->points[2] );
+				edges.AddEdgeWithChecking ( triangle->points[2], triangle->points[0] );
 
-				trianglesToDelete.push_back(i);
+				GXTriangleNode* q = p->next;
+				triangles.Remove ( *triangle );
+				p = q;
 			}
 		}
 
-		// TODO
+		for ( GXEdgeNode* p = edges.head; p; p = p->next )
+		{
+			GXTriangle t ( a, p->edge->points[ 0 ], p->edge->points[ 1 ] );
+			triangles.PushBack ( t );
+		}
+
+		edges.Clear ();
 	}
 }
 
@@ -1154,4 +1170,12 @@ GXVoid GXCollisionDetector::GetContacts ( GXTriangle &triangle, const GXShape &s
 	contact->SetData ( shapeA, &shapeB );
 	
 	collisionData.AddContacts ( 1 );
+}
+
+GXBool GXCollisionDetector::SimpleWindingCheck ( const GXTriangle &triangle, const GXVec3 &point )
+{
+	GXVec3 triangleToPoint;
+	GXSubVec3Vec3 ( triangleToPoint, point, triangle.points[ 0 ].difference );
+
+	return GXDotVec3Fast ( triangleToPoint, triangle.normal ) > 0.0f;
 }

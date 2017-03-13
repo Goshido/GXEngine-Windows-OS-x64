@@ -62,8 +62,8 @@ GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUInt &siz
 	{
 		if ( notsilent )
 		{
-			GXDebugBox ( L"GXLoadFile::Error - Ќе могу открыть файл" );
-			GXLogW ( L"GXLoadFile::Error - Ќе могу открыть файл %s\n", fileName );
+			GXDebugBox ( L"GXLoadFile::Error - ЌБEБEгу ъCБEытБEфайл" );
+			GXLogW ( L"GXLoadFile::Error - ЌБEБEгу ъCБEытБEфайл %s\n", fileName );
 		}
 
 		*buffer = 0;
@@ -78,8 +78,8 @@ GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUInt &siz
 
 	if ( fileSize == 0 )
 	{
-		GXDebugBox ( L"GXLoadFile::Error - ‘айл пуст" );
-		GXLogW ( L"GXLoadFile::Error - ‘айл %s пуст\n", fileName );
+		GXDebugBox ( L"GXLoadFile::Error - ‘айБEБEст" );
+		GXLogW ( L"GXLoadFile::Error - ‘айБE%s БEст\n", fileName );
 
 		fclose ( input );
 		*buffer = 0;
@@ -94,8 +94,8 @@ GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUInt &siz
 
 	if ( readed != fileSize )
 	{
-		GXDebugBox ( L"GXLoadFile::Error - Ќе могу прочитать файл" );
-		GXLogW ( L"GXLoadFile::Error - Ќе могу прочитать файл %s\n", fileName );
+		GXDebugBox ( L"GXLoadFile::Error - ЌБEБEгу БEъHитатБEфайл" );
+		GXLogW ( L"GXLoadFile::Error - ЌБEБEгу БEъHитатБEфайл %s\n", fileName );
 
 		free ( *buffer );
 		*buffer = 0;
@@ -115,8 +115,8 @@ GXBool GXCALL GXWriteToFile ( const GXWChar* fileName, const GXVoid* buffer, GXU
 
 	if ( !input )
 	{
-		GXDebugBox ( L"GXWriteToFile::Error - Ќе могу создать файл" );
-		GXLogW ( L"GXWriteToFile::Error - Ќе могу создать файл %s\n", fileName );
+		GXDebugBox ( L"GXWriteToFile::Error - ЌБEБEгу создатБEфайл" );
+		GXLogW ( L"GXWriteToFile::Error - ЌБEБEгу создатБEфайл %s\n", fileName );
 
 		return GX_FALSE;
 	}

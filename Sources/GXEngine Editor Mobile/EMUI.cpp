@@ -64,7 +64,7 @@ GXFloat GXCALL EMGetNextGUIForegroundZ ()
 {
 	//em_UIForegroundZ -= EM_UI_FOREGROUND_STEP;
 	if ( em_UIForegroundZ < 0.0f )
-		GXLogW ( L"EMGetNextGUIForegroundZ::Warning - Çíà÷åíèå em_UIForegroundZ ìåíüøå íóëÿ (%f)\n", em_UIForegroundZ );
+		GXLogW ( L"EMGetNextGUIForegroundZ::Warning - Çúü÷åûGEem_UIForegroundZ Eû[øå ûRE (%f)\n", em_UIForegroundZ );
 
 	return em_UIForegroundZ;
 }

@@ -4,7 +4,7 @@
 #define GX_TYPES
 
 
-#define WIN32_LEAN_AND_MEAN			//Нужно для правильного подключения WinSock2.h
+#define WIN32_LEAN_AND_MEAN			//to correct include WinSock2.h
 #include <Windows.h>
 
 typedef signed __int16			GXShort;

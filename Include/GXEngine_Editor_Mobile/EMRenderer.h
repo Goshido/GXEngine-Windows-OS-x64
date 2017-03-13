@@ -10,12 +10,22 @@
 
 typedef GXVoid ( GXCALL* PFNEMRENDERERONOBJECTPROC ) ( GXUPointer object );
 
-enum eEMRenderPass : GXUByte
+enum class eEMRenderPass : GXUByte
 {
-	EM_RENDER_PASS_COMMON					= 0,
-	EM_RENDER_PASS_LIGHT					= 1,
-	EM_RENDER_PASS_HUD_DEPTH_DEPENDENT		= 2,
-	EM_RENDER_PASS_HUD_DEPTH_INDEPENDENT	= 3
+	Common				= 0,
+	Light				= 1,
+	HudDepthDependent	= 2,
+	HudDepthIndependent	= 3
+};
+
+enum class eEMRenderTarget
+{
+	Albedo,
+	Normal,
+	Specular,
+	Emission,
+	Depth,
+	Combine
 };
 
 class EMRenderer
@@ -28,8 +38,11 @@ class EMRenderer
 		GLuint						objectTextures[ 2 ];
 		GLuint						depthStencilTexture;
 		GLuint						outTexture;
+		GLuint						combineHudTarget;
 
 		GLuint						fbo;
+		GLuint						sourceFbo;
+
 		GLuint						screenSampler;
 
 		GXUByte						objectMask[ 8 ];
@@ -60,8 +73,9 @@ class EMRenderer
 		GXVoid StartHudMaskPass ();
 
 		GXVoid SetObjectMask ( GXUPointer object );
-
-		GXVoid PresentFrame ();
+		
+		GXVoid CombineHudWithTarget ( eEMRenderTarget target = eEMRenderTarget::Combine );
+		GXVoid PresentFrame ( eEMRenderTarget target = eEMRenderTarget::Combine );
 
 		GXVoid SetOnObjectCallback ( PFNEMRENDERERONOBJECTPROC callback );
 		GXVoid GetObject ( GXUShort x, GXUShort y );
@@ -79,6 +93,8 @@ class EMRenderer
 		GXVoid LightUpByDirected ( EMDirectedLight* light );
 		GXVoid LightUpBySpot ( EMSpotlight* light );
 		GXVoid LightUpByBulp ( EMBulp* light );
+
+		GXVoid CopyTexureToCombineTexture ( GLuint texture );
 
 		GXUPointer SampleObject ();
 };

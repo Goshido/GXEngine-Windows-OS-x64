@@ -52,6 +52,7 @@ GXRigidBody::GXRigidBody ()
 
 	acceleration = GXPhysicsEngine::GetInstance ()->GetGravity ();
 
+	DisableKinematic ();
 	ClearAccumulators ();
 
 	shape = nullptr;
@@ -168,7 +169,7 @@ GXFloat GXRigidBody::GetInverseMass () const
 
 GXBool GXRigidBody::HasFiniteMass () const
 {
-	return invMass >= 0.0f;
+	return !isKinematic;
 }
 
 GXVoid GXRigidBody::SetLinearDamping ( GXFloat damping )
@@ -237,6 +238,21 @@ GXBool GXRigidBody::IsAwake () const
 	return isAwake;
 }
 
+GXVoid GXRigidBody::EnableKinematic ()
+{
+	isKinematic = GX_TRUE;
+}
+
+GXVoid GXRigidBody::DisableKinematic ()
+{
+	isKinematic = GX_FALSE;
+}
+
+GXBool GXRigidBody::IsKinematic () const
+{
+	return isKinematic;
+}
+
 GXVoid GXRigidBody::AddForce ( const GXVec3 &forceWorld )
 {
 	GXSumVec3Vec3 ( totalForce, totalForce, forceWorld );
@@ -273,6 +289,12 @@ GXVoid GXRigidBody::AddForceAtPointWorld ( const GXVec3 &forceWorld, const GXVec
 
 GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 {
+	if ( isKinematic )
+	{
+		CalculateCachedData ();
+		return;
+	}
+
 	if ( !isAwake ) return;
 
 	GXSumVec3ScaledVec3 ( lastFrameAcceleration, acceleration, invMass, totalForce );

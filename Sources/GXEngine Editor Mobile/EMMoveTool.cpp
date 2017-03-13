@@ -349,7 +349,7 @@ GXVoid EMMoveTool::GetAxis ( GXVec3& axisView )
 		break;
 
 		default:
-			GXLogW ( L"EMMoveTool::GetAxis::Error - Неизвестная ось\n" );
+			GXLogW ( L"EMMoveTool::GetAxis::Error - НеизвестнЃE ъBЃEn" );
 			return;
 		break;
 	}

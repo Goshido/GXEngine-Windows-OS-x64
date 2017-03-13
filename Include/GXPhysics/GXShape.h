@@ -11,7 +11,8 @@ enum class eGXShapeType
 {
 	Sphere,
 	Box,
-	Plane
+	Plane,
+	Polygon
 };
 
 class GXRigidBody;

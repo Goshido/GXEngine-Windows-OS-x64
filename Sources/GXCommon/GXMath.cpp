@@ -1,10 +1,11 @@
-//version 1.27
+//version 1.28
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
 #include <cstdlib>
 #include <cfloat>
 #include <cwchar>
+
 
 GXVoid GXVec2::operator = ( const GXVec2 &vector )
 {
@@ -1124,6 +1125,29 @@ GXVoid GXCALL GXSetAABBEmpty ( GXAABB &inOut )
 
 	inOut.min = GXVec3 ( FLT_MAX, FLT_MAX, FLT_MAX );
 	inOut.max = GXVec3 ( FLT_MIN, FLT_MIN, FLT_MIN );
+}
+
+GXVoid GXCALL GXSetAABBTransformed ( GXAABB &out, const GXAABB &bounds, const GXMat4 &transform )
+{
+	GXVec3 verticesLocal[8];
+	verticesLocal[0] = GXCreateVec3 ( bounds.min.x, bounds.min.y, bounds.min.z );
+	verticesLocal[1] = GXCreateVec3 ( bounds.max.x, bounds.min.y, bounds.min.z );
+	verticesLocal[2] = GXCreateVec3 ( bounds.max.x, bounds.min.y, bounds.max.z );
+	verticesLocal[3] = GXCreateVec3 ( bounds.min.x, bounds.min.y, bounds.max.z );
+
+	verticesLocal[4] = GXCreateVec3 ( bounds.min.x, bounds.max.y, bounds.min.z );
+	verticesLocal[5] = GXCreateVec3 ( bounds.max.x, bounds.max.y, bounds.min.z );
+	verticesLocal[6] = GXCreateVec3 ( bounds.max.x, bounds.max.y, bounds.max.z );
+	verticesLocal[7] = GXCreateVec3 ( bounds.min.x, bounds.max.y, bounds.max.z );
+
+	GXSetAABBEmpty ( out );
+
+	for ( GXUByte i = 0; i < 8; i++ )
+	{
+		GXVec3 vertex;
+		GXMulVec3Mat4AsPoint ( vertex, verticesLocal[ i ], transform );
+		GXAddVertexToAABB ( out, vertex );
+	}
 }
 
 GXVoid GXCALL GXAddVertexToAABB ( GXAABB &inOut, const GXVec3 &vertex )
