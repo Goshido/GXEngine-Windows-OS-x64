@@ -21,21 +21,21 @@ GXPhysXAdapter* GXCALL GXGetPhysXInstance ()
 	if ( !gx_GXEngineDLLModuleHandle )
 	{
 		GXLogW ( L"GXPhysXInit::Error - Не удалось загрузить GXEngine.dll\n" );
-		return GX_FALSE;
+		return nullptr;
 	}
 
 	GXCreatePhysXInstance = (PFNGXPHYSXCREATE)GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXPhysXCreate" );
 	if ( !GXCreatePhysXInstance )
 	{
 		GXLogW ( L"GXPhysXInit::Error - Не удалось найти функцию GXPhysXCreate\n" );
-		return GX_FALSE;
+		return nullptr;
 	}
 
 	GXDestroyPhysXInstance = (PFNGXPHYSXDESTROY)GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXPhysXDestroy" );
 	if ( !GXDestroyPhysXInstance )
 	{
 		GXLogW ( L"GXPhysXInit::Error - Не удалось найти функцию GXPhysXDestroy\n" );
-		return GX_FALSE;
+		return nullptr;
 	}
 
 	gx_PhysX = GXCreatePhysXInstance ();

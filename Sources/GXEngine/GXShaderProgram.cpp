@@ -11,17 +11,16 @@ static GXShaderProgramEntry* gx_ShaderProgramHead = nullptr;
 
 class GXShaderProgramEntry
 {
+	public:
+		GXShaderProgramEntry*	next;
+		GXShaderProgramEntry*	prev;
+
 	private:
 		GXShaderProgram*		program;
 		GXInt					refs;
 
 	public:
-		GXShaderProgramEntry*	next;
-		GXShaderProgramEntry*	prev;
-
-	public:
 		explicit GXShaderProgramEntry ( GXShaderProgram &program );
-		~GXShaderProgramEntry ();
 
 		GXShaderProgram& GetProgram () const;
 
@@ -46,11 +45,6 @@ GXShaderProgramEntry::GXShaderProgramEntry ( GXShaderProgram &program )
 	gx_ShaderProgramHead = this;
 }
 
-GXShaderProgramEntry::~GXShaderProgramEntry ()
-{
-	delete program;
-}
-
 GXShaderProgram& GXShaderProgramEntry::GetProgram () const
 {
 	return *program;
@@ -70,6 +64,8 @@ GXVoid GXShaderProgramEntry::Release ()
 
 GXShaderProgramEntry::~GXShaderProgramEntry ()
 {
+	delete program;
+
 	if ( gx_ShaderProgramHead == this )
 		gx_ShaderProgramHead = gx_ShaderProgramHead->next;
 	else
@@ -85,6 +81,18 @@ GXShaderProgram::GXShaderProgram ()
 {
 	vs = gs = fs = nullptr;
 	program = 0;
+}
+
+GXShaderProgram::~GXShaderProgram ()
+{
+	GXSafeFree ( vs );
+	GXSafeFree ( gs );
+	GXSafeFree ( fs );
+
+	if ( program == 0 ) return;
+
+	glUseProgram ( 0 );
+	glDeleteProgram ( program );
 }
 
 GLuint GXShaderProgram::GetProgram () const
@@ -132,12 +140,13 @@ GXVoid GXCALL GXShaderProgram::RemoveShaderProgram ( GXShaderProgram &program )
 		if ( p->GetProgram () == program )
 		{
 			p->Release ();
+			program = GXShaderProgram ();
 			return;
 		}
 	}
 }
 
-GXUInt GXCALL GXShaderProgram::GetTotalPrograms ( const GXWChar* lastVS, const GXWChar* lastGS, const GXWChar* lastFS )
+GXUInt GXCALL GXShaderProgram::GetTotalLoadedShaderPrograms ( const GXWChar** lastVS, const GXWChar** lastGS, const GXWChar** lastFS )
 {
 	GXUInt total = 0;
 	for ( GXShaderProgramEntry* p = gx_ShaderProgramHead; p; p = p->next )
@@ -146,12 +155,23 @@ GXUInt GXCALL GXShaderProgram::GetTotalPrograms ( const GXWChar* lastVS, const G
 	if ( total > 0 )
 	{
 		GXShaderProgram& program = gx_ShaderProgramHead->GetProgram ();
-		lastVS = program.vs;
-		lastGS = program.gs;
-		lastFS = program.fs;
+		*lastVS = program.vs;
+		*lastGS = program.gs;
+		*lastFS = program.fs;
+	}
+	else
+	{
+		*lastVS = nullptr;
+		*lastGS = nullptr;
+		*lastFS = nullptr;
 	}
 
 	return total;
+}
+
+GXVoid GXShaderProgram::operator = ( const GXShaderProgram &shadepProgram )
+{
+	memcpy ( this, &shadepProgram, sizeof ( GXShaderProgram ) );
 }
 
 GXShaderProgram::GXShaderProgram ( const GXShaderProgramInfo &info )
@@ -209,17 +229,7 @@ GXShaderProgram::GXShaderProgram ( const GXShaderProgramInfo &info )
 	glUseProgram ( 0 );
 }
 
-GXShaderProgram::~GXShaderProgram ()
-{
-	GXSafeFree ( vs );
-	GXSafeFree ( gs );
-	GXSafeFree ( fs );
-
-	glUseProgram ( 0 );
-	glDeleteProgram ( program );
-}
-
-GXBool GXShaderProgram::operator == ( const GXShaderProgramInfo &other )
+GXBool GXShaderProgram::operator == ( const GXShaderProgramInfo &other ) const
 {
 	if ( !GXWcscmp ( other.vs, vs ) != 0 ) return GX_FALSE;
 	if ( !GXWcscmp ( other.gs, gs ) != 0 ) return GX_FALSE;
@@ -228,19 +238,19 @@ GXBool GXShaderProgram::operator == ( const GXShaderProgramInfo &other )
 	return GX_TRUE;
 }
 
-GXBool GXShaderProgram::operator == ( const GXShaderProgram &other )
+GXBool GXShaderProgram::operator == ( const GXShaderProgram &other ) const
 {
 	return program == other.program;
 }
 
 GLuint GXShaderProgram::GetShader ( GLenum type, const GXWChar* fileName )
 {
+	if ( !fileName ) return 0;
+
 	GLuint shader = glCreateShader ( type );
 
 	GXChar* shaderSource = nullptr;
 	GXUInt shaderSourceLength = 0;
-
-	if ( type == GL_GEOMETRY_SHADER && !fileName ) return 0;
 
 	static const GXWChar* vertexShaderLoadError = L"GXShaderProgram::GetShader::Error - Ќе могу загрузить вершинный шейдер %s\n";
 	static const GXWChar* geometryShaderLoadError = L"GXShaderProgram::GetShader::Error - Ќе могу загрузить геометрический шейдер %s\n";
@@ -266,6 +276,7 @@ GLuint GXShaderProgram::GetShader ( GLenum type, const GXWChar* fileName )
 	if ( !GXLoadFile ( fileName, (GXVoid**)&shaderSource, shaderSourceLength, GX_TRUE ) )
 	{
 		GXLogW ( loadError, fileName );
+		glDeleteShader ( shader );
 		return 0;
 	}
 
@@ -290,6 +301,7 @@ GLuint GXShaderProgram::GetShader ( GLenum type, const GXWChar* fileName )
 
 		free ( log );
 
+		glDeleteShader ( shader );
 		return 0;
 	}
 

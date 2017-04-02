@@ -16,7 +16,6 @@ class EMUIStaticText : public EMUI
 		~EMUIStaticText () override;
 
 		GXWidget* GetWidget () const override;
-		GXVoid OnDrawMask () override;
 
 		GXVoid SetText ( const GXWChar* text );
 		const GXWChar* GetText () const;

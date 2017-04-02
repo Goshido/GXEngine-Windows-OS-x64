@@ -1,6 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMRotateGismo.h>
-#include <GXEngine/GXShaderStorage.h>
 #include <GXEngine/GXCamera.h>
+#include <GXEngine/GXSamplerUtils.h>
 
 
 EMRotateGismo::EMRotateGismo ()
@@ -26,13 +26,10 @@ GXVoid EMRotateGismo::Show ()
 	isVisible = GX_TRUE;
 }
 
-GXVoid EMRotateGismo::Draw ()
+GXVoid EMRotateGismo::Render ()
 {
-	if ( vaoInfo.vao == 0 )
-	{
-		Load3DModel ();
-		InitUniforms ();
-	}
+	if ( shaderProgram.GetProgram () == 0 )
+		InitGraphicResources ();
 
 	if ( isDeleted )
 	{
@@ -42,57 +39,64 @@ GXVoid EMRotateGismo::Draw ()
 
 	if ( !isVisible ) return;
 
-	glUseProgram ( programs[ 0 ].program );
+	GXCamera* camera = GXCamera::GetActiveCamera ();
 
-	const GXMat4& view_proj_mat = GXCamera::GetActiveCamera ()->GetViewProjectionMatrix ();
+	if ( !camera->IsObjectVisible ( meshGeometry.GetBoundsWorld () ) ) return;
+
+	glUseProgram ( shaderProgram.GetProgram () );
+
+	const GXMat4& view_proj_mat = camera->GetViewProjectionMatrix ();
 	GXMat4 mod_view_proj_mat;
 	GXMulMat4Mat4 ( mod_view_proj_mat, mod_mat, view_proj_mat );
 
 	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );
 
-	glActiveTexture ( GL_TEXTURE0 );
-	glBindTexture ( GL_TEXTURE_2D, texture.texObj );
+	texture.Bind ( 0 );
+	meshGeometry.Render ();
 
-	glBindVertexArray ( vaoInfo.vao );
-	glDrawArrays ( GL_TRIANGLES, 0, vaoInfo.numVertices );
-	glBindVertexArray ( 0 );
-
-	glBindTexture ( GL_TEXTURE_2D, 0 );
+	texture.Unbind ();
 	glUseProgram ( 0 );
 }
 
 EMRotateGismo::~EMRotateGismo ()
 {
-	GXRemoveVAO ( vaoInfo );
+	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	GXMeshGeometry::RemoveMeshGeometry ( meshGeometry );
+	GXTexture::RemoveTexture ( texture );
+	glDeleteSamplers ( 1, &sampler );
 }
 
-GXVoid EMRotateGismo::Load3DModel ()
+GXVoid EMRotateGismo::InitGraphicResources ()
 {
-	GXGetVAOFromNativeStaticMesh ( vaoInfo, L"3D Models/Editor Mobile/Rotate Gismo.stm" );
+	meshGeometry = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Rotate Gismo.stm" );
 	UpdateBounds ();
 
-	AllocateTextures ( 1 );
-	GXLoadTexture ( L"Textures/Editor Mobile/Gismo Texture.tex", textures[ 0 ] );
+	static const GLchar* samplerNames[ 1 ] = { "imageSampler" };
+	static const GLuint samplerLocations[ 1 ] = { 0 };
 
-	glBindTexture ( GL_TEXTURE_2D, texture.texObj );
-	glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-	glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-	glTexParameterf ( GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1.0f );
-	glBindTexture ( GL_TEXTURE_2D, 0 );
+	GXShaderProgramInfo si;
+	si.vs = L"Shaders/System/VertexAndUV_vs.txt";
+	si.gs = nullptr;
+	si.fs = L"Shaders/Editor Mobile/OneSampler_fs.txt";
+	si.numSamplers = 1;
+	si.samplerNames = samplerNames;
+	si.samplerLocations = samplerLocations;
 
-	AllocateShaderPrograms ( 1 );
-	GXGetShaderProgram ( programs[ 0 ], L"Shaders/System/VertexAndUV_vs.txt", 0, L"Shaders/Editor Mobile/OneSampler_fs.txt" );
+	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+
+	mod_view_proj_matLocation = shaderProgram.GetUniform ( "mod_view_proj_mat" );
+
+	texture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Gismo Texture.tex", GX_FALSE );
+
+	GXGLSamplerInfo samplerInfo;
+	samplerInfo.anisotropy = 1.0f;
+	samplerInfo.resampling = eGXSamplerResampling::None;
+	samplerInfo.wrap = GL_CLAMP_TO_EDGE;
+
+	sampler = GXCreateSampler ( samplerInfo );
 }
 
-GXVoid EMRotateGismo::InitUniforms ()
+GXVoid EMRotateGismo::UpdateBounds ()
 {
-	if ( !programs[ 0 ].isSamplersTuned )
-	{
-		const GLuint samplerIndexes[ 1 ] = { 0 };
-		const GLchar* samplerNames[ 1 ] = { "imageSampler" };
-
-		GXTuneShaderSamplers ( programs[ 0 ], samplerIndexes, samplerNames, 1 );
-	}
-
-	mod_view_proj_matLocation = GXGetUniformLocation ( programs[ 0 ].program, "mod_view_proj_mat" );
+	meshGeometry.UpdateBoundsWorld ( mod_mat );
 }

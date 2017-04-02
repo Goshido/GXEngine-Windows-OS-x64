@@ -1,22 +1,22 @@
 //version 1.7
 
-#ifndef EM_LIGHT_EMITTER
-#define EM_LIGHT_EMITTER
+#ifndef EM_LIGHT
+#define EM_LIGHT
 
 
-#include <GXEngine/GXVAOStorage.h>
+#include <GXEngine/GXMeshGeometry.h>
 #include <GXCommon/GXMath.h>
 
 
 class EMLightEmitter;
 extern EMLightEmitter* em_LightEmitters;
 
-enum eEMLightEmitterType
+enum class eEMLightEmitterType
 {
-	EM_BULP,
-	EM_DIRECTED,
-	EM_SPOT,
-	EM_UNKNOWN
+	Bulp,
+	Directed,
+	Spot,
+	Unknown
 };
 
 class EMLightEmitter
@@ -52,7 +52,7 @@ class EMLightEmitter
 class EMBulp : public EMLightEmitter
 {
 	private:
-		GXVAOInfo	lightVolume;
+		GXMeshGeometry	lightVolume;
 
 	public:
 		EMBulp ();
@@ -73,15 +73,15 @@ class EMBulp : public EMLightEmitter
 class EMSpotlight : public EMLightEmitter
 {
 	private:
-		GXFloat		distance;
-		GXFloat		coneAngle;
+		GXFloat			distance;
+		GXFloat			coneAngle;
 
-		GXFloat		compressionXY;
+		GXFloat			compressionXY;
 
-		GXMat4		rot_mat;
-		GXVec3		location;
+		GXMat4			rot_mat;
+		GXVec3			location;
 
-		GXVAOInfo	lightVolume;
+		GXMeshGeometry	lightVolume;
 
 	public:
 		EMSpotlight ();
@@ -132,4 +132,4 @@ class EMDirectedLight : public EMLightEmitter
 };
 
 
-#endif //EM_LIGHT_EMITTER
+#endif //EM_LIGHT

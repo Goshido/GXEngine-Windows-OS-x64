@@ -3,38 +3,38 @@
 #include <GXEngine/GXSamplerUtils.h>
 
 
-GXGLSamplerStruct::GXGLSamplerStruct ()
+GXGLSamplerInfo::GXGLSamplerInfo ()
 {
 	wrap = GL_CLAMP_TO_EDGE;
-	resampling = GX_SAMPLER_RESAMPLING_NONE;
+	resampling = eGXSamplerResampling::None;
 	anisotropy = 1.0f;
 }
 
 //----------------------------------------------------------------------------------
 
-GLuint GXCALL GXCreateSampler ( const GXGLSamplerStruct &samplerInfo )
+GLuint GXCALL GXCreateSampler ( const GXGLSamplerInfo &samplerInfo )
 {
 	GLuint sampler;
 	glGenSamplers ( 1, &sampler );
 
 	switch ( samplerInfo.resampling )
 	{
-		case GX_SAMPLER_RESAMPLING_LINEAR:
+		case eGXSamplerResampling::Linear:
 			glSamplerParameteri ( sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 			glSamplerParameteri ( sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 		break;
 
-		case GX_SAMPLER_RESAMPLING_BILINEAR:
+		case eGXSamplerResampling::Bilinear:
 			glSamplerParameteri ( sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 			glSamplerParameteri ( sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
 		break;
 
-		case GX_SAMPLER_RESAMPLING_TRILINEAR:
+		case eGXSamplerResampling::Trilinear:
 			glSamplerParameteri ( sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 			glSamplerParameteri ( sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
 		break;
 
-		case GX_SAMPLER_RESAMPLING_NONE:
+		case eGXSamplerResampling::None:
 		default:
 			glSamplerParameteri ( sampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 			glSamplerParameteri ( sampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST );

@@ -9,10 +9,10 @@
 #include <GXCommon/GXMemory.h>
 
 
-enum eGXMouseButtonState : GXUByte
+enum class eGXMouseButtonState : GXUByte
 {
-	GX_MOUSE_BUTTON_DOWN,
-	GX_MOUSE_BUTTON_UP
+	Down,
+	Up
 };
 
 

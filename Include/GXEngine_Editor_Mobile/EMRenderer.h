@@ -3,9 +3,9 @@
 
 
 #include <GXEngine_Editor_Mobile/EMLight.h>
-#include <GXEngine/GXOpenGL.h>
-#include <GXEngine/GXVAOStorage.h>
-#include <GXEngine/GXShaderStorage.h>
+#include <GXEngine/GXShaderProgram.h>
+#include <GXEngine/GXMeshGeometry.h>
+#include <GXEngine/GXTexture.h>
 
 
 typedef GXVoid ( GXCALL* PFNEMRENDERERONOBJECTPROC ) ( GXUPointer object );
@@ -31,14 +31,14 @@ enum class eEMRenderTarget
 class EMRenderer
 {
 	private:
-		GLuint						diffuseTexture;
-		GLuint						normalTexture;
-		GLuint						specularTexture;
-		GLuint						emissionTexture;
-		GLuint						objectTextures[ 2 ];
-		GLuint						depthStencilTexture;
-		GLuint						outTexture;
-		GLuint						combineHudTarget;
+		GXTexture					diffuseTexture;
+		GXTexture					normalTexture;
+		GXTexture					specularTexture;
+		GXTexture					emissionTexture;
+		GXTexture					objectTextures[ 2 ];
+		GXTexture					depthStencilTexture;
+		GXTexture					outTexture;
+		GXTexture					combineHudTarget;
 
 		GLuint						fbo;
 		GLuint						sourceFbo;
@@ -47,7 +47,7 @@ class EMRenderer
 
 		GXUByte						objectMask[ 8 ];
 
-		GXVAOInfo					screenQuadVAO;
+		GXMeshGeometry				screenQuadMesh;
 		GXShaderProgram				screenQuadProgram;
 
 		GXMat4						inv_proj_mat;
@@ -80,10 +80,10 @@ class EMRenderer
 		GXVoid SetOnObjectCallback ( PFNEMRENDERERONOBJECTPROC callback );
 		GXVoid GetObject ( GXUShort x, GXUShort y );
 
-		static EMRenderer* GetInstance ();
+		static EMRenderer* GXCALL GetInstance ();
 
 	private:
-		explicit EMRenderer ();
+		EMRenderer ();
 
 		GXVoid CreateFBO ();
 		GXVoid CreateScreenQuad ();

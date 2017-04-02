@@ -1,10 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMUIButton.h>
 #include <GXEngine/GXCamera.h>
 #include <GXEngine/GXHudSurface.h>
-#include <GXEngine/GXFontStorage.h>
-#include <GXEngine/GXTextureStorage.h>
-#include <GXEngine/GXShaderStorage.h>
-#include <GXEngine/GXSamplerUtils.h>
 #include <GXEngine/GXRenderer.h>
 #include <GXCommon/GXCommon.h>
 #include <GXCommon/GXStrings.h>
@@ -59,21 +55,18 @@
 #define EM_NORMAL_FONT_COLOR_B				0
 #define EM_NORMAL_FONT_COLOR_A				255
 
+#define EM_BACKGROUND_TEXTURE				L"Textures/System/Default_Diffuse.tga" 
 
 class EMUIButtonRenderer : public GXWidgetRenderer
 {
 	private:
 		GXHudSurface*		surface;
-		GXFont*				font;
+		GXFont				font;
 		GXWChar*			caption;
 		GXTexture			background;
 
-		GLuint				maskSampler;
-		GLint				mod_view_proj_matLocation;
-		GXShaderProgram		maskProgram;
-
 	public:
-		EMUIButtonRenderer ( GXUIButton* buttonWidget );
+		explicit EMUIButtonRenderer ( GXUIButton* buttonWidget );
 		~EMUIButtonRenderer () override;
 
 		GXVoid OnRefresh () override;
@@ -91,40 +84,20 @@ class EMUIButtonRenderer : public GXWidgetRenderer
 EMUIButtonRenderer::EMUIButtonRenderer ( GXUIButton* buttonWidget ):
 GXWidgetRenderer ( buttonWidget )
 {
-	font = GXGetFont ( EM_DEFAULT_FONT, (GXUShort)( EM_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
+	font = GXFont::GetFont ( EM_DEFAULT_FONT, (GXUShort)( EM_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
 	GXWcsclone ( &caption, EM_DEFAULT_CAPTION );
-	GXLoadTexture ( L"Textures/System/Default_Diffuse.tga", background );
+	background = GXTexture::LoadTexture ( EM_BACKGROUND_TEXTURE, GX_FALSE );
 
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
-	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ), GX_FALSE );
-
-	GXGLSamplerStruct ss;
-	ss.anisotropy = 16.0f;
-	ss.resampling = GX_SAMPLER_RESAMPLING_NONE;
-	ss.wrap = GL_CLAMP_TO_EDGE;
-	maskSampler = GXCreateSampler ( ss );
-
-	GXGetShaderProgram ( maskProgram, L"Shaders/Editor Mobile/MaskVertexAndUV_vs.txt", 0, L"Shaders/Editor Mobile/MaskAlphaTest_fs.txt" );
-
-	if ( !maskProgram.isSamplersTuned )
-	{
-		const GLuint samplerIndexes[ 1 ] = { 0 };
-		const GLchar* samplerNames[ 1 ] = { "alphaSampler" };
-
-		GXTuneShaderSamplers ( maskProgram, samplerIndexes, samplerNames, 1 );
-	}
-
-	mod_view_proj_matLocation = GXGetUniformLocation ( maskProgram.program, "mod_view_proj_mat" );
+	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
 }
 
 EMUIButtonRenderer::~EMUIButtonRenderer ()
 {
 	GXSafeFree ( caption );
-	GXRemoveTexture ( background );
-	GXRemoveFont ( font );
-	GXRemoveShaderProgram ( maskProgram );
 
-	glDeleteSamplers ( 1, &maskSampler );
+	GXTexture::RemoveTexture ( background );
+	GXFont::RemoveFont ( font );
 
 	delete surface;
 }
@@ -141,7 +114,7 @@ GXVoid EMUIButtonRenderer::OnRefresh ()
 	GXImageInfo ii;
 	GXPenInfo pi;
 
-	ii.texture = background;
+	ii.texture = &background;
 
 	if ( button->IsDisabled () )
 	{
@@ -167,41 +140,41 @@ GXVoid EMUIButtonRenderer::OnRefresh ()
 	ii.insertX = ii.insertY = 1.5f;
 	ii.insertWidth = w - 2.0f;
 	ii.insertHeight = h - 2.0f;
-	ii.overlayType = GX_SIMPLE_REPLACE;
+	ii.overlayType = eGXImageOverlayType::SimpleReplace;
 
 	surface->AddImage ( ii );
 
 	if ( !caption ) return;
 
-	GXInt len = (GXInt)font->GetTextLength ( 0, caption );
-	pi.font = font;
+	GXInt len = (GXInt)font.GetTextLength ( 0, caption );
+	pi.font = &font;
 	pi.insertX = ( ii.insertWidth - len ) * 0.5f;
-	pi.insertY = ( ii.insertHeight - font->GetSize () * 0.61f ) * 0.5f;
-	pi.overlayType = GX_ALPHA_TRANSPARENCY_PRESERVE_ALPHA;
+	pi.insertY = ( ii.insertHeight - font.GetSize () * 0.61f ) * 0.5f;
+	pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
 	surface->AddText ( pi, 0, caption );
 
 	GXLineInfo li;
 	GXColorToVec4 ( li.color, 128, 128, 128, 255 );
 	li.thickness = 1.0f;
-	li.startPoint = GXCreateVec3 ( 1.5f, 0.5f, 0.0f );
-	li.endPoint = GXCreateVec3 ( w - 0.5f, 0.5f, 0.0f );
-	li.overlayType = GX_SIMPLE_REPLACE;
+	li.startPoint = GXCreateVec2 ( 1.5f, 0.5f );
+	li.endPoint = GXCreateVec2 ( w - 0.5f, 0.5f );
+	li.overlayType = eGXImageOverlayType::SimpleReplace;
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec3 ( w - 0.5f, 1.5f, 0.0f );
-	li.endPoint = GXCreateVec3 ( w - 0.5f, h - 0.5f, 0.0f );
+	li.startPoint = GXCreateVec2 ( w - 0.5f, 1.5f );
+	li.endPoint = GXCreateVec2 ( w - 0.5f, h - 0.5f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec3 ( w - 1.5f, h - 0.5f, 0.0f );
-	li.endPoint = GXCreateVec3 ( 0.5f, h - 0.5f, 0.0f );
+	li.startPoint = GXCreateVec2 ( w - 1.5f, h - 0.5f );
+	li.endPoint = GXCreateVec2 ( 0.5f, h - 0.5f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec3 ( 0.5f, h - 1.5f, 0.0f );
-	li.endPoint = GXCreateVec3 ( 0.5f, 0.5f, 0.0f );
+	li.startPoint = GXCreateVec2 ( 0.5f, h - 1.5f );
+	li.endPoint = GXCreateVec2 ( 0.5f, 0.5f );
 
 	surface->AddLine ( li );
 }
@@ -209,32 +182,8 @@ GXVoid EMUIButtonRenderer::OnRefresh ()
 GXVoid EMUIButtonRenderer::OnDraw ()
 {
 	glDisable ( GL_DEPTH_TEST );
-	surface->Draw ();
+	surface->Render ();
 	glEnable ( GL_DEPTH_TEST );
-}
-
-GXVoid EMUIButtonRenderer::OnDrawMask ()
-{
-	GXMat4 mod_view_proj_mat;
-	GXMulMat4Mat4 ( mod_view_proj_mat, surface->GetModelMatrix (), GXCamera::GetActiveCamera ()->GetViewMatrix () );
-
-	const GXVAOInfo& surfaceVAOInfo = surface->GetMeshVAOInfo ();
-	
-	glUseProgram ( maskProgram.program );
-
-	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );
-	glActiveTexture ( GL_TEXTURE0 );
-	glBindTexture ( GL_TEXTURE_2D, surface->GetTexture () );
-	glBindSampler ( 0, maskSampler );
-
-	glBindVertexArray ( surfaceVAOInfo.vao );
-	glDrawArrays ( GL_TRIANGLES, 0, surfaceVAOInfo.numVertices );
-	glBindVertexArray ( 0 );
-
-	glBindTexture ( GL_TEXTURE_2D, 0 );
-	glBindSampler ( 0, 0 );
-
-	glUseProgram ( 0 );
 }
 
 GXVoid EMUIButtonRenderer::SetCaption ( const GXWChar* caption )
@@ -250,7 +199,7 @@ GXVoid EMUIButtonRenderer::SetCaption ( const GXWChar* caption )
 GXVoid EMUIButtonRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
 {
 	GXSafeDelete ( surface );
-	surface = new GXHudSurface ( width, height, GX_FALSE );
+	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
 	surface->GetLocation ( location );
 	surface->SetLocation ( x, y, location.z );
@@ -282,12 +231,6 @@ EMUIButton::~EMUIButton ()
 GXWidget* EMUIButton::GetWidget () const
 {
 	return widget;
-}
-
-GXVoid EMUIButton::OnDrawMask ()
-{
-	EMUIButtonRenderer* renderer = (EMUIButtonRenderer*)widget->GetRenderer ();
-	renderer->OnDrawMask ();
 }
 
 GXVoid EMUIButton::Enable ()

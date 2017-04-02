@@ -2,139 +2,147 @@
 #include <GXEngine_Editor_Mobile/EMRenderer.h>
 #include <GXEngine/GXCamera.h>
 #include <GXEngine/GXSamplerUtils.h>
-#include <GXEngine/GXShaderStorage.h>
-#include <GXEngine/GXTextureStorage.h>
+#include <GXEngine/GXShaderProgram.h>
+#include <GXEngine/GXTexture.h>
+#include <GXEngine/GXRenderable.h>
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXMemory.h>
 
 
-#define EM_DIFFUSE		0
-#define EM_NORMAL		1
-#define EM_SPECULAR		2
-#define EM_EMISSION		3
+#define DIFFUSE_SLOT		0
+#define NORMAL_SLOT			1
+#define SPECULAR_SLOT		2
+#define EMISSION_SLOT		3
 
 
-class EMUnitActorMesh : public GXMesh
+class EMUnitActorMesh : public GXRenderable
 {
 	private:
-		GLint			mod_view_proj_matLocation;
-		GLint			mod_view_matLocation;
+		GXShaderProgram		shaderProgram;
+		GLint				mod_view_proj_matLocation;
+		GLint				mod_view_matLocation;
 
-		GLuint			sampler;
+		GXMeshGeometry		meshGeometry;
+
+		GXTexture			diffuseTexture;
+		GXTexture			normalTexture;
+		GXTexture			emissionTexture;
+		GXTexture			specularTexture;
+
+		GLuint				sampler;
 
 	public:
 		EMUnitActorMesh ();
-		virtual ~EMUnitActorMesh ();
+		~EMUnitActorMesh () override;
 
-		virtual GXVoid Draw ();
+		GXVoid Render () override;
 
 	protected:
-		virtual GXVoid Load3DModel ();
-		virtual GXVoid InitUniforms ();
+		GXVoid InitGraphicResources () override;
+		GXVoid UpdateBounds () override;
 };
 
 EMUnitActorMesh::EMUnitActorMesh ()
 {
-	Load3DModel ();
-	InitUniforms ();
+	InitGraphicResources ();
 }
 
 EMUnitActorMesh::~EMUnitActorMesh ()
 {
-	GXRemoveVAO ( vaoInfo );
+	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+
+	GXTexture::RemoveTexture ( diffuseTexture );
+	GXTexture::RemoveTexture ( normalTexture );
+	GXTexture::RemoveTexture ( emissionTexture );
+	GXTexture::RemoveTexture ( specularTexture );
+
+	GXMeshGeometry::RemoveMeshGeometry ( meshGeometry );
+
 	glDeleteSamplers ( 1, &sampler );
 }
 
-GXVoid EMUnitActorMesh::Draw ()
+GXVoid EMUnitActorMesh::Render ()
 {
-	if ( !IsVisible () ) return;
+	GXCamera* activeCamera = GXCamera::GetActiveCamera ();
+
+	if ( !activeCamera->IsObjectVisible ( meshGeometry.GetBoundsWorld () ) ) return;
 
 	GXMat4 mod_view_mat;
 	GXMat4 mod_view_proj_mat;
 
-	GXCamera* activeCamera = GXCamera::GetActiveCamera ();
-
 	GXMulMat4Mat4 ( mod_view_mat, mod_mat, activeCamera->GetViewMatrix () );
 	GXMulMat4Mat4 ( mod_view_proj_mat, mod_mat, activeCamera->GetViewProjectionMatrix () );
 
-	glUseProgram ( programs[ 0 ].program );
+	glUseProgram ( shaderProgram.GetProgram () );
 
 	glUniformMatrix4fv ( mod_view_matLocation, 1, GL_FALSE, mod_view_mat.arr );
 	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );
 
-	glActiveTexture ( GL_TEXTURE0 );
-	glBindSampler ( 0, sampler );
-	glBindTexture ( GL_TEXTURE_2D, textures[ EM_DIFFUSE ].texObj );
+	glBindSampler ( DIFFUSE_SLOT, sampler );
+	diffuseTexture.Bind ( DIFFUSE_SLOT );
 
-	glActiveTexture ( GL_TEXTURE1 );
-	glBindSampler ( 1, sampler );
-	glBindTexture ( GL_TEXTURE_2D, textures[ EM_NORMAL ].texObj );
+	glBindSampler ( NORMAL_SLOT, sampler );
+	normalTexture.Bind ( NORMAL_SLOT );
 
-	glActiveTexture ( GL_TEXTURE2 );
-	glBindSampler ( 2, sampler );
-	glBindTexture ( GL_TEXTURE_2D, textures[ EM_SPECULAR ].texObj );
+	glBindSampler ( SPECULAR_SLOT, sampler );
+	specularTexture.Bind ( SPECULAR_SLOT );
 
-	glActiveTexture ( GL_TEXTURE3 );
-	glBindSampler ( 3, sampler );
-	glBindTexture ( GL_TEXTURE_2D, textures[ EM_EMISSION ].texObj );
+	glBindSampler ( EMISSION_SLOT, sampler );
+	emissionTexture.Bind ( EMISSION_SLOT );
 
-	glBindVertexArray ( vaoInfo.vao );
+	meshGeometry.Render ();
 
-	glDrawArrays ( GL_TRIANGLES, 0, vaoInfo.numVertices );
+	glBindSampler ( DIFFUSE_SLOT, 0 );
+	diffuseTexture.Unbind ();
 
-	glBindVertexArray ( 0 );
+	glBindSampler ( NORMAL_SLOT, 0 );
+	normalTexture.Unbind ();
 
-	glActiveTexture ( GL_TEXTURE0 );
-	glBindSampler ( 0, 0 );
-	glBindTexture ( GL_TEXTURE_2D, 0 );
+	glBindSampler ( SPECULAR_SLOT, 0 );
+	specularTexture.Unbind ();
 
-	glActiveTexture ( GL_TEXTURE1 );
-	glBindSampler ( 1, 0 );
-	glBindTexture ( GL_TEXTURE_2D, 0 );
-
-	glActiveTexture ( GL_TEXTURE2 );
-	glBindSampler ( 2, 0 );
-	glBindTexture ( GL_TEXTURE_2D, 0 );
-
-	glActiveTexture ( GL_TEXTURE3 );
-	glBindSampler ( 3, 0 );
-	glBindTexture ( GL_TEXTURE_2D, 0 );
-
+	glBindSampler ( EMISSION_SLOT, 0 );
+	emissionTexture.Unbind ();
+	
 	glUseProgram ( 0 );
 }
 
-GXVoid EMUnitActorMesh::Load3DModel ()
+GXVoid EMUnitActorMesh::InitGraphicResources ()
 {
-	GXGetVAOFromNativeStaticMesh ( vaoInfo, L"3D Models/Editor Mobile/Unit Cube.stm" );
+	meshGeometry = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Unit Cube.stm" );
+	UpdateBounds ();
 
-	AllocateTextures ( 4 );
-	GXLoadTexture ( L"Textures/Editor Mobile/Default Diffuse.tex", textures[ EM_DIFFUSE ] );
-	GXLoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", textures[ EM_NORMAL ] );
-	GXLoadTexture ( L"Textures/Editor Mobile/Default Specular.tex", textures[ EM_SPECULAR ] );
-	GXLoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", textures[ EM_EMISSION ] );
+	diffuseTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Diffuse.tex", GX_FALSE );
+	normalTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE );
+	specularTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Specular.tex", GX_FALSE );
+	emissionTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE );
 
-	AllocateShaderPrograms ( 1 );
-	GXGetShaderProgram ( programs[ 0 ], L"Shaders/Editor Mobile/StaticMesh_vs.txt", 0, L"Shaders/Editor Mobile/StaticMesh_fs.txt" );
+	static const GLchar* samplerNames[ 4 ] = { "diffuseSampler", "normalSampler", "specularSampler", "emissionSampler" };
+	static const GLuint samplerLocations[ 4 ] = { 0, 1, 2, 3 };
 
-	GXGLSamplerStruct ss;
-	ss.anisotropy = 16.0f;
-	ss.resampling = GX_SAMPLER_RESAMPLING_TRILINEAR;
-	ss.wrap = GL_REPEAT;
-	sampler = GXCreateSampler ( ss );
+	GXShaderProgramInfo si;
+	si.vs = L"Shaders/Editor Mobile/StaticMesh_vs.txt";
+	si.gs = nullptr;
+	si.fs = L"Shaders/Editor Mobile/StaticMesh_fs.txt";
+	si.numSamplers = 4;
+	si.samplerNames = samplerNames;
+	si.samplerLocations = samplerLocations;
+
+	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+
+	mod_view_proj_matLocation = shaderProgram.GetUniform ( "mod_view_proj_mat" );
+	mod_view_matLocation = shaderProgram.GetUniform ( "mod_view_mat" );
+
+	GXGLSamplerInfo samplerInfo;
+	samplerInfo.anisotropy = 16.0f;
+	samplerInfo.resampling = eGXSamplerResampling::Trilinear;
+	samplerInfo.wrap = GL_REPEAT;
+	sampler = GXCreateSampler ( samplerInfo );
 }
 
-GXVoid EMUnitActorMesh::InitUniforms ()
+GXVoid EMUnitActorMesh::UpdateBounds ()
 {
-	if ( !programs[ 0 ].isSamplersTuned )
-	{
-		const GLuint samplerIndexes[ 4 ] = { 0, 1, 2, 3 };
-		const GLchar* samplerNames[ 4 ] = { "diffuseSampler", "normalSampler", "specularSampler", "emissionSampler" };
-
-		GXTuneShaderSamplers ( programs[ 0 ], samplerIndexes, samplerNames, 4 );
-	}
-
-	mod_view_proj_matLocation = GXGetUniformLocation ( programs[ 0 ].program, "mod_view_proj_mat" );
-	mod_view_matLocation = GXGetUniformLocation ( programs[ 0 ].program, "mod_view_mat" );
+	meshGeometry.UpdateBoundsWorld ( mod_mat );
 }
 
 //-------------------------------------------------------------------------------------------
@@ -154,7 +162,7 @@ EMUnitActor::~EMUnitActor ()
 GXVoid EMUnitActor::OnDrawCommonPass ()
 {
 	EMRenderer::GetInstance ()->SetObjectMask ( (GXUPointer)this );
-	mesh->Draw ();
+	mesh->Render ();
 }
 
 GXVoid EMUnitActor::OnSave ( GXUByte** data )

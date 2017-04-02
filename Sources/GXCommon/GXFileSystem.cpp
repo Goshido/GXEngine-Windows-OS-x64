@@ -144,6 +144,17 @@ GXBool GXCALL GXDoesFileExist ( const GXWChar* fileName )
 	}
 }
 
+GXBool GXCALL GXDoesDirectoryExist ( const GXWChar* directory )
+{
+	DWORD ret = GetFileAttributesW ( directory ) != INVALID_FILE_ATTRIBUTES;
+	return ( ret != INVALID_FILE_ATTRIBUTES ) && ( ret & FILE_ATTRIBUTE_DIRECTORY );
+}
+
+GXBool GXCALL GXCreateDirectory ( const GXWChar* directory )
+{
+	return CreateDirectoryW ( directory, nullptr ) ? GX_TRUE : GX_FALSE;
+}
+
 GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar* directory )
 {
 	if ( !directory ) return GX_FALSE;
@@ -241,6 +252,91 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 	}
 
 	return GX_TRUE;
+}
+
+GXVoid GXCALL GXGetFileDirectoryPath ( GXWChar** path, const GXWChar* absoluteFileName )
+{
+	if ( !absoluteFileName )
+	{
+		*path = nullptr;
+		return;
+	}
+
+	GXInt symbols = (GXInt)GXWcslen ( absoluteFileName );
+	if ( symbols == 0 )
+	{
+		*path = nullptr;
+		return;
+	}
+
+	GXInt i = symbols;
+	for ( ; i > 0; i-- )
+	{
+		if ( absoluteFileName[ i ] == L'\\' || absoluteFileName[ i ] == L'/' )
+			break;
+	}
+
+	if ( i < 0 )
+	{
+		*path = nullptr;
+		return;
+	}
+
+
+	GXUInt size = ( i + 1 ) * sizeof ( GXWChar );
+	*path = (GXWChar*)malloc ( size );
+	memcpy ( *path, absoluteFileName, size - sizeof ( GXWChar ) );
+
+	( *path )[ i ] = 0;
+}
+
+GXVoid GXCALL GXGetBaseFileName ( GXWChar** fileName, const GXWChar* absoluteFileName )
+{
+	if ( !absoluteFileName )
+	{
+		*fileName = nullptr;
+		return;
+	}
+
+	GXInt symbols = (GXInt)GXWcslen ( absoluteFileName );
+	if ( symbols == 0 )
+	{
+		*fileName = nullptr;
+		return;
+	}
+
+	GXInt i = symbols;
+	for ( ; i > 0; i-- )
+	{
+		if ( absoluteFileName[ i ] == L'.' )
+			break;
+	}
+
+	if ( i <= 0 )
+	{
+		*fileName = nullptr;
+		return;
+	}
+
+	i--;
+	GXInt end = i;
+
+	for ( ; i >= 0; i-- )
+	{
+		if ( absoluteFileName[ i ] == L'\\' || absoluteFileName[ i ] == L'/' )
+			break;
+	}
+
+	if ( i < 0 )
+		i = 0;
+
+	GXInt start = i;
+	GXInt baseFileNameSymbols = end - start + 1;
+	GXUInt size = ( baseFileNameSymbols + 1 ) * sizeof ( GXWChar );
+	*fileName = (GXWChar*)malloc ( size );
+	memcpy ( *fileName, absoluteFileName + start, size - sizeof ( GXWChar ) );
+
+	( *fileName )[ baseFileNameSymbols ] = 0;
 }
 
 //------------------------------------------------------------------------------------------------

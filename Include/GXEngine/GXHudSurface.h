@@ -1,27 +1,28 @@
-//version 1.17
+//version 1.18
 
 #ifndef GX_HUD_SURFACE
 #define GX_HUD_SURFACE
 
 
-#include "GXMesh.h"
-#include "GXTextureStorage.h"
+#include "GXRenderable.h"
+#include "GXMeshGeometry.h"
+#include "GXTexture.h"
+#include "GXShaderProgram.h"
 #include "GXFont.h"
-#include <GXCommon/GXMemory.h>
 
 
-enum eGXImageOverlayType
+enum class eGXImageOverlayType
 {
-	GX_ALPHA_TRANSPARENCY,
-	GX_ALPHA_TRANSPARENCY_PRESERVE_ALPHA,
-	GX_ALPHA_ADD,
-	GX_ALPHA_MULTIPLY,
-	GX_SIMPLE_REPLACE
+	AlphaTransparency,
+	AlphaTransparencyPreserveAlpha,
+	AlphaAdd,
+	AlphaMultiply,
+	SimpleReplace
 };
 
 struct GXImageInfo
 {
-	GXTexture			texture;
+	GXTexture*			texture;
 
 	GXVec4				color;
 	GXFloat				insertX;
@@ -46,43 +47,46 @@ struct GXLineInfo
 {
 	GXVec4				color;
 	GXFloat				thickness;
-	GXVec3				startPoint;
-	GXVec3				endPoint;
+	GXVec2				startPoint;
+	GXVec2				endPoint;
 	
 	eGXImageOverlayType	overlayType;
 };
 
-class GXHudSurface : public GXMesh
+class GXHudSurface : public GXRenderable
 {
 	protected:
 		GLuint				fbo;
-		GLuint				uvVBO;
-		GLuint				lineVAO;
-		GLuint				lineVBO;
-		GLuint				texObj;
-		GLuint				imageSampler;
+		GXTexture			texture;
+		GLuint				sampler;
 
-		GLint				img_mod_view_proj_matLocation;
-		GLint				img_colorLocation;
+		GXMeshGeometry		screenQuad;
+		GXShaderProgram		imageShaderProgram;
+		GLint				imageModelViewProjectionMatrixLocation;
+		GLint				imageColorLocation;
 
-		GLint				txt_mod_view_proj_matLocation;
-		GLint				txt_colorLocation;
+		GXMeshGeometry		glyphMesh;
+		GXShaderProgram		glyphShaderProgram;
+		GLint				glyphModelViewProjectionMatrixLocation;
+		GLint				glyphColorLocation;
 
-		GLint				line_colorLocation;
-		GLint				line_mod_view_proj_matLocation;
+		GXMeshGeometry		lineMesh;
+		GXShaderProgram		lineShaderProgram;
+		GLint				lineModelViewProjectionMatrixLocation;
+		GLint				lineColorLocation;
 
-		GXFloat				invAspect;
+		GXMeshGeometry		surfaceMesh;
 
-		GXMat4				imageProjMat;
+		GXMat4				projectionMatrix;
 
-		GXUInt				surfaceWidth;
-		GXUInt				surfaceHeight;
+		GXUShort			width;
+		GXUShort			height;
 
-		GXVAOInfo			screenQuad;
+		GXBool				enableSmooth;
 
 	public:
-		GXHudSurface ( GXUShort width, GXUShort height, GXBool enableSmooth = GX_TRUE );
-		virtual ~GXHudSurface ();
+		explicit GXHudSurface ( GXUShort width, GXUShort height );
+		~GXHudSurface () override;
 		
 		GXVoid Reset ();
 
@@ -90,69 +94,17 @@ class GXHudSurface : public GXMesh
 		GXVoid AddLine ( const GXLineInfo &lineInfo );
 		GXFloat AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbols, const GXWChar* format, ... );
 
-		GLuint GetTexture ();
+		GXUShort GetWidth () const;
+		GXUShort GetHeight () const;
 
-		GXUShort GetWidth ();
-		GXUShort GetHeight ();
-
-		virtual GXVoid Draw ();
+		GXVoid Render () override;
 
 	protected:
-		virtual GXVoid Load3DModel ();
-		virtual GXVoid InitUniforms ();
+		GXVoid InitGraphicResources () override;
+		GXVoid UpdateBounds () override;
 
-		GXVoid DrawImageQuad ();
-		GXVoid DrawSymbolQuad ();
-		GXVoid DrawLine ();
-
-		GXVoid UpdateUV ( const GXVec2 &min, const GXVec2 &max );
-		GXVoid UpdateLine ( const GXVec3 &start, const GXVec3 &end );
-};
-
-//------------------------------------------------------------------------------------
-
-enum eGXTextAlignment : GXUByte
-{
-	GX_TEXT_ALIGNMENT_LEFT,
-	GX_TEXT_ALIGNMENT_CENTER,
-	GX_TEXT_ALIGNMENT_RIGHT
-};
-
-struct GXTextPageInfo
-{
-	GXWChar*	text;
-	GXUInt		numLines;
-};
-
-class GXTextBox : public GXHudSurface
-{
-	private:
-		GXDynamicArray			pageInfo;
-
-		GXFont*					font;
-		GXVec4					fontColor;
-		GXInt					fontHeight;
-
-		eGXTextAlignment		alignment;
-		GXByte					currentPage;
-		GXByte					pageNum;
-
-	public:
-		GXTextBox ( GXFont* font, const GXVec4 &fontColor, eGXTextAlignment alignment, GXUShort width, GXUShort height );
-		virtual ~GXTextBox ();
-
-		GXVoid AddFullText ( const GXWChar* text );
-		GXUInt GetPageLines ();
-		GXByte GetPageNum ();
-
-		GXVoid NextPage ();
-		GXVoid PrevPage ();
-		GXVoid SetPage ( GXUByte page );
-
-	private:
-		GXVoid SetText ( const GXWChar* text );
-		GXWChar* GetTextFittingLine ( const GXWChar* text, GXInt &size );
-		GXVoid Update ();
+		GXVoid UpdateGlyphGeometry ( const GXVec2 &min, const GXVec2 &max );
+		GXVoid UpdateLineGeometry ( const GXVec2 &start, const GXVec2 &end );
 };
 
 

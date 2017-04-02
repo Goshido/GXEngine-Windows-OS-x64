@@ -4,7 +4,8 @@
 
 #include <GXPhysics/GXRigidBody.h>
 #include <GXPhysics/GXShape.h>
-#include <GXEngine/GXMesh.h>
+#include <GXEngine/GXRenderable.h>
+
 
 enum class eEMPhysicsDrivenActorType
 {
@@ -16,7 +17,7 @@ enum class eEMPhysicsDrivenActorType
 class EMPhysicsDrivenActor
 {
 	private:
-		GXMesh*			mesh;
+		GXRenderable*	mesh;
 		GXRigidBody*	rigidBody;
 
 	public:
@@ -28,4 +29,4 @@ class EMPhysicsDrivenActor
 };
 
 
-#endif EM_PHYSICS_DRIVEN_ACTOR
+#endif //EM_PHYSICS_DRIVEN_ACTOR

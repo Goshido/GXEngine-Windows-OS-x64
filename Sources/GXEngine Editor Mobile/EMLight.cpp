@@ -1,6 +1,5 @@
 #include <GXEngine_Editor_Mobile/EMLight.h>
-#include <GXEngine/GXShaderStorage.h>
-#include <GXEngine/GXShaderUtils.h>
+#include <GXEngine/GXShaderProgram.h>
 
 
 EMLightEmitter* em_LightEmitters = 0;
@@ -14,7 +13,7 @@ EMLightEmitter::EMLightEmitter ()
 		em_LightEmitters->prev = this;
 	em_LightEmitters = this;
 
-	type = EM_UNKNOWN;
+	type = eEMLightEmitterType::Unknown;
 
 	memset ( baseColor, 255, 3 * sizeof ( GXUByte ) );
 	color = GXCreateVec3 ( 1.0f, 1.0f, 1.0f );
@@ -86,7 +85,7 @@ GXFloat EMLightEmitter::GetIntensity ()
 
 EMBulp::EMBulp ()
 {
-	type = EM_BULP;
+	type = eEMLightEmitterType::Bulp;
 	SetInfluenceDistance ( 1.0f );
 
 	LoadLightVolume ();
@@ -94,7 +93,7 @@ EMBulp::EMBulp ()
 
 EMBulp::~EMBulp ()
 {
-	GXRemoveVAO ( lightVolume );
+	GXMeshGeometry::RemoveMeshGeometry ( lightVolume );
 }
 
 GXVoid EMBulp::SetInfluenceDistance ( GXFloat distance )
@@ -121,21 +120,19 @@ const GXVec3& EMBulp::GetLocation ()
 
 GXVoid EMBulp::DrawLightVolume ()
 {
-	glBindVertexArray ( lightVolume.vao );
-	glDrawArrays ( GL_TRIANGLES, 0, lightVolume.numVertices );
-	glBindVertexArray ( 0 );
+	lightVolume.Render ();
 }
 
 GXVoid EMBulp::LoadLightVolume ()
 {
-	GXGetVAOFromNativeStaticMesh ( lightVolume, L"3D Models/Editor Mobile/Bulp light volume.stm" );
+	lightVolume = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Bulp light volume.stm" );
 }
 
 //---------------------------------------------------------------
 
 EMSpotlight::EMSpotlight ()
 {
-	type = EM_SPOT;
+	type = eEMLightEmitterType::Spot;
 
 	coneAngle = GXDegToRad ( 90.0f );
 
@@ -149,7 +146,7 @@ EMSpotlight::EMSpotlight ()
 
 EMSpotlight::~EMSpotlight ()
 {
-	GXRemoveVAO ( lightVolume );
+	GXMeshGeometry::RemoveMeshGeometry ( lightVolume );
 }
 
 GXVoid EMSpotlight::SetInfluenceDistance ( GXFloat distance )
@@ -213,21 +210,19 @@ const GXMat4& EMSpotlight::GetRotation ()
 
 GXVoid EMSpotlight::DrawLightVolume ()
 {
-	glBindVertexArray ( lightVolume.vao );
-	glDrawArrays ( GL_TRIANGLES, 0, lightVolume.numVertices );
-	glBindVertexArray ( 0 );
+	lightVolume.Render ();
 }
 
 GXVoid EMSpotlight::LoadLightVolume ()
 {
-	GXGetVAOFromNativeStaticMesh ( lightVolume, L"3D Models/Editor Mobile/Spot light volume.stm" );
+	lightVolume = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Spot light volume.stm" );
 }
 
 //---------------------------------------------------------------
 
 EMDirectedLight::EMDirectedLight ()
 {
-	type = EM_DIRECTED;
+	type = eEMLightEmitterType::Directed;
 	SetRotation ( GXDegToRad ( -90.0f ), 0.0, 0.0 );
 
 	memset ( ambientBase, 0, 3 * sizeof ( GXUByte ) );

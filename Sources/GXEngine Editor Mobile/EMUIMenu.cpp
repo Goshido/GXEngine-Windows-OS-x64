@@ -1,5 +1,4 @@
 #include <GXEngine_Editor_Mobile/EMUIMenu.h>
-#include <GXEngine/GXFontStorage.h>
 #include <GXEngine/GXUICommon.h>
 
 
@@ -35,11 +34,12 @@
 
 #define EM_DEFAULT_TEXTURE			L"Textures/System/Default_Diffuse.tga"
 
+
 class EMUIMenuRenderer : public GXWidgetRenderer
 {
 	private:
 		GXHudSurface*		surface;
-		GXFont*				font;
+		GXFont				font;
 		GXTexture			texture;
 
 	public:
@@ -59,21 +59,21 @@ EMUIMenuRenderer::EMUIMenuRenderer ( GXUIMenu* widget ):
 GXWidgetRenderer ( widget )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
-	surface = new GXHudSurface ( (GXShort)GXGetAABBWidth ( boundsLocal ), (GXShort)GXGetAABBHeight ( boundsLocal ), GX_FALSE );
-	font = GXGetFont ( EM_DEFAULT_FONT, (GXUShort)( EM_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
-	GXLoadTexture ( EM_DEFAULT_TEXTURE, texture );
+	surface = new GXHudSurface ( (GXShort)GXGetAABBWidth ( boundsLocal ), (GXShort)GXGetAABBHeight ( boundsLocal ) );
+	font = GXFont::GetFont ( EM_DEFAULT_FONT, (GXUShort)( EM_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
+	texture = GXTexture::LoadTexture ( EM_DEFAULT_TEXTURE, GX_FALSE );
 }
 
 EMUIMenuRenderer::~EMUIMenuRenderer ()
 {
 	delete surface;
-	GXRemoveFont ( font );
-	GXRemoveTexture ( texture );
+	GXFont::RemoveFont ( font );
+	GXTexture::RemoveTexture ( texture );
 }
 
 GXFloat EMUIMenuRenderer::GetTextWidth ( const GXWChar* text ) const
 {
-	return (GXFloat)font->GetTextLength ( 0, text );
+	return (GXFloat)font.GetTextLength ( 0, text );
 }
 
 GXVoid EMUIMenuRenderer::OnRefresh ()
@@ -92,8 +92,8 @@ GXVoid EMUIMenuRenderer::OnRefresh ()
 
 	GXImageInfo ii;
 	GXColorToVec4 ( ii.color, EM_BACKGROUND_COLOR_R, EM_BACKGROUND_COLOR_G, EM_BACKGROUND_COLOR_B, EM_BACKGROUND_COLOR_A );
-	ii.texture = texture;
-	ii.overlayType = GX_SIMPLE_REPLACE;
+	ii.texture = &texture;
+	ii.overlayType = eGXImageOverlayType::SimpleReplace;
 	ii.insertX = 0.1f;
 	ii.insertY = 0.1f;
 	ii.insertWidth = w - 0.2f;
@@ -104,7 +104,7 @@ GXVoid EMUIMenuRenderer::OnRefresh ()
 	if ( selectedItemIndex != GX_UI_MENU_INVALID_INDEX )
 	{
 		GXColorToVec4 ( ii.color, EM_SELECT_COLOR_R, EM_SELECT_COLOR_G, EM_SELECT_COLOR_B, EM_SELECT_COLOR_A );
-		ii.overlayType = GX_ALPHA_TRANSPARENCY_PRESERVE_ALPHA;
+		ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 		ii.insertX = menu->GetItemOffset ( selectedItemIndex ) + 0.1f;
 		ii.insertY = 0.1f;
 		ii.insertWidth = menu->GetItemWidth ( selectedItemIndex ) - 0.2f;
@@ -116,7 +116,7 @@ GXVoid EMUIMenuRenderer::OnRefresh ()
 	if ( highlightedItemIndex != GX_UI_MENU_INVALID_INDEX )
 	{
 		GXColorToVec4 ( ii.color, EM_HIGHLIGHT_COLOR_R, EM_HIGHLIGHT_COLOR_G, EM_HIGHLIGHT_COLOR_B, EM_HIGHLIGHT_COLOR_A );
-		ii.overlayType = GX_ALPHA_TRANSPARENCY_PRESERVE_ALPHA;
+		ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 		ii.insertX = menu->GetItemOffset ( highlightedItemIndex ) + 0.1f;
 		ii.insertY = 0.1f;
 		ii.insertWidth = menu->GetItemWidth ( highlightedItemIndex ) - 0.2f;
@@ -127,16 +127,16 @@ GXVoid EMUIMenuRenderer::OnRefresh ()
 
 	GXPenInfo pi;
 	GXColorToVec4 ( pi.color, EM_FONT_COLOR_R, EM_FONT_COLOR_G, EM_FONT_COLOR_B, EM_FONT_COLOR_A );
-	pi.overlayType = GX_ALPHA_TRANSPARENCY_PRESERVE_ALPHA;
-	pi.font = font;
-	pi.insertY = ( h - font->GetSize () ) * 0.7f;
+	pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+	pi.font = &font;
+	pi.insertY = ( h - font.GetSize () ) * 0.7f;
 
 	for ( GXUByte i = 0; i < totalItems; i++ )
 	{
 		const GXWChar* itemName = menu->GetItemName ( i );
 		GXFloat itemOffset = menu->GetItemOffset ( i );
 		GXFloat itemWidth = menu->GetItemWidth ( i );
-		GXFloat textWidth = (GXFloat)font->GetTextLength ( 0, itemName );
+		GXFloat textWidth = (GXFloat)font.GetTextLength ( 0, itemName );
 
 		pi.insertX = itemOffset + ( itemWidth - textWidth ) * 0.5f;
 
@@ -146,13 +146,13 @@ GXVoid EMUIMenuRenderer::OnRefresh ()
 
 GXVoid EMUIMenuRenderer::OnDraw ()
 {
-	surface->Draw ();
+	surface->Render ();
 }
 
 GXVoid EMUIMenuRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
 {
 	delete surface;
-	surface = new GXHudSurface ( width, height, GX_FALSE );
+	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
 	surface->GetLocation ( location );
 	surface->SetLocation ( x, y, location.z );

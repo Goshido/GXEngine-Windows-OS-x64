@@ -26,7 +26,6 @@ struct GXNativeStaticMeshInfo
 
 
 GXVoid GXCALL GXLoadNativeStaticMesh ( const GXWChar* fileName, GXNativeStaticMeshInfo &info );
-GXVoid GXCALL GXLoadNativeStaticMesh ( const GXUByte* mappedFile, GXNativeStaticMeshInfo &info );
 
 
 #endif //GX_NATIVE_STATIC_MESH_LOADER

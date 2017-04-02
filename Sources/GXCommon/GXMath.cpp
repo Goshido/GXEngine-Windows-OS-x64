@@ -1087,7 +1087,7 @@ GXAABB::GXAABB ()
 	vertices = 0;
 
 	min = GXVec3 ( FLT_MAX, FLT_MAX, FLT_MAX );
-	max = GXVec3 ( FLT_MIN, FLT_MIN, FLT_MIN );
+	max = GXVec3 ( -FLT_MAX, -FLT_MAX, -FLT_MAX );
 }
 
 GXVoid GXAABB::operator = ( const GXAABB &aabb )

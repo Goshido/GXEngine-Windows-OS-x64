@@ -1,7 +1,20 @@
 #include <GXEngine_Editor_Mobile/EMUIDraggableArea.h>
 #include <GXEngine/GXHudSurface.h>
+#include <GXEngine/GXTexture.h>
 #include <GXEngine/GXUICommon.h>
-#include <GXEngine/GXTextureStorage.h>
+
+
+#define BACKGROUND_TEXTURE	L"Textures/Editor Mobile/Default Diffuse.tex"
+
+#define BACKGROUND_COLOR_R	48
+#define BACKGROUND_COLOR_G	48
+#define BACKGROUND_COLOR_B	48
+#define BACKGROUND_COLOR_A	255
+
+#define FRAME_COLOR_R		128
+#define FRAME_COLOR_G		128
+#define FRAME_COLOR_B		128
+#define FRAME_COLOR_A		255
 
 
 class EMUIDraggableAreaRenderer : public GXWidgetRenderer
@@ -25,15 +38,15 @@ class EMUIDraggableAreaRenderer : public GXWidgetRenderer
 EMUIDraggableAreaRenderer::EMUIDraggableAreaRenderer ( GXUIDragableArea* draggableAreaWidget ):
 GXWidgetRenderer ( draggableAreaWidget )
 {
-	GXLoadTexture ( L"Textures/Editor Mobile/Default Diffuse.tex", background );
+	background = GXTexture::LoadTexture ( BACKGROUND_TEXTURE, GX_FALSE );
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
-	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ), GX_FALSE );
+	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
 }
 
 EMUIDraggableAreaRenderer::~EMUIDraggableAreaRenderer ()
 {
 	delete surface;
-	GXRemoveTexture ( background );
+	GXTexture::RemoveTexture ( background );
 }
 
 GXVoid EMUIDraggableAreaRenderer::OnRefresh ()
@@ -45,36 +58,36 @@ GXVoid EMUIDraggableAreaRenderer::OnRefresh ()
 	GXFloat h = (GXFloat)surface->GetHeight ();
 
 	GXImageInfo ii;
-	ii.texture = background;
-	GXColorToVec4 ( ii.color, 49, 48, 48, 255 );
+	ii.texture = &background;
+	GXColorToVec4 ( ii.color, BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
 	ii.insertX = ii.insertY = 1.5f;
 	ii.insertWidth = w - 2.0f;
 	ii.insertHeight = h - 2.0f;
-	ii.overlayType = GX_SIMPLE_REPLACE;
+	ii.overlayType = eGXImageOverlayType::SimpleReplace;
 
 	surface->AddImage ( ii );
 
 	GXLineInfo li;
-	GXColorToVec4 ( li.color, 128, 128, 128, 255 );
+	GXColorToVec4 ( li.color, FRAME_COLOR_R, FRAME_COLOR_G, FRAME_COLOR_B, FRAME_COLOR_A );
 	li.thickness = 1.0f;
-	li.startPoint = GXCreateVec3 ( 1.5f, 0.5f, 0.0f );
-	li.endPoint = GXCreateVec3 ( w - 0.5f, 0.5f, 0.0f );
-	li.overlayType = GX_SIMPLE_REPLACE;
+	li.startPoint = GXCreateVec2 ( 1.5f, 0.5f );
+	li.endPoint = GXCreateVec2 ( w - 0.5f, 0.5f );
+	li.overlayType = eGXImageOverlayType::SimpleReplace;
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec3 ( w - 0.5f, 1.5f, 0.0f );
-	li.endPoint = GXCreateVec3 ( w - 0.5f, h - 0.5f, 0.0f );
+	li.startPoint = GXCreateVec2 ( w - 0.5f, 1.5f );
+	li.endPoint = GXCreateVec2 ( w - 0.5f, h - 0.5f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec3 ( w - 1.5f, h - 0.5f, 0.0f );
-	li.endPoint = GXCreateVec3 ( 0.5f, h - 0.5f, 0.0f );
+	li.startPoint = GXCreateVec2 ( w - 1.5f, h - 0.5f );
+	li.endPoint = GXCreateVec2 ( 0.5f, h - 0.5f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec3 ( 0.5f, h - 1.5f, 0.0f );
-	li.endPoint = GXCreateVec3 ( 0.5f, 0.5f, 0.0f );
+	li.startPoint = GXCreateVec2 ( 0.5f, h - 1.5f );
+	li.endPoint = GXCreateVec2 ( 0.5f, 0.5f );
 
 	surface->AddLine ( li );
 }
@@ -82,7 +95,7 @@ GXVoid EMUIDraggableAreaRenderer::OnRefresh ()
 GXVoid EMUIDraggableAreaRenderer::OnDraw ()
 {
 	glDisable ( GL_DEPTH_TEST );
-	surface->Draw ();
+	surface->Render ();
 	glEnable ( GL_DEPTH_TEST );
 }
 
@@ -91,7 +104,7 @@ GXVoid EMUIDraggableAreaRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort wid
 	GXVec3 location;
 	surface->GetLocation ( location );
 	delete surface;
-	surface = new GXHudSurface ( width, height, GX_FALSE );
+	surface = new GXHudSurface ( width, height );
 	surface->SetLocation ( x, y, location.z );
 }
 
@@ -120,11 +133,6 @@ EMUIDraggableArea::~EMUIDraggableArea ()
 GXWidget* EMUIDraggableArea::GetWidget () const
 {
 	return widget;
-}
-
-GXVoid EMUIDraggableArea::OnDrawMask ()
-{
-	//TODO
 }
 
 GXVoid EMUIDraggableArea::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height )

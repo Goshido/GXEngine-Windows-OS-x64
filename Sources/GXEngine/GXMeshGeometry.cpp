@@ -3,24 +3,31 @@
 #include <GXEngine/GXMeshGeometry.h>
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXMemory.h>
+#include <GXCommon/GXFileSystem.h>
+#include <GXCommon/GXOBJLoader.h>
+#include <GXCommon/GXNativeStaticMeshLoader.h>
+#include <GXCommon/GXNativeStaticMeshSaver.h>
 
 
-struct GXMeshGeomentryEntry;
-static GXMeshGeomentryEntry* gx_MeshGeometryHead = nullptr;
+#define CACHE_FOLDER_NAME L"Cache"
+#define CACHE_FILE_EXTENSION L"cache"
 
-class GXMeshGeomentryEntry
+
+static GXMeshGeometryEntry* gx_MeshGeometryHead = nullptr;
+
+class GXMeshGeometryEntry
 {
+	public:
+		GXMeshGeometryEntry*	next;
+		GXMeshGeometryEntry*	prev;
+
 	private:
 		GXWChar*				fileName;
 		GXMeshGeometry*			meshGeometry;
 		GXInt					refs;
 
 	public:
-		GXMeshGeomentryEntry*	next;
-		GXMeshGeomentryEntry*	prev;
-
-	public:
-		GXMeshGeomentryEntry ( GXMeshGeometry& meshGeometry, const GXWChar* fileName );
+		explicit GXMeshGeometryEntry ( GXMeshGeometry& meshGeometry, const GXWChar* fileName );
 
 		const GXWChar* GetFileName () const;
 		GXMeshGeometry& GetMeshGeometry () const;
@@ -29,10 +36,10 @@ class GXMeshGeomentryEntry
 		GXVoid Release ();
 
 	private:
-		~GXMeshGeomentryEntry ();
+		~GXMeshGeometryEntry ();
 };
 
-GXMeshGeomentryEntry::GXMeshGeomentryEntry ( GXMeshGeometry& meshGeometry, const GXWChar* fileName )
+GXMeshGeometryEntry::GXMeshGeometryEntry ( GXMeshGeometry& meshGeometry, const GXWChar* fileName )
 {
 	GXWcsclone ( &this->fileName, fileName );
 	this->meshGeometry = &meshGeometry;
@@ -47,22 +54,22 @@ GXMeshGeomentryEntry::GXMeshGeomentryEntry ( GXMeshGeometry& meshGeometry, const
 	gx_MeshGeometryHead = this;
 }
 
-const GXWChar* GXMeshGeomentryEntry::GetFileName () const
+const GXWChar* GXMeshGeometryEntry::GetFileName () const
 {
 	return fileName;
 }
 
-GXMeshGeometry& GXMeshGeomentryEntry::GetMeshGeometry () const
+GXMeshGeometry& GXMeshGeometryEntry::GetMeshGeometry () const
 {
 	return *meshGeometry;
 }
 
-GXVoid GXMeshGeomentryEntry::AddRef ()
+GXVoid GXMeshGeometryEntry::AddRef ()
 {
 	refs++;
 }
 
-GXVoid GXMeshGeomentryEntry::Release ()
+GXVoid GXMeshGeometryEntry::Release ()
 {
 	refs--;
 
@@ -70,7 +77,7 @@ GXVoid GXMeshGeomentryEntry::Release ()
 		delete this;
 }
 
-GXMeshGeomentryEntry::~GXMeshGeomentryEntry ()
+GXMeshGeometryEntry::~GXMeshGeometryEntry ()
 {
 	GXSafeFree ( fileName );
 	delete meshGeometry;
@@ -88,32 +95,28 @@ GXMeshGeomentryEntry::~GXMeshGeomentryEntry ()
 
 GXMeshGeometry::GXMeshGeometry ()
 {
-	glGenVertexArrays ( 1, &vao );
-	glGenBuffers ( 1, &vbo );
-
-	glBindVertexArray ( vao );
-	//{
-		glBindBuffer ( GL_ARRAY_BUFFER, vbo );
-	//}
-	glBindVertexArray ( 0 );
-
-	totalElements = 0;
+	totalVertices = 0;
+	vao = 0;
+	vbo = 0;
+	topology = GL_TRIANGLES;
 }
 
 GXMeshGeometry::~GXMeshGeometry ()
 {
+	if ( vao == 0 ) return;
+
 	glBindVertexArray ( 0 );
 	glDeleteVertexArrays ( 1, &vao );
-	glBindBuffer ( GL_ARRAY_BUFFER, vbo );
+	glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 	glDeleteBuffers ( 1, &vbo );
 }
 
 GXVoid GXMeshGeometry::Render () const
 {
-	if ( totalElements == 0 ) return;
+	if ( vao == 0 || totalVertices == 0 ) return;
 	
 	glBindVertexArray ( vao );
-	glDrawArrays ( GL_TRIANGLES, 0, totalElements );
+	glDrawArrays ( topology, 0, totalVertices );
 	glBindVertexArray ( 0 );
 }
 
@@ -137,13 +140,16 @@ const GXAABB& GXMeshGeometry::GetBoundsWorld () const
 	return boundsWorld;
 }
 
-GXVoid GXMeshGeometry::SetTotalElements ( GLsizei elements )
+GXVoid GXMeshGeometry::SetTotalVertices ( GLsizei totalVertices )
 {
-	totalElements = elements;
+	this->totalVertices = totalVertices;
 }
 
 GXVoid GXMeshGeometry::FillVertexBuffer ( const GXVoid* data, GLsizeiptr size, GLenum usage )
 {
+	if ( vao == 0 )
+		Init ();
+
 	glBindVertexArray ( vao );
 	glBindBuffer ( GL_ARRAY_BUFFER, vbo );
 	//{
@@ -154,175 +160,269 @@ GXVoid GXMeshGeometry::FillVertexBuffer ( const GXVoid* data, GLsizeiptr size, G
 
 GXVoid GXMeshGeometry::SetBufferStream ( eGXMeshStreamIndex streamIndex, GLint numElements, GLenum elementType, GLsizei stride, const GLvoid* offset )
 {
+	if ( vao == 0 )
+		Init ();
+
 	glBindVertexArray ( vao );
 	//{	
 		glEnableVertexAttribArray ( (GLuint)streamIndex );
 		glVertexAttribPointer ( (GLuint)streamIndex, numElements, elementType, GL_FALSE, stride, offset );
 	//}
-	glBindVertexArray(0);
+	glBindVertexArray ( 0 );
+}
+
+GXVoid GXMeshGeometry::SetTopology ( GLenum topology )
+{
+	this->topology = topology;
 }
 
 GXMeshGeometry& GXCALL GXMeshGeometry::LoadFromObj ( const GXWChar* fileName )
 {
-	QFileInfo fileInfo(fileName);
+	for ( GXMeshGeometryEntry* p = gx_MeshGeometryHead; p; p = p->next )
+	{
+		if ( GXWcscmp ( p->GetFileName (), fileName ) == 0 )
+		{
+			p->AddRef ();
+			return p->GetMeshGeometry ();
+		}
+	}
 
-    if (!fileInfo.exists()) {
-        gx_common::gxLogA("MeshGeometry::loadFromObj::Error - File %s not found\n", fileName);
-        return QSharedPointer<MeshGeometry>();
-    }
+	GXWChar* path = nullptr;
+	GXGetFileDirectoryPath ( &path, fileName );
+	GXUInt size = GXWcslen ( path ) * sizeof ( GXWChar );
 
-    QDir dir;
-    QString cacheFileDir = fileInfo.path() + "/" + CACHE_FOLDER_NAME;
+	size += sizeof ( GXWChar ); // "/" symbol
+	size += GXWcslen ( CACHE_FOLDER_NAME ) * sizeof ( GXWChar );
+	size += sizeof ( GXWChar ); // "/" symbol
 
-    if (dir.mkdir(cacheFileDir)) {
-        gx_common::gxLogA("MeshGeometry::loadFromObj::Info - Directory %s created\n", cacheFileDir.toLatin1().data());
-    }
+	GXWChar* baseFileName = nullptr;
+	GXGetBaseFileName ( &baseFileName, fileName );
+	size += GXWcslen ( baseFileName ) * sizeof ( GXWChar );
 
-    QSharedPointer<MeshGeometry> meshGeometry;
-    QHash<QString, QWeakPointer<MeshGeometry>>::iterator it = _storage.find(fileName);
+	size += sizeof ( GXWChar ); // "." symbol
+	size += GXWcslen ( CACHE_FILE_EXTENSION ) * sizeof ( GXWChar );
+	size += sizeof ( GXWChar ); // "\0" symbol
 
-    if (it == _storage.end()) {
-        meshGeometry = QSharedPointer<MeshGeometry>(new MeshGeometry(fileName), &MeshGeometry::remove);
-        _storage.insert(fileName, meshGeometry.toWeakRef());
+	GXWChar* cacheFileName = (GXWChar*)malloc ( size );
+	wsprintfW ( cacheFileName, L"%s/%s/%s.%s", path, CACHE_FOLDER_NAME, baseFileName, CACHE_FILE_EXTENSION );
 
-        QString cacheFileName = cacheFileDir + "/" + fileInfo.completeBaseName() + CACHE_FILE_SUFFIX;
-        QFile cacheFile(cacheFileName);
-        if (cacheFile.exists()) {
-            // Load from cache
-            gx_common::GXNativeStaticMeshInfo info;
-            gx_common::gxLoadNativeStaticMesh(cacheFileName, info);
+	if ( GXDoesFileExist ( cacheFileName ) )
+	{
+		GXMeshGeometry& geometry = GetGeometryFromStm ( cacheFileName );
 
-            meshGeometry->setBoundsLocal(info.bounds);
-            gx_common::GXMat4 transform;
-            gx_common::gxSetMat4Identity(transform);
-            meshGeometry->updateBoundsWorld(transform);
+		free ( path );
+		free ( baseFileName );
+		free ( cacheFileName );
 
-            meshGeometry->setTotalElements(info.numVertices);
-            meshGeometry->fillVertexBuffer(info.vboData, info.getVBOSize(), GL_STATIC_DRAW);
+		new GXMeshGeometryEntry ( geometry, fileName );
+		
+		return geometry;
+	}
 
-            size_t offset = 0;
-            meshGeometry->setBufferStream(VERTEX_STREAM, 3, GL_FLOAT, info.vboStride, (const void*)offset);
-            offset += sizeof(gx_common::GXVec3);
-            meshGeometry->setBufferStream(UV_COORD_STREAM, 2, GL_FLOAT, info.vboStride, (const void*)offset);
-            offset += sizeof(gx_common::GXVec2);
-            meshGeometry->setBufferStream(NORMAL_STREAM, 3, GL_FLOAT, info.vboStride, (const void*)offset);
-            offset += sizeof(gx_common::GXVec3);
-            meshGeometry->setBufferStream(TANGENT_STREAM, 3, GL_FLOAT, info.vboStride, (const void*)offset);
-            offset += sizeof(gx_common::GXVec3);
-            meshGeometry->setBufferStream(BITANGENT_STREAM, 3, GL_FLOAT, info.vboStride, (const void*)offset);
+	GXOBJPoint* points = nullptr;
+	GXInt numVerticies = GXLoadOBJ ( fileName, &points );
 
-            info.cleanup ();
-        } else {
-            // Load from original file and save cache
-            gx_common::GXOBJPoint* objPoints = nullptr;
-            int numVertices = gx_common::gxLoadOBJ(fileName, &objPoints);
+	GXAABB bounds;
+	GXSetAABBEmpty ( bounds );
 
-            gx_common::GXNativeStaticMeshDesc desc;
+	GXNativeStaticMeshDesc descriptor;
+	descriptor.numVertices = (GXUInt)numVerticies;
+	descriptor.numNormals = (GXUInt)numVerticies;
+	descriptor.numTBPairs = (GXUInt)numVerticies;
+	descriptor.numUVs = (GXUInt)numVerticies;
+	descriptor.numElements = 0;
 
-            desc.numVertices = numVertices;
-            desc.numNormals = numVertices;
-            desc.numTBPairs = numVertices;
-            desc.numUVs = numVertices;
-            desc.numElements = 0;
+	GXUInt alpha = numVerticies * sizeof( GXVec3 );
+	GXUInt betta = numVerticies * sizeof ( GXVec2 );
+	descriptor.vertices = (GXVec3*)malloc ( alpha );
+	descriptor.uvs = (GXVec2*)malloc( betta );
+	descriptor.normals = (GXVec3*)malloc ( alpha );
+	descriptor.tangents = (GXVec3*)malloc ( alpha );
+	descriptor.bitangents = (GXVec3*)malloc ( alpha );
+	descriptor.elements = nullptr;
 
-            size_t size = desc.numVertices * sizeof(gx_common::GXVec3);
+	GXUInt cacheSize = alpha + betta + alpha + alpha + alpha;
+	GXUByte* cache = (GXUByte*)malloc ( cacheSize );
+	GXPointer offset = 0;
 
-            desc.vertices = (gx_common::GXVec3*)malloc(size);
-            desc.uvs = (gx_common::GXVec2*)malloc(desc.numUVs * sizeof(gx_common::GXVec2));
-            desc.normals = (gx_common::GXVec3*)malloc(size);
-            desc.tangents = (gx_common::GXVec3*)malloc(size);
-            desc.bitangents = (gx_common::GXVec3*)malloc(size);
-            desc.elements = 0;
+	for ( GXUInt i = 0; i < descriptor.numVertices; i++ )
+	{
+		GXAddVertexToAABB ( bounds, points[ i ].vertex );
 
-            size_t cachedDataSize = 4 * size + desc.numUVs * sizeof(gx_common::GXVec2);
-            unsigned char* content = (unsigned char*)malloc(cachedDataSize);
-            size_t offset = 0;
+		descriptor.vertices[ i ] = points[ i ].vertex;
+		descriptor.uvs[ i ] = points[ i ].uv;
+		descriptor.normals[ i ] = points[ i ].normal;
 
-            gx_common::GXAABB localBounds;
+		const GXUByte* vertices = (const GXUByte*)( &points[ 3 * ( i / 3 ) ].vertex );
+		const GXUByte* uvs = (const GXUByte*)( &points[ 3 * ( i / 3 ) ].uv );
 
-            for (unsigned int i = 0; i < desc.numVertices; i++) {
-                gx_common::gxAddVertexToAABB(localBounds, objPoints[i].vertex);
+		GXGetTangentBitangent ( descriptor.tangents[ i ], descriptor.bitangents[ i ], i % 3, vertices, sizeof ( GXOBJPoint ), uvs, sizeof ( GXOBJPoint ) );
 
-                desc.vertices[i] = objPoints[i].vertex;
-                desc.uvs[i] = objPoints[i].uv;
-                desc.normals[i] = objPoints[i].normal;
+		GXVec3* gamma = (GXVec3*)( cache + offset );
+		*gamma = descriptor.vertices[ i ];
+		offset += sizeof ( GXVec3 );
 
-                const unsigned char* vertices = (const unsigned char*)(&objPoints[3 * (i / 3)].vertex);
-                const unsigned char* uvs = (const unsigned char*)(&objPoints[3 * (i / 3)].uv);
+		GXVec2* zeta = (GXVec2*)( cache + offset );
+		*zeta = descriptor.uvs[ i ];
+		offset += sizeof ( GXVec2 );
 
-                gx_common::gxGetTangentBitangent(desc.tangents[i], desc.bitangents[i], i % 3, vertices,
-                                                 sizeof(gx_common::GXOBJPoint), uvs, sizeof(gx_common::GXOBJPoint));
+		gamma = (GXVec3*)( cache + offset );
+		*gamma = descriptor.normals[ i ];
+		offset += sizeof ( GXVec3 );
 
-                gx_common::GXVec3* v = (gx_common::GXVec3*)(content + offset);
-                *v = desc.vertices[i];
-                offset += sizeof(gx_common::GXVec3);
+		gamma = (GXVec3*)( cache + offset );
+		*gamma = descriptor.tangents[ i ];
+		offset += sizeof ( GXVec3 );
 
-                gx_common::GXVec2* u = (gx_common::GXVec2*)(content + offset);
-                *u = desc.uvs[i];
-                offset += sizeof(gx_common::GXVec2);
+		gamma = (GXVec3*)( cache + offset );
+		*gamma = descriptor.bitangents[ i ];
+		offset += sizeof ( GXVec3 );
+	}
 
-                v = (gx_common::GXVec3*)(content + offset);
-                *v = desc.normals[i];
-                offset += sizeof(gx_common::GXVec3);
+	free ( points );
 
-                v = (gx_common::GXVec3*)(content + offset);
-                *v = desc.tangents[i];
-                offset += sizeof(gx_common::GXVec3);
+	GXExportNativeStaticMesh ( cacheFileName, descriptor );
 
-                v = (gx_common::GXVec3*)(content + offset);
-                *v = desc.bitangents[i];
-                offset += sizeof(gx_common::GXVec3);
-            }
+	free ( descriptor.vertices );
+	free ( descriptor.uvs );
+	free ( descriptor.normals );
+	free ( descriptor.tangents );
+	free ( descriptor.bitangents );
 
-            meshGeometry->setBoundsLocal(localBounds);
-            gx_common::GXMat4 transform;
-            gx_common::gxSetMat4Identity(transform);
-            meshGeometry->updateBoundsWorld(transform);
+	free ( path );
+	free ( baseFileName );
+	free ( cacheFileName );
 
-            meshGeometry->setTotalElements(desc.numVertices);
-            meshGeometry->fillVertexBuffer(content, cachedDataSize, GL_STATIC_DRAW);
+	GXMeshGeometry* geometry = new GXMeshGeometry ();
+	geometry->SetTotalVertices ( (GLsizei)numVerticies );
+	geometry->FillVertexBuffer ( cache, (GLsizeiptr)cacheSize, GL_STATIC_DRAW );
+	geometry->SetTopology ( GL_TRIANGLES );
 
-            static const size_t vboStride = sizeof(gx_common::GXVec3) + sizeof(gx_common::GXVec2)
-                    + sizeof(gx_common::GXVec3) + 2 * sizeof(gx_common::GXVec3);
+	GLsizei stride = sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 );
+	offset = 0;
 
-            offset = 0;
-            meshGeometry->setBufferStream(VERTEX_STREAM, 3, GL_FLOAT, vboStride, (const void*)offset);
-            offset += sizeof(gx_common::GXVec3);
-            meshGeometry->setBufferStream(UV_COORD_STREAM, 2, GL_FLOAT, vboStride, (const void*)offset);
-            offset += sizeof(gx_common::GXVec2);
-            meshGeometry->setBufferStream(NORMAL_STREAM, 3, GL_FLOAT, vboStride, (const void*)offset);
-            offset += sizeof(gx_common::GXVec3);
-            meshGeometry->setBufferStream(TANGENT_STREAM, 3, GL_FLOAT, vboStride, (const void*)offset);
-            offset += sizeof(gx_common::GXVec3);
-            meshGeometry->setBufferStream(BITANGENT_STREAM, 3, GL_FLOAT, vboStride, (const void*)offset);
+	geometry->SetBufferStream ( eGXMeshStreamIndex::Vertex, 3, GL_FLOAT, stride, (const GLvoid*)offset );
+	offset += sizeof ( GXVec3 );
 
-            free(content);
+	geometry->SetBufferStream ( eGXMeshStreamIndex::UV, 2, GL_FLOAT, stride, (const GLvoid*)offset );
+	offset += sizeof ( GXVec2 );
 
-            gx_common::gxExportNativeStaticMesh(cacheFileName, desc);
+	geometry->SetBufferStream ( eGXMeshStreamIndex::Normal, 3, GL_FLOAT, stride, (const GLvoid*)offset );
+	offset += sizeof ( GXVec3 );
 
-            free(desc.vertices);
-            free(desc.uvs);
-            free(desc.normals);
-            free(desc.tangents);
-            free(desc.bitangents);
-        }
-    } else {
-        meshGeometry = it.value().lock();
-    }
+	geometry->SetBufferStream ( eGXMeshStreamIndex::Tangent, 3, GL_FLOAT, stride, (const GLvoid*)offset );
+	offset += sizeof ( GXVec3 );
 
-    return meshGeometry;
+	geometry->SetBufferStream ( eGXMeshStreamIndex::Bitangent, 3, GL_FLOAT, stride, (const GLvoid*)offset );
+
+	GXMat4 transform;
+	GXSetMat4Identity ( transform );
+	geometry->SetBoundsLocal ( bounds );
+	geometry->UpdateBoundsWorld ( transform );
+	
+	new GXMeshGeometryEntry ( *geometry, fileName );
+
+	return *geometry;
 }
 
-GXVoid GXCALL GXMeshGeometry::Remove ( GXMeshGeometry& mesh )
+GXMeshGeometry& GXCALL GXMeshGeometry::LoadFromStm ( const GXWChar* fileName )
 {
-	for ( GXMeshGeomentryEntry* p = gx_MeshGeometryHead; p; p->next )
+	for ( GXMeshGeometryEntry* p = gx_MeshGeometryHead; p; p = p->next )
+	{
+		if ( GXWcscmp ( p->GetFileName (), fileName ) == 0 )
+		{
+			p->AddRef ();
+			return p->GetMeshGeometry ();
+		}
+	}
+
+	GXMeshGeometry& geometry = GetGeometryFromStm ( fileName );
+	new GXMeshGeometryEntry ( geometry, fileName );
+
+	return geometry;
+}
+
+GXVoid GXCALL GXMeshGeometry::RemoveMeshGeometry ( GXMeshGeometry& mesh )
+{
+	for ( GXMeshGeometryEntry* p = gx_MeshGeometryHead; p; p = p->next )
 	{
 		if ( mesh == *p )
+		{
 			p->Release ();
+			mesh = GXMeshGeometry ();
+		}
 	}
 }
 
-GXBool GXMeshGeometry::operator == ( const GXMeshGeomentryEntry &entry )
+GXUInt GXCALL GXMeshGeometry::GetTotalLoadedMeshGeometries ( const GXWChar** lastMeshGeometry )
 {
-	return this == &entry.GetMeshGeometry ();
+	GXUInt total = 0;
+	for ( GXMeshGeometryEntry* p = gx_MeshGeometryHead; p; p = p->next )
+		total++;
+
+	if ( total > 0 )
+		*lastMeshGeometry = gx_MeshGeometryHead->GetFileName ();
+	else
+		*lastMeshGeometry = nullptr;
+
+	return total;
+}
+
+GXBool GXMeshGeometry::operator == ( const GXMeshGeometryEntry &entry ) const
+{
+	return vao == entry.GetMeshGeometry ().vao;
+}
+
+GXVoid GXMeshGeometry::operator = ( const GXMeshGeometry &meshGeometry )
+{
+	memcpy ( this, &meshGeometry, sizeof ( GXMeshGeometry ) );
+}
+
+GXVoid GXMeshGeometry::Init ()
+{
+	glGenVertexArrays ( 1, &vao );
+	glGenBuffers ( 1, &vbo );
+
+	glBindVertexArray ( vao );
+	//{
+		glBindBuffer ( GL_ARRAY_BUFFER, vbo );
+	//}
+	glBindVertexArray ( 0 );
+}
+
+GXMeshGeometry& GXCALL  GXMeshGeometry::GetGeometryFromStm ( const GXWChar* fileName )
+{
+	GXNativeStaticMeshInfo info;
+	GXLoadNativeStaticMesh ( fileName, info );
+
+	GXPointer offset = 0;
+	GLsizei stride = sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 );
+
+	GXMeshGeometry* geometry = new GXMeshGeometry ();
+	geometry->SetTotalVertices ( info.numVertices );
+	geometry->FillVertexBuffer ( info.vboData, (GLsizeiptr)( info.numVertices * stride ), GL_STATIC_DRAW );
+	geometry->SetTopology ( GL_TRIANGLES );
+
+	geometry->SetBufferStream ( eGXMeshStreamIndex::Vertex, 3, GL_FLOAT, stride, (const GLvoid*)offset );
+	offset += sizeof ( GXVec3 );
+
+	geometry->SetBufferStream ( eGXMeshStreamIndex::UV, 2, GL_FLOAT, stride, (const GLvoid*)offset );
+	offset += sizeof ( GXVec2 );
+
+	geometry->SetBufferStream ( eGXMeshStreamIndex::Normal, 3, GL_FLOAT, stride, (const GLvoid*)offset );
+	offset += sizeof ( GXVec3 );
+
+	geometry->SetBufferStream ( eGXMeshStreamIndex::Tangent, 3, GL_FLOAT, stride, (const GLvoid*)offset );
+	offset += sizeof ( GXVec3 );
+
+	geometry->SetBufferStream ( eGXMeshStreamIndex::Bitangent, 3, GL_FLOAT, stride, (const GLvoid*)offset );
+
+	GXMat4 transform;
+	GXSetMat4Identity ( transform );
+	geometry->SetBoundsLocal ( info.bounds );
+	geometry->UpdateBoundsWorld ( transform );
+
+	info.Cleanup ();
+
+	return *geometry;
 }

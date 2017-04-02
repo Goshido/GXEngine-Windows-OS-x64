@@ -1,8 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMUIFileListBox.h>
 #include <GXEngine/GXHudSurface.h>
-#include <GXEngine/GXFontStorage.h>
 #include <GXEngine/GXUICommon.h>
-#include <GXEngine/GXRenderer.h>
 #include <GXCommon/GXStrings.h>
 
 
@@ -66,7 +64,7 @@ class EMUIFileListBoxRenderer : public GXWidgetRenderer
 {
 	private:
 		GXHudSurface*		surface;
-		GXFont*				font;
+		GXFont				font;
 		GXTexture			rectangle;
 		GXTexture			fileIcon;
 		GXTexture			folderIcon;
@@ -86,22 +84,24 @@ class EMUIFileListBoxRenderer : public GXWidgetRenderer
 EMUIFileListBoxRenderer::EMUIFileListBoxRenderer ( GXUIListBox* widget ) :
 GXWidgetRenderer ( widget )
 {
-	font = GXGetFont ( EM_DEFAULT_FONT, (GXUShort)( EM_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
-	GXLoadTexture ( EM_DEFAULT_RECTANGLE, rectangle );
-	GXLoadTexture ( EM_DEFAULT_FOLDER_ICON, folderIcon );
-	GXLoadTexture ( EM_DEFAULT_FILE_ICON, fileIcon );
+	font = GXFont::GetFont ( EM_DEFAULT_FONT, (GXUShort)( EM_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
+
+	rectangle = GXTexture::LoadTexture ( EM_DEFAULT_RECTANGLE, GX_FALSE );
+	fileIcon = GXTexture::LoadTexture ( EM_DEFAULT_FILE_ICON, GX_FALSE );
+	folderIcon = GXTexture::LoadTexture ( EM_DEFAULT_FOLDER_ICON, GX_FALSE );
 
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
-	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ), GX_FALSE );
+	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
 }
 
 EMUIFileListBoxRenderer::~EMUIFileListBoxRenderer ()
 {
 	delete surface;
-	GXRemoveFont ( font );
-	GXRemoveTexture ( rectangle );
-	GXRemoveTexture ( folderIcon );
-	GXRemoveTexture ( fileIcon );
+	GXFont::RemoveFont ( font );
+
+	GXTexture::RemoveTexture ( rectangle );
+	GXTexture::RemoveTexture ( folderIcon );
+	GXTexture::RemoveTexture ( fileIcon );
 }
 
 GXVoid EMUIFileListBoxRenderer::OnRefresh ()
@@ -120,8 +120,8 @@ GXVoid EMUIFileListBoxRenderer::OnRefresh ()
 	ii.insertX = ii.insertY = 0.0f;
 	ii.insertWidth = width;
 	ii.insertHeight = height;
-	ii.overlayType = GX_SIMPLE_REPLACE;
-	ii.texture = rectangle;
+	ii.overlayType = eGXImageOverlayType::SimpleReplace;
+	ii.texture = &rectangle;
 
 	surface->AddImage ( ii );
 
@@ -135,13 +135,12 @@ GXVoid EMUIFileListBoxRenderer::OnRefresh ()
 
 	GXPenInfo pi;
 	GXColorToVec4 ( pi.color, EM_DEFAULT_ITEM_NAME_COLOR_R, EM_DEFAULT_ITEM_NAME_COLOR_G, EM_DEFAULT_ITEM_NAME_COLOR_B, EM_DEFAULT_ITEM_NAME_COLOR_A );
-	pi.font = font;
+	pi.font = &font;
 	pi.insertX = EM_DEFAULT_ITEM_NAME_OFFSET_X * gx_ui_Scale;
-	pi.overlayType = GX_ALPHA_TRANSPARENCY_PRESERVE_ALPHA;
-
+	pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
 	GXFloat iconXOffset = EM_DEFAULT_ICON_OFFSET_X * gx_ui_Scale;
-	ii.overlayType = GX_ALPHA_TRANSPARENCY_PRESERVE_ALPHA;
+	ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
 	GXVec4 highlightedColor;
 	GXColorToVec4 ( highlightedColor, EM_DEFAULT_HIGHLIGHTED_COLOR_R, EM_DEFAULT_HIGHLIGHTED_COLOR_G, EM_DEFAULT_HIGHLIGHTED_COLOR_B, EM_DEFAULT_HIGHLIGHTED_COLOR_A );
@@ -152,7 +151,7 @@ GXVoid EMUIFileListBoxRenderer::OnRefresh ()
 	GXVec4 iconColor;
 	GXColorToVec4 ( iconColor, 255, 255, 255, 255 );
 
-	GXFloat itemNameYOffset = ( itemHeight - font->GetSize () * 0.5f ) * 0.5f;
+	GXFloat itemNameYOffset = ( itemHeight - font.GetSize () * 0.5f ) * 0.5f;
 
 	for ( GXUInt i = 0; i < totalItems; i++ )
 	{
@@ -172,8 +171,8 @@ GXVoid EMUIFileListBoxRenderer::OnRefresh ()
 			ii.insertWidth = width;
 			ii.insertHeight = itemHeight;
 			ii.color = selectedColor;
-			ii.overlayType = GX_ALPHA_TRANSPARENCY_PRESERVE_ALPHA;
-			ii.texture = rectangle;
+			ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+			ii.texture = &rectangle;
 
 			surface->AddImage ( ii );
 		}
@@ -185,31 +184,31 @@ GXVoid EMUIFileListBoxRenderer::OnRefresh ()
 			ii.insertWidth = width;
 			ii.insertHeight = itemHeight;
 			ii.color = highlightedColor;
-			ii.overlayType = GX_ALPHA_ADD;
-			ii.texture = rectangle;
+			ii.overlayType = eGXImageOverlayType::AlphaAdd;
+			ii.texture = &rectangle;
 
 			surface->AddImage ( ii );
 		}
 
 		switch ( item->type )
 		{
-			case EM_UI_FILE_BOX_ITEM_TYPE_FILE:
+			case eEMUIFileListBoxItemType::File:
 				ii.insertY = yOffset + fileIconYOffset;
 				ii.insertWidth = fileIconWidth;
 				ii.insertHeight = fileIconHeight;
-				ii.texture = fileIcon;
+				ii.texture = &fileIcon;
 			break;
 
-			case EM_UI_FILE_BOX_ITEM_TYPE_FOLDER:
+			case eEMUIFileListBoxItemType::Folder:
 				ii.insertY = yOffset + folderIconYOffset;
 				ii.insertWidth = folderIconWidth;
 				ii.insertHeight = folderIconHeight;
-				ii.texture = folderIcon;
+				ii.texture = &folderIcon;
 			break;
 		}
 
 		ii.insertX = iconXOffset;
-		ii.overlayType = GX_ALPHA_TRANSPARENCY_PRESERVE_ALPHA;
+		ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 		ii.color = iconColor;
 
 		surface->AddImage ( ii );
@@ -225,14 +224,14 @@ GXVoid EMUIFileListBoxRenderer::OnRefresh ()
 GXVoid EMUIFileListBoxRenderer::OnDraw ()
 {
 	glDisable ( GL_DEPTH_TEST );
-	surface->Draw ();
+	surface->Render ();
 	glEnable ( GL_DEPTH_TEST );
 }
 
 GXVoid EMUIFileListBoxRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
 {
 	GXSafeDelete ( surface );
-	surface = new GXHudSurface ( width, height, GX_FALSE );
+	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
 	surface->GetLocation ( location );
 	surface->SetLocation ( x, y, location.z );
@@ -267,11 +266,6 @@ GXWidget* EMUIFileListBox::GetWidget () const
 	return widget;
 }
 
-GXVoid EMUIFileListBox::OnDrawMask ()
-{
-	//TODO
-}
-
 GXVoid EMUIFileListBox::Resize ( GXFloat leftBottomX, GXFloat leftBottomY, GXFloat width, GXFloat height )
 {
 	widget->Resize ( leftBottomX, leftBottomY, width, height );
@@ -279,12 +273,12 @@ GXVoid EMUIFileListBox::Resize ( GXFloat leftBottomX, GXFloat leftBottomY, GXFlo
 
 GXVoid EMUIFileListBox::AddFolder ( const GXWChar* name )
 {
-	widget->AddItem ( new EMUIFileListBoxItem ( EM_UI_FILE_BOX_ITEM_TYPE_FOLDER, name ) );
+	widget->AddItem ( new EMUIFileListBoxItem ( eEMUIFileListBoxItemType::Folder, name ) );
 }
 
 GXVoid EMUIFileListBox::AddFile ( const GXWChar* name )
 {
-	widget->AddItem ( new EMUIFileListBoxItem ( EM_UI_FILE_BOX_ITEM_TYPE_FILE, name ) );
+	widget->AddItem ( new EMUIFileListBoxItem ( eEMUIFileListBoxItemType::File, name ) );
 }
 
 GXVoid EMUIFileListBox::Clear ()

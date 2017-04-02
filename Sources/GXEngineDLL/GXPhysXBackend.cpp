@@ -9,6 +9,7 @@
 #include <GXCommon/GXLogger.h>
 #include <GXCommon/GXTime.h>
 #include <GXCommon/GXFileSystem.h>
+#include <GXCommon/GXMemory.h>
 
 
 #define GX_PHYSICS_NB_THREADS				1
@@ -613,8 +614,8 @@ PxVehicleDrive4W* GXPhysXBackend::CreateVehicle ( const GXVehicleInfo &info )
 	ackermannData.mAxleSeparation = info.ackermannAxleSeparation;
 	driveSimData.setAckermannGeometryData ( ackermannData );
 
-	GXQuat physXRotation;
-	GXQuatRehandCoordinateSystem ( physXRotation, info.spawnRotation );
+	GXQuat physXRotation = info.spawnRotation;
+	GXQuatRehandCoordinateSystem ( physXRotation );
 	PxRigidDynamic* rigidVehicle = pPhysics->createRigidDynamic ( PxTransform ( PxVec3 ( info.spawnLocation.x, info.spawnLocation.y, info.spawnLocation.z ), PxQuat ( physXRotation.x, physXRotation.y, physXRotation.z, physXRotation.w ) ) );
 	rigidVehicle->userData = info.renderCarAddress;
 	
@@ -712,8 +713,8 @@ PxController* GXPhysXBackend::CreateCharacterController ( PxCapsuleControllerDes
 
 GXVoid GXPhysXBackend::SetRigidActorOrigin ( PxRigidActor* actor, const GXVec3 &location, const GXQuat &rotation )
 {
-	GXQuat physXRotation;
-	GXQuatRehandCoordinateSystem ( physXRotation, rotation );
+	GXQuat physXRotation = rotation;
+	GXQuatRehandCoordinateSystem ( physXRotation );
 	actor->setGlobalPose ( PxTransform ( PxVec3 ( location.x, location.y, location.z ), PxQuat ( physXRotation.x, physXRotation.y, physXRotation.z, physXRotation.w ) ) );
 }
 
@@ -986,7 +987,7 @@ GXVoid GXPhysXBackend::DoSimulate ()
 					rotationPhysX.y = activeTransforms [ i ].actor2World.q.y;
 					rotationPhysX.z = activeTransforms [ i ].actor2World.q.z;
 					rotationPhysX.w = activeTransforms [ i ].actor2World.q.w;
-					GXQuatRehandCoordinateSystem ( rotation, rotationPhysX );
+					GXQuatRehandCoordinateSystem ( rotationPhysX );
 					renderObject->SetPivotOrigin ( location, rotation );
 				}
 			}
@@ -1010,10 +1011,9 @@ GXVoid GXPhysXBackend::DoSimulate ()
 					physXRotation.z = trans.q.z;
 					physXRotation.w = trans.q.w;
 
-					GXQuat rotation;
-					GXQuatRehandCoordinateSystem ( rotation, physXRotation );
+					GXQuatRehandCoordinateSystem ( physXRotation );
 
-					vehicle->SetShapeOrigin ( shapeID, location, rotation );
+					vehicle->SetShapeOrigin ( shapeID, location, physXRotation );
 				}
 			}
 		}

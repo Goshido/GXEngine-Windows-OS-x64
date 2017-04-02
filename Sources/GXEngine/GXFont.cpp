@@ -1,153 +1,213 @@
-//version 1.3
+//version 1.6
 
 #include <GXEngine/GXFont.h>
-#include <GXEngine/GXTextureUtils.h>
-#include <GXEngine/GXFont.h>
+#include <GXEngineDLL/GXEngineAPI.h>
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXLogger.h>
+#include <GXCommon/GXFileSystem.h>
+#include <GXCommon/GXMemory.h>
 
 
-#define GX_ATLAS_UNDEFINED		-1
-#define GX_ATLAS_NEW_LINE		0
-#define GX_ATLAS_NEW_TEXTURE	1
-#define GX_ATLAS_FILL			2
-#define GX_ATLAS_RESOLUTION		512
-#define GX_ATLAS_ONE_PIXEL		0.0019531f	//1 pixel in uv coordinate system
-#define GX_ATLAS_SPACING		2
+#define ATLAS_UNDEFINED		-1
+#define ATLAS_NEW_LINE		0
+#define ATLAS_NEW_TEXTURE	1
+#define ATLAS_FILL			2
+#define ATLAS_RESOLUTION	512
+#define ATLAS_ONE_PIXEL		0.0019531f	//1 pixel in uv coordinate system
+#define ATLAS_SPACING		2
 
-
-PFNFTNEWMEMORYFACE		GXFtNewMemoryFace			= 0;
-PFNFTDONEFACE			GXFtDoneFace				= 0;
-
-PFNFTSETCHARSIZE		GXFtSetCharSize				= 0;
-PFNFTSETPIXELSIZES		GXFtSetPixelSizes			= 0;
-
-PFNFTGETCHARINDEX		GXFtGetCharIndex			= 0;
-PFNFTGETKERNING			GXFtGetKerning				= 0;
-
-PFNFTLOADGLYPH			GXFtLoadGlyph				= 0;
-PFNFTRENDERGLYPH		GXFtRenderGlyph				= 0;
-
-PFNGXFREETYPEDESTROY	GXFreeTypeDestroy			= 0;
-
-//-------------------------------------------------------------------------
 
 extern HMODULE gx_GXEngineDLLModuleHandle;
 
-FT_Library	gx_ft_Library;
+static FT_Library				gx_ft_Library				= nullptr;
 
+static PFNFTNEWMEMORYFACE		GXFtNewMemoryFace			= nullptr;
+static PFNFTDONEFACE			GXFtDoneFace				= nullptr;
 
-GXBool GXCALL GXFontInit ()
+static PFNFTSETCHARSIZE			GXFtSetCharSize				= nullptr;
+static PFNFTSETPIXELSIZES		GXFtSetPixelSizes			= nullptr;
+
+static PFNFTGETCHARINDEX		GXFtGetCharIndex			= nullptr;
+static PFNFTGETKERNING			GXFtGetKerning				= nullptr;
+
+static PFNFTLOADGLYPH			GXFtLoadGlyph				= nullptr;
+static PFNFTRENDERGLYPH			GXFtRenderGlyph				= nullptr;
+
+static PFNGXFREETYPEDESTROY		GXFreeTypeDestroy			= nullptr;
+
+static GXFontEntry*				gx_FontHead					= nullptr;
+
+class GXFontEntry
 {
-	gx_GXEngineDLLModuleHandle = LoadLibraryW ( L"GXEngine.dll" );
-	if ( !gx_GXEngineDLLModuleHandle )
-	{
-		GXLogW ( L"GXFontInit::Error - Не удалось загрузить GXEngine.dll" );
-		return GX_FALSE;
-	}
+	public:
+		GXFontEntry*	next;
+		GXFontEntry*	prev;
 
-	PFNGXFREETYPEINIT GXFreeTypeInit;
-	GXFreeTypeInit = ( PFNGXFREETYPEINIT )GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXFreeTypeInit" );
-	if ( !GXFreeTypeInit )
-	{
-		GXLogW ( L"GXFontInit::Error - Не удалось найти функцию GXFreeTypeInit" );
-		return GX_FALSE;
-	}
+	private:
+		GXFont*			font;
+		GXWChar*		fileName;
+		GXUShort		size;
 
-	GXFreeTypeFunctions out;
-	out.FT_Done_Face = &GXFtDoneFace;
-	out.FT_Get_Char_Index = &GXFtGetCharIndex;
-	out.FT_Get_Kerning = &GXFtGetKerning;
-	out.FT_Load_Glyph = &GXFtLoadGlyph;
-	out.FT_New_Memory_Face = &GXFtNewMemoryFace;
-	out.FT_Render_Glyph = &GXFtRenderGlyph;
-	out.FT_Set_Char_Size = &GXFtSetCharSize;
-	out.FT_Set_Pixel_Sizes = &GXFtSetPixelSizes;
-	out.GXFreeTypeDestroy = &GXFreeTypeDestroy;
+		GXInt			refs;
 
-	return GXFreeTypeInit ( out, gx_ft_Library );
+	public:
+		explicit GXFontEntry ( GXFont &font, const GXWChar* fileName, GXUShort size );
+
+		GXFont& GetFont () const;
+		const GXWChar* GetFileName () const;
+		GXUShort GetSize () const;
+
+		GXVoid AddRef ();
+		GXVoid Release ();
+
+	private:
+		~GXFontEntry ();
+};
+
+GXFontEntry::GXFontEntry ( GXFont &font, const GXWChar* fileName, GXUShort size )
+{
+	this->font = &font;
+	GXWcsclone ( &this->fileName, fileName );
+	this->size = size;
+
+	refs = 1;
+
+	prev = nullptr;
+
+	if ( gx_FontHead )
+		gx_FontHead->prev = this;
+
+	next = gx_FontHead;
+	gx_FontHead = this;
 }
 
-GXBool GXCALL GXFontDestroy ()
+GXFont& GXFontEntry::GetFont () const
 {
-	if ( !gx_GXEngineDLLModuleHandle )
-	{
-		GXLogW ( L"GXFontDestroy::Error - Попытка выгрузить несуществующую в памяти GXEngine.dll" );
-		return GX_FALSE;
-	}
+	return *font;
+}
 
-	GXFreeTypeDestroy ();
+const GXWChar* GXFontEntry::GetFileName () const
+{
+	return fileName;
+}
 
-	if ( !FreeLibrary ( gx_GXEngineDLLModuleHandle ) )
-	{
-		GXLogW ( L"GXFontDestroy::Error - Не удалось выгрузить библиотеку GXEngine.dll" );
-		return GX_FALSE;
-	}
+GXUShort GXFontEntry::GetSize () const
+{
+	return size;
+}
 
-	return GX_TRUE;
+GXVoid GXFontEntry::AddRef ()
+{
+	refs++;
+}
+
+GXVoid GXFontEntry::Release ()
+{
+	refs--;
+	if ( refs <= 0 )
+		delete this;
+}
+
+GXFontEntry::~GXFontEntry ()
+{
+	delete font;
+	GXSafeFree ( fileName );
+
+	if ( gx_FontHead == this )
+		gx_FontHead = gx_FontHead->next;
+	else
+		prev->next = next;
+
+	if ( next )
+		next->prev = prev;
 }
 
 //---------------------------------------------------------------------------------------------------
 
-GXFont::GXFont ( FT_Face face, GXUShort size )
+struct GXGlyph
 {
-	this->face = face;
-	this->size = size;
+	GXVec2		min;
+	GXVec2		max;
+	GXFloat		offsetY;
+	GXUShort	advance;
+	GXByte		atlasID;
+};
 
-	left = bottom = top = 0;
+struct GXFontParameters
+{
+	GXGlyph			glyphs[ 0x7FFF ];
+	GXTexture*		atlases;
+	GXByte			atlasID;
+	GXUShort		left;
+	GXUShort		top;
+	GXUShort		bottom;
+	GXUShort		spaceAdvance;
+	GXVoid*			mappedFile;
+};
 
-	for ( GXUShort i = 0; i < 0x7FFF; i++ )
-		glyphs[ i ].atlasID = GX_ATLAS_UNDEFINED;
+//---------------------------------------------------------------------------------------------------
 
-	atlases = 0;
-	atlasID = GX_ATLAS_UNDEFINED;
+GXFont GXFont::nullFont;
 
-	GXUShort temp =  (GXUShort)( size * 0.5f );
-	spaceAdvance = temp == 0 ? 1 : temp;
+GXFont::GXFont ()
+{
+	face = nullptr;
+	size = 0;
+	parameters = nullptr;
 }
 
 GXFont::~GXFont ()
 {
-	if ( atlasID == GX_ATLAS_UNDEFINED )
-		return;
+	if ( parameters == nullptr ) return;
 
-	glDeleteTextures ( atlasID + 1, atlases );
+	if ( GXFtDoneFace ( face ) )
+		GXLogA ( "GXFont::~GXFont::Error - GXFtDoneFace выполнилась с ошибкой\n" );
 
-	free ( atlases );
+	if ( parameters->atlasID != ATLAS_UNDEFINED )
+	{
+		for ( GXByte i = 0; i <= parameters->atlasID; i++ )
+			parameters->atlases[ i ].FreeResources ();
+
+		free ( parameters->atlases );
+	}
+
+	free ( parameters->mappedFile );
+	
+	delete parameters;
 }
 
-GXBool GXFont::GetGlyph ( GXUInt symbol, GXGlyphInfo &info )
+GXBool GXFont::GetGlyph ( GXUInt symbol, GXGlyphInfo &info ) const
 {
 	if ( symbol > 0x7FFF )
 		return GX_FALSE;
 
-	if ( glyphs[ symbol ].atlasID != GX_ATLAS_UNDEFINED )
+	if ( parameters->glyphs[ symbol ].atlasID != ATLAS_UNDEFINED )
 	{
-		info.atlas = atlases[ glyphs[ symbol ].atlasID ];
-		memcpy ( &info.min, &glyphs[ symbol ].min, sizeof ( GXVec2 ) );
-		memcpy ( &info.max, &glyphs[ symbol ].max, sizeof ( GXVec2 ) );
-		info.offsetY = glyphs[ symbol ].offsetY;
-		info.width = ( glyphs[ symbol ].max.x - glyphs[ symbol ].min.x ) * GX_ATLAS_RESOLUTION;
-		info.height = ( glyphs[ symbol ].max.y - glyphs[ symbol ].min.y ) * GX_ATLAS_RESOLUTION;
-		info.advance = glyphs[ symbol ].advance;
+		info.atlas = &parameters->atlases[ parameters->glyphs[ symbol ].atlasID ];
+		memcpy ( &info.min, &parameters->glyphs[ symbol ].min, sizeof ( GXVec2 ) );
+		memcpy ( &info.max, &parameters->glyphs[ symbol ].max, sizeof ( GXVec2 ) );
+		info.offsetY = parameters->glyphs[ symbol ].offsetY;
+		info.width = ( parameters->glyphs[ symbol ].max.x - parameters->glyphs[ symbol ].min.x ) * ATLAS_RESOLUTION;
+		info.height = ( parameters->glyphs[ symbol ].max.y - parameters->glyphs[ symbol ].min.y ) * ATLAS_RESOLUTION;
+		info.advance = parameters->glyphs[ symbol ].advance;
 
 		return GX_TRUE;
 	}
 
 	RenderGlyph ( symbol );
 
-	info.atlas = atlases[ glyphs[ symbol ].atlasID ];
-	memcpy ( &info.min, &glyphs[ symbol ].min, sizeof ( GXVec2 ) );
-	memcpy ( &info.max, &glyphs[ symbol ].max, sizeof ( GXVec2 ) );
-	info.offsetY = glyphs[ symbol ].offsetY;
-	info.width = ( glyphs[ symbol ].max.x - glyphs[ symbol ].min.x ) * GX_ATLAS_RESOLUTION;
-	info.height = ( glyphs[ symbol ].max.y - glyphs[ symbol ].min.y ) * GX_ATLAS_RESOLUTION;
-	info.advance = glyphs[ symbol ].advance;
+	info.atlas = &parameters->atlases[ parameters->glyphs[ symbol ].atlasID ];
+	memcpy ( &info.min, &parameters->glyphs[ symbol ].min, sizeof ( GXVec2 ) );
+	memcpy ( &info.max, &parameters->glyphs[ symbol ].max, sizeof ( GXVec2 ) );
+	info.offsetY = parameters->glyphs[ symbol ].offsetY;
+	info.width = ( parameters->glyphs[ symbol ].max.x - parameters->glyphs[ symbol ].min.x ) * ATLAS_RESOLUTION;
+	info.height = ( parameters->glyphs[ symbol ].max.y - parameters->glyphs[ symbol ].min.y ) * ATLAS_RESOLUTION;
+	info.advance = parameters->glyphs[ symbol ].advance;
 
 	return GX_TRUE;
 }
 
-GXInt GXFont::GetKerning ( GXUInt symbol, GXUInt prevSymbol )
+GXInt GXFont::GetKerning ( GXUInt symbol, GXUInt prevSymbol ) const
 {
 	FT_UInt glyphIndex = GXFtGetCharIndex ( face, symbol );
 	FT_UInt prevGlyphIndex = GXFtGetCharIndex ( face, prevSymbol );
@@ -162,34 +222,33 @@ GXInt GXFont::GetKerning ( GXUInt symbol, GXUInt prevSymbol )
 	return 0;
 }
 
-GXUShort GXFont::GetSpaceAdvance ()
+GXUShort GXFont::GetSpaceAdvance () const
 {
-	return spaceAdvance;
+	if ( !parameters ) return 0;
+	return parameters->spaceAdvance;
 }
 
-GXUShort GXFont::GetSize ()
+GXUShort GXFont::GetSize () const
 {
 	return size;
 }
 
-GXVoid GXFont::GetAtlasTexture (  GXByte atlasID, GXTexture &texture )
+GXTexture* GXFont::GetAtlasTexture ( GXByte atlasID )
 {
-	if ( atlasID > this->atlasID )
+	if ( atlasID > this->parameters->atlasID )
 	{
 		GXLogW ( L"GXFont::GetAtlasTexture::Error - Wrong atlas ID\n" );
-		return;
+		return nullptr;
 	}
 
-	texture.channels = 1;
-	texture.width = texture.height = GX_ATLAS_RESOLUTION;
-	texture.texObj = atlases[ atlasID ];
+	return &parameters->atlases[ atlasID ];
 }
 
-GXUInt GXCDECLCALL GXFont::GetTextLength ( GXUInt bufferNumSymbols, const GXWChar* format, ... )
+GXUInt GXCDECLCALL GXFont::GetTextLength ( GXUInt bufferNumSymbols, const GXWChar* format, ... ) const
 {
 	GXInt penX = 0;
 
-	GXWChar* text = 0;
+	GXWChar* text = nullptr;
 
 	if ( bufferNumSymbols )
 	{
@@ -236,7 +295,149 @@ GXUInt GXCDECLCALL GXFont::GetTextLength ( GXUInt bufferNumSymbols, const GXWCha
 	return penX;
 }
 
-GXVoid GXFont::RenderGlyph ( GXUInt symbol )
+GXFont& GXCALL GXFont::GetFont ( const GXWChar* fileName, GXUShort size )
+{
+	for ( GXFontEntry* p = gx_FontHead; p; p = p->next )
+	{
+		if ( GXWcscmp ( p->GetFileName (), fileName ) == 0 && p->GetSize () == size )
+		{
+			p->AddRef ();
+			return p->GetFont ();
+		}
+	}
+
+	GXFont* font = new GXFont ( fileName, size );
+
+	if ( !font->face )
+		return nullFont;
+
+	new GXFontEntry ( *font, fileName, size );
+	return *font;
+}
+
+GXVoid GXCALL GXFont::RemoveFont ( GXFont &font )
+{
+	for ( GXFontEntry* p = gx_FontHead; p; p = p->next )
+	{
+		if ( font == *p )
+		{
+			p->Release ();
+			font = nullFont;
+		}
+	}
+}
+
+GXUInt GXCALL GXFont::GetTotalLoadedFonts ( const GXWChar** lastFont, GXUShort &lastSize )
+{
+	GXUInt total = 0;
+	for ( GXFontEntry* p = gx_FontHead; p; p = p->next )
+		total++;
+
+	if ( total > 0 )
+	{
+		*lastFont = gx_FontHead->GetFileName ();
+		lastSize = gx_FontHead->GetSize ();
+	}
+	else
+	{
+		*lastFont = nullptr;
+		lastSize = 0;
+	}
+
+	return total;
+}
+
+GXBool GXCALL GXFont::InitFreeTypeLibrary ()
+{
+	gx_GXEngineDLLModuleHandle = LoadLibraryW ( L"GXEngine.dll" );
+	if ( !gx_GXEngineDLLModuleHandle )
+	{
+		GXLogW ( L"GXFont::InitFreeType::Error - Не удалось загрузить GXEngine.dll\n" );
+		return GX_FALSE;
+	}
+
+	PFNGXFREETYPEINIT GXFreeTypeInit;
+	GXFreeTypeInit = (PFNGXFREETYPEINIT)GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXFreeTypeInit" );
+	if ( !GXFreeTypeInit )
+	{
+		GXLogW ( L"GXFont::InitFreeType::Error - Не удалось найти функцию GXFreeTypeInit\n" );
+		return GX_FALSE;
+	}
+
+	GXFreeTypeFunctions out;
+	out.FT_Done_Face = &GXFtDoneFace;
+	out.FT_Get_Char_Index = &GXFtGetCharIndex;
+	out.FT_Get_Kerning = &GXFtGetKerning;
+	out.FT_Load_Glyph = &GXFtLoadGlyph;
+	out.FT_New_Memory_Face = &GXFtNewMemoryFace;
+	out.FT_Render_Glyph = &GXFtRenderGlyph;
+	out.FT_Set_Char_Size = &GXFtSetCharSize;
+	out.FT_Set_Pixel_Sizes = &GXFtSetPixelSizes;
+	out.GXFreeTypeDestroy = &GXFreeTypeDestroy;
+
+	return GXFreeTypeInit ( out, gx_ft_Library );
+}
+
+GXBool GXCALL GXFont::DestroyFreeTypeLibrary ()
+{
+	if ( !gx_GXEngineDLLModuleHandle )
+	{
+		GXLogW ( L"GXFont::DestroyFreeTypeLibrary::Error - Попытка выгрузить несуществующую в памяти GXEngine.dll\n" );
+		return GX_FALSE;
+	}
+
+	GXFreeTypeDestroy ();
+
+	if ( !FreeLibrary ( gx_GXEngineDLLModuleHandle ) )
+	{
+		GXLogW ( L"GXFont::DestroyFreeTypeLibrary::Error - Не удалось выгрузить библиотеку GXEngine.dll\n" );
+		return GX_FALSE;
+	}
+
+	return GX_TRUE;
+}
+
+GXVoid GXFont::operator = ( const GXFont &other )
+{
+	memcpy ( this, &other, sizeof ( GXFont ) );
+}
+
+GXFont::GXFont ( const GXWChar* fileName, GXUShort size )
+{
+	parameters = new GXFontParameters ();
+
+	this->size = size;
+
+	for ( GXUShort i = 0; i < 0x7FFF; i++ )
+		parameters->glyphs[ i ].atlasID = ATLAS_UNDEFINED;
+
+	parameters->atlases = nullptr;
+	parameters->atlasID = ATLAS_UNDEFINED;
+
+	parameters->left = 0;
+	parameters->bottom = 0;
+	parameters->top = 0;
+
+	GXUShort temp = (GXUShort)( size * 0.5f );
+	parameters->spaceAdvance = temp == 0 ? 1 : temp;
+	GXUInt totalSize = 0;
+
+	if ( !GXLoadFile ( fileName, &parameters->mappedFile, totalSize, GX_TRUE ) )
+	{
+		GXLogA ( "GXFont::GXFont::Error - не могу загрузить файл шрифта %s\n", fileName );
+		face = nullptr;
+		GXSafeDelete ( parameters );
+	}
+	else if ( GXFtNewMemoryFace ( gx_ft_Library, (FT_Byte*)parameters->mappedFile, totalSize, 0, &face ) )
+	{
+		GXLogW ( L"GXFontUnit::GXFontUnit::Error - GXFtNewMemoryFace выполнилась с ошибкой для шрифта %s failed\n", fileName );
+		free ( parameters->mappedFile );
+		GXSafeDelete ( parameters );
+		face = nullptr;
+	}
+}
+
+GXVoid GXFont::RenderGlyph ( GXUInt symbol ) const
 {
 	if ( GXFtSetPixelSizes ( face, size, size ) )
 		GXLogA ( "GXFont::RenderGlyph::Error - Can't set font size %i\n", size );
@@ -249,106 +450,100 @@ GXVoid GXFont::RenderGlyph ( GXUInt symbol )
 	if ( GXFtRenderGlyph ( face->glyph, FT_RENDER_MODE_NORMAL ) )
 		GXLogA ( "GXFont::RenderGlyph::Error - FT_Render_Glyph failed at symbol #%i\n", symbol );
 
-	glyphs[ symbol ].offsetY = (GXFloat)( ( face->glyph->metrics.horiBearingY - face->glyph->metrics.height ) >> 6 );
-	glyphs[ symbol ].advance = (GXUShort)( face->glyph->advance.x >> 6 );
+	parameters->glyphs[ symbol ].offsetY = (GXFloat)( ( face->glyph->metrics.horiBearingY - face->glyph->metrics.height ) >> 6 );
+	parameters->glyphs[ symbol ].advance = (GXUShort)( face->glyph->advance.x >> 6 );
 
 	FT_Bitmap bitmap = face->glyph->bitmap;
 
 	switch ( CheckAtlas ( bitmap.width, bitmap.rows ) )
 	{
-		case GX_ATLAS_NEW_LINE:
-			left = 0;
-			bottom = top;
-			top = bottom;
+		case ATLAS_NEW_LINE:
+			parameters->left = 0;
+			parameters->bottom = parameters->top;
+			parameters->top = parameters->bottom;
 		break;
 
-		case GX_ATLAS_NEW_TEXTURE:
+		case ATLAS_NEW_TEXTURE:
 			CreateAtlas ();
 
-			left = 0;
-			bottom = 0;
-			top = 0;
+			parameters->left = 0;
+			parameters->bottom = 0;
+			parameters->top = 0;
 		break;
 	}
 
-	glyphs[ symbol ].min = GXCreateVec2 ( ( left ) * GX_ATLAS_ONE_PIXEL, ( bottom ) * GX_ATLAS_ONE_PIXEL );
-	glyphs[ symbol ].max = GXCreateVec2 ( ( left + bitmap.width + 1 ) * GX_ATLAS_ONE_PIXEL, ( bottom + bitmap.rows ) * GX_ATLAS_ONE_PIXEL );
+	parameters->glyphs[ symbol ].min = GXCreateVec2 ( parameters->left * ATLAS_ONE_PIXEL, parameters->bottom * ATLAS_ONE_PIXEL );
+	parameters->glyphs[ symbol ].max = GXCreateVec2 ( ( parameters->left + bitmap.width + 1 ) * ATLAS_ONE_PIXEL, ( parameters->bottom + bitmap.rows ) * ATLAS_ONE_PIXEL );
 
-	glyphs[ symbol ].atlasID = atlasID;
+	parameters->glyphs[ symbol ].atlasID = parameters->atlasID;
 
 	GXUByte* buffer = (GXUByte*)malloc ( bitmap.width * bitmap.rows );
 
-	for ( GXUInt h = 0; h < (GXUInt)bitmap.rows; h ++ )
-		for ( GXUInt w = 0; w < (GXUInt)bitmap.width; w ++ )
+	for ( GXUInt h = 0; h < (GXUInt)bitmap.rows; h++ )
+	{
+		for ( GXUInt w = 0; w < (GXUInt)bitmap.width; w++ )
 			buffer[ h * bitmap.width + w ] = bitmap.buffer[ ( bitmap.rows - 1 - h ) * bitmap.width + w ];
+	}
 
-	glBindTexture ( GL_TEXTURE_2D, atlases[ atlasID ] );
-	glPixelStorei ( GL_UNPACK_ALIGNMENT, 1 );
-	glTexSubImage2D ( GL_TEXTURE_2D, 0, left, bottom, bitmap.width, bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, buffer );
-	glBindTexture ( GL_TEXTURE_2D, 0 );
+	parameters->atlases[ parameters->atlasID ].FillRegionPixelData ( parameters->left, parameters->bottom, (GXUShort)bitmap.width, (GXUShort)bitmap.rows, buffer );
 
 	free ( buffer );
 
-	left += bitmap.width + GX_ATLAS_SPACING;
+	parameters->left += bitmap.width + ATLAS_SPACING;
 
-	if ( top < ( bottom + bitmap.rows + GX_ATLAS_SPACING ) )
-		top = bottom + bitmap.rows + GX_ATLAS_SPACING;
+	if ( parameters->top < ( parameters->bottom + bitmap.rows + ATLAS_SPACING ) )
+		parameters->top = parameters->bottom + bitmap.rows + ATLAS_SPACING;
 }
 
-GXVoid GXFont::CreateAtlas ()
+GXVoid GXFont::CreateAtlas () const
 {
-	if ( atlasID == GX_ATLAS_UNDEFINED )
+	if ( parameters->atlasID == ATLAS_UNDEFINED )
 	{
-		atlasID = 0;
-		atlases = (GLuint*)malloc ( sizeof ( GLuint ) );
+		parameters->atlasID = 0;
+		parameters->atlases = (GXTexture*)malloc ( sizeof ( GXTexture ) );
 	}
 	else
 	{
-		GLuint* temp = (GLuint*)malloc ( ( atlasID + 2 ) * sizeof ( GLuint ) );
-		for ( GXUShort i = 0; i < atlasID; i++ )
-			temp[ i ] = atlases[ i ];
+		GXTexture* temp = (GXTexture*)malloc ( ( parameters->atlasID + 2 ) * sizeof ( GXTexture ) );
+		for ( GXUShort i = 0; i < parameters->atlasID; i++ )
+			temp[ i ] = parameters->atlases[ i ];
 
-		atlasID++;
-		free ( atlases );
-		atlases = temp;
+		parameters->atlasID++;
+		free ( parameters->atlases );
+		parameters->atlases = temp;
 	}
 
-	GXUInt size = GX_ATLAS_RESOLUTION * GX_ATLAS_RESOLUTION;
+	GXUInt size = ATLAS_RESOLUTION * ATLAS_RESOLUTION;
 	GXUByte* data = (GXUByte*)malloc ( size );
 
 	memset ( data, 0, size );
 
-	GXGLTextureStruct ts;
-	ts.format = GL_RED;
-	ts.internalFormat = GL_R8;
-	ts.type = GL_UNSIGNED_BYTE;
-	ts.width = GX_ATLAS_RESOLUTION;
-	ts.height = GX_ATLAS_RESOLUTION;
-	ts.wrap = GL_CLAMP_TO_EDGE;
-	ts.anisotropy = 1;
-	ts.resampling = GX_TEXTURE_RESAMPLING_NONE;
-	ts.data = data;
-
-	atlases[ atlasID ] = GXCreateTexture ( ts );
+	parameters->atlases[ parameters->atlasID ].InitResources ( ATLAS_RESOLUTION, ATLAS_RESOLUTION, GL_R8, GX_FALSE );
+	parameters->atlases[ parameters->atlasID ].FillWholePixelData ( data );
 
 	free ( data );
 }
 
-GXUByte GXFont::CheckAtlas ( GXUInt width, GXUInt height )
+GXUByte GXFont::CheckAtlas ( GXUInt width, GXUInt height ) const
 {
-	if ( atlasID == GX_ATLAS_UNDEFINED )
-		return GX_ATLAS_NEW_TEXTURE;
+	if ( parameters->atlasID == ATLAS_UNDEFINED )
+		return ATLAS_NEW_TEXTURE;
 
-	if ( ( left + width ) >= GX_ATLAS_RESOLUTION )
+	if ( ( parameters->left + width ) >= ATLAS_RESOLUTION )
 	{
-		if ( ( bottom + height ) >= GX_ATLAS_RESOLUTION )
-			return GX_ATLAS_NEW_TEXTURE;
+		if ( ( parameters->bottom + height ) >= ATLAS_RESOLUTION )
+			return ATLAS_NEW_TEXTURE;
 		else
-			return GX_ATLAS_NEW_LINE;
+			return ATLAS_NEW_LINE;
 	}
 
-	if ( ( bottom + height ) >= GX_ATLAS_RESOLUTION )
-		return GX_ATLAS_NEW_TEXTURE;
+	if ( ( parameters->bottom + height ) >= ATLAS_RESOLUTION )
+		return ATLAS_NEW_TEXTURE;
 
-	return GX_ATLAS_FILL;
+	return ATLAS_FILL;
+}
+
+GXBool GXFont::operator == ( const GXFontEntry &other ) const
+{
+	return face == other.GetFont ().face;
 }

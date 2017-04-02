@@ -1,6 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMUIPopup.h>
 #include <GXEngine/GXUICommon.h>
-#include <GXEngine/GXFontStorage.h>
+#include <GXEngine/GXFont.h>
 #include <GXCommon/GXStrings.h>
 
 
@@ -46,7 +46,7 @@
 class EMUIPopupRenderer : public GXWidgetRenderer
 {
 	private:
-		GXFont*			font;
+		GXFont			font;
 		GXHudSurface*	surface;
 		GXTexture		texture;
 		GXDynamicArray	itemNames;
@@ -67,16 +67,16 @@ class EMUIPopupRenderer : public GXWidgetRenderer
 EMUIPopupRenderer::EMUIPopupRenderer ( GXUIPopup* widget ):
 GXWidgetRenderer ( widget ), itemNames ( sizeof ( GXWChar* ) )
 {
-	font = GXGetFont ( EM_DEFAULT_FONT, (GXUShort)( EM_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
-	GXLoadTexture ( EM_DEFAULT_TEXTURE, texture );
-	surface = new GXHudSurface ( (GXShort)widget->GetItemWidth (), (GXUShort)widget->GetItemHeight (), GX_FALSE );
+	font = GXFont::GetFont ( EM_DEFAULT_FONT, (GXUShort)( EM_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
+	texture = GXTexture::LoadTexture ( EM_DEFAULT_TEXTURE, GX_FALSE );
+	surface = new GXHudSurface ( (GXShort)widget->GetItemWidth (), (GXUShort)widget->GetItemHeight () );
 }
 
 EMUIPopupRenderer::~EMUIPopupRenderer ()
 {
-	GXRemoveFont ( font );
+	GXFont::RemoveFont ( font );
 	delete surface;
-	GXRemoveTexture ( texture );
+	GXTexture::RemoveTexture ( texture );
 
 	GXWChar** names = (GXWChar**)itemNames.GetData ();
 	GXUInt totalNames = itemNames.GetLength ();
@@ -104,8 +104,8 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
 
 	GXImageInfo ii;
 	GXColorToVec4 ( ii.color, EM_BACKGROUND_COLOR_R, EM_BACKGROUND_COLOR_G, EM_BACKGROUND_COLOR_B, EM_BACKGROUND_COLOR_A );
-	ii.texture = texture;
-	ii.overlayType = GX_SIMPLE_REPLACE;
+	ii.texture = &texture;
+	ii.overlayType = eGXImageOverlayType::SimpleReplace;
 	ii.insertX = 1.0f + 0.1f;
 	ii.insertY = 1.0f + 0.1f;
 	ii.insertWidth = itemWidth - 2.0f - 0.2f;
@@ -116,24 +116,24 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
 	GXLineInfo li;
 	GXColorToVec4 ( li.color, EM_BORDER_COLOR_R, EM_BORDER_COLOR_G, EM_BORDER_COLOR_B, EM_BORDER_COLOR_A );
 	li.thickness = 1.0f;
-	li.overlayType = GX_SIMPLE_REPLACE;
-	li.startPoint = GXCreateVec3 ( 1.0f + 0.1f, 0.1f, 0.0f );
-	li.endPoint = GXCreateVec3 ( itemWidth - 2.0f + 0.9f, 0.1f, 0.0f );
+	li.overlayType = eGXImageOverlayType::SimpleReplace;
+	li.startPoint = GXCreateVec2 ( 1.0f + 0.1f, 0.1f );
+	li.endPoint = GXCreateVec2 ( itemWidth - 2.0f + 0.9f, 0.1f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec3 ( itemWidth - 1.0f + 0.9f, 1.0f + 0.1f, 0.0f );
-	li.endPoint = GXCreateVec3 ( itemWidth - 1.0f + 0.9f, totalHeight - 2.0f + 0.9f, 0.0f );
+	li.startPoint = GXCreateVec2 ( itemWidth - 1.0f + 0.9f, 1.0f + 0.1f );
+	li.endPoint = GXCreateVec2 ( itemWidth - 1.0f + 0.9f, totalHeight - 2.0f + 0.9f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec3 ( itemWidth - 2.0f + 0.9f, totalHeight - 1.0f + 0.9f, 0.0f );
-	li.endPoint = GXCreateVec3 ( 1.0f + 0.1f, totalHeight - 1.0f + 0.9f, 0.0f );
+	li.startPoint = GXCreateVec2 ( itemWidth - 2.0f + 0.9f, totalHeight - 1.0f + 0.9f );
+	li.endPoint = GXCreateVec2 ( 1.0f + 0.1f, totalHeight - 1.0f + 0.9f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec3 ( 0.1f, totalHeight - 2.0f + 0.9f, 0.0f );
-	li.endPoint = GXCreateVec3 ( 0.1f, 1.0f + 0.1f, 0.0f );
+	li.startPoint = GXCreateVec2 ( 0.1f, totalHeight - 2.0f + 0.9f );
+	li.endPoint = GXCreateVec2 ( 0.1f, 1.0f + 0.1f );
 
 	surface->AddLine ( li );
 
@@ -141,7 +141,7 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
 	if ( hightlighted != GX_UI_POPUP_INVALID_INDEX )
 	{
 		GXColorToVec4 ( ii.color, EM_HIGHTLIGHT_COLOR_R, EM_HIGHTLIGHT_COLOR_G, EM_HIGHTLIGHT_COLOR_B, EM_HIGHTLIGHT_COLOR_A );
-		ii.overlayType = GX_ALPHA_TRANSPARENCY_PRESERVE_ALPHA;
+		ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 		ii.insertX = 0.5f;
 		ii.insertY = totalHeight - 0.5f - ( 1.0f + (GXFloat)hightlighted ) * itemHeight;
 		ii.insertWidth = itemWidth;
@@ -152,10 +152,10 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
 
 	const GXWChar** names = (const GXWChar**)itemNames.GetData ();
 	GXPenInfo pi;
-	pi.font = font;
-	pi.overlayType = GX_ALPHA_TRANSPARENCY_PRESERVE_ALPHA;
+	pi.font = &font;
+	pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 	pi.insertX = EM_TEXT_OFFSET_X * gx_ui_Scale;
-	pi.insertY = totalHeight - itemHeight + ( itemHeight - (GXFloat)font->GetSize () ) * 0.5f;
+	pi.insertY = totalHeight - itemHeight + ( itemHeight - (GXFloat)font.GetSize () ) * 0.5f;
 
 	for ( GXUByte i = 0; i < totalItems; i++ )
 	{
@@ -171,7 +171,7 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
 
 GXVoid EMUIPopupRenderer::OnDraw ()
 {
-	surface->Draw ();
+	surface->Render ();
 }
 
 GXVoid EMUIPopupRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
@@ -182,7 +182,7 @@ GXVoid EMUIPopupRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUS
 	surface->GetLocation ( location );
 
 	delete surface;
-	surface = new GXHudSurface ( width, height, GX_FALSE );
+	surface = new GXHudSurface ( width, height );
 	surface->SetLocation ( x, y, location.z );
 }
 
@@ -213,11 +213,6 @@ EMUIPopup::~EMUIPopup ()
 GXWidget* EMUIPopup::GetWidget () const
 {
 	return widget;
-}
-
-GXVoid EMUIPopup::OnDrawMask ()
-{
-	//TODO
 }
 
 GXVoid EMUIPopup::AddItem ( const GXWChar* name, PFNGXONUIPOPUPACTIONPROC action )

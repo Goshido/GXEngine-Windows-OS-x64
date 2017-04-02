@@ -205,7 +205,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\Main.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimSolverMovement.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimSolverPlayer.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngine\GXAttachment.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXCamera.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXCameraman.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXCameraOrthographic.cpp" />
@@ -213,11 +212,10 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXCore.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXEngineSettings.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXFont.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngine\GXFontStorage.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXHudSurface.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXInput.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXLocale.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngine\GXMesh.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXRenderable.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXMeshGeometry.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXNetwork.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXOGGSoundProvider.cpp" />
@@ -226,9 +224,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXRenderer.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSamplerUtils.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXShaderProgram.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngine\GXSkeletalMesh.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngine\GXSkeletalMeshQuat.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngine\GXSkeletalMeshStorage.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSound.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSoundChannel.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSoundEmitter.cpp" />
@@ -236,8 +231,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXSoundProvider.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSoundStorage.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTextureDuplicator.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngine\GXTextureStorage.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngine\GXTextureUtils.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXTexture.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTouchSurface.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIButton.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIDraggableArea.cpp" />
@@ -247,7 +241,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXUIMenu.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIPopup.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIStaticText.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngine\GXVAOStorage.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXWidget.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXBoxShape.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXCollisionData.cpp" />
@@ -302,7 +295,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXAnimSolverMovement.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXAnimSolverPlayer.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXArrayTextureOuter.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXAttachment.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXCamera.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXCameraman.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXCameraOrthographic.h" />
@@ -313,14 +305,13 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXEditBox.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXEngineSettings.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXFont.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXFontStorage.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXHudSurface.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXIdealParticles.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXInput.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXJsonSaver.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXLocale.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMenu.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXMesh.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXRenderable.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMeshGeometry.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMotionBlurEffect.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXNetwork.h" />
@@ -333,9 +324,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXResource.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSamplerUtils.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXShaderProgram.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXSkeletalMesh.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXSkeletalMeshQuat.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXSkeletalMeshStorage.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSound.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSoundChannel.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSoundEmitter.h" />
@@ -344,8 +332,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXSoundStorage.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTextureDuplicator.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTextureOuter.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXTextureStorage.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXTextureUtils.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXTexture.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTouchSurface.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIButton.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUICommon.h" />
@@ -357,7 +344,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXUIMessage.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIPopup.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIStaticText.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXVAOStorage.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXWidget.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMActor.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMDirectedLightActor.h" />

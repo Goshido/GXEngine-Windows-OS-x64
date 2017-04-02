@@ -16,7 +16,6 @@ class EMUIButton : public EMUI
 		~EMUIButton () override;
 
 		GXWidget* GetWidget () const override;
-		GXVoid OnDrawMask () override;
 
 		GXVoid Enable ();
 		GXVoid Disable ();

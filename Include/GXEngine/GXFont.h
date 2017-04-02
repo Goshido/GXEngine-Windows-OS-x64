@@ -1,51 +1,16 @@
-//version 1.4
+//version 1.6
 
 #ifndef GX_FONT
 #define GX_FONT
 
 
-#include "GXFont.h"
-#include "GXOpenGL.h"
+#include <GXEngine/GXTexture.h>
 #include <GXEngineDLL/GXEngineAPI.h>
-#include <GXEngine/GXTextureStorage.h>
-#include <GXCommon/GXMath.h>
 
-
-extern FT_Library				gx_ft_Library;
-
-//-------------------------------------------------------------------------
-
-extern PFNFTNEWMEMORYFACE		GXFtNewMemoryFace;
-extern PFNFTDONEFACE			GXFtDoneFace;
-
-extern PFNFTSETCHARSIZE			GXFtSetCharSize;
-extern PFNFTSETPIXELSIZES		GXFtSetPixelSizes;
-
-extern PFNFTGETCHARINDEX		GXFtGetCharIndex;
-extern PFNFTGETKERNING			GXFtGetKerning;
-
-extern PFNFTLOADGLYPH			GXFtLoadGlyph;
-extern PFNFTRENDERGLYPH			GXFtRenderGlyph;
-
-//-------------------------------------------------------------------------
-
-GXBool GXCALL GXFontInit ();
-GXBool GXCALL GXFontDestroy ();
-
-//-------------------------------------------------------------------------
-
-struct GXGlyph
-{
-	GXVec2		min;
-	GXVec2		max;
-	GXFloat		offsetY;
-	GXUShort	advance;
-	GXByte		atlasID;
-};
 
 struct GXGlyphInfo
 {
-	GLuint			atlas;
+	GXTexture*		atlas;
 	GXVec2			min;
 	GXVec2			max;
 	GXFloat			offsetY;
@@ -54,34 +19,45 @@ struct GXGlyphInfo
 	GXUShort		advance;
 };
 
+class GXFontEntry;
+struct GXFontParameters;
 class GXFont
 {
 	private:
-		FT_Face		face;
-		GXUShort	size;
-		GXGlyph		glyphs[ 0x7FFF ];
-		GLuint*		atlases;
-		GXByte		atlasID;
-		GXUShort	left;
-		GXUShort	top;
-		GXUShort	bottom;
-		GXUShort	spaceAdvance;
+		FT_Face				face;
+		GXUShort			size;
+		GXFontParameters*	parameters;
+
+		static GXFont		nullFont;
 
 	public:
-		GXFont ( FT_Face face, GXUShort size );
+		GXFont ();
 		~GXFont ();
 
-		GXBool GetGlyph ( GXUInt symbol, GXGlyphInfo &info );
-		GXInt GetKerning ( GXUInt symbol, GXUInt prevSymbol );
-		GXUShort GetSpaceAdvance ();
-		GXUShort GetSize ();
-		GXVoid GetAtlasTexture ( GXByte atlasID, GXTexture &texture );
-		GXUInt GXCDECLCALL GetTextLength ( GXUInt bufferNumSymbols, const GXWChar* format, ... );
+		GXBool GetGlyph ( GXUInt symbol, GXGlyphInfo &info ) const;
+		GXInt GetKerning ( GXUInt symbol, GXUInt prevSymbol ) const;
+		GXUShort GetSpaceAdvance () const;
+		GXUShort GetSize () const;
+		GXTexture* GetAtlasTexture ( GXByte atlasID );
+		GXUInt GXCDECLCALL GetTextLength ( GXUInt bufferNumSymbols, const GXWChar* format, ... ) const;
+
+		static GXFont& GXCALL GetFont ( const GXWChar* fileName, GXUShort size );
+		static GXVoid GXCALL RemoveFont ( GXFont &font );
+		static GXUInt GXCALL GetTotalLoadedFonts ( const GXWChar** lastFont, GXUShort &lastSize );
+
+		static GXBool GXCALL InitFreeTypeLibrary ();
+		static GXBool GXCALL DestroyFreeTypeLibrary ();
+
+		GXVoid operator = ( const GXFont &other );
 
 	private:
-		GXVoid RenderGlyph ( GXUInt symbol );
-		GXVoid CreateAtlas ();
-		GXUByte CheckAtlas ( GXUInt width, GXUInt height );
+		explicit GXFont ( const GXWChar* fileName, GXUShort size );
+
+		GXVoid RenderGlyph ( GXUInt symbol ) const;
+		GXVoid CreateAtlas () const;
+		GXUByte CheckAtlas ( GXUInt width, GXUInt height ) const;
+
+		GXBool operator == ( const GXFontEntry &other ) const;
 };
 
 

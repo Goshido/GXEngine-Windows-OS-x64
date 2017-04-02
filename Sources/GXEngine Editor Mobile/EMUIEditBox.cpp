@@ -1,7 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMUIEditBox.h>
 #include <GXEngine/GXHudSurface.h>
-#include <GXEngine/GXRenderer.h>
-#include <GXEngine/GXTextureStorage.h>
+#include <GXEngine/GXTexture.h>
 #include <GXEngine/GXUICommon.h>
 #include <GXCommon/GXCommon.h>
 
@@ -66,15 +65,15 @@ class EMUIEditBoxRenderer : public GXWidgetRenderer
 EMUIEditBoxRenderer::EMUIEditBoxRenderer ( GXUIEditBox* widget ):
 GXWidgetRenderer ( widget )
 {
-	GXLoadTexture ( EM_DEFAULT_BACKGROUND, background );
+	background = GXTexture::LoadTexture ( EM_DEFAULT_BACKGROUND, GX_FALSE );
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
-	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ), GX_FALSE );
+	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
 }
 
 EMUIEditBoxRenderer::~EMUIEditBoxRenderer ()
 {
 	delete surface;
-	GXRemoveTexture ( background );
+	GXTexture::RemoveTexture ( background );
 }
 
 GXVoid EMUIEditBoxRenderer::OnRefresh ()
@@ -89,12 +88,12 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
 
 	GXImageInfo ii;
 
-	ii.texture = background;
+	ii.texture = &background;
 	GXColorToVec4 ( ii.color, EM_BACKGROUND_COLOR_R, EM_BACKGROUND_COLOR_G, EM_BACKGROUND_COLOR_B, EM_BACKGROUND_COLOR_A );
 	ii.insertX = ii.insertY = 1.5f;
 	ii.insertWidth = width - 2.0f;
 	ii.insertHeight = height - 2.0f;
-	ii.overlayType = GX_SIMPLE_REPLACE;
+	ii.overlayType = eGXImageOverlayType::SimpleReplace;
 
 	surface->AddImage ( ii );
 
@@ -117,7 +116,7 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
 		GXPenInfo pi;
 		pi.font = font;
 		pi.insertY = ( height - font->GetSize () * 0.6f ) * 0.5f;
-		pi.overlayType = GX_ALPHA_TRANSPARENCY_PRESERVE_ALPHA;
+		pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 		GXColorToVec4 ( pi.color, EM_FONT_COLOR_R, EM_FONT_COLOR_G, EM_FONT_COLOR_B, EM_FONT_COLOR_A );
 
 		switch ( editBoxWidget->GetAlignment () )
@@ -148,35 +147,35 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
 
 	GXLineInfo li;
 	li.thickness = 1.0f;
-	li.overlayType = GX_SIMPLE_REPLACE;
+	li.overlayType = eGXImageOverlayType::SimpleReplace;
 
 	if ( editBoxWidget->IsActive () )
 	{
 		GXColorToVec4 ( li.color, EM_CURSOR_COLOR_R, EM_CURSOR_COLOR_G, EM_CURSOR_COLOR_B, EM_CURSOR_COLOR_A );
-		li.startPoint = GXCreateVec3 ( editBoxWidget->GetCursorOffset () + 0.5f, 0.5f, 0.0f );
-		li.endPoint = GXCreateVec3 ( li.startPoint.x, height, 0.0f );
+		li.startPoint = GXCreateVec2 ( editBoxWidget->GetCursorOffset () + 0.5f, 0.5f );
+		li.endPoint = GXCreateVec2 ( li.startPoint.x, height );
 		surface->AddLine ( li );
 	}
 
 	GXColorToVec4 ( li.color, EM_BORDER_COLOR_R , EM_BORDER_COLOR_G , EM_BORDER_COLOR_B, EM_BORDER_COLOR_A );
 	
-	li.startPoint = GXCreateVec3 ( 0.5f, 0.5f, 0.0f );
-	li.endPoint = GXCreateVec3 ( width - 0.5f, 0.5f, 0.0f );
+	li.startPoint = GXCreateVec2 ( 0.5f, 0.5f );
+	li.endPoint = GXCreateVec2 ( width - 0.5f, 0.5f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec3 ( width - 0.5f, 0.5f, 0.0f );
-	li.endPoint = GXCreateVec3 ( width - 0.5f, height - 0.5f, 0.0f );
+	li.startPoint = GXCreateVec2 ( width - 0.5f, 0.5f );
+	li.endPoint = GXCreateVec2 ( width - 0.5f, height - 0.5f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec3 ( width - 0.5f, height - 0.5f, 0.0f );
-	li.endPoint = GXCreateVec3 ( 0.5f, height - 0.5f, 0.0f );
+	li.startPoint = GXCreateVec2 ( width - 0.5f, height - 0.5f );
+	li.endPoint = GXCreateVec2 ( 0.5f, height - 0.5f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec3 ( 0.5f, height - 0.5f, 0.0f );
-	li.endPoint = GXCreateVec3 ( 0.5f, 0.5f, 0.0f );
+	li.startPoint = GXCreateVec2 ( 0.5f, height - 0.5f );
+	li.endPoint = GXCreateVec2 ( 0.5f, 0.5f );
 
 	surface->AddLine ( li );
 }
@@ -184,14 +183,14 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
 GXVoid EMUIEditBoxRenderer::OnDraw ()
 {
 	glDisable ( GL_DEPTH_TEST );
-	surface->Draw ();
+	surface->Render ();
 	glEnable ( GL_DEPTH_TEST );
 }
 
 GXVoid EMUIEditBoxRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
 {
 	GXSafeDelete ( surface );
-	surface = new GXHudSurface ( width, height, GX_FALSE );
+	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
 	surface->GetLocation ( location );
 	surface->SetLocation ( x, y, location.z );

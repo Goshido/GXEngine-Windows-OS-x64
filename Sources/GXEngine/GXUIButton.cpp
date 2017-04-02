@@ -37,7 +37,7 @@ GXVoid GXUIButton::OnMessage ( GXUInt message, const GXVoid* data )
 			if ( OnLeftMouseButton )
 			{
 				const GXVec2* position = (const GXVec2*)data;
-				OnLeftMouseButton ( handler, this, position->x, position->y, GX_MOUSE_BUTTON_DOWN );
+				OnLeftMouseButton ( handler, this, position->x, position->y, eGXMouseButtonState::Down );
 			}
 		}
 		break;
@@ -54,7 +54,7 @@ GXVoid GXUIButton::OnMessage ( GXUInt message, const GXVoid* data )
 			if ( !OnLeftMouseButton ) return;
 
 			const GXVec2* position = (const GXVec2*)data;
-			OnLeftMouseButton ( handler, this, position->x, position->y, GX_MOUSE_BUTTON_UP );
+			OnLeftMouseButton ( handler, this, position->x, position->y, eGXMouseButtonState::Up );
 		}
 		break;
 

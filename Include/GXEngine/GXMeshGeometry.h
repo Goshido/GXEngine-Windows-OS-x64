@@ -8,35 +8,32 @@
 #include <GXCommon/GXMath.h>
 
 
-#define VERTEX_STREAM		0
-#define UV_COORD_STREAM		1
-#define NORMAL_STREAM		2
-#define TANGENT_STREAM		3
-#define BITANGENT_STREAM	4
-
 enum class eGXMeshStreamIndex : GLuint
 {
 	Vertex		= 0,
 	UV			= 1,
 	Normal		= 2,
 	Tangent		= 3,
-	Bitangent	= 4	
+	Bitangent	= 4
 };
 
-
+class GXMeshGeometryEntry;
 class GXMeshGeometry
 {
 	private:
-		GLsizei		totalElements;
-		GLuint		vao;
-		GLuint		vbo;
+		GLsizei					totalVertices;
+		GLuint					vao;
+		GLuint					vbo;
+		GLenum					topology;
 
-		GXAABB		boundsLocal;
-		GXAABB		boundsWorld;
+		GXAABB					boundsLocal;
+		GXAABB					boundsWorld;
+
+		static GXMeshGeometry	nullObject;
 
 	public:
 		GXMeshGeometry ();
-		virtual ~GXMeshGeometry ();
+		~GXMeshGeometry ();
 
 		GXVoid Render() const;
 
@@ -46,14 +43,23 @@ class GXMeshGeometry
 		GXVoid UpdateBoundsWorld ( const GXMat4& transform );
 		const GXAABB& GetBoundsWorld () const;
 
-		GXVoid SetTotalElements ( GLsizei elements );
+		GXVoid SetTotalVertices ( GLsizei totalVertices );
 		GXVoid FillVertexBuffer ( const GXVoid* data, GLsizeiptr size, GLenum usage );
 		GXVoid SetBufferStream ( eGXMeshStreamIndex streamIndex, GLint numElements, GLenum elementType, GLsizei stride, const GLvoid* offset );
+		GXVoid SetTopology ( GLenum topology );
 
 		static GXMeshGeometry& GXCALL LoadFromObj ( const GXWChar* fileName );
-		static GXVoid GXCALL Remove ( GXMeshGeometry& mesh );
+		static GXMeshGeometry& GXCALL LoadFromStm ( const GXWChar* fileName );
 
-		GXBool operator == ( const GXMeshGeomentryEntry &entry );
+		static GXVoid GXCALL RemoveMeshGeometry ( GXMeshGeometry& mesh );
+		static GXUInt GXCALL GetTotalLoadedMeshGeometries ( const GXWChar** lastMeshGeometry );
+
+		GXBool operator == ( const GXMeshGeometryEntry &entry ) const;
+		GXVoid operator = ( const GXMeshGeometry &meshGeometry );
+
+	private:
+		GXVoid Init ();
+		static GXMeshGeometry& GXCALL GetGeometryFromStm ( const GXWChar* fileName );
 };
 
 

@@ -32,7 +32,7 @@ class EMActor
 		GXBool			isVisible;
 
 	public:
-		EMActor ( const GXWChar* name, GXUInt type, const GXMat4 &transform );
+		explicit EMActor ( const GXWChar* name, GXUInt type, const GXMat4 &transform );
 		virtual ~EMActor ();
 
 		virtual GXVoid OnDrawCommonPass ();

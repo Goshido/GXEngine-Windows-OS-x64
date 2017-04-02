@@ -10,11 +10,10 @@
 #include <GXEngine/GXEngineSettings.h>
 #include <GXEngine/GXPhysXFrontend.h>
 #include <GXEngine/GXFont.h>
-#include <GXEngine/GXFontStorage.h>
-#include <GXEngine/GXShaderStorage.h>
+#include <GXEngine/GXShaderProgram.h>
 #include <GXEngine/GXSoundStorage.h>
-#include <GXEngine/GXTextureStorage.h>
-#include <GXEngine/GXVAOStorage.h>
+#include <GXEngine/GXTexture.h>
+#include <GXEngine/GXMeshGeometry.h>
 #include <GXCommon/GXCFGLoader.h>
 
 
@@ -37,7 +36,7 @@ GXCore::~GXCore ()
 
 	GXSoundDestroy ();
 
-	GXFontDestroy ();
+	GXFont::DestroyFreeTypeLibrary ();
 	GXLogDestroy ();
 }
 
@@ -125,7 +124,7 @@ GXCore::GXCore ()
 
 	GXSoundMixer::GetInstance ();
 
-	if ( !GXFontInit () )
+	if ( !GXFont::InitFreeTypeLibrary () )
 	{
 		GXLogW ( L"GXCore::GXCore::Error - Инициализация модуля шрифтов провалена\n" );
 		GXDebugBox ( L"Инициализация модуля шрифтов провалена" );
@@ -145,28 +144,29 @@ GXCore::GXCore ()
 GXVoid GXCore::CheckMemoryLeak ()
 {
 	const GXWChar* lastFont = nullptr;
-	GXUInt fonts = GXGetTotalFontStorageObjects ( &lastFont );
+	GXUShort lastFontSize = 0;
+	GXUInt fonts = GXFont::GetTotalLoadedFonts ( &lastFont, lastFontSize );
 
 	const GXWChar* lastVS = nullptr;
 	const GXWChar* lastGS = nullptr;
 	const GXWChar* lastFS = nullptr;
-	GXUInt shaders = GXGetTotalShaderStorageObjects ( &lastVS, &lastGS, &lastFS );
+	GXUInt shaders = GXShaderProgram::GetTotalLoadedShaderPrograms ( &lastVS, &lastGS, &lastFS );
 
 	GXWChar* lastSound = nullptr;
 	GXUInt sounds = GXGetTotalSoundStorageObjects ( &lastSound );
 
 	const GXWChar* lastTexture = nullptr;
-	GXUInt textures = GXGetTotalTextureStorageObjects ( &lastTexture );
+	GXUInt textures = GXTexture::GetTotalLoadedTextures ( &lastTexture );
 
-	const GXWChar* lastVAO = nullptr;
-	GXUInt vaos = GXGetTotalVAOStorageObjects ( &lastVAO );
+	const GXWChar* lastMeshGeometry = nullptr;
+	GXUInt meshGeometries = GXMeshGeometry::GetTotalLoadedMeshGeometries ( &lastMeshGeometry );
 
-	if ( ( fonts + shaders + sounds + textures + vaos ) != 0 )
+	if ( ( fonts + shaders + sounds + textures + meshGeometries ) != 0 )
 	{
 		GXLogW ( L"GXCore::CheckMemoryLeak::Warning - Обнаружена утечка памяти\n" );
 
 		if ( fonts > 0 )
-			GXLogW ( L"Шрифты - %i [%s]\n", fonts, lastFont );
+			GXLogW ( L"Шрифты - %i [%s] [размер %i]\n", fonts, lastFont, lastFontSize );
 
 		if ( shaders > 0 )
 			GXLogW ( L"Шейдерные программы - %i [%s] [%s] [%s]\n", shaders, lastVS, lastGS, lastFS );
@@ -177,8 +177,8 @@ GXVoid GXCore::CheckMemoryLeak ()
 		if ( textures > 0 )
 			GXLogW ( L"Текстурные объёкты  - %i [%s]\n ", textures, lastTexture );
 
-		if ( vaos > 0 )
-			GXLogW ( L"Статичные меши - %i [%s]\n", vaos, lastVAO );
+		if ( meshGeometries > 0 )
+			GXLogW ( L"Меши - %i [%s]\n", meshGeometries, lastMeshGeometry );
 
 		system ( "pause" );
 	}

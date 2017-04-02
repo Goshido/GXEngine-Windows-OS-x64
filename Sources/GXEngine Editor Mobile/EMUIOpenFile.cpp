@@ -92,11 +92,6 @@ GXWidget* EMUIOpenFile::GetWidget () const
 	return mainPanel->GetWidget ();
 }
 
-GXVoid EMUIOpenFile::OnDrawMask ()
-{
-	//TODO
-}
-
 GXVoid EMUIOpenFile::Browse ( PFNEMONBROWSEFILEPROC callback )
 {
 	if ( !callback ) return;
@@ -153,7 +148,7 @@ GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
 					continue;
 				}
 
-				items[ itemIndex ].type = EM_UI_FILE_BOX_ITEM_TYPE_FOLDER;
+				items[ itemIndex ].type = eEMUIFileListBoxItemType::Folder;
 				items[ itemIndex ].name = (GXWChar*)directoryInfo.folderNames[ i ];
 				itemIndex++;
 			}
@@ -175,7 +170,7 @@ GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
 					continue;
 				}
 
-				items[ itemIndex ].type = EM_UI_FILE_BOX_ITEM_TYPE_FOLDER;
+				items[ itemIndex ].type = eEMUIFileListBoxItemType::Folder;
 				items[ itemIndex ].name = (GXWChar*)directoryInfo.folderNames[ i ];
 				itemIndex++;
 			}
@@ -183,7 +178,7 @@ GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
 
 		for ( GXUInt i = 0; i < directoryInfo.totalFiles; i++ )
 		{
-			items[ itemIndex ].type = EM_UI_FILE_BOX_ITEM_TYPE_FILE;
+			items[ itemIndex ].type = eEMUIFileListBoxItemType::File;
 			items[ itemIndex ].name = (GXWChar*)directoryInfo.fileNames[ i ];
 			itemIndex++;
 		}
@@ -206,14 +201,14 @@ const GXWChar* EMUIOpenFile::GetRelativePath () const
 
 GXVoid GXCALL EMUIOpenFile::OnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFloat y, eGXMouseButtonState state )
 {
-	if ( state != GX_MOUSE_BUTTON_UP ) return;
+	if ( state != eGXMouseButtonState::Up ) return;
 
 	EMUIOpenFile* main = (EMUIOpenFile*)handler;
 
 	if ( button == main->okButton->GetWidget () )
 	{
 		EMUIFileListBoxItem* i = (EMUIFileListBoxItem*)main->fileListBox->GetSelectedItem ();
-		if ( i && i->type == EM_UI_FILE_BOX_ITEM_TYPE_FILE )
+		if ( i && i->type == eEMUIFileListBoxItemType::File )
 			main->OnBrowseFile ( main->filePathStaticText->GetText () );
 
 		main->mainPanel->Hide ();
@@ -232,7 +227,7 @@ GXVoid GXCALL EMUIOpenFile::OnItemSelected ( GXVoid* handler, GXUIListBox* listB
 
 	switch ( element->type )
 	{
-		case EM_UI_FILE_BOX_ITEM_TYPE_FILE:
+		case eEMUIFileListBoxItemType::File:
 		{
 			GXWChar* buf = (GXWChar*)malloc ( EM_PATH_BUFFER_SIZE );
 			wsprintfW ( buf, L"%s\\%s", main->GetRelativePath (), element->name );
@@ -241,7 +236,7 @@ GXVoid GXCALL EMUIOpenFile::OnItemSelected ( GXVoid* handler, GXUIListBox* listB
 		}
 		break;
 
-		case EM_UI_FILE_BOX_ITEM_TYPE_FOLDER:
+		case eEMUIFileListBoxItemType::Folder:
 			main->filePathStaticText->SetText ( main->GetRelativePath () );
 		break;
 	}
@@ -254,11 +249,11 @@ GXVoid GXCALL EMUIOpenFile::OnItemDoubleClicked ( GXVoid* handler, GXUIListBox* 
 
 	switch ( element->type )
 	{
-		case EM_UI_FILE_BOX_ITEM_TYPE_FILE:
-			OnButton ( main, (GXUIButton*)main->okButton->GetWidget (), 0.0f, 0.0f, GX_MOUSE_BUTTON_UP );
+		case eEMUIFileListBoxItemType::File:
+			OnButton ( main, (GXUIButton*)main->okButton->GetWidget (), 0.0f, 0.0f, eGXMouseButtonState::Up );
 		break;
 
-		case EM_UI_FILE_BOX_ITEM_TYPE_FOLDER:
+		case eEMUIFileListBoxItemType::Folder:
 			main->UpdateDirectory ( element->name );
 		break;
 	}

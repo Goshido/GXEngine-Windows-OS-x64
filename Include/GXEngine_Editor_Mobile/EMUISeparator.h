@@ -15,7 +15,6 @@ class EMUISeparator : public EMUI
 		~EMUISeparator () override;
 
 		GXWidget* GetWidget () const override;
-		GXVoid OnDrawMask () override;
 
 		GXVoid Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height );
 };

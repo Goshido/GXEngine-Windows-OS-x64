@@ -1,7 +1,7 @@
 #include <GXEngine_Editor_Mobile/EMUIStaticText.h>
 #include <GXEngine/GXHudSurface.h>
 #include <GXEngine/GXUICommon.h>
-#include <GXEngine/GXFontStorage.h>
+#include <GXEngine/GXFont.h>
 
 
 #define EM_STATIC_TEXT_DEFAULT_WIDTH		4.0f
@@ -18,7 +18,7 @@ class EMUIStaticTextRenderer : public GXWidgetRenderer
 {
 	private:
 		GXHudSurface*		surface;
-		GXFont*				font;
+		GXFont				font;
 
 	public:
 		EMUIStaticTextRenderer ( GXUIStaticText* staticTextWidget );
@@ -36,14 +36,14 @@ EMUIStaticTextRenderer::EMUIStaticTextRenderer ( GXUIStaticText* staticTextWidge
 GXWidgetRenderer ( staticTextWidget )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
-	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ), GX_FALSE );
-	font = GXGetFont ( EM_STATIC_TEXT_DEFAULT_FONT, (GXUShort)( EM_STATIC_TEXT_DEFAULT_TEXT_SIZE * gx_ui_Scale ) );
+	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
+	font = GXFont::GetFont ( EM_STATIC_TEXT_DEFAULT_FONT, (GXUShort)( EM_STATIC_TEXT_DEFAULT_TEXT_SIZE * gx_ui_Scale ) );
 }
 
 EMUIStaticTextRenderer::~EMUIStaticTextRenderer ()
 {
 	delete surface;
-	GXRemoveFont ( font );
+	GXFont::RemoveFont ( font );
 }
 
 GXVoid EMUIStaticTextRenderer::OnRefresh ()
@@ -59,9 +59,9 @@ GXVoid EMUIStaticTextRenderer::OnRefresh ()
 	if ( !text ) return;
 
 	GXPenInfo pi;
-	pi.font = font;
-	pi.insertY = ( h - font->GetSize () * 0.6f ) * 0.5f;
-	pi.overlayType = GX_SIMPLE_REPLACE;
+	pi.font = &font;
+	pi.insertY = ( h - font.GetSize () * 0.6f ) * 0.5f;
+	pi.overlayType = eGXImageOverlayType::SimpleReplace;
 	GXColorToVec4 ( pi.color, EM_STATIC_TEXT_DEFAULT_COLOR_R, EM_STATIC_TEXT_DEFAULT_COLOR_G, EM_STATIC_TEXT_DEFAULT_COLOR_B, EM_STATIC_TEXT_DEFAULT_COLOR_A );	
 
 	switch ( staticText->GetAlignment () )
@@ -73,7 +73,7 @@ GXVoid EMUIStaticTextRenderer::OnRefresh ()
 		case GX_UI_TEXT_ALIGNMENT_RIGHT:
 		{
 			GXFloat w = (GXFloat)surface->GetWidth ();
-			GXFloat len = (GXFloat)font->GetTextLength ( 0, staticText->GetText () );
+			GXFloat len = (GXFloat)font.GetTextLength ( 0, staticText->GetText () );
 			pi.insertX = w - len;
 		}
 		break;
@@ -81,7 +81,7 @@ GXVoid EMUIStaticTextRenderer::OnRefresh ()
 		case GX_UI_TEXT_ALIGNMENT_CENTER:
 		{
 			GXFloat w = (GXFloat)surface->GetWidth ();
-			GXFloat len = (GXFloat)font->GetTextLength ( 0, staticText->GetText () );
+			GXFloat len = (GXFloat)font.GetTextLength ( 0, staticText->GetText () );
 			pi.insertX = ( w - len ) * 0.5f;
 		}
 		break;
@@ -93,7 +93,7 @@ GXVoid EMUIStaticTextRenderer::OnRefresh ()
 GXVoid EMUIStaticTextRenderer::OnDraw ()
 {
 	glDisable ( GL_DEPTH_TEST );
-	surface->Draw ();
+	surface->Render ();
 	glEnable ( GL_DEPTH_TEST );
 }
 
@@ -102,7 +102,7 @@ GXVoid EMUIStaticTextRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width,
 	GXVec3 location;
 	surface->GetLocation ( location );
 	delete surface;
-	surface = new GXHudSurface ( width, height, GX_FALSE );
+	surface = new GXHudSurface ( width, height );
 	surface->SetLocation ( x, y, location.z );
 }
 
@@ -131,11 +131,6 @@ EMUIStaticText::~EMUIStaticText ()
 GXWidget* EMUIStaticText::GetWidget () const
 {
 	return widget;
-}
-
-GXVoid EMUIStaticText::OnDrawMask ()
-{
-	//TODO
 }
 
 GXVoid EMUIStaticText::SetText ( const GXWChar* text )

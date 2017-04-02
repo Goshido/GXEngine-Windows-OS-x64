@@ -4,8 +4,8 @@
 
 #include "EMTool.h"
 #include <GXEngine/GXInput.h>
-#include <GXEngine/GXVAOStorage.h>
 #include <GXEngine/GXShaderProgram.h>
+#include <GXEngine/GXMeshGeometry.h>
 
 
 class EMMoveTool : public EMTool
@@ -23,13 +23,13 @@ class EMMoveTool : public EMTool
 		GXUShort			mouseX;
 		GXUShort			mouseY;
 
-		GXVAOInfo			xAxis;
-		GXVAOInfo			xAxisMask;
-		GXVAOInfo			yAxis;
-		GXVAOInfo			yAxisMask;
-		GXVAOInfo			zAxis;
-		GXVAOInfo			zAxisMask;
-		GXVAOInfo			center;
+		GXMeshGeometry		xAxis;
+		GXMeshGeometry		xAxisMask;
+		GXMeshGeometry		yAxis;
+		GXMeshGeometry		yAxisMask;
+		GXMeshGeometry		zAxis;
+		GXMeshGeometry		zAxisMask;
+		GXMeshGeometry		center;
 
 		GXShaderProgram		colorProgram;
 		GXShaderProgram		maskProgram;
@@ -44,27 +44,26 @@ class EMMoveTool : public EMTool
 		EMMoveTool ();
 		GXVoid Delete ();
 
-		virtual GXVoid Bind ();
-		virtual GXVoid SetActor ( EMActor* actor );
-		virtual GXVoid UnBind ();
+		GXVoid Bind () override;
+		GXVoid SetActor ( EMActor* actor ) override;
+		GXVoid UnBind () override;
 
-		virtual GXVoid OnViewerTransformChanged ();
+		GXVoid OnViewerTransformChanged () override;
 
-		virtual GXVoid OnDrawHudColorPass ();
-		virtual GXVoid OnDrawHudMaskPass ();
+		GXVoid OnDrawHudColorPass () override;
+		GXVoid OnDrawHudMaskPass () override;
 
-		virtual GXVoid OnMouseMove ( const GXVec2 &mousePosition );
-		virtual GXVoid OnMouseButton ( EGXInputMouseFlags mouseflags );
+		GXVoid OnMouseMove ( const GXVec2 &mousePosition ) override;
+		GXVoid OnMouseButton ( EGXInputMouseFlags mouseflags ) override;
 
 		GXVoid SetLocalMode ();
 		GXVoid SetWorldMode ();
 
 	protected:
-		virtual ~EMMoveTool ();
+		~EMMoveTool () override;
 
 	private:
-		GXVoid Load3DModels ();
-		GXVoid InitUniforms ();
+		GXVoid InitGraphicResources ();
 
 		GXVoid SetMode ( GXUByte mode );
 

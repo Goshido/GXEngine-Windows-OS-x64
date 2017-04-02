@@ -16,7 +16,6 @@ class EMUIPopup : public EMUI
 		~EMUIPopup () override;
 
 		GXWidget* GetWidget () const override;
-		GXVoid OnDrawMask () override;
 
 		GXVoid AddItem ( const GXWChar* name, PFNGXONUIPOPUPACTIONPROC action );
 

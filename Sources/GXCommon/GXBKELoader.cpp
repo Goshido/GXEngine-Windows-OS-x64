@@ -2,12 +2,13 @@
 
 #include <GXCommon/GXBKELoader.h>
 #include <GXCommon/GXFileSystem.h>
+#include <GXCommon/GXMemory.h>
 
 
 GXVoid GXCALL GXLoadBKE ( const GXWChar* fileName, GXBakeInfo &out_bake_info )
 {
-	GXChar* buffer = 0;
-	GXUInt size;
+	GXChar* buffer = nullptr;
+	GXUInt size = 0;
 
 	if ( !GXLoadFile ( fileName, (GXVoid**)&buffer, size, GX_TRUE ) )
 	{

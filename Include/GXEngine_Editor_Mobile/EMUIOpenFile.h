@@ -39,7 +39,6 @@ class EMUIOpenFile : public EMUI
 		~EMUIOpenFile () override;
 
 		GXWidget* GetWidget () const override;
-		GXVoid OnDrawMask () override;
 
 		GXVoid Browse ( PFNEMONBROWSEFILEPROC callback );
 

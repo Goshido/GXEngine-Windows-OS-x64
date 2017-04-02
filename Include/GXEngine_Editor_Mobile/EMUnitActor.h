@@ -3,7 +3,6 @@
 
 
 #include "EMActor.h"
-#include <GXEngine/GXMesh.h>
 
 
 #define EM_UNIT_ACTOR_CLASS		0
@@ -17,15 +16,15 @@ class EMUnitActor : public EMActor
 		EMUnitActorMesh*	mesh;
 
 	public:
-		EMUnitActor ( const GXWChar* name, const GXMat4 &transform );
-		virtual ~EMUnitActor ();
+		explicit EMUnitActor ( const GXWChar* name, const GXMat4 &transform );
+		~EMUnitActor () override;
 
-		virtual GXVoid OnDrawCommonPass ();
+		GXVoid OnDrawCommonPass () override;
 
-		virtual GXVoid OnSave ( GXUByte** data );
-		virtual GXVoid OnLoad ( const GXUByte* data );
-		virtual GXUInt OnRequeredSaveSize ();
-		virtual GXVoid OnTransformChanged ();
+		GXVoid OnSave ( GXUByte** data ) override;
+		GXVoid OnLoad ( const GXUByte* data ) override;
+		GXUInt OnRequeredSaveSize () override;
+		GXVoid OnTransformChanged () override;
 };
 
 

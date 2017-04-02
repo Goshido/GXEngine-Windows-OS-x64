@@ -293,6 +293,10 @@ GXUInt GXCALL GXUTF8len ( const GXUTF8* str )
 
 GXInt GXCALL GXWcscmp ( const GXWChar* a, const GXWChar* b )
 {
+	if ( a == nullptr && b == nullptr ) return 0;
+	if ( a == nullptr ) return -1;
+	if ( b == nullptr ) return 1;
+
 	return wcscmp ( a, b );
 }
 
@@ -316,6 +320,12 @@ GXUInt GXCALL GXUTF8size ( const GXUTF8* str )
 
 GXVoid GXCALL GXWcsclone ( GXWChar** dest, const GXWChar* src )
 {
+	if ( !src )
+	{
+		*dest = nullptr;
+		return;
+	}
+
 	GXUInt size = sizeof ( GXWChar ) * ( GXWcslen ( src ) + 1 ); 
 	*dest = (GXWChar*)malloc ( size );
 	memcpy ( *dest, src, size );

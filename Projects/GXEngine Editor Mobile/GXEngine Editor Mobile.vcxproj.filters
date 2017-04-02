@@ -90,19 +90,10 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXSoundStorage.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine\GXTextureUtils.cpp">
-      <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine\GXVAOStorage.cpp">
-      <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimSolverMovement.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimSolverPlayer.cpp">
-      <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine\GXAttachment.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXCamera.cpp">
@@ -126,9 +117,6 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXLocale.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine\GXMesh.cpp">
-      <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXNetwork.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
@@ -142,12 +130,6 @@
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXSamplerUtils.cpp">
-      <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine\GXSkeletalMesh.cpp">
-      <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine\GXSkeletalMeshStorage.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXSound.cpp">
@@ -218,15 +200,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\GXOBJLoader.cpp">
       <Filter>Source Files\GXCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine\GXFontStorage.cpp">
-      <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine\GXSkeletalMeshQuat.cpp">
-      <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine\GXTextureStorage.cpp">
-      <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXHudSurface.cpp">
       <Filter>Source Files\GXEngine</Filter>
@@ -343,6 +316,12 @@
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXMeshGeometry.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXRenderable.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXTexture.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -500,9 +479,6 @@
     <ClInclude Include="..\..\Include\GXEngine\GXFont.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXFontStorage.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXHudSurface.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
@@ -519,9 +495,6 @@
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXMenu.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXMesh.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXMotionBlurEffect.h">
@@ -551,15 +524,6 @@
     <ClInclude Include="..\..\Include\GXEngine\GXSamplerUtils.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXSkeletalMesh.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXSkeletalMeshQuat.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXSkeletalMeshStorage.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXSound.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
@@ -581,15 +545,6 @@
     <ClInclude Include="..\..\Include\GXEngine\GXTextureOuter.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXTextureStorage.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXTextureUtils.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXVAOStorage.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXAnimSolver.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
@@ -600,9 +555,6 @@
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXArrayTextureOuter.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXAttachment.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXCamera.h">
@@ -744,6 +696,12 @@
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXMeshGeometry.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXRenderable.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXTexture.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
   </ItemGroup>

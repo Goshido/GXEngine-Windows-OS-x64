@@ -2,19 +2,24 @@
 #define EM_ROTATE_GISMO
 
 
-#include <GXEngine/GXMesh.h>
-#include <GXEngine/GXTextureStorage.h>
+#include <GXEngine/GXRenderable.h>
+#include <GXEngine/GXMeshGeometry.h>
+#include <GXEngine/GXShaderProgram.h>
+#include <GXEngine/GXTexture.h>
 
 
-class EMRotateGismo : public GXMesh
+class EMRotateGismo : public GXRenderable
 {
 	private:
-		GXBool		isDeleted;
-		GXBool		isVisible;
+		GXBool				isDeleted;
+		GXBool				isVisible;
 
-		GLint		mod_view_proj_matLocation;
+		GXShaderProgram		shaderProgram;
+		GLint				mod_view_proj_matLocation;
 
-		GXTexture	texture;
+		GXMeshGeometry		meshGeometry;
+		GXTexture			texture;
+		GLuint				sampler;
 
 	public:
 		EMRotateGismo ();
@@ -23,13 +28,13 @@ class EMRotateGismo : public GXMesh
 		GXVoid Hide ();
 		GXVoid Show ();
 
-		virtual GXVoid Draw ();
+		GXVoid Render () override;
 
 	protected:
-		~EMRotateGismo ();
+		~EMRotateGismo () override;
 
-		virtual GXVoid Load3DModel ();
-		virtual GXVoid InitUniforms ();
+		GXVoid InitGraphicResources () override;
+		GXVoid UpdateBounds () override;
 };
 
 

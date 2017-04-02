@@ -6,10 +6,10 @@
 #include <GXEngine/GXUIListBox.h>
 
 
-enum eEMUIFileListBoxItemType : GXUByte
+enum class eEMUIFileListBoxItemType : GXUByte
 {
-	EM_UI_FILE_BOX_ITEM_TYPE_FOLDER,
-	EM_UI_FILE_BOX_ITEM_TYPE_FILE
+	Folder,
+	File
 };
 
 struct EMUIFileListBoxItem
@@ -31,7 +31,6 @@ class EMUIFileListBox : public EMUI
 		~EMUIFileListBox () override;
 
 		GXWidget* GetWidget () const override;
-		GXVoid OnDrawMask () override;
 
 		GXVoid Resize ( GXFloat leftBottomX, GXFloat leftBottomY, GXFloat width, GXFloat height );
 		GXVoid AddFolder ( const GXWChar* name );

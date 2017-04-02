@@ -37,7 +37,7 @@ EMUISeparatorRenderer::EMUISeparatorRenderer ( GXWidget* widget ):
 GXWidgetRenderer ( widget )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
-	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ), GX_FALSE );
+	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
 }
 
 EMUISeparatorRenderer::~EMUISeparatorRenderer ()
@@ -54,10 +54,10 @@ GXVoid EMUISeparatorRenderer::OnRefresh ()
 
 	GXLineInfo li;
 	GXColorToVec4 ( li.color, EM_SEPARATOR_DEFAULT_COLOR_R, EM_SEPARATOR_DEFAULT_COLOR_G, EM_SEPARATOR_DEFAULT_COLOR_B, EM_SEPARATOR_DEFAULT_COLOR_A );
-	li.overlayType = GX_SIMPLE_REPLACE;
+	li.overlayType = eGXImageOverlayType::SimpleReplace;
 	li.thickness = 1.0f;
-	li.startPoint = GXCreateVec3 ( 0.0f, y, 0.0f );
-	li.endPoint = GXCreateVec3 ( (GXFloat)surface->GetWidth (), y, 0.0f );
+	li.startPoint = GXCreateVec2 ( 0.0f, y );
+	li.endPoint = GXCreateVec2 ( (GXFloat)surface->GetWidth (), y );
 
 	surface->AddLine ( li );
 }
@@ -65,14 +65,14 @@ GXVoid EMUISeparatorRenderer::OnRefresh ()
 GXVoid EMUISeparatorRenderer::OnDraw ()
 {
 	glDisable ( GL_DEPTH_TEST );
-	surface->Draw ();
+	surface->Render ();
 	glEnable ( GL_DEPTH_TEST );
 }
 
 GXVoid EMUISeparatorRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
 {
 	GXSafeDelete ( surface );
-	surface = new GXHudSurface ( width, height, GX_FALSE );
+	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
 	surface->GetLocation ( location );
 	surface->SetLocation ( x, y, location.z );
@@ -104,11 +104,6 @@ EMUISeparator::~EMUISeparator ()
 GXWidget* EMUISeparator::GetWidget () const
 {
 	return widget;
-}
-
-GXVoid EMUISeparator::OnDrawMask ()
-{
-	//TODO
 }
 
 GXVoid EMUISeparator::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height )

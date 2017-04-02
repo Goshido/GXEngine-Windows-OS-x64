@@ -51,7 +51,7 @@ EMPhysicsDrivenActor*	em_PhysicsPlaneActor = nullptr;
 GXVoid GXCALL EMOnOpenFile ( const GXWChar* filePath );
 GXVoid GXCALL EMOnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFloat y, eGXMouseButtonState state )
 {
-	if ( state == GX_MOUSE_BUTTON_DOWN ) return;
+	if ( state == eGXMouseButtonState::Down ) return;
 
 	if ( button == em_Button1->GetWidget () )
 	{
@@ -83,14 +83,14 @@ GXVoid GXCALL EMOnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFlo
 
 GXVoid GXCALL EMOnSave ( GXFloat x, GXFloat y, eGXMouseButtonState state )
 {
-	if ( state == GX_MOUSE_BUTTON_UP )
+	if ( state == eGXMouseButtonState::Down )
 		GXLogW ( L"EMOnSave::Info - Just worked\n" );
 }
 
 GXVoid GXCALL EMOnExit ()
 {
 	GXCore::GetInstance ()->Exit ();
-	GXLogA ( "ЗавершеыGе\n" );
+	GXLogA ( "Завершение\n" );
 }
 
 GXVoid GXCALL EMOnDummy ( GXFloat x, GXFloat y, eGXMouseButtonState state )
@@ -187,7 +187,6 @@ GXBool GXCALL EMOnFrame ( GXFloat deltatime )
 	EMDrawUI ();
 
 	renderer->StartHudMaskPass ();
-	EMDrawUIMasks ();
 
 	GXCamera::SetActiveCamera ( viewerCamera );
 
@@ -349,7 +348,7 @@ GXVoid GXCALL EMOnDeleteRenderableObjects ()
 GXVoid GXCALL EMExit ( GXVoid* handler )
 {
 	GXCore::GetInstance ()->Exit ();
-	GXLogW ( L"ЗавершеыGе\n" );
+	GXLogW ( L"Завершение\n" );
 }
 
 //-------------------------------------------------------------------

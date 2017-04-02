@@ -28,8 +28,11 @@ struct GXDirectoryInfo
 GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUInt &size, GXBool notsilent );
 GXBool GXCALL GXWriteToFile ( const GXWChar* fileName, const GXVoid* buffer, GXUInt size );
 GXBool GXCALL GXDoesFileExist ( const GXWChar* fileName );
+GXBool GXCALL GXDoesDirectoryExist ( const GXWChar* directory );
+GXBool GXCALL GXCreateDirectory ( const GXWChar* directory );
 GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar* directory );
-GXVoid GXCALL GXGetFilePath ( GXWChar** path, const GXWChar fullFileName );
+GXVoid GXCALL GXGetFileDirectoryPath ( GXWChar** path, const GXWChar* absoluteFileName );
+GXVoid GXCALL GXGetBaseFileName ( GXWChar** fileName, const GXWChar* absoluteFileName );
 
 class GXWriteStream
 {

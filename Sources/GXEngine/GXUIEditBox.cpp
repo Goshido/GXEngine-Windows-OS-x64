@@ -3,8 +3,6 @@
 #include <GXEngine/GXUIEditBox.h>
 #include <GXEngine/GXUIMessage.h>
 #include <GXEngine/GXUICommon.h>
-#include <GXEngine/GXFontStorage.h>
-#include <GXEngine/GXHudSurface.h>
 #include <GXEngine/GXInput.h>
 #include <GXCommon/GXCommon.h>
 #include <GXCommon/GXStrings.h>
@@ -48,7 +46,7 @@ GXWidget ( parent )
 	textSymbols = maxSymbols = 0;
 	textLeftOffset = GX_UI_DEFAULT_TEXT_LEFT_OFFSET * gx_ui_Scale;
 	textRightOffset = GX_UI_DEFAULT_TEXT_RIGHT_OFFSET * gx_ui_Scale;
-	font = GXGetFont ( GX_UI_DEFAULT_FONT, (GXUShort)( GX_UI_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
+	font = GXFont::GetFont ( GX_UI_DEFAULT_FONT, (GXUShort)( GX_UI_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
 	cursor = selection = 0;
 	alignment = GX_UI_DEFAULT_TEXT_ALIGNMENT;
 	editCursor = LoadCursorW ( 0, IDC_IBEAM );
@@ -58,7 +56,7 @@ GXWidget ( parent )
 
 GXUIEditBox::~GXUIEditBox ()
 {
-	GXRemoveFont ( font );
+	GXFont::RemoveFont ( font );
 	GXSafeFree ( text );
 }
 
@@ -107,8 +105,8 @@ GXVoid GXUIEditBox::OnMessage ( GXUInt message, const GXVoid* data )
 		case GX_MSG_EDIT_BOX_SET_FONT:
 		{
 			const GXUIEditBoxFontInfo* fi = (const GXUIEditBoxFontInfo*)data;
-			GXRemoveFont ( font );
-			font = GXGetFont ( fi->fontFile, fi->size );
+			GXFont::RemoveFont ( font );
+			font = GXFont::GetFont ( fi->fontFile, fi->size );
 
 			if ( renderer )
 				renderer->OnUpdate ();
@@ -457,9 +455,9 @@ GXVoid GXUIEditBox::SetFont ( const GXWChar* fontFile, GXUShort fontSize )
 	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_EDIT_BOX_SET_FONT, &fi, sizeof ( GXUIEditBoxFontInfo ) );
 }
 
-GXFont* GXUIEditBox::GetFont () const
+GXFont* GXUIEditBox::GetFont ()
 {
-	return font;
+	return &font;
 }
 
 GXBool GXUIEditBox::IsActive ()
@@ -473,7 +471,7 @@ GXInt GXUIEditBox::GetSelectionPosition ( const GXVec2 &mousePosition ) const
 	GXGetAABBCenter ( center, boundsWorld );
 	GXFloat width = GXGetAABBWidth ( boundsWorld );
 	GXFloat offset = 0.0f;
-	GXFloat textLength = (GXFloat)font->GetTextLength ( 0, text );
+	GXFloat textLength = (GXFloat)font.GetTextLength ( 0, text );
 
 	switch ( alignment )
 	{
@@ -492,7 +490,7 @@ GXInt GXUIEditBox::GetSelectionPosition ( const GXVec2 &mousePosition ) const
 		break;
 
 		case GX_UI_TEXT_ALIGNMENT_LEFT:
-			textLength = (GXFloat)font->GetTextLength ( 0, text );
+			textLength = (GXFloat)font.GetTextLength ( 0, text );
 			offset = GXClampf ( mousePosition.x - boundsWorld.min.x + textLeftOffset, textLeftOffset, textLength );
 		break;
 	}
@@ -504,7 +502,7 @@ GXInt GXUIEditBox::GetSelectionPosition ( const GXVec2 &mousePosition ) const
 	{
 		workingBuffer[ i ] = text[ i ];
 		workingBuffer[ i + 1 ] = 0;
-		GXFloat currentOffset = (GXFloat)font->GetTextLength ( 0, workingBuffer );
+		GXFloat currentOffset = (GXFloat)font.GetTextLength ( 0, workingBuffer );
 
 		if ( currentOffset > offset )
 			return i;
@@ -520,7 +518,7 @@ GXFloat GXUIEditBox::GetSelectionOffset ( GXUInt symbolIndex ) const
 	memcpy ( workingBuffer, text, sizeof ( GXWChar ) * symbolIndex );
 	workingBuffer[ symbolIndex ] = 0;
 
-	GXFloat textLength = (GXFloat)font->GetTextLength ( 0, text );
+	GXFloat textLength = (GXFloat)font.GetTextLength ( 0, text );
 	GXFloat textOffset;
 
 	switch ( alignment )
@@ -538,7 +536,7 @@ GXFloat GXUIEditBox::GetSelectionOffset ( GXUInt symbolIndex ) const
 		break;
 	}
 
-	return textOffset + (GXFloat)font->GetTextLength ( 0, workingBuffer );
+	return textOffset + (GXFloat)font.GetTextLength ( 0, workingBuffer );
 }
 
 GXVoid GXUIEditBox::LockInput ()

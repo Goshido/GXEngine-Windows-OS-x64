@@ -27,7 +27,7 @@ class GXUIEditBox : public GXWidget
 		GXFloat				textLeftOffset;
 		GXFloat				textRightOffset;
 
-		GXFont*				font;
+		GXFont				font;
 		GXInt				cursor;			//index before symbol
 		GXInt				selection;		//index before symbol
 		eGXUITextAlignment	alignment;
@@ -59,7 +59,7 @@ class GXUIEditBox : public GXWidget
 		eGXUITextAlignment GetAlignment () const;
 
 		GXVoid SetFont ( const GXWChar* fontFile, GXUShort fontSize );
-		GXFont* GetFont () const;
+		GXFont* GetFont ();
 
 		GXBool IsActive ();
 

@@ -26,7 +26,6 @@ class EMUI
 		virtual ~EMUI ();
 
 		virtual GXWidget* GetWidget () const;
-		virtual GXVoid OnDrawMask ();
 
 		GXVoid ToForeground ();
 };

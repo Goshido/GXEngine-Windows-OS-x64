@@ -22,8 +22,8 @@ GXVoid GXNativeStaticMeshInfo::Cleanup ()
 
 GXVoid GXCALL GXLoadNativeStaticMesh ( const GXWChar* fileName, GXNativeStaticMeshInfo &info )
 {
-	GXUInt size;
-	GXUByte* data;
+	GXUInt size = 0;
+	GXUByte* data = nullptr;
 
 	if ( !GXLoadFile ( fileName, (GXVoid**)&data, size, GX_TRUE ) )
 	{
@@ -31,14 +31,7 @@ GXVoid GXCALL GXLoadNativeStaticMesh ( const GXWChar* fileName, GXNativeStaticMe
 		return;
 	}
 
-	GXLoadNativeStaticMesh ( data, info );
-
-	free ( data );
-}
-
-GXVoid GXCALL GXLoadNativeStaticMesh ( const GXUByte* mappedFile, GXNativeStaticMeshInfo &info )
-{
-	GXNativeStaticMeshHeader* h = (GXNativeStaticMeshHeader*)mappedFile;
+	GXNativeStaticMeshHeader* h = (GXNativeStaticMeshHeader*)data;
 
 	info.bounds = h->bounds;
 
@@ -47,15 +40,17 @@ GXVoid GXCALL GXLoadNativeStaticMesh ( const GXUByte* mappedFile, GXNativeStatic
 	info.numNormals = h->numNormals;
 	info.numTBPairs = h->numTBPairs;
 
-	GXUInt size = info.numVertices * sizeof ( GXVec3 ) + info.numUVs * sizeof ( GXVec2 ) + info.numNormals * sizeof ( GXVec3 ) + info.numTBPairs * 2 * sizeof ( GXVec3 );
+	size = info.numVertices * sizeof ( GXVec3 ) + info.numUVs * sizeof ( GXVec2 ) + info.numNormals * sizeof ( GXVec3 ) + info.numTBPairs * 2 * sizeof ( GXVec3 );
 	info.vboData = (GXUByte*)malloc ( size );
-	memcpy ( info.vboData, mappedFile + sizeof ( GXNativeStaticMeshHeader ), size );
+	memcpy ( info.vboData, data + sizeof ( GXNativeStaticMeshHeader ), size );
 
 	info.numElements = h->numElements;
 	if ( info.numElements > 0 )
 	{
 		size = info.numElements * sizeof ( GXUInt );
 		info.eboData = (GXUByte*)malloc ( size );
-		memcpy ( info.eboData, mappedFile + h->elementOffset, size );
+		memcpy ( info.eboData, data + h->elementOffset, size );
 	}
+
+	free ( data );
 }

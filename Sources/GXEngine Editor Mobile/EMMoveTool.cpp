@@ -1,7 +1,5 @@
 #include <GXEngine_Editor_Mobile/EMMoveTool.h>
 #include <GXEngine_Editor_Mobile/EMRenderer.h>
-#include <GXEngine/GXShaderStorage.h>
-#include <GXEngine/GXShaderUtils.h>
 #include <GXEngine/GXCamera.h>
 #include <GXEngine/GXRenderer.h>
 #include <GXCommon/GXLogger.h>
@@ -17,7 +15,7 @@
 #define EM_MOVE_TOOL_GISMO_SIZE_FACTOR		0.14f
 
 
-EMMoveTool* em_mt_Me;
+static EMMoveTool* em_mt_Me = nullptr;
 
 EMMoveTool::EMMoveTool ()
 {
@@ -26,8 +24,6 @@ EMMoveTool::EMMoveTool ()
 	memset ( &startLocationWorld, 0, sizeof ( GXVec3 ) );
 	memset ( &deltaWorld, 0, sizeof ( GXVec3 ) );
 	GXSetMat4Identity ( gismoRotation );
-
-	memset ( &xAxis, 0, sizeof ( GXVAOInfo ) );
 
 	activeAxis = EM_MOVE_TOOL_ACTIVE_AXIS_UNKNOWN;
 
@@ -87,11 +83,8 @@ GXVoid EMMoveTool::OnViewerTransformChanged ()
 
 GXVoid EMMoveTool::OnDrawHudColorPass ()
 {
-	if ( xAxis.vao == 0 )
-	{
-		Load3DModels ();
-		InitUniforms ();
-	}
+	if ( colorProgram.GetProgram () == 0 )
+		InitGraphicResources ();
 
 	if ( isDeleted )
 	{
@@ -101,7 +94,7 @@ GXVoid EMMoveTool::OnDrawHudColorPass ()
 
 	if ( !actor ) return;
 
-	glUseProgram ( colorProgram.program );
+	glUseProgram ( colorProgram.GetProgram () );
 
 	GXMat4 rot_mat;
 	GXMat4 scale_mat;
@@ -122,30 +115,28 @@ GXVoid EMMoveTool::OnDrawHudColorPass ()
 		glUniform4f ( clr_colorLocation, 1.0f, 1.0f, 1.0f, 1.0f );
 	else
 		glUniform4f ( clr_colorLocation, 1.0f, 0.0f, 0.0f, 1.0f );
-	glBindVertexArray ( xAxis.vao );
-	glDrawArrays ( GL_TRIANGLES, 0, xAxis.numVertices );
+
+	xAxis.Render ();
 
 	if ( activeAxis == EM_MOVE_TOOL_ACTIVE_AXIS_Y )
 		glUniform4f ( clr_colorLocation, 1.0f, 1.0f, 1.0f, 1.0f );
 	else
 		glUniform4f ( clr_colorLocation, 0.0f, 1.0f, 0.0f, 1.0f );
-	glBindVertexArray ( yAxis.vao );
-	glDrawArrays ( GL_TRIANGLES, 0, yAxis.numVertices );
+
+	yAxis.Render ();
 
 	if ( activeAxis == EM_MOVE_TOOL_ACTIVE_AXIS_Z )
 		glUniform4f ( clr_colorLocation, 1.0f, 1.0f, 1.0f, 1.0f );
 	else
 		glUniform4f ( clr_colorLocation, 0.0f, 0.0f, 1.0f, 1.0f );
-	glBindVertexArray ( zAxis.vao );
-	glDrawArrays ( GL_TRIANGLES, 0, zAxis.numVertices );
+
+	zAxis.Render ();
 
 	glUniform4f ( clr_colorLocation, 1.0f, 1.0f, 1.0f, 1.0f );
-	glBindVertexArray ( center.vao );
-	glDrawArrays ( GL_TRIANGLES, 0, center.numVertices );
+
+	center.Render ();
 
 	glEnable ( GL_BLEND );
-
-	glBindVertexArray ( 0 );
 	glUseProgram ( 0 );
 }
 
@@ -153,7 +144,7 @@ GXVoid EMMoveTool::OnDrawHudMaskPass ()
 {
 	if ( !actor || isDeleted ) return;
 	
-	glUseProgram ( maskProgram.program );
+	glUseProgram ( maskProgram.GetProgram () );
 
 	GXMat4 rot_mat;
 	GXMat4 scale_mat;
@@ -170,18 +161,14 @@ GXVoid EMMoveTool::OnDrawHudMaskPass ()
 
 	EMRenderer* renderer = EMRenderer::GetInstance ();
 	renderer->SetObjectMask ( (GXUPointer)( &xAxisMask ) );
-	glBindVertexArray ( xAxisMask.vao );
-	glDrawArrays ( GL_TRIANGLES, 0, xAxisMask.numVertices );
+	xAxisMask.Render ();
 
 	renderer->SetObjectMask ( (GXUPointer)( &yAxisMask ) );
-	glBindVertexArray ( yAxisMask.vao );
-	glDrawArrays ( GL_TRIANGLES, 0, yAxisMask.numVertices );
+	yAxisMask.Render ();
 
 	renderer->SetObjectMask ( (GXUPointer)( &zAxisMask ) );
-	glBindVertexArray ( zAxisMask.vao );
-	glDrawArrays ( GL_TRIANGLES, 0, zAxisMask.numVertices );
+	zAxisMask.Render ();
 
-	glBindVertexArray ( 0 );
 	glUseProgram ( 0 );
 }
 
@@ -229,39 +216,60 @@ GXVoid EMMoveTool::SetWorldMode ()
 
 EMMoveTool::~EMMoveTool ()
 {
-	if ( xAxis.vao == 0 ) return;
+	if ( colorProgram.GetProgram () == 0 ) return;
 
-	GXRemoveVAO ( xAxis );
-	GXRemoveVAO ( xAxisMask );
-	GXRemoveVAO ( yAxis );
-	GXRemoveVAO ( yAxisMask );
-	GXRemoveVAO ( zAxis );
-	GXRemoveVAO ( zAxisMask );
-	GXRemoveVAO ( center );
+	GXMeshGeometry::RemoveMeshGeometry ( xAxis );
+	GXMeshGeometry::RemoveMeshGeometry ( xAxisMask );
 
-	GXRemoveShaderProgram ( colorProgram );
-	GXRemoveShaderProgram ( maskProgram );
+	GXMeshGeometry::RemoveMeshGeometry ( yAxis );
+	GXMeshGeometry::RemoveMeshGeometry ( yAxisMask );
+
+	GXMeshGeometry::RemoveMeshGeometry ( zAxis );
+	GXMeshGeometry::RemoveMeshGeometry ( zAxisMask );
+
+	GXMeshGeometry::RemoveMeshGeometry ( center );
+
+	GXShaderProgram::RemoveShaderProgram ( colorProgram );
+	GXShaderProgram::RemoveShaderProgram ( maskProgram );
 }
 
-GXVoid EMMoveTool::Load3DModels ()
+GXVoid EMMoveTool::InitGraphicResources ()
 {
-	GXGetVAOFromNativeStaticMesh ( xAxis, L"3D Models/Editor Mobile/Move gismo X axis.stm" );
-	GXGetVAOFromNativeStaticMesh ( xAxisMask, L"3D Models/Editor Mobile/Move gismo X axis mask.stm" );
-	GXGetVAOFromNativeStaticMesh ( yAxis, L"3D Models/Editor Mobile/Move gismo Y axis.stm" );
-	GXGetVAOFromNativeStaticMesh ( yAxisMask, L"3D Models/Editor Mobile/Move gismo Y axis mask.stm" );
-	GXGetVAOFromNativeStaticMesh ( zAxis, L"3D Models/Editor Mobile/Move gismo Z axis.stm" );
-	GXGetVAOFromNativeStaticMesh ( zAxisMask, L"3D Models/Editor Mobile/Move gismo z axis mask.stm" );
-	GXGetVAOFromNativeStaticMesh ( center, L"3D Models/Editor Mobile/Move gismo center.stm" );
+	xAxis = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Move gismo X axis.stm" );
+	xAxisMask = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Move gismo X axis mask.stm" );
 
-	GXGetShaderProgram ( colorProgram, L"Shaders/Editor Mobile/VertexOnly_vs.txt", 0, L"Shaders/Editor Mobile/Color_fs.txt" );
-	GXGetShaderProgram ( maskProgram, L"Shaders/Editor Mobile/MaskVertexOnly_vs.txt", 0, L"Shaders/Editor Mobile/Mask_fs.txt" );
-}
+	yAxis = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Move gismo Y axis.stm" );
+	yAxisMask = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Move gismo Y axis mask.stm" );
 
-GXVoid EMMoveTool::InitUniforms ()
-{
-	clr_mod_view_proj_matLocation = GXGetUniformLocation ( colorProgram.program, "mod_view_proj_mat" );
-	clr_colorLocation = GXGetUniformLocation ( colorProgram.program, "color" );
-	msk_mod_view_proj_matLocation = GXGetUniformLocation ( maskProgram.program, "mod_view_proj_mat" );
+	zAxis = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Move gismo Z axis.stm" );
+	zAxisMask = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Move gismo z axis mask.stm" );
+
+	center = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Move gismo center.stm" );
+
+
+	GXShaderProgramInfo si;
+	si.vs = L"Shaders/Editor Mobile/VertexOnly_vs.txt";
+	si.gs = nullptr;
+	si.fs = L"Shaders/Editor Mobile/Color_fs.txt";
+	si.numSamplers = 0;
+	si.samplerNames = nullptr;
+	si.samplerLocations = nullptr;
+	
+	colorProgram = GXShaderProgram::GetShaderProgram ( si );
+
+	clr_mod_view_proj_matLocation = colorProgram.GetUniform ( "mod_view_proj_mat" );
+	clr_colorLocation = colorProgram.GetUniform ( "color" );
+
+	si.vs = L"Shaders/Editor Mobile/MaskVertexOnly_vs.txt";
+	si.gs = nullptr;
+	si.fs = L"Shaders/Editor Mobile/Mask_fs.txt";
+	si.numSamplers = 0;
+	si.samplerNames = nullptr;
+	si.samplerLocations = nullptr;
+
+	maskProgram = GXShaderProgram::GetShaderProgram ( si );
+
+	msk_mod_view_proj_matLocation = maskProgram.GetUniform ( "mod_view_proj_mat" );
 }
 
 GXVoid EMMoveTool::SetMode ( GXUByte mode )
@@ -349,7 +357,7 @@ GXVoid EMMoveTool::GetAxis ( GXVec3& axisView )
 		break;
 
 		default:
-			GXLogW ( L"EMMoveTool::GetAxis::Error - НеизвестнЃE ъBЃEn" );
+			GXLogW ( L"EMMoveTool::GetAxis::Error - Неизвестная ось\n" );
 			return;
 		break;
 	}
