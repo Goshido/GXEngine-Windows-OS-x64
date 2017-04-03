@@ -230,7 +230,7 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 	}
 	else
 	{
-		directoryInfo.folderNames = 0;
+		directoryInfo.folderNames = nullptr;
 	}
 
 	directoryInfo.totalFiles = fileNames.GetLength ();
@@ -240,6 +240,7 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 		GXWChar** f = (GXWChar**)malloc ( size );
 		memcpy ( f, fileNames.GetData (), size );
 		directoryInfo.fileNames = (const GXWChar**)f;
+
 		size = directoryInfo.totalFiles * sizeof ( GXULongLong );
 		GXULongLong* s = (GXULongLong*)malloc ( size );
 		memcpy ( s, fileSizes.GetData (), size );
@@ -247,8 +248,8 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 	}
 	else
 	{
-		directoryInfo.fileNames = 0;
-		directoryInfo.fileSizes = 0;
+		directoryInfo.fileNames = nullptr;
+		directoryInfo.fileSizes = nullptr;
 	}
 
 	return GX_TRUE;
