@@ -84,7 +84,7 @@ GXVoid GXCALL EMOnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFlo
 GXVoid GXCALL EMOnSave ( GXFloat x, GXFloat y, eGXMouseButtonState state )
 {
 	if ( state == eGXMouseButtonState::Down )
-		GXLogW ( L"EMOnSave::Info - Just worked\n" );
+		GXLogW ( L"EMOnSave::Info - Отработала\n" );
 }
 
 GXVoid GXCALL EMOnExit ()
@@ -123,7 +123,7 @@ GXVoid GXCALL EMOnObject ( GXUPointer object )
 	if ( !object ) return;
 
 	EMActor* actor = (EMActor*)object;
-	GXLogW ( L"EMOnObject::Info - ОбъекЃE%s (адреЃE0x%016X)\n", actor->GetName (), object );
+	GXLogW ( L"EMOnObject::Info - Объект%s (адрес 0x%016X)\n", actor->GetName (), object );
 }
 
 //-----------------------------------------------------------------------------
@@ -137,7 +137,7 @@ GXVoid GXCALL EMOnViewerTransformChanged ()
 
 GXVoid GXCALL EMOnOpenFile ( const GXWChar* filePath )
 {
-	GXLogW ( L"EMOnOpenFile::Info - ФайЃE %s\n", filePath );
+	GXLogW ( L"EMOnOpenFile::Info - Файл %s\n", filePath );
 }
 
 
@@ -145,7 +145,7 @@ GXVoid GXCALL EMOnOpenFile ( const GXWChar* filePath )
 
 GXVoid GXCALL EMStartBoxFallingSimulation ()
 {
-	GXLogW ( L"EMStartBoxFallingSimulation::Info - Started\n" );
+	GXLogW ( L"EMStartBoxFallingSimulation::Info - Старт\n" );
 
 	GXRigidBody& body = em_PhysicsBoxActor->GetRigidBody ();
 	body.SetLocation ( 0.0f, 10.0f, 15.0f );
@@ -269,7 +269,7 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 	em_Button3->SetCaption ( locale->GetString ( L"TestButton" ) );
 
 	em_EditBox = new EMUIEditBox ( em_DraggableArea );
-	em_EditBox->SetText ( L"Приве, Сиськи" );
+	em_EditBox->SetText ( L"Привет, Сиськи" );
 	em_EditBox->Resize ( 10.0f, 60.0f, 4.5f * gx_ui_Scale, 0.6f * gx_ui_Scale );
 
 	em_OpenFile = new EMUIOpenFile ();

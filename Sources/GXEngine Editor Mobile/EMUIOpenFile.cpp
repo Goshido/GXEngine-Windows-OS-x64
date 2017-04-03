@@ -64,9 +64,9 @@ EMUI ( nullptr )
 	fileListBox->SetOnItemSelectedCallback ( this, &EMUIOpenFile::OnItemSelected );
 	fileListBox->SetOnItemDoubleClickedCallbak ( this, &EMUIOpenFile::OnItemDoubleClicked );
 
-	rootDirectory = (GXWChar*)malloc ( EM_PATH_BUFFER_SIZE );
-	GetCurrentDirectoryW ( EM_PATH_BUFFER_SIZE / sizeof ( GXWChar ), rootDirectory );
-	rootDirectoryPathOffset = GXWcslen ( rootDirectory ) + 1;
+	GXGetCurrentDirectory ( &rootDirectory );
+	rootDirectoryPathOffset = GXWcslen ( rootDirectory );
+	currentDirectory = nullptr;
 	UpdateDirectory ( rootDirectory );
 
 	mainPanel->Resize ( EM_PANEL_LEFT_BOTTOM_X * gx_ui_Scale, EM_PANEL_LEFT_BOTTOM_Y * gx_ui_Scale, EM_PANEL_WIDTH * gx_ui_Scale, EM_PANEL_HEIGHT * gx_ui_Scale );
@@ -77,6 +77,7 @@ EMUI ( nullptr )
 EMUIOpenFile::~EMUIOpenFile ()
 {
 	free ( rootDirectory );
+	GXSafeFree ( currentDirectory );
 
 	delete fileListBox;
 	delete bottomSeparator;
@@ -103,24 +104,28 @@ GXVoid EMUIOpenFile::Browse ( PFNEMONBROWSEFILEPROC callback )
 
 GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
 {
-	GXWChar* path = nullptr;
-
-	if ( directoryInfo.absolutePath )
+	if ( currentDirectory )
 	{
-		GXUInt size = ( GXWcslen ( directoryInfo.absolutePath ) + GXWcslen ( folder ) + 2 ) * sizeof ( GXWChar );
-		path = (GXWChar*)malloc ( size );
-		wsprintfW ( path, L"%s\\%s", directoryInfo.absolutePath, folder );
+		GXUInt size = ( GXWcslen ( currentDirectory ) + GXWcslen ( folder ) + 2 ) * sizeof ( GXWChar );
+		GXWChar* newCurrentDirectory = (GXWChar*)malloc ( size );
+		wsprintfW ( newCurrentDirectory, L"%s/%s", currentDirectory, folder );
+		free ( currentDirectory );
+		currentDirectory = newCurrentDirectory;
 	}
 	else
-		GXWcsclone ( &path, rootDirectory );
+	{
+		GXWcsclone ( &currentDirectory, rootDirectory );
+	}
 
 	GXUInt totalItems = 0;
 	EMUIFileListBoxItem* items = nullptr;
 	GXUInt itemIndex = 0;
+	GXDirectoryInfo directoryInfo;
 
-	if ( GXGetDirectoryInfo ( directoryInfo, path ) )
+	if ( GXGetDirectoryInfo ( directoryInfo, currentDirectory ) )
 	{
-		free ( path );
+		free ( currentDirectory );
+		GXWcsclone ( &currentDirectory, directoryInfo.absolutePath );
 		fileListBox->Clear ();
 		filePathStaticText->SetText ( GetRelativePath () );
 
@@ -189,14 +194,17 @@ GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
 	}
 	else
 	{
-		free ( path );
-		GXLogW ( L"EMUIOpenFile::UpdateDirectory::Error - Can't open directory %s\n", path );
+		GXLogW ( L"EMUIOpenFile::UpdateDirectory::Error - Can't open directory %s\n", currentDirectory );
+		GXSafeFree ( currentDirectory );
 	}
 }
 
 const GXWChar* EMUIOpenFile::GetRelativePath () const
 {
-	return directoryInfo.absolutePath + rootDirectoryPathOffset;
+	if ( GXWcscmp ( currentDirectory, rootDirectory ) == 0 )
+		return currentDirectory + rootDirectoryPathOffset;
+
+	return currentDirectory + rootDirectoryPathOffset + 1;
 }
 
 GXVoid GXCALL EMUIOpenFile::OnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFloat y, eGXMouseButtonState state )
@@ -229,10 +237,22 @@ GXVoid GXCALL EMUIOpenFile::OnItemSelected ( GXVoid* handler, GXUIListBox* listB
 	{
 		case eEMUIFileListBoxItemType::File:
 		{
-			GXWChar* buf = (GXWChar*)malloc ( EM_PATH_BUFFER_SIZE );
-			wsprintfW ( buf, L"%s\\%s", main->GetRelativePath (), element->name );
-			main->filePathStaticText->SetText ( buf );
-			free ( buf );
+			if ( GXWcscmp ( main->currentDirectory, main->rootDirectory ) == 0 )
+			{
+				main->filePathStaticText->SetText ( element->name );
+			}
+			else
+			{
+				GXUInt symbols = main->rootDirectoryPathOffset;
+				symbols += 1;									// '/' symbol
+				symbols += GXWcslen ( element->name );
+				symbols += 1;									// '\0' symbol
+
+				GXWChar* buf = (GXWChar*)malloc ( symbols * sizeof ( GXWChar ) );
+				wsprintfW ( buf, L"%s/%s", main->GetRelativePath (), element->name );
+				main->filePathStaticText->SetText ( buf );
+				free ( buf );
+			}
 		}
 		break;
 

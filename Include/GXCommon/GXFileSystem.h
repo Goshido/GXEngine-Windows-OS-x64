@@ -1,4 +1,4 @@
-//version 1.6
+//version 1.7
 
 #ifndef GX_FILE_SYSTEM
 #define GX_FILE_SYSTEM
@@ -28,6 +28,7 @@ struct GXDirectoryInfo
 GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUInt &size, GXBool notsilent );
 GXBool GXCALL GXWriteToFile ( const GXWChar* fileName, const GXVoid* buffer, GXUInt size );
 GXBool GXCALL GXDoesFileExist ( const GXWChar* fileName );
+GXVoid GXCALL GXGetCurrentDirectory ( GXWChar** currentDirectory );
 GXBool GXCALL GXDoesDirectoryExist ( const GXWChar* directory );
 GXBool GXCALL GXCreateDirectory ( const GXWChar* directory );
 GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar* directory );

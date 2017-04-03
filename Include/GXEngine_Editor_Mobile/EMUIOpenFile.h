@@ -14,11 +14,6 @@ typedef GXVoid ( GXCALL* PFNEMONBROWSEFILEPROC ) ( const GXWChar* filePath );
 
 class EMUIOpenFile : public EMUI
 {
-	friend GXVoid GXCALL EMUIOpenFile::OnButton ( GXFloat x, GXFloat y, eGXMouseButtonState state );
-	friend GXVoid GXCALL EMUIOpenFile::OnItemSelected ( GXVoid* handler, GXUIListBox* listBox, const GXVoid* item );
-	friend GXVoid GXCALL EMUIOpenFile::OnItemDoubleClicked ( GXVoid* handler, GXUIListBox* listBox, const GXVoid* item );
-	friend GXVoid GXCALL EMUIOpenFile::OnResize ( GXUIDragableArea* area, GXFloat width, GXFloat height );
-
 	private:
 		EMUIDraggableArea*		mainPanel;
 		EMUIButton*				okButton;
@@ -29,8 +24,8 @@ class EMUIOpenFile : public EMUI
 		EMUIFileListBox*		fileListBox;
 
 		GXWChar*				rootDirectory;
+		GXWChar*				currentDirectory;
 		GXUInt					rootDirectoryPathOffset;
-		GXDirectoryInfo			directoryInfo;
 
 		PFNEMONBROWSEFILEPROC	OnBrowseFile;
 

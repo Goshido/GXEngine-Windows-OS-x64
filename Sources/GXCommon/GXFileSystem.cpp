@@ -1,23 +1,23 @@
-//version 1.6
+//version 1.7
 
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXStrings.h>
 
 
-#define GX_FS_BUFFER_SIZE_IN_CHARACTERS		1024
+#define BUFFER_SIZE_IN_SYMBOLS		1024
 
 
 GXDirectoryInfo::GXDirectoryInfo ()
 {
-	absolutePath = 0;
+	absolutePath = nullptr;
 
 	totalFolders = 0;
-	folderNames = 0;
+	folderNames = nullptr;
 
 	totalFiles = 0;
-	fileNames = 0;
-	fileSizes = 0;
+	fileNames = nullptr;
+	fileSizes = nullptr;
 }
 
 GXDirectoryInfo::~GXDirectoryInfo ()
@@ -29,12 +29,14 @@ GXVoid GXDirectoryInfo::Clear ()
 {
 	GXWChar* p = (GXWChar*)absolutePath;
 	GXSafeFree ( p );
+	absolutePath = nullptr;
 
 	for ( GXUInt i = 0; i < totalFolders; i++ )
 	{
 		p = (GXWChar*)folderNames[ i ];
 		GXSafeFree ( p );
 	}
+
 	totalFolders = 0;
 	GXSafeFree ( folderNames );
 
@@ -43,30 +45,33 @@ GXVoid GXDirectoryInfo::Clear ()
 		p = (GXWChar*)fileNames[ i ];
 		GXSafeFree ( p );
 	}
+
 	totalFiles = 0;
 	GXSafeFree ( fileNames );
+
 	GXULongLong* s = (GXULongLong*)fileSizes;
 	GXSafeFree ( s );
+	fileSizes = nullptr;
 }
 
 //-----------------------------------------------------------------------
 
 GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUInt &size, GXBool notsilent )
 {
-	FILE* input;
-	GXUInt fileSize;
-	GXUInt readed;
+	FILE* input = nullptr;
+	GXUInt fileSize = 0;
+	GXUInt readed = 0;
 
 	_wfopen_s ( &input, fileName, L"rb" );
-	if ( input == 0 )
+	if ( input == nullptr )
 	{
 		if ( notsilent )
 		{
-			GXDebugBox ( L"GXLoadFile::Error - ЌБEБEгу ъCБEытБEфайл" );
-			GXLogW ( L"GXLoadFile::Error - ЌБEБEгу ъCБEытБEфайл %s\n", fileName );
+			GXDebugBox ( L"GXLoadFile::Error - Ќе могу открыть файл" );
+			GXLogW ( L"GXLoadFile::Error - Ќе могу открыть файл %s\n", fileName );
 		}
 
-		*buffer = 0;
+		*buffer = nullptr;
 		size = 0;
 
 		return GX_FALSE;
@@ -78,11 +83,11 @@ GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUInt &siz
 
 	if ( fileSize == 0 )
 	{
-		GXDebugBox ( L"GXLoadFile::Error - ‘айБEБEст" );
-		GXLogW ( L"GXLoadFile::Error - ‘айБE%s БEст\n", fileName );
+		GXDebugBox ( L"GXLoadFile::Error - ‘айл пуст" );
+		GXLogW ( L"GXLoadFile::Error - ‘айл пуст\n", fileName );
 
 		fclose ( input );
-		*buffer = 0;
+		*buffer = nullptr;
 		size = 0;
 
 		return GX_FALSE;
@@ -94,11 +99,11 @@ GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUInt &siz
 
 	if ( readed != fileSize )
 	{
-		GXDebugBox ( L"GXLoadFile::Error - ЌБEБEгу БEъHитатБEфайл" );
-		GXLogW ( L"GXLoadFile::Error - ЌБEБEгу БEъHитатБEфайл %s\n", fileName );
+		GXDebugBox ( L"GXLoadFile::Error - Ќе могу прочесть файл" );
+		GXLogW ( L"GXLoadFile::Error - Ќе могу прочесть файл %s\n", fileName );
 
 		free ( *buffer );
-		*buffer = 0;
+		*buffer = nullptr;
 		size = 0;
 
 		return GX_FALSE;
@@ -115,8 +120,8 @@ GXBool GXCALL GXWriteToFile ( const GXWChar* fileName, const GXVoid* buffer, GXU
 
 	if ( !input )
 	{
-		GXDebugBox ( L"GXWriteToFile::Error - ЌБEБEгу создатБEфайл" );
-		GXLogW ( L"GXWriteToFile::Error - ЌБEБEгу создатБEфайл %s\n", fileName );
+		GXDebugBox ( L"GXWriteToFile::Error - Ќе могу создать файл" );
+		GXLogW ( L"GXWriteToFile::Error - Ќе могу создать файл %s\n", fileName );
 
 		return GX_FALSE;
 	}
@@ -129,11 +134,11 @@ GXBool GXCALL GXWriteToFile ( const GXWChar* fileName, const GXVoid* buffer, GXU
 
 GXBool GXCALL GXDoesFileExist ( const GXWChar* fileName )
 {
-	FILE* input;
+	FILE* input = nullptr;
 
 	_wfopen_s ( &input, fileName, L"rb" );
 
-	if ( input == 0 )
+	if ( input == nullptr )
 	{
 		return GX_FALSE;
 	}
@@ -142,6 +147,22 @@ GXBool GXCALL GXDoesFileExist ( const GXWChar* fileName )
 		fclose ( input );
 		return GX_TRUE;
 	}
+}
+
+GXVoid GXCALL GXGetCurrentDirectory ( GXWChar** currentDirectory )
+{
+	GXWChar* buffer = (GXWChar*)malloc ( BUFFER_SIZE_IN_SYMBOLS * sizeof ( GXWChar ) );
+	GetCurrentDirectoryW ( BUFFER_SIZE_IN_SYMBOLS, buffer );
+
+	for ( GXWChar* p = buffer; *p != L'\0'; p++ )
+	{
+		if ( *p == '\\' )
+			*p = L'/';
+	}
+
+	GXWcsclone ( currentDirectory, buffer );
+
+	free ( buffer );
 }
 
 GXBool GXCALL GXDoesDirectoryExist ( const GXWChar* directory )
@@ -159,9 +180,9 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 {
 	if ( !directory ) return GX_FALSE;
 
-	GXUInt size = ( GXWcslen ( directory ) + 3 ) * sizeof ( GXWChar );	// \, * and \0 symbols
+	GXUInt size = ( GXWcslen ( directory ) + 3 ) * sizeof ( GXWChar );	// /, * and \0 symbols
 	GXWChar* listedDirectory = (GXWChar*)malloc ( size );
-	wsprintfW ( listedDirectory, L"%s\\*", directory );
+	wsprintfW ( listedDirectory, L"%s/*", directory );
 
 	WIN32_FIND_DATAW info;
 	HANDLE handleFind;
@@ -216,8 +237,14 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 
 	directoryInfo.Clear ();
 
-	GXWChar* absolutePath = (GXWChar*)malloc ( GX_FS_BUFFER_SIZE_IN_CHARACTERS * sizeof ( GXWChar) );
-	GetFullPathNameW ( directory, GX_FS_BUFFER_SIZE_IN_CHARACTERS, absolutePath, 0 );
+	GXWChar* absolutePath = (GXWChar*)malloc ( BUFFER_SIZE_IN_SYMBOLS * sizeof ( GXWChar) );
+	GetFullPathNameW ( directory, BUFFER_SIZE_IN_SYMBOLS, absolutePath, nullptr );
+	for ( GXWChar* p = absolutePath; *p != L'\0'; p++ )
+	{
+		if ( *p == L'\\' )
+			*p = L'/';
+	}
+
 	directoryInfo.absolutePath = absolutePath;
 
 	directoryInfo.totalFolders = folderNames.GetLength ();
@@ -347,7 +374,7 @@ GXWriteStream::GXWriteStream ( const GXWChar* fileName )
 	_wfopen_s ( &input, fileName, L"wb" );
 
 	if ( !input )
-		GXLogW ( L"GXWriteToFile::Error - Can't create file %s", fileName );
+		GXLogW ( L"GXWriteToFile::Error - Ќе могу создать файл %s", fileName );
 }
 
 GXWriteStream::~GXWriteStream ()
@@ -364,9 +391,8 @@ GXVoid GXWriteStream::Write ( const GXVoid* data, GXUInt size )
 
 GXVoid GXWriteStream::Close ()
 {
-	if ( input )
-	{
-		fclose ( input );
-		input = 0;
-	}
+	if ( !input ) return;
+
+	fclose ( input );
+	input = nullptr;
 }
