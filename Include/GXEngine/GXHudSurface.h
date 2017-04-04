@@ -9,6 +9,7 @@
 #include "GXTexture.h"
 #include "GXShaderProgram.h"
 #include "GXFont.h"
+#include "GXUnlitColorMaterial.h"
 
 
 enum class eGXImageOverlayType
@@ -56,33 +57,34 @@ struct GXLineInfo
 class GXHudSurface : public GXRenderable
 {
 	protected:
-		GLuint				fbo;
-		GXTexture			texture;
-		GLuint				sampler;
+		GLuint					fbo;
+		GXTexture				texture;
+		GLuint					sampler;
 
-		GXMeshGeometry		screenQuad;
-		GXShaderProgram		imageShaderProgram;
-		GLint				imageModelViewProjectionMatrixLocation;
-		GLint				imageColorLocation;
+		GXMeshGeometry			screenQuad;
+		GXShaderProgram			imageShaderProgram;
+		GLint					imageModelViewProjectionMatrixLocation;
+		GLint					imageColorLocation;
 
-		GXMeshGeometry		glyphMesh;
-		GXShaderProgram		glyphShaderProgram;
-		GLint				glyphModelViewProjectionMatrixLocation;
-		GLint				glyphColorLocation;
+		GXMeshGeometry			glyphMesh;
+		GXShaderProgram			glyphShaderProgram;
+		GLint					glyphModelViewProjectionMatrixLocation;
+		GLint					glyphColorLocation;
 
-		GXMeshGeometry		lineMesh;
-		GXShaderProgram		lineShaderProgram;
-		GLint				lineModelViewProjectionMatrixLocation;
-		GLint				lineColorLocation;
+		GXMeshGeometry			lineMesh;
+		GXUnlitColorMaterial	unlitColorMaterial;
+		GXShaderProgram			lineShaderProgram;
+		GLint					lineModelViewProjectionMatrixLocation;
+		GLint					lineColorLocation;
 
-		GXMeshGeometry		surfaceMesh;
+		GXMeshGeometry			surfaceMesh;
 
-		GXMat4				projectionMatrix;
+		GXMat4					projectionMatrix;
 
-		GXUShort			width;
-		GXUShort			height;
+		GXUShort				width;
+		GXUShort				height;
 
-		GXBool				enableSmooth;
+		GXBool					enableSmooth;
 
 	public:
 		explicit GXHudSurface ( GXUShort width, GXUShort height );

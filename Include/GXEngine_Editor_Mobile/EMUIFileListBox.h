@@ -17,7 +17,7 @@ struct EMUIFileListBoxItem
 	eEMUIFileListBoxItemType	type;
 	GXWChar*					name;
 
-	EMUIFileListBoxItem ( eEMUIFileListBoxItemType type, const GXWChar* name );
+	explicit EMUIFileListBoxItem ( eEMUIFileListBoxItemType type, const GXWChar* name );
 	~EMUIFileListBoxItem ();
 };
 
@@ -27,7 +27,7 @@ class EMUIFileListBox : public EMUI
 		GXUIListBox*	widget;
 
 	public:
-		EMUIFileListBox ( EMUI* parent );
+		explicit EMUIFileListBox ( EMUI* parent );
 		~EMUIFileListBox () override;
 
 		GXWidget* GetWidget () const override;
