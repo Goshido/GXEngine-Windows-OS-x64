@@ -17,7 +17,14 @@
 
 static EMMoveTool* em_mt_Me = nullptr;
 
-EMMoveTool::EMMoveTool ()
+EMMoveTool::EMMoveTool () :
+xAxis ( L"3D Models/Editor Mobile/Move gismo X axis.stm" ),
+xAxisMask ( L"3D Models/Editor Mobile/Move gismo X axis mask.stm" ),
+yAxis ( L"3D Models/Editor Mobile/Move gismo Y axis.stm" ),
+yAxisMask ( L"3D Models/Editor Mobile/Move gismo Y axis mask.stm" ),
+zAxis ( L"3D Models/Editor Mobile/Move gismo Z axis.stm" ),
+zAxisMask ( L"3D Models/Editor Mobile/Move gismo z axis mask.stm" ),
+center ( L"3D Models/Editor Mobile/Move gismo center.stm" )
 {
 	mode = EM_MOVE_TOOL_LOCAL_MODE;
 
@@ -218,35 +225,12 @@ EMMoveTool::~EMMoveTool ()
 {
 	if ( colorProgram.GetProgram () == 0 ) return;
 
-	GXMeshGeometry::RemoveMeshGeometry ( xAxis );
-	GXMeshGeometry::RemoveMeshGeometry ( xAxisMask );
-
-	GXMeshGeometry::RemoveMeshGeometry ( yAxis );
-	GXMeshGeometry::RemoveMeshGeometry ( yAxisMask );
-
-	GXMeshGeometry::RemoveMeshGeometry ( zAxis );
-	GXMeshGeometry::RemoveMeshGeometry ( zAxisMask );
-
-	GXMeshGeometry::RemoveMeshGeometry ( center );
-
 	GXShaderProgram::RemoveShaderProgram ( colorProgram );
 	GXShaderProgram::RemoveShaderProgram ( maskProgram );
 }
 
 GXVoid EMMoveTool::InitGraphicResources ()
 {
-	xAxis = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Move gismo X axis.stm" );
-	xAxisMask = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Move gismo X axis mask.stm" );
-
-	yAxis = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Move gismo Y axis.stm" );
-	yAxisMask = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Move gismo Y axis mask.stm" );
-
-	zAxis = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Move gismo Z axis.stm" );
-	zAxisMask = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Move gismo z axis mask.stm" );
-
-	center = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Move gismo center.stm" );
-
-
 	GXShaderProgramInfo si;
 	si.vs = L"Shaders/Editor Mobile/VertexOnly_vs.txt";
 	si.gs = nullptr;

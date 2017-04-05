@@ -3,42 +3,41 @@
 
 
 #include "EMTool.h"
+#include "EMObjectMaskMaterial.h"
+#include "EMMesh.h"
 #include <GXEngine/GXInput.h>
-#include <GXEngine/GXShaderProgram.h>
-#include <GXEngine/GXMeshGeometry.h>
 
 
 class EMMoveTool : public EMTool
 {
 	private:
-		GXVec3				startLocationWorld;
-		GXMat4				gismoRotation;
-		GXVec3				deltaWorld;
-		GXFloat				gismoScaleCorrector;
-		GXFloat				axisStartParameter;
-		GXUByte				mode;
-		GXUByte				activeAxis;
+		GXVec3					startLocationWorld;
+		GXMat4					gismoRotation;
+		GXVec3					deltaWorld;
+		GXFloat					gismoScaleCorrector;
+		GXFloat					axisStartParameter;
+		GXUByte					mode;
+		GXUByte					activeAxis;
 
-		GXBool				isLMBPressed;
-		GXUShort			mouseX;
-		GXUShort			mouseY;
+		GXBool					isLMBPressed;
+		GXUShort				mouseX;
+		GXUShort				mouseY;
 
-		GXMeshGeometry		xAxis;
-		GXMeshGeometry		xAxisMask;
-		GXMeshGeometry		yAxis;
-		GXMeshGeometry		yAxisMask;
-		GXMeshGeometry		zAxis;
-		GXMeshGeometry		zAxisMask;
-		GXMeshGeometry		center;
+		EMMesh					xAxis;
+		EMMesh					xAxisMask;
+		EMMesh					yAxis;
+		EMMesh					yAxisMask;
+		EMMesh					zAxis;
+		EMMesh					zAxisMask;
+		EMMesh					center;
 
-		GXShaderProgram		colorProgram;
-		GXShaderProgram		maskProgram;
+		GXShaderProgram			colorProgram;
+		EMObjectMaskMaterial	objectMaskMaterial;
 
-		GLint				clr_mod_view_proj_matLocation;
-		GLint				clr_colorLocation;
-		GLint				msk_mod_view_proj_matLocation;
+		GLint					clr_mod_view_proj_matLocation;
+		GLint					clr_colorLocation;
 
-		GXBool				isDeleted;
+		GXBool					isDeleted;
 
 	public:
 		EMMoveTool ();

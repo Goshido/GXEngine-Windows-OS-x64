@@ -1,0 +1,21 @@
+#version 330 core
+
+
+#define VERTEX_STREAM	0
+#define UV_STREAM		1
+
+
+layout ( location = VERTEX_STREAM ) in vec3 vertex;
+layout ( lcoation = UV_STREAM ) in vec2 uv;
+
+uniform mat4 mod_view_proj_mat;
+uniform vec4 uvScaleOffset;
+
+smooth out vec2 v_uv;
+
+
+void main ()
+{
+	gl_Position = mod_view_proj_mat * vec4 ( vertex, 1.0 );
+	v_uv = uv * uvScaleOffset.xy + uvScaleOffset.zw;
+}

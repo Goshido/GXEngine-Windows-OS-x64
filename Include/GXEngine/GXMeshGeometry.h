@@ -27,7 +27,6 @@ class GXMeshGeometry
 		GLenum					topology;
 
 		GXAABB					boundsLocal;
-		GXAABB					boundsWorld;
 
 		static GXMeshGeometry	nullObject;
 
@@ -39,9 +38,6 @@ class GXMeshGeometry
 
 		GXVoid SetBoundsLocal ( const GXAABB& bounds );
 		const GXAABB& GetBoundsLocal () const;
-
-		GXVoid UpdateBoundsWorld ( const GXMat4& transform );
-		const GXAABB& GetBoundsWorld () const;
 
 		GXVoid SetTotalVertices ( GLsizei totalVertices );
 		GXVoid FillVertexBuffer ( const GXVoid* data, GLsizeiptr size, GLenum usage );

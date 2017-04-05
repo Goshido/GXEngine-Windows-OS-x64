@@ -58,3 +58,8 @@ GXVoid GXUnlitColorMaterial::SetColor ( GXUByte red, GXUByte green, GXUByte blue
 {
 	GXColorToVec4 ( color, red, green, blue, alpha );
 }
+
+GXVoid GXUnlitColorMaterial::SetColor ( const GXVec4 &color )
+{
+	this->color = color;
+}

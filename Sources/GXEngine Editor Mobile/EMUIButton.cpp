@@ -55,7 +55,13 @@
 #define EM_NORMAL_FONT_COLOR_B				0
 #define EM_NORMAL_FONT_COLOR_A				255
 
-#define EM_BACKGROUND_TEXTURE				L"Textures/System/Default_Diffuse.tga" 
+#define EM_BORDER_COLOR_R					128
+#define EM_BORDER_COLOR_G					128
+#define EM_BORDER_COLOR_B					128
+#define EM_BORDER_COLOR_A					255
+
+#define EM_BACKGROUND_TEXTURE				L"Textures/System/Default_Diffuse.tga"
+
 
 class EMUIButtonRenderer : public GXWidgetRenderer
 {
@@ -71,8 +77,6 @@ class EMUIButtonRenderer : public GXWidgetRenderer
 
 		GXVoid OnRefresh () override;
 		GXVoid OnDraw () override;
-
-		GXVoid OnDrawMask ();
 
 		GXVoid SetCaption ( const GXWChar* caption );
 
@@ -155,7 +159,7 @@ GXVoid EMUIButtonRenderer::OnRefresh ()
 	surface->AddText ( pi, 0, caption );
 
 	GXLineInfo li;
-	GXColorToVec4 ( li.color, 128, 128, 128, 255 );
+	GXColorToVec4 ( li.color, EM_BORDER_COLOR_R, EM_BORDER_COLOR_G, EM_BORDER_COLOR_B, EM_BORDER_COLOR_A );
 	li.thickness = 1.0f;
 	li.startPoint = GXCreateVec2 ( 1.5f, 0.5f );
 	li.endPoint = GXCreateVec2 ( w - 0.5f, 0.5f );

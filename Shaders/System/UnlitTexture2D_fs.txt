@@ -1,0 +1,25 @@
+#version 330 core
+
+
+#define COLOR_SLOT		0
+#define ALPHA_DISCARD	0.01176
+
+
+smooth in vec2 v_uv;
+
+uniform vec4 color;
+unifrom sampler2D textureSampler;
+
+layout ( location = COLOR_SLOT ) out vec4 colorSlot;
+
+
+void main ()
+{
+	vec4 sample = texture ( textureSampler, v_uv );
+	sample.a *= color.a;
+
+	if ( sample.a < ALPHA_DISCARD ) discard;
+
+	sample.rgb *= color.rgb;
+	colorSlot = sample;
+}

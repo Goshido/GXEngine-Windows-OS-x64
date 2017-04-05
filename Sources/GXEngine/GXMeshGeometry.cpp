@@ -130,16 +130,6 @@ const GXAABB& GXMeshGeometry::GetBoundsLocal () const
 	return boundsLocal;
 }
 
-GXVoid GXMeshGeometry::UpdateBoundsWorld ( const GXMat4& transform )
-{
-	GXSetAABBTransformed ( boundsWorld, boundsLocal, transform );
-}
-
-const GXAABB& GXMeshGeometry::GetBoundsWorld () const
-{
-	return boundsWorld;
-}
-
 GXVoid GXMeshGeometry::SetTotalVertices ( GLsizei totalVertices )
 {
 	this->totalVertices = totalVertices;
@@ -316,9 +306,7 @@ GXMeshGeometry& GXCALL GXMeshGeometry::LoadFromObj ( const GXWChar* fileName )
 	geometry->SetBufferStream ( eGXMeshStreamIndex::Bitangent, 3, GL_FLOAT, stride, (const GLvoid*)offset );
 
 	GXMat4 transform;
-	GXSetMat4Identity ( transform );
 	geometry->SetBoundsLocal ( bounds );
-	geometry->UpdateBoundsWorld ( transform );
 	
 	new GXMeshGeometryEntry ( *geometry, fileName );
 
@@ -420,7 +408,6 @@ GXMeshGeometry& GXCALL  GXMeshGeometry::GetGeometryFromStm ( const GXWChar* file
 	GXMat4 transform;
 	GXSetMat4Identity ( transform );
 	geometry->SetBoundsLocal ( info.bounds );
-	geometry->UpdateBoundsWorld ( transform );
 
 	info.Cleanup ();
 

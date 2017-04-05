@@ -46,6 +46,9 @@
     <Filter Include="Source Files\GXPhysics">
       <UniqueIdentifier>{4f041a0b-6400-4a5d-945d-0d1f9573665f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\GXEngine Editor Mobile">
+      <UniqueIdentifier>{2c335632-ca9d-49af-89c3-4a023d177c17}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\GXCommon\GXAVLTree.cpp">
@@ -329,6 +332,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXUnlitColorMaterial.cpp">
       <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXUnlitTexture2DMaterial.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXUnlitColorMaskMaterial.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMObjectMaskMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMMesh.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -716,6 +731,18 @@
     <ClInclude Include="..\..\Include\GXEngine\GXUnlitColorMaterial.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXUnlitTexture2DMaterial.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXUnlitColorMaskMaterial.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMObjectMaskMaterial.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMesh.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="..\..\Sources\GXEngine\GXRecource.res">
@@ -724,40 +751,127 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\Shaders\Editor Mobile\Color_fs.txt">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\DirectedLight_fs.txt">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\Mask_fs.txt">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\MaskAlphaTest_fs.txt">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\MaskVertexAndUV_vs.txt">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\MaskVertexOnly_vs.txt">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\Null_fs.txt">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\OneSampler_fs.txt">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\ScreenQuad_vs.txt">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\StaticMesh_fs.txt">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\StaticMesh_vs.txt">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\VertexOnly_vs.txt">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\ArrayTextureOuter_fs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\ArrayTextureOuter_vs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\ColorMask_fs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\DOF_fs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\DOF_vs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\GaussDownsamplerX16_First_Pass_fs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\GaussDownsamplerX16_First_Pass_vs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\GaussDownsamplerX16_Second_Pass_fs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\GaussDownsamplerX16_Second_Pass_vs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\Glyph_fs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\HudSurface_fs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\HudSurface_vs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\Line_fs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\Line_vs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\MotionBlur_fs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\MotionBlur_vs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\NativeSkin_vs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\Particle_fs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\Particle_vs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\Skeleton_fs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\Skeleton_vs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\SkinExt_fs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\SkinExt_vs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\TextureOuter_fs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\TextureOuter_vs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\TextureWithColorAndAlphaTest_fs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\UnlitTexture2D_fs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\VertexAndUV_vs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\VertexUVScaleOffset_vs.txt">
+      <Filter>Shaders\System</Filter>
     </Text>
   </ItemGroup>
 </Project>

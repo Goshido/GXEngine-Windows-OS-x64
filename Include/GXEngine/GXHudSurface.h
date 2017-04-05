@@ -5,11 +5,13 @@
 
 
 #include "GXRenderable.h"
+#include "GXCameraOrthographic.h"
 #include "GXMeshGeometry.h"
 #include "GXTexture.h"
-#include "GXShaderProgram.h"
 #include "GXFont.h"
 #include "GXUnlitColorMaterial.h"
+#include "GXUnlitColorMaskMaterial.h"
+#include "GXUnlitTexture2DMaterial.h"
 
 
 enum class eGXImageOverlayType
@@ -54,37 +56,32 @@ struct GXLineInfo
 	eGXImageOverlayType	overlayType;
 };
 
+class GXImageRenderable;
+class GXGlyphRenderable;
+class GXLineRenderable;
 class GXHudSurface : public GXRenderable
 {
-	protected:
-		GLuint					fbo;
-		GXTexture				texture;
-		GLuint					sampler;
+	private:
+		GLuint						fbo;
+		GXTexture					canvasTexture;
+		GLuint						sampler;
 
-		GXMeshGeometry			screenQuad;
-		GXShaderProgram			imageShaderProgram;
-		GLint					imageModelViewProjectionMatrixLocation;
-		GLint					imageColorLocation;
+		GXUnlitColorMaterial		unlitColorMaterial;
+		GXUnlitColorMaskMaterial	unlitColorMaskMaterial;
+		GXUnlitTexture2DMaterial	unlitTexture2DMaterial;
 
-		GXMeshGeometry			glyphMesh;
-		GXShaderProgram			glyphShaderProgram;
-		GLint					glyphModelViewProjectionMatrixLocation;
-		GLint					glyphColorLocation;
+		GXMeshGeometry				screenQuadMesh;
 
-		GXMeshGeometry			lineMesh;
-		GXUnlitColorMaterial	unlitColorMaterial;
-		GXShaderProgram			lineShaderProgram;
-		GLint					lineModelViewProjectionMatrixLocation;
-		GLint					lineColorLocation;
+		GXImageRenderable*			image;
+		GXGlyphRenderable*			glyph;
+		GXLineRenderable*			line;
 
-		GXMeshGeometry			surfaceMesh;
+		GXCameraOrthographic		canvasCamera;
 
-		GXMat4					projectionMatrix;
+		GXUShort					width;
+		GXUShort					height;
 
-		GXUShort				width;
-		GXUShort				height;
-
-		GXBool					enableSmooth;
+		GXBool						enableSmooth;
 
 	public:
 		explicit GXHudSurface ( GXUShort width, GXUShort height );
@@ -104,9 +101,6 @@ class GXHudSurface : public GXRenderable
 	protected:
 		GXVoid InitGraphicResources () override;
 		GXVoid UpdateBounds () override;
-
-		GXVoid UpdateGlyphGeometry ( const GXVec2 &min, const GXVec2 &max );
-		GXVoid UpdateLineGeometry ( const GXVec2 &start, const GXVec2 &end );
 };
 
 
