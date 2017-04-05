@@ -10,6 +10,11 @@ GXBoxShape::GXBoxShape ( GXRigidBody* body, GXFloat width, GXFloat height, GXFlo
 	this->depth = depth;
 }
 
+GXBoxShape::~GXBoxShape ()
+{
+	//NOTHING
+}
+
 GXVoid GXBoxShape::CalculateInertiaTensor ( GXFloat mass )
 {
 	GXFloat factor = mass * 0.08333f;

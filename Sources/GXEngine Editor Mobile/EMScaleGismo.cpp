@@ -44,8 +44,6 @@ GXVoid EMScaleGismo::Render ()
 
 	GXCamera* activeCamera = GXCamera::GetActiveCamera ();
 
-	if ( !activeCamera->IsObjectVisible ( meshGeometry.GetBoundsWorld () ) ) return;
-
 	glUseProgram ( shaderProgram.GetProgram () );
 
 	GXMat4 mod_view_proj_mat;
@@ -93,6 +91,4 @@ GXVoid EMScaleGismo::InitGraphicResources ()
 GXVoid EMScaleGismo::UpdateBounds ()
 {
 	if ( shaderProgram.GetProgram () == 0 ) return;
-
-	meshGeometry.UpdateBoundsWorld ( mod_mat );
 }

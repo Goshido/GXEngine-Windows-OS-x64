@@ -65,8 +65,6 @@ GXVoid EMUnitActorMesh::Render ()
 {
 	GXCamera* activeCamera = GXCamera::GetActiveCamera ();
 
-	if ( !activeCamera->IsObjectVisible ( meshGeometry.GetBoundsWorld () ) ) return;
-
 	GXMat4 mod_view_mat;
 	GXMat4 mod_view_proj_mat;
 
@@ -142,7 +140,7 @@ GXVoid EMUnitActorMesh::InitGraphicResources ()
 
 GXVoid EMUnitActorMesh::UpdateBounds ()
 {
-	meshGeometry.UpdateBoundsWorld ( mod_mat );
+	//TODO
 }
 
 //-------------------------------------------------------------------------------------------

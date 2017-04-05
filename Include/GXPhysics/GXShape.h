@@ -30,6 +30,7 @@ class GXShape
 
 	public:
 		GXShape ( eGXShapeType type, GXRigidBody* body );
+		virtual ~GXShape ();
 
 		eGXShapeType GetType () const;
 

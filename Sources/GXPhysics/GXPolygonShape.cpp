@@ -9,6 +9,11 @@ GXPolygonShape::GXPolygonShape ( GXRigidBody* body, GXFloat widht, GXFloat depth
 	this->depth = depth;
 }
 
+GXPolygonShape::~GXPolygonShape ()
+{
+	//NOTHING
+}
+
 GXFloat GXPolygonShape::GetWidth () const
 {
 	return width;

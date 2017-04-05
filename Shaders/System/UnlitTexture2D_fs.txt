@@ -8,7 +8,7 @@
 smooth in vec2 v_uv;
 
 uniform vec4 color;
-unifrom sampler2D textureSampler;
+uniform sampler2D textureSampler;
 
 layout ( location = COLOR_SLOT ) out vec4 colorSlot;
 

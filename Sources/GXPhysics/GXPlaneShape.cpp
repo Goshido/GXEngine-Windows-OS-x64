@@ -12,6 +12,11 @@ GXPlaneShape::GXPlaneShape ( GXRigidBody* body, const GXPlane& plane )
 	this->plane = plane;
 }
 
+GXPlaneShape::~GXPlaneShape ()
+{
+	//NOTHING
+}
+
 const GXPlane& GXPlaneShape::GetPlane () const
 {
 	return plane;

@@ -21,6 +21,7 @@ class GXBoxShape : public GXShape
 
 	public:
 		GXBoxShape ( GXRigidBody* body, GXFloat width, GXFloat height, GXFloat depth );
+		~GXBoxShape () override;
 
 		GXVoid CalculateInertiaTensor ( GXFloat mass ) override;
 		GXVoid GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const override;

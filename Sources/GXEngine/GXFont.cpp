@@ -147,8 +147,6 @@ struct GXFontParameters
 
 //---------------------------------------------------------------------------------------------------
 
-GXFont GXFont::nullFont;
-
 GXFont::GXFont ()
 {
 	face = nullptr;
@@ -307,10 +305,6 @@ GXFont& GXCALL GXFont::GetFont ( const GXWChar* fileName, GXUShort size )
 	}
 
 	GXFont* font = new GXFont ( fileName, size );
-
-	if ( !font->face )
-		return nullFont;
-
 	new GXFontEntry ( *font, fileName, size );
 	return *font;
 }
@@ -322,7 +316,8 @@ GXVoid GXCALL GXFont::RemoveFont ( GXFont &font )
 		if ( font == *p )
 		{
 			p->Release ();
-			font = nullFont;
+			font = GXFont ();
+			return;
 		}
 	}
 }

@@ -175,7 +175,7 @@ GXVoid GXCore::CheckMemoryLeak ()
 			GXLogW ( L"Звуковые файлы - %i [%s]\n", sounds, lastSound );
 
 		if ( textures > 0 )
-			GXLogW ( L"Текстурные объёкты  - %i [%s]\n ", textures, lastTexture );
+			GXLogW ( L"Текстурные объекты  - %i [%s]\n", textures, lastTexture );
 
 		if ( meshGeometries > 0 )
 			GXLogW ( L"Меши - %i [%s]\n", meshGeometries, lastMeshGeometry );

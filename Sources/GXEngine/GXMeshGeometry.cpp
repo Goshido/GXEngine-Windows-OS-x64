@@ -338,6 +338,7 @@ GXVoid GXCALL GXMeshGeometry::RemoveMeshGeometry ( GXMeshGeometry& mesh )
 		{
 			p->Release ();
 			mesh = GXMeshGeometry ();
+			return;
 		}
 	}
 }

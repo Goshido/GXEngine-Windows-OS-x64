@@ -14,6 +14,8 @@ class GXPlaneShape : public GXShape
 
 	public:
 		GXPlaneShape ( GXRigidBody* body, const GXPlane& plane );
+		~GXPlaneShape () override;
+
 		const GXPlane& GetPlane () const;
 
 		GXVoid CalculateInertiaTensor ( GXFloat mass ) override;

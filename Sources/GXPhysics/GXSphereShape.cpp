@@ -8,6 +8,11 @@ GXSphereShape::GXSphereShape ( GXRigidBody* body, GXFloat radius )
 	this->radius = radius;
 }
 
+GXSphereShape::~GXSphereShape ()
+{
+	//NOTHING
+}
+
 GXFloat GXSphereShape::GetRadius () const
 {
 	return radius;

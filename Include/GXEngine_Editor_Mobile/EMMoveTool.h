@@ -73,6 +73,8 @@ class EMMoveTool : public EMTool
 		GXFloat GetAxisParameter ( const GXVec3 &axisLocationView, const GXVec3 &axisDirectionView, const GXVec3 &rayView );
 		GXFloat GetScaleCorrector ( const GXVec3 &axisLocationView, const GXVec3 &deltaView );
 
+		GXVoid UpdateMeshTransform ( EMMesh &mesh );
+
 		static GXVoid GXCALL OnObject ( GXUPointer object );
 };
 

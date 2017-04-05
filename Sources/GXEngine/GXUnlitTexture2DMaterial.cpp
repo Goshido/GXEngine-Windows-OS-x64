@@ -16,7 +16,7 @@
 
 #define VERTEX_SHADER			L"Shaders/System/VertexUVScaleOffset_vs.txt"
 #define GEOMETRY_SHADER			nullptr
-#define FRAGMENT_SHADER			L"UnlitTexture2D_fs.txt"
+#define FRAGMENT_SHADER			L"Shaders/System/UnlitTexture2D_fs.txt"
 
 #define TEXTURE_SLOT			0
 

@@ -204,7 +204,6 @@ GXShape& GXRigidBody::GetShape ()
 	return *shape;
 }
 
-
 const GXVec3& GXRigidBody::GetLastFrameAcceleration () const
 {
 	return lastFrameAcceleration;

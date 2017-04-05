@@ -41,8 +41,6 @@ GXVoid EMRotateGismo::Render ()
 
 	GXCamera* camera = GXCamera::GetActiveCamera ();
 
-	if ( !camera->IsObjectVisible ( meshGeometry.GetBoundsWorld () ) ) return;
-
 	glUseProgram ( shaderProgram.GetProgram () );
 
 	const GXMat4& view_proj_mat = camera->GetViewProjectionMatrix ();
@@ -98,5 +96,5 @@ GXVoid EMRotateGismo::InitGraphicResources ()
 
 GXVoid EMRotateGismo::UpdateBounds ()
 {
-	meshGeometry.UpdateBoundsWorld ( mod_mat );
+	//TODO
 }

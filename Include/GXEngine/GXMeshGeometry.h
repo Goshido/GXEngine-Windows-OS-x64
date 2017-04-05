@@ -28,8 +28,6 @@ class GXMeshGeometry
 
 		GXAABB					boundsLocal;
 
-		static GXMeshGeometry	nullObject;
-
 	public:
 		GXMeshGeometry ();
 		~GXMeshGeometry ();

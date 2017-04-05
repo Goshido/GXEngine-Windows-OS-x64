@@ -28,8 +28,6 @@ class GXFont
 		GXUShort			size;
 		GXFontParameters*	parameters;
 
-		static GXFont		nullFont;
-
 	public:
 		GXFont ();
 		~GXFont ();

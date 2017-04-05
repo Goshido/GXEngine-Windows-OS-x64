@@ -106,8 +106,6 @@ struct GXTextureCacheHeader
 
 //----------------------------------------------------------------------
 
-GXTexture	GXTexture::nullTexture = GXTexture ();
-
 GXTexture::GXTexture ()
 {
 	width = height = 0;
@@ -224,7 +222,9 @@ GXTexture& GXCALL GXTexture::LoadTexture ( const GXWChar* fileName, GXBool isGen
 		free ( path );
 		free ( baseFileName );
 
-		return nullTexture;
+		GXTexture* texture = new GXTexture ();
+		new GXTextureEntry ( *texture, fileName );
+		return *texture;
 	}
 
 	cacheHeader.width = (GXUShort)width;
@@ -280,6 +280,7 @@ GXVoid GXCALL GXTexture::RemoveTexture ( GXTexture& texture )
 		{
 			p->Release ();
 			texture = GXTexture ();
+			return;
 		}
 	}
 }

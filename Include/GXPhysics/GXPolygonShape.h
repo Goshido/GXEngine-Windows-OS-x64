@@ -15,6 +15,7 @@ class GXPolygonShape : public GXShape
 
 	public:
 		GXPolygonShape ( GXRigidBody* body, GXFloat widht, GXFloat depth );
+		~GXPolygonShape () override;
 
 		GXFloat GetWidth () const;
 		GXFloat GetHeight () const;

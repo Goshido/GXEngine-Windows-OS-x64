@@ -151,32 +151,25 @@ GXVoid EMMoveTool::OnDrawHudMaskPass ()
 {
 	if ( !actor || isDeleted ) return;
 	
-	glUseProgram ( maskProgram.GetProgram () );
-
-	GXMat4 rot_mat;
-	GXMat4 scale_mat;
-	GXMat4 mod_mat;
-	GXMat4 mod_view_proj_mat;
-
-	const GXMat4& actorTransform = actor->GetTransform ();
-	GXSetMat4Scale ( scale_mat, gismoScaleCorrector, gismoScaleCorrector, gismoScaleCorrector );
-	GXMulMat4Mat4 ( mod_mat, gismoRotation, scale_mat );
-	GXSetMat4TranslateTo ( mod_mat, actorTransform.m41, actorTransform.m42, actorTransform.m43 );
-	GXMulMat4Mat4 ( mod_view_proj_mat, mod_mat, GXCamera::GetActiveCamera ()->GetViewProjectionMatrix () );
-
-	glUniformMatrix4fv ( msk_mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );
-
 	EMRenderer* renderer = EMRenderer::GetInstance ();
+
 	renderer->SetObjectMask ( (GXUPointer)( &xAxisMask ) );
+	UpdateMeshTransform ( xAxisMask );
+	objectMaskMaterial.Bind ( xAxisMask );
 	xAxisMask.Render ();
+	objectMaskMaterial.Unbind ();
 
 	renderer->SetObjectMask ( (GXUPointer)( &yAxisMask ) );
+	UpdateMeshTransform ( yAxisMask );
+	objectMaskMaterial.Bind ( yAxisMask );
 	yAxisMask.Render ();
+	objectMaskMaterial.Unbind ();
 
 	renderer->SetObjectMask ( (GXUPointer)( &zAxisMask ) );
+	UpdateMeshTransform ( zAxisMask );
+	objectMaskMaterial.Bind ( zAxisMask );
 	zAxisMask.Render ();
-
-	glUseProgram ( 0 );
+	objectMaskMaterial.Unbind ();
 }
 
 GXVoid EMMoveTool::OnMouseMove ( const GXVec2 &mousePosition )
@@ -226,7 +219,6 @@ EMMoveTool::~EMMoveTool ()
 	if ( colorProgram.GetProgram () == 0 ) return;
 
 	GXShaderProgram::RemoveShaderProgram ( colorProgram );
-	GXShaderProgram::RemoveShaderProgram ( maskProgram );
 }
 
 GXVoid EMMoveTool::InitGraphicResources ()
@@ -243,17 +235,6 @@ GXVoid EMMoveTool::InitGraphicResources ()
 
 	clr_mod_view_proj_matLocation = colorProgram.GetUniform ( "mod_view_proj_mat" );
 	clr_colorLocation = colorProgram.GetUniform ( "color" );
-
-	si.vs = L"Shaders/Editor Mobile/MaskVertexOnly_vs.txt";
-	si.gs = nullptr;
-	si.fs = L"Shaders/Editor Mobile/Mask_fs.txt";
-	si.numSamplers = 0;
-	si.samplerNames = nullptr;
-	si.samplerLocations = nullptr;
-
-	maskProgram = GXShaderProgram::GetShaderProgram ( si );
-
-	msk_mod_view_proj_matLocation = maskProgram.GetUniform ( "mod_view_proj_mat" );
 }
 
 GXVoid EMMoveTool::SetMode ( GXUByte mode )
@@ -376,6 +357,14 @@ GXFloat EMMoveTool::GetAxisParameter ( const GXVec3 &axisLocationView, const GXV
 GXFloat EMMoveTool::GetScaleCorrector ( const GXVec3 &axisLocationView, const GXVec3 &deltaView )
 {
 	return ( axisLocationView.z + deltaView.z ) * EM_MOVE_TOOL_GISMO_SIZE_FACTOR;
+}
+
+GXVoid EMMoveTool::UpdateMeshTransform ( EMMesh &mesh )
+{
+	const GXMat4& actorTransform = actor->GetTransform ();
+	mesh.SetScale ( gismoScaleCorrector, gismoScaleCorrector, gismoScaleCorrector );
+	mesh.SetRotation ( gismoRotation );
+	mesh.SetLocation ( actorTransform.wv );
 }
 
 GXVoid GXCALL EMMoveTool::OnObject ( GXUPointer object )

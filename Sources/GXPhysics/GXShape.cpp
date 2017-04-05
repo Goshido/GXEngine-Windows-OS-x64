@@ -20,6 +20,12 @@ GXShape::GXShape ( eGXShapeType type, GXRigidBody* body )
 	GXSetMat4Identity ( transformWorld );
 }
 
+GXShape::~GXShape ()
+{
+	int r = 0;
+	//NOTHING
+}
+
 eGXShapeType GXShape::GetType () const
 {
 	return type;

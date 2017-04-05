@@ -21,8 +21,6 @@ class GXTexture
 		GXUByte				textureUnit;
 		GLuint				textureObject;
 
-		static GXTexture	nullTexture;
-
 	public:
 		GXTexture ();
 		explicit GXTexture ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap );

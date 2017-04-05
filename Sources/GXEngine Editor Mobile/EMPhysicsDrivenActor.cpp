@@ -67,7 +67,6 @@ EMPhysicsDrivenActorMesh::~EMPhysicsDrivenActorMesh ()
 GXVoid EMPhysicsDrivenActorMesh::Render ()
 {
 	GXCamera* activeCamera = GXCamera::GetActiveCamera ();
-	if ( !activeCamera->IsObjectVisible ( mesh.GetBoundsWorld () ) ) return;
 
 	GXMat4 mod_view_mat;
 	GXMat4 mod_view_proj_mat;
@@ -144,7 +143,7 @@ GXVoid EMPhysicsDrivenActorMesh::InitGraphicResources ()
 
 GXVoid EMPhysicsDrivenActorMesh::UpdateBounds ()
 {
-	mesh.UpdateBoundsWorld ( mod_mat );
+	//TODO
 }
 
 //------------------------------------------------------------

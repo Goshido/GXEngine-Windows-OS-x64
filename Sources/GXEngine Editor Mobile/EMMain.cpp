@@ -296,12 +296,12 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 	EMTool::SetActiveTool ( em_MoveTool );
 
 	em_PhysicsBoxActor = new EMPhysicsDrivenActor ( eGXShapeType::Sphere );
-	GXRigidBody& body = em_PhysicsBoxActor->GetRigidBody ();
-	body.SetLocation ( 0.0f, 10.0f, 15.0f );
+	GXRigidBody& body1 = em_PhysicsBoxActor->GetRigidBody ();
+	body1.SetLocation ( 0.0f, 10.0f, 15.0f );
 
 	em_PhysicsPlaneActor = new EMPhysicsDrivenActor ( eGXShapeType::Polygon );
-	body = em_PhysicsPlaneActor->GetRigidBody ();
-	body.SetLocation ( 0.0f, 0.0f, 15.0f );
+	GXRigidBody& body2 = em_PhysicsPlaneActor->GetRigidBody ();
+	body2.SetLocation ( 0.0f, 0.0f, 15.0f );
 
 	GXWorld& world = GXPhysicsEngine::GetInstance ()->GetWorld ();
 	world.RegisterRigidBody ( em_PhysicsBoxActor->GetRigidBody () );
