@@ -44,6 +44,8 @@ EMViewer::~EMViewer ()
 		inputWidget->SetOnDoubleClickCallback ( nullptr );
 		inputWidget->SetOnMouseMoveCallback ( nullptr );
 		inputWidget->SetOnMouseScrollCallback ( nullptr );
+		inputWidget->SetOnKeyDownCallback ( nullptr );
+		inputWidget->SetOnKeyUpCallback ( nullptr );
 
 		inputWidget->SetHandler ( nullptr );
 	}
@@ -59,6 +61,8 @@ GXVoid EMViewer::SetInputWidget ( GXUIInput &inputWidget )
 	inputWidget.SetOnMiddleMouseButtonUpCallback ( &EMViewer::OnMMBUpCallback );
 	inputWidget.SetOnMouseMoveCallback ( &EMViewer::OnMouseMoveCallback );
 	inputWidget.SetOnMouseScrollCallback ( &EMViewer::OnMouseScrollCallback );
+	inputWidget.SetOnKeyDownCallback ( &EMViewer::OnKeyDownCallback );
+	inputWidget.SetOnKeyUpCallback ( &EMViewer::OnKeyUpCallback );
 
 	inputWidget.SetHandler ( this );
 	this->inputWidget = &inputWidget;

@@ -12,7 +12,7 @@
 #define MOVE_TOOL_ACTIVE_AXIS_X			0
 #define MOVE_TOOL_ACTIVE_AXIS_Y			1
 #define MOVE_TOOL_ACTIVE_AXIS_Z			2
-#define MOVE_TOOL_GISMO_SIZE_FACTOR		0.14f
+#define MOVE_TOOL_GISMO_SIZE_FACTOR		0.1f
 
 #define X_AXIS_COLOR_R					255
 #define X_AXIS_COLOR_G					0
@@ -139,7 +139,7 @@ GXVoid EMMoveTool::OnDrawHudColorPass ()
 	if ( activeAxis == MOVE_TOOL_ACTIVE_AXIS_Z )
 		unlitColorMaterial.SetColor ( SELECTED_AXIS_COLOR_R, SELECTED_AXIS_COLOR_G, SELECTED_AXIS_COLOR_B, SELECTED_AXIS_COLOR_A );
 	else
-		unlitColorMaterial.SetColor ( Y_AXIS_COLOR_R, Y_AXIS_COLOR_G, Y_AXIS_COLOR_B, Y_AXIS_COLOR_A );
+		unlitColorMaterial.SetColor ( Z_AXIS_COLOR_R, Z_AXIS_COLOR_G, Z_AXIS_COLOR_B, Z_AXIS_COLOR_A );
 
 	unlitColorMaterial.Bind ( zAxis );
 	zAxis.Render ();
