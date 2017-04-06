@@ -1,5 +1,4 @@
 #include <GXEngine_Editor_Mobile/EMUIOpenFile.h>
-#include <GXCommon/GXCommon.h>
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXStrings.h>
 #include <GXEngine/GXLocale.h>

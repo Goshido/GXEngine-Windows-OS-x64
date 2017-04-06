@@ -10,6 +10,7 @@
 class GXUIInput;
 typedef GXVoid ( GXCALL* PFNGXUIINPUTONMOUSEPOSITIONPROC ) ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y );
 typedef GXVoid ( GXCALL* PFNGXUIINPUTONMOUSESCROLLPROC ) ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y, GXFloat scroll );
+typedef GXVoid ( GXCALL* PFNGXUIINPUTONKEYPROC ) ( GXVoid* handler, GXUIInput* input, GXInt keyCode );
 
 class GXUIInput : public GXWidget
 {
@@ -24,6 +25,9 @@ class GXUIInput : public GXWidget
 		PFNGXUIINPUTONMOUSEPOSITIONPROC		onDoubleClickCallback;
 		PFNGXUIINPUTONMOUSESCROLLPROC		onMouseScrollCallback;
 		PFNGXUIINPUTONMOUSEPOSITIONPROC		onMouseMoveCallback;
+
+		PFNGXUIINPUTONKEYPROC				onKeyDownCallback;
+		PFNGXUIINPUTONKEYPROC				onKeyUpCallback;
 
 		GXVoid*								handler;
 
@@ -43,6 +47,9 @@ class GXUIInput : public GXWidget
 		GXVoid SetOnDoubleClickCallback ( PFNGXUIINPUTONMOUSEPOSITIONPROC callback );
 		GXVoid SetOnMouseMoveCallback ( PFNGXUIINPUTONMOUSEPOSITIONPROC callback );
 		GXVoid SetOnMouseScrollCallback ( PFNGXUIINPUTONMOUSESCROLLPROC callback );
+
+		GXVoid SetOnKeyDownCallback ( PFNGXUIINPUTONKEYPROC callback );
+		GXVoid SetOnKeyUpCallback ( PFNGXUIINPUTONKEYPROC callback );
 
 		GXVoid SetHandler ( GXVoid* handler );
 };

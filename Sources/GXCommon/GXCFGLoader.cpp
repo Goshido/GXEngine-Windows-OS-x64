@@ -1,8 +1,9 @@
-//version 1.0
+//version 1.1
 
 #include <GXCommon/GXCFGLoader.h>
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXMemory.h>
+#include <GXCommon/GXLogger.h>
 
 
 GXVoid GXCALL GXLoadCFG ( GXEngineConfiguration &out_config_info )

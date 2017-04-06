@@ -1,4 +1,4 @@
-//version 1.28
+//version 1.29
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -27,6 +27,9 @@ union GXVec2
 		GXFloat v;
 	};
 	GXFloat arr[ 2 ];
+
+	GXVec2 ();
+	explicit GXVec2 ( GXFloat component_1, GXFloat component_2 );
 
 	GXVoid operator = ( const GXVec2 &vector );
 };

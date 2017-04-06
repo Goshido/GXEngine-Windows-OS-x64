@@ -10,10 +10,9 @@
 class GXRenderable
 {
 	protected:
-		GXMat4				trans_mat;
+		GXVec3				location;
+		GXVec3				scale;
 		GXMat4				rot_mat;
-		GXMat4				scale_mat;
-		GXMat4				scale_rot_mat;
 		GXMat4				mod_mat;
 
 	public:

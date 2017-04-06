@@ -2,7 +2,6 @@
 #include <GXEngine/GXHudSurface.h>
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXUICommon.h>
-#include <GXCommon/GXCommon.h>
 
 
 #define EM_SEPARATOR_DEFAULT_WIDHT			3.0f

@@ -4,7 +4,7 @@
 #define GX_FILE_SYSTEM
 
 
-#include "GXCommon.h"
+#include "GXTypes.h"
 #include <iostream>
 
 

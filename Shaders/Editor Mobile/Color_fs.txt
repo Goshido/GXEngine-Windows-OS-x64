@@ -1,12 +1,14 @@
 #version 330 core
 
 
-uniform vec4	color;
+#define COLOR_SLOT 0
 
-layout ( location = 0 ) out vec4 fragColor;
+
+uniform vec4 color;
+layout ( location = COLOR_SLOT ) out vec4 colorSlot;
 
 
 void main ()
 {
-	fragColor = color;
+	colorSlot = color;
 }

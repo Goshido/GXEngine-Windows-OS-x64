@@ -18,6 +18,9 @@ GXWidget ( parent, isNeedRegister )
 	onMouseMoveCallback = nullptr;
 	onMouseScrollCallback = nullptr;
 
+	onKeyDownCallback = nullptr;
+	onKeyUpCallback = nullptr;
+
 	handler = nullptr;
 }
 
@@ -128,6 +131,28 @@ GXVoid GXUIInput::OnMessage ( GXUInt message, const GXVoid* data )
 		}
 		break;
 
+		case GX_MSG_KEY_DOWN:
+		{
+			const GXInt* keyCode = (const GXInt*)data;
+			if ( onKeyDownCallback )
+				onKeyDownCallback ( handler, this, *keyCode );
+
+			if ( renderer )
+				renderer->OnUpdate ();
+		}
+		break;
+
+		case GX_MSG_KEY_UP:
+		{
+			const GXInt* keyCode = (const GXInt*)data;
+			if ( onKeyUpCallback )
+				onKeyUpCallback ( handler, this, *keyCode );
+
+			if ( renderer )
+				renderer->OnUpdate ();
+		}
+		break;
+
 		default:
 			GXWidget::OnMessage ( message, data );
 		break;
@@ -177,6 +202,16 @@ GXVoid GXUIInput::SetOnMouseMoveCallback ( PFNGXUIINPUTONMOUSEPOSITIONPROC callb
 GXVoid GXUIInput::SetOnMouseScrollCallback ( PFNGXUIINPUTONMOUSESCROLLPROC callback )
 {
 	onMouseScrollCallback = callback;
+}
+
+GXVoid GXUIInput::SetOnKeyDownCallback ( PFNGXUIINPUTONKEYPROC callback )
+{
+	onKeyDownCallback = callback;
+}
+
+GXVoid GXUIInput::SetOnKeyUpCallback ( PFNGXUIINPUTONKEYPROC callback )
+{
+	onKeyUpCallback = callback;
 }
 
 GXVoid GXUIInput::SetHandler ( GXVoid* handler )

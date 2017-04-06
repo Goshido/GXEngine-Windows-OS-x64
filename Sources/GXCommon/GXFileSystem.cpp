@@ -3,6 +3,7 @@
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXStrings.h>
+#include <GXCommon/GXLogger.h>
 
 
 #define BUFFER_SIZE_IN_SYMBOLS		1024

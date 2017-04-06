@@ -1,6 +1,7 @@
 //version 1.2
 
 #include <GXCommon/GXStrings.h>
+#include <GXCommon/GXLogger.h>
 
 
 GXUTF8Parser::GXUTF8Parser ( const GXUTF8* string )

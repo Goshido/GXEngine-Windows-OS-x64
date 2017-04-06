@@ -359,9 +359,6 @@
     <ClInclude Include="..\..\Include\GXCommon\GXCFGStruct.h">
       <Filter>Header Files\GXCommon</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXCommon\GXCommon.h">
-      <Filter>Header Files\GXCommon</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXCommon\GXFileSystem.h">
       <Filter>Header Files\GXCommon</Filter>
     </ClInclude>

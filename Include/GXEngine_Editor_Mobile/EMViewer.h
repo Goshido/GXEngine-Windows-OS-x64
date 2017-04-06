@@ -2,9 +2,9 @@
 #define EM_VIEWER
 
 
-#include <GXEngine/GXCameraPerspective.h>
-#include <GXEngine/GXInput.h>
 #include "EMActor.h"
+#include <GXEngine/GXCameraPerspective.h>
+#include <GXEngine/GXUIInput.h>
 
 
 typedef GXVoid ( GXCALL* PFNEMONVIEWERTRANSFORMCHANGEDPROC ) ();
@@ -13,6 +13,8 @@ typedef GXVoid ( GXCALL* PFNEMONVIEWERTRANSFORMCHANGEDPROC ) ();
 class EMViewer
 {
 	private:
+		GXUIInput*							inputWidget;
+
 		GXFloat								pitch;
 		GXFloat								yaw;
 		GXFloat								distance;
@@ -22,7 +24,7 @@ class EMViewer
 		GXFloat								panSpeed;
 		GXFloat								zoomSpeed;
 
-		GXCameraPerspective*				camera;
+		GXCameraPerspective					camera;
 		EMActor*							target;
 		PFNEMONVIEWERTRANSFORMCHANGEDPROC	OnViewerTransformChanged;
 
@@ -36,20 +38,20 @@ class EMViewer
 	public:
 		~EMViewer ();
 
+		GXVoid SetInputWidget ( GXUIInput &inputWidget );
 		GXVoid SetTarget ( EMActor* actor );
 		GXVoid SetOnViewerTransformChangedCallback ( PFNEMONVIEWERTRANSFORMCHANGEDPROC callback );
-		GXVoid CaptureInput ();
-		GXCamera* GetCamera ();
+		GXCamera& GetCamera ();
 		GXVoid UpdateMouse ( const GXVec2 &position );
 
 		static EMViewer* GetInstance ();
 
 	private:
-		explicit EMViewer ();
+		EMViewer ();
 
 		GXVoid OnPan ( const GXVec2& mouseDelta );
 		GXVoid OnRotate ( const GXVec2& mouseDelta );
-		GXVoid OnZoom ( GXInt mouseWheelSteps );
+		GXVoid OnZoom ( GXFloat mouseWheelSteps );
 
 		GXVoid UpdateCamera ();
 		GXFloat FixPitch ( GXFloat pitch );
@@ -57,12 +59,16 @@ class EMViewer
 
 		GXUByte ResolveMode ( GXBool isAltPressed, GXBool isMMBPressed, GXBool isWheel );
 
-		static GXVoid GXCALL OnMouseMove ( GXInt win_x, GXInt win_y );
-		static GXVoid GXCALL OnMouseButton ( EGXInputMouseFlags mouseflags );
-		static GXVoid GXCALL OnMouseWheel ( GXInt steps );
+		static GXVoid GXCALL OnLMBDownCallback ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y );
+		static GXVoid GXCALL OnLMBUpCallback ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y );
+		static GXVoid GXCALL OnMMBDownCallback ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y );
+		static GXVoid GXCALL OnMMBUpCallback ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y );
 
-		static GXVoid GXCALL OnAltDown ( GXVoid* handler );
-		static GXVoid GXCALL OnAltUp ( GXVoid* handler );
+		static GXVoid GXCALL OnMouseScrollCallback ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y, GXFloat scroll );
+		static GXVoid GXCALL OnMouseMoveCallback ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y );
+
+		static GXVoid GXCALL OnKeyDownCallback ( GXVoid* handler, GXUIInput* input, GXInt keyCode );
+		static GXVoid GXCALL OnKeyUpCallback ( GXVoid* handler, GXUIInput* input, GXInt keyCode );
 };
 
 

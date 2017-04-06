@@ -1,4 +1,4 @@
-//version 1.2
+//version 1.3
 
 #include <GXEngine/GXTouchSurface.h>
 #include <GXEngine/GXUIMessage.h>
@@ -202,6 +202,54 @@ GXVoid GXTouchSurface::OnMouseMove ( const GXVec2 &position )
 	SendMessage ( target, GX_MSG_MOUSE_MOVE, &position, sizeof ( GXVec2 ) );
 }
 
+GXVoid GXTouchSurface::OnKeyDown ( GXInt keyCode )
+{
+	if ( lockedWidget )
+	{
+		SendMessage ( lockedWidget, GX_MSG_KEY_DOWN, &keyCode, sizeof ( GXInt ) );
+		return;
+	}
+
+	GXWidget* target = FindWidget ( mousePosition.x, mousePosition.y );
+
+	if ( target != mouseOverWidget )
+	{
+		if ( mouseOverWidget )
+			SendMessage ( mouseOverWidget, GX_MSG_MOUSE_LEAVE, &mousePosition, sizeof ( GXVec2 ) );
+
+		mouseOverWidget = target;
+
+		if ( target )
+			SendMessage ( target, GX_MSG_MOUSE_OVER, &mousePosition, sizeof ( GXVec2 ) );
+	}
+
+	SendMessage ( target, GX_MSG_KEY_DOWN, &keyCode, sizeof ( GXInt ) );
+}
+
+GXVoid GXTouchSurface::OnKeyUp ( GXInt keyCode )
+{
+	if ( lockedWidget )
+	{
+		SendMessage ( lockedWidget, GX_MSG_KEY_UP, &keyCode, sizeof ( GXInt ) );
+		return;
+	}
+
+	GXWidget* target = FindWidget ( mousePosition.x, mousePosition.y );
+
+	if ( target != mouseOverWidget )
+	{
+		if ( mouseOverWidget )
+			SendMessage ( mouseOverWidget, GX_MSG_MOUSE_LEAVE, &mousePosition, sizeof ( GXVec2 ) );
+
+		mouseOverWidget = target;
+
+		if ( target )
+			SendMessage ( target, GX_MSG_MOUSE_OVER, &mousePosition, sizeof ( GXVec2 ) );
+	}
+
+	SendMessage ( target, GX_MSG_KEY_UP, &keyCode, sizeof ( GXInt ) );
+}
+
 GXVoid GXTouchSurface::SendMessage ( GXWidget* widget, GXUInt message, const GXVoid* data, GXUInt size )
 {
 	GXMessage* msg = (GXMessage*)gx_ui_MessageBuffer->Allocate ( sizeof ( GXMessage ) );
@@ -224,7 +272,6 @@ GXVoid GXTouchSurface::SendMessage ( GXWidget* widget, GXUInt message, const GXV
 	}
 
 	gx_ui_Mutex->Release ();
-
 }
 
 GXVoid GXTouchSurface::ExecuteMessages ()
@@ -260,9 +307,9 @@ GXVoid GXTouchSurface::MoveWidgetToForeground ( GXWidget* widget )
 	widgetHead = widget;
 }
 
-GXVoid GXTouchSurface::LockCursor ( GXWidget* destination )
+GXVoid GXTouchSurface::LockCursor ( GXWidget* lockedWidget )
 {
-	lockedWidget = destination;
+	this->lockedWidget = lockedWidget;
 }
 
 GXWidget* GXTouchSurface::GetLockedCursorWidget ()

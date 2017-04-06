@@ -4,7 +4,6 @@
 #include <GXEngine/GXUIMessage.h>
 #include <GXEngine/GXUICommon.h>
 #include <GXEngine/GXInput.h>
-#include <GXCommon/GXCommon.h>
 #include <GXCommon/GXStrings.h>
 
 
@@ -544,12 +543,12 @@ GXVoid GXUIEditBox::LockInput ()
 	GXTouchSurface::GetInstance ()->LockCursor ( this );
 
 	GXInput* input = GXInput::GetInstance ();
-	input->BindKeyFunc ( &GXUIEditBox::OnBackspace, this, VK_BACK, INPUT_DOWN );
-	input->BindKeyFunc ( &GXUIEditBox::OnDel, this, VK_DELETE, INPUT_DOWN );
-	input->BindKeyFunc ( &GXUIEditBox::OnLeftArrow, this, VK_LEFT, INPUT_DOWN );
-	input->BindKeyFunc ( &GXUIEditBox::OnRightArrow, this, VK_RIGHT, INPUT_DOWN );
-	input->BindKeyFunc ( &GXUIEditBox::OnHome, this, VK_HOME, INPUT_DOWN );
-	input->BindKeyFunc ( &GXUIEditBox::OnEnd, this, VK_END, INPUT_DOWN );
+	input->BindKeyFunc ( &GXUIEditBox::OnBackspace, this, VK_BACK, eGXInputButtonState::Down );
+	input->BindKeyFunc ( &GXUIEditBox::OnDel, this, VK_DELETE, eGXInputButtonState::Down );
+	input->BindKeyFunc ( &GXUIEditBox::OnLeftArrow, this, VK_LEFT, eGXInputButtonState::Down );
+	input->BindKeyFunc ( &GXUIEditBox::OnRightArrow, this, VK_RIGHT, eGXInputButtonState::Down );
+	input->BindKeyFunc ( &GXUIEditBox::OnHome, this, VK_HOME, eGXInputButtonState::Down );
+	input->BindKeyFunc ( &GXUIEditBox::OnEnd, this, VK_END, eGXInputButtonState::Down );
 	input->BindTypeFunc ( &GXUIEditBox::OnType, this );
 }
 
@@ -558,12 +557,12 @@ GXVoid GXUIEditBox::ReleaseInput ()
 	GXTouchSurface::GetInstance ()->ReleaseCursor ();
 
 	GXInput* input = GXInput::GetInstance ();
-	input->UnBindKeyFunc ( VK_BACK, INPUT_DOWN );
-	input->UnBindKeyFunc ( VK_DELETE, INPUT_DOWN );
-	input->UnBindKeyFunc ( VK_LEFT, INPUT_DOWN );
-	input->UnBindKeyFunc ( VK_RIGHT, INPUT_DOWN );
-	input->UnBindKeyFunc ( VK_HOME, INPUT_DOWN );
-	input->UnBindKeyFunc ( VK_END, INPUT_DOWN );
+	input->UnBindKeyFunc ( VK_BACK, eGXInputButtonState::Down );
+	input->UnBindKeyFunc ( VK_DELETE, eGXInputButtonState::Down );
+	input->UnBindKeyFunc ( VK_LEFT, eGXInputButtonState::Down );
+	input->UnBindKeyFunc ( VK_RIGHT, eGXInputButtonState::Down );
+	input->UnBindKeyFunc ( VK_HOME, eGXInputButtonState::Down );
+	input->UnBindKeyFunc ( VK_END, eGXInputButtonState::Down );
 	input->UnBindTypeFunc ();
 }
 

@@ -1,4 +1,4 @@
-//version 1.2
+//version 1.3
 
 #ifndef GX_TOUCH_SURFACE
 #define GX_TOUCH_SURFACE
@@ -39,13 +39,16 @@ class GXTouchSurface
 		GXVoid OnScroll ( const GXVec2 &position, GXFloat scroll );
 		GXVoid OnMouseMove ( const GXVec2 &position );
 
+		GXVoid OnKeyDown ( GXInt keyCode );
+		GXVoid OnKeyUp ( GXInt keyCode );
+
 		GXVoid SendMessage ( GXWidget* widget, GXUInt message, const GXVoid* data, GXUInt size );
 		GXVoid ExecuteMessages ();
 
 		GXVoid DrawWidgets ();
 		GXVoid MoveWidgetToForeground ( GXWidget* widget );
 
-		GXVoid LockCursor ( GXWidget* destination );			//For draggable and resizable widgets
+		GXVoid LockCursor ( GXWidget* lockedWidget );			//For draggable and resizable widgets
 		GXWidget* GetLockedCursorWidget ();
 		GXVoid ReleaseCursor ();
 

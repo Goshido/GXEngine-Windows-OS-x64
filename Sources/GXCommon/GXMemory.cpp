@@ -1,7 +1,6 @@
 //version 1.1
 
 #include <GXCommon/GXMemory.h>
-#include <GXCommon/GXCommon.h>
 
 
 GXCircleBuffer::GXCircleBuffer ( GXUInt size )

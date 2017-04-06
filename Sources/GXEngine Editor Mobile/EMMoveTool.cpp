@@ -5,14 +5,39 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define EM_MOVE_TOOL_LOCAL_MODE		0
-#define EM_MOVE_TOOL_WORLD_MODE		1
+#define MOVE_TOOL_LOCAL_MODE			0
+#define MOVE_TOOL_WORLD_MODE			1
 
-#define EM_MOVE_TOOL_ACTIVE_AXIS_UNKNOWN	0xFF
-#define EM_MOVE_TOOL_ACTIVE_AXIS_X			0
-#define EM_MOVE_TOOL_ACTIVE_AXIS_Y			1
-#define EM_MOVE_TOOL_ACTIVE_AXIS_Z			2
-#define EM_MOVE_TOOL_GISMO_SIZE_FACTOR		0.14f
+#define MOVE_TOOL_ACTIVE_AXIS_UNKNOWN	0xFF
+#define MOVE_TOOL_ACTIVE_AXIS_X			0
+#define MOVE_TOOL_ACTIVE_AXIS_Y			1
+#define MOVE_TOOL_ACTIVE_AXIS_Z			2
+#define MOVE_TOOL_GISMO_SIZE_FACTOR		0.14f
+
+#define X_AXIS_COLOR_R					255
+#define X_AXIS_COLOR_G					0
+#define X_AXIS_COLOR_B					0
+#define X_AXIS_COLOR_A					255
+
+#define Y_AXIS_COLOR_R					0
+#define Y_AXIS_COLOR_G					255
+#define Y_AXIS_COLOR_B					0
+#define Y_AXIS_COLOR_A					255
+
+#define Z_AXIS_COLOR_R					0
+#define Z_AXIS_COLOR_G					0
+#define Z_AXIS_COLOR_B					255
+#define Z_AXIS_COLOR_A					255
+
+#define CENTER_COLOR_R					255
+#define CENTER_COLOR_G					255
+#define CENTER_COLOR_B					255
+#define CENTER_COLOR_A					255
+
+#define SELECTED_AXIS_COLOR_R			255
+#define SELECTED_AXIS_COLOR_G			255
+#define SELECTED_AXIS_COLOR_B			255
+#define SELECTED_AXIS_COLOR_A			255
 
 
 static EMMoveTool* em_mt_Me = nullptr;
@@ -26,33 +51,29 @@ zAxis ( L"3D Models/Editor Mobile/Move gismo Z axis.stm" ),
 zAxisMask ( L"3D Models/Editor Mobile/Move gismo z axis mask.stm" ),
 center ( L"3D Models/Editor Mobile/Move gismo center.stm" )
 {
-	mode = EM_MOVE_TOOL_LOCAL_MODE;
+	mode = MOVE_TOOL_LOCAL_MODE;
 
 	memset ( &startLocationWorld, 0, sizeof ( GXVec3 ) );
 	memset ( &deltaWorld, 0, sizeof ( GXVec3 ) );
 	GXSetMat4Identity ( gismoRotation );
 
-	activeAxis = EM_MOVE_TOOL_ACTIVE_AXIS_UNKNOWN;
-
-	isDeleted = GX_FALSE;
+	activeAxis = MOVE_TOOL_ACTIVE_AXIS_UNKNOWN;
 	isLMBPressed = GX_FALSE;
-
 	mouseX = mouseY = 0xFFFF;
-
 	gismoScaleCorrector = 1.0f;
 
 	em_mt_Me = this;
 }
 
-GXVoid EMMoveTool::Delete ()
+EMMoveTool::~EMMoveTool ()
 {
-	isDeleted = GX_TRUE;
+	//NOTHING
 }
 
 GXVoid EMMoveTool::Bind ()
 {
 	actor = nullptr;
-	activeAxis = EM_MOVE_TOOL_ACTIVE_AXIS_UNKNOWN;
+	activeAxis = MOVE_TOOL_ACTIVE_AXIS_UNKNOWN;
 	isLMBPressed = GX_FALSE;
 
 	EMRenderer::GetInstance ()->SetOnObjectCallback ( &OnObject );
@@ -64,11 +85,11 @@ GXVoid EMMoveTool::SetActor ( EMActor* actor )
 
 	switch ( mode )
 	{
-		case EM_MOVE_TOOL_LOCAL_MODE:
+		case MOVE_TOOL_LOCAL_MODE:
 			SetLocalMode ();
 		break;
 
-		case EM_MOVE_TOOL_WORLD_MODE:
+		case MOVE_TOOL_WORLD_MODE:
 			SetWorldMode ();
 		break;
 	}
@@ -90,66 +111,52 @@ GXVoid EMMoveTool::OnViewerTransformChanged ()
 
 GXVoid EMMoveTool::OnDrawHudColorPass ()
 {
-	if ( colorProgram.GetProgram () == 0 )
-		InitGraphicResources ();
-
-	if ( isDeleted )
-	{
-		delete this;
-		return;
-	}
-
 	if ( !actor ) return;
-
-	glUseProgram ( colorProgram.GetProgram () );
-
-	GXMat4 rot_mat;
-	GXMat4 scale_mat;
-	GXMat4 mod_mat;
-	GXMat4 mod_view_proj_mat;
-
-	const GXMat4& actorTransform = actor->GetTransform ();
-	GXSetMat4Scale ( scale_mat, gismoScaleCorrector, gismoScaleCorrector, gismoScaleCorrector );
-	GXMulMat4Mat4 ( mod_mat, gismoRotation, scale_mat );
-	GXSetMat4TranslateTo ( mod_mat, actorTransform.m41, actorTransform.m42, actorTransform.m43 );
-	GXMulMat4Mat4 ( mod_view_proj_mat, mod_mat, GXCamera::GetActiveCamera ()->GetViewProjectionMatrix () );
-
-	glUniformMatrix4fv ( clr_mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );
 
 	glDisable ( GL_BLEND );
 
-	if ( activeAxis == EM_MOVE_TOOL_ACTIVE_AXIS_X )
-		glUniform4f ( clr_colorLocation, 1.0f, 1.0f, 1.0f, 1.0f );
+	UpdateMeshTransform ( xAxis );
+	if ( activeAxis == MOVE_TOOL_ACTIVE_AXIS_X )
+		unlitColorMaterial.SetColor ( SELECTED_AXIS_COLOR_R, SELECTED_AXIS_COLOR_G, SELECTED_AXIS_COLOR_B, SELECTED_AXIS_COLOR_A );
 	else
-		glUniform4f ( clr_colorLocation, 1.0f, 0.0f, 0.0f, 1.0f );
+		unlitColorMaterial.SetColor ( X_AXIS_COLOR_R, X_AXIS_COLOR_G, X_AXIS_COLOR_B, X_AXIS_COLOR_A );
 
+	unlitColorMaterial.Bind ( xAxis );
 	xAxis.Render ();
+	unlitColorMaterial.Unbind ();
 
-	if ( activeAxis == EM_MOVE_TOOL_ACTIVE_AXIS_Y )
-		glUniform4f ( clr_colorLocation, 1.0f, 1.0f, 1.0f, 1.0f );
+	UpdateMeshTransform ( yAxis );
+	if ( activeAxis == MOVE_TOOL_ACTIVE_AXIS_Y )
+		unlitColorMaterial.SetColor ( SELECTED_AXIS_COLOR_R, SELECTED_AXIS_COLOR_G, SELECTED_AXIS_COLOR_B, SELECTED_AXIS_COLOR_A );
 	else
-		glUniform4f ( clr_colorLocation, 0.0f, 1.0f, 0.0f, 1.0f );
+		unlitColorMaterial.SetColor ( Y_AXIS_COLOR_R, Y_AXIS_COLOR_G, Y_AXIS_COLOR_B, Y_AXIS_COLOR_A );
 
+	unlitColorMaterial.Bind ( yAxis );
 	yAxis.Render ();
+	unlitColorMaterial.Unbind ();
 
-	if ( activeAxis == EM_MOVE_TOOL_ACTIVE_AXIS_Z )
-		glUniform4f ( clr_colorLocation, 1.0f, 1.0f, 1.0f, 1.0f );
+	UpdateMeshTransform ( zAxis );
+	if ( activeAxis == MOVE_TOOL_ACTIVE_AXIS_Z )
+		unlitColorMaterial.SetColor ( SELECTED_AXIS_COLOR_R, SELECTED_AXIS_COLOR_G, SELECTED_AXIS_COLOR_B, SELECTED_AXIS_COLOR_A );
 	else
-		glUniform4f ( clr_colorLocation, 0.0f, 0.0f, 1.0f, 1.0f );
+		unlitColorMaterial.SetColor ( Y_AXIS_COLOR_R, Y_AXIS_COLOR_G, Y_AXIS_COLOR_B, Y_AXIS_COLOR_A );
 
+	unlitColorMaterial.Bind ( zAxis );
 	zAxis.Render ();
+	unlitColorMaterial.Unbind ();
 
-	glUniform4f ( clr_colorLocation, 1.0f, 1.0f, 1.0f, 1.0f );
-
+	UpdateMeshTransform ( center );
+	unlitColorMaterial.SetColor ( CENTER_COLOR_R, CENTER_COLOR_G, CENTER_COLOR_B, CENTER_COLOR_A );
+	unlitColorMaterial.Bind ( center );
 	center.Render ();
+	unlitColorMaterial.Unbind ();
 
 	glEnable ( GL_BLEND );
-	glUseProgram ( 0 );
 }
 
 GXVoid EMMoveTool::OnDrawHudMaskPass ()
 {
-	if ( !actor || isDeleted ) return;
+	if ( !actor ) return;
 	
 	EMRenderer* renderer = EMRenderer::GetInstance ();
 
@@ -172,69 +179,52 @@ GXVoid EMMoveTool::OnDrawHudMaskPass ()
 	objectMaskMaterial.Unbind ();
 }
 
-GXVoid EMMoveTool::OnMouseMove ( const GXVec2 &mousePosition )
+GXBool EMMoveTool::OnMouseMove ( GXFloat x, GXFloat y )
 {
-	mouseX = (GXUShort)mousePosition.x;
-	mouseY = (GXUShort)mousePosition.y;
+	mouseX = (GXUShort)x;
+	mouseY = (GXUShort)y;
 
-	if ( isLMBPressed && activeAxis != EM_MOVE_TOOL_ACTIVE_AXIS_UNKNOWN )
+	if ( isLMBPressed && activeAxis != MOVE_TOOL_ACTIVE_AXIS_UNKNOWN )
+	{
 		OnMoveActor ();
+		return GX_TRUE;
+	}
+
+	return GX_FALSE;
 }
 
-GXVoid EMMoveTool::OnMouseButton ( EGXInputMouseFlags mouseflags )
+GXBool EMMoveTool::OnLeftMouseButtonDown ( GXFloat x, GXFloat y )
 {
-	if ( mouseflags.lmb ) 
-	{
-		isLMBPressed = GX_TRUE;
-		EMRenderer::GetInstance ()->GetObject ( mouseX, mouseY );
-	}
-	else if ( isLMBPressed && !mouseflags.lmb )
-	{
-		if ( activeAxis == EM_MOVE_TOOL_ACTIVE_AXIS_UNKNOWN ) return;
+	isLMBPressed = GX_TRUE;
+	EMRenderer::GetInstance ()->GetObject ( (GXUShort)x, (GXUShort)y );
+	return GX_FALSE;
+}
 
-		GXSumVec3Vec3 ( startLocationWorld, startLocationWorld, deltaWorld );
+GXBool EMMoveTool::OnLeftMouseButtonUp ( GXFloat /*x*/, GXFloat /*y*/ )
+{
+	if ( activeAxis == MOVE_TOOL_ACTIVE_AXIS_UNKNOWN ) return GX_FALSE;
 
-		GXMat4 newTransform = actor->GetTransform ();
-		newTransform.wv = startLocationWorld;
-		actor->SetTransform ( newTransform );
+	GXSumVec3Vec3 ( startLocationWorld, startLocationWorld, deltaWorld );
 
-		isLMBPressed = GX_FALSE;
-	}
+	GXMat4 newTransform = actor->GetTransform ();
+	newTransform.wv = startLocationWorld;
+	actor->SetTransform ( newTransform );
+
+	isLMBPressed = GX_FALSE;
+
+	return GX_FALSE;
 }
 
 GXVoid EMMoveTool::SetLocalMode ()
 {
 	if ( !actor ) return;
-	SetMode ( EM_MOVE_TOOL_LOCAL_MODE );
+	SetMode ( MOVE_TOOL_LOCAL_MODE );
 }
 
 GXVoid EMMoveTool::SetWorldMode ()
 {
 	if ( !actor ) return;
-	SetMode ( EM_MOVE_TOOL_WORLD_MODE );
-}
-
-EMMoveTool::~EMMoveTool ()
-{
-	if ( colorProgram.GetProgram () == 0 ) return;
-
-	GXShaderProgram::RemoveShaderProgram ( colorProgram );
-}
-
-GXVoid EMMoveTool::InitGraphicResources ()
-{
-	GXShaderProgramInfo si;
-	si.vs = L"Shaders/Editor Mobile/VertexOnly_vs.txt";
-	si.gs = nullptr;
-	si.fs = L"Shaders/Editor Mobile/Color_fs.txt";
-	si.numSamplers = 0;
-	si.samplerNames = nullptr;
-	si.samplerLocations = nullptr;
-	
-	colorProgram = GXShaderProgram::GetShaderProgram ( si );
-
-	clr_mod_view_proj_matLocation = colorProgram.GetUniform ( "mod_view_proj_mat" );
-	clr_colorLocation = colorProgram.GetUniform ( "color" );
+	SetMode ( MOVE_TOOL_WORLD_MODE );
 }
 
 GXVoid EMMoveTool::SetMode ( GXUByte mode )
@@ -250,11 +240,11 @@ GXVoid EMMoveTool::SetMode ( GXUByte mode )
 
 	switch ( mode )
 	{
-		case EM_MOVE_TOOL_LOCAL_MODE:
+		case MOVE_TOOL_LOCAL_MODE:
 			GXSetMat4ClearRotation ( gismoRotation, actorTransform );
 		break;
 
-		case EM_MOVE_TOOL_WORLD_MODE:
+		case MOVE_TOOL_WORLD_MODE:
 			GXSetMat4Identity ( gismoRotation );
 		break;
 	}
@@ -276,7 +266,7 @@ GXVoid EMMoveTool::SetMode ( GXUByte mode )
 
 GXVoid EMMoveTool::OnMoveActor ()
 {
-	if ( activeAxis == EM_MOVE_TOOL_ACTIVE_AXIS_UNKNOWN ) return;
+	if ( activeAxis == MOVE_TOOL_ACTIVE_AXIS_UNKNOWN ) return;
 
 	GXCamera* activeCamera = GXCamera::GetActiveCamera ();
 
@@ -309,16 +299,16 @@ GXVoid EMMoveTool::GetAxis ( GXVec3& axisView )
 
 	switch ( activeAxis )
 	{
-		case EM_MOVE_TOOL_ACTIVE_AXIS_X:
-			axisWorld = ( mode == EM_MOVE_TOOL_WORLD_MODE ) ? GXCreateVec3 ( 1.0f, 0.0f, 0.0f ) : gismoRotation.xv;
+		case MOVE_TOOL_ACTIVE_AXIS_X:
+			axisWorld = ( mode == MOVE_TOOL_WORLD_MODE ) ? GXCreateVec3 ( 1.0f, 0.0f, 0.0f ) : gismoRotation.xv;
 		break;
 
-		case EM_MOVE_TOOL_ACTIVE_AXIS_Y:
-			axisWorld = ( mode == EM_MOVE_TOOL_WORLD_MODE ) ? GXCreateVec3 ( 0.0f, 1.0f, 0.0f ) : gismoRotation.yv;
+		case MOVE_TOOL_ACTIVE_AXIS_Y:
+			axisWorld = ( mode == MOVE_TOOL_WORLD_MODE ) ? GXCreateVec3 ( 0.0f, 1.0f, 0.0f ) : gismoRotation.yv;
 		break;
 
-		case EM_MOVE_TOOL_ACTIVE_AXIS_Z:
-			axisWorld = ( mode == EM_MOVE_TOOL_WORLD_MODE ) ? GXCreateVec3 ( 0.0f, 0.0f, 1.0f ) : gismoRotation.zv;
+		case MOVE_TOOL_ACTIVE_AXIS_Z:
+			axisWorld = ( mode == MOVE_TOOL_WORLD_MODE ) ? GXCreateVec3 ( 0.0f, 0.0f, 1.0f ) : gismoRotation.zv;
 		break;
 
 		default:
@@ -356,7 +346,7 @@ GXFloat EMMoveTool::GetAxisParameter ( const GXVec3 &axisLocationView, const GXV
 
 GXFloat EMMoveTool::GetScaleCorrector ( const GXVec3 &axisLocationView, const GXVec3 &deltaView )
 {
-	return ( axisLocationView.z + deltaView.z ) * EM_MOVE_TOOL_GISMO_SIZE_FACTOR;
+	return ( axisLocationView.z + deltaView.z ) * MOVE_TOOL_GISMO_SIZE_FACTOR;
 }
 
 GXVoid EMMoveTool::UpdateMeshTransform ( EMMesh &mesh )
@@ -370,23 +360,23 @@ GXVoid EMMoveTool::UpdateMeshTransform ( EMMesh &mesh )
 GXVoid GXCALL EMMoveTool::OnObject ( GXUPointer object )
 {
 	if ( object == (GXUPointer)( &em_mt_Me->xAxisMask ) )
-		em_mt_Me->activeAxis = EM_MOVE_TOOL_ACTIVE_AXIS_X;
+		em_mt_Me->activeAxis = MOVE_TOOL_ACTIVE_AXIS_X;
 	else if ( object == (GXUPointer)( &em_mt_Me->yAxisMask ) )
-		em_mt_Me->activeAxis = EM_MOVE_TOOL_ACTIVE_AXIS_Y;
+		em_mt_Me->activeAxis = MOVE_TOOL_ACTIVE_AXIS_Y;
 	else if ( object == (GXUPointer)( &em_mt_Me->zAxisMask ) )
-		em_mt_Me->activeAxis = EM_MOVE_TOOL_ACTIVE_AXIS_Z;
+		em_mt_Me->activeAxis = MOVE_TOOL_ACTIVE_AXIS_Z;
 	else
-		em_mt_Me->activeAxis = EM_MOVE_TOOL_ACTIVE_AXIS_UNKNOWN;
+		em_mt_Me->activeAxis = MOVE_TOOL_ACTIVE_AXIS_UNKNOWN;
 
-	if ( em_mt_Me->activeAxis == EM_MOVE_TOOL_ACTIVE_AXIS_UNKNOWN ) return;
+	if ( em_mt_Me->activeAxis == MOVE_TOOL_ACTIVE_AXIS_UNKNOWN ) return;
 
 	switch ( em_mt_Me->mode )
 	{
-		case EM_MOVE_TOOL_WORLD_MODE:
+		case MOVE_TOOL_WORLD_MODE:
 			em_mt_Me->SetWorldMode ();
 		break;
 
-		case EM_MOVE_TOOL_LOCAL_MODE:
+		case MOVE_TOOL_LOCAL_MODE:
 			em_mt_Me->SetLocalMode ();
 		break;
 	}

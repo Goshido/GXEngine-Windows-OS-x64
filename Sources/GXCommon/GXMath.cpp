@@ -1,4 +1,4 @@
-//version 1.28
+//version 1.29
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
@@ -6,6 +6,17 @@
 #include <cfloat>
 #include <cwchar>
 
+
+GXVec2::GXVec2 ()
+{
+	memset ( this, 0, sizeof ( GXVec2 ) );
+}
+
+GXVec2::GXVec2 ( GXFloat component_1, GXFloat component_2 )
+{
+	x = component_1;
+	y = component_2;
+}
 
 GXVoid GXVec2::operator = ( const GXVec2 &vector )
 {

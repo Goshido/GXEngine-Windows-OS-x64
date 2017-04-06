@@ -4,6 +4,7 @@
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXMemory.h>
+#include <GXCommon/GXLogger.h>
 
 
 class GXShaderProgramEntry;

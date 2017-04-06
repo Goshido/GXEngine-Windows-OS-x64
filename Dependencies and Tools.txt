@@ -1,0 +1,10 @@
+Build tool:
+    MSVC-140 x64
+
+Dependencies:
+    1) FreeType
+    2) OpenAL
+    3) PhysX 3.3.4
+    4) XInput
+    5) Vorbis/Ogg
+    6) STB

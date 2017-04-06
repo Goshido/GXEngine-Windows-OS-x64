@@ -4,7 +4,8 @@
 #define GX_CFG_STRUCT
 
 
-#include "GXCommon.h"
+#include "GXTypes.h"
+
 
 struct GXEngineConfiguration
 {

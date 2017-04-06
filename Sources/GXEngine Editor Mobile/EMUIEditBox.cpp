@@ -2,7 +2,6 @@
 #include <GXEngine/GXHudSurface.h>
 #include <GXEngine/GXTexture.h>
 #include <GXEngine/GXUICommon.h>
-#include <GXCommon/GXCommon.h>
 
 
 #define EM_DEFAULT_BACKGROUND			L"Textures/System/Default_Diffuse.tga"

@@ -7,10 +7,9 @@
 
 GXRenderable::GXRenderable ()
 {
-	GXSetMat4Identity ( trans_mat );
+	location = GXCreateVec3 ( 0.0f, 0.0f, 0.0f );
+	scale = GXCreateVec3 ( 1.0f, 1.0f, 1.0f );
 	GXSetMat4Identity ( rot_mat );
-	GXSetMat4Identity ( scale_mat );
-	GXSetMat4Identity ( scale_rot_mat );
 	GXSetMat4Identity ( mod_mat );
 }
 
@@ -21,16 +20,16 @@ GXRenderable::~GXRenderable ()
 
 GXVoid GXRenderable::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 {
-	GXSetMat4Translation ( trans_mat, x, y, z );
-	GXMulMat4Mat4 ( mod_mat, scale_rot_mat, trans_mat );
+	location = GXCreateVec3 ( x, y, z );
+	mod_mat.wv = location;
 
 	UpdateBounds ();
 }
 
 GXVoid GXRenderable::SetLocation ( const GXVec3 &loc )
 {
-	trans_mat.wv = loc;
-	GXMulMat4Mat4 ( mod_mat, scale_rot_mat, trans_mat );
+	location = loc;
+	mod_mat.wv = location;
 
 	UpdateBounds ();
 }
@@ -38,8 +37,10 @@ GXVoid GXRenderable::SetLocation ( const GXVec3 &loc )
 GXVoid GXRenderable::SetRotation ( const GXVec3 &rot_rad  )
 {
 	GXSetMat4RotationXYZ ( rot_mat, rot_rad.pitch_rad, rot_rad.yaw_rad, rot_rad.roll_rad );
-	GXMulMat4Mat4 ( scale_rot_mat, scale_mat, rot_mat );
-	GXMulMat4Mat4 ( mod_mat, scale_rot_mat, trans_mat );
+	
+	GXMulVec3Scalar ( mod_mat.xv, rot_mat.xv, scale.x );
+	GXMulVec3Scalar ( mod_mat.yv, rot_mat.yv, scale.y );
+	GXMulVec3Scalar ( mod_mat.zv, rot_mat.zv, scale.z );
 
 	UpdateBounds ();
 }
@@ -47,8 +48,10 @@ GXVoid GXRenderable::SetRotation ( const GXVec3 &rot_rad  )
 GXVoid GXRenderable::SetRotation ( const GXMat4 &rot )
 {
 	rot_mat = rot;
-	GXMulMat4Mat4 ( scale_rot_mat, scale_mat, rot_mat );
-	GXMulMat4Mat4 ( mod_mat, scale_rot_mat, trans_mat );
+
+	GXMulVec3Scalar ( mod_mat.xv, rot_mat.xv, scale.x );
+	GXMulVec3Scalar ( mod_mat.yv, rot_mat.yv, scale.y );
+	GXMulVec3Scalar ( mod_mat.zv, rot_mat.zv, scale.z );
 
 	UpdateBounds ();
 }
@@ -56,8 +59,10 @@ GXVoid GXRenderable::SetRotation ( const GXMat4 &rot )
 GXVoid GXRenderable::SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_rad )
 {
 	GXSetMat4RotationXYZ ( rot_mat, pitch_rad, yaw_rad, roll_rad );
-	GXMulMat4Mat4 ( scale_rot_mat, scale_mat, rot_mat );
-	GXMulMat4Mat4 ( mod_mat, scale_rot_mat, trans_mat );
+
+	GXMulVec3Scalar ( mod_mat.xv, rot_mat.xv, scale.x );
+	GXMulVec3Scalar ( mod_mat.yv, rot_mat.yv, scale.y );
+	GXMulVec3Scalar ( mod_mat.zv, rot_mat.zv, scale.z );
 
 	UpdateBounds ();
 }
@@ -65,33 +70,39 @@ GXVoid GXRenderable::SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat r
 GXVoid GXRenderable::SetRotation ( const GXQuat &quaternion )
 {
 	rot_mat.SetRotation ( quaternion );
-	GXMulMat4Mat4 ( scale_rot_mat, scale_mat, rot_mat );
-	GXMulMat4Mat4 ( mod_mat, scale_rot_mat, trans_mat );
+
+	GXMulVec3Scalar ( mod_mat.xv, rot_mat.xv, scale.x );
+	GXMulVec3Scalar ( mod_mat.yv, rot_mat.yv, scale.y );
+	GXMulVec3Scalar ( mod_mat.zv, rot_mat.zv, scale.z );
 
 	UpdateBounds ();
 }
 
 GXVoid GXRenderable::SetScale ( GXFloat x, GXFloat y, GXFloat z ) 
 {
-	GXSetMat4Scale ( scale_mat, x, y, z );
-	GXMulMat4Mat4 ( scale_rot_mat, scale_mat, rot_mat );
-	GXMulMat4Mat4 ( mod_mat, scale_rot_mat, trans_mat );
+	scale = GXCreateVec3 ( x, y, z );
+
+	GXMulVec3Scalar ( mod_mat.xv, rot_mat.xv, scale.x );
+	GXMulVec3Scalar ( mod_mat.yv, rot_mat.yv, scale.y );
+	GXMulVec3Scalar ( mod_mat.zv, rot_mat.zv, scale.z );
 
 	UpdateBounds ();
 }
 
 GXVoid GXRenderable::SetScale ( const GXVec3 &scale )
 {
-	GXSetMat4Scale ( scale_mat, scale.x, scale.y, scale.z );
-	GXMulMat4Mat4 ( scale_rot_mat, scale_mat, rot_mat );
-	GXMulMat4Mat4 ( mod_mat, scale_rot_mat, trans_mat );
+	this->scale = scale;
+
+	GXMulVec3Scalar ( mod_mat.xv, rot_mat.xv, scale.x );
+	GXMulVec3Scalar ( mod_mat.yv, rot_mat.yv, scale.y );
+	GXMulVec3Scalar ( mod_mat.zv, rot_mat.zv, scale.z );
 
 	UpdateBounds ();
 }
 
 GXVoid GXRenderable::GetLocation ( GXVec3 &loc ) const
 {
-	loc = trans_mat.wv;
+	loc = location;
 } 
 
 GXVoid GXRenderable::GetRotation ( GXMat4 &rot ) const
@@ -106,9 +117,7 @@ GXVoid GXRenderable::GetRotation ( GXQuat &rot ) const
 
 GXVoid GXRenderable::GetScale ( GXVec3 &scale ) const
 {
-	scale.x = scale_mat.m11;
-	scale.y = scale_mat.m22;
-	scale.z = scale_mat.m33;
+	scale = this->scale;
 }
 
 const GXMat4& GXRenderable::GetModelMatrix () const

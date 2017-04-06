@@ -2,27 +2,23 @@
 #define EM_SCALE_GISMO
 
 
-#include <GXEngine/GXRenderable.h>
-#include <GXEngine/GXShaderProgram.h>
-#include <GXEngine/GXMeshGeometry.h>
+#include "EMMesh.h"
 #include <GXEngine/GXTexture.h>
+#include <GXEngine/GXUnlitTexture2DMaterial.h>
 
 
 class EMScaleGismo : public GXRenderable
 {
 	private:
-		GXBool				isDeleted;
-		GXBool				isVisible;
-
-		GLint				mod_view_proj_matLocation;
-		GXShaderProgram		shaderProgram;
-
-		GXMeshGeometry		meshGeometry;
-		GXTexture			texture;
+		GXBool						isVisible;
+		EMMesh						mesh;
+		GXTexture					texture;
+		GXUnlitTexture2DMaterial	unlitMaterial;
+		GLuint						sampler;
 
 	public:
 		EMScaleGismo ();
-		GXVoid Delete ();
+		~EMScaleGismo () override;
 
 		GXVoid Hide ();
 		GXVoid Show ();
@@ -30,8 +26,6 @@ class EMScaleGismo : public GXRenderable
 		GXVoid Render () override;
 
 	protected:
-		~EMScaleGismo () override;
-
 		GXVoid InitGraphicResources () override;
 		GXVoid UpdateBounds () override;
 };

@@ -4,7 +4,7 @@
 #define GX_STRINGS
 
 
-#include "GXCommon.h"
+#include "GXTypes.h"
 
 
 class GXUTF8Parser

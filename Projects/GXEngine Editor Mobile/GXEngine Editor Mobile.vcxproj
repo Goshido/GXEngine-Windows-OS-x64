@@ -271,7 +271,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXCommon\GXCFGLoader.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXCFGSaver.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXCFGStruct.h" />
-    <ClInclude Include="..\..\Include\GXCommon\GXCommon.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXFileSystem.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXImageLoader.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXLogger.h" />

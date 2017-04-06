@@ -1,19 +1,31 @@
 #include <GXEngine_Editor_Mobile/EMRotateGismo.h>
-#include <GXEngine/GXCamera.h>
 #include <GXEngine/GXSamplerUtils.h>
 
 
-EMRotateGismo::EMRotateGismo ()
-{
-	isDeleted = GX_FALSE;
-	isVisible = GX_TRUE;
+#define TEXTURE_COLOR_R		255
+#define TEXTURE_COLOR_G		255
+#define TEXTURE_COLOR_B		255
+#define TEXTURE_COLOR_A		255
 
-	mod_view_proj_matLocation = -1;
+#define TEXTURE_SCALE_X		1.0f
+#define TEXTURE_SCALE_Y		1.0f
+#define TEXTURE_OFFSET_X	0.0f
+#define TEXTURE_OFFSET_Y	0.0f
+
+#define TEXTURE_SLOT		0
+
+
+EMRotateGismo::EMRotateGismo () :
+mesh ( L"3D Models/Editor Mobile/Rotate Gismo.stm" )
+{
+	isVisible = GX_TRUE;
+	InitGraphicResources ();
 }
 
-GXVoid EMRotateGismo::Delete ()
+EMRotateGismo::~EMRotateGismo ()
 {
-	isDeleted = GX_TRUE;
+	GXTexture::RemoveTexture ( texture );
+	glDeleteSamplers ( 1, &sampler );
 }
 
 GXVoid EMRotateGismo::Hide ()
@@ -28,62 +40,20 @@ GXVoid EMRotateGismo::Show ()
 
 GXVoid EMRotateGismo::Render ()
 {
-	if ( shaderProgram.GetProgram () == 0 )
-		InitGraphicResources ();
-
-	if ( isDeleted )
-	{
-		delete this;
-		return;
-	}
-
 	if ( !isVisible ) return;
 
-	GXCamera* camera = GXCamera::GetActiveCamera ();
+	glBindSampler ( TEXTURE_SLOT, sampler );
+	unlitMaterial.Bind ( mesh );
 
-	glUseProgram ( shaderProgram.GetProgram () );
+	mesh.Render ();
 
-	const GXMat4& view_proj_mat = camera->GetViewProjectionMatrix ();
-	GXMat4 mod_view_proj_mat;
-	GXMulMat4Mat4 ( mod_view_proj_mat, mod_mat, view_proj_mat );
-
-	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );
-
-	texture.Bind ( 0 );
-	meshGeometry.Render ();
-
-	texture.Unbind ();
-	glUseProgram ( 0 );
-}
-
-EMRotateGismo::~EMRotateGismo ()
-{
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
-	GXMeshGeometry::RemoveMeshGeometry ( meshGeometry );
-	GXTexture::RemoveTexture ( texture );
-	glDeleteSamplers ( 1, &sampler );
+	unlitMaterial.Unbind ();
+	glBindSampler ( TEXTURE_SLOT, 0 );
 }
 
 GXVoid EMRotateGismo::InitGraphicResources ()
 {
-	meshGeometry = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Rotate Gismo.stm" );
 	UpdateBounds ();
-
-	static const GLchar* samplerNames[ 1 ] = { "imageSampler" };
-	static const GLuint samplerLocations[ 1 ] = { 0 };
-
-	GXShaderProgramInfo si;
-	si.vs = L"Shaders/System/VertexAndUV_vs.txt";
-	si.gs = nullptr;
-	si.fs = L"Shaders/Editor Mobile/OneSampler_fs.txt";
-	si.numSamplers = 1;
-	si.samplerNames = samplerNames;
-	si.samplerLocations = samplerLocations;
-
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
-
-	mod_view_proj_matLocation = shaderProgram.GetUniform ( "mod_view_proj_mat" );
-
 	texture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Gismo Texture.tex", GX_FALSE );
 
 	GXGLSamplerInfo samplerInfo;
@@ -92,9 +62,14 @@ GXVoid EMRotateGismo::InitGraphicResources ()
 	samplerInfo.wrap = GL_CLAMP_TO_EDGE;
 
 	sampler = GXCreateSampler ( samplerInfo );
+
+	unlitMaterial.SetColor ( TEXTURE_COLOR_R, TEXTURE_COLOR_G, TEXTURE_COLOR_B, TEXTURE_COLOR_A );
+	unlitMaterial.SetTexture ( texture );
+	unlitMaterial.SetTextureScale ( TEXTURE_SCALE_X, TEXTURE_SCALE_Y );
+	unlitMaterial.SetTextureOffset ( TEXTURE_OFFSET_X, TEXTURE_OFFSET_Y );
 }
 
 GXVoid EMRotateGismo::UpdateBounds ()
 {
-	//TODO
+	//NOTHING
 }

@@ -1,4 +1,4 @@
-//version 1.13
+//version 1.14
 
 #include <GXEngine/GXInput.h>
 #include <GXEngine/GXCore.h>
@@ -14,55 +14,10 @@
 #define GX_INPUT_INV_STICK_VALUE	3.0519e-5f
 #define GX_INPUT_INV_TRIGGER_VALUE	3.9216e-3f
 
+
 extern HMODULE gx_GXEngineDLLModuleHandle;
 
-PFNXINPUTGETSTATEPROC	GXXInputGetState = 0;
-PFNXINPUTENABLEPROC		GXXInputEnable = 0;
 
-
-GXBool GXCALL GXXInputInit ()
-{
-	gx_GXEngineDLLModuleHandle = LoadLibraryW ( L"GXEngine.dll" );
-	if ( !gx_GXEngineDLLModuleHandle )
-	{
-		GXLogW ( L"%i\n", GetLastError() );
-		GXLogW ( L"GXInput::XInputInit::Error - Не удалось загрузить GXEngine.dll\n" );
-		return GX_FALSE;
-	}
-
-	PFNGXXINPUTINITPROC GXXInputInit = (PFNGXXINPUTINITPROC)GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXXInputInit" );
-	if ( !GXXInputInit )
-	{
-		GXLogW ( L"GXInput::XInputInit::Error - Не удалось найти функцию GXXInputInit\n" );
-		return GX_FALSE;
-	}
-
-	GXXInputFunctions out;
-	out.XInputGetState = &GXXInputGetState;
-	out.XInputEnable = &GXXInputEnable;
-	GXXInputInit ( out );
-
-	return GX_TRUE;
-}	
-
-GXBool GXCALL GXXInputDestroy ()
-{
-	if ( !gx_GXEngineDLLModuleHandle )
-	{
-		GXLogW ( L"GXInput::XInputDestroy::Error - Попытка выгрузить несуществующую в памяти GXEngine.dll\n" );
-		return GX_FALSE;
-	}
-
-	if ( !FreeLibrary ( gx_GXEngineDLLModuleHandle ) )
-	{
-		GXLogW ( L"GXInput::XInputDestroy::Error - Не удалось выгрузить библиотеку GXEngine.dll\n" );
-		return GX_FALSE;
-	}
-
-	return GX_TRUE;
-}
-
-//--------------------------------------------------------------------------------------------------
 GXThread*				GXInput::thread = nullptr;
 GXBool					GXInput::keysMask[ GX_INPUT_TOTAL_KEYBOARD_KEYS ];
 PFNGXKEYPROC			GXInput::KeysMapping[ GX_INPUT_TOTAL_KEYBOARD_KEYS ];
@@ -83,30 +38,22 @@ GXBool					GXInput::loopFlag = false;
 PFNGXMOUSEMOVEPROC		GXInput::DoMouseMoving = nullptr;
 PFNGXMOUSEBUTTONSPROC	GXInput::DoMouseButtons = nullptr;
 PFNGXMOUSEWHEELPROC		GXInput::DoMouseWheel = nullptr;
-EGXInputMouseFlags		GXInput::mouseflags;
+GXInputMouseFlags		GXInput::mouseflags;
+eGXInputDevice			GXInput::activeInputDevice = eGXInputDevice::Keyboard;
+PFNXINPUTGETSTATEPROC	GXInput::XInputGetState = nullptr;
+PFNXINPUTENABLEPROC		GXInput::XInputEnable = nullptr;
 GXInput*				GXInput::instance = nullptr;
-
-
-enum eGXInputDevice
-{
-	KEYBOARD,
-	MOUSE,
-	XBOX_CONTROLLER
-};
-
-eGXInputDevice gx_inputActiveDevice = KEYBOARD;
-
 
 
 GXInput::~GXInput ()
 {
+	DestroyXInputLibrary ();
 	delete thread;
 }
 
 GXVoid GXInput::Start ()
 {
 	thread->Resume ();
-	GXXInputDestroy ();
 }
 
 GXVoid GXInput::Suspend ()
@@ -121,21 +68,21 @@ GXVoid GXInput::Shutdown ()
 	thread->Join ();
 }
 
-GXVoid GXInput::BindKeyFunc ( PFNGXKEYPROC callback, GXVoid* handler, GXInt vk_key, EGXInputButtonState eState )
+GXVoid GXInput::BindKeyFunc ( PFNGXKEYPROC callback, GXVoid* handler, GXInt vk_key, eGXInputButtonState eState )
 {
-	GXUShort i = ( eState == INPUT_DOWN ) ? vk_key << 1 : ( vk_key << 1 ) + 1;
+	GXUShort i = ( eState == eGXInputButtonState::Down ) ? vk_key << 1 : ( vk_key << 1 ) + 1;
 
 	keysMask[ i ] = GX_FALSE;
 	KeysMapping[ i ] = callback;
 	keysHandlers[ i ] = handler;
 }
 
-GXVoid GXInput::UnBindKeyFunc ( GXInt vk_key, EGXInputButtonState eState  )
+GXVoid GXInput::UnBindKeyFunc ( GXInt vk_key, eGXInputButtonState eState  )
 {
-	GXUShort i = ( eState == INPUT_DOWN ) ? vk_key << 1 : ( vk_key << 1 ) + 1;
+	GXUShort i = ( eState == eGXInputButtonState::Down ) ? vk_key << 1 : ( vk_key << 1 ) + 1;
 
 	keysMask[ i ] = GX_FALSE;
-	KeysMapping[ ( eState == INPUT_DOWN ) ? vk_key * 2 : vk_key * 2 + 1 ] = 0;
+	KeysMapping[ ( eState == eGXInputButtonState::Down ) ? vk_key * 2 : vk_key * 2 + 1 ] = 0;
 }
 
 GXVoid GXInput::BindTypeFunc ( PFNGXTYPEPROC callback, GXVoid* handler )
@@ -181,18 +128,18 @@ GXVoid GXInput::UnBindMouseWheelFunc ()
 	DoMouseWheel = 0;
 }
 
-GXVoid GXInput::BindGamepadKeyFunc ( PFNGXKEYPROC callback, GXVoid* handler, GXInt gamepad_key, EGXInputButtonState eState )
+GXVoid GXInput::BindGamepadKeyFunc ( PFNGXKEYPROC callback, GXVoid* handler, GXInt gamepad_key, eGXInputButtonState eState )
 {
-	GXUChar i = ( eState == INPUT_DOWN ) ? gamepad_key << 1 : ( gamepad_key << 1 ) + 1;
+	GXUChar i = ( eState == eGXInputButtonState::Down ) ? gamepad_key << 1 : ( gamepad_key << 1 ) + 1;
 
 	gamepadKeysMask[ i ] = GX_FALSE;
 	GamepadKeysMapping[ i ] = callback;
 	gamepadKeysHandlers[ i ] = handler;
 }
 
-GXVoid GXInput::UnBindGamepadKeyFunc ( GXInt gamepad_key, EGXInputButtonState eState )
+GXVoid GXInput::UnBindGamepadKeyFunc ( GXInt gamepad_key, eGXInputButtonState eState )
 {
-	GXUChar i = ( eState == INPUT_DOWN ) ? gamepad_key << 1 : ( gamepad_key << 1 ) + 1;
+	GXUChar i = ( eState == eGXInputButtonState::Down ) ? gamepad_key << 1 : ( gamepad_key << 1 ) + 1;
 
 	gamepadKeysMask[ i ] = GX_FALSE;
 	GamepadKeysMapping[ i ] = 0;
@@ -246,7 +193,6 @@ GXInput* GXCALL GXInput::GetInstance ()
 	return instance;
 }
 
-BYTE gx_inputKeys[ 256 ];
 LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
 	switch ( msg )
@@ -271,8 +217,10 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		case WM_KEYDOWN:
 		case WM_SYSKEYDOWN:
 		{
-			gx_inputActiveDevice = KEYBOARD;
+			activeInputDevice = eGXInputDevice::Keyboard;
 			keysMask[ wParam << 1 ] = GX_TRUE;
+
+			GXTouchSurface::GetInstance ()->OnKeyDown ( (GXInt)wParam );
 
 			if ( !OnType ) return 0;
 
@@ -286,9 +234,11 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			GXBool result = tests[ 0 ] || tests[ 1 ] || tests[ 2 ] || tests[ 3 ] || tests[ 4 ];
 			if ( !result ) return 0;
 
-			GetKeyboardState ( gx_inputKeys );
+			static BYTE inputKeys[ 256 ];
+
+			GetKeyboardState ( inputKeys );
 			GXWChar buff[ 20 ];
-			if ( ToUnicode ( (UINT)wParam, (UINT)lParam, gx_inputKeys, buff, 20, 0 ) )
+			if ( ToUnicode ( (UINT)wParam, (UINT)lParam, inputKeys, buff, 20, 0 ) )
 				OnType ( buff[ 0 ], onTypeHandler );
 		}
 		return 0;
@@ -296,6 +246,7 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		case WM_KEYUP:
 		case WM_SYSKEYUP:
 		{
+			GXTouchSurface::GetInstance ()->OnKeyUp ( (GXInt)wParam );
 			keysMask[ ( wParam << 1 ) + 1 ] = GX_TRUE;
 		}
 		return 0;
@@ -452,10 +403,12 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
 GXInput::GXInput ()
 {
+	activeInputDevice = eGXInputDevice::Keyboard;
+
 	for ( GXInt i = 0; i < GX_INPUT_TOTAL_KEYBOARD_KEYS; i++ )
 	{
 		keysMask[ i ] = GX_FALSE;
-		KeysMapping[ i ] = 0;
+		KeysMapping[ i ] = nullptr;
 	}
 
 	OnType = nullptr;
@@ -477,7 +430,8 @@ GXInput::GXInput ()
 	DoLeftTrigger = DoRightTrigger = nullptr;
 	currentGamepadState = 0;
 	gamepadState[ 0 ].Gamepad.wButtons = gamepadState[ 1 ].Gamepad.wButtons = 0;
-	GXXInputInit ();
+
+	InitXInputLibrary ();
 
 	loopFlag = GX_TRUE;
 	thread = new GXThread ( &InputLoop, nullptr, GX_SUSPEND );
@@ -489,9 +443,9 @@ GXDword GXTHREADCALL GXInput::InputLoop ( GXVoid* args )
 	{
 		UpdateGamepad ();
 
-		switch ( gx_inputActiveDevice )
+		switch ( activeInputDevice )
 		{
-			case KEYBOARD:
+			case eGXInputDevice::Keyboard:
 			{
 				for ( GXUShort i = 0; i < GX_INPUT_TOTAL_KEYBOARD_KEYS; i++ )
 				{
@@ -507,7 +461,7 @@ GXDword GXTHREADCALL GXInput::InputLoop ( GXVoid* args )
 			}
 			break;
 
-			case XBOX_CONTROLLER:
+			case eGXInputDevice::xboxController:
 			default:
 			{
 				for ( GXInt i = 0;  i < GX_INPUT_TOTAL_GAMEPAD_KEYS * 2; i++ )
@@ -531,7 +485,7 @@ GXBool GXInput::IsGamepadConnected ( GXDword gamepadID )
 {
 	XINPUT_STATE state;
 
-	if ( GXXInputGetState ( gamepadID, &state ) == ERROR_DEVICE_NOT_CONNECTED ) 
+	if ( XInputGetState ( gamepadID, &state ) == ERROR_DEVICE_NOT_CONNECTED ) 
 		return GX_FALSE;
 	else
 		return GX_TRUE;
@@ -543,7 +497,7 @@ GXVoid GXInput::TestGamepadButton ( GXDword buttonFlag, GXUChar buttonID )
 
 	if ( ( gamepadState[ currentGamepadState ].Gamepad.wButtons & buttonFlag ) && !( gamepadState[ oldGamepadState ].Gamepad.wButtons & buttonFlag ) )
 	{
-		gx_inputActiveDevice = XBOX_CONTROLLER;
+		activeInputDevice = eGXInputDevice::xboxController;
 		gamepadKeysMask[ buttonID << 1 ] = GX_TRUE;
 	}
 	else if ( !( gamepadState[ currentGamepadState ].Gamepad.wButtons & buttonFlag ) && ( gamepadState[ oldGamepadState ].Gamepad.wButtons & buttonFlag ) )
@@ -552,9 +506,9 @@ GXVoid GXInput::TestGamepadButton ( GXDword buttonFlag, GXUChar buttonID )
 
 GXVoid GXInput::UpdateGamepad ()
 {
-	if ( GXXInputGetState ( 0, &gamepadState[ currentGamepadState ] ) == ERROR_DEVICE_NOT_CONNECTED ) return;
+	if ( XInputGetState ( 0, &gamepadState[ currentGamepadState ] ) == ERROR_DEVICE_NOT_CONNECTED ) return;
 	
-	if ( gx_inputActiveDevice == XBOX_CONTROLLER )
+	if ( activeInputDevice == eGXInputDevice::xboxController )
 	{
 		if ( DoLeftStick )
 			DoLeftStick ( gamepadState[ currentGamepadState ].Gamepad.sThumbLX * GX_INPUT_INV_STICK_VALUE, gamepadState[ currentGamepadState ].Gamepad.sThumbLY * GX_INPUT_INV_STICK_VALUE ); 
@@ -588,4 +542,46 @@ GXVoid GXInput::UpdateGamepad ()
 	TestGamepadButton ( XINPUT_GAMEPAD_BACK, GX_INPUT_XBOX_BACK );
 
 	currentGamepadState = oldGamepadState;
+}
+
+GXBool GXCALL GXInput::InitXInputLibrary ()
+{
+	gx_GXEngineDLLModuleHandle = LoadLibraryW ( L"GXEngine.dll" );
+	if ( !gx_GXEngineDLLModuleHandle )
+	{
+		GXLogW ( L"%i\n", GetLastError () );
+		GXLogW ( L"GXInput::InitXInputLibrary::Error - Не удалось загрузить GXEngine.dll\n" );
+		return GX_FALSE;
+	}
+
+	PFNGXXINPUTINITPROC GXXInputInit = (PFNGXXINPUTINITPROC)GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXXInputInit" );
+	if ( !GXXInputInit )
+	{
+		GXLogW ( L"GXInput::InitXInputLibrary::Error - Не удалось найти функцию GXXInputInit\n" );
+		return GX_FALSE;
+	}
+
+	GXXInputFunctions out;
+	out.XInputGetState = &XInputGetState;
+	out.XInputEnable = &XInputEnable;
+	GXXInputInit ( out );
+
+	return GX_TRUE;
+}
+
+GXBool GXCALL GXInput::DestroyXInputLibrary ()
+{
+	if ( !gx_GXEngineDLLModuleHandle )
+	{
+		GXLogW ( L"GXInput::DestroyXInputLibrary::Error - Попытка выгрузить несуществующую в памяти GXEngine.dll\n" );
+		return GX_FALSE;
+	}
+
+	if ( !FreeLibrary ( gx_GXEngineDLLModuleHandle ) )
+	{
+		GXLogW ( L"GXInput::DestroyXInputLibrary::Error - Не удалось выгрузить библиотеку GXEngine.dll\n" );
+		return GX_FALSE;
+	}
+
+	return GX_TRUE;
 }

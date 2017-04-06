@@ -6,6 +6,7 @@
 #include "EMObjectMaskMaterial.h"
 #include "EMMesh.h"
 #include <GXEngine/GXInput.h>
+#include <GXEngine/GXUnlitColorMaterial.h>
 
 
 class EMMoveTool : public EMTool
@@ -31,17 +32,12 @@ class EMMoveTool : public EMTool
 		EMMesh					zAxisMask;
 		EMMesh					center;
 
-		GXShaderProgram			colorProgram;
 		EMObjectMaskMaterial	objectMaskMaterial;
-
-		GLint					clr_mod_view_proj_matLocation;
-		GLint					clr_colorLocation;
-
-		GXBool					isDeleted;
+		GXUnlitColorMaterial	unlitColorMaterial;
 
 	public:
 		EMMoveTool ();
-		GXVoid Delete ();
+		~EMMoveTool () override;
 
 		GXVoid Bind () override;
 		GXVoid SetActor ( EMActor* actor ) override;
@@ -52,18 +48,14 @@ class EMMoveTool : public EMTool
 		GXVoid OnDrawHudColorPass () override;
 		GXVoid OnDrawHudMaskPass () override;
 
-		GXVoid OnMouseMove ( const GXVec2 &mousePosition ) override;
-		GXVoid OnMouseButton ( EGXInputMouseFlags mouseflags ) override;
+		GXBool OnMouseMove ( GXFloat x, GXFloat y ) override;
+		GXBool OnLeftMouseButtonDown ( GXFloat x, GXFloat y ) override;
+		GXBool OnLeftMouseButtonUp ( GXFloat x, GXFloat y ) override;
 
 		GXVoid SetLocalMode ();
 		GXVoid SetWorldMode ();
 
-	protected:
-		~EMMoveTool () override;
-
 	private:
-		GXVoid InitGraphicResources ();
-
 		GXVoid SetMode ( GXUByte mode );
 
 		GXVoid OnMoveActor ();

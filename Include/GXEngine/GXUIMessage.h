@@ -46,6 +46,8 @@
 #define GX_MSG_POPUP_CLOSED							38				//GXUIPopup*					closed popup
 #define GX_MSG_POPUP_SHOW							39				//GXWidget*						owner widget
 #define GX_MSG_MENY_ADD_ITEM						40				//GXUIMenuExtItem				see GXUIMenuExtItem
+#define GX_MSG_KEY_DOWN								41				//GXInt							virtual key code
+#define GX_MSG_KEY_UP								42				//GXInt							virtual key code
 
 
 #endif //GX_UI_MESSAGE

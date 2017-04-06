@@ -18,6 +18,7 @@
 #include <GXEngine/GXInput.h>
 #include <GXEngine/GXOpenGL.h>
 #include <GXEngine/GXCameraOrthographic.h>
+#include <GXEngine/GXUIInput.h>
 #include <GXPhysics/GXPhysicsEngine.h>
 
 
@@ -46,6 +47,7 @@ GXInt					em_MouseX = 0;
 GXInt					em_MouseY = 0;
 EMPhysicsDrivenActor*	em_PhysicsBoxActor = nullptr;
 EMPhysicsDrivenActor*	em_PhysicsPlaneActor = nullptr;
+GXUIInput*				em_UIInput = nullptr;
 
 
 GXVoid GXCALL EMOnOpenFile ( const GXWChar* filePath );
@@ -112,7 +114,7 @@ GXVoid GXCALL EMOnMouseMove ( GXInt win_x, GXInt win_y )
 	em_MouseY = GXRenderer::GetInstance ()->GetHeight () - win_y;
 }
 
-GXVoid GXCALL EMOnMouseButton ( EGXInputMouseFlags mouseflags )
+GXVoid GXCALL EMOnMouseButton ( GXInputMouseFlags mouseflags )
 {
 	if ( mouseflags.lmb )
 		EMRenderer::GetInstance ()->GetObject ( em_MouseX, em_MouseY );
@@ -166,8 +168,8 @@ GXBool GXCALL EMOnFrame ( GXFloat deltatime )
 
 	GXPhysicsEngine::GetInstance ()->RunSimulateLoop ( deltatime );
 
-	GXCamera* viewerCamera = EMViewer::GetInstance ()->GetCamera ();
-	GXCamera::SetActiveCamera ( viewerCamera );
+	GXCamera& viewerCamera = EMViewer::GetInstance ()->GetCamera ();
+	GXCamera::SetActiveCamera ( &viewerCamera );
 
 	EMRenderer* renderer = EMRenderer::GetInstance ();
 	renderer->StartCommonPass ();
@@ -188,7 +190,7 @@ GXBool GXCALL EMOnFrame ( GXFloat deltatime )
 
 	renderer->StartHudMaskPass ();
 
-	GXCamera::SetActiveCamera ( viewerCamera );
+	GXCamera::SetActiveCamera ( &viewerCamera );
 
 	em_MoveTool->OnDrawHudMaskPass ();
 
@@ -199,6 +201,9 @@ GXBool GXCALL EMOnFrame ( GXFloat deltatime )
 
 GXVoid GXCALL EMOnInitRenderableObjects ()
 {
+	em_UIInput = new GXUIInput ( nullptr, GX_FALSE );
+	GXTouchSurface::GetInstance ()->SetDefaultWidget ( em_UIInput );
+
 	GXRenderer* engineRenderer = GXRenderer::GetInstance ();
 	GXFloat w = (GXFloat)engineRenderer->GetWidth ();
 	GXFloat h = (GXFloat)engineRenderer->GetHeight ();
@@ -290,8 +295,8 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 	
 	EMViewer* viewer = EMViewer::GetInstance ();
 	viewer->SetOnViewerTransformChangedCallback ( &EMOnViewerTransformChanged );
+	viewer->SetInputWidget ( *em_UIInput );
 	viewer->SetTarget ( em_UnitActor );
-	viewer->CaptureInput ();
 
 	EMTool::SetActiveTool ( em_MoveTool );
 
@@ -314,6 +319,9 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 
 GXVoid GXCALL EMOnDeleteRenderableObjects ()
 {
+	em_MoveTool->UnBind ();
+	GXSafeDelete ( em_MoveTool );
+
 	GXSafeDelete ( em_PhysicsBoxActor );
 	GXSafeDelete ( em_PhysicsPlaneActor );
 
@@ -334,11 +342,11 @@ GXVoid GXCALL EMOnDeleteRenderableObjects ()
 	GXSafeDelete ( em_LanguagePopup );
 	GXSafeDelete ( em_HudCamera );
 
-	em_MoveTool->UnBind ();
-	em_MoveTool->Delete ();
-	em_MoveTool->OnDrawHudColorPass ();
-
 	delete EMViewer::GetInstance ();
+
+	GXTouchSurface::GetInstance ()->SetDefaultWidget ( nullptr );
+	GXSafeDelete ( em_UIInput );
+
 	delete EMRenderer::GetInstance ();
 	delete GXPhysicsEngine::GetInstance ();
 }
@@ -367,7 +375,7 @@ GXVoid GXCALL EMOnInit ()
 	locale->SetLanguage ( eGXLanguage::Russian );
 
 	GXInput* input = GXInput::GetInstance ();
-	input->BindKeyFunc ( &EMExit, 0, VK_ESCAPE, INPUT_UP );
+	input->BindKeyFunc ( &EMExit, nullptr, VK_ESCAPE, eGXInputButtonState::Up );
 	input->BindMouseMoveFunc ( &EMOnMouseMove );
 	input->BindMouseButtonsFunc ( &EMOnMouseButton );
 }
@@ -377,5 +385,5 @@ GXVoid GXCALL EMOnClose ()
 	GXInput* input = GXInput::GetInstance ();
 	input->UnBindMouseMoveFunc ();
 	input->UnBindMouseButtonsFunc ();
-	input->UnBindKeyFunc ( VK_ESCAPE, INPUT_UP );
+	input->UnBindKeyFunc ( VK_ESCAPE, eGXInputButtonState::Up );
 }

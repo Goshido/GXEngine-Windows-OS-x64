@@ -2,7 +2,6 @@
 #include <GXEngine/GXCamera.h>
 #include <GXEngine/GXHudSurface.h>
 #include <GXEngine/GXRenderer.h>
-#include <GXCommon/GXCommon.h>
 #include <GXCommon/GXStrings.h>
 
 

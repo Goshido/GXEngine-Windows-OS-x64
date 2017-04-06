@@ -9,13 +9,11 @@
 
 class EMTool
 {
-	private:
-		static EMTool*		activeTool;
-		static GXUIInput*	inputWidget;
-		static GXInt		inputWidgetRef;
-
 	protected:
 		EMActor*			actor;
+
+	private:
+		static EMTool*		activeTool;
 
 	public:
 		EMTool ();
@@ -31,24 +29,15 @@ class EMTool
 		virtual GXVoid OnDrawHudColorPass ();
 		virtual GXVoid OnDrawHudMaskPass ();
 
-		virtual GXVoid OnMouseMove ( const GXVec2 &mousePosition );
-		virtual GXVoid OnMouseButton ( EGXInputMouseFlags mouseflags );
-		virtual GXVoid OnMouseWheel ( GXInt steps );
-		virtual GXVoid OnDoubleClick ( const GXVec2 &mousePosition );
+		virtual GXBool OnLeftMouseButtonDown ( GXFloat x, GXFloat y );
+		virtual GXBool OnLeftMouseButtonUp ( GXFloat x, GXFloat y );
+		virtual GXBool OnMouseMove ( GXFloat x, GXFloat y );
+		virtual GXBool OnMouseScroll ( GXFloat x, GXFloat y, GXFloat scroll );
+		virtual GXBool OnKeyDown ( GXInt keyCode );
+		virtual GXBool OnKeyUp ( GXInt keyCode );
 
+		static EMTool* GXCALL GetActiveTool ();
 		static GXVoid GXCALL SetActiveTool ( EMTool* tool );
-
-	private:
-		static GXVoid GXCALL OnLMBDown ( GXVoid* handler, GXUIInput* widget, GXFloat x, GXFloat y );
-		static GXVoid GXCALL OnLMBUp ( GXVoid* handler, GXUIInput* widget, GXFloat x, GXFloat y );
-		static GXVoid GXCALL OnMMBDown ( GXVoid* handler, GXUIInput* widget, GXFloat x, GXFloat y );
-		static GXVoid GXCALL OnMMBUp ( GXVoid* handler, GXUIInput* widget, GXFloat x, GXFloat y );
-		static GXVoid GXCALL OnRMBDown ( GXVoid* handler, GXUIInput* widget, GXFloat x, GXFloat y );
-		static GXVoid GXCALL OnRMBUp ( GXVoid* handler, GXUIInput* widget, GXFloat x, GXFloat y );
-
-		static GXVoid GXCALL OnDoubleClick ( GXVoid* handler, GXUIInput* widget, GXFloat x, GXFloat y );
-		static GXVoid GXCALL OnMouseMove ( GXVoid* handler, GXUIInput* widget, GXFloat x, GXFloat y );
-		static GXVoid GXCALL OnMouseScroll ( GXVoid* handler, GXUIInput* widget, GXFloat x, GXFloat y, GXFloat scroll );
 };
 
 
