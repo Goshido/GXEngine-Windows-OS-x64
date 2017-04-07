@@ -1,10 +1,4 @@
 #include <GXEngine_Editor_Mobile/EMPhysicsDrivenActor.h>
-#include <GXEngine/GXTransform.h>
-#include <GXEngine/GXTexture.h>
-#include <GXEngine/GXSamplerUtils.h>
-#include <GXEngine/GXShaderProgram.h>
-#include <GXEngine/GXMeshGeometry.h>
-#include <GXEngine/GXCamera.h>
 #include <GXPhysics/GXBoxShape.h>
 #include <GXPhysics/GXPlaneShape.h>
 #include <GXPhysics/GXSphereShape.h>
@@ -13,144 +7,18 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define DIFFUSE_SLOT	0
-#define NORMAL_SLOT		1
-#define SPECULAR_SLOT	2
-#define EMISSION_SLOT	3
-
-
-class EMPhysicsDrivenActorMesh : public GXTransform, public GXRenderable
-{
-	private:
-		GXMeshGeometry		mesh;
-
-		GXTexture			diffuseTexture;
-		GXTexture			normalTexture;
-		GXTexture			specularTexture;
-		GXTexture			emissionTexture;
-
-		GXShaderProgram		shaderProgram;
-		GLint				mod_view_proj_matLocation;
-		GLint				mod_view_matLocation;
-
-		GLuint				sampler;
-
-	public:
-		EMPhysicsDrivenActorMesh ();
-		~EMPhysicsDrivenActorMesh () override;
-
-		GXVoid Render () override;
-
-	protected:
-		GXVoid InitGraphicResources () override;
-		GXVoid TransformUpdated () override;
-};
-
-EMPhysicsDrivenActorMesh::EMPhysicsDrivenActorMesh ()
-{
-	InitGraphicResources ();
-}
-
-EMPhysicsDrivenActorMesh::~EMPhysicsDrivenActorMesh ()
-{
-	GXMeshGeometry::RemoveMeshGeometry ( mesh );
-
-	GXTexture::RemoveTexture ( diffuseTexture );
-	GXTexture::RemoveTexture ( normalTexture );
-	GXTexture::RemoveTexture ( emissionTexture );
-	GXTexture::RemoveTexture ( specularTexture );
-
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
-
-	glDeleteSamplers ( 1, &sampler );
-}
-
-GXVoid EMPhysicsDrivenActorMesh::Render ()
-{
-	GXCamera* activeCamera = GXCamera::GetActiveCamera ();
-
-	GXMat4 mod_view_mat;
-	GXMat4 mod_view_proj_mat;
-
-	GXMulMat4Mat4 ( mod_view_mat, mod_mat, activeCamera->GetViewMatrix () );
-	GXMulMat4Mat4 ( mod_view_proj_mat, mod_mat, activeCamera->GetViewProjectionMatrix () );
-
-	glUseProgram ( shaderProgram.GetProgram () );
-
-	glUniformMatrix4fv ( mod_view_matLocation, 1, GL_FALSE, mod_view_mat.arr );
-	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );
-
-	glBindSampler ( DIFFUSE_SLOT, sampler );
-	diffuseTexture.Bind ( DIFFUSE_SLOT );
-
-	glBindSampler ( NORMAL_SLOT, sampler );
-	normalTexture.Bind ( NORMAL_SLOT );
-
-	glBindSampler ( SPECULAR_SLOT, sampler );
-	specularTexture.Bind ( SPECULAR_SLOT );
-
-	glBindSampler ( EMISSION_SLOT, sampler );
-	emissionTexture.Bind ( EMISSION_SLOT );
-
-	mesh.Render ();
-
-	glBindSampler ( DIFFUSE_SLOT, 0 );
-	diffuseTexture.Unbind ();
-
-	glBindSampler ( NORMAL_SLOT, 0 );
-	normalTexture.Unbind ();
-
-	glBindSampler ( EMISSION_SLOT, 0 );
-	emissionTexture.Unbind ();
-
-	glBindSampler ( SPECULAR_SLOT, 0 );
-	specularTexture.Unbind ();
-
-	glUseProgram ( 0 );
-}
-
-GXVoid EMPhysicsDrivenActorMesh::InitGraphicResources ()
-{
-	mesh = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Unit Cube.stm" );
-	TransformUpdated ();
-
-	diffuseTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/gui_file_icon.png", GX_TRUE );
-	normalTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_TRUE );
-	emissionTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Specular.tex", GX_TRUE );
-	specularTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_TRUE );
-
-	static const GLchar* samplerNames[ 4 ] = { "diffuseSampler", "normalSampler", "specularSampler", "emissionSampler" };
-	static const GLuint samplerLocations[ 4 ] = { 0, 1, 2, 3 };
-
-	GXShaderProgramInfo si;
-	si.vs = L"Shaders/Editor Mobile/StaticMesh_vs.txt";
-	si.gs = nullptr;
-	si.fs = L"Shaders/Editor Mobile/StaticMesh_fs.txt";
-	si.numSamplers = 4;
-	si.samplerNames = samplerNames;
-	si.samplerLocations = samplerLocations;
-
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
-
-	mod_view_proj_matLocation = shaderProgram.GetUniform ( "mod_view_proj_mat" );
-	mod_view_matLocation = shaderProgram.GetUniform ( "mod_view_mat" );
-
-	GXGLSamplerInfo samplerInfo;
-	samplerInfo.anisotropy = 16.0f;
-	samplerInfo.resampling = eGXSamplerResampling::Trilinear;
-	samplerInfo.wrap = GL_REPEAT;
-	sampler = GXCreateSampler ( samplerInfo );
-}
-
-GXVoid EMPhysicsDrivenActorMesh::TransformUpdated ()
-{
-	//TODO
-}
-
-//------------------------------------------------------------
-
 EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
 {
+	diffuseTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Diffuse.tex", GX_TRUE );
+	normalTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_TRUE );
+	emissionTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_TRUE );
+	specularTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Specular.tex", GX_TRUE );
+
+	material.SetDiffuseTexture ( diffuseTexture );
+	material.SetNormalTexture ( normalTexture );
+	material.SetSpecularTexture ( specularTexture );
+	material.SetEmissionTexture ( emissionTexture );
+
 	rigidBody = new GXRigidBody ();
 
 	switch ( type )
@@ -200,6 +68,10 @@ EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
 
 EMPhysicsDrivenActor::~EMPhysicsDrivenActor ()
 {
+	GXTexture::RemoveTexture ( diffuseTexture );
+	GXTexture::RemoveTexture ( normalTexture );
+	GXTexture::RemoveTexture ( specularTexture );
+	GXTexture::RemoveTexture ( emissionTexture );
 	GXSafeDelete ( mesh );
 	delete rigidBody;
 }
@@ -222,5 +94,9 @@ GXVoid EMPhysicsDrivenActor::Draw ()
 	GXQuatRehandCoordinateSystem ( rot );
 	mesh->SetRotation ( rot );
 
+	material.Bind ( *mesh );
+
 	mesh->Render ();
+
+	material.Unbind ();
 }

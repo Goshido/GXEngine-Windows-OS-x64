@@ -11,6 +11,12 @@
 
 #define OUT_TEXTURE_SLOT		0
 
+#define DIFFUSE_SLOT			0
+#define NORMAL_SLOT				1
+#define SPECULAR_SLOT			2
+#define EMISSION_SLOT			3
+#define DEPTH_SLOT				4
+
 #define Z_NEAR					0.0f
 #define Z_FAR					77.0f
 #define Z_RENDER				1.0f
@@ -115,8 +121,21 @@ GXVoid EMRenderer::StartLightPass ()
 	glEnable ( GL_CULL_FACE );
 	glEnable ( GL_DEPTH_TEST );
 	glEnable ( GL_BLEND );
+	glBlendFunc ( GL_ONE, GL_ONE );
+
+	glBindSampler ( DIFFUSE_SLOT, screenSampler );
+	glBindSampler ( NORMAL_SLOT, screenSampler );
+	glBindSampler ( SPECULAR_SLOT, screenSampler );
+	glBindSampler ( EMISSION_SLOT, screenSampler );
+	glBindSampler ( DEPTH_SLOT, screenSampler );
 
 	LightUp ();
+
+	glBindSampler ( DIFFUSE_SLOT, 0 );
+	glBindSampler ( NORMAL_SLOT, 0 );
+	glBindSampler ( SPECULAR_SLOT, 0 );
+	glBindSampler ( EMISSION_SLOT, 0 );
+	glBindSampler ( DEPTH_SLOT, 0 );
 }
 
 GXVoid EMRenderer::StartHudColorPass ()
@@ -264,7 +283,7 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 		break;
 
 		case eEMRenderTarget::Specular:
-			texture = &normalTexture;
+			texture = &specularTexture;
 		break;
 
 		case eEMRenderTarget::Emission:
@@ -401,6 +420,7 @@ GXVoid EMRenderer::LightUp ()
 			break;
 
 			default:
+				//NOTHING
 			break;
 		}
 	}
@@ -457,7 +477,7 @@ GXVoid EMRenderer::CopyTexureToCombineTexture ( GLuint texture )
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
 	glBindFramebuffer ( GL_DRAW_FRAMEBUFFER, fbo );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, outTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, outTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );

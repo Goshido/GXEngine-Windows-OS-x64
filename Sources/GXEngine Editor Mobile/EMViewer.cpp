@@ -9,7 +9,7 @@
 #define EM_VIEWER_PAN_MODE				2
 #define EM_VIEWER_NOTHING_MODE			0xFF
 
-#define EM_VIEWER_ZOOM_STEP				0.2f
+#define EM_VIEWER_ZOOM_STEP				2.0f
 #define EM_VIEWER_MIN_DISTANCE			0.1f
 #define EM_VIEWER_MAX_DISTANCE			1.0e+30f
 #define EM_VIEWER_ROTATION_SPEED		45.0f		//45 degrees per centimeter

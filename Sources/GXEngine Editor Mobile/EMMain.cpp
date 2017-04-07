@@ -306,13 +306,13 @@ GXVoid GXCALL EMOnInitRenderableObjects ()
 
 	em_PhysicsPlaneActor = new EMPhysicsDrivenActor ( eGXShapeType::Polygon );
 	GXRigidBody& body2 = em_PhysicsPlaneActor->GetRigidBody ();
-	body2.SetLocation ( 0.0f, 0.0f, 15.0f );
+	body2.SetLocation ( 0.0f, -10.0f, 15.0f );
 
 	GXWorld& world = GXPhysicsEngine::GetInstance ()->GetWorld ();
 	world.RegisterRigidBody ( em_PhysicsBoxActor->GetRigidBody () );
 	world.RegisterRigidBody ( em_PhysicsPlaneActor->GetRigidBody () );
 
-	EMRenderer::GetInstance ()->CombineHudWithTarget ( eEMRenderTarget::Normal );
+	EMRenderer::GetInstance ()->CombineHudWithTarget ( eEMRenderTarget::Albedo );
 
 	ShowCursor ( 1 );
 }

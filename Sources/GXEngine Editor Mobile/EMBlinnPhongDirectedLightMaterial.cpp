@@ -16,9 +16,9 @@
 
 #define DIFFUSE_SLOT						0
 #define NORMAL_SLOT							1
-#define SPECULAR_SLOT						3
-#define EMISSION_SLOT						4
-#define DEPTH_SLOT							5
+#define SPECULAR_SLOT						2
+#define EMISSION_SLOT						3
+#define DEPTH_SLOT							4
 
 #define VERTEX_SHADER						L"Shaders/Editor Mobile/ScreenQuad_vs.txt"
 #define GEOMETRY_SHADER						nullptr
@@ -44,6 +44,12 @@ EMBlinnPhongDirectedLightMaterial::EMBlinnPhongDirectedLightMaterial ()
 	inv_proj_matLocation = shaderProgram.GetUniform ( "inv_proj_mat" );
 	colorLocation = shaderProgram.GetUniform ( "color" );
 	ambientColorLocation = shaderProgram.GetUniform ( "ambientColor" );
+
+	diffuseTexture = nullptr;
+	normalTexture = nullptr;
+	specularTexture = nullptr;
+	emissionTexture = nullptr;
+	depthTexture = nullptr;
 
 	SetToLightDirectionView ( GXCreateVec3 ( DEFAULT_TO_LIGHT_DIRECTION_VIEW_X, DEFAULT_TO_LIGHT_DIRECTION_VIEW_Y, DEFAULT_TO_LIGHT_DIRECTION_VIEW_Z ) );
 	SetColor ( GXCreateVec3 ( DEFAULT_COLOR_R, DEFAULT_COLOR_G, DEFAULT_COLOR_B ) );

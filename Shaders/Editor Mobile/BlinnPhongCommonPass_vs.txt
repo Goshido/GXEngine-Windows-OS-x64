@@ -19,7 +19,7 @@ layout ( location = OBJECT_HI_STREAM ) in vec4 objectHi;
 layout ( location = OBJECT_LOW_STREAM ) in vec4 objectLow;
 
 uniform mat4 mod_view_proj_mat;
-uniform mat4 mod_view_mat;
+uniform mat3 rot_view_mat;
 
 uniform vec4 diffuseTextureScaleOffset;
 uniform vec4 normalTextureScaleOffset;
@@ -48,11 +48,9 @@ void main ()
 	v_uvSpecular = uv * specularTextureScaleOffset.xy + specularTextureScaleOffset.zw;
 	v_uvEmission = uv * emissionTextureScaleOffset.xy + emissionTextureScaleOffset.zw;
 
-	mat3 m = mat3 ( mod_view_mat );
-
-	v_normal = m * normal;
-	v_tangent = m * tangent;
-	v_bitangent = m * bitangent;
+	v_normal = rot_view_mat * normal;
+	v_tangent = rot_view_mat * tangent;
+	v_bitangent = rot_view_mat * bitangent;
 
 	v_objectHi = objectHi;
 	v_objectLow = objectLow;

@@ -14,6 +14,11 @@
 #define SPECULAR_TEXTURE	L"Textures/Editor Mobile/Default Specular.tex"
 #define EMISSION_TEXTURE	L"Textures/Editor Mobile/Default Emission.tex"
 
+#define DIFFUSE_COLOR_R		115
+#define DIFFUSE_COLOR_G		185
+#define DIFFUSE_COLOR_B		0
+#define DIFFUSE_COLOR_A		255
+
 
 EMUnitActor::EMUnitActor ( const GXWChar* name, const GXMat4 &transform ):
 EMActor ( name, EM_UNIT_ACTOR_CLASS, transform ),
@@ -30,6 +35,8 @@ mesh ( L"3D Models/Editor Mobile/Unit Cube.stm" )
 	commonPassMaterial.SetNormalTexture ( normalTexture );
 	commonPassMaterial.SetSpecularTexture ( specularTexture );
 	commonPassMaterial.SetEmissionTexture ( emissionTexture );
+
+	commonPassMaterial.SetDiffuseTextureColor ( DIFFUSE_COLOR_R, DIFFUSE_COLOR_G, DIFFUSE_COLOR_B, DIFFUSE_COLOR_A );
 }
 
 EMUnitActor::~EMUnitActor ()

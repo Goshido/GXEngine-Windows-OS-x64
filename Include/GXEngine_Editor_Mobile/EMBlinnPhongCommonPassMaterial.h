@@ -30,7 +30,7 @@ class EMBlinnPhongCommonPassMaterial : public GXMaterial
 		GLint				emissionColorLocation;
 
 		GLint				mod_view_proj_matLocation;
-		GLint				mod_view_matLocation;
+		GLint				rot_view_matLocation;
 
 	public:
 		EMBlinnPhongCommonPassMaterial ();

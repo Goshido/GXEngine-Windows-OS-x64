@@ -39,9 +39,9 @@
 
 #define EMISSION_SLOT						3
 
-#define VERTEX_SHADER						L"Shaders/GXEngine Editor Mobile/BlinnPhongCommonPass_vs.txt"
+#define VERTEX_SHADER						L"Shaders/Editor Mobile/BlinnPhongCommonPass_vs.txt"
 #define GEOMETRY_SHADER						nullptr
-#define FRAGMENT_SHADER						L"Shaders/GXEngine Editor Mobile/BlinnPhongCommonPass_fs.txt"
+#define FRAGMENT_SHADER						L"Shaders/Editor Mobile/BlinnPhongCommonPass_fs.txt"
 
 
 EMBlinnPhongCommonPassMaterial::EMBlinnPhongCommonPassMaterial ()
@@ -66,7 +66,7 @@ EMBlinnPhongCommonPassMaterial::EMBlinnPhongCommonPassMaterial ()
 	emissionTextureScaleOffsetLocation = shaderProgram.GetUniform ( "emissionTextureScaleOffset" );
 	emissionColorLocation = shaderProgram.GetUniform ( "emissionColor" );
 	mod_view_proj_matLocation = shaderProgram.GetUniform ( "mod_view_proj_mat" );
-	mod_view_matLocation = shaderProgram.GetUniform ( "mod_view_mat" );
+	rot_view_matLocation = shaderProgram.GetUniform ( "rot_view_mat" );
 
 	diffuseTexture = nullptr;
 	SetDiffuseTextureColor ( DEFAULT_DIFFUSE_COLOR_R, DEFAULT_DIFFUSE_COLOR_G, DEFAULT_DIFFUSE_COLOR_B, DEFAULT_DIFFUSE_COLOR_A );
@@ -99,12 +99,28 @@ GXVoid EMBlinnPhongCommonPassMaterial::Bind ( const GXTransform &transform ) con
 	glUseProgram ( shaderProgram.GetProgram () );
 
 	GXCamera* camera = GXCamera::GetActiveCamera ();
-	GXMat4 mod_view_mat;
+
+	GXMat4 rot_mat;
+	GXMat3 rot_view_mat;
 	GXMat4 mod_view_proj_mat;
-	GXMulMat4Mat4 ( mod_view_mat, transform.GetModelMatrix (), camera->GetViewMatrix () );
+
+	const GXMat4& view_mat = camera->GetViewMatrix ();
+	transform.GetRotation ( rot_mat );
+
+	GXMat3 r;
+	r.xv = rot_mat.xv;
+	r.yv = rot_mat.yv;
+	r.zv = rot_mat.zv;
+
+	GXMat3 v;
+	v.xv = view_mat.xv;
+	v.yv = view_mat.yv;
+	v.zv = view_mat.zv;
+
+	GXMulMat3Mat3 ( rot_view_mat, r, v );
 	GXMulMat4Mat4 ( mod_view_proj_mat, transform.GetModelMatrix (), camera->GetViewProjectionMatrix () );
 
-	glUniformMatrix4fv ( mod_view_matLocation, 1, GL_FALSE, mod_view_mat.arr );
+	glUniformMatrix3fv ( rot_view_matLocation, 1, GL_FALSE, rot_view_mat.arr );
 	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );
 
 	diffuseTexture->Bind ( DIFFUSE_SLOT );
