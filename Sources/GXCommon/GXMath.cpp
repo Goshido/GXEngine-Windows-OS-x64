@@ -1,10 +1,13 @@
-//version 1.29
+//version 1.30
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
 #include <cstdlib>
 #include <cfloat>
 #include <cwchar>
+
+
+#define GX_COLOR_TO_FLOAT_FACTOR 0.00392157f
 
 
 GXVec2::GXVec2 ()
@@ -1448,16 +1451,19 @@ GXFloat GXCALL GXDegToRad ( GXFloat degrees )
 	return degrees * 0.0174533f;	//degrees * pi / 180
 }
 
+GXVoid GXCALL GXColorToVec3 ( GXVec3 &out, GXUChar r, GXUChar g, GXUChar b )
+{
+	out.r = r * GX_COLOR_TO_FLOAT_FACTOR;
+	out.g = g * GX_COLOR_TO_FLOAT_FACTOR;
+	out.b = b * GX_COLOR_TO_FLOAT_FACTOR;
+}
+
 GXVoid GXCALL GXColorToVec4 ( GXVec4 &out, GXUChar r, GXUChar g, GXUChar b, GXUChar a )
 {
-	#define GX_FACTOR 0.00392157f
-
-	out.r = r * GX_FACTOR;
-	out.g = g * GX_FACTOR;
-	out.b = b * GX_FACTOR;
-	out.a = a * GX_FACTOR;
-
-	#undef GX_FACTOR
+	out.r = r * GX_COLOR_TO_FLOAT_FACTOR;
+	out.g = g * GX_COLOR_TO_FLOAT_FACTOR;
+	out.b = b * GX_COLOR_TO_FLOAT_FACTOR;
+	out.a = a * GX_COLOR_TO_FLOAT_FACTOR;
 }
 
 GXVoid GXCALL GXConvert3DSMaxToGXEngine ( GXVec3 &gx_out, GXFloat max_x, GXFloat max_y, GXFloat max_z )

@@ -19,7 +19,20 @@ EMScaleGismo::EMScaleGismo () :
 mesh ( L"3D Models/Editor Mobile/Scale Gismo.stm" )
 {
 	isVisible = GX_TRUE;
-	InitGraphicResources ();
+
+	texture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Gismo Texture.tex", GX_FALSE );
+
+	GXGLSamplerInfo samplerInfo;
+	samplerInfo.anisotropy = 1.0f;
+	samplerInfo.resampling = eGXSamplerResampling::None;
+	samplerInfo.wrap = GL_CLAMP_TO_EDGE;
+
+	sampler = GXCreateSampler ( samplerInfo );
+
+	unlitMaterial.SetColor ( TEXTURE_COLOR_R, TEXTURE_COLOR_G, TEXTURE_COLOR_B, TEXTURE_COLOR_A );
+	unlitMaterial.SetTexture ( texture );
+	unlitMaterial.SetTextureScale ( TEXTURE_SCALE_X, TEXTURE_SCALE_Y );
+	unlitMaterial.SetTextureOffset ( TEXTURE_OFFSET_X, TEXTURE_OFFSET_Y );
 }
 
 EMScaleGismo::~EMScaleGismo ()
@@ -51,26 +64,9 @@ GXVoid EMScaleGismo::Render ()
 	glBindSampler ( TEXTURE_SLOT, 0 );
 }
 
-GXVoid EMScaleGismo::InitGraphicResources ()
+GXVoid EMScaleGismo::TransformUpdated ()
 {
-	UpdateBounds ();
-
-	texture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Gismo Texture.tex", GX_FALSE );
-
-	GXGLSamplerInfo samplerInfo;
-	samplerInfo.anisotropy = 1.0f;
-	samplerInfo.resampling = eGXSamplerResampling::None;
-	samplerInfo.wrap = GL_CLAMP_TO_EDGE;
-
-	sampler = GXCreateSampler ( samplerInfo );
-
-	unlitMaterial.SetColor ( TEXTURE_COLOR_R, TEXTURE_COLOR_G, TEXTURE_COLOR_B, TEXTURE_COLOR_A );
-	unlitMaterial.SetTexture ( texture );
-	unlitMaterial.SetTextureScale ( TEXTURE_SCALE_X, TEXTURE_SCALE_Y );
-	unlitMaterial.SetTextureOffset ( TEXTURE_OFFSET_X, TEXTURE_OFFSET_Y );
-}
-
-GXVoid EMScaleGismo::UpdateBounds ()
-{
-	//NOTHING
+	mesh.SetRotation ( rot_mat );
+	mesh.SetScale ( scale );
+	mesh.SetLocation ( location );
 }

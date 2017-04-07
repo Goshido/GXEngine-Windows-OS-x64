@@ -52,12 +52,12 @@ GXUnlitColorMaskMaterial::~GXUnlitColorMaskMaterial ()
 	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 }
 
-GXVoid GXUnlitColorMaskMaterial::Bind ( const GXRenderable &activeRenderable ) const
+GXVoid GXUnlitColorMaskMaterial::Bind ( const GXTransform &transform ) const
 {
 	if ( !mask ) return;
 
 	GXMat4 mod_view_proj_mat;
-	GXMulMat4Mat4 ( mod_view_proj_mat, activeRenderable.GetModelMatrix (), GXCamera::GetActiveCamera ()->GetViewProjectionMatrix () );
+	GXMulMat4Mat4 ( mod_view_proj_mat, transform.GetModelMatrix (), GXCamera::GetActiveCamera ()->GetViewProjectionMatrix () );
 
 	glUseProgram ( shaderProgram.GetProgram () );
 

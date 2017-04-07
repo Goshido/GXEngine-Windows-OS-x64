@@ -2,11 +2,12 @@
 #define EM_MESH
 
 
+#include <GXEngine/GXTransform.h>
 #include <GXEngine/GXRenderable.h>
 #include <GXEngine/GXMeshGeometry.h>
 
 
-class EMMesh : public GXRenderable
+class EMMesh : public GXTransform, public GXRenderable
 {
 	private:
 		GXMeshGeometry	meshGeometry;
@@ -21,7 +22,7 @@ class EMMesh : public GXRenderable
 
 	protected:
 		GXVoid InitGraphicResources () override;
-		GXVoid UpdateBounds () override;
+		GXVoid TransformUpdated () override;
 };
 
 

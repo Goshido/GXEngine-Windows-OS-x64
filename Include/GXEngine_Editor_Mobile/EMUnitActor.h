@@ -3,17 +3,23 @@
 
 
 #include "EMActor.h"
+#include "EMMesh.h"
+#include "EMBlinnPhongCommonPassMaterial.h"
+#include <GXEngine/GXTexture.h>
 
 
 #define EM_UNIT_ACTOR_CLASS		0
 
 
-class EMUnitActorMesh;
-
 class EMUnitActor : public EMActor
 {
 	private:
-		EMUnitActorMesh*	mesh;
+		EMMesh							mesh;
+		EMBlinnPhongCommonPassMaterial	commonPassMaterial;
+		GXTexture						diffuseTexture;
+		GXTexture						normalTexture;
+		GXTexture						specularTexture;
+		GXTexture						emissionTexture;
 
 	public:
 		explicit EMUnitActor ( const GXWChar* name, const GXMat4 &transform );

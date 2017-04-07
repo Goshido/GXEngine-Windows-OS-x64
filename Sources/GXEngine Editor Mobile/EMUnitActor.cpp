@@ -9,158 +9,44 @@
 #include <GXCommon/GXMemory.h>
 
 
-#define DIFFUSE_SLOT		0
-#define NORMAL_SLOT			1
-#define SPECULAR_SLOT		2
-#define EMISSION_SLOT		3
+#define DIFFUSE_TEXTURE		L"Textures/Editor Mobile/Default Diffuse.tex"
+#define NORMAL_TEXTURE		L"Textures/Editor Mobile/Default Normals.tex"
+#define SPECULAR_TEXTURE	L"Textures/Editor Mobile/Default Specular.tex"
+#define EMISSION_TEXTURE	L"Textures/Editor Mobile/Default Emission.tex"
 
-
-class EMUnitActorMesh : public GXRenderable
-{
-	private:
-		GXShaderProgram		shaderProgram;
-		GLint				mod_view_proj_matLocation;
-		GLint				mod_view_matLocation;
-
-		GXMeshGeometry		meshGeometry;
-
-		GXTexture			diffuseTexture;
-		GXTexture			normalTexture;
-		GXTexture			emissionTexture;
-		GXTexture			specularTexture;
-
-		GLuint				sampler;
-
-	public:
-		EMUnitActorMesh ();
-		~EMUnitActorMesh () override;
-
-		GXVoid Render () override;
-
-	protected:
-		GXVoid InitGraphicResources () override;
-		GXVoid UpdateBounds () override;
-};
-
-EMUnitActorMesh::EMUnitActorMesh ()
-{
-	InitGraphicResources ();
-}
-
-EMUnitActorMesh::~EMUnitActorMesh ()
-{
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
-
-	GXTexture::RemoveTexture ( diffuseTexture );
-	GXTexture::RemoveTexture ( normalTexture );
-	GXTexture::RemoveTexture ( emissionTexture );
-	GXTexture::RemoveTexture ( specularTexture );
-
-	GXMeshGeometry::RemoveMeshGeometry ( meshGeometry );
-
-	glDeleteSamplers ( 1, &sampler );
-}
-
-GXVoid EMUnitActorMesh::Render ()
-{
-	GXCamera* activeCamera = GXCamera::GetActiveCamera ();
-
-	GXMat4 mod_view_mat;
-	GXMat4 mod_view_proj_mat;
-
-	GXMulMat4Mat4 ( mod_view_mat, mod_mat, activeCamera->GetViewMatrix () );
-	GXMulMat4Mat4 ( mod_view_proj_mat, mod_mat, activeCamera->GetViewProjectionMatrix () );
-
-	glUseProgram ( shaderProgram.GetProgram () );
-
-	glUniformMatrix4fv ( mod_view_matLocation, 1, GL_FALSE, mod_view_mat.arr );
-	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );
-
-	glBindSampler ( DIFFUSE_SLOT, sampler );
-	diffuseTexture.Bind ( DIFFUSE_SLOT );
-
-	glBindSampler ( NORMAL_SLOT, sampler );
-	normalTexture.Bind ( NORMAL_SLOT );
-
-	glBindSampler ( SPECULAR_SLOT, sampler );
-	specularTexture.Bind ( SPECULAR_SLOT );
-
-	glBindSampler ( EMISSION_SLOT, sampler );
-	emissionTexture.Bind ( EMISSION_SLOT );
-
-	meshGeometry.Render ();
-
-	glBindSampler ( DIFFUSE_SLOT, 0 );
-	diffuseTexture.Unbind ();
-
-	glBindSampler ( NORMAL_SLOT, 0 );
-	normalTexture.Unbind ();
-
-	glBindSampler ( SPECULAR_SLOT, 0 );
-	specularTexture.Unbind ();
-
-	glBindSampler ( EMISSION_SLOT, 0 );
-	emissionTexture.Unbind ();
-	
-	glUseProgram ( 0 );
-}
-
-GXVoid EMUnitActorMesh::InitGraphicResources ()
-{
-	meshGeometry = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Unit Cube.stm" );
-	UpdateBounds ();
-
-	diffuseTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Diffuse.tex", GX_FALSE );
-	normalTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE );
-	specularTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Specular.tex", GX_FALSE );
-	emissionTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE );
-
-	static const GLchar* samplerNames[ 4 ] = { "diffuseSampler", "normalSampler", "specularSampler", "emissionSampler" };
-	static const GLuint samplerLocations[ 4 ] = { 0, 1, 2, 3 };
-
-	GXShaderProgramInfo si;
-	si.vs = L"Shaders/Editor Mobile/StaticMesh_vs.txt";
-	si.gs = nullptr;
-	si.fs = L"Shaders/Editor Mobile/StaticMesh_fs.txt";
-	si.numSamplers = 4;
-	si.samplerNames = samplerNames;
-	si.samplerLocations = samplerLocations;
-
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
-
-	mod_view_proj_matLocation = shaderProgram.GetUniform ( "mod_view_proj_mat" );
-	mod_view_matLocation = shaderProgram.GetUniform ( "mod_view_mat" );
-
-	GXGLSamplerInfo samplerInfo;
-	samplerInfo.anisotropy = 16.0f;
-	samplerInfo.resampling = eGXSamplerResampling::Trilinear;
-	samplerInfo.wrap = GL_REPEAT;
-	sampler = GXCreateSampler ( samplerInfo );
-}
-
-GXVoid EMUnitActorMesh::UpdateBounds ()
-{
-	//TODO
-}
-
-//-------------------------------------------------------------------------------------------
 
 EMUnitActor::EMUnitActor ( const GXWChar* name, const GXMat4 &transform ):
-EMActor ( name, EM_UNIT_ACTOR_CLASS, transform )
+EMActor ( name, EM_UNIT_ACTOR_CLASS, transform ),
+mesh ( L"3D Models/Editor Mobile/Unit Cube.stm" )
 {
-	mesh = new EMUnitActorMesh ();
 	OnTransformChanged ();
+
+	diffuseTexture = GXTexture::LoadTexture ( DIFFUSE_TEXTURE, GX_FALSE );
+	normalTexture = GXTexture::LoadTexture ( NORMAL_TEXTURE, GX_FALSE );
+	specularTexture = GXTexture::LoadTexture ( SPECULAR_TEXTURE, GX_FALSE );
+	emissionTexture = GXTexture::LoadTexture ( EMISSION_TEXTURE, GX_FALSE );
+
+	commonPassMaterial.SetDiffuseTexture ( diffuseTexture );
+	commonPassMaterial.SetNormalTexture ( normalTexture );
+	commonPassMaterial.SetSpecularTexture ( specularTexture );
+	commonPassMaterial.SetEmissionTexture ( emissionTexture );
 }
 
 EMUnitActor::~EMUnitActor ()
 {
-	delete mesh;
+	GXTexture::RemoveTexture ( diffuseTexture );
+	GXTexture::RemoveTexture ( normalTexture );
+	GXTexture::RemoveTexture ( specularTexture );
+	GXTexture::RemoveTexture ( emissionTexture );
 }
 
 GXVoid EMUnitActor::OnDrawCommonPass ()
 {
 	EMRenderer::GetInstance ()->SetObjectMask ( (GXUPointer)this );
-	mesh->Render ();
+
+	commonPassMaterial.Bind ( mesh );
+	mesh.Render ();
+	commonPassMaterial.Unbind ();
 }
 
 GXVoid EMUnitActor::OnSave ( GXUByte** data )
@@ -207,10 +93,10 @@ GXUInt EMUnitActor::OnRequeredSaveSize ()
 
 GXVoid EMUnitActor::OnTransformChanged ()
 {
-	mesh->SetLocation ( transform.wv );
+	mesh.SetLocation ( transform.wv );
 
 	GXMat4 cleanRotation;
 	GXSetMat4ClearRotation ( cleanRotation, transform );
 
-	mesh->SetRotation ( cleanRotation );
+	mesh.SetRotation ( cleanRotation );
 }

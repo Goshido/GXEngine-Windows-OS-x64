@@ -1,4 +1,4 @@
-//version 1.9
+//version 1.10
 
 #ifndef GX_CAMERA
 #define GX_CAMERA
@@ -21,6 +21,7 @@ class GXCamera
 		GXMat4					mod_mat;
 		GXMat4					view_mat;
 		GXMat4					proj_mat;
+		GXMat4					inv_proj_mat;
 		GXMat4					view_proj_mat;
 
 		GXProjectionClipPlanes	clipPlanesWorld;
@@ -31,6 +32,7 @@ class GXCamera
 
 		const GXMat4& GetViewProjectionMatrix () const;
 		const GXMat4& GetProjectionMatrix () const;
+		const GXMat4& GetInverseProjectionMatrix () const;
 		const GXMat4& GetModelMatrix () const;
 		const GXMat4& GetViewMatrix () const;
 

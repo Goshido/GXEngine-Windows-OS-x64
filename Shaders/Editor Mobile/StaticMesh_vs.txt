@@ -1,21 +1,21 @@
 #version 330 core
 
 
-#define GX_VERTEX_INDEX		0
-#define GX_UV_INDEX			1
-#define GX_NORMAL_INDEX		2
-#define GX_TANGENT_INDEX	3
-#define GX_BITANGENT_INDEX	4
-#define EM_OBJECT_HI_INDEX	14
-#define EM_OBJECT_LOW_INDEX	15
+#define VERTEX_STREAM		0
+#define UV_STREAM			1
+#define NORMAL_STREAM		2
+#define TANGENT_STREAM		3
+#define BITANGENT_STREAM	4
+#define OBJECT_HI_STREAM	14
+#define OBJECT_LOW_STREAM	15
 
-layout ( location = GX_VERTEX_INDEX ) in vec3 vertex;
-layout ( location = GX_UV_INDEX ) in vec2 uv;
-layout ( location = GX_NORMAL_INDEX ) in vec3 normal;
-layout ( location = GX_TANGENT_INDEX ) in vec3 tangent;
-layout ( location = GX_BITANGENT_INDEX ) in vec3 bitangent;
-layout ( location = EM_OBJECT_HI_INDEX ) in vec4 objectHi;
-layout ( location = EM_OBJECT_LOW_INDEX ) in vec4 objectLow;
+layout ( location = VERTEX_STREAM ) in vec3 vertex;
+layout ( location = UV_STREAM ) in vec2 uv;
+layout ( location = NORMAL_STREAM ) in vec3 normal;
+layout ( location = TANGENT_STREAM ) in vec3 tangent;
+layout ( location = BITANGENT_STREAM ) in vec3 bitangent;
+layout ( location = OBJECT_HI_STREAM ) in vec4 objectHi;
+layout ( location = OBJECT_LOW_STREAM ) in vec4 objectLow;
 
 uniform mat4 mod_view_proj_mat;
 uniform mat4 mod_view_mat;

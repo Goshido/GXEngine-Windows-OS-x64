@@ -321,9 +321,6 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXMeshGeometry.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine\GXRenderable.cpp">
-      <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXTexture.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
@@ -343,6 +340,18 @@
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMMesh.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXTransform.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXRenderable.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMBlinnPhongCommonPassMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMBlinnPhongDirectedLightMaterial.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
   </ItemGroup>
@@ -716,9 +725,6 @@
     <ClInclude Include="..\..\Include\GXEngine\GXMeshGeometry.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXRenderable.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXTexture.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
@@ -738,6 +744,18 @@
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMesh.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXTransform.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXRenderable.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMBlinnPhongCommonPassMaterial.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMBlinnPhongDirectedLightMaterial.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
   </ItemGroup>
@@ -869,6 +887,12 @@
     </Text>
     <Text Include="..\..\Shaders\System\VertexUVScaleOffset_vs.txt">
       <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\BlinnPhongCommonPass_fs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\BlinnPhongCommonPass_vs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
   </ItemGroup>
 </Project>

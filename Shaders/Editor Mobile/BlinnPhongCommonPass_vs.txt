@@ -1,0 +1,59 @@
+#version 330 core
+
+
+#define VERTEX_STREAM		0
+#define UV_STREAM			1
+#define NORMAL_STREAM		2
+#define TANGENT_STREAM		3
+#define BITANGENT_STREAM	4
+#define OBJECT_HI_STREAM	14
+#define OBJECT_LOW_STREAM	15
+
+
+layout ( location = VERTEX_STREAM ) in vec3 vertex;
+layout ( location = UV_STREAM ) in vec2 uv;
+layout ( location = NORMAL_STREAM ) in vec3 normal;
+layout ( location = TANGENT_STREAM ) in vec3 tangent;
+layout ( location = BITANGENT_STREAM ) in vec3 bitangent;
+layout ( location = OBJECT_HI_STREAM ) in vec4 objectHi;
+layout ( location = OBJECT_LOW_STREAM ) in vec4 objectLow;
+
+uniform mat4 mod_view_proj_mat;
+uniform mat4 mod_view_mat;
+
+uniform vec4 diffuseTextureScaleOffset;
+uniform vec4 normalTextureScaleOffset;
+uniform vec4 specularTextureScaleOffset;
+uniform vec4 emissionTextureScaleOffset;
+
+smooth out vec2 v_uvDiffuse;
+smooth out vec2 v_uvNormal;
+smooth out vec2 v_uvSpecular;
+smooth out vec2 v_uvEmission;
+
+smooth out vec3 v_normal;
+smooth out vec3 v_tangent;
+smooth out vec3 v_bitangent;
+
+flat out vec4 v_objectHi;
+flat out vec4 v_objectLow;
+
+
+void main ()
+{
+	gl_Position = mod_view_proj_mat * vec4 ( vertex, 1.0 );
+
+	v_uvDiffuse = uv * diffuseTextureScaleOffset.xy + diffuseTextureScaleOffset.zw;
+	v_uvNormal = uv * normalTextureScaleOffset.xy + normalTextureScaleOffset.zw;
+	v_uvSpecular = uv * specularTextureScaleOffset.xy + specularTextureScaleOffset.zw;
+	v_uvEmission = uv * emissionTextureScaleOffset.xy + emissionTextureScaleOffset.zw;
+
+	mat3 m = mat3 ( mod_view_mat );
+
+	v_normal = m * normal;
+	v_tangent = m * tangent;
+	v_bitangent = m * bitangent;
+
+	v_objectHi = objectHi;
+	v_objectLow = objectLow;
+}

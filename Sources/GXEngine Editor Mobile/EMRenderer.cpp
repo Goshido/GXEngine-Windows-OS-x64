@@ -10,11 +10,13 @@
 #define EM_OBJECT_LOW_INDEX		15
 
 #define OUT_TEXTURE_SLOT		0
-#define DIFFUSE_SLOT			0
-#define NORMAL_SLOT				1
-#define SPECULAR_SLOT			2
-#define EMISSION_SLOT			3
-#define DEPTH_STENCIL_SLOT		4
+
+#define Z_NEAR					0.0f
+#define Z_FAR					77.0f
+#define Z_RENDER				1.0f
+
+#define CVV_WIDTH				2.0f
+#define CVV_HEIGHT				2.0f
 
 
 EMRenderer* EMRenderer::instance = nullptr;
@@ -35,10 +37,6 @@ EMRenderer::~EMRenderer ()
 
 	if ( sourceFbo )
 		glDeleteFramebuffers ( 1, &sourceFbo );
-
-	GXMeshGeometry::RemoveMeshGeometry ( screenQuadMesh );
-	GXShaderProgram::RemoveShaderProgram ( screenQuadProgram );
-	GXShaderProgram::RemoveShaderProgram ( directedLightProgram );
 
 	glDeleteSamplers ( 1, &screenSampler );
 
@@ -117,8 +115,6 @@ GXVoid EMRenderer::StartLightPass ()
 	glEnable ( GL_CULL_FACE );
 	glEnable ( GL_DEPTH_TEST );
 	glEnable ( GL_BLEND );
-
-	GXSetMat4Inverse ( inv_proj_mat, GXCamera::GetActiveCamera ()->GetProjectionMatrix () );
 
 	LightUp ();
 }
@@ -238,6 +234,9 @@ GXVoid EMRenderer::CombineHudWithTarget ( eEMRenderTarget target )
 
 GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 {
+	GXCamera* oldCamera = GXCamera::GetActiveCamera ();
+	GXCamera::SetActiveCamera ( &outCamera );
+
 	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
 	glDisable ( GL_DEPTH_TEST );
 	glDisable ( GL_CULL_FACE );
@@ -251,8 +250,6 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 
 	GXRenderer* renderer = GXRenderer::GetInstance ();
 	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
-
-	glUseProgram ( screenQuadProgram.GetProgram () );
 
 	GXTexture* texture = nullptr;
 
@@ -284,12 +281,16 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 	}
 
 	glBindSampler ( OUT_TEXTURE_SLOT, screenSampler );
-	texture->Bind ( OUT_TEXTURE_SLOT );
+	unlitMaterial.SetTexture ( *texture );
+	unlitMaterial.Bind ( screenQuadMesh );
+
 	screenQuadMesh.Render ();
 
-	texture->Unbind ();
-	glBindSampler ( 0, 0 );
-	glUseProgram ( 0 );
+	unlitMaterial.Unbind ();
+
+	glBindSampler ( OUT_TEXTURE_SLOT, 0 );
+
+	GXCamera::SetActiveCamera ( oldCamera );
 }
 
 GXVoid EMRenderer::SetOnObjectCallback ( PFNEMRENDERERONOBJECTPROC callback )
@@ -311,19 +312,32 @@ EMRenderer* EMRenderer::GetInstance ()
 	return instance;
 }
 
-EMRenderer::EMRenderer ()
+EMRenderer::EMRenderer ():
+screenQuadMesh( L"3D Models/System/ScreenQuad.stm" )
 {
 	memset ( objectMask, 0, 8 * sizeof ( GXUByte ) );
 	mouseX = mouseY = -1;
 	OnObject = nullptr;
 
-	GXSetMat4Identity ( inv_proj_mat );
+	GXGLSamplerInfo samplerInfo;
+	samplerInfo.anisotropy = 1.0f;
+	samplerInfo.resampling = eGXSamplerResampling::None;
+	samplerInfo.wrap = GL_CLAMP_TO_EDGE;
+	screenSampler = GXCreateSampler ( samplerInfo );
 
-	CreateScreenQuad ();
 	CreateFBO ();
-	InitDirectedLightShader ();
 
-	SetObjectMask ( 0 );
+	GXRenderer* coreRenderer = GXRenderer::GetInstance ();
+	outCamera.SetProjection ( CVV_WIDTH, CVV_HEIGHT, Z_NEAR, Z_FAR );
+	screenQuadMesh.SetLocation ( 0.0f, 0.0f, Z_RENDER );
+
+	directedLightMaterial.SetDiffuseTexture ( diffuseTexture );
+	directedLightMaterial.SetNormalTexture ( normalTexture );
+	directedLightMaterial.SetSpecularTexture ( specularTexture );
+	directedLightMaterial.SetEmissionTexture ( emissionTexture );
+	directedLightMaterial.SetDepthTexture ( depthStencilTexture );
+
+	SetObjectMask ( (GXUPointer)nullptr );
 	CombineHudWithTarget ( eEMRenderTarget::Combine );
 }
 
@@ -366,51 +380,6 @@ GXVoid EMRenderer::CreateFBO ()
 	glDrawBuffer ( GL_BACK );
 }
 
-GXVoid EMRenderer::CreateScreenQuad ()
-{
-	screenQuadMesh = GXMeshGeometry::LoadFromStm ( L"3D Models/System/ScreenQuad.stm" );
-
-	const GLchar* samplerNames[ 1 ] = { "Texture" };
-	const GLuint samplerLocations[ 1 ] = { 0 };
-
-	GXShaderProgramInfo si;
-	si.vs = L"Shaders/System/TextureOuter_vs.txt";
-	si.gs = nullptr;
-	si.fs = L"Shaders/System/TextureOuter_fs.txt";
-	si.numSamplers = 1;
-	si.samplerNames = samplerNames;
-	si.samplerLocations = samplerLocations;
-
-	screenQuadProgram = GXShaderProgram::GetShaderProgram ( si );
-
-	GXGLSamplerInfo samplerInfo;
-	samplerInfo.anisotropy = 1.0f;
-	samplerInfo.resampling = eGXSamplerResampling::None;
-	samplerInfo.wrap = GL_CLAMP_TO_EDGE;
-	screenSampler = GXCreateSampler ( samplerInfo );
-}
-
-GXVoid EMRenderer::InitDirectedLightShader ()
-{
-	const GLchar* samplerNames[ 5 ] = { "diffuseSampler", "normalSampler", "specularSampler", "emissionSampler", "depthSampler" };
-	const GLuint samplerLocations[ 5 ] = { DIFFUSE_SLOT, NORMAL_SLOT, SPECULAR_SLOT, EMISSION_SLOT, DEPTH_STENCIL_SLOT };
-
-	GXShaderProgramInfo si;
-	si.vs = L"Shaders/Editor Mobile/ScreenQuad_vs.txt";
-	si.gs = nullptr;
-	si.fs = L"Shaders/Editor Mobile/DirectedLight_fs.txt";
-	si.numSamplers = 5;
-	si.samplerNames = samplerNames;
-	si.samplerLocations = samplerLocations;
-
-	directedLightProgram = GXShaderProgram::GetShaderProgram ( si );
-
-	dl_lightDirectionViewLocation = directedLightProgram.GetUniform ( "toLightDirectionView" );
-	dl_inv_proj_matLocation = directedLightProgram.GetUniform ( "inv_proj_mat" );
-	dl_colorLocation = directedLightProgram.GetUniform ( "color" );
-	dl_ambientColorLocation = directedLightProgram.GetUniform ( "ambientColor" );
-}
-
 GXVoid EMRenderer::LightUp ()
 {
 	EMLightEmitter* light = em_LightEmitters;
@@ -446,8 +415,6 @@ GXVoid EMRenderer::LightUpByDirected ( EMDirectedLight* light )
 	glDisable ( GL_DEPTH_TEST );
 	glDisable ( GL_CULL_FACE );
 
-	glUseProgram ( directedLightProgram.GetProgram () );
-
 	GXVec3 toLightDirectionView;
 	const GXMat4& rotation = light->GetRotation ();
 	GXMulVec3Mat4AsNormal ( toLightDirectionView, rotation.zv, GXCamera::GetActiveCamera ()->GetViewMatrix () );
@@ -455,48 +422,15 @@ GXVoid EMRenderer::LightUpByDirected ( EMDirectedLight* light )
 	toLightDirectionView.y = -toLightDirectionView.y;
 	toLightDirectionView.z = -toLightDirectionView.z;
 
-	glUniform3fv ( dl_lightDirectionViewLocation, 1, toLightDirectionView.arr );
-	glUniformMatrix4fv ( dl_inv_proj_matLocation, 1, GL_FALSE, inv_proj_mat.arr );
+	directedLightMaterial.SetToLightDirectionView ( toLightDirectionView );
+	directedLightMaterial.SetColor ( light->GetColor () );
+	directedLightMaterial.SetAmbientColor ( light->GetAmbientColor () );
 
-	const GXVec3& color = light->GetColor ();
-	glUniform3fv ( dl_colorLocation, 1, color.arr );
-
-	const GXVec3& ambientColor = light->GetAmbientColor ();
-	glUniform3fv ( dl_ambientColorLocation, 1, ambientColor.arr );
-
-	diffuseTexture.Bind ( DIFFUSE_SLOT );
-	glBindSampler ( DIFFUSE_SLOT, screenSampler );
-
-	normalTexture.Bind ( NORMAL_SLOT );
-	glBindSampler ( NORMAL_SLOT, screenSampler );
-
-	specularTexture.Bind ( SPECULAR_SLOT );
-	glBindSampler ( SPECULAR_SLOT, screenSampler );
-
-	emissionTexture.Bind ( EMISSION_SLOT );
-	glBindSampler ( EMISSION_SLOT, screenSampler );
-
-	depthStencilTexture.Bind ( DEPTH_STENCIL_SLOT );
-	glBindSampler ( DEPTH_STENCIL_SLOT, screenSampler );
+	directedLightMaterial.Bind ( screenQuadMesh );
 
 	screenQuadMesh.Render ();
 
-	diffuseTexture.Unbind ();
-	glBindSampler ( DIFFUSE_SLOT, 0 );
-
-	normalTexture.Unbind ();
-	glBindSampler ( NORMAL_SLOT, 0 );
-
-	specularTexture.Unbind ();
-	glBindSampler ( SPECULAR_SLOT, 0 );
-
-	emissionTexture.Unbind ();
-	glBindSampler ( EMISSION_SLOT, 0 );
-
-	depthStencilTexture.Unbind ();
-	glBindSampler ( DEPTH_STENCIL_SLOT, 0 );
-
-	glUseProgram ( 0 );
+	directedLightMaterial.Unbind ();
 }
 
 GXVoid EMRenderer::LightUpBySpot ( EMSpotlight* light )
@@ -515,8 +449,6 @@ GXVoid EMRenderer::CopyTexureToCombineTexture ( GLuint texture )
 		glGenFramebuffers ( 1, &sourceFbo );
 
 	const GLenum buffers[] = { GL_COLOR_ATTACHMENT0 };
-
-	
 
 	glBindFramebuffer ( GL_READ_FRAMEBUFFER, sourceFbo );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, 0 );

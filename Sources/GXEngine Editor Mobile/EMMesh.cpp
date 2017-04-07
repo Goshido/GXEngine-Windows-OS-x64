@@ -22,10 +22,10 @@ GXVoid EMMesh::Render ()
 GXVoid EMMesh::InitGraphicResources ()
 {
 	meshGeometry = GXMeshGeometry::LoadFromStm ( meshFileName );
-	UpdateBounds ();
+	TransformUpdated ();
 }
 
-GXVoid EMMesh::UpdateBounds ()
+GXVoid EMMesh::TransformUpdated ()
 {
 	GXSetAABBTransformed ( boundsWorld, meshGeometry.GetBoundsLocal (), mod_mat );
 }

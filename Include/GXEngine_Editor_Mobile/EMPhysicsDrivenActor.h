@@ -2,9 +2,9 @@
 #define EM_PHYSICS_DRIVEN_ACTOR
 
 
+#include "EMMesh.h"
 #include <GXPhysics/GXRigidBody.h>
 #include <GXPhysics/GXShape.h>
-#include <GXEngine/GXRenderable.h>
 
 
 enum class eEMPhysicsDrivenActorType
@@ -17,7 +17,7 @@ enum class eEMPhysicsDrivenActorType
 class EMPhysicsDrivenActor
 {
 	private:
-		GXRenderable*	mesh;
+		EMMesh*			mesh;
 		GXRigidBody*	rigidBody;
 
 	public:

@@ -1,4 +1,4 @@
-//version 1.29
+//version 1.30
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -324,6 +324,7 @@ class GXProjectionClipPlanes
 //-------------------------------------------------------------
 
 GXFloat GXCALL GXDegToRad ( GXFloat degrees );
+GXVoid GXCALL GXColorToVec3 ( GXVec3 &out, GXUChar r, GXUChar g, GXUChar b );
 GXVoid GXCALL GXColorToVec4 ( GXVec4 &out, GXUChar r, GXUChar g, GXUChar b, GXUChar a );
 GXVoid GXCALL GXConvert3DSMaxToGXEngine ( GXVec3 &gx_out, GXFloat max_x, GXFloat max_y, GXFloat max_z );
 GXFloat GXCALL GXRandomNormalize ();

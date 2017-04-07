@@ -1,4 +1,4 @@
-//version 1.9
+//version 1.10
 
 #include <GXEngine/GXCamera.h>
 
@@ -14,6 +14,7 @@ GXCamera::GXCamera ()
 	GXSetMat4Identity ( mod_mat );
 	GXSetMat4Identity ( view_mat );
 	GXSetMat4Identity ( proj_mat );
+	GXSetMat4Identity ( inv_proj_mat );
 	GXSetMat4Identity ( view_proj_mat );
 
 	UpdateClipPlanes ();
@@ -32,6 +33,11 @@ const GXMat4& GXCamera::GetViewProjectionMatrix () const
 const GXMat4& GXCamera::GetProjectionMatrix () const
 {
 	return proj_mat;
+}
+
+const GXMat4& GXCamera::GetInverseProjectionMatrix () const
+{
+	return inv_proj_mat;
 }
 
 const GXMat4& GXCamera::GetModelMatrix () const

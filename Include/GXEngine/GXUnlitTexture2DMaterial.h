@@ -23,7 +23,7 @@ class GXUnlitTexture2DMaterial : public GXMaterial
 		GXUnlitTexture2DMaterial ();
 		~GXUnlitTexture2DMaterial () override;
 
-		GXVoid Bind ( const GXRenderable &activeRenderable ) const;
+		GXVoid Bind ( const GXTransform &transform ) const;
 		GXVoid Unbind () const;
 
 		GXVoid SetTexture ( GXTexture &texture );

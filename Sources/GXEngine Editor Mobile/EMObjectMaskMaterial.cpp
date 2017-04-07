@@ -27,10 +27,10 @@ EMObjectMaskMaterial::~EMObjectMaskMaterial ()
 	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 }
 
-GXVoid EMObjectMaskMaterial::Bind ( const GXRenderable &activeRenderable ) const
+GXVoid EMObjectMaskMaterial::Bind ( const GXTransform &transform ) const
 {
 	GXMat4 mod_view_proj_mat;
-	GXMulMat4Mat4 ( mod_view_proj_mat, activeRenderable.GetModelMatrix (), GXCamera::GetActiveCamera ()->GetViewProjectionMatrix () );
+	GXMulMat4Mat4 ( mod_view_proj_mat, transform.GetModelMatrix (), GXCamera::GetActiveCamera ()->GetViewProjectionMatrix () );
 
 	glUseProgram ( shaderProgram.GetProgram () );
 	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );

@@ -1,4 +1,5 @@
 #include <GXEngine_Editor_Mobile/EMPhysicsDrivenActor.h>
+#include <GXEngine/GXTransform.h>
 #include <GXEngine/GXTexture.h>
 #include <GXEngine/GXSamplerUtils.h>
 #include <GXEngine/GXShaderProgram.h>
@@ -18,7 +19,7 @@
 #define EMISSION_SLOT	3
 
 
-class EMPhysicsDrivenActorMesh : public GXRenderable
+class EMPhysicsDrivenActorMesh : public GXTransform, public GXRenderable
 {
 	private:
 		GXMeshGeometry		mesh;
@@ -42,7 +43,7 @@ class EMPhysicsDrivenActorMesh : public GXRenderable
 
 	protected:
 		GXVoid InitGraphicResources () override;
-		GXVoid UpdateBounds () override;
+		GXVoid TransformUpdated () override;
 };
 
 EMPhysicsDrivenActorMesh::EMPhysicsDrivenActorMesh ()
@@ -111,7 +112,7 @@ GXVoid EMPhysicsDrivenActorMesh::Render ()
 GXVoid EMPhysicsDrivenActorMesh::InitGraphicResources ()
 {
 	mesh = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Unit Cube.stm" );
-	UpdateBounds ();
+	TransformUpdated ();
 
 	diffuseTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/gui_file_icon.png", GX_TRUE );
 	normalTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_TRUE );
@@ -141,7 +142,7 @@ GXVoid EMPhysicsDrivenActorMesh::InitGraphicResources ()
 	sampler = GXCreateSampler ( samplerInfo );
 }
 
-GXVoid EMPhysicsDrivenActorMesh::UpdateBounds ()
+GXVoid EMPhysicsDrivenActorMesh::TransformUpdated ()
 {
 	//TODO
 }
@@ -156,7 +157,7 @@ EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
 	{
 		case eGXShapeType::Box:
 		{
-			mesh = new EMPhysicsDrivenActorMesh ();
+			mesh = new EMMesh ( L"3D Models/Editor Mobile/Unit Cube.stm" );
 			GXBoxShape* box = new GXBoxShape ( rigidBody, 1.0f, 1.0f, 1.0f );
 			rigidBody->SetShape ( *box );
 		}
@@ -179,7 +180,7 @@ EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
 
 		case eGXShapeType::Sphere:
 		{
-			mesh = new EMPhysicsDrivenActorMesh ();
+			mesh = new EMMesh ( L"3D Models/Editor Mobile/Unit Cube.stm" );
 			GXSphereShape* p = new GXSphereShape ( rigidBody, 0.5f );
 			rigidBody->SetShape ( *p );
 		}
@@ -187,7 +188,7 @@ EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
 
 		case eGXShapeType::Polygon:
 		{
-			mesh = new EMPhysicsDrivenActorMesh ();
+			mesh = new EMMesh ( L"3D Models/Editor Mobile/Unit Cube.stm" );
 			//GXPolygonShape* p = new GXPolygonShape ( nullptr, 30.0f, 30.0f );
 
 			GXBoxShape* box = new GXBoxShape ( rigidBody, 100.0f, 1.0f, 100.0f );

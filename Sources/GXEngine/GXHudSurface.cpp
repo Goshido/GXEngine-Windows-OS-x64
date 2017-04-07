@@ -13,7 +13,7 @@
 #define TEXTURE_SLOT	0
 
 
-class GXImageRenderable : public GXRenderable
+class GXImageRenderable : public GXTransform, public GXRenderable
 {
 	private:
 		GXMeshGeometry		mesh;
@@ -26,7 +26,7 @@ class GXImageRenderable : public GXRenderable
 
 	protected:
 		GXVoid InitGraphicResources () override;
-		GXVoid UpdateBounds () override;
+		GXVoid TransformUpdated () override;
 };
 
 GXImageRenderable::GXImageRenderable ()
@@ -49,14 +49,14 @@ GXVoid GXImageRenderable::InitGraphicResources ()
 	mesh = GXMeshGeometry::LoadFromStm ( L"3D Models/System/ScreenQuad1x1.stm" );
 }
 
-GXVoid GXImageRenderable::UpdateBounds ()
+GXVoid GXImageRenderable::TransformUpdated ()
 {
 	//NOTHING
 }
 
 //-----------------------------------------------------------------------------------------
 
-class GXGlyphRenderable : public GXRenderable
+class GXGlyphRenderable : public GXTransform, public GXRenderable
 {
 	private:
 		GXMeshGeometry		mesh;
@@ -71,7 +71,7 @@ class GXGlyphRenderable : public GXRenderable
 
 	protected:
 		GXVoid InitGraphicResources () override;
-		GXVoid UpdateBounds () override;
+		GXVoid TransformUpdated () override;
 };
 
 GXGlyphRenderable::GXGlyphRenderable ()
@@ -122,14 +122,14 @@ GXVoid GXGlyphRenderable::InitGraphicResources ()
 	mesh.SetTopology ( GL_TRIANGLES );
 }
 
-GXVoid GXGlyphRenderable::UpdateBounds ()
+GXVoid GXGlyphRenderable::TransformUpdated ()
 {
 	//NOTHING
 }
 
 //-----------------------------------------------------------------------------------------
 
-class GXLineRenderable : public GXRenderable
+class GXLineRenderable : public GXTransform, public GXRenderable
 {
 	private:
 		GXMeshGeometry		mesh;
@@ -144,7 +144,7 @@ class GXLineRenderable : public GXRenderable
 
 	protected:
 		GXVoid InitGraphicResources () override;
-		GXVoid UpdateBounds () override;
+		GXVoid TransformUpdated () override;
 };
 
 GXLineRenderable::GXLineRenderable ()
@@ -178,7 +178,7 @@ GXVoid GXLineRenderable::InitGraphicResources ()
 	mesh.SetTopology ( GL_LINES );
 }
 
-GXVoid GXLineRenderable::UpdateBounds ()
+GXVoid GXLineRenderable::TransformUpdated ()
 {
 	//NOTHING
 }
@@ -191,7 +191,48 @@ canvasCamera ( (GXFloat)width, (GXFloat)height, Z_NEAR, Z_FAR )
 	this->width = width;
 	this->height = height;
 
-	InitGraphicResources ();
+	GXUInt size = ( width * height ) * BYTES_PER_PIXEL;
+	GXUByte* data = (GXUByte*)malloc ( size );
+	memset ( data, 0, size );
+
+	canvasTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE );
+	canvasTexture.FillWholePixelData ( data );
+	free ( data );
+
+	SetScale ( width * 0.5f, height * 0.5f, 1.0f );
+
+	glGenFramebuffers ( 1, &fbo );
+	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+
+	glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, canvasTexture.GetTextureObject (), 0 );
+	GLenum buffer = GL_COLOR_ATTACHMENT0;
+	glDrawBuffers ( 1, &buffer );
+
+	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+	if ( status != GL_FRAMEBUFFER_COMPLETE )
+		GXLogW ( L"GXHudSurface::GXHudSurfaceExt::Error - Что-то с fbo. Ошибка 0x%04x\n", status );
+
+	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
+
+	screenQuadMesh = GXMeshGeometry::LoadFromStm ( L"3D Models/System/ScreenQuad.stm" );
+
+	GXGLSamplerInfo samplerInfo;
+	samplerInfo.anisotropy = 1.0f;
+	samplerInfo.resampling = eGXSamplerResampling::None;
+	samplerInfo.wrap = GL_CLAMP_TO_EDGE;
+	sampler = GXCreateSampler ( samplerInfo );
+
+	image = new GXImageRenderable ();
+	glyph = new GXGlyphRenderable ();
+
+	line = new GXLineRenderable ();
+	line->SetLocation ( -0.5f * width, -0.5f * height, RENDER_Z );
+
+	unlitTexture2DMaterial.SetTextureScale ( 1.0f, 1.0f );
+	unlitTexture2DMaterial.SetTextureOffset ( 0.0f, 0.0f );
+
+	unlitColorMaskMaterial.SetMaskScale ( 1.0f, 1.0f );
+	unlitColorMaskMaterial.SetMaskOffset ( 0.0f, 0.0f );
 }
 
 GXHudSurface::~GXHudSurface ()
@@ -558,53 +599,7 @@ GXVoid GXHudSurface::Render ()
 		glDisable ( GL_BLEND );
 }
 
-GXVoid GXHudSurface::InitGraphicResources ()
-{
-	GXUInt size = ( width * height ) * BYTES_PER_PIXEL;
-	GXUByte* data = (GXUByte*)malloc ( size );
-	memset ( data, 0, size );
-
-	canvasTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE );
-	canvasTexture.FillWholePixelData ( data );
-	free ( data );
-
-	SetScale ( width * 0.5f, height * 0.5f, 1.0f );
-
-	glGenFramebuffers ( 1, &fbo );
-	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
-
-	glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, canvasTexture.GetTextureObject (), 0 );
-	GLenum buffer = GL_COLOR_ATTACHMENT0;
-	glDrawBuffers ( 1, &buffer );
-
-	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
-	if ( status != GL_FRAMEBUFFER_COMPLETE )
-		GXLogW ( L"GXHudSurface::GXHudSurfaceExt::Error - Что-то с fbo. Ошибка 0x%04x\n", status );
-
-	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
-
-	screenQuadMesh = GXMeshGeometry::LoadFromStm ( L"3D Models/System/ScreenQuad.stm" );
-
-	GXGLSamplerInfo samplerInfo;
-	samplerInfo.anisotropy = 1.0f;
-	samplerInfo.resampling = eGXSamplerResampling::None;
-	samplerInfo.wrap = GL_CLAMP_TO_EDGE;
-	sampler = GXCreateSampler ( samplerInfo );
-
-	image = new GXImageRenderable ();
-	glyph = new GXGlyphRenderable ();
-
-	line = new GXLineRenderable ();
-	line->SetLocation ( -0.5f * width, -0.5f * height, RENDER_Z );
-
-	unlitTexture2DMaterial.SetTextureScale ( 1.0f, 1.0f );
-	unlitTexture2DMaterial.SetTextureOffset ( 0.0f, 0.0f );
-
-	unlitColorMaskMaterial.SetMaskScale ( 1.0f, 1.0f );
-	unlitColorMaskMaterial.SetMaskOffset ( 0.0f, 0.0f );
-}
-
-GXVoid GXHudSurface::UpdateBounds ()
+GXVoid GXHudSurface::TransformUpdated ()
 {
 	//NOTHING
 }

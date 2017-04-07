@@ -2,10 +2,11 @@
 #define EM_RENDERER
 
 
-#include <GXEngine_Editor_Mobile/EMLight.h>
-#include <GXEngine/GXShaderProgram.h>
-#include <GXEngine/GXMeshGeometry.h>
-#include <GXEngine/GXTexture.h>
+#include "EMLight.h"
+#include "EMMesh.h"
+#include "EMBlinnPhongDirectedLightMaterial.h"
+#include <GXEngine/GXUnlitTexture2DMaterial.h>
+#include <GXEngine/GXCameraOrthographic.h>
 
 
 typedef GXVoid ( GXCALL* PFNEMRENDERERONOBJECTPROC ) ( GXUPointer object );
@@ -31,38 +32,32 @@ enum class eEMRenderTarget
 class EMRenderer
 {
 	private:
-		GXTexture					diffuseTexture;
-		GXTexture					normalTexture;
-		GXTexture					specularTexture;
-		GXTexture					emissionTexture;
-		GXTexture					objectTextures[ 2 ];
-		GXTexture					depthStencilTexture;
-		GXTexture					outTexture;
-		GXTexture					combineHudTarget;
+		GXTexture							diffuseTexture;
+		GXTexture							normalTexture;
+		GXTexture							specularTexture;
+		GXTexture							emissionTexture;
+		GXTexture							objectTextures[ 2 ];
+		GXTexture							depthStencilTexture;
+		GXTexture							outTexture;
+		GXTexture							combineHudTarget;
 
-		GLuint						fbo;
-		GLuint						sourceFbo;
+		GLuint								fbo;
+		GLuint								sourceFbo;
 
-		GLuint						screenSampler;
+		GLuint								screenSampler;
 
-		GXUByte						objectMask[ 8 ];
+		GXUByte								objectMask[ 8 ];
 
-		GXMeshGeometry				screenQuadMesh;
-		GXShaderProgram				screenQuadProgram;
+		EMMesh								screenQuadMesh;
+		EMBlinnPhongDirectedLightMaterial	directedLightMaterial;
+		GXUnlitTexture2DMaterial			unlitMaterial;
+		GXCameraOrthographic				outCamera;
 
-		GXMat4						inv_proj_mat;
+		GXInt								mouseX;
+		GXInt								mouseY;
+		PFNEMRENDERERONOBJECTPROC			OnObject;
 
-		GLint						dl_lightDirectionViewLocation;
-		GLint						dl_inv_proj_matLocation;
-		GLint						dl_colorLocation;
-		GLint						dl_ambientColorLocation;
-		GXShaderProgram				directedLightProgram;
-
-		GXInt						mouseX;
-		GXInt						mouseY;
-		PFNEMRENDERERONOBJECTPROC	OnObject;
-
-		static EMRenderer*			instance;
+		static EMRenderer*					instance;
 
 	public:
 		~EMRenderer ();
@@ -86,8 +81,6 @@ class EMRenderer
 		EMRenderer ();
 
 		GXVoid CreateFBO ();
-		GXVoid CreateScreenQuad ();
-		GXVoid InitDirectedLightShader ();
 
 		GXVoid LightUp ();
 		GXVoid LightUpByDirected ( EMDirectedLight* light );

@@ -5,7 +5,7 @@
 
 
 #include "GXShaderProgram.h"
-#include "GXRenderable.h"
+#include "GXTransform.h"
 
 
 class GXMaterial
@@ -17,7 +17,7 @@ class GXMaterial
 		GXMaterial ();
 		virtual ~GXMaterial ();
 
-		virtual GXVoid Bind ( const GXRenderable &activeRenderable ) const = 0;
+		virtual GXVoid Bind ( const GXTransform &transform ) const = 0;
 		virtual GXVoid Unbind () const = 0;
 };
 

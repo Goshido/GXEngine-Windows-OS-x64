@@ -17,6 +17,7 @@ GXCameraPerspective::GXCameraPerspective ()
 	zfar = DEFAULT_Z_FAR;
 
 	GXSetMat4Perspective ( proj_mat, fov_rad, aspectRatio, znear, zfar );
+	GXSetMat4Inverse ( inv_proj_mat, proj_mat );
 	view_proj_mat = proj_mat;
 
 	UpdateClipPlanes ();
@@ -30,6 +31,7 @@ GXCameraPerspective::GXCameraPerspective ( GXFloat fovy_rad, GXFloat aspectRatio
 	this->zfar = zfar;
 
 	GXSetMat4Perspective ( proj_mat, fov_rad, aspectRatio, znear, zfar );
+	GXSetMat4Inverse ( inv_proj_mat, proj_mat );
 	view_proj_mat = proj_mat;
 
 	UpdateClipPlanes ();
@@ -44,6 +46,7 @@ GXVoid GXCameraPerspective::SetFov ( GXFloat fov_rad )
 {
 	this->fov_rad = fov_rad;
 	GXSetMat4Perspective ( proj_mat, fov_rad, aspectRatio, znear, zfar );
+	GXSetMat4Inverse ( inv_proj_mat, proj_mat );
 	GXMulMat4Mat4 ( view_proj_mat, view_mat, proj_mat );
 
 	UpdateClipPlanes ();
@@ -53,6 +56,7 @@ GXVoid GXCameraPerspective::SetAspectRatio ( GXFloat aspectRatio )
 {
 	this->aspectRatio = aspectRatio;
 	GXSetMat4Perspective ( proj_mat, fov_rad, aspectRatio, znear, zfar );
+	GXSetMat4Inverse ( inv_proj_mat, proj_mat );
 	GXMulMat4Mat4 ( view_proj_mat, view_mat, proj_mat );
 
 	UpdateClipPlanes ();
@@ -62,6 +66,7 @@ GXVoid GXCameraPerspective::SetZnear ( GXFloat znear )
 {
 	this->znear = znear;
 	GXSetMat4Perspective ( proj_mat, fov_rad, aspectRatio, znear, zfar );
+	GXSetMat4Inverse ( inv_proj_mat, proj_mat );
 	GXMulMat4Mat4 ( view_proj_mat, view_mat, proj_mat );
 
 	UpdateClipPlanes ();
@@ -71,6 +76,7 @@ GXVoid GXCameraPerspective::SetZfar	( GXFloat zfar )
 {
 	this->zfar = zfar;
 	GXSetMat4Perspective ( proj_mat, fov_rad, aspectRatio, znear, zfar );
+	GXSetMat4Inverse ( inv_proj_mat, proj_mat );
 	GXMulMat4Mat4 ( view_proj_mat, view_mat, proj_mat );
 
 	UpdateClipPlanes ();

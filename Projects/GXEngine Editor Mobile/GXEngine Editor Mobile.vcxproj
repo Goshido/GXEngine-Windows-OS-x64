@@ -181,6 +181,8 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXCommon\GXThread.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXTime.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMActor.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMBlinnPhongCommonPassMaterial.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMBlinnPhongDirectedLightMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMDirectedLightActor.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMLight.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMMain.cpp" />
@@ -219,6 +221,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXLocale.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXRenderable.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXTransform.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXMeshGeometry.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXNetwork.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXOGGSoundProvider.cpp" />
@@ -318,6 +321,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMenu.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXRenderable.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXTransform.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMeshGeometry.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMotionBlurEffect.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXNetwork.h" />
@@ -355,6 +359,8 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXUnlitTexture2DMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXWidget.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMActor.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMBlinnPhongCommonPassMaterial.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMBlinnPhongDirectedLightMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMDirectedLightActor.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMLight.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMain.h" />
@@ -400,6 +406,8 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Resource Include="..\..\Sources\GXEngine\GXRecource.res" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="..\..\Shaders\Editor Mobile\BlinnPhongCommonPass_fs.txt" />
+    <Text Include="..\..\Shaders\Editor Mobile\BlinnPhongCommonPass_vs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\Color_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\DirectedLight_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\MaskAlphaTest_fs.txt" />

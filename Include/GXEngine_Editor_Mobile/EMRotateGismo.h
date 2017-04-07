@@ -7,7 +7,7 @@
 #include <GXEngine/GXUnlitTexture2DMaterial.h>
 
 
-class EMRotateGismo : public GXRenderable
+class EMRotateGismo : public GXTransform
 {
 	private:
 		GXBool						isVisible;
@@ -23,11 +23,10 @@ class EMRotateGismo : public GXRenderable
 		GXVoid Hide ();
 		GXVoid Show ();
 
-		GXVoid Render () override;
+		GXVoid Render ();
 
 	protected:
-		GXVoid InitGraphicResources () override;
-		GXVoid UpdateBounds () override;
+		GXVoid TransformUpdated () override;
 };
 
 

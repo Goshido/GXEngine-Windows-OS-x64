@@ -7,7 +7,7 @@
 #include <GXEngine/GXUnlitTexture2DMaterial.h>
 
 
-class EMScaleGismo : public GXRenderable
+class EMScaleGismo : public GXTransform
 {
 	private:
 		GXBool						isVisible;
@@ -23,11 +23,10 @@ class EMScaleGismo : public GXRenderable
 		GXVoid Hide ();
 		GXVoid Show ();
 
-		GXVoid Render () override;
+		GXVoid Render ();
 
 	protected:
-		GXVoid InitGraphicResources () override;
-		GXVoid UpdateBounds () override;
+		GXVoid TransformUpdated () override;
 };
 
 

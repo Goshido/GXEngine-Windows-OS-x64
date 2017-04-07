@@ -6,6 +6,7 @@
 
 #include "GXRenderable.h"
 #include "GXCameraOrthographic.h"
+#include "GXTransform.h"
 #include "GXMeshGeometry.h"
 #include "GXTexture.h"
 #include "GXFont.h"
@@ -59,7 +60,7 @@ struct GXLineInfo
 class GXImageRenderable;
 class GXGlyphRenderable;
 class GXLineRenderable;
-class GXHudSurface : public GXRenderable
+class GXHudSurface : public GXTransform
 {
 	private:
 		GLuint						fbo;
@@ -96,11 +97,10 @@ class GXHudSurface : public GXRenderable
 		GXUShort GetWidth () const;
 		GXUShort GetHeight () const;
 
-		GXVoid Render () override;
+		GXVoid Render ();
 
 	protected:
-		GXVoid InitGraphicResources () override;
-		GXVoid UpdateBounds () override;
+		GXVoid TransformUpdated () override;
 };
 
 

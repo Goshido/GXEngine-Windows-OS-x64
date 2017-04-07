@@ -53,12 +53,12 @@ GXUnlitTexture2DMaterial::~GXUnlitTexture2DMaterial ()
 	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 }
 
-GXVoid GXUnlitTexture2DMaterial::Bind ( const GXRenderable &activeRenderable ) const
+GXVoid GXUnlitTexture2DMaterial::Bind ( const GXTransform &transfrom ) const
 {
 	if ( !texture ) return;
 
 	GXMat4 mod_view_proj_mat;
-	GXMulMat4Mat4 ( mod_view_proj_mat, activeRenderable.GetModelMatrix (), GXCamera::GetActiveCamera ()->GetViewProjectionMatrix () );
+	GXMulMat4Mat4 ( mod_view_proj_mat, transfrom.GetModelMatrix (), GXCamera::GetActiveCamera ()->GetViewProjectionMatrix () );
 	
 	glUseProgram ( shaderProgram.GetProgram () );
 	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );
