@@ -1,14 +1,10 @@
-//version 1.11
+//version 1.12
 
 #ifndef GX_CORE
 #define GX_CORE
 
 
-#include <GXCommon/GXTypes.h>
-
-
-typedef GXVoid ( GXCALL* PFNGXONGAMEINITPROC ) ();
-typedef GXVoid ( GXCALL* PFNGXONGAMECLOSEPROC ) ();
+#include "GXGame.h"
 
 
 class GXCore
@@ -20,7 +16,7 @@ class GXCore
 	public:
 		~GXCore ();
 
-		GXVoid Start ( PFNGXONGAMEINITPROC onGameInit, PFNGXONGAMECLOSEPROC onGameClose );
+		GXVoid Start ( GXGame &game );
 		GXVoid Exit ();
 
 		static GXCore* GXCALL GetInstance ();

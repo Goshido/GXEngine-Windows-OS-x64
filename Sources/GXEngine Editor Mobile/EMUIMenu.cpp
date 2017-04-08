@@ -61,7 +61,7 @@ GXWidgetRenderer ( widget )
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 	surface = new GXHudSurface ( (GXShort)GXGetAABBWidth ( boundsLocal ), (GXShort)GXGetAABBHeight ( boundsLocal ) );
 	font = GXFont::GetFont ( EM_DEFAULT_FONT, (GXUShort)( EM_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
-	texture = GXTexture::LoadTexture ( EM_DEFAULT_TEXTURE, GX_FALSE );
+	texture = GXTexture::LoadTexture ( EM_DEFAULT_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
 }
 
 EMUIMenuRenderer::~EMUIMenuRenderer ()

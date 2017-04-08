@@ -39,7 +39,7 @@
 #define GX_MSG_ADD_SYMBOL							31				//GXWChar						symbol
 #define GX_MSG_EDIT_BOX_SET_TEXT_LEFT_OFFSET		32				//GXFloat						text left offset
 #define GX_MSG_EDIT_BOX_SET_TEXT_RIGHT_OFFSET		33				//GXFloat						text right offset
-#define GX_MSG_POPUP_ADD_ITEM						34				//PFNGXONUIPOPUPACTIONPROC		action callback
+#define GX_MSG_POPUP_ADD_ITEM						34				//GXUIPopupItem					see GXUIPopupItem
 #define GX_MSG_POPUP_SET_ITEM_HEIGHT				35				//GXFloat						item height
 #define GX_MSG_POPUP_ENABLE_ITEM					36				//GXUByte						item index
 #define GX_MSG_POPUP_DISABLE_ITEM					37				//GXUByte						item index

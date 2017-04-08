@@ -73,8 +73,9 @@ GXVoid EMViewer::SetTarget ( EMActor* actor )
 	this->target = actor;
 }
 
-GXVoid EMViewer::SetOnViewerTransformChangedCallback ( PFNEMONVIEWERTRANSFORMCHANGEDPROC callback )
+GXVoid EMViewer::SetOnViewerTransformChangedCallback ( GXVoid* handler, PFNEMONVIEWERTRANSFORMCHANGEDPROC callback )
 {
+	this->handler = handler;
 	OnViewerTransformChanged = callback;
 }
 
@@ -100,6 +101,7 @@ EMViewer::EMViewer ()
 {
 	inputWidget = nullptr;
 
+	handler = nullptr;
 	OnViewerTransformChanged = nullptr;
 
 	pitch = EM_DEFAULT_PITCH_RAD;
@@ -135,7 +137,7 @@ GXVoid EMViewer::OnPan ( const GXVec2& mouseDelta )
 	UpdateCamera ();
 
 	if ( OnViewerTransformChanged )
-		OnViewerTransformChanged ();
+		OnViewerTransformChanged ( handler );
 }
 
 GXVoid EMViewer::OnRotate ( const GXVec2& mouseDelta )
@@ -167,7 +169,7 @@ GXVoid EMViewer::OnRotate ( const GXVec2& mouseDelta )
 	UpdateCamera ();
 	
 	if ( OnViewerTransformChanged )
-		OnViewerTransformChanged ();
+		OnViewerTransformChanged ( handler );
 }
 
 GXVoid EMViewer::OnZoom ( GXFloat mouseWheelSteps )
@@ -176,7 +178,7 @@ GXVoid EMViewer::OnZoom ( GXFloat mouseWheelSteps )
 	UpdateCamera ();
 
 	if ( OnViewerTransformChanged )
-		OnViewerTransformChanged ();
+		OnViewerTransformChanged ( handler );
 }
 
 GXVoid EMViewer::UpdateCamera ()

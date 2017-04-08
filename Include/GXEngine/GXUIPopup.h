@@ -11,7 +11,7 @@
 #define GX_UI_POPUP_INVALID_INDEX 0xFF
 
 
-typedef GXVoid ( GXCALL* PFNGXONUIPOPUPACTIONPROC ) ();
+typedef GXVoid ( GXCALL* PFNGXONUIPOPUPACTIONPROC ) ( GXVoid* handler );
 
 
 class GXUIPopup : public GXWidget
@@ -28,7 +28,7 @@ class GXUIPopup : public GXWidget
 
 		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
 
-		GXVoid AddItem ( PFNGXONUIPOPUPACTIONPROC action );
+		GXVoid AddItem ( GXVoid* handler, PFNGXONUIPOPUPACTIONPROC action );
 		GXUByte GetTotalItems () const;
 
 		GXVoid EnableItem ( GXUByte itemIndex );

@@ -10,6 +10,7 @@
 struct GXUIPopupItem
 {
 	GXBool						isActive;
+	GXVoid*						handler;
 	PFNGXONUIPOPUPACTIONPROC	action;
 	GXAABB						boundsWorld;
 };
@@ -35,11 +36,12 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 	{
 		case GX_MSG_POPUP_ADD_ITEM:
 		{
-			const PFNGXONUIPOPUPACTIONPROC* action = (const PFNGXONUIPOPUPACTIONPROC*)data;
+			const GXUIPopupItem* pi = (const GXUIPopupItem*)data;
 
 			GXUInt totalItems = items.GetLength ();
 			GXUIPopupItem item;
-			item.action = *action;
+			item.handler = pi->handler;
+			item.action = pi->action;
 			item.isActive = GX_TRUE;
 
 			if ( totalItems == 0 )
@@ -141,7 +143,7 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 			{
 				GXUIPopupItem* itemStorage = (GXUIPopupItem*)items.GetData ();
 				if ( itemStorage[ selectedItemIndex ].action )
-					itemStorage[ selectedItemIndex ].action ();
+					itemStorage[ selectedItemIndex ].action ( itemStorage[ selectedItemIndex ].handler );
 
 				if ( owner )
 				{
@@ -231,9 +233,12 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 	}
 }
 
-GXVoid GXUIPopup::AddItem ( PFNGXONUIPOPUPACTIONPROC action )
+GXVoid GXUIPopup::AddItem ( GXVoid* handler, PFNGXONUIPOPUPACTIONPROC action )
 {
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_POPUP_ADD_ITEM, &action, sizeof ( PFNGXONUIPOPUPACTIONPROC ) );
+	GXUIPopupItem pi;
+	pi.handler = handler;
+	pi.action = action;
+	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_POPUP_ADD_ITEM, &pi, sizeof ( GXUIPopupItem ) );
 }
 
 GXUByte GXUIPopup::GetTotalItems () const

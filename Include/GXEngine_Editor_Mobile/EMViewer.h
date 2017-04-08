@@ -7,7 +7,7 @@
 #include <GXEngine/GXUIInput.h>
 
 
-typedef GXVoid ( GXCALL* PFNEMONVIEWERTRANSFORMCHANGEDPROC ) ();
+typedef GXVoid ( GXCALL* PFNEMONVIEWERTRANSFORMCHANGEDPROC ) ( GXVoid* handler );
 
 
 class EMViewer
@@ -26,6 +26,7 @@ class EMViewer
 
 		GXCameraPerspective					camera;
 		EMActor*							target;
+		GXVoid*								handler;
 		PFNEMONVIEWERTRANSFORMCHANGEDPROC	OnViewerTransformChanged;
 
 		GXBool								isAltPressed;
@@ -40,7 +41,7 @@ class EMViewer
 
 		GXVoid SetInputWidget ( GXUIInput &inputWidget );
 		GXVoid SetTarget ( EMActor* actor );
-		GXVoid SetOnViewerTransformChangedCallback ( PFNEMONVIEWERTRANSFORMCHANGEDPROC callback );
+		GXVoid SetOnViewerTransformChangedCallback ( GXVoid* handler, PFNEMONVIEWERTRANSFORMCHANGEDPROC callback );
 		GXCamera& GetCamera ();
 		GXVoid UpdateMouse ( const GXVec2 &position );
 

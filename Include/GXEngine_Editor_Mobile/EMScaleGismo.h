@@ -14,7 +14,6 @@ class EMScaleGismo : public GXTransform
 		EMMesh						mesh;
 		GXTexture					texture;
 		GXUnlitTexture2DMaterial	unlitMaterial;
-		GLuint						sampler;
 
 	public:
 		EMScaleGismo ();

@@ -13,23 +13,28 @@ class GXTexture
 	private:
 		GXUShort			width;
 		GXUShort			height;
+
 		GLint				internalFormat;
 		GLint				unpackAlignment;
 		GLenum				format;
 		GLenum				type;
-		GXBool				isGenerateMipmap;
+
 		GXUByte				textureUnit;
 		GLuint				textureObject;
 
+		GXBool				isGenerateMipmap;
+		GLint				wrapMode;
+		GLuint				sampler;
+
 	public:
 		GXTexture ();
-		explicit GXTexture ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap );
+		explicit GXTexture ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap, GLint wrapMode );
 		~GXTexture ();
 
 		GXUShort GetWidth () const;
 		GXUShort GetHeight () const;
 
-		static GXTexture& GXCALL LoadTexture ( const GXWChar* fileName, GXBool isGenerateMipmap );
+		static GXTexture& GXCALL LoadTexture ( const GXWChar* fileName, GXBool isGenerateMipmap, GLint wrapMode );
 		static GXVoid GXCALL RemoveTexture ( GXTexture& texture );
 		static GXUInt GXCALL GetTotalLoadedTextures ( const GXWChar** lastTexture );
 
@@ -41,7 +46,7 @@ class GXTexture
 
 		GLuint GetTextureObject () const;
 
-		GXVoid InitResources ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap );
+		GXVoid InitResources ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap, GLint wrapMode );
 		GXVoid FreeResources ();
 
 		GXBool operator == ( const GXTextureEntry &other ) const;

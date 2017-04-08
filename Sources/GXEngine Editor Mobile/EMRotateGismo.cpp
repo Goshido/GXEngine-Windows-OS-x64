@@ -18,14 +18,7 @@
 EMRotateGismo::EMRotateGismo () :
 mesh ( L"3D Models/Editor Mobile/Rotate Gismo.stm" )
 {
-	texture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Gismo Texture.tex", GX_FALSE );
-
-	GXGLSamplerInfo samplerInfo;
-	samplerInfo.anisotropy = 1.0f;
-	samplerInfo.resampling = eGXSamplerResampling::None;
-	samplerInfo.wrap = GL_CLAMP_TO_EDGE;
-
-	sampler = GXCreateSampler ( samplerInfo );
+	texture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Gismo Texture.tex", GX_FALSE, GL_CLAMP_TO_EDGE );
 
 	unlitMaterial.SetColor ( TEXTURE_COLOR_R, TEXTURE_COLOR_G, TEXTURE_COLOR_B, TEXTURE_COLOR_A );
 	unlitMaterial.SetTexture ( texture );
@@ -38,7 +31,6 @@ mesh ( L"3D Models/Editor Mobile/Rotate Gismo.stm" )
 EMRotateGismo::~EMRotateGismo ()
 {
 	GXTexture::RemoveTexture ( texture );
-	glDeleteSamplers ( 1, &sampler );
 }
 
 GXVoid EMRotateGismo::Hide ()
@@ -55,13 +47,11 @@ GXVoid EMRotateGismo::Render ()
 {
 	if ( !isVisible ) return;
 
-	glBindSampler ( TEXTURE_SLOT, sampler );
 	unlitMaterial.Bind ( mesh );
 
 	mesh.Render ();
 
 	unlitMaterial.Unbind ();
-	glBindSampler ( TEXTURE_SLOT, 0 );
 }
 
 GXVoid EMRotateGismo::TransformUpdated ()

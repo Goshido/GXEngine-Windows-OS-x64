@@ -17,7 +17,7 @@ class EMUIPopup : public EMUI
 
 		GXWidget* GetWidget () const override;
 
-		GXVoid AddItem ( const GXWChar* name, PFNGXONUIPOPUPACTIONPROC action );
+		GXVoid AddItem ( const GXWChar* name, GXVoid* handler, PFNGXONUIPOPUPACTIONPROC action );
 
 		GXVoid EnableItem ( GXUByte itemIndex );
 		GXVoid DisableItem ( GXUByte itemIndex );

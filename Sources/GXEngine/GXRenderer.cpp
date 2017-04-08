@@ -49,34 +49,34 @@ GXVoid GXRendererResolutions::GetResolution ( GXUShort i, GXUShort &width, GXUSh
 
 //--------------------------------------------------------------------------------------------
 
-GXThread*								GXRenderer::thread = nullptr;
+GXGame*			GXRenderer::game = nullptr;
 
-GXBool									GXRenderer::loopFlag = GX_TRUE;
+GXThread*		GXRenderer::thread = nullptr;
+GXBool			GXRenderer::loopFlag = GX_TRUE;
 
-HWND									GXRenderer::hwnd = (HWND)INVALID_HANDLE_VALUE;
-HINSTANCE								GXRenderer::hinst = (HINSTANCE)INVALID_HANDLE_VALUE;
-HGLRC									GXRenderer::hglRC = (HGLRC)INVALID_HANDLE_VALUE;
-HDC										GXRenderer::hDC = (HDC)INVALID_HANDLE_VALUE;
+HWND			GXRenderer::hwnd = (HWND)INVALID_HANDLE_VALUE;
+HINSTANCE		GXRenderer::hinst = (HINSTANCE)INVALID_HANDLE_VALUE;
+HGLRC			GXRenderer::hglRC = (HGLRC)INVALID_HANDLE_VALUE;
+HDC				GXRenderer::hDC = (HDC)INVALID_HANDLE_VALUE;
 
-GXBool									GXRenderer::isFullScreen;
-GXBool									GXRenderer::isSettingsChanged;
+GXBool			GXRenderer::isFullScreen;
+GXBool			GXRenderer::isSettingsChanged;
 
-GXInt									GXRenderer::width;
-GXInt									GXRenderer::height;
-GXInt									GXRenderer::vsync;
+GXInt			GXRenderer::width;
+GXInt			GXRenderer::height;
+GXInt			GXRenderer::vsync;
 
-GXWChar*								GXRenderer::title = nullptr;
+GXWChar*		GXRenderer::title = nullptr;
 
-GXUInt									GXRenderer::currentFPS = 0;
-GXDouble								GXRenderer::accumulator = 0.0;
-GXDouble								GXRenderer::lastTime;
+GXUInt			GXRenderer::currentFPS = 0;
+GXDouble		GXRenderer::accumulator = 0.0;
+GXDouble		GXRenderer::lastTime = 0.0;
+GXUShort		GXRenderer::fpsCounter = 0;
+GXDouble		GXRenderer::fpsTimer = 0.0;
 
-PFNGXONFRAMEPROC						GXRenderer::onFrameFunc = nullptr;
-PFNGXONINITRENDERABLEOBJECTSPROC		GXRenderer::onInitRenderableObjectsFunc = nullptr;
-PFNGXONDELETERENDERABLEOBJECTSPROC		GXRenderer::onDeleteRenderableObjectsFunc = nullptr;
-GXBool									GXRenderer::isRenderableObjectInited = GX_FALSE;
+GXBool			GXRenderer::isRenderableObjectInited = GX_FALSE;
 
-GXRenderer*								GXRenderer::instance = nullptr;
+GXRenderer*		GXRenderer::instance = nullptr;
 
 
 GXRenderer::~GXRenderer ()
@@ -96,8 +96,9 @@ GXRenderer::~GXRenderer ()
 	instance = nullptr;
 }
 
-GXVoid GXRenderer::Start ()
+GXVoid GXRenderer::Start ( GXGame &game )
 {
+	this->game = &game;
 	thread->Resume ();
 }
 
@@ -226,21 +227,6 @@ GXVoid GXRenderer::SetWindowName ( const GXWChar* name )
 	SetWindowTextW ( hwnd, title );
 }
 
-GXVoid GXRenderer::SetOnFrameFunc ( PFNGXONFRAMEPROC callback )
-{
-	this->onFrameFunc = callback;
-}
-
-GXVoid GXRenderer::SetOnInitRenderableObjectsFunc ( PFNGXONINITRENDERABLEOBJECTSPROC callback )
-{
-	this->onInitRenderableObjectsFunc = callback;
-}
-
-GXVoid GXRenderer::SetOnDeleteRenderableObjectsFunc ( PFNGXONDELETERENDERABLEOBJECTSPROC callback )
-{
-	this->onDeleteRenderableObjectsFunc = callback;
-}
-
 GXUInt GXRenderer::GetCurrentFPS () const
 {
 	return currentFPS;
@@ -332,6 +318,8 @@ GXVoid GXCALL GXRenderer::ReSizeScene ( GXInt width, GXInt height  )
 
 	GXRenderer::width = width;
 	GXRenderer::height = height;
+
+	game->OnResize ( width, height );
 }
 
 GXRenderer* GXCALL GXRenderer::GetInstance ()
@@ -357,6 +345,8 @@ GXRenderer::GXRenderer ()
 	currentFPS = 0;
 	lastTime = GXGetProcessorTicks ();
 	accumulator = 0.0;
+	fpsCounter = 0;
+	fpsTimer = 0.0;
 
 	isSettingsChanged = GX_FALSE;
 	loopFlag = GX_TRUE;
@@ -375,7 +365,7 @@ GXDword GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* args )
 		if ( !isRenderableObjectInited )
 			InitRenderableObjects ();
 
-		if ( PeekMessage ( &msg, 0, 0, 0, PM_REMOVE ) ) 
+		while ( PeekMessage ( &msg, 0, 0, 0, PM_REMOVE ) ) 
 		{
 			TranslateMessage ( &msg );
 			DispatchMessage ( &msg );
@@ -391,8 +381,8 @@ GXDword GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* args )
 		{
 			if ( isRenderableObjectInited )
 			{
-				if ( DrawScene () )
-					SwapBuffers ( hDC );
+				DrawScene ();
+				SwapBuffers ( hDC );
 			}
 		}
 		SwitchToThread ();
@@ -411,10 +401,7 @@ GXVoid GXCALL GXRenderer::InitOpenGL ()
 	GXCheckOpenGLError ();
 }
 
-GXUShort gx_renderer_fpsCounter = 0;
-GXDouble gx_renderer_fpsTimer = 0.0;
-
-GXBool GXCALL GXRenderer::DrawScene ()
+GXVoid GXCALL GXRenderer::DrawScene ()
 {
 	GXGetPhysXInstance ()->DoSimulate ();
 
@@ -423,26 +410,21 @@ GXBool GXCALL GXRenderer::DrawScene ()
 	lastTime = newtime;
 	
 	accumulator += delta;
-	gx_renderer_fpsTimer += delta;
-	if ( gx_renderer_fpsTimer >= 1.0 )
+	fpsTimer += delta;
+	if ( fpsTimer >= 1.0 )
 	{
-		currentFPS = gx_renderer_fpsCounter;
-		gx_renderer_fpsTimer = 0.0;
-		gx_renderer_fpsCounter = 0;
+		currentFPS = fpsCounter;
+		fpsTimer = 0.0;
+		fpsCounter = 0;
 	}
 
-	if ( accumulator <= 0.001 ) return GX_FALSE;
+	if ( accumulator <= 0.001 ) return;
 
-	if ( onFrameFunc )
-	{
-		gx_renderer_fpsCounter++;
+	fpsCounter++;
 
-		GXFloat update = (GXFloat)accumulator;
-		accumulator = 0.0;
-		return onFrameFunc ( update );
-	}
-
-	return GX_FALSE;
+	GXFloat update = (GXFloat)accumulator;
+	accumulator = 0.0;
+	game->OnFrame ( update );
 }
 
 GXVoid GXCALL GXRenderer::Destroy ()
@@ -674,16 +656,12 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
 GXVoid GXCALL GXRenderer::InitRenderableObjects ()
 {	
-	if ( !onInitRenderableObjectsFunc ) return;
-
-	onInitRenderableObjectsFunc ();
+	game->OnInit ();
 	isRenderableObjectInited = GX_TRUE;
 }
 
 GXVoid GXCALL GXRenderer::DeleteRenderableObjects ()
 {
-	if ( !onDeleteRenderableObjectsFunc ) return;
-
-	onDeleteRenderableObjectsFunc ();
+	game->OnDestroy ();
 	isRenderableObjectInited = GX_FALSE;
 }

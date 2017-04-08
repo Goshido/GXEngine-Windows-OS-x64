@@ -281,6 +281,8 @@ GXVoid EMMoveTool::OnMoveActor ()
 
 	GXFloat axisParameterDelta = GetAxisParameter ( axisLocationView, axisDirectionView, rayView ) - axisStartParameter;
 
+	if ( !isfinite ( axisParameterDelta ) ) return;
+
 	GXVec3 deltaView;
 	GXMulVec3Scalar ( deltaView, axisDirectionView, axisParameterDelta );
 

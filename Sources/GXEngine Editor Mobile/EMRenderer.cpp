@@ -44,8 +44,6 @@ EMRenderer::~EMRenderer ()
 	if ( sourceFbo )
 		glDeleteFramebuffers ( 1, &sourceFbo );
 
-	glDeleteSamplers ( 1, &screenSampler );
-
 	instance = nullptr;
 }
 
@@ -123,19 +121,7 @@ GXVoid EMRenderer::StartLightPass ()
 	glEnable ( GL_BLEND );
 	glBlendFunc ( GL_ONE, GL_ONE );
 
-	glBindSampler ( DIFFUSE_SLOT, screenSampler );
-	glBindSampler ( NORMAL_SLOT, screenSampler );
-	glBindSampler ( SPECULAR_SLOT, screenSampler );
-	glBindSampler ( EMISSION_SLOT, screenSampler );
-	glBindSampler ( DEPTH_SLOT, screenSampler );
-
 	LightUp ();
-
-	glBindSampler ( DIFFUSE_SLOT, 0 );
-	glBindSampler ( NORMAL_SLOT, 0 );
-	glBindSampler ( SPECULAR_SLOT, 0 );
-	glBindSampler ( EMISSION_SLOT, 0 );
-	glBindSampler ( DEPTH_SLOT, 0 );
 }
 
 GXVoid EMRenderer::StartHudColorPass ()
@@ -299,15 +285,12 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 		break;
 	}
 
-	glBindSampler ( OUT_TEXTURE_SLOT, screenSampler );
 	unlitMaterial.SetTexture ( *texture );
 	unlitMaterial.Bind ( screenQuadMesh );
 
 	screenQuadMesh.Render ();
 
 	unlitMaterial.Unbind ();
-
-	glBindSampler ( OUT_TEXTURE_SLOT, 0 );
 
 	GXCamera::SetActiveCamera ( oldCamera );
 }
@@ -338,12 +321,6 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" )
 	mouseX = mouseY = -1;
 	OnObject = nullptr;
 
-	GXGLSamplerInfo samplerInfo;
-	samplerInfo.anisotropy = 1.0f;
-	samplerInfo.resampling = eGXSamplerResampling::None;
-	samplerInfo.wrap = GL_CLAMP_TO_EDGE;
-	screenSampler = GXCreateSampler ( samplerInfo );
-
 	CreateFBO ();
 
 	GXRenderer* coreRenderer = GXRenderer::GetInstance ();
@@ -366,14 +343,14 @@ GXVoid EMRenderer::CreateFBO ()
 	GXUShort width = (GXUShort)renderer->GetWidth ();
 	GXUShort height = (GXUShort)renderer->GetHeight ();
 
-	diffuseTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE );
-	normalTexture.InitResources ( width, height, GL_RGB16, GX_FALSE );
-	specularTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE );
-	emissionTexture.InitResources ( width, height, GL_RGB8, GX_FALSE );
-	objectTextures[ 0 ].InitResources ( width, height, GL_RGBA8, GX_FALSE );
-	objectTextures[ 1 ].InitResources ( width, height, GL_RGBA8, GX_FALSE );
-	depthStencilTexture.InitResources ( width, height, GL_DEPTH24_STENCIL8, GX_FALSE );
-	outTexture.InitResources ( width, height, GL_RGB8, GX_FALSE );
+	diffuseTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	normalTexture.InitResources ( width, height, GL_RGB16, GX_FALSE, GL_CLAMP_TO_EDGE );
+	specularTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	emissionTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	objectTextures[ 0 ].InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	objectTextures[ 1 ].InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	depthStencilTexture.InitResources ( width, height, GL_DEPTH24_STENCIL8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	outTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
 
 	glGenFramebuffers ( 1, &fbo );
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );

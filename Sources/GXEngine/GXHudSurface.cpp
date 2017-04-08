@@ -195,7 +195,7 @@ canvasCamera ( (GXFloat)width, (GXFloat)height, Z_NEAR, Z_FAR )
 	GXUByte* data = (GXUByte*)malloc ( size );
 	memset ( data, 0, size );
 
-	canvasTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE );
+	canvasTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	canvasTexture.FillWholePixelData ( data );
 	free ( data );
 
@@ -215,12 +215,6 @@ canvasCamera ( (GXFloat)width, (GXFloat)height, Z_NEAR, Z_FAR )
 	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
 
 	screenQuadMesh = GXMeshGeometry::LoadFromStm ( L"3D Models/System/ScreenQuad.stm" );
-
-	GXGLSamplerInfo samplerInfo;
-	samplerInfo.anisotropy = 1.0f;
-	samplerInfo.resampling = eGXSamplerResampling::None;
-	samplerInfo.wrap = GL_CLAMP_TO_EDGE;
-	sampler = GXCreateSampler ( samplerInfo );
 
 	image = new GXImageRenderable ();
 	glyph = new GXGlyphRenderable ();
@@ -245,8 +239,6 @@ GXHudSurface::~GXHudSurface ()
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
 	glDeleteFramebuffers ( 1, &fbo );
-
-	glDeleteSamplers ( 1, &sampler );
 }
 
 GXVoid GXHudSurface::Reset ()
@@ -286,7 +278,6 @@ GXVoid GXHudSurface::AddImage ( const GXImageInfo &imageInfo )
 	unlitTexture2DMaterial.SetColor ( imageInfo.color );
 
 	unlitTexture2DMaterial.Bind ( *image );
-	glBindSampler ( TEXTURE_SLOT, sampler );
 
 	GLboolean isBlend;
 	glGetBooleanv ( GL_BLEND, &isBlend );
@@ -335,7 +326,6 @@ GXVoid GXHudSurface::AddImage ( const GXImageInfo &imageInfo )
 
 
 	unlitTexture2DMaterial.Unbind ();
-	glBindSampler ( TEXTURE_SLOT, 0 );
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, oldFBO );
 	glViewport ( oldVP[ 0 ], oldVP[ 1 ], oldVP[ 2 ], oldVP[ 3 ] );
@@ -434,8 +424,6 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
 	glDisable ( GL_DEPTH_TEST );
 
 	glViewport ( 0, 0, (GLsizei)width, (GLsizei)height );
-
-	glBindSampler ( TEXTURE_SLOT, sampler );
 
 	GLboolean isBlend;
 	glGetBooleanv ( GL_BLEND, &isBlend );
@@ -549,8 +537,6 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
 	if ( penInfo.overlayType == eGXImageOverlayType::AlphaTransparencyPreserveAlpha )
 		glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
-	glBindSampler ( TEXTURE_SLOT, 0 );
-
 	glUseProgram ( 0 );
 	glBindFramebuffer ( GL_FRAMEBUFFER, oldFBO );
 	glViewport ( oldVP[ 0 ], oldVP[ 1 ], oldVP[ 2 ], oldVP[ 3 ] );
@@ -588,11 +574,9 @@ GXVoid GXHudSurface::Render ()
 	unlitTexture2DMaterial.SetTexture ( canvasTexture );
 
 	unlitTexture2DMaterial.Bind ( *this );
-	glBindSampler ( TEXTURE_SLOT, sampler );
 
 	screenQuadMesh.Render ();
 
-	glBindSampler ( TEXTURE_SLOT, 0 );
 	unlitTexture2DMaterial.Unbind ();
 
 	if ( !isBlend )

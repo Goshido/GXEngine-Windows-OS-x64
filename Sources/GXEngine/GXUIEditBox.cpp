@@ -543,13 +543,13 @@ GXVoid GXUIEditBox::LockInput ()
 	GXTouchSurface::GetInstance ()->LockCursor ( this );
 
 	GXInput* input = GXInput::GetInstance ();
-	input->BindKeyFunc ( &GXUIEditBox::OnBackspace, this, VK_BACK, eGXInputButtonState::Down );
-	input->BindKeyFunc ( &GXUIEditBox::OnDel, this, VK_DELETE, eGXInputButtonState::Down );
-	input->BindKeyFunc ( &GXUIEditBox::OnLeftArrow, this, VK_LEFT, eGXInputButtonState::Down );
-	input->BindKeyFunc ( &GXUIEditBox::OnRightArrow, this, VK_RIGHT, eGXInputButtonState::Down );
-	input->BindKeyFunc ( &GXUIEditBox::OnHome, this, VK_HOME, eGXInputButtonState::Down );
-	input->BindKeyFunc ( &GXUIEditBox::OnEnd, this, VK_END, eGXInputButtonState::Down );
-	input->BindTypeFunc ( &GXUIEditBox::OnType, this );
+	input->BindKeyCallback ( this, &GXUIEditBox::OnBackspace, VK_BACK, eGXInputButtonState::Down );
+	input->BindKeyCallback ( this, &GXUIEditBox::OnDel, VK_DELETE, eGXInputButtonState::Down );
+	input->BindKeyCallback ( this, &GXUIEditBox::OnLeftArrow, VK_LEFT, eGXInputButtonState::Down );
+	input->BindKeyCallback ( this, &GXUIEditBox::OnRightArrow, VK_RIGHT, eGXInputButtonState::Down );
+	input->BindKeyCallback ( this, &GXUIEditBox::OnHome, VK_HOME, eGXInputButtonState::Down );
+	input->BindKeyCallback ( this, &GXUIEditBox::OnEnd, VK_END, eGXInputButtonState::Down );
+	input->BindTypeCallback ( this, &GXUIEditBox::OnType );
 }
 
 GXVoid GXUIEditBox::ReleaseInput ()
@@ -557,13 +557,13 @@ GXVoid GXUIEditBox::ReleaseInput ()
 	GXTouchSurface::GetInstance ()->ReleaseCursor ();
 
 	GXInput* input = GXInput::GetInstance ();
-	input->UnBindKeyFunc ( VK_BACK, eGXInputButtonState::Down );
-	input->UnBindKeyFunc ( VK_DELETE, eGXInputButtonState::Down );
-	input->UnBindKeyFunc ( VK_LEFT, eGXInputButtonState::Down );
-	input->UnBindKeyFunc ( VK_RIGHT, eGXInputButtonState::Down );
-	input->UnBindKeyFunc ( VK_HOME, eGXInputButtonState::Down );
-	input->UnBindKeyFunc ( VK_END, eGXInputButtonState::Down );
-	input->UnBindTypeFunc ();
+	input->UnbindKeyCallback ( VK_BACK, eGXInputButtonState::Down );
+	input->UnbindKeyCallback ( VK_DELETE, eGXInputButtonState::Down );
+	input->UnbindKeyCallback ( VK_LEFT, eGXInputButtonState::Down );
+	input->UnbindKeyCallback ( VK_RIGHT, eGXInputButtonState::Down );
+	input->UnbindKeyCallback ( VK_HOME, eGXInputButtonState::Down );
+	input->UnbindKeyCallback ( VK_END, eGXInputButtonState::Down );
+	input->UnbindTypeCallback ();
 }
 
 GXVoid GXUIEditBox::UpdateCursor ( GXInt newCursor )
@@ -714,7 +714,7 @@ GXVoid GXCALL GXUIEditBox::OnRightArrow ( GXVoid* handler )
 	GXTouchSurface::GetInstance ()->SendMessage ( (GXWidget*)handler, GX_MSG_ADD_SYMBOL, &symbol, sizeof ( GXWChar ) );
 }
 
-GXVoid GXCALL GXUIEditBox::OnType ( GXWChar symbol, GXVoid* handler )
+GXVoid GXCALL GXUIEditBox::OnType ( GXVoid* handler, GXWChar symbol )
 {
 	GXTouchSurface::GetInstance ()->SendMessage ( (GXWidget*)handler, GX_MSG_ADD_SYMBOL, &symbol, sizeof ( GXWChar ) );
 }

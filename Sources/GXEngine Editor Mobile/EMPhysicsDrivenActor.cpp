@@ -9,10 +9,10 @@
 
 EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
 {
-	diffuseTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Diffuse.tex", GX_TRUE );
-	normalTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_TRUE );
-	emissionTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_TRUE );
-	specularTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Specular.tex", GX_TRUE );
+	diffuseTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/gui_folder_icon.png", GX_TRUE, GL_REPEAT );
+	normalTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE, GL_REPEAT );
+	emissionTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE, GL_REPEAT );
+	specularTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Specular.tex", GX_FALSE, GL_REPEAT );
 
 	material.SetDiffuseTexture ( diffuseTexture );
 	material.SetNormalTexture ( normalTexture );

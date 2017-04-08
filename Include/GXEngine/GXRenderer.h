@@ -4,12 +4,8 @@
 #define GX_RENDERER
 
 
+#include "GXGame.h"
 #include <GXCommon/GXThread.h>
-
-
-typedef GXBool ( GXCALL* PFNGXONFRAMEPROC ) ( GXFloat deltatime );
-typedef GXVoid ( GXCALL* PFNGXONINITRENDERABLEOBJECTSPROC ) ();
-typedef GXVoid ( GXCALL* PFNGXONDELETERENDERABLEOBJECTSPROC ) ();
 
 
 class GXRendererResolutions
@@ -32,39 +28,39 @@ class GXRendererResolutions
 class GXRenderer
 {	
 	private:
-		static GXThread*							thread;
+		static GXGame*		game;
 
-		static GXBool								loopFlag;
+		static GXThread*	thread;
+		static GXBool		loopFlag;
 
-		static HWND									hwnd;
-		static HGLRC								hglRC;
-		static HINSTANCE							hinst;
-		static HDC									hDC;
+		static HWND			hwnd;
+		static HGLRC		hglRC;
+		static HINSTANCE	hinst;
+		static HDC			hDC;
 
-		static GXBool								isFullScreen;
-		static GXBool								isSettingsChanged;
+		static GXBool		isFullScreen;
+		static GXBool		isSettingsChanged;
 
-		static GXInt								width;
-		static GXInt								height;
-		static GXInt								vsync;
+		static GXInt		width;
+		static GXInt		height;
+		static GXInt		vsync;
 
-		static GXWChar*								title;
+		static GXWChar*		title;
 
-		static GXDouble								lastTime;
-		static GXDouble								accumulator;
-		static GXUInt								currentFPS;
+		static GXDouble		lastTime;
+		static GXDouble		accumulator;
+		static GXUInt		currentFPS;
+		static GXUShort		fpsCounter;
+		static GXDouble		fpsTimer;
 
-		static PFNGXONFRAMEPROC						onFrameFunc;
-		static PFNGXONINITRENDERABLEOBJECTSPROC		onInitRenderableObjectsFunc;
-		static PFNGXONDELETERENDERABLEOBJECTSPROC	onDeleteRenderableObjectsFunc;
-		static GXBool								isRenderableObjectInited;
+		static GXBool		isRenderableObjectInited;
 
-		static GXRenderer*							instance;
+		static GXRenderer*	instance;
 
 	public:
 		~GXRenderer ();
 
-		GXVoid Start ();
+		GXVoid Start ( GXGame &game );
 		GXVoid Suspend ();
 		GXBool Shutdown ();
 
@@ -72,10 +68,6 @@ class GXRenderer
 		GXVoid SetVSync ( GXBool enabled );
 		GXVoid SetResolution ( GXInt width, GXInt height );
 		GXVoid SetWindowName ( const GXWChar* name );
-
-		GXVoid SetOnFrameFunc ( PFNGXONFRAMEPROC callback );
-		GXVoid SetOnInitRenderableObjectsFunc ( PFNGXONINITRENDERABLEOBJECTSPROC callback );
-		GXVoid SetOnDeleteRenderableObjectsFunc ( PFNGXONDELETERENDERABLEOBJECTSPROC callback );
 
 		GXUInt GetCurrentFPS () const;
 		GXVoid GetSupportedResolutions ( GXRendererResolutions &out ) const;
@@ -88,11 +80,11 @@ class GXRenderer
 		static GXRenderer* GXCALL GetInstance ();
 
 	private:
-		explicit GXRenderer ();
+		GXRenderer ();
 
 		static GXDword GXTHREADCALL RenderLoop ( GXVoid* args );
 		static GXVoid GXCALL InitOpenGL ();
-		static GXBool GXCALL DrawScene ();
+		static GXVoid GXCALL DrawScene ();
 		static GXVoid GXCALL Destroy ();
 		static GXBool GXCALL MakeWindow ();
 		static GXVoid GXCALL InitRenderableObjects ();

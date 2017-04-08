@@ -10,14 +10,6 @@
 
 class GXUIEditBox : public GXWidget
 {
-	friend GXVoid GXCALL GXUIEditBox::OnEnd ( GXVoid* handler );
-	friend GXVoid GXCALL GXUIEditBox::OnHome ( GXVoid* handler );
-	friend GXVoid GXCALL GXUIEditBox::OnDel ( GXVoid* handler );
-	friend GXVoid GXCALL GXUIEditBox::OnBackspace ( GXVoid* handler );
-	friend GXVoid GXCALL GXUIEditBox::OnLeftArrow ( GXVoid* handler );
-	friend GXVoid GXCALL GXUIEditBox::OnRightArrow ( GXVoid* handler );
-	friend GXVoid GXCALL GXUIEditBox::OnType ( GXWChar symbol, GXVoid* handler );
-
 	private:
 		GXWChar*			text;
 		GXWChar*			workingBuffer;
@@ -82,7 +74,7 @@ class GXUIEditBox : public GXWidget
 		static GXVoid GXCALL OnBackspace ( GXVoid* handler );
 		static GXVoid GXCALL OnLeftArrow ( GXVoid* handler );
 		static GXVoid GXCALL OnRightArrow ( GXVoid* handler );
-		static GXVoid GXCALL OnType ( GXWChar symbol, GXVoid* handler );
+		static GXVoid GXCALL OnType ( GXVoid* handler, GXWChar symbol );
 };
 
 

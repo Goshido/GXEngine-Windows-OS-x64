@@ -156,9 +156,6 @@
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMLight.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMMain.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMMoveTool.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
@@ -354,6 +351,12 @@
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMBlinnPhongDirectedLightMaterial.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXGame.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMGame.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -459,9 +462,6 @@
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMLight.h">
-      <Filter>Header Files\GXEngine Editor Mobile</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMain.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMoveTool.h">
@@ -756,6 +756,12 @@
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMBlinnPhongDirectedLightMaterial.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXGame.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMGame.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
   </ItemGroup>

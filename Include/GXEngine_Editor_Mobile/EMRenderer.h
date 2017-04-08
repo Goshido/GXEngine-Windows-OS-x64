@@ -44,8 +44,6 @@ class EMRenderer
 		GLuint								fbo;
 		GLuint								sourceFbo;
 
-		GLuint								screenSampler;
-
 		GXUByte								objectMask[ 8 ];
 
 		EMMesh								screenQuadMesh;

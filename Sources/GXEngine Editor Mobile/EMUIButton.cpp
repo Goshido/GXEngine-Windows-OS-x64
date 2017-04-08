@@ -89,7 +89,7 @@ GXWidgetRenderer ( buttonWidget )
 {
 	font = GXFont::GetFont ( EM_DEFAULT_FONT, (GXUShort)( EM_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
 	GXWcsclone ( &caption, EM_DEFAULT_CAPTION );
-	background = GXTexture::LoadTexture ( EM_BACKGROUND_TEXTURE, GX_FALSE );
+	background = GXTexture::LoadTexture ( EM_BACKGROUND_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
 
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );

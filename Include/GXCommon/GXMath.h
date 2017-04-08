@@ -5,7 +5,7 @@
 
 
 #include "GXTypes.h"
-#include <math.h>
+#include <cmath>
 #include <limits>
 
 

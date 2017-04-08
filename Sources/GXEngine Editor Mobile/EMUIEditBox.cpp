@@ -64,7 +64,7 @@ class EMUIEditBoxRenderer : public GXWidgetRenderer
 EMUIEditBoxRenderer::EMUIEditBoxRenderer ( GXUIEditBox* widget ):
 GXWidgetRenderer ( widget )
 {
-	background = GXTexture::LoadTexture ( EM_DEFAULT_BACKGROUND, GX_FALSE );
+	background = GXTexture::LoadTexture ( EM_DEFAULT_BACKGROUND, GX_FALSE, GL_CLAMP_TO_EDGE );
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
 	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
 }

@@ -185,7 +185,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMBlinnPhongDirectedLightMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMDirectedLightActor.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMLight.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMMain.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMGame.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMMesh.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMMoveTool.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMObjectMaskMaterial.cpp" />
@@ -216,6 +216,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXCore.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXEngineSettings.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXFont.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXGame.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXHudSurface.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXInput.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXLocale.cpp" />
@@ -313,6 +314,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXEditBox.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXEngineSettings.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXFont.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXGame.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXHudSurface.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXIdealParticles.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXInput.h" />
@@ -363,7 +365,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMBlinnPhongDirectedLightMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMDirectedLightActor.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMLight.h" />
-    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMain.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMGame.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMesh.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMoveTool.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMObjectMaskMaterial.h" />

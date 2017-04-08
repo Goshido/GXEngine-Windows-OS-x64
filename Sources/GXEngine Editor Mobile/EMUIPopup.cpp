@@ -68,7 +68,7 @@ EMUIPopupRenderer::EMUIPopupRenderer ( GXUIPopup* widget ):
 GXWidgetRenderer ( widget ), itemNames ( sizeof ( GXWChar* ) )
 {
 	font = GXFont::GetFont ( EM_DEFAULT_FONT, (GXUShort)( EM_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
-	texture = GXTexture::LoadTexture ( EM_DEFAULT_TEXTURE, GX_FALSE );
+	texture = GXTexture::LoadTexture ( EM_DEFAULT_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
 	surface = new GXHudSurface ( (GXShort)widget->GetItemWidth (), (GXUShort)widget->GetItemHeight () );
 }
 
@@ -215,11 +215,11 @@ GXWidget* EMUIPopup::GetWidget () const
 	return widget;
 }
 
-GXVoid EMUIPopup::AddItem ( const GXWChar* name, PFNGXONUIPOPUPACTIONPROC action )
+GXVoid EMUIPopup::AddItem ( const GXWChar* name, GXVoid* handler, PFNGXONUIPOPUPACTIONPROC action )
 {
 	EMUIPopupRenderer* renderer = (EMUIPopupRenderer*)widget->GetRenderer ();
 	renderer->AddItem ( name );
-	widget->AddItem ( action );
+	widget->AddItem ( handler, action );
 }
 
 GXVoid EMUIPopup::EnableItem ( GXUByte itemIndex )

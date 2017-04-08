@@ -1,4 +1,4 @@
-//version 1.11
+//version 1.12
 
 #include <GXEngine/GXCore.h>
 #include <GXEngine/GXInput.h>
@@ -40,19 +40,16 @@ GXCore::~GXCore ()
 	GXLogDestroy ();
 }
 
-GXVoid GXCore::Start ( PFNGXONGAMEINITPROC onGameInit, PFNGXONGAMECLOSEPROC onGameClose )
+GXVoid GXCore::Start ( GXGame &game )
 {
 	GXSoundMixer* soundMixer = GXSoundMixer::GetInstance ();
 	soundMixer->Start ();
 
 	GXRenderer* renderer = GXRenderer::GetInstance ();
-	renderer->Start ();
+	renderer->Start ( game );
 
 	GXInput* input = GXInput::GetInstance ();
 	input->Start ();
-
-	if ( onGameInit )
-		onGameInit ();
 
 	while ( loopFlag )
 		Sleep ( 30 );
@@ -60,10 +57,6 @@ GXVoid GXCore::Start ( PFNGXONGAMEINITPROC onGameInit, PFNGXONGAMECLOSEPROC onGa
 	input->Suspend ();
 	renderer->Suspend ();
 	soundMixer->Suspend ();
-
-	if ( onGameClose )
-		onGameClose ();
-
 	input->Shutdown ();
 	renderer->Shutdown ();
 	soundMixer->Shutdown ();

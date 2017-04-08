@@ -26,10 +26,10 @@ mesh ( L"3D Models/Editor Mobile/Unit Cube.stm" )
 {
 	OnTransformChanged ();
 
-	diffuseTexture = GXTexture::LoadTexture ( DIFFUSE_TEXTURE, GX_FALSE );
-	normalTexture = GXTexture::LoadTexture ( NORMAL_TEXTURE, GX_FALSE );
-	specularTexture = GXTexture::LoadTexture ( SPECULAR_TEXTURE, GX_FALSE );
-	emissionTexture = GXTexture::LoadTexture ( EMISSION_TEXTURE, GX_FALSE );
+	diffuseTexture = GXTexture::LoadTexture ( DIFFUSE_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	normalTexture = GXTexture::LoadTexture ( NORMAL_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	specularTexture = GXTexture::LoadTexture ( SPECULAR_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	emissionTexture = GXTexture::LoadTexture ( EMISSION_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
 
 	commonPassMaterial.SetDiffuseTexture ( diffuseTexture );
 	commonPassMaterial.SetNormalTexture ( normalTexture );

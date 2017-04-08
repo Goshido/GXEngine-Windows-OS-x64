@@ -513,7 +513,7 @@ GXVoid GXFont::CreateAtlas () const
 
 	memset ( data, 0, size );
 
-	parameters->atlases[ parameters->atlasID ].InitResources ( ATLAS_RESOLUTION, ATLAS_RESOLUTION, GL_R8, GX_FALSE );
+	parameters->atlases[ parameters->atlasID ].InitResources ( ATLAS_RESOLUTION, ATLAS_RESOLUTION, GL_R8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	parameters->atlases[ parameters->atlasID ].FillWholePixelData ( data );
 
 	free ( data );

@@ -1,6 +1,7 @@
 //version 1.0
 
 #include <GXEngine/GXTexture.h>
+#include <GXEngine/GXSamplerUtils.h>
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXImageLoader.h>
@@ -47,6 +48,7 @@ GXTextureEntry::GXTextureEntry ( GXTexture &texture, const GXWChar* fileName )
 {
 	GXWcsclone ( &this->fileName, fileName );
 	this->texture = &texture;
+
 	refs = 1;
 
 	prev = nullptr;
@@ -115,11 +117,12 @@ GXTexture::GXTexture ()
 	isGenerateMipmap = GX_FALSE;
 	textureUnit = INVALID_TEXTURE_UNIT;
 	textureObject = 0;
+	sampler = 0;
 }
 
-GXTexture::GXTexture ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap )
+GXTexture::GXTexture ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap, GLint wrapMode )
 {
-	InitResources ( width, height, internalFormat, isGenerateMipmap );
+	InitResources ( width, height, internalFormat, isGenerateMipmap, wrapMode );
 }
 
 GXTexture::~GXTexture ()
@@ -137,7 +140,7 @@ GXUShort GXTexture::GetHeight () const
 	return height;
 }
 
-GXTexture& GXCALL GXTexture::LoadTexture ( const GXWChar* fileName, GXBool isGenerateMipmap )
+GXTexture& GXCALL GXTexture::LoadTexture ( const GXWChar* fileName, GXBool isGenerateMipmap, GLint wrapMode )
 {
 	for ( GXTextureEntry* p = gx_TextureHead; p; p = p->next )
 	{
@@ -202,7 +205,7 @@ GXTexture& GXCALL GXTexture::LoadTexture ( const GXWChar* fileName, GXBool isGen
 			break;
 		}
 
-		GXTexture* texture = new GXTexture ( cacheHeader->width, cacheHeader->height, internalFormat, isGenerateMipmap );
+		GXTexture* texture = new GXTexture ( cacheHeader->width, cacheHeader->height, internalFormat, isGenerateMipmap, wrapMode );
 		texture->FillWholePixelData ( pixelData );
 
 		free ( data );
@@ -259,7 +262,7 @@ GXTexture& GXCALL GXTexture::LoadTexture ( const GXWChar* fileName, GXBool isGen
 		break;
 	}
 
-	GXTexture* texture = new GXTexture ( cacheHeader.width, cacheHeader.height, internalFormat, isGenerateMipmap );
+	GXTexture* texture = new GXTexture ( cacheHeader.width, cacheHeader.height, internalFormat, isGenerateMipmap, wrapMode );
 	texture->FillWholePixelData ( data );
 
 	free ( data );
@@ -352,6 +355,8 @@ GXVoid GXTexture::FillRegionPixelData ( GXUShort left, GXUShort bottom, GXUShort
 GXVoid GXTexture::Bind ( GXUByte textureUnit )
 {
 	this->textureUnit = textureUnit;
+
+	glBindSampler ( textureUnit, sampler );
 	glActiveTexture ( GL_TEXTURE0 + textureUnit );
 	glBindTexture ( GL_TEXTURE_2D, textureObject );
 }
@@ -360,6 +365,7 @@ GXVoid GXTexture::Unbind ()
 {
 	glActiveTexture ( GL_TEXTURE0 + textureUnit );
 	glBindTexture ( GL_TEXTURE_2D, 0 );
+	glBindSampler ( textureUnit, 0 );
 }
 
 GLuint GXTexture::GetTextureObject () const
@@ -367,12 +373,13 @@ GLuint GXTexture::GetTextureObject () const
 	return textureObject;
 }
 
-GXVoid GXTexture::InitResources ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap )
+GXVoid GXTexture::InitResources ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap, GLint wrapMode )
 {
 	this->width = width;
 	this->height = height;
 	this->internalFormat = internalFormat;
 	this->isGenerateMipmap = isGenerateMipmap;
+	this->wrapMode = wrapMode;
 
 	textureUnit = INVALID_TEXTURE_UNIT;
 
@@ -460,6 +467,23 @@ GXVoid GXTexture::InitResources ( GXUShort width, GXUShort height, GLint interna
 		break;
 	}
 
+	GXGLSamplerInfo samplerInfo;
+
+	if ( isGenerateMipmap )
+	{
+		samplerInfo.anisotropy = 16.0f;
+		samplerInfo.resampling = eGXSamplerResampling::Trilinear;
+	}
+	else
+	{
+		glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0 );
+		samplerInfo.anisotropy = 1.0f;
+		samplerInfo.resampling = eGXSamplerResampling::None;
+	}
+
+	samplerInfo.wrap = wrapMode;
+	sampler = GXCreateSampler ( samplerInfo );
+
 	glBindTexture ( GL_TEXTURE_2D, 0 );
 
 	FillWholePixelData ( nullptr );
@@ -478,11 +502,17 @@ GXVoid GXTexture::FreeResources ()
 	isGenerateMipmap = GX_FALSE;
 	textureUnit = INVALID_TEXTURE_UNIT;
 	textureObject = 0;
+	glDeleteSamplers ( 1, &sampler );
+	sampler = 0;
 }
 
 GXBool GXTexture::operator == ( const GXTextureEntry &other ) const
 {
-	return textureObject == other.GetTexture ().textureObject;
+	if ( textureObject != other.GetTexture ().textureObject ) return GX_FALSE;
+	if ( isGenerateMipmap != other.GetTexture ().isGenerateMipmap ) return GX_FALSE;
+	if ( wrapMode != other.GetTexture ().wrapMode ) return GX_FALSE;
+
+	return GX_TRUE;
 }
 
 GXVoid GXTexture::operator = ( const GXTexture &other )

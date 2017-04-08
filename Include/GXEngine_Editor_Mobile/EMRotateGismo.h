@@ -14,7 +14,6 @@ class EMRotateGismo : public GXTransform
 		EMMesh						mesh;
 		GXUnlitTexture2DMaterial	unlitMaterial;
 		GXTexture					texture;
-		GLuint						sampler;
 
 	public:
 		EMRotateGismo ();
