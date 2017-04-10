@@ -1,4 +1,4 @@
-//verison 1.6
+//verison 1.7
 
 #ifndef GX_NETWORK
 #define GX_NETWORK
@@ -10,7 +10,7 @@
 
 
 #define GX_MAX_NETWORK_CLIENTS	64
-#define GX_SOCKET_BUFFER_SIZE	1024 * 1024 * 4		//64 кЅайта
+#define GX_SOCKET_BUFFER_SIZE	4194304		//4 Mb
 
 
 typedef GXVoid ( GXCALL* PFNGXONSERVERPMESSAGETCPPROC ) ( GXUInt clientID, GXVoid* data, GXUInt size );
@@ -56,6 +56,9 @@ class GXNetServer
 
 		static PFNGXONSERVERPMESSAGETCPPROC			OnMessageTCP;
 		static PFNGXONSERVERPMESSAGEUDPPROC			OnMessageUDP;
+
+		static GXUByte								bufferTCP[ GX_SOCKET_BUFFER_SIZE ];
+		static GXUByte								bufferUDP[ GX_SOCKET_BUFFER_SIZE ];
 
 		static GXNetServer*							instance;
 
@@ -111,6 +114,9 @@ class GXNetClient
 
 		static PFNGXONCLIENTMESSAGEPROC		OnMessageTCP;
 		static PFNGXONCLIENTMESSAGEPROC		OnMessageUDP;
+
+		static GXUByte						bufferTCP[ GX_SOCKET_BUFFER_SIZE ];
+		static GXUByte						bufferUDP[ GX_SOCKET_BUFFER_SIZE ];
 
 		static GXNetClient*					instance;
 

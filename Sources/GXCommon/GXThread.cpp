@@ -1,25 +1,16 @@
-//version 1.0
+//version 1.1
 
 #include <GXCommon/GXThread.h>
+#include <GXCommon/GXLogger.h>
 
 
-GXThread::GXThread ( PFNGXTHREADPROC threadFunc, GXVoid* arg, eGXThreadState startState )
+GXThread::GXThread ( PFNGXTHREADPROC threadProc, GXVoid* arg )
 {
-	state = startState;
+	this->threadProc = threadProc;
+	this->arg = arg;
+	this->state = eGXThreadState::Waiting;
 
-	switch ( state )
-	{
-		case GX_SUSPEND:
-			thread = CreateThread ( 0, 0, threadFunc, arg, CREATE_SUSPENDED, &threadID );
-		break;
-
-		case GX_WORKING:
-			thread = CreateThread ( 0, 0, threadFunc, arg, 0, &threadID );
-		break;
-
-		default:
-		break;
-	}
+	thread = NULL;
 }
 
 GXThread::~GXThread ()
@@ -27,23 +18,33 @@ GXThread::~GXThread ()
 	CloseHandle ( thread );
 }
 
-GXVoid GXThread::Suspend ()
+GXVoid GXThread::Start ()
 {
-	if ( state == GX_SUSPEND ) return;
+	if ( state == eGXThreadState::Started ) return;
 
-	state = GX_SUSPEND;
-	SuspendThread ( thread );
-}
+	DWORD threadID = 0;
+	thread = CreateThread ( nullptr, 0, threadProc, arg, 0, &threadID );
 
-GXVoid GXThread::Resume ()
-{
-	if ( state == GX_WORKING ) return;
-
-	ResumeThread ( thread );
-	state = GX_WORKING;
+	if ( thread == NULL )
+		GXLogW ( L"GXThread::Start::Error - Не удалось создать поток\n" );
+	else
+		state = eGXThreadState::Started;
 }
 
 GXVoid GXThread::Join ()
 {
+	if ( state == eGXThreadState::Waiting )
+	{
+		GXLogW ( L"GXThread::Join::Warning - Поток не запущен\n" );
+		return;
+	}
+
 	WaitForSingleObject ( thread, INFINITE );
+	CloseHandle ( thread );
+	thread = NULL;
+}
+
+eGXThreadState GXThread::GetState () const
+{
+	return state;
 }

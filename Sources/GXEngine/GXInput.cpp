@@ -75,18 +75,12 @@ GXInput::~GXInput ()
 
 GXVoid GXInput::Start ()
 {
-	thread->Resume ();
-}
-
-GXVoid GXInput::Suspend ()
-{
-	thread->Suspend ();
+	thread->Start ();
 }
 
 GXVoid GXInput::Shutdown ()
 {
 	loopFlag = GX_FALSE;
-	thread->Resume ();
 	thread->Join ();
 }
 
@@ -485,7 +479,7 @@ GXInput::GXInput ()
 	InitXInputLibrary ();
 
 	loopFlag = GX_TRUE;
-	thread = new GXThread ( &InputLoop, nullptr, GX_SUSPEND );
+	thread = new GXThread ( &InputLoop, nullptr );
 }
 
 GXDword GXTHREADCALL GXInput::InputLoop ( GXVoid* args )

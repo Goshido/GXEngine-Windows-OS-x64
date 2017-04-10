@@ -1,4 +1,4 @@
-//version 1.4
+//version 1.5
 
 #ifndef GX_SOUND_MIXER
 #define GX_SOUND_MIXER
@@ -37,7 +37,6 @@ class GXSoundMixer
 		GXVoid AddChannel ( GXSoundChannel* channel );
 
 		GXVoid Start ();
-		GXVoid Suspend ();
 		GXBool Shutdown ();
 
 		GXVoid SetMasterVolume ( GXFloat masterVolume );

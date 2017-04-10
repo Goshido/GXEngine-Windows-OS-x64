@@ -1,4 +1,4 @@
-//version 1.3
+//version 1.5
 
 #include <GXEngine/GXSoundMixer.h>
 
@@ -83,18 +83,12 @@ GXVoid GXSoundMixer::AddChannel ( GXSoundChannel* channel )
 
 GXVoid GXSoundMixer::Start ()
 {
-	thread.Resume ();
-}
-
-GXVoid GXSoundMixer::Suspend ()
-{
-	thread.Suspend ();
+	thread.Start ();
 }
 
 GXBool GXSoundMixer::Shutdown ()
 {
 	loopFlag = GX_FALSE;
-	thread.Resume ();
 	thread.Join ();
 
 	return GX_TRUE;
@@ -115,7 +109,7 @@ GXSoundMixer* GXCALL GXSoundMixer::GetInstance ()
 }
 
 GXSoundMixer::GXSoundMixer () :
-thread ( &Update, 0, GX_SUSPEND )
+thread ( &Update, nullptr )
 {
 	instance = this;
 

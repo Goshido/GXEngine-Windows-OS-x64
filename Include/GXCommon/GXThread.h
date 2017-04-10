@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #ifndef GX_THREAD
 #define GX_THREAD
@@ -10,10 +10,10 @@
 typedef GXDword ( GXTHREADCALL* PFNGXTHREADPROC ) ( GXVoid* arg );
 
 
-enum eGXThreadState
+enum class eGXThreadState
 {
-	GX_SUSPEND,
-	GX_WORKING
+	Waiting,
+	Started
 };
 
 
@@ -21,16 +21,18 @@ class GXThread
 {
 	private:
 		HANDLE			thread;
-		DWORD			threadID;
 		eGXThreadState	state;
+		PFNGXTHREADPROC	threadProc;
+		GXVoid*			arg;
 
 	public:
-		GXThread ( PFNGXTHREADPROC threadFunc, GXVoid* arg, eGXThreadState startState );
+		GXThread ( PFNGXTHREADPROC threadProc, GXVoid* arg );
 		~GXThread ();
 
-		GXVoid Suspend ();
-		GXVoid Resume ();
+		GXVoid Start ();
 		GXVoid Join ();
+
+		eGXThreadState GetState () const;
 };
 
 

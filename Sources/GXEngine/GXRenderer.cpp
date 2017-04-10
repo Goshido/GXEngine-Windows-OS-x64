@@ -1,4 +1,4 @@
-//version 1.13
+//version 1.14
 
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXOpenGL.h>
@@ -99,18 +99,12 @@ GXRenderer::~GXRenderer ()
 GXVoid GXRenderer::Start ( GXGame &game )
 {
 	this->game = &game;
-	thread->Resume ();
-}
-
-GXVoid GXRenderer::Suspend ()
-{
-	thread->Suspend ();
+	thread->Start ();
 }
 
 GXBool GXRenderer::Shutdown ()
 {
 	loopFlag = GX_FALSE;
-	thread->Resume ();
 	thread->Join ();
 
 	return GX_TRUE;
@@ -350,7 +344,7 @@ GXRenderer::GXRenderer ()
 
 	isSettingsChanged = GX_FALSE;
 	loopFlag = GX_TRUE;
-	thread = new GXThread ( &RenderLoop, 0, GX_SUSPEND );
+	thread = new GXThread ( &RenderLoop, nullptr );
 
 	SetWindowName ( GX_DEFAULT_WINDOW_NAME );
 }

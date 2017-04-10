@@ -1,4 +1,4 @@
-//version 1.12
+//version 1.13
 
 #include <GXEngine/GXCore.h>
 #include <GXEngine/GXInput.h>
@@ -54,9 +54,6 @@ GXVoid GXCore::Start ( GXGame &game )
 	while ( loopFlag )
 		Sleep ( 30 );
 
-	input->Suspend ();
-	renderer->Suspend ();
-	soundMixer->Suspend ();
 	input->Shutdown ();
 	renderer->Shutdown ();
 	soundMixer->Shutdown ();

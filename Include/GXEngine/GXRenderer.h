@@ -1,4 +1,4 @@
-//version 1.13
+//version 1.14
 
 #ifndef GX_RENDERER
 #define GX_RENDERER
@@ -61,7 +61,6 @@ class GXRenderer
 		~GXRenderer ();
 
 		GXVoid Start ( GXGame &game );
-		GXVoid Suspend ();
 		GXBool Shutdown ();
 
 		GXVoid SetFullscreen ( GXBool enabled );

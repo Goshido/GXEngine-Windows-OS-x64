@@ -155,7 +155,6 @@ class GXInput
 		~GXInput ();
 
 		GXVoid Start ();
-		GXVoid Suspend ();
 		GXVoid Shutdown ();
 
 		GXVoid BindKeyCallback ( GXVoid* handler, PFNGXKEYPROC callback, GXInt vk_key, eGXInputButtonState eState );
