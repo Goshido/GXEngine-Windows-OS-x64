@@ -15,7 +15,12 @@ GXThread::GXThread ( PFNGXTHREADPROC threadProc, GXVoid* arg )
 
 GXThread::~GXThread ()
 {
-	CloseHandle ( thread );
+	if ( !thread == NULL && state == eGXThreadState::Started )
+	{
+		GXLogW ( L"GXThread::~GXThread::Warning - Поток завершён неверно\n" );
+		system ( "pause" );
+		CloseHandle ( thread );
+	}
 }
 
 GXVoid GXThread::Start ()
