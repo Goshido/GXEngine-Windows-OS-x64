@@ -222,6 +222,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXLocale.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXRenderable.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXSkeleton.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTransform.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXMeshGeometry.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXNetwork.cpp" />
@@ -323,6 +324,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMenu.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXRenderable.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXSkeleton.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTransform.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMeshGeometry.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMotionBlurEffect.h" />
