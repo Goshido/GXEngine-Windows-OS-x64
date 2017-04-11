@@ -112,7 +112,6 @@ GXMeshGeometry::GXMeshGeometry ()
 	skinningSwitchIndex = 0;
 
 	topology = GL_TRIANGLES;
-	skeletalMeshID = (GXUPointer)nullptr;
 }
 
 GXMeshGeometry::~GXMeshGeometry ()
@@ -164,141 +163,30 @@ GXVoid GXMeshGeometry::SetTotalVertices ( GLsizei totalVertices )
 	this->totalVertices = totalVertices;
 }
 
-GXVoid GXMeshGeometry::FillVertexBuffer ( const GXVoid* data, GLsizeiptr size, GLenum usage, eGXMeshGeometryType type )
+GXVoid GXMeshGeometry::FillVertexBuffer ( const GXVoid* data, GLsizeiptr size, GLenum usage )
 {
-	switch ( type )
-	{
-		case eGXMeshGeometryType::Static:
-		{
-			if ( staticVAO == 0 )
-				InitStaticVAO ();
+	if ( staticVAO == 0 )
+		InitStaticResources ();
 
-			glBindBuffer ( GL_ARRAY_BUFFER, staticVBO );
-			//{
-				glBufferData ( GL_ARRAY_BUFFER, size, data, usage );
-			//}
-			glBindVertexArray ( 0 );
-		}
-		break;
-
-		case eGXMeshGeometryType::Skeletal:
-		{
-			if ( skeletalVBO == 0 )
-				InitSkeletalVAO ();
-
-			glBindBuffer ( GL_ARRAY_BUFFER, skeletalVBO );
-			//{
-				glBufferData ( GL_ARRAY_BUFFER, size, data, usage );
-			//}
-			glBindVertexArray ( 0 );
-		}
-		break;
-	}
+	glBindBuffer ( GL_ARRAY_BUFFER, staticVBO );
+	//{
+		glBufferData ( GL_ARRAY_BUFFER, size, data, usage );
+	//}
+	glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 }
 
-GXVoid GXMeshGeometry::EnableBufferStream ( eGXMeshStreamIndex streamIndex, eGXMeshGeometryType type )
+GXVoid GXMeshGeometry::SetBufferStream ( eGXMeshStreamIndex streamIndex, GLint numElements, GLenum elementType, GLsizei stride, const GLvoid* offset )
 {
-	switch ( type )
-	{
-		case eGXMeshGeometryType::Static:
-		{
-			if ( staticVAO == 0 )
-				InitStaticVAO ();
+	if ( staticVAO == 0 )
+		InitStaticResources ();
 
-			glBindVertexArray ( staticVAO );
-			//{
-				glEnableVertexAttribArray ( (GLuint)streamIndex );
-			//}
-			glBindVertexArray ( 0 );
-		}
-		break;
-
-		case eGXMeshGeometryType::Skeletal:
-		{
-			if ( skeletalVBO == 0 )
-				InitSkeletalVAO ();
-
-			for ( GXUByte i = 0; i < 2; i++ )
-			{
-				glBindVertexArray ( skinningVAO[ i ] );
-				//{
-					glEnableVertexAttribArray ( (GLuint)streamIndex );
-				//}
-				glBindVertexArray ( 0 );
-			}
-		}
-		break;
-	}
-}
-
-GXVoid GXMeshGeometry::DisableBufferStream ( eGXMeshStreamIndex streamIndex, eGXMeshGeometryType type )
-{
-	switch ( type )
-	{
-		case eGXMeshGeometryType::Static:
-		{
-			if ( staticVAO == 0 )
-				InitStaticVAO ();
-
-			glBindVertexArray ( staticVAO );
-			//{
-				glDisableVertexAttribArray ( (GLuint)streamIndex );
-			//}
-			glBindVertexArray ( 0 );
-		}
-		break;
-
-		case eGXMeshGeometryType::Skeletal:
-		{
-			if ( skeletalVBO == 0 )
-				InitSkeletalVAO ();
-
-			for ( GXUByte i = 0; i < 2; i++ )
-			{
-				glBindVertexArray ( skinningVAO[ i ] );
-				//{
-					glDisableVertexAttribArray ( (GLuint)streamIndex );
-				//}
-				glBindVertexArray ( 0 );
-			}
-		}
-		break;
-	}
-}
-
-GXVoid GXMeshGeometry::SetBufferStream ( eGXMeshStreamIndex streamIndex, GLint numElements, GLenum elementType, GLsizei stride, const GLvoid* offset, eGXMeshGeometryType type )
-{
-	switch ( type )
-	{
-		case eGXMeshGeometryType::Static:
-		{
-			if ( staticVAO == 0 )
-				InitStaticVAO ();
-
-			glBindVertexArray ( staticVAO );
-			//{
-				glVertexAttribPointer ( (GLuint)streamIndex, numElements, elementType, GL_FALSE, stride, offset );
-			//}
-			glBindVertexArray ( 0 );
-		}
-		break;
-
-		case eGXMeshGeometryType::Skeletal:
-		{
-			if ( skeletalVBO == 0 )
-				InitSkeletalVAO ();
-
-			for ( GXUByte i = 0; i < 2; i++ )
-			{
-				glBindVertexArray ( skinningVAO[ i ] );
-				//{
-					glVertexAttribPointer ( (GLuint)streamIndex, numElements, elementType, GL_FALSE, stride, offset );
-				//}
-				glBindVertexArray ( 0 );
-			}
-		}
-		break;
-	}
+	glBindVertexArray ( staticVAO );
+	//{
+		glBindBuffer ( GL_ARRAY_BUFFER, staticVBO );
+		glEnableVertexAttribArray ( (GLuint)streamIndex );
+		glVertexAttribPointer ( (GLuint)streamIndex, numElements, elementType, GL_FALSE, stride, offset );
+	//}
+	glBindVertexArray ( 0 );
 }
 
 GXVoid GXMeshGeometry::SetTopology ( GLenum topology )
@@ -430,25 +318,25 @@ GXMeshGeometry& GXCALL GXMeshGeometry::LoadFromObj ( const GXWChar* fileName )
 
 	GXMeshGeometry* geometry = new GXMeshGeometry ();
 	geometry->SetTotalVertices ( (GLsizei)numVerticies );
-	geometry->FillVertexBuffer ( cache, (GLsizeiptr)cacheSize, GL_STATIC_DRAW, eGXMeshGeometryType::Static );
+	geometry->FillVertexBuffer ( cache, (GLsizeiptr)cacheSize, GL_STATIC_DRAW );
 	geometry->SetTopology ( GL_TRIANGLES );
 
 	GLsizei stride = sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 );
 	offset = 0;
 
-	geometry->SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, stride, (const GLvoid*)offset, eGXMeshGeometryType::Static );
+	geometry->SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, stride, (const GLvoid*)offset );
 	offset += sizeof ( GXVec3 );
 
-	geometry->SetBufferStream ( eGXMeshStreamIndex::UV, 2, GL_FLOAT, stride, (const GLvoid*)offset, eGXMeshGeometryType::Static );
+	geometry->SetBufferStream ( eGXMeshStreamIndex::UV, 2, GL_FLOAT, stride, (const GLvoid*)offset );
 	offset += sizeof ( GXVec2 );
 
-	geometry->SetBufferStream ( eGXMeshStreamIndex::Normal, 3, GL_FLOAT, stride, (const GLvoid*)offset, eGXMeshGeometryType::Static );
+	geometry->SetBufferStream ( eGXMeshStreamIndex::Normal, 3, GL_FLOAT, stride, (const GLvoid*)offset );
 	offset += sizeof ( GXVec3 );
 
-	geometry->SetBufferStream ( eGXMeshStreamIndex::Tangent, 3, GL_FLOAT, stride, (const GLvoid*)offset, eGXMeshGeometryType::Static );
+	geometry->SetBufferStream ( eGXMeshStreamIndex::Tangent, 3, GL_FLOAT, stride, (const GLvoid*)offset );
 	offset += sizeof ( GXVec3 );
 
-	geometry->SetBufferStream ( eGXMeshStreamIndex::Bitangent, 3, GL_FLOAT, stride, (const GLvoid*)offset, eGXMeshGeometryType::Static );
+	geometry->SetBufferStream ( eGXMeshStreamIndex::Bitangent, 3, GL_FLOAT, stride, (const GLvoid*)offset );
 
 	geometry->SetBoundsLocal ( bounds );
 	
@@ -474,6 +362,41 @@ GXMeshGeometry& GXCALL GXMeshGeometry::LoadFromStm ( const GXWChar* fileName )
 	return geometry;
 }
 
+GXMeshGeometry& GXCALL GXMeshGeometry::LoadFromSkm ( const GXWChar* fileName )
+{
+	GXSkeletalMeshData skeletalMeshData;
+	GXLoadNativeSkeletalMesh ( fileName, skeletalMeshData );
+
+	GLsizeiptr originalVBOSize = skeletalMeshData.numVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec4 ) + sizeof ( GXVec4 ) );
+	GLsizeiptr poseVBOSize = skeletalMeshData.numVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) );
+
+	GXMeshGeometry* meshGeometry = new GXMeshGeometry ();
+	meshGeometry->InitSkeletalResources ();
+	meshGeometry->SetTotalVertices ( (GLsizei)skeletalMeshData.numVertices );
+	meshGeometry->SetTopology ( GL_TRIANGLES );
+
+	glBindBuffer ( GL_ARRAY_BUFFER, meshGeometry->skeletalVBO );
+	//{
+		glBufferData ( GL_ARRAY_BUFFER, originalVBOSize, skeletalMeshData.vboData, GL_STATIC_DRAW );
+	//}
+	glBindBuffer ( GL_ARRAY_BUFFER, 0 );
+
+	for ( GXUByte i = 0; i < 2; i++ )
+	{
+		glBindBuffer ( GL_ARRAY_BUFFER, meshGeometry->skinningVBO[ i ] );
+		//{
+			glBufferData ( GL_ARRAY_BUFFER, poseVBOSize, nullptr, GL_STATIC_DRAW );
+		//}
+		glBindBuffer ( GL_ARRAY_BUFFER, 0 );
+	}
+
+	new GXMeshGeometryEntry ( *meshGeometry, fileName );
+
+	skeletalMeshData.Cleanup ();
+
+	return *meshGeometry;
+}
+
 GXVoid GXCALL GXMeshGeometry::RemoveMeshGeometry ( GXMeshGeometry& mesh )
 {
 	for ( GXMeshGeometryEntry* p = gx_MeshGeometryHead; p; p = p->next )
@@ -485,37 +408,6 @@ GXVoid GXCALL GXMeshGeometry::RemoveMeshGeometry ( GXMeshGeometry& mesh )
 			return;
 		}
 	}
-}
-
-GXMeshGeometry& GXCALL GXMeshGeometry::LoadFromSkm ( const GXWChar* fileName )
-{
-	GXSkeletalMeshData skeletalMeshData;
-	GXLoadNativeSkeletalMesh ( fileName, skeletalMeshData );
-
-	GLsizeiptr originalVBOSize = skeletalMeshData.numVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec4 ) + sizeof ( GXVec4 ) );
-	GLsizeiptr poseVBOSize = skeletalMeshData.numVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) );
-
-	GXMeshGeometry* meshGeometry = new GXMeshGeometry ();
-	meshGeometry->SetTotalVertices ( (GLsizei)skeletalMeshData.numVertices );
-	meshGeometry->SetTopology ( GL_TRIANGLES );
-	meshGeometry->FillVertexBuffer ( skeletalMeshData.vboData, originalVBOSize, GL_STATIC_DRAW );
-
-	glGenBuffers ( 2, meshGeometry->vboPose );
-	for ( GXUByte i = 0; i < 2; i++ )
-	{
-		glBindBuffer ( GL_TRANSFORM_FEEDBACK_BUFFER, meshGeometry->vboPose[ i ] );
-		//{
-			glBufferData ( GL_TRANSFORM_FEEDBACK_BUFFER, poseVBOSize, nullptr, GL_DYNAMIC_COPY );
-		//}
-		glBindBuffer ( GL_TRANSFORM_FEEDBACK_BUFFER, 0 );
-	}
-
-	meshGeometry->skeletalMeshID = (GXUPointer)meshGeometry;
-	new GXMeshGeometryEntry ( *meshGeometry, fileName );
-
-	skeletalMeshData.Cleanup ();
-
-	return *meshGeometry;
 }
 
 GXUInt GXCALL GXMeshGeometry::GetTotalLoadedMeshGeometries ( const GXWChar** lastMeshGeometry )
@@ -550,19 +442,19 @@ GXVoid GXMeshGeometry::operator = ( const GXMeshGeometry &meshGeometry )
 	memcpy ( this, &meshGeometry, sizeof ( GXMeshGeometry ) );
 }
 
-GXVoid GXMeshGeometry::InitStaticVAO ()
+GXVoid GXMeshGeometry::InitStaticResources ()
 {
 	glGenVertexArrays ( 1, &staticVAO );
 	glGenBuffers ( 1, &staticVBO );
 
-	glBindVertexArray ( staticVBO );
+	glBindVertexArray ( staticVAO );
 	//{
 		glBindBuffer ( GL_ARRAY_BUFFER, staticVBO );
 	//}
 	glBindVertexArray ( 0 );
 }
 
-GXVoid GXMeshGeometry::InitSkeletalVAO ()
+GXVoid GXMeshGeometry::InitSkeletalResources ()
 {
 	glGenVertexArrays ( 2, skeletalVAO );
 	glGenVertexArrays ( 2, skinningVAO );
@@ -576,21 +468,28 @@ GXVoid GXMeshGeometry::InitSkeletalVAO ()
 	//{
 		glBindBuffer ( GL_ARRAY_BUFFER, skinningVBO[ 0 ] );
 
+		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::CurrenVertex );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );
 		offset += sizeof ( GXVec3 );
 
+		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::UV );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::UV, 2, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );
 		offset += sizeof ( GXVec2 );
 
+		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::Normal );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::Normal, 3, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );
 		offset += sizeof ( GXVec3 );
 
+		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::Tangent );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::Tangent, 3, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );
 		offset += sizeof ( GXVec3 );
 
+		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::Bitangent );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::Bitangent, 3, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );
 
 		glBindBuffer ( GL_ARRAY_BUFFER, skinningVBO[ 1 ] );
+
+		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::LastFrameVertex );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::LastFrameVertex, 3, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)0 );
 	//}
 	glBindVertexArray ( 0 );
@@ -601,31 +500,69 @@ GXVoid GXMeshGeometry::InitSkeletalVAO ()
 	//{
 		glBindBuffer ( GL_ARRAY_BUFFER, skinningVBO[ 1 ] );
 
+		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::CurrenVertex );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );
 		offset += sizeof ( GXVec3 );
 
+		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::UV );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::UV, 2, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );
 		offset += sizeof ( GXVec2 );
 
+		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::Normal );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::Normal, 3, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );
 		offset += sizeof ( GXVec3 );
 
+		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::Tangent );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::Tangent, 3, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );
 		offset += sizeof ( GXVec3 );
 
+		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::Bitangent );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::Bitangent, 3, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );
 
 		glBindBuffer ( GL_ARRAY_BUFFER, skinningVBO[ 0 ] );
+
+		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::LastFrameVertex );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::LastFrameVertex, 3, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)0 );
 	//}
 	glBindVertexArray ( 0 );
 
-	glBindVertexArray ( skinningVAO[ 0 ] );
-	//{
-		glBindBuffer ( GL_ARRAY_BUFFER, skeletalVBO );
-		glBindBuffer ( GL_TRANSFORM_FEEDBACK_BUFFER, skinningVBO[ 0 ] );
-	//}
-	glBindVertexArray ( 0 );
+	for ( GXUByte i = 0; i < 2; i++ )
+	{
+		offset = 0;
+
+		glBindVertexArray ( skinningVAO[ i ] );
+		//{
+			glBindBuffer ( GL_ARRAY_BUFFER, skeletalVBO );
+
+			glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::CurrenVertex );
+			glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );
+			offset += sizeof ( GXVec3 );
+
+			glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::UV );
+			glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::UV, 2, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );
+			offset += sizeof ( GXVec2 );
+
+			glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::Normal );
+			glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::Normal, 3, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );
+			offset += sizeof ( GXVec3 );
+
+			glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::Tangent );
+			glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::Tangent, 3, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );
+			offset += sizeof ( GXVec3 );
+
+			glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::Bitangent );
+			glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::Bitangent, 3, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );
+			offset += sizeof ( GXVec3 );
+
+			glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::SkinningIndices );
+			glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::SkinningIndices, 4, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );
+			offset += sizeof ( GXVec4 );
+
+			glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::SkinnngWeights );
+			glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::SkinnngWeights, 4, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );
+		//}
+		glBindVertexArray ( 0 );
+	}
 }
 
 GXMeshGeometry& GXCALL  GXMeshGeometry::GetGeometryFromStm ( const GXWChar* fileName )
@@ -638,25 +575,23 @@ GXMeshGeometry& GXCALL  GXMeshGeometry::GetGeometryFromStm ( const GXWChar* file
 
 	GXMeshGeometry* geometry = new GXMeshGeometry ();
 	geometry->SetTotalVertices ( info.numVertices );
-	geometry->FillVertexBuffer ( info.vboData, (GLsizeiptr)( info.numVertices * stride ), GL_STATIC_DRAW, eGXMeshGeometryType::Static );
+	geometry->FillVertexBuffer ( info.vboData, (GLsizeiptr)( info.numVertices * stride ), GL_STATIC_DRAW );
 	geometry->SetTopology ( GL_TRIANGLES );
 
-	geometry->SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, stride, (const GLvoid*)offset, eGXMeshGeometryType::Static );
+	geometry->SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, stride, (const GLvoid*)offset );
 	offset += sizeof ( GXVec3 );
 
-	geometry->SetBufferStream ( eGXMeshStreamIndex::UV, 2, GL_FLOAT, stride, (const GLvoid*)offset, eGXMeshGeometryType::Static );
+	geometry->SetBufferStream ( eGXMeshStreamIndex::UV, 2, GL_FLOAT, stride, (const GLvoid*)offset );
 	offset += sizeof ( GXVec2 );
 
-	geometry->SetBufferStream ( eGXMeshStreamIndex::Normal, 3, GL_FLOAT, stride, (const GLvoid*)offset, eGXMeshGeometryType::Static );
+	geometry->SetBufferStream ( eGXMeshStreamIndex::Normal, 3, GL_FLOAT, stride, (const GLvoid*)offset );
 	offset += sizeof ( GXVec3 );
 
-	geometry->SetBufferStream ( eGXMeshStreamIndex::Tangent, 3, GL_FLOAT, stride, (const GLvoid*)offset, eGXMeshGeometryType::Static );
+	geometry->SetBufferStream ( eGXMeshStreamIndex::Tangent, 3, GL_FLOAT, stride, (const GLvoid*)offset );
 	offset += sizeof ( GXVec3 );
 
-	geometry->SetBufferStream ( eGXMeshStreamIndex::Bitangent, 3, GL_FLOAT, stride, (const GLvoid*)offset, eGXMeshGeometryType::Static );
+	geometry->SetBufferStream ( eGXMeshStreamIndex::Bitangent, 3, GL_FLOAT, stride, (const GLvoid*)offset );
 
-	GXMat4 transform;
-	GXSetMat4Identity ( transform );
 	geometry->SetBoundsLocal ( info.bounds );
 
 	info.Cleanup ();

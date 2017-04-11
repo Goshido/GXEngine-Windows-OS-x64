@@ -117,7 +117,7 @@ GXVoid GXGlyphRenderable::InitGraphicResources ()
 {
 	GLsizei stride = sizeof ( GXVec3 ) + sizeof ( GXVec2 );
 	mesh.SetTotalVertices ( 6 );
-	mesh.SetBufferStream ( eGXMeshStreamIndex::Vertex, 3, GL_FLOAT, stride, (const GLvoid*)0 );
+	mesh.SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, stride, (const GLvoid*)0 );
 	mesh.SetBufferStream ( eGXMeshStreamIndex::UV, 2, GL_FLOAT, stride, ( const GLvoid* )sizeof ( GXVec3 ) );
 	mesh.SetTopology ( GL_TRIANGLES );
 }
@@ -174,7 +174,7 @@ GXVoid GXLineRenderable::UpdateGeometry ( const GXVec2 &start, const GXVec2 &end
 GXVoid GXLineRenderable::InitGraphicResources ()
 {
 	mesh.SetTotalVertices ( 2 );
-	mesh.SetBufferStream ( eGXMeshStreamIndex::Vertex, 3, GL_FLOAT, sizeof ( GXVec3 ), (const GLvoid*)0 );
+	mesh.SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, sizeof ( GXVec3 ), (const GLvoid*)0 );
 	mesh.SetTopology ( GL_LINES );
 }
 

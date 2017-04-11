@@ -16,15 +16,9 @@ enum class eGXMeshStreamIndex : GLuint
 	Normal				= 2,
 	Tangent				= 3,
 	Bitangent			= 4,
-	SkinnngWeights		= 5,
-	SkinningIndices		= 6,
-	LastFrameVertex		= 5
-};
-
-enum class eGXMeshGeometryType
-{
-	Static,
-	Skeletal
+	SkinningIndices		= 5,
+	SkinnngWeights		= 6,
+	LastFrameVertex		= 7
 };
 
 class GXMeshGeometryEntry;
@@ -57,11 +51,8 @@ class GXMeshGeometry
 		const GXAABB& GetBoundsLocal () const;
 
 		GXVoid SetTotalVertices ( GLsizei totalVertices );
-		GXVoid FillVertexBuffer ( const GXVoid* data, GLsizeiptr size, GLenum usage, eGXMeshGeometryType type );
-		
-		GXVoid EnableBufferStream ( eGXMeshStreamIndex streamIndex, eGXMeshGeometryType type );
-		GXVoid DisableBufferStream ( eGXMeshStreamIndex streamIndex, eGXMeshGeometryType type );
-		GXVoid SetBufferStream ( eGXMeshStreamIndex streamIndex, GLint numElements, GLenum elementType, GLsizei stride, const GLvoid* offset, eGXMeshGeometryType type );
+		GXVoid FillVertexBuffer ( const GXVoid* data, GLsizeiptr size, GLenum usage );
+		GXVoid SetBufferStream ( eGXMeshStreamIndex streamIndex, GLint numElements, GLenum elementType, GLsizei stride, const GLvoid* offset );
 
 		GXVoid SetTopology ( GLenum topology );
 
@@ -78,8 +69,9 @@ class GXMeshGeometry
 		GXVoid operator = ( const GXMeshGeometry &meshGeometry );
 
 	private:
-		GXVoid InitStaticVAO ();
-		GXVoid InitSkeletalVAO ();
+		GXVoid InitStaticResources ();
+		GXVoid InitSkeletalResources ();
+
 		static GXMeshGeometry& GXCALL GetGeometryFromStm ( const GXWChar* fileName );
 		GXBool IsSkeletalMesh () const;
 };
