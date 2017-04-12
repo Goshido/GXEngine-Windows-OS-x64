@@ -16,6 +16,9 @@ struct GXShaderProgramInfo
 	const GLchar**		samplerNames;
 	const GLuint*		samplerLocations;
 	GXInt				numSamplers;
+
+	const GLchar**		transformFeedbackOutputNames;
+	GLsizei				numTransformFeedbackOutputs;
 };
 
 class GXShaderProgram

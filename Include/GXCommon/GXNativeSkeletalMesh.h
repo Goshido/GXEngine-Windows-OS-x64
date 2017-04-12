@@ -9,6 +9,7 @@
 
 
 #define GX_BONE_NAME_SIZE	64
+#define GX_FLOATS_PER_BONE	7
 
 
 struct GXNativeSkeletalMeshHeader

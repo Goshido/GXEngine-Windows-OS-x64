@@ -6,6 +6,7 @@
 
 #include "GXOpenGL.h"
 #include "GXSkeleton.h"
+#include "GXSkinningMaterial.h"
 #include <GXCommon/GXMath.h>
 
 
@@ -25,19 +26,19 @@ class GXMeshGeometryEntry;
 class GXMeshGeometry
 {
 	private:
-		GLsizei					totalVertices;
-
+		GLsizei					totalStaticVertices;
 		GLuint					staticVAO;
 		GLuint					staticVBO;
+		GLenum					staticTopology;
 
+		GLsizei					totalSkeletalVertices;
 		GLuint					skeletalVAO[ 2 ];
-		GLuint					skinningVAO[ 2 ];
-		GLuint					skinningVBO[ 2 ];
 		GLuint					skeletalVBO;
-
+		GLuint					skinningVAO;
+		GLuint					poseVBO[ 2 ];
 		GXUByte					skinningSwitchIndex;
-
-		GLenum					topology;
+		GXSkinningMaterial*		skinningMaterial;
+		GLenum					skeletalTopology;
 
 		GXAABB					boundsLocal;
 
@@ -45,7 +46,7 @@ class GXMeshGeometry
 		GXMeshGeometry ();
 		~GXMeshGeometry ();
 
-		GXVoid Render() const;
+		GXVoid Render();
 
 		GXVoid SetBoundsLocal ( const GXAABB& bounds );
 		const GXAABB& GetBoundsLocal () const;

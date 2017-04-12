@@ -15,6 +15,9 @@ class GXTransform
 		GXMat4				rot_mat;
 		GXMat4				mod_mat;
 
+	private:
+		static GXTransform	nullTransform;
+
 	public:
 		GXTransform ();
 		virtual ~GXTransform ();
@@ -39,8 +42,10 @@ class GXTransform
 
 		const GXMat4& GetModelMatrix () const;
 
+		static const GXTransform& GetNullTransform ();
+
 	protected:
-		virtual GXVoid TransformUpdated () = 0;
+		virtual GXVoid TransformUpdated ();
 };
 
 

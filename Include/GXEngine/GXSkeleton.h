@@ -11,7 +11,7 @@
 class GXSkeleton
 {
 	private:
-		GXUInt				numBones;
+		GXUShort			numBones;
 		GXUTF8*				boneNames;
 		GXShort*			parentBoneIndices;
 		GXQuatLocJoint*		pose;
@@ -27,6 +27,7 @@ class GXSkeleton
 		GXVoid LoadFromSkm ( const GXWChar* fileName );
 		GXVoid UpdatePose ( GXAnimSolver &solver );
 		const GXQuatLocJoint* GetPose () const;
+		GXUShort GetTotalBones () const;
 
 	private:
 		GXVoid CalculatePose ();

@@ -5,6 +5,8 @@
 #include <GXCommon/GXMemory.h>
 
 
+GXTransform	GXTransform::nullTransform;
+
 GXTransform::GXTransform ()
 {
 	location = GXCreateVec3 ( 0.0f, 0.0f, 0.0f );
@@ -123,4 +125,14 @@ GXVoid GXTransform::GetScale ( GXVec3 &scale ) const
 const GXMat4& GXTransform::GetModelMatrix () const
 {
 	return mod_mat;
+}
+
+const GXTransform& GXTransform::GetNullTransform ()
+{
+	return nullTransform;
+}
+
+GXVoid GXTransform::TransformUpdated ()
+{
+	//NOTHING
 }

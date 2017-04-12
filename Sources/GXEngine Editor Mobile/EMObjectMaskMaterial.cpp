@@ -16,6 +16,8 @@ EMObjectMaskMaterial::EMObjectMaskMaterial ()
 	si.numSamplers = 0;
 	si.samplerNames = nullptr;
 	si.samplerLocations = nullptr;
+	si.numTransformFeedbackOutputs = 0;
+	si.transformFeedbackOutputNames = nullptr;
 
 	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
 

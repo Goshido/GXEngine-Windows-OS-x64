@@ -195,8 +195,14 @@ GXShaderProgram::GXShaderProgram ( const GXShaderProgramInfo &info )
 		glDeleteShader ( geometryShader );
 	}
 
-	glAttachShader ( program, fragmentShader );
-	glDeleteShader ( fragmentShader );
+	if ( fragmentShader )
+	{
+		glAttachShader ( program, fragmentShader );
+		glDeleteShader ( fragmentShader );
+	}
+
+	if ( info.numTransformFeedbackOutputs > 0 )
+		glTransformFeedbackVaryings ( program, info.numTransformFeedbackOutputs, info.transformFeedbackOutputNames, GL_INTERLEAVED_ATTRIBS );
 
 	glLinkProgram ( program );
 

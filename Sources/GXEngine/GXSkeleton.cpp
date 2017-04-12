@@ -93,6 +93,11 @@ const GXQuatLocJoint* GXSkeleton::GetPose () const
 	return pose;
 }
 
+GXUShort GXSkeleton::GetTotalBones () const
+{
+	return numBones;
+}
+
 GXVoid GXSkeleton::CalculatePose ()
 {
 	tempPoseGlobal[ 0 ].rotation = tempPoseLocal[ 0 ].rotation;

@@ -33,6 +33,8 @@ GXUnlitColorMaskMaterial::GXUnlitColorMaskMaterial ()
 	si.numSamplers = 1;
 	si.samplerNames = samplerNames;
 	si.samplerLocations = samplerLocations;
+	si.numTransformFeedbackOutputs = 0;
+	si.transformFeedbackOutputNames = nullptr;
 
 	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
 

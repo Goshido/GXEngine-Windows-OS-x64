@@ -1,0 +1,121 @@
+#version 330 core
+
+
+#define VERTEX_STREAM			0
+#define UV_STREAM				1
+#define NORMAL_STREAM			2
+#define TANGENT_STREAM			3
+#define BITANGENT_STREAM		4
+#define WEIGHT_INDICES_STREAM	5
+#define WEIGHTS_STREAM			6
+
+#define MAX_BONES				80
+#define FLOATS_PER_BONE			7
+
+
+layout ( location = VERTEX_STREAM ) in vec3 vertex;
+layout ( location = UV_STREAM ) in vec2 uv;
+layout ( location = NORMAL_STREAM ) in vec3 normal;
+layout ( location = TANGENT_STREAM ) in vec3 tangent;
+layout ( location = BITANGENT_STREAM ) in vec3 bitangent;
+layout ( location = WEIGHT_INDICES_STREAM ) in vec4 weightIndices;
+layout ( location = WEIGHTS_STREAM ) in vec4 weights;
+
+uniform float bones[ MAX_BONES * FLOATS_PER_BONE ];
+
+flat out vec3 v_vertex;
+flat out vec2 v_uv;
+flat out vec3 v_normal;
+flat out vec3 v_tangent;
+flat out vec3 v_bitangent;
+
+
+vec3 VertexSkinning ( in vec3 p, in int index )
+{
+	int i = index * FLOATS_PER_BONE;
+ 
+	// restore rotation component ( quaternion )
+	float x = bones[ i ];
+	float y = bones[ i + 1 ];
+	float z = bones[ i + 2 ];
+	float w = bones[ i + 3 ];
+	
+	//original code from DooM 3 SDK
+	float xxzz = x * x - z * z;
+	float wwyy = w * w - y * y;
+	float xw2 = x * w * 2.0;
+	float xy2 = x * y * 2.0;
+	float xz2 = x * z * 2.0;
+	float yw2 = y * w * 2.0;
+	float yz2 = y * z * 2.0;
+	float zw2 = z * w * 2.0;
+
+	vec3 result;
+	result.x = ( xxzz + wwyy ) * p.x + ( xy2 + zw2 ) * p.y + ( xz2 - yw2 ) * p.z + bones[ i + 4 ];
+	result.y = ( xy2 - zw2 ) * p.x + ( y * y + w * w - x * x - z * z ) * p.y + ( yz2 + xw2 ) * p.z + bones[ i + 5 ];
+	result.z = ( xz2 + yw2 ) * p.x + ( yz2 - xw2 ) * p.y + ( wwyy - xxzz ) * p.z + bones[ i + 6 ];
+
+	return result;
+}
+
+vec3 VectorSkinning ( in vec3 v, in int index )
+{
+	int i = index * FLOATS_PER_BONE;
+
+	//restore rotation component ( quaternion )
+	float x = bones[ i ];
+	float y = bones[ i + 1 ];
+	float z = bones[ i + 2 ];
+	float w = bones[ i + 3 ];
+	
+	//original code from DooM 3 SDK
+	float xxzz = x * x - z * z;
+	float wwyy = w * w - y * y;
+	float xw2 = x * w * 2.0;
+	float xy2 = x * y * 2.0;
+	float xz2 = x * z * 2.0;
+	float yw2 = y * w * 2.0;
+	float yz2 = y * z * 2.0;
+	float zw2 = z * w * 2.0;
+
+	vec3 result;
+	result.x = ( xxzz + wwyy ) * v.x + ( xy2 + zw2 ) * v.y + ( xz2 - yw2 ) * v.z;
+	result.y = ( xy2 - zw2 ) * v.x + ( y * y + w * w - x * x - z * z ) * v.y + ( yz2 + xw2 ) * v.z;
+	result.z = ( xz2 + yw2 ) * v.x + ( yz2 - xw2 ) * v.y + ( wwyy - xxzz ) * v.z;
+
+	return result;
+}
+
+
+void main ()
+{
+	vec3 v = VertexSkinning ( vertex, int ( weightIndices.x ) ) * weights.x;
+	v += VertexSkinning ( vertex, int ( weightIndices.y ) ) * weights.y;
+	v += VertexSkinning ( vertex, int ( weightIndices.z ) ) * weights.z;
+	v += VertexSkinning ( vertex, int ( weightIndices.w ) ) * weights.w;
+
+	v_vertex = v;
+
+	v_uv = uv;
+
+	v = VectorSkinning ( normal, int ( weightIndices.x ) ) * weights.x;
+	v += VectorSkinning ( normal, int ( weightIndices.y ) ) * weights.y;
+	v += VectorSkinning ( normal, int ( weightIndices.z ) ) * weights.z;
+	v += VectorSkinning ( normal, int ( weightIndices.w ) ) * weights.w;
+
+	v_normal = v;
+
+	v = VectorSkinning ( tangent, int ( weightIndices.x ) ) * weights.x;
+	v += VectorSkinning ( tangent, int ( weightIndices.y ) ) * weights.y;
+	v += VectorSkinning ( tangent, int ( weightIndices.z ) ) * weights.z;
+	v += VectorSkinning ( tangent, int ( weightIndices.w ) ) * weights.w;
+
+	v_tangent = v;
+
+	v = VectorSkinning ( bitangent, int ( weightIndices.x ) ) * weights.x;
+	v += VectorSkinning ( bitangent, int ( weightIndices.y ) ) * weights.y;
+	v += VectorSkinning ( bitangent, int ( weightIndices.z ) ) * weights.z;
+	v += VectorSkinning ( bitangent, int ( weightIndices.w ) ) * weights.w;
+
+	v_bitangent = v;
+}

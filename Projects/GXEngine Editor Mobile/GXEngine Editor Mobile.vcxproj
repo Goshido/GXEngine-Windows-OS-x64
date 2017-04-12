@@ -223,6 +223,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXRenderable.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSkeleton.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXSkinningMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTransform.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXMeshGeometry.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXNetwork.cpp" />
@@ -325,6 +326,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXMenu.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXRenderable.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSkeleton.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXSkinningMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTransform.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMeshGeometry.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMotionBlurEffect.h" />
@@ -447,6 +449,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Text Include="..\..\Shaders\System\Skeleton_vs.txt" />
     <Text Include="..\..\Shaders\System\SkinExt_fs.txt" />
     <Text Include="..\..\Shaders\System\SkinExt_vs.txt" />
+    <Text Include="..\..\Shaders\System\Skinning_vs.txt" />
     <Text Include="..\..\Shaders\System\TextureOuter_fs.txt" />
     <Text Include="..\..\Shaders\System\TextureOuter_vs.txt" />
     <Text Include="..\..\Shaders\System\TextureWithColorAndAlphaTest_fs.txt" />
