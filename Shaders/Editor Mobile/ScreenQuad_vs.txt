@@ -1,9 +1,9 @@
 #version 330 core
 
 
-#define GX_VERTEX_INDEX		0
+#define VERTEX_STREAM		0
 
-layout ( location = GX_VERTEX_INDEX ) in vec3 vertex;
+layout ( location = VERTEX_STREAM ) in vec3 vertex;
 
 smooth out vec2 v_uv;
 

@@ -36,6 +36,7 @@ EMRenderer::~EMRenderer ()
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
@@ -60,12 +61,13 @@ GXVoid EMRenderer::StartCommonPass ()
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, normalTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, specularTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, emissionTexture.GetTextureObject (), 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, objectTextures[ 0 ].GetTextureObject (), 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, objectTextures[ 1 ].GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, velocityTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, objectTextures[ 0 ].GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, objectTextures[ 1 ].GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, depthStencilTexture.GetTextureObject (), 0 );
 
-	const GLenum buffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5 };
-	glDrawBuffers ( 6, buffers );
+	const GLenum buffers[ 7 ] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6 };
+	glDrawBuffers ( 7, buffers );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
@@ -86,7 +88,7 @@ GXVoid EMRenderer::StartCommonPass ()
 	glEnable ( GL_DEPTH_TEST );
 	glDisable ( GL_BLEND );
 
-	glClear ( GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+	glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 }
 
 GXVoid EMRenderer::StartLightPass ()
@@ -98,6 +100,7 @@ GXVoid EMRenderer::StartLightPass ()
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
 
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
@@ -107,7 +110,7 @@ GXVoid EMRenderer::StartLightPass ()
 	GXRenderer* renderer = GXRenderer::GetInstance ();
 	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
 
-	const GLenum buffers[] = { GL_COLOR_ATTACHMENT0 };
+	const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers ( 1, buffers );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
@@ -130,12 +133,13 @@ GXVoid EMRenderer::StartHudColorPass ()
 		CopyTexureToCombineTexture ( combineHudTarget.GetTextureObject () );
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, outTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, motionBlurredTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, depthStencilTexture.GetTextureObject (), 0 );
 
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
@@ -147,7 +151,7 @@ GXVoid EMRenderer::StartHudColorPass ()
 	GXRenderer* renderer = GXRenderer::GetInstance ();
 	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
 
-	const GLenum buffers[] = { GL_COLOR_ATTACHMENT0 };
+	const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers ( 1, buffers );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
@@ -167,6 +171,7 @@ GXVoid EMRenderer::StartHudMaskPass ()
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, depthStencilTexture.GetTextureObject (), 0 );
 
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
@@ -178,7 +183,7 @@ GXVoid EMRenderer::StartHudMaskPass ()
 	GXRenderer* renderer = GXRenderer::GetInstance ();
 	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
 
-	const GLenum buffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	const GLenum buffers[ 2 ] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 	glDrawBuffers ( 2, buffers );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
@@ -227,6 +232,10 @@ GXVoid EMRenderer::CombineHudWithTarget ( eEMRenderTarget target )
 			combineHudTarget = emissionTexture;
 		break;
 
+		case eEMRenderTarget::Velocity:
+			combineHudTarget = velocityTexture;
+		break;
+
 		case eEMRenderTarget::Depth:
 			GXLogW ( L"EMRenderer::CombineHudWithTarget::Warnin - Can't combine HUD with depth target" );
 		break;
@@ -235,6 +244,40 @@ GXVoid EMRenderer::CombineHudWithTarget ( eEMRenderTarget target )
 			combineHudTarget = outTexture;
 		break;
 	}
+}
+
+GXVoid EMRenderer::ApplyMotionBlur ()
+{
+	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, motionBlurredTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
+
+	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+	glDepthMask ( GX_FALSE );
+	glStencilMask ( 0x00 );
+
+	GXRenderer* renderer = GXRenderer::GetInstance ();
+	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
+
+	const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers ( 1, buffers );
+
+	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+	if ( status != GL_FRAMEBUFFER_COMPLETE )
+		GXLogW ( L"EMRenderer::ApplyMotionBlur::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
+
+	glDisable ( GL_BLEND );
+	glDisable ( GL_DEPTH_TEST );
+
+	motionBlurMaterial.Bind ( GXTransform::GetNullTransform () );
+	screenQuadMesh.Render ();
+	motionBlurMaterial.Unbind ();
 }
 
 GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
@@ -252,6 +295,8 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 	glStencilMask ( 0x00 );
 
 	glDrawBuffer ( GL_BACK );
+
+	glClear ( GL_COLOR_BUFFER_BIT );
 
 	GXRenderer* renderer = GXRenderer::GetInstance ();
 	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
@@ -276,12 +321,16 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 			texture = &emissionTexture;
 		break;
 
+		case eEMRenderTarget::Velocity:
+			texture = &velocityTexture;
+		break;
+
 		case eEMRenderTarget::Depth:
 			texture = &depthStencilTexture;
 		break;
 
 		case eEMRenderTarget::Combine:
-			texture = &outTexture;
+			texture = &motionBlurredTexture;
 		break;
 	}
 
@@ -333,6 +382,11 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" )
 	directedLightMaterial.SetEmissionTexture ( emissionTexture );
 	directedLightMaterial.SetDepthTexture ( depthStencilTexture );
 
+	motionBlurMaterial.SetVelocityTexture ( velocityTexture );
+	motionBlurMaterial.SetDepthTexture ( depthStencilTexture );
+	motionBlurMaterial.SetImageTexture ( outTexture );
+	motionBlurMaterial.SetScreenResolution ( outTexture.GetWidth (), outTexture.GetHeight () );
+
 	SetObjectMask ( (GXUPointer)nullptr );
 	CombineHudWithTarget ( eEMRenderTarget::Combine );
 }
@@ -347,10 +401,12 @@ GXVoid EMRenderer::CreateFBO ()
 	normalTexture.InitResources ( width, height, GL_RGB16, GX_FALSE, GL_CLAMP_TO_EDGE );
 	specularTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	emissionTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	velocityTexture.InitResources ( width, height, GL_RGBA16F, GX_FALSE, GL_CLAMP_TO_EDGE );
 	objectTextures[ 0 ].InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	objectTextures[ 1 ].InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	depthStencilTexture.InitResources ( width, height, GL_DEPTH24_STENCIL8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	outTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	motionBlurredTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
 
 	glGenFramebuffers ( 1, &fbo );
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
@@ -358,12 +414,13 @@ GXVoid EMRenderer::CreateFBO ()
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, normalTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, specularTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, emissionTexture.GetTextureObject (), 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, objectTextures[ 0 ].GetTextureObject (), 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, objectTextures[ 1 ].GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, velocityTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, objectTextures[ 0 ].GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, objectTextures[ 1 ].GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, depthStencilTexture.GetTextureObject (), 0 );
 
-	const GLenum buffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5 };
-	glDrawBuffers ( 6, buffers );
+	const GLenum buffers[ 7 ] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6 };
+	glDrawBuffers ( 7, buffers );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
@@ -414,7 +471,7 @@ GXVoid EMRenderer::LightUpByDirected ( EMDirectedLight* light )
 
 	GXVec3 toLightDirectionView;
 	const GXMat4& rotation = light->GetRotation ();
-	GXMulVec3Mat4AsNormal ( toLightDirectionView, rotation.zv, GXCamera::GetActiveCamera ()->GetViewMatrix () );
+	GXMulVec3Mat4AsNormal ( toLightDirectionView, rotation.zv, GXCamera::GetActiveCamera ()->GetCurrentViewMatrix () );
 	toLightDirectionView.x = -toLightDirectionView.x;
 	toLightDirectionView.y = -toLightDirectionView.y;
 	toLightDirectionView.z = -toLightDirectionView.z;

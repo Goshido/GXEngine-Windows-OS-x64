@@ -29,8 +29,10 @@ class EMBlinnPhongCommonPassMaterial : public GXMaterial
 		GXVec3				emissionColor;
 		GLint				emissionColorLocation;
 
-		GLint				mod_view_proj_matLocation;
-		GLint				rot_view_matLocation;
+		GLint				currentModelViewProjectionMatrixLocation;
+		GLint				currentRotationViewMatrixLocation;
+		GLint				currentModelViewMatrixLocation;
+		GLint				lastFrameModelViewMatrixLocation;
 
 	public:
 		EMBlinnPhongCommonPassMaterial ();

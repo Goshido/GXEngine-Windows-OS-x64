@@ -67,8 +67,10 @@ EMBlinnPhongCommonPassMaterial::EMBlinnPhongCommonPassMaterial ()
 	specularTextureScaleOffsetLocation = shaderProgram.GetUniform ( "specularTextureScaleOffset" );
 	emissionTextureScaleOffsetLocation = shaderProgram.GetUniform ( "emissionTextureScaleOffset" );
 	emissionColorLocation = shaderProgram.GetUniform ( "emissionColor" );
-	mod_view_proj_matLocation = shaderProgram.GetUniform ( "mod_view_proj_mat" );
-	rot_view_matLocation = shaderProgram.GetUniform ( "rot_view_mat" );
+	currentModelViewProjectionMatrixLocation = shaderProgram.GetUniform ( "currentModelViewProjectionMatrix" );
+	currentRotationViewMatrixLocation = shaderProgram.GetUniform ( "currentRotationViewMatrix" );
+	currentModelViewMatrixLocation = shaderProgram.GetUniform ( "currentModelViewMatrix" );
+	lastFrameModelViewMatrixLocation = shaderProgram.GetUniform ( "lastFrameModelViewMatrix" );
 
 	diffuseTexture = nullptr;
 	SetDiffuseTextureColor ( DEFAULT_DIFFUSE_COLOR_R, DEFAULT_DIFFUSE_COLOR_G, DEFAULT_DIFFUSE_COLOR_B, DEFAULT_DIFFUSE_COLOR_A );
@@ -102,28 +104,38 @@ GXVoid EMBlinnPhongCommonPassMaterial::Bind ( const GXTransform &transform ) con
 
 	GXCamera* camera = GXCamera::GetActiveCamera ();
 
-	GXMat4 rot_mat;
-	GXMat3 rot_view_mat;
-	GXMat4 mod_view_proj_mat;
+	GXMat4 currentModelViewProjectionMatrix;
+	GXMat3 currentRotationViewMatrix;
+	GXMat4 currentModelViewMatrix;
+	GXMat4 lastFrameModelViewMatrix;
 
-	const GXMat4& view_mat = camera->GetViewMatrix ();
-	transform.GetRotation ( rot_mat );
+	const GXMat4& currentModelMatrix = transform.GetCurrentModelMatrix ();
+	GXMulMat4Mat4 ( currentModelViewProjectionMatrix, currentModelMatrix, camera->GetCurrentViewProjectionMatrix () );
+
+	GXMat4 currentRotationMatrix;
+	transform.GetRotation ( currentRotationMatrix );
+	const GXMat4& currentViewMatrix = camera->GetCurrentViewMatrix ();
 
 	GXMat3 r;
-	r.xv = rot_mat.xv;
-	r.yv = rot_mat.yv;
-	r.zv = rot_mat.zv;
+	r.xv = currentRotationMatrix.xv;
+	r.yv = currentRotationMatrix.yv;
+	r.zv = currentRotationMatrix.zv;
 
 	GXMat3 v;
-	v.xv = view_mat.xv;
-	v.yv = view_mat.yv;
-	v.zv = view_mat.zv;
+	v.xv = currentViewMatrix.xv;
+	v.yv = currentViewMatrix.yv;
+	v.zv = currentViewMatrix.zv;
 
-	GXMulMat3Mat3 ( rot_view_mat, r, v );
-	GXMulMat4Mat4 ( mod_view_proj_mat, transform.GetModelMatrix (), camera->GetViewProjectionMatrix () );
+	GXMulMat3Mat3 ( currentRotationViewMatrix, r, v );
 
-	glUniformMatrix3fv ( rot_view_matLocation, 1, GL_FALSE, rot_view_mat.arr );
-	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );
+	GXMulMat4Mat4 ( currentModelViewMatrix, currentModelMatrix, camera->GetCurrentViewMatrix () );
+
+	GXMulMat4Mat4 ( lastFrameModelViewMatrix, transform.GetLastFrameModelMatrix (), camera->GetLastFrameViewMatrix () );
+
+	glUniformMatrix4fv ( currentModelViewProjectionMatrixLocation, 1, GL_FALSE, currentModelViewProjectionMatrix.arr );
+	glUniformMatrix3fv ( currentRotationViewMatrixLocation, 1, GL_FALSE, currentRotationViewMatrix.arr );
+	glUniformMatrix4fv ( currentModelViewMatrixLocation, 1, GL_FALSE, currentModelViewMatrix.arr );
+	glUniformMatrix4fv ( lastFrameModelViewMatrixLocation, 1, GL_FALSE, lastFrameModelViewMatrix.arr );
 
 	diffuseTexture->Bind ( DIFFUSE_SLOT );
 	glUniform4fv ( diffuseColorLocation, 1, diffuseColor.arr );

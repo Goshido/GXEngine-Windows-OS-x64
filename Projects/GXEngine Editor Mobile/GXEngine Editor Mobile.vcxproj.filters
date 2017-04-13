@@ -363,6 +363,9 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXSkinningMaterial.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMMotionBlurMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -776,6 +779,9 @@
     <ClInclude Include="..\..\Include\GXEngine\GXSkinningMaterial.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMotionBlurMaterial.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="..\..\Sources\GXEngine\GXRecource.res">
@@ -914,6 +920,9 @@
     </Text>
     <Text Include="..\..\Shaders\System\Skinning_vs.txt">
       <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\MotionBlur_fs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
   </ItemGroup>
 </Project>

@@ -168,7 +168,7 @@ GXVoid EMGame::OnInit ()
 	world.RegisterRigidBody ( physicsBoxActor->GetRigidBody () );
 	world.RegisterRigidBody ( physicsPlaneActor->GetRigidBody () );
 
-	EMRenderer::GetInstance ()->CombineHudWithTarget ( eEMRenderTarget::Albedo );
+	EMRenderer::GetInstance ()->CombineHudWithTarget ( eEMRenderTarget::Velocity );
 
 	ShowCursor ( 1 );
 }
@@ -196,6 +196,8 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	renderer->StartLightPass ();
 
+	renderer->ApplyMotionBlur ();
+
 	renderer->StartHudColorPass ();
 
 	moveTool->OnDrawHudColorPass ();
@@ -211,6 +213,8 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	moveTool->OnDrawHudMaskPass ();
 
 	renderer->PresentFrame ( eEMRenderTarget::Combine );
+
+	viewerCamera.UpdateLastFrameViewMatrix ();
 }
 
 GXVoid EMGame::OnDestroy ()

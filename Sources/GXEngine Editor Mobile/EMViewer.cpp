@@ -124,7 +124,7 @@ EMViewer::EMViewer ()
 
 GXVoid EMViewer::OnPan ( const GXVec2& mouseDelta )
 {
-	const GXMat4& cameraTransform = camera.GetModelMatrix ();
+	const GXMat4& cameraTransform = camera.GetCurrentModelMatrix ();
 
 	GXVec3 deltaRight;
 	GXMulVec3Scalar ( deltaRight, cameraTransform.xv, -mouseDelta.x * panSpeed );
@@ -155,11 +155,11 @@ GXVoid EMViewer::OnRotate ( const GXVec2& mouseDelta )
 		targetLocation = origin;
 
 	GXVec3 targetOriginView;
-	GXMulVec3Mat4AsPoint ( targetOriginView, targetLocation, camera.GetViewMatrix () );
+	GXMulVec3Mat4AsPoint ( targetOriginView, targetLocation, camera.GetCurrentViewMatrix () );
 
 	UpdateCamera ();
 	GXVec3 tempTargetWorld;
-	GXMulVec3Mat4AsPoint ( tempTargetWorld, targetOriginView, camera.GetModelMatrix () );
+	GXMulVec3Mat4AsPoint ( tempTargetWorld, targetOriginView, camera.GetCurrentModelMatrix () );
 
 	GXVec3 deltaTargetWorld;
 	GXSubVec3Vec3 ( deltaTargetWorld, targetLocation, tempTargetWorld );
@@ -191,7 +191,7 @@ GXVoid EMViewer::UpdateCamera ()
 
 	GXSubVec3Vec3 ( matrix.wv, origin, stick );
 
-	camera.SetModelMatrix ( matrix );
+	camera.SetCurrentModelMatrix ( matrix );
 }
 
 GXFloat EMViewer::FixPitch ( GXFloat pitch )

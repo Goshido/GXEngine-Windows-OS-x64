@@ -5,19 +5,12 @@
 #include "EMLight.h"
 #include "EMMesh.h"
 #include "EMBlinnPhongDirectedLightMaterial.h"
+#include "EMMotionBlurMaterial.h"
 #include <GXEngine/GXUnlitTexture2DMaterial.h>
 #include <GXEngine/GXCameraOrthographic.h>
 
 
 typedef GXVoid ( GXCALL* PFNEMRENDERERONOBJECTPROC ) ( GXUPointer object );
-
-enum class eEMRenderPass : GXUByte
-{
-	Common				= 0,
-	Light				= 1,
-	HudDepthDependent	= 2,
-	HudDepthIndependent	= 3
-};
 
 enum class eEMRenderTarget
 {
@@ -25,6 +18,7 @@ enum class eEMRenderTarget
 	Normal,
 	Specular,
 	Emission,
+	Velocity,
 	Depth,
 	Combine
 };
@@ -36,9 +30,11 @@ class EMRenderer
 		GXTexture							normalTexture;
 		GXTexture							specularTexture;
 		GXTexture							emissionTexture;
+		GXTexture							velocityTexture;
 		GXTexture							objectTextures[ 2 ];
 		GXTexture							depthStencilTexture;
 		GXTexture							outTexture;
+		GXTexture							motionBlurredTexture;
 		GXTexture							combineHudTarget;
 
 		GLuint								fbo;
@@ -48,6 +44,7 @@ class EMRenderer
 
 		EMMesh								screenQuadMesh;
 		EMBlinnPhongDirectedLightMaterial	directedLightMaterial;
+		EMMotionBlurMaterial				motionBlurMaterial;
 		GXUnlitTexture2DMaterial			unlitMaterial;
 		GXCameraOrthographic				outCamera;
 
@@ -68,6 +65,7 @@ class EMRenderer
 		GXVoid SetObjectMask ( GXUPointer object );
 		
 		GXVoid CombineHudWithTarget ( eEMRenderTarget target = eEMRenderTarget::Combine );
+		GXVoid ApplyMotionBlur ();
 		GXVoid PresentFrame ( eEMRenderTarget target = eEMRenderTarget::Combine );
 
 		GXVoid SetOnObjectCallback ( PFNEMRENDERERONOBJECTPROC callback );

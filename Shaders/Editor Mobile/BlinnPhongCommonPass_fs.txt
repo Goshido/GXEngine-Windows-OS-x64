@@ -5,8 +5,9 @@
 #define NORMAL_SLOT			1
 #define SPECULAR_SLOT		2
 #define EMISSION_SLOT		3
-#define OBJECT_HI_SLOT		4
-#define OBJECT_LOW_SLOT		5
+#define VELOCITY_SLOT		4
+#define OBJECT_HI_SLOT		5
+#define OBJECT_LOW_SLOT		6
 
 
 smooth in vec2 v_uvDiffuse;
@@ -14,9 +15,11 @@ smooth in vec2 v_uvNormal;
 smooth in vec2 v_uvSpecular;
 smooth in vec2 v_uvEmission;
 
-smooth in vec3 v_normal;
-smooth in vec3 v_tangent;
-smooth in vec3 v_bitangent;
+smooth in vec3 v_velocityView;
+
+smooth in vec3 v_normalView;
+smooth in vec3 v_tangentView;
+smooth in vec3 v_bitangentView;
 
 flat in vec4 v_objectHi;
 flat in vec4 v_objectLow;
@@ -34,13 +37,14 @@ layout ( location = DISSUFE_SLOT ) out vec4 outDiffuse;
 layout ( location = NORMAL_SLOT ) out vec3 outNormal;
 layout ( location = SPECULAR_SLOT ) out vec4 outSpecular;
 layout ( location = EMISSION_SLOT ) out vec3 outEmission;
+layout ( location = VELOCITY_SLOT ) out vec4 outVelocity;
 layout ( location = OBJECT_HI_SLOT ) out vec4 outObjectHi;
 layout ( location = OBJECT_LOW_SLOT ) out vec4 outObjectLow;
 
 
 vec3 GetNormal ()
 {
-	mat3 tbn = mat3 ( v_tangent, v_bitangent, v_normal );
+	mat3 tbn = mat3 ( v_tangentView, v_bitangentView, v_normalView );
 
 	vec3 normalLocal = texture ( normalSampler, v_uvNormal ).xyz * 2.0 - 1.0;
 	vec3 normalView = normalize ( tbn * normalLocal );
@@ -54,6 +58,7 @@ void main ()
 	outNormal = GetNormal ();
 	outSpecular = texture ( specularSampler, v_uvSpecular );
 	outEmission = texture ( emissionSampler, v_uvEmission ).rgb * emissionColor;
+	outVelocity = vec4 ( v_velocityView, 1.0 );
 	outObjectHi = v_objectHi;
 	outObjectLow = v_objectLow;
 }

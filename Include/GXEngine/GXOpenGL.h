@@ -1,4 +1,4 @@
-//version 1.6
+//version 1.7
 
 #ifndef GX_OPENGL
 #define GX_OPENGL
@@ -40,6 +40,7 @@ extern PFNGLDELETEPROGRAMPROC				glDeleteProgram;
 extern PFNGLUNIFORM1IPROC					glUniform1i;
 extern PFNGLUNIFORM1FPROC					glUniform1f;
 extern PFNGLUNIFORM1FVPROC					glUniform1fv;
+extern PFNGLUNIFORM2FPROC					glUniform2f;
 extern PFNGLUNIFORM2FVPROC					glUniform2fv;
 extern PFNGLUNIFORM3FVPROC					glUniform3fv;
 extern PFNGLUNIFORM4FPROC					glUniform4f;

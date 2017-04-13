@@ -356,6 +356,8 @@ GXVoid GXCALL GXGetBaseFileName ( GXWChar** fileName, const GXWChar* absoluteFil
 			break;
 	}
 
+	i++;
+
 	if ( i < 0 )
 		i = 0;
 
@@ -375,7 +377,7 @@ GXWriteStream::GXWriteStream ( const GXWChar* fileName )
 	_wfopen_s ( &input, fileName, L"wb" );
 
 	if ( !input )
-		GXLogW ( L"GXWriteToFile::Error - Не могу создать файл %s", fileName );
+		GXLogW ( L"GXWriteToFile::Error - Не могу создать файл %s\n", fileName );
 }
 
 GXWriteStream::~GXWriteStream ()

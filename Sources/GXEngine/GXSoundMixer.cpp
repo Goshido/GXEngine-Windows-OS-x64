@@ -122,7 +122,7 @@ thread ( &Update, nullptr )
 	gx_sound_mixer_Mutex = new GXMutex (); 
 }
 
-GXDword GXTHREADCALL GXSoundMixer::Update ( GXVoid* args )
+GXDword GXTHREADCALL GXSoundMixer::Update ( GXVoid* /*args*/ )
 {
 	while ( loopFlag )
 	{

@@ -18,8 +18,10 @@ layout ( location = BITANGENT_STREAM ) in vec3 bitangent;
 layout ( location = OBJECT_HI_STREAM ) in vec4 objectHi;
 layout ( location = OBJECT_LOW_STREAM ) in vec4 objectLow;
 
-uniform mat4 mod_view_proj_mat;
-uniform mat3 rot_view_mat;
+uniform mat4 currentModelViewProjectionMatrix;
+uniform mat3 currentRotationViewMatrix;
+uniform mat4 currentModelViewMatrix;
+uniform mat4 lastFrameModelViewMatrix;
 
 uniform vec4 diffuseTextureScaleOffset;
 uniform vec4 normalTextureScaleOffset;
@@ -31,9 +33,11 @@ smooth out vec2 v_uvNormal;
 smooth out vec2 v_uvSpecular;
 smooth out vec2 v_uvEmission;
 
-smooth out vec3 v_normal;
-smooth out vec3 v_tangent;
-smooth out vec3 v_bitangent;
+smooth out vec3 v_velocityView;
+
+smooth out vec3 v_normalView;
+smooth out vec3 v_tangentView;
+smooth out vec3 v_bitangentView;
 
 flat out vec4 v_objectHi;
 flat out vec4 v_objectLow;
@@ -41,16 +45,21 @@ flat out vec4 v_objectLow;
 
 void main ()
 {
-	gl_Position = mod_view_proj_mat * vec4 ( vertex, 1.0 );
+	vec4 v = vec4 ( vertex, 1.0 );
+	gl_Position = currentModelViewProjectionMatrix * v;
 
 	v_uvDiffuse = uv * diffuseTextureScaleOffset.xy + diffuseTextureScaleOffset.zw;
 	v_uvNormal = uv * normalTextureScaleOffset.xy + normalTextureScaleOffset.zw;
 	v_uvSpecular = uv * specularTextureScaleOffset.xy + specularTextureScaleOffset.zw;
 	v_uvEmission = uv * emissionTextureScaleOffset.xy + emissionTextureScaleOffset.zw;
 
-	v_normal = rot_view_mat * normal;
-	v_tangent = rot_view_mat * tangent;
-	v_bitangent = rot_view_mat * bitangent;
+	vec4 currentLocationView = currentModelViewMatrix * v;
+	vec4 lastFrameLocationView = lastFrameModelViewMatrix * v;
+	v_velocityView = currentLocationView.xyz - lastFrameLocationView.xyz;
+
+	v_normalView = currentRotationViewMatrix * normal;
+	v_tangentView = currentRotationViewMatrix * tangent;
+	v_bitangentView = currentRotationViewMatrix * bitangent;
 
 	v_objectHi = objectHi;
 	v_objectLow = objectLow;

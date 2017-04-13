@@ -59,7 +59,7 @@ GXVoid GXUnlitColorMaskMaterial::Bind ( const GXTransform &transform ) const
 	if ( !mask ) return;
 
 	GXMat4 mod_view_proj_mat;
-	GXMulMat4Mat4 ( mod_view_proj_mat, transform.GetModelMatrix (), GXCamera::GetActiveCamera ()->GetViewProjectionMatrix () );
+	GXMulMat4Mat4 ( mod_view_proj_mat, transform.GetCurrentModelMatrix (), GXCamera::GetActiveCamera ()->GetCurrentViewProjectionMatrix () );
 
 	glUseProgram ( shaderProgram.GetProgram () );
 

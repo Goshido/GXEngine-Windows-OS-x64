@@ -1,4 +1,4 @@
-//version 1.6
+//version 1.7
 
 #include <GXEngine/GXOpenGL.h>
 #include <GXCommon/GXLogger.h>
@@ -41,6 +41,7 @@ PFNGLDELETEPROGRAMPROC				glDeleteProgram				= nullptr;
 PFNGLUNIFORM1IPROC					glUniform1i					= nullptr;
 PFNGLUNIFORM1FPROC					glUniform1f					= nullptr;
 PFNGLUNIFORM1FVPROC					glUniform1fv				= nullptr;
+PFNGLUNIFORM2FPROC					glUniform2f					= nullptr;
 PFNGLUNIFORM2FVPROC					glUniform2fv				= nullptr;
 PFNGLUNIFORM3FVPROC					glUniform3fv				= nullptr;
 PFNGLUNIFORM4FPROC					glUniform4f					= nullptr;
@@ -113,6 +114,7 @@ GXVoid GXCALL GXOpenGLInit ()
 	OPENGL_GET_PROC ( PFNGLUNIFORM1IPROC,					glUniform1i					);
 	OPENGL_GET_PROC ( PFNGLUNIFORM1FPROC,					glUniform1f					);
 	OPENGL_GET_PROC ( PFNGLUNIFORM1FVPROC,					glUniform1fv				);
+	OPENGL_GET_PROC ( PFNGLUNIFORM2FPROC,					glUniform2f					);
 	OPENGL_GET_PROC ( PFNGLUNIFORM2FVPROC,					glUniform2fv				);
 	OPENGL_GET_PROC ( PFNGLUNIFORM3FVPROC,					glUniform3fv				);
 	OPENGL_GET_PROC ( PFNGLUNIFORM4FPROC,					glUniform4f					);

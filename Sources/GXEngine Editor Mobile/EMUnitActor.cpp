@@ -54,6 +54,8 @@ GXVoid EMUnitActor::OnDrawCommonPass ()
 	commonPassMaterial.Bind ( mesh );
 	mesh.Render ();
 	commonPassMaterial.Unbind ();
+
+	mesh.UpdateLastFrameModelMatrix ();
 }
 
 GXVoid EMUnitActor::OnSave ( GXUByte** data )

@@ -13,8 +13,8 @@
 #define INVALID_TYPE			0
 #define INVALID_TEXTURE_UNIT	0xFF
 
-#define CACHE_FOLDER_NAME L"Cache"
-#define CACHE_FILE_EXTENSION L"cache"
+#define CACHE_DIRECTORY_NAME	L"Cache"
+#define CACHE_FILE_EXTENSION	L"cache"
 
 
 static GXTextureEntry* gx_TextureHead = nullptr;
@@ -155,20 +155,20 @@ GXTexture& GXCALL GXTexture::LoadTexture ( const GXWChar* fileName, GXBool isGen
 	GXGetFileDirectoryPath ( &path, fileName );
 	GXUInt size = GXWcslen ( path ) * sizeof ( GXWChar );
 
-	size += sizeof ( GXWChar ); // "/" symbol
-	size += GXWcslen ( CACHE_FOLDER_NAME ) * sizeof ( GXWChar );
-	size += sizeof ( GXWChar ); // "/" symbol
+	size += sizeof ( GXWChar );		//L'/' symbol
+	size += GXWcslen ( CACHE_DIRECTORY_NAME ) * sizeof ( GXWChar );
+	size += sizeof ( GXWChar );		//L'/' symbol
 
 	GXWChar* baseFileName = nullptr;
 	GXGetBaseFileName ( &baseFileName, fileName );
 	size += GXWcslen ( baseFileName ) * sizeof ( GXWChar );
 
-	size += sizeof ( GXWChar ); // "." symbol
+	size += sizeof ( GXWChar );		//L'.' symbol
 	size += GXWcslen ( CACHE_FILE_EXTENSION ) * sizeof ( GXWChar );
-	size += sizeof ( GXWChar ); // "\0" symbol
+	size += sizeof ( GXWChar );		//L'\0' symbol
 
 	GXWChar* cacheFileName = (GXWChar*)malloc ( size );
-	wsprintfW ( cacheFileName, L"%s/%s/%s.%s", path, CACHE_FOLDER_NAME, baseFileName, CACHE_FILE_EXTENSION );
+	wsprintfW ( cacheFileName, L"%s/%s/%s.%s", path, CACHE_DIRECTORY_NAME, baseFileName, CACHE_FILE_EXTENSION );
 
 	GXUByte* data = nullptr;
 
@@ -229,6 +229,19 @@ GXTexture& GXCALL GXTexture::LoadTexture ( const GXWChar* fileName, GXBool isGen
 		new GXTextureEntry ( *texture, fileName );
 		return *texture;
 	}
+
+	size = GXWcslen ( path ) * sizeof ( GXWChar );
+	size += sizeof ( GXWChar );		//L'/' symbol
+	size += GXWcslen ( CACHE_DIRECTORY_NAME ) * sizeof ( GXWChar );
+	size += sizeof ( GXWChar );		//L'\0' symbol
+
+	GXWChar* cacheDirectory = (GXWChar*)malloc ( size );
+	wsprintfW ( cacheDirectory, L"%s/%s", path, CACHE_DIRECTORY_NAME );
+
+	if ( !GXDoesDirectoryExist ( cacheDirectory ) )
+		GXCreateDirectory ( cacheDirectory );
+
+	free ( cacheDirectory );
 
 	cacheHeader.width = (GXUShort)width;
 	cacheHeader.height = (GXUShort)height;

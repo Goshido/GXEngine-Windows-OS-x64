@@ -187,6 +187,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMLight.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMGame.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMMesh.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMMotionBlurMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMMoveTool.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMObjectMaskMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMPhysicsDrivenActor.cpp" />
@@ -371,6 +372,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMLight.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMGame.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMesh.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMotionBlurMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMoveTool.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMObjectMaskMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMPhysicsDrivenActor.h" />
@@ -420,6 +422,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Text Include="..\..\Shaders\Editor Mobile\MaskVertexAndUV_vs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\MaskVertexOnly_vs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\Mask_fs.txt" />
+    <Text Include="..\..\Shaders\Editor Mobile\MotionBlur_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\Null_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\OneSampler_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\ScreenQuad_vs.txt" />

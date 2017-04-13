@@ -10,10 +10,11 @@
 class GXTransform
 {
 	protected:
-		GXVec3				location;
-		GXVec3				scale;
-		GXMat4				rot_mat;
-		GXMat4				mod_mat;
+		GXVec3				currentLocation;
+		GXVec3				currentScale;
+		GXMat4				currentRotationMatrix;
+		GXMat4				currentModelMatrix;
+		GXMat4				lastFrameModelMatrix;
 
 	private:
 		static GXTransform	nullTransform;
@@ -40,7 +41,9 @@ class GXTransform
 
 		GXVoid GetScale ( GXVec3 &scale ) const;
 
-		const GXMat4& GetModelMatrix () const;
+		const GXMat4& GetCurrentModelMatrix () const;
+		const GXMat4& GetLastFrameModelMatrix () const;
+		GXVoid UpdateLastFrameModelMatrix ();
 
 		static const GXTransform& GetNullTransform ();
 

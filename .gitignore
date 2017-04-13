@@ -1,6 +1,9 @@
 Debug/x64/*.exe
 Debug/x64/*.pdb
 Debug/x64/*.ilk
+Debug/x64/Software OpenGL 3.3
+Debug/x64/xinput1_3.dll
+Debug/x64/opengl32.dll
 
 Projects/GXEngine/.vs
 Projects/GXEngine/Debug

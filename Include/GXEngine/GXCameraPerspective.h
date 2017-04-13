@@ -1,4 +1,4 @@
-//version 1.6
+//version 1.7
 
 #ifndef GX_CAMERA_PERSPECTIVE
 #define GX_CAMERA_PERSPECTIVE
@@ -10,23 +10,21 @@
 class GXCameraPerspective : public GXCamera
 {
 	protected:
-		GXFloat	fov_rad;
-		GXFloat aspectRatio;
+		GXFloat		fovy_rad;
+		GXFloat		aspectRatio;
 
 	public:
 		GXCameraPerspective ();
 		explicit GXCameraPerspective ( GXFloat fovy_rad, GXFloat aspectRatio, GXFloat znear, GXFloat zfar );
 		~GXCameraPerspective () override;
 
-		GXVoid SetFov ( GXFloat fov_rad );
+		GXVoid SetFov ( GXFloat fovy_rad );
 		GXVoid SetAspectRatio ( GXFloat aspecRatio );
 		GXVoid SetZnear ( GXFloat znear ) override;
 		GXVoid SetZfar ( GXFloat zfar ) override;
 
-		GXFloat GetFov ();
-		GXFloat GetAspectRatio ();
-		GXFloat GetZnear () const override;
-		GXFloat GetZfar () const override;
+		GXFloat GetFovYRadians () const;
+		GXFloat GetAspectRatio () const;
 };
 
 

@@ -1,0 +1,57 @@
+#version 330 core
+
+
+#define TOTAL_SAMPLES		8
+#define INV_TOTAL_SAMPLES	0.125
+#define COLOR_SLOT			0
+
+
+smooth in vec2 v_uv;
+
+uniform sampler2D velocitySampler;
+uniform sampler2D depthSampler;
+uniform sampler2D imageSampler;
+
+uniform float blurStrength;
+uniform float blurMinimumVelocity;
+uniform vec2 inverseScreenResolution;
+uniform mat4 inverseProjectionMatrix;
+
+layout ( location = COLOR_SLOT ) out vec4 outColor;
+
+
+float GetDepthView ()
+{
+	vec4 locationCVV;
+	locationCVV.xy = gl_FragCoord.xy * inverseScreenResolution * 2.0 - 1.0;
+	locationCVV.z = texture ( depthSampler, v_uv ).r * 2.0 - 1.0;
+	locationCVV.w = 1.0;
+
+	vec4 homogeneousLocationView = inverseProjectionMatrix * locationCVV;
+	return homogeneousLocationView.z / homogeneousLocationView.w;
+}
+
+void main ()
+{
+	vec3 velocityView = texture ( velocitySampler, v_uv ).xyz;
+	float depthView = GetDepthView ();
+	float perspectiveCorrectedVelocityMagnitude = length ( velocityView.xy ) / depthView;
+
+	if ( perspectiveCorrectedVelocityMagnitude < blurMinimumVelocity ) 
+	{
+		outColor = texture ( imageSampler, v_uv );
+		return;
+	}
+
+	vec2 lookupStep = -blurStrength * ( velocityView.xy / depthView );
+	vec2 lookupUV = v_uv;
+
+	vec3 colorSum = vec3 ( 0.0, 0.0, 0.0 );
+	for ( int i = 0; i < TOTAL_SAMPLES; i++ )
+	{
+		colorSum += texture ( imageSampler, lookupUV ).rgb;
+		lookupUV += lookupStep;
+	}
+
+	outColor = vec4 ( colorSum * INV_TOTAL_SAMPLES, 1.0 );
+}

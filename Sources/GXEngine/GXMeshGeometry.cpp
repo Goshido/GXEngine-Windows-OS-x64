@@ -9,8 +9,8 @@
 #include <GXCommon/GXNativeStaticMeshSaver.h>
 
 
-#define CACHE_FOLDER_NAME L"Cache"
-#define CACHE_FILE_EXTENSION L"cache"
+#define CACHE_DIRECTORY_NAME	L"Cache"
+#define CACHE_FILE_EXTENSION	L"cache"
 
 
 static GXMeshGeometryEntry* gx_MeshGeometryHead = nullptr;
@@ -27,7 +27,7 @@ class GXMeshGeometryEntry
 		GXInt					refs;
 
 	public:
-		explicit GXMeshGeometryEntry ( GXMeshGeometry& meshGeometry, const GXWChar* fileName );
+		explicit GXMeshGeometryEntry ( GXMeshGeometry &meshGeometry, const GXWChar* fileName );
 
 		const GXWChar* GetFileName () const;
 		GXMeshGeometry& GetMeshGeometry () const;
@@ -39,7 +39,7 @@ class GXMeshGeometryEntry
 		~GXMeshGeometryEntry ();
 };
 
-GXMeshGeometryEntry::GXMeshGeometryEntry ( GXMeshGeometry& meshGeometry, const GXWChar* fileName )
+GXMeshGeometryEntry::GXMeshGeometryEntry ( GXMeshGeometry &meshGeometry, const GXWChar* fileName )
 {
 	GXWcsclone ( &this->fileName, fileName );
 	this->meshGeometry = &meshGeometry;
@@ -207,6 +207,8 @@ GXVoid GXMeshGeometry::SetTopology ( GLenum topology )
 
 GXVoid GXMeshGeometry::UpdatePose ( const GXSkeleton &skeleton )
 {
+	if ( !IsSkeletalMesh () || skinningVAO == 0 ) return;
+
 	skinningMaterial->SetSkeleton ( skeleton );
 	skinningMaterial->Bind ( GXTransform::GetNullTransform () );
 
@@ -240,20 +242,20 @@ GXMeshGeometry& GXCALL GXMeshGeometry::LoadFromObj ( const GXWChar* fileName )
 	GXGetFileDirectoryPath ( &path, fileName );
 	GXUInt size = GXWcslen ( path ) * sizeof ( GXWChar );
 
-	size += sizeof ( GXWChar ); // "/" symbol
-	size += GXWcslen ( CACHE_FOLDER_NAME ) * sizeof ( GXWChar );
-	size += sizeof ( GXWChar ); // "/" symbol
+	size += sizeof ( GXWChar );		//L'/' symbol
+	size += GXWcslen ( CACHE_DIRECTORY_NAME ) * sizeof ( GXWChar );
+	size += sizeof ( GXWChar );		//L'/' symbol
 
 	GXWChar* baseFileName = nullptr;
 	GXGetBaseFileName ( &baseFileName, fileName );
 	size += GXWcslen ( baseFileName ) * sizeof ( GXWChar );
 
-	size += sizeof ( GXWChar ); // "." symbol
+	size += sizeof ( GXWChar );		//L'.' symbol
 	size += GXWcslen ( CACHE_FILE_EXTENSION ) * sizeof ( GXWChar );
-	size += sizeof ( GXWChar ); // "\0" symbol
+	size += sizeof ( GXWChar );		//L'\0' symbol
 
 	GXWChar* cacheFileName = (GXWChar*)malloc ( size );
-	wsprintfW ( cacheFileName, L"%s/%s/%s.%s", path, CACHE_FOLDER_NAME, baseFileName, CACHE_FILE_EXTENSION );
+	wsprintfW ( cacheFileName, L"%s/%s/%s.%s", path, CACHE_DIRECTORY_NAME, baseFileName, CACHE_FILE_EXTENSION );
 
 	if ( GXDoesFileExist ( cacheFileName ) )
 	{
@@ -329,6 +331,19 @@ GXMeshGeometry& GXCALL GXMeshGeometry::LoadFromObj ( const GXWChar* fileName )
 	}
 
 	free ( points );
+
+	size = GXWcslen ( path ) * sizeof ( GXWChar );
+	size += sizeof ( GXWChar );		//L'/' symbol
+	size += GXWcslen ( CACHE_DIRECTORY_NAME ) * sizeof ( GXWChar );
+	size += sizeof ( GXWChar );		//L'\0' symbol
+
+	GXWChar* cacheDirectory = (GXWChar*)malloc ( size );
+	wsprintfW ( cacheDirectory, L"%s/%s", path, CACHE_DIRECTORY_NAME );
+
+	if ( !GXDoesDirectoryExist ( cacheDirectory ) )
+		GXCreateDirectory ( cacheDirectory );
+
+	free ( cacheDirectory );
 
 	GXExportNativeStaticMesh ( cacheFileName, descriptor );
 

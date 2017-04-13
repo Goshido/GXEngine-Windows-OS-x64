@@ -1,4 +1,4 @@
-//version 1.1
+//version 1.2
 
 #include <GXCommon/GXImageLoader.h>
 #include <GXCommon/GXLogger.h>
@@ -39,15 +39,17 @@ GXBool GXCALL GXLoadImage ( const GXWChar* fileName, GXUInt &width, GXUInt &heig
 
 	GXInt line = width * comp;
 	GXUByte* tmp = (GXUByte*)malloc ( line );
+	GXUByte* p = *data;
+	GXUByte* n = *data + line * ( height - 1 );
 
-	for ( GXInt i = height / 2; i > 0; i-- )
+	while ( p < n )
 	{
-		GXUByte* p = *data + i * line;
-		GXUByte* n = *data + ( height - i - 1 ) * line;
-
 		memcpy ( tmp, p, line );
 		memcpy ( p, n, line );
 		memcpy ( n, tmp, line );
+
+		p += line;
+		n -= line;
 	}
 
 	free ( tmp );

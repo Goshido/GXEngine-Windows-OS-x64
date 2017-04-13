@@ -1,4 +1,4 @@
-//version 1.6
+//version 1.7
 
 #include <GXEngine/GXCameraOrthographic.h>
 
@@ -16,11 +16,12 @@ GXCameraOrthographic::GXCameraOrthographic ()
 	znear = DEFAULT_Z_NEAR;
 	zfar = DEFAULT_Z_FAR;
 
-	GXSetMat4Ortho ( proj_mat, width, height, znear, zfar );
-	GXSetMat4Inverse ( inv_proj_mat, proj_mat );
-	view_proj_mat = proj_mat;
+	GXSetMat4Ortho ( currentProjectionMatrix, width, height, znear, zfar );
+	GXSetMat4Inverse ( currentInverseProjectionMatrix, currentProjectionMatrix );
+	currentViewProjectionMatrix = currentProjectionMatrix;
 
 	UpdateClipPlanes ();
+	UpdateLastFrameViewMatrix ();
 }
 
 GXCameraOrthographic::GXCameraOrthographic ( GXFloat width, GXFloat height, GXFloat znear, GXFloat zfar )
@@ -30,11 +31,12 @@ GXCameraOrthographic::GXCameraOrthographic ( GXFloat width, GXFloat height, GXFl
 	this->znear = znear;
 	this->zfar = zfar;
 
-	GXSetMat4Ortho ( proj_mat, width, height, znear, zfar );
-	GXSetMat4Inverse ( inv_proj_mat, proj_mat );
-	view_proj_mat = proj_mat;
+	GXSetMat4Ortho ( currentProjectionMatrix, width, height, znear, zfar );
+	GXSetMat4Inverse ( currentInverseProjectionMatrix, currentProjectionMatrix );
+	currentViewProjectionMatrix = currentProjectionMatrix;
 
 	UpdateClipPlanes ();
+	UpdateLastFrameViewMatrix ();
 }
 
 GXCameraOrthographic::~GXCameraOrthographic ()
@@ -45,9 +47,9 @@ GXCameraOrthographic::~GXCameraOrthographic ()
 GXVoid GXCameraOrthographic::SetZnear ( GXFloat znear )
 {
 	this->znear = znear;
-	GXSetMat4Ortho ( proj_mat, width, height, znear, zfar );
-	GXSetMat4Inverse ( inv_proj_mat, proj_mat );
-	GXMulMat4Mat4 ( view_proj_mat, view_mat, proj_mat );
+	GXSetMat4Ortho ( currentProjectionMatrix, width, height, znear, zfar );
+	GXSetMat4Inverse ( currentInverseProjectionMatrix, currentProjectionMatrix );
+	GXMulMat4Mat4 ( currentViewProjectionMatrix, currentViewMatrix, currentProjectionMatrix );
 
 	UpdateClipPlanes ();
 }
@@ -55,21 +57,11 @@ GXVoid GXCameraOrthographic::SetZnear ( GXFloat znear )
 GXVoid GXCameraOrthographic::SetZfar ( GXFloat zfar )
 {
 	this->zfar = zfar;
-	GXSetMat4Ortho ( proj_mat, width, height, znear, zfar );
-	GXSetMat4Inverse ( inv_proj_mat, proj_mat );
-	GXMulMat4Mat4 ( view_proj_mat, view_mat, proj_mat );
+	GXSetMat4Ortho ( currentProjectionMatrix, width, height, znear, zfar );
+	GXSetMat4Inverse ( currentInverseProjectionMatrix, currentProjectionMatrix );
+	GXMulMat4Mat4 ( currentViewProjectionMatrix, currentViewMatrix, currentProjectionMatrix );
 
 	UpdateClipPlanes ();
-}
-
-GXFloat GXCameraOrthographic::GetZnear () const
-{
-	return znear;
-}
-
-GXFloat GXCameraOrthographic::GetZfar () const
-{
-	return zfar;
 }
 
 GXVoid GXCameraOrthographic::SetProjection ( GXFloat width, GXFloat height, GXFloat znear, GXFloat zfar )
@@ -79,9 +71,9 @@ GXVoid GXCameraOrthographic::SetProjection ( GXFloat width, GXFloat height, GXFl
 	this->znear = znear;
 	this->zfar = zfar;
 
-	GXSetMat4Ortho ( proj_mat, width, height, znear, zfar );
-	GXSetMat4Inverse ( inv_proj_mat, proj_mat );
-	GXMulMat4Mat4 ( view_proj_mat, view_mat, proj_mat );
+	GXSetMat4Ortho ( currentProjectionMatrix, width, height, znear, zfar );
+	GXSetMat4Inverse ( currentInverseProjectionMatrix, currentProjectionMatrix );
+	GXMulMat4Mat4 ( currentViewProjectionMatrix, currentViewMatrix, currentProjectionMatrix );
 
 	UpdateClipPlanes ();
 }

@@ -99,4 +99,6 @@ GXVoid EMPhysicsDrivenActor::Draw ()
 	mesh->Render ();
 
 	material.Unbind ();
+
+	mesh->UpdateLastFrameModelMatrix ();
 }
