@@ -15,10 +15,12 @@ class EMMesh : public GXTransform, public GXRenderable
 		GXAABB			boundsWorld;
 
 	public:
-		EMMesh ( const GXWChar* staticMeshFileName );
+		EMMesh ( const GXWChar* meshFileName );
 		~EMMesh () override;
 
 		GXVoid Render () override;
+
+		GXVoid UpdatePose ( GXSkeleton &skeleton );
 
 	protected:
 		GXVoid InitGraphicResources () override;

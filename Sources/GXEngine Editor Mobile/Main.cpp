@@ -1,6 +1,7 @@
 //version 1.2
 
 #include <GXEngine/GXCore.h>
+#include <GXCommon/GXFileSystem.h>
 #include <GXEngine_Editor_Mobile/EMGame.h>
 
 

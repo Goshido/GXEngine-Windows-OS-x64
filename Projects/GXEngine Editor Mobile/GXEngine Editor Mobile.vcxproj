@@ -184,6 +184,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMBlinnPhongCommonPassMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMBlinnPhongDirectedLightMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMDirectedLightActor.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMFluttershy.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMLight.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMGame.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMMesh.cpp" />
@@ -369,6 +370,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMBlinnPhongCommonPassMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMBlinnPhongDirectedLightMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMDirectedLightActor.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMFluttershy.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMLight.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMGame.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMesh.h" />
@@ -414,8 +416,8 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Resource Include="..\..\Sources\GXEngine\GXRecource.res" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\Shaders\Editor Mobile\BlinnPhongCommonPass_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\BlinnPhongCommonPass_vs.txt" />
+    <Text Include="..\..\Shaders\Editor Mobile\BlinnPhongCommonPass_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\Color_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\DirectedLight_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\MaskAlphaTest_fs.txt" />

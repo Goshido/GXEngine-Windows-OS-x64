@@ -26,6 +26,28 @@ GXVoid GXSkeletalMeshData::Cleanup ()
 
 //-------------------------------------------------------------------------------------------------------------
 
+GXAnimationInfo::GXAnimationInfo ()
+{
+	numBones = 0;
+	boneNames = nullptr;
+
+	fps = 60.0f;
+	numFrames = 0;
+	keys = nullptr;
+}
+
+GXVoid GXAnimationInfo::Cleanup ()
+{
+	numBones = 0;
+	GXSafeFree ( boneNames );
+
+	fps = 60.0f;
+	numFrames = 0;
+	GXSafeFree ( keys );
+}
+
+//-------------------------------------------------------------------------------------------------------------
+
 GXVoid GXCALL GXLoadNativeSkeletalMesh ( const GXWChar* fileName, GXSkeletalMeshData &info )
 {
 	GXUByte* data;
@@ -65,7 +87,7 @@ GXVoid GXCALL GXLoadNativeSkeletalMesh ( const GXWChar* fileName, GXSkeletalMesh
 	free ( data );
 }
 
-GXVoid GXCALL GXLoadNativeAnimation ( const GXWChar* fileName, GXAnimationInfoExt &info )
+GXVoid GXCALL GXLoadNativeAnimation ( const GXWChar* fileName, GXAnimationInfo &info )
 {
 	GXUByte* data;
 	GXUInt size;

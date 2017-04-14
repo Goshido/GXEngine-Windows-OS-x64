@@ -2,8 +2,9 @@
 #include <GXEngine/GXCamera.h>
 
 
-#define DEFAULT_BLUR_STRENGHT			0.01f
+#define DEFAULT_BLUR_STRENGHT			0.03f
 #define DEFAULT_BLUR_MINIMUM_VELOCITY	0.01f
+#define DEFAULT_BLUR_DEPTH_FACTOR_VIEW	1.2f
 #define DEFAULT_SCREEN_WIDTH			1280
 #define DEFAULT_SCREEN_HEIGHT			720
 
@@ -21,6 +22,8 @@ EMMotionBlurMaterial::EMMotionBlurMaterial ()
 	velocityTexture = nullptr;
 	depthTexture = nullptr;
 	imageTexture = nullptr;
+	objectHighTexture = nullptr;
+	objectLowTexture = nullptr;
 
 	static const GLchar* samplerNames[ 3 ] = { "velocitySampler", "depthSampler", "imageSampler" };
 	static const GLuint samplerLocations[ 3 ] = { VELOCITY_SLOT, DEPTH_SLOT, IMAGE_SLOT };
@@ -41,9 +44,11 @@ EMMotionBlurMaterial::EMMotionBlurMaterial ()
 	blurMinimumvelocityLocation = shaderProgram.GetUniform ( "blurMinimumVelocity" );
 	inverseScreenResolutionLocation = shaderProgram.GetUniform ( "inverseScreenResolution" );
 	inverseProjectionMatrixLocation = shaderProgram.GetUniform ( "inverseProjectionMatrix" );
+	blurDepthFactorViewLocation = shaderProgram.GetUniform ( "blurDepthFactorView" );
 
 	SetBlurStrength ( DEFAULT_BLUR_STRENGHT );
 	SetBlurMinimumVelocity ( DEFAULT_BLUR_MINIMUM_VELOCITY );
+	SetBlurDepthFactorView ( DEFAULT_BLUR_DEPTH_FACTOR_VIEW );
 	SetScreenResolution ( DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT );
 }
 
@@ -63,6 +68,7 @@ GXVoid EMMotionBlurMaterial::Bind ( const GXTransform& /*transform*/ ) const
 	glUniform1f ( blurStrengthLocation, blurStrength );
 	glUniform1f ( blurMinimumvelocityLocation, blurMinimumVelocity );
 	glUniform2f ( inverseScreenResolutionLocation, inverseScreenResolution.x, inverseScreenResolution.y );
+	glUniform1f ( blurDepthFactorViewLocation, blurDepthFactorView );
 	glUniformMatrix4fv ( inverseProjectionMatrixLocation, 1, GL_FALSE, inverseProjectionMatrix.arr );
 
 	velocityTexture->Bind ( VELOCITY_SLOT );
@@ -104,6 +110,11 @@ GXVoid EMMotionBlurMaterial::SetBlurStrength ( GXFloat strength )
 GXVoid EMMotionBlurMaterial::SetBlurMinimumVelocity ( GXFloat velocity )
 {
 	blurMinimumVelocity = velocity;
+}
+
+GXVoid EMMotionBlurMaterial::SetBlurDepthFactorView ( GXFloat depthFactorView )
+{
+	blurDepthFactorView = depthFactorView;
 }
 
 GXVoid EMMotionBlurMaterial::SetScreenResolution ( GXUShort width, GXUShort height )

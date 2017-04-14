@@ -37,6 +37,8 @@ EMGame::EMGame ()
 	physicsBoxActor = nullptr;
 	physicsPlaneActor = nullptr;
 
+	fluttershy = nullptr;
+
 	uiInput = nullptr;
 }
 
@@ -168,7 +170,7 @@ GXVoid EMGame::OnInit ()
 	world.RegisterRigidBody ( physicsBoxActor->GetRigidBody () );
 	world.RegisterRigidBody ( physicsPlaneActor->GetRigidBody () );
 
-	EMRenderer::GetInstance ()->CombineHudWithTarget ( eEMRenderTarget::Velocity );
+	fluttershy = new EMFluttershy ();
 
 	ShowCursor ( 1 );
 }
@@ -184,6 +186,8 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	GXPhysicsEngine::GetInstance ()->RunSimulateLoop ( deltaTime );
 
+	//fluttershy->UpdatePose ( deltaTime );
+
 	GXCamera& viewerCamera = EMViewer::GetInstance ()->GetCamera ();
 	GXCamera::SetActiveCamera ( &viewerCamera );
 
@@ -193,6 +197,8 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	unitActor->OnDrawCommonPass ();
 	physicsBoxActor->Draw ();
 	physicsPlaneActor->Draw ();
+	fluttershy->UpdatePose ( deltaTime );
+	fluttershy->Render ();
 
 	renderer->StartLightPass ();
 
@@ -248,6 +254,8 @@ GXVoid EMGame::OnDestroy ()
 	GXSafeDelete ( hudCamera );
 
 	delete EMViewer::GetInstance ();
+
+	GXSafeDelete ( fluttershy );
 
 	GXTouchSurface::GetInstance ()->SetDefaultWidget ( nullptr );
 	GXSafeDelete ( uiInput );

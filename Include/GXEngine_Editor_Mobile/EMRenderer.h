@@ -35,7 +35,6 @@ class EMRenderer
 		GXTexture							depthStencilTexture;
 		GXTexture							outTexture;
 		GXTexture							motionBlurredTexture;
-		GXTexture							combineHudTarget;
 
 		GLuint								fbo;
 		GLuint								sourceFbo;
@@ -64,9 +63,8 @@ class EMRenderer
 
 		GXVoid SetObjectMask ( GXUPointer object );
 		
-		GXVoid CombineHudWithTarget ( eEMRenderTarget target = eEMRenderTarget::Combine );
 		GXVoid ApplyMotionBlur ();
-		GXVoid PresentFrame ( eEMRenderTarget target = eEMRenderTarget::Combine );
+		GXVoid PresentFrame ( eEMRenderTarget target );
 
 		GXVoid SetOnObjectCallback ( PFNEMRENDERERONOBJECTPROC callback );
 		GXVoid GetObject ( GXUShort x, GXUShort y );
@@ -82,8 +80,6 @@ class EMRenderer
 		GXVoid LightUpByDirected ( EMDirectedLight* light );
 		GXVoid LightUpBySpot ( EMSpotlight* light );
 		GXVoid LightUpByBulp ( EMBulp* light );
-
-		GXVoid CopyTexureToCombineTexture ( GLuint texture );
 
 		GXUPointer SampleObject ();
 };

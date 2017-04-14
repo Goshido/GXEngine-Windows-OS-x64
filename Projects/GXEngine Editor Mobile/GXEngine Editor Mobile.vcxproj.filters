@@ -366,6 +366,9 @@
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMMotionBlurMaterial.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMFluttershy.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -782,6 +785,9 @@
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMotionBlurMaterial.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMFluttershy.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="..\..\Sources\GXEngine\GXRecource.res">
@@ -915,13 +921,13 @@
     <Text Include="..\..\Shaders\Editor Mobile\BlinnPhongCommonPass_fs.txt">
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
-    <Text Include="..\..\Shaders\Editor Mobile\BlinnPhongCommonPass_vs.txt">
-      <Filter>Shaders\GXEngine Editor Mobile</Filter>
-    </Text>
     <Text Include="..\..\Shaders\System\Skinning_vs.txt">
       <Filter>Shaders\System</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\MotionBlur_fs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\BlinnPhongCommonPass_vs.txt">
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
   </ItemGroup>

@@ -16,17 +16,17 @@ class GXAnimSolverPlayer : public GXAnimSolver
 
 		GXFloat							multiplier;
 		GXFloat							animPos;
-		const GXAnimationInfoExt*		animData;
+		const GXAnimationInfo*			animData;
 		GXFloat							delta2PartFartor;
 
 	public:
-		GXAnimSolverPlayer ( GXUShort solver );
-		virtual ~GXAnimSolverPlayer ();
+		GXAnimSolverPlayer ( GXUShort solverID );
+		~GXAnimSolverPlayer () override;
 
-		virtual GXVoid GetBone ( const GXUTF8* boneName, const GXQuat** rot, const GXVec3** loc );
-		virtual GXVoid Update ( GXFloat delta );
+		GXVoid GetBone ( const GXUTF8* boneName, const GXQuat** rot, const GXVec3** loc ) override;
+		GXVoid Update ( GXFloat delta ) override;
 
-		GXVoid SetAnimationSequence ( const GXAnimationInfoExt* animData );
+		GXVoid SetAnimationSequence ( const GXAnimationInfo* animData );
 		GXVoid SetAnimationMultiplier ( GXFloat multiplier );
 };
 

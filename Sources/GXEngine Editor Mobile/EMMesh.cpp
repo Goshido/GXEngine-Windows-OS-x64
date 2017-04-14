@@ -1,10 +1,13 @@
 #include <GXEngine_Editor_Mobile/EMMesh.h>
+#include <GXEngine_Editor_Mobile/EMRenderer.h>
+#include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXStrings.h>
+#include <GXCommon/GXMemory.h>
 
 
-EMMesh::EMMesh ( const GXWChar* staticMeshFileName )
+EMMesh::EMMesh ( const GXWChar* meshFileName )
 {
-	GXWcsclone ( &meshFileName, staticMeshFileName );
+	GXWcsclone ( &this->meshFileName, meshFileName );
 	InitGraphicResources ();
 }
 
@@ -16,12 +19,29 @@ EMMesh::~EMMesh ()
 
 GXVoid EMMesh::Render ()
 {
+	EMRenderer::GetInstance ()->SetObjectMask ( (GXUPointer)this );
 	meshGeometry.Render ();
+}
+
+GXVoid EMMesh::UpdatePose ( GXSkeleton &skeleton )
+{
+	meshGeometry.UpdatePose ( skeleton );
 }
 
 GXVoid EMMesh::InitGraphicResources ()
 {
-	meshGeometry = GXMeshGeometry::LoadFromStm ( meshFileName );
+	GXWChar* extension = nullptr;
+	GXGetFileExtension ( &extension, meshFileName );
+
+	if ( GXWcscmp ( extension, L"stm") == 0 || GXWcscmp ( extension, L"STM" ) == 0 )
+		meshGeometry = GXMeshGeometry::LoadFromStm ( meshFileName );
+	else if ( GXWcscmp ( extension, L"skm" ) == 0 || GXWcscmp ( extension, L"SKM" ) == 0 )
+		meshGeometry = GXMeshGeometry::LoadFromSkm ( meshFileName );
+	else
+		meshGeometry = GXMeshGeometry::LoadFromObj ( meshFileName );
+
+	GXSafeFree ( extension );
+
 	TransformUpdated ();
 }
 

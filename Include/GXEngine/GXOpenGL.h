@@ -1,4 +1,4 @@
-//version 1.7
+//version 1.8
 
 #ifndef GX_OPENGL
 #define GX_OPENGL
@@ -80,6 +80,7 @@ extern PFNGLBINDSAMPLERPROC					glBindSampler;
 extern PFNGLSAMPLERPARAMETERIPROC			glSamplerParameteri;
 extern PFNGLSAMPLERPARAMETERFPROC			glSamplerParameterf;
 extern PFNGLBLITFRAMEBUFFERPROC				glBlitFramebuffer;
+extern PFNGLCLEARBUFFERFVPROC				glClearBufferfv;
 
 
 GXVoid GXCALL GXOpenGLInit ();

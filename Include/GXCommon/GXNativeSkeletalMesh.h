@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #ifndef GX_NATIVE_SKELETAL_MESH
 #define GX_NATIVE_SKELETAL_MESH
@@ -55,7 +55,7 @@ struct GXNativeAnimationHeader
 	GXUInt		keysOffset;				//array of [numBones * numFrames] elements: location (GXVec3), rotation (GXQuat). Relative parent
 };
 
-struct GXAnimationInfoExt
+struct GXAnimationInfo
 {
 	GXUShort				numBones;
 	GXUTF8*					boneNames;
@@ -63,11 +63,15 @@ struct GXAnimationInfoExt
 	GXFloat					fps;
 	GXUInt					numFrames;
 	GXQuatLocJoint*			keys;
+
+	GXAnimationInfo ();
+	GXVoid Cleanup ();
 };
 
 //------------------------------------------------------------------------------------
 
 GXVoid GXCALL GXLoadNativeSkeletalMesh ( const GXWChar* fileName, GXSkeletalMeshData &info );
-GXVoid GXCALL GXLoadNativeAnimation ( const GXWChar* fileName, GXAnimationInfoExt &info );
+GXVoid GXCALL GXLoadNativeAnimation ( const GXWChar* fileName, GXAnimationInfo &info );
+
 
 #endif //GX_NATIVE_SKELETAL_MESH

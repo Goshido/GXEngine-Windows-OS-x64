@@ -37,7 +37,7 @@ vec3 GetSpecular ( in vec3 normalView, in vec3 fragmentView )
 	vec4 specular = texture ( specularSampler, v_uv );
 	specular.a *= 255.0;
 
-	vec3 toObserverDirectionView = normalize ( -fragmentView );
+	vec3 toObserverDirectionView = normalize ( fragmentView );
 	vec3 mirroredDirectionView = reflect ( toLightDirectionView, normalView );
 
 	return pow ( max ( dot ( toObserverDirectionView, mirroredDirectionView ), 0.0 ), specular.a ) * specular.rgb * color;

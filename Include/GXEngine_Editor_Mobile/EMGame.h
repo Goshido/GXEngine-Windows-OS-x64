@@ -11,6 +11,7 @@
 #include "EMUnitActor.h"
 #include "EMMoveTool.h"
 #include "EMPhysicsDrivenActor.h"
+#include "EMFluttershy.h"
 #include <GXEngine/GXGame.h>
 #include <GXEngine/GXCameraOrthographic.h>
 
@@ -36,6 +37,7 @@ class EMGame : public GXGame
 		EMMoveTool*				moveTool;
 		EMPhysicsDrivenActor*	physicsBoxActor;
 		EMPhysicsDrivenActor*	physicsPlaneActor;
+		EMFluttershy*			fluttershy;
 		GXUIInput*				uiInput;
 
 	public:

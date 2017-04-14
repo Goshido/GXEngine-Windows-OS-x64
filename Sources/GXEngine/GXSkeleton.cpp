@@ -108,7 +108,7 @@ GXVoid GXSkeleton::CalculatePose ()
 	GXQuatTransform ( alpha, pose[ 0 ].rotation, bindTransform[ 0 ].location );
 	GXSumVec3Vec3 ( pose[ 0 ].location, alpha, tempPoseGlobal[ 0 ].location );
 
-	for ( GXUShort i = 0; i < numBones; i++ )
+	for ( GXUShort i = 1; i < numBones; i++ )
 	{
 		GXShort parentIndex = parentBoneIndices[ i ];
 

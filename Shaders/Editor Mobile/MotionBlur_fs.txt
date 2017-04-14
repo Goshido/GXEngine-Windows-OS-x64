@@ -2,7 +2,6 @@
 
 
 #define TOTAL_SAMPLES		8
-#define INV_TOTAL_SAMPLES	0.125
 #define COLOR_SLOT			0
 
 
@@ -14,17 +13,18 @@ uniform sampler2D imageSampler;
 
 uniform float blurStrength;
 uniform float blurMinimumVelocity;
+uniform float blurDepthFactorView;
 uniform vec2 inverseScreenResolution;
 uniform mat4 inverseProjectionMatrix;
 
-layout ( location = COLOR_SLOT ) out vec4 outColor;
+layout ( location = COLOR_SLOT ) out vec3 outColor;
 
 
-float GetDepthView ()
+float GetDepthView ( in vec2 uv )
 {
 	vec4 locationCVV;
 	locationCVV.xy = gl_FragCoord.xy * inverseScreenResolution * 2.0 - 1.0;
-	locationCVV.z = texture ( depthSampler, v_uv ).r * 2.0 - 1.0;
+	locationCVV.z = texture ( depthSampler, uv ).r * 2.0 - 1.0;
 	locationCVV.w = 1.0;
 
 	vec4 homogeneousLocationView = inverseProjectionMatrix * locationCVV;
@@ -34,24 +34,34 @@ float GetDepthView ()
 void main ()
 {
 	vec3 velocityView = texture ( velocitySampler, v_uv ).xyz;
-	float depthView = GetDepthView ();
+	float depthView = GetDepthView ( v_uv );
 	float perspectiveCorrectedVelocityMagnitude = length ( velocityView.xy ) / depthView;
 
 	if ( perspectiveCorrectedVelocityMagnitude < blurMinimumVelocity ) 
 	{
-		outColor = texture ( imageSampler, v_uv );
+		outColor = texture ( imageSampler, v_uv ).xyz;
 		return;
 	}
 
 	vec2 lookupStep = -blurStrength * ( velocityView.xy / depthView );
 	vec2 lookupUV = v_uv;
 
-	vec3 colorSum = vec3 ( 0.0, 0.0, 0.0 );
-	for ( int i = 0; i < TOTAL_SAMPLES; i++ )
+	float hits = 1.0;
+	vec3 colorSum = texture ( imageSampler, lookupUV ).rgb;
+	lookupUV += lookupStep;
+
+	for ( int i = 1; i < TOTAL_SAMPLES; i++ )
 	{
-		colorSum += texture ( imageSampler, lookupUV ).rgb;
+		float sampleDepthView = GetDepthView ( lookupUV );
+		if ( abs ( sampleDepthView - depthView ) < blurDepthFactorView )
+		{
+			hits += 1.0;
+			colorSum += texture ( imageSampler, lookupUV ).rgb;
+		}
+
 		lookupUV += lookupStep;
 	}
 
-	outColor = vec4 ( colorSum * INV_TOTAL_SAMPLES, 1.0 );
+	float invHits = 1.0 / hits;
+	outColor = colorSum * invHits;
 }

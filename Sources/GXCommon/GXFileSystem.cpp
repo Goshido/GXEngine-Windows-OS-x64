@@ -283,15 +283,15 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 	return GX_TRUE;
 }
 
-GXVoid GXCALL GXGetFileDirectoryPath ( GXWChar** path, const GXWChar* absoluteFileName )
+GXVoid GXCALL GXGetFileDirectoryPath ( GXWChar** path, const GXWChar* fileName )
 {
-	if ( !absoluteFileName )
+	if ( !fileName )
 	{
 		*path = nullptr;
 		return;
 	}
 
-	GXInt symbols = (GXInt)GXWcslen ( absoluteFileName );
+	GXInt symbols = (GXInt)GXWcslen ( fileName );
 	if ( symbols == 0 )
 	{
 		*path = nullptr;
@@ -301,7 +301,7 @@ GXVoid GXCALL GXGetFileDirectoryPath ( GXWChar** path, const GXWChar* absoluteFi
 	GXInt i = symbols;
 	for ( ; i > 0; i-- )
 	{
-		if ( absoluteFileName[ i ] == L'\\' || absoluteFileName[ i ] == L'/' )
+		if ( fileName[ i ] == L'\\' || fileName[ i ] == L'/' )
 			break;
 	}
 
@@ -314,36 +314,36 @@ GXVoid GXCALL GXGetFileDirectoryPath ( GXWChar** path, const GXWChar* absoluteFi
 
 	GXUInt size = ( i + 1 ) * sizeof ( GXWChar );
 	*path = (GXWChar*)malloc ( size );
-	memcpy ( *path, absoluteFileName, size - sizeof ( GXWChar ) );
+	memcpy ( *path, fileName, size - sizeof ( GXWChar ) );
 
 	( *path )[ i ] = 0;
 }
 
-GXVoid GXCALL GXGetBaseFileName ( GXWChar** fileName, const GXWChar* absoluteFileName )
+GXVoid GXCALL GXGetBaseFileName ( GXWChar** baseFileName, const GXWChar* fileName )
 {
-	if ( !absoluteFileName )
+	if ( !fileName )
 	{
-		*fileName = nullptr;
+		*baseFileName = nullptr;
 		return;
 	}
 
-	GXInt symbols = (GXInt)GXWcslen ( absoluteFileName );
+	GXInt symbols = (GXInt)GXWcslen ( fileName );
 	if ( symbols == 0 )
 	{
-		*fileName = nullptr;
+		*baseFileName = nullptr;
 		return;
 	}
 
 	GXInt i = symbols;
 	for ( ; i > 0; i-- )
 	{
-		if ( absoluteFileName[ i ] == L'.' )
+		if ( fileName[ i ] == L'.' )
 			break;
 	}
 
 	if ( i <= 0 )
 	{
-		*fileName = nullptr;
+		*baseFileName = nullptr;
 		return;
 	}
 
@@ -352,7 +352,7 @@ GXVoid GXCALL GXGetBaseFileName ( GXWChar** fileName, const GXWChar* absoluteFil
 
 	for ( ; i >= 0; i-- )
 	{
-		if ( absoluteFileName[ i ] == L'\\' || absoluteFileName[ i ] == L'/' )
+		if ( fileName[ i ] == L'\\' || fileName[ i ] == L'/' )
 			break;
 	}
 
@@ -364,10 +364,41 @@ GXVoid GXCALL GXGetBaseFileName ( GXWChar** fileName, const GXWChar* absoluteFil
 	GXInt start = i;
 	GXInt baseFileNameSymbols = end - start + 1;
 	GXUInt size = ( baseFileNameSymbols + 1 ) * sizeof ( GXWChar );
-	*fileName = (GXWChar*)malloc ( size );
-	memcpy ( *fileName, absoluteFileName + start, size - sizeof ( GXWChar ) );
+	*baseFileName = (GXWChar*)malloc ( size );
+	memcpy ( *baseFileName, fileName + start, size - sizeof ( GXWChar ) );
 
-	( *fileName )[ baseFileNameSymbols ] = 0;
+	( *baseFileName )[ baseFileNameSymbols ] = 0;
+}
+
+GXVoid GXCALL GXGetFileExtension ( GXWChar** extension, const GXWChar* fileName )
+{
+	if ( !fileName )
+	{
+		*extension = nullptr;
+		return;
+	}
+
+	GXInt symbols = GXWcslen ( fileName );
+	GXInt i = symbols - 1;
+
+	for ( ; i > 0; i-- )
+	{
+		if ( fileName[ i ] == L'.' ) break;
+	}
+
+	if ( i < 0 )
+	{
+		*extension = nullptr;
+		return;
+	}
+
+	i++;
+
+	GXUInt extensionSymbols = (GXUInt)symbols - i + 1;
+	GXUInt size = extensionSymbols * sizeof ( GXWChar );
+
+	*extension = (GXWChar*)malloc ( size );
+	memcpy ( *extension, fileName + i, size );
 }
 
 //------------------------------------------------------------------------------------------------

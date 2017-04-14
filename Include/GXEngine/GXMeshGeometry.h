@@ -73,8 +73,9 @@ class GXMeshGeometry
 		GXVoid InitStaticResources ();
 		GXVoid InitSkeletalResources ();
 
-		static GXMeshGeometry& GXCALL GetGeometryFromStm ( const GXWChar* fileName );
 		GXBool IsSkeletalMesh () const;
+
+		static GXMeshGeometry& GXCALL GetGeometryFromStm ( const GXWChar* fileName );
 };
 
 

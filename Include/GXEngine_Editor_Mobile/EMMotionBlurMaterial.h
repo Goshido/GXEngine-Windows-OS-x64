@@ -8,12 +8,17 @@ class EMMotionBlurMaterial : public GXMaterial
 		GXTexture*			velocityTexture;
 		GXTexture*			depthTexture;
 		GXTexture*			imageTexture;
+		GXTexture*			objectHighTexture;
+		GXTexture*			objectLowTexture;
 
 		GXFloat				blurStrength;
 		GLint				blurStrengthLocation;
 
 		GXFloat				blurMinimumVelocity;
 		GLint				blurMinimumvelocityLocation;
+
+		GXFloat				blurDepthFactorView;
+		GXInt				blurDepthFactorViewLocation;
 
 		GXVec2				inverseScreenResolution;
 		GLint				inverseScreenResolutionLocation;
@@ -33,5 +38,6 @@ class EMMotionBlurMaterial : public GXMaterial
 
 		GXVoid SetBlurStrength ( GXFloat strength );
 		GXVoid SetBlurMinimumVelocity ( GXFloat velocity );
+		GXVoid SetBlurDepthFactorView ( GXFloat depthFactorView );
 		GXVoid SetScreenResolution ( GXUShort width, GXUShort height );
 };

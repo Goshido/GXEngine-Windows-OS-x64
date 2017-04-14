@@ -32,8 +32,9 @@ GXVoid GXCALL GXGetCurrentDirectory ( GXWChar** currentDirectory );
 GXBool GXCALL GXDoesDirectoryExist ( const GXWChar* directory );
 GXBool GXCALL GXCreateDirectory ( const GXWChar* directory );
 GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar* directory );
-GXVoid GXCALL GXGetFileDirectoryPath ( GXWChar** path, const GXWChar* absoluteFileName );
-GXVoid GXCALL GXGetBaseFileName ( GXWChar** fileName, const GXWChar* absoluteFileName );
+GXVoid GXCALL GXGetFileDirectoryPath ( GXWChar** path, const GXWChar* fileName );
+GXVoid GXCALL GXGetBaseFileName ( GXWChar** baseFileName, const GXWChar* fileName );
+GXVoid GXCALL GXGetFileExtension ( GXWChar** extension, const GXWChar* fileName );
 
 class GXWriteStream
 {

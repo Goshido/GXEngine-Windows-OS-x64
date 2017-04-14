@@ -76,13 +76,13 @@ GXVoid EMRenderer::StartCommonPass ()
 	GXRenderer* renderer = GXRenderer::GetInstance ();
 	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
 
-	glClearColor ( 0.0f, 0.0f, 0.0f, 0.0f );
-	glClearDepth ( 1.0f );
-	glClearStencil ( 0x00 );
-
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 	glDepthMask ( GL_TRUE );
 	glStencilMask ( 0xFF );
+
+	glClearColor ( 0.0f, 0.0f, 0.0f, 1.0f );
+	glClearDepth ( 1.0f );
+	glClearStencil ( 0x00 );
 
 	glEnable ( GL_CULL_FACE );
 	glEnable ( GL_DEPTH_TEST );
@@ -103,9 +103,9 @@ GXVoid EMRenderer::StartLightPass ()
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
 
-	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
 	glDepthMask ( GX_FALSE );
-	glStencilMask ( 0xFF );
+	glStencilMask ( 0x00 );
 
 	GXRenderer* renderer = GXRenderer::GetInstance ();
 	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
@@ -119,8 +119,8 @@ GXVoid EMRenderer::StartLightPass ()
 
 	glClear ( GL_COLOR_BUFFER_BIT );
 
-	glEnable ( GL_CULL_FACE );
-	glEnable ( GL_DEPTH_TEST );
+	glDisable ( GL_CULL_FACE );
+	glDisable ( GL_DEPTH_TEST );
 	glEnable ( GL_BLEND );
 	glBlendFunc ( GL_ONE, GL_ONE );
 
@@ -129,9 +129,6 @@ GXVoid EMRenderer::StartLightPass ()
 
 GXVoid EMRenderer::StartHudColorPass ()
 {
-	if ( combineHudTarget.GetTextureObject () != outTexture.GetTextureObject () )
-		CopyTexureToCombineTexture ( combineHudTarget.GetTextureObject () );
-
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, motionBlurredTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
@@ -142,7 +139,7 @@ GXVoid EMRenderer::StartHudColorPass ()
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, depthStencilTexture.GetTextureObject (), 0 );
 
-	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
 	glDepthMask ( GX_TRUE );
 	glStencilMask ( 0xFF );
 
@@ -159,6 +156,7 @@ GXVoid EMRenderer::StartHudColorPass ()
 		GXLogW ( L"EMRenderer::StartHudDepthDependentPass::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
 	glEnable ( GL_BLEND );
+	glBlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 	glEnable ( GL_DEPTH_TEST );
 }
 
@@ -191,6 +189,7 @@ GXVoid EMRenderer::StartHudMaskPass ()
 		GXLogW ( L"EMRenderer::StartHudDepthDependentPass::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
 	glDisable ( GL_BLEND );
+	glEnable ( GL_CULL_FACE );
 	glEnable ( GL_DEPTH_TEST );
 }
 
@@ -209,43 +208,6 @@ GXVoid EMRenderer::SetObjectMask ( GXUPointer object )
 	glVertexAttrib4Nub ( EM_OBJECT_LOW_INDEX, objectMask[ 4 ], objectMask[ 5 ], objectMask[ 6 ], objectMask[ 7 ] );
 }
 
-GXVoid EMRenderer::CombineHudWithTarget ( eEMRenderTarget target )
-{
-	if ( target == eEMRenderTarget::Depth )
-		GXLogW ( L"EMRenderer::CombineHudWithTarget::Warning - Can't combine HUD with depth target" );
-
-	switch ( target )
-	{
-		case eEMRenderTarget::Albedo:
-			combineHudTarget = diffuseTexture;
-		break;
-
-		case eEMRenderTarget::Normal:
-			combineHudTarget = normalTexture;
-		break;
-
-		case eEMRenderTarget::Specular:
-			combineHudTarget = specularTexture;
-		break;
-
-		case eEMRenderTarget::Emission:
-			combineHudTarget = emissionTexture;
-		break;
-
-		case eEMRenderTarget::Velocity:
-			combineHudTarget = velocityTexture;
-		break;
-
-		case eEMRenderTarget::Depth:
-			GXLogW ( L"EMRenderer::CombineHudWithTarget::Warnin - Can't combine HUD with depth target" );
-		break;
-
-		case eEMRenderTarget::Combine:
-			combineHudTarget = outTexture;
-		break;
-	}
-}
-
 GXVoid EMRenderer::ApplyMotionBlur ()
 {
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
@@ -258,8 +220,8 @@ GXVoid EMRenderer::ApplyMotionBlur ()
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
 
-	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
-	glDepthMask ( GX_FALSE );
+	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
+	glDepthMask ( GL_FALSE );
 	glStencilMask ( 0x00 );
 
 	GXRenderer* renderer = GXRenderer::GetInstance ();
@@ -274,6 +236,7 @@ GXVoid EMRenderer::ApplyMotionBlur ()
 
 	glDisable ( GL_BLEND );
 	glDisable ( GL_DEPTH_TEST );
+	glDisable ( GL_CULL_FACE );
 
 	motionBlurMaterial.Bind ( GXTransform::GetNullTransform () );
 	screenQuadMesh.Render ();
@@ -291,8 +254,9 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 	glDisable ( GL_BLEND );
 
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
-	glDepthMask ( GL_FALSE );
-	glStencilMask ( 0x00 );
+	glDepthMask ( GL_TRUE );
+	glStencilMask ( 0xFF );
+	glClearColor ( 0.0f, 0.0f, 0.0f, 1.0f );
 
 	glDrawBuffer ( GL_BACK );
 
@@ -388,7 +352,6 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" )
 	motionBlurMaterial.SetScreenResolution ( outTexture.GetWidth (), outTexture.GetHeight () );
 
 	SetObjectMask ( (GXUPointer)nullptr );
-	CombineHudWithTarget ( eEMRenderTarget::Combine );
 }
 
 GXVoid EMRenderer::CreateFBO ()
@@ -472,9 +435,7 @@ GXVoid EMRenderer::LightUpByDirected ( EMDirectedLight* light )
 	GXVec3 toLightDirectionView;
 	const GXMat4& rotation = light->GetRotation ();
 	GXMulVec3Mat4AsNormal ( toLightDirectionView, rotation.zv, GXCamera::GetActiveCamera ()->GetCurrentViewMatrix () );
-	toLightDirectionView.x = -toLightDirectionView.x;
-	toLightDirectionView.y = -toLightDirectionView.y;
-	toLightDirectionView.z = -toLightDirectionView.z;
+	GXReverseVec3 ( toLightDirectionView );
 
 	directedLightMaterial.SetToLightDirectionView ( toLightDirectionView );
 	directedLightMaterial.SetColor ( light->GetColor () );
@@ -495,35 +456,6 @@ GXVoid EMRenderer::LightUpBySpot ( EMSpotlight* light )
 GXVoid EMRenderer::LightUpByBulp ( EMBulp* light )
 {
 	//TODO
-}
-
-GXVoid EMRenderer::CopyTexureToCombineTexture ( GLuint texture )
-{
-	if ( sourceFbo == 0 )
-		glGenFramebuffers ( 1, &sourceFbo );
-
-	const GLenum buffers[] = { GL_COLOR_ATTACHMENT0 };
-
-	glBindFramebuffer ( GL_READ_FRAMEBUFFER, sourceFbo );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, 0 );
-	glDrawBuffers ( 1, buffers );
-
-	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
-
-	glBindFramebuffer ( GL_DRAW_FRAMEBUFFER, fbo );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, outTexture.GetTextureObject (), 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
-	glDrawBuffers ( 1, buffers );
-
-	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
-
-	GXInt width = GXRenderer::GetInstance ()->GetWidth ();
-	GXInt heingt = GXRenderer::GetInstance ()->GetHeight ();
 }
 
 GXUPointer EMRenderer::SampleObject ()

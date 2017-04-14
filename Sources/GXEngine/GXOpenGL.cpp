@@ -1,4 +1,4 @@
-//version 1.7
+//version 1.8
 
 #include <GXEngine/GXOpenGL.h>
 #include <GXCommon/GXLogger.h>
@@ -81,6 +81,7 @@ PFNGLBINDSAMPLERPROC				glBindSampler				= nullptr;
 PFNGLSAMPLERPARAMETERIPROC			glSamplerParameteri			= nullptr;
 PFNGLSAMPLERPARAMETERFPROC			glSamplerParameterf			= nullptr;
 PFNGLBLITFRAMEBUFFERPROC			glBlitFramebuffer			= nullptr;
+PFNGLCLEARBUFFERFVPROC				glClearBufferfv				= nullptr;
 
 
 GXVoid GXCALL GXOpenGLInit ()
@@ -154,6 +155,7 @@ GXVoid GXCALL GXOpenGLInit ()
 	OPENGL_GET_PROC ( PFNGLSAMPLERPARAMETERIPROC,			glSamplerParameteri			);
 	OPENGL_GET_PROC ( PFNGLSAMPLERPARAMETERFPROC,			glSamplerParameterf			);
 	OPENGL_GET_PROC ( PFNGLBLITFRAMEBUFFERPROC,				glBlitFramebuffer			);
+	OPENGL_GET_PROC ( PFNGLCLEARBUFFERFVPROC,				glClearBufferfv				);
 }
 
 GXVoid GXCALL GXCheckOpenGLError ()

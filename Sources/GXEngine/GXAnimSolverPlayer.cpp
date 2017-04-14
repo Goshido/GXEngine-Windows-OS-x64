@@ -6,6 +6,9 @@
 #include <new>
 
 
+#define DEFAULT_MULTIPLIER		1.0f
+
+
 class GXBoneFinderNode : public GXAVLTreeNode
 {
 	public:
@@ -44,13 +47,13 @@ class GXBoneFinder : public GXAVLTree
 		GXBoneFinderNode*	cacheFriendlyNodes;
 
 	public:
-		GXBoneFinder ( const GXAnimationInfoExt &animInfo );
+		GXBoneFinder ( const GXAnimationInfo &animInfo );
 		virtual ~GXBoneFinder ();
 
 		GXUShort FindBoneIndex ( const GXUTF8* boneName );
 };
 
-GXBoneFinder::GXBoneFinder ( const GXAnimationInfoExt &animInfo ) :
+GXBoneFinder::GXBoneFinder ( const GXAnimationInfo &animInfo ) :
 GXAVLTree ( &GXBoneFinderNode::Compare, GX_FALSE )
 {
 	cacheFriendlyNodes = (GXBoneFinderNode*)malloc ( sizeof ( GXBoneFinderNode ) * animInfo.numBones );
@@ -82,7 +85,8 @@ GXAnimSolverPlayer::GXAnimSolverPlayer ( GXUShort solverID ):
 GXAnimSolver ( solverID )
 {
 	animPos = 0.0f;
-	finder = 0;
+	finder = nullptr;
+	SetAnimationMultiplier ( DEFAULT_MULTIPLIER );
 }
 
 GXAnimSolverPlayer::~GXAnimSolverPlayer ()
@@ -134,7 +138,7 @@ GXVoid GXAnimSolverPlayer::Update ( GXFloat delta )
 	}
 }
 
-GXVoid GXAnimSolverPlayer::SetAnimationSequence ( const GXAnimationInfoExt* animData )
+GXVoid GXAnimSolverPlayer::SetAnimationSequence ( const GXAnimationInfo* animData )
 {
 	GXSafeDelete ( finder );
 	finder = new GXBoneFinder ( *animData );

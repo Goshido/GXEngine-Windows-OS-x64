@@ -1,20 +1,22 @@
 #version 330 core
 
 
-#define VERTEX_STREAM		0
-#define UV_STREAM			1
-#define NORMAL_STREAM		2
-#define TANGENT_STREAM		3
-#define BITANGENT_STREAM	4
-#define OBJECT_HI_STREAM	14
-#define OBJECT_LOW_STREAM	15
+#define CURRENT_VERTEX_STREAM		0
+#define UV_STREAM					1
+#define CURRENT_NORMAL_STREAM		2
+#define CURRENT_TANGENT_STREAM		3
+#define CURRENT_BITANGENT_STREAM	4
+#define LAST_FRAME_VERTEX_STREAM	7
+#define OBJECT_HI_STREAM			14
+#define OBJECT_LOW_STREAM			15
 
 
-layout ( location = VERTEX_STREAM ) in vec3 vertex;
+layout ( location = CURRENT_VERTEX_STREAM ) in vec3 currentVertex;
 layout ( location = UV_STREAM ) in vec2 uv;
-layout ( location = NORMAL_STREAM ) in vec3 normal;
-layout ( location = TANGENT_STREAM ) in vec3 tangent;
-layout ( location = BITANGENT_STREAM ) in vec3 bitangent;
+layout ( location = CURRENT_NORMAL_STREAM ) in vec3 currentNormal;
+layout ( location = CURRENT_TANGENT_STREAM ) in vec3 currentTangent;
+layout ( location = CURRENT_BITANGENT_STREAM ) in vec3 currentBitangent;
+layout ( location = LAST_FRAME_VERTEX_STREAM ) in vec3 lastFrameVertex;
 layout ( location = OBJECT_HI_STREAM ) in vec4 objectHi;
 layout ( location = OBJECT_LOW_STREAM ) in vec4 objectLow;
 
@@ -45,7 +47,7 @@ flat out vec4 v_objectLow;
 
 void main ()
 {
-	vec4 v = vec4 ( vertex, 1.0 );
+	vec4 v = vec4 ( currentVertex, 1.0 );
 	gl_Position = currentModelViewProjectionMatrix * v;
 
 	v_uvDiffuse = uv * diffuseTextureScaleOffset.xy + diffuseTextureScaleOffset.zw;
@@ -54,12 +56,12 @@ void main ()
 	v_uvEmission = uv * emissionTextureScaleOffset.xy + emissionTextureScaleOffset.zw;
 
 	vec4 currentLocationView = currentModelViewMatrix * v;
-	vec4 lastFrameLocationView = lastFrameModelViewMatrix * v;
+	vec4 lastFrameLocationView = lastFrameModelViewMatrix * vec4 ( lastFrameVertex, 1.0 );
 	v_velocityView = currentLocationView.xyz - lastFrameLocationView.xyz;
 
-	v_normalView = currentRotationViewMatrix * normal;
-	v_tangentView = currentRotationViewMatrix * tangent;
-	v_bitangentView = currentRotationViewMatrix * bitangent;
+	v_normalView = currentRotationViewMatrix * currentNormal;
+	v_tangentView = currentRotationViewMatrix * currentTangent;
+	v_bitangentView = currentRotationViewMatrix * currentBitangent;
 
 	v_objectHi = objectHi;
 	v_objectLow = objectLow;
