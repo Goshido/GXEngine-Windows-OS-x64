@@ -33,8 +33,9 @@ EMFluttershy::~EMFluttershy ()
 	GXTexture::RemoveTexture ( emissionTexture );
 }
 
-GXVoid EMFluttershy::Render ()
+GXVoid EMFluttershy::Render ( GXFloat deltaTime )
 {
+	material.SetDeltaTime ( deltaTime );
 	material.Bind ( mesh );
 	mesh.Render ();
 	material.Unbind ();

@@ -34,6 +34,9 @@ class EMBlinnPhongCommonPassMaterial : public GXMaterial
 		GLint				currentModelViewMatrixLocation;
 		GLint				lastFrameModelViewMatrixLocation;
 
+		GXFloat				inverseDeltaTime;
+		GLint				inverseDeltaTimeLocation;
+
 	public:
 		EMBlinnPhongCommonPassMaterial ();
 		~EMBlinnPhongCommonPassMaterial () override;
@@ -58,6 +61,8 @@ class EMBlinnPhongCommonPassMaterial : public GXMaterial
 		GXVoid SetEmissionTextureScale ( GXFloat x, GXFloat y );
 		GXVoid SetEmissionTextureOffset ( GXFloat x, GXFloat y );
 		GXVoid SetEmissionTextureColor ( GXUByte red, GXUByte green, GXUByte blue );
+
+		GXVoid SetDeltaTime ( GXFloat deltaTime );
 };
 
 

@@ -208,7 +208,7 @@ GXVoid EMRenderer::SetObjectMask ( GXUPointer object )
 	glVertexAttrib4Nub ( EM_OBJECT_LOW_INDEX, objectMask[ 4 ], objectMask[ 5 ], objectMask[ 6 ], objectMask[ 7 ] );
 }
 
-GXVoid EMRenderer::ApplyMotionBlur ()
+GXVoid EMRenderer::ApplyMotionBlur ( GXFloat deltaTime )
 {
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, motionBlurredTexture.GetTextureObject (), 0 );

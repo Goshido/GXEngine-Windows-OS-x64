@@ -81,7 +81,7 @@ GXRigidBody& EMPhysicsDrivenActor::GetRigidBody ()
 	return *rigidBody;
 }
 
-GXVoid EMPhysicsDrivenActor::Draw ()
+GXVoid EMPhysicsDrivenActor::Draw ( GXFloat deltaTime )
 {
 	if ( !mesh ) return;
 
@@ -94,6 +94,7 @@ GXVoid EMPhysicsDrivenActor::Draw ()
 	GXQuatRehandCoordinateSystem ( rot );
 	mesh->SetRotation ( rot );
 
+	material.SetDeltaTime ( deltaTime );
 	material.Bind ( *mesh );
 
 	mesh->Render ();

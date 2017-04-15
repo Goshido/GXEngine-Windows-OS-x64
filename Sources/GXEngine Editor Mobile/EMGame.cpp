@@ -194,15 +194,15 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	EMRenderer* renderer = EMRenderer::GetInstance ();
 	renderer->StartCommonPass ();
 
-	unitActor->OnDrawCommonPass ();
-	physicsBoxActor->Draw ();
-	physicsPlaneActor->Draw ();
+	unitActor->OnDrawCommonPass ( deltaTime );
+	physicsBoxActor->Draw ( deltaTime );
+	physicsPlaneActor->Draw ( deltaTime );
 	fluttershy->UpdatePose ( deltaTime );
-	fluttershy->Render ();
+	fluttershy->Render ( deltaTime );
 
 	renderer->StartLightPass ();
 
-	renderer->ApplyMotionBlur ();
+	renderer->ApplyMotionBlur ( deltaTime );
 
 	renderer->StartHudColorPass ();
 

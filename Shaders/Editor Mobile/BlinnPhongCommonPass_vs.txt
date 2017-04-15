@@ -30,6 +30,8 @@ uniform vec4 normalTextureScaleOffset;
 uniform vec4 specularTextureScaleOffset;
 uniform vec4 emissionTextureScaleOffset;
 
+uniform float inverseDeltaTime;
+
 smooth out vec2 v_uvDiffuse;
 smooth out vec2 v_uvNormal;
 smooth out vec2 v_uvSpecular;
@@ -57,7 +59,7 @@ void main ()
 
 	vec4 currentLocationView = currentModelViewMatrix * v;
 	vec4 lastFrameLocationView = lastFrameModelViewMatrix * vec4 ( lastFrameVertex, 1.0 );
-	v_velocityView = currentLocationView.xyz - lastFrameLocationView.xyz;
+	v_velocityView = ( currentLocationView.xyz - lastFrameLocationView.xyz ) * inverseDeltaTime;
 
 	v_normalView = currentRotationViewMatrix * currentNormal;
 	v_tangentView = currentRotationViewMatrix * currentTangent;

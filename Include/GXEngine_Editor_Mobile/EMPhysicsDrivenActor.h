@@ -31,7 +31,7 @@ class EMPhysicsDrivenActor
 		~EMPhysicsDrivenActor ();
 
 		GXRigidBody& GetRigidBody ();
-		GXVoid Draw ();
+		GXVoid Draw ( GXFloat deltaTime );
 };
 
 

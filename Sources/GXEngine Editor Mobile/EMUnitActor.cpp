@@ -47,10 +47,11 @@ EMUnitActor::~EMUnitActor ()
 	GXTexture::RemoveTexture ( emissionTexture );
 }
 
-GXVoid EMUnitActor::OnDrawCommonPass ()
+GXVoid EMUnitActor::OnDrawCommonPass ( GXFloat deltaTime )
 {
 	EMRenderer::GetInstance ()->SetObjectMask ( (GXUPointer)this );
 
+	commonPassMaterial.SetDeltaTime ( deltaTime );
 	commonPassMaterial.Bind ( mesh );
 	mesh.Render ();
 	commonPassMaterial.Unbind ();

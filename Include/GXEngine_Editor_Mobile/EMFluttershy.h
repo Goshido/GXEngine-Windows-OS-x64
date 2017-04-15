@@ -22,7 +22,7 @@ class EMFluttershy : public GXTransform
 		EMFluttershy ();
 		~EMFluttershy () override;
 
-		GXVoid Render ();
+		GXVoid Render ( GXFloat deltaTime );
 		GXVoid UpdatePose ( GXFloat deltaTime );
 
 	protected:

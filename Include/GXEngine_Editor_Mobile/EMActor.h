@@ -35,7 +35,7 @@ class EMActor
 		explicit EMActor ( const GXWChar* name, GXUInt type, const GXMat4 &transform );
 		virtual ~EMActor ();
 
-		virtual GXVoid OnDrawCommonPass ();
+		virtual GXVoid OnDrawCommonPass ( GXFloat deltaTime );
 		virtual GXVoid OnDrawHudColorPass ();
 		virtual GXVoid OnDrawHudMaskPass ();
 		

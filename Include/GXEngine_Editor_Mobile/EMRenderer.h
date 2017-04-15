@@ -63,7 +63,7 @@ class EMRenderer
 
 		GXVoid SetObjectMask ( GXUPointer object );
 		
-		GXVoid ApplyMotionBlur ();
+		GXVoid ApplyMotionBlur ( GXFloat deltaTime );
 		GXVoid PresentFrame ( eEMRenderTarget target );
 
 		GXVoid SetOnObjectCallback ( PFNEMRENDERERONOBJECTPROC callback );

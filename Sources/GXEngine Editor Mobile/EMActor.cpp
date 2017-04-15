@@ -31,7 +31,7 @@ EMActor::~EMActor ()
 	free ( name );
 }
 
-GXVoid EMActor::OnDrawCommonPass ()
+GXVoid EMActor::OnDrawCommonPass ( GXFloat /*deltaTime*/ )
 {
 	//NOTHING
 }

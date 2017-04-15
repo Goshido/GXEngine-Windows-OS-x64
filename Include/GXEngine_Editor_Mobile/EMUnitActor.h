@@ -25,7 +25,7 @@ class EMUnitActor : public EMActor
 		explicit EMUnitActor ( const GXWChar* name, const GXMat4 &transform );
 		~EMUnitActor () override;
 
-		GXVoid OnDrawCommonPass () override;
+		GXVoid OnDrawCommonPass ( GXFloat deltaTime ) override;
 
 		GXVoid OnSave ( GXUByte** data ) override;
 		GXVoid OnLoad ( const GXUByte* data ) override;

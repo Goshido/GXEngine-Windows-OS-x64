@@ -39,6 +39,8 @@
 
 #define EMISSION_SLOT						3
 
+#define DEFAULT_DELTA_TIME					0.1667f
+
 #define VERTEX_SHADER						L"Shaders/Editor Mobile/BlinnPhongCommonPass_vs.txt"
 #define GEOMETRY_SHADER						nullptr
 #define FRAGMENT_SHADER						L"Shaders/Editor Mobile/BlinnPhongCommonPass_fs.txt"
@@ -71,6 +73,7 @@ EMBlinnPhongCommonPassMaterial::EMBlinnPhongCommonPassMaterial ()
 	currentRotationViewMatrixLocation = shaderProgram.GetUniform ( "currentRotationViewMatrix" );
 	currentModelViewMatrixLocation = shaderProgram.GetUniform ( "currentModelViewMatrix" );
 	lastFrameModelViewMatrixLocation = shaderProgram.GetUniform ( "lastFrameModelViewMatrix" );
+	inverseDeltaTimeLocation = shaderProgram.GetUniform ( "inverseDeltaTime" );
 
 	diffuseTexture = nullptr;
 	SetDiffuseTextureColor ( DEFAULT_DIFFUSE_COLOR_R, DEFAULT_DIFFUSE_COLOR_G, DEFAULT_DIFFUSE_COLOR_B, DEFAULT_DIFFUSE_COLOR_A );
@@ -89,6 +92,8 @@ EMBlinnPhongCommonPassMaterial::EMBlinnPhongCommonPassMaterial ()
 	SetEmissionTextureColor ( DEFAULT_EMISSION_COLOR_R, DEFAULT_EMISSION_COLOR_G, DEFAULT_EMISSION_COLOR_B );
 	SetEmissionTextureScale ( DEFAULT_EMISSION_TEXTURE_SCALE_X, DEFAULT_EMISSION_TEXTURE_SCALE_Y );
 	SetEmissionTextureOffset ( DEFAULT_EMISSION_TEXTURE_OFFSET_X, DEFAULT_EMISSION_TEXTURE_OFFSET_Y );
+
+	SetDeltaTime ( DEFAULT_DELTA_TIME );
 }
 
 EMBlinnPhongCommonPassMaterial::~EMBlinnPhongCommonPassMaterial ()
@@ -150,6 +155,8 @@ GXVoid EMBlinnPhongCommonPassMaterial::Bind ( const GXTransform &transform ) con
 	emissionTexture->Bind ( EMISSION_SLOT );
 	glUniform3fv ( emissionColorLocation, 1, emissionColor.arr );
 	glUniform4fv ( emissionTextureScaleOffsetLocation, 1, emissionTextureScaleOffset.arr );
+
+	glUniform1f ( inverseDeltaTimeLocation, inverseDeltaTime );
 }
 
 GXVoid EMBlinnPhongCommonPassMaterial::Unbind () const
@@ -240,4 +247,9 @@ GXVoid EMBlinnPhongCommonPassMaterial::SetEmissionTextureOffset ( GXFloat x, GXF
 GXVoid EMBlinnPhongCommonPassMaterial::SetEmissionTextureColor ( GXUByte red, GXUByte green, GXUByte blue )
 {
 	GXColorToVec3 ( emissionColor, red, green, blue );
+}
+
+GXVoid EMBlinnPhongCommonPassMaterial::SetDeltaTime ( GXFloat deltaTime )
+{
+	inverseDeltaTime = 1.0f / deltaTime;
 }

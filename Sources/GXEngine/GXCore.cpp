@@ -90,7 +90,7 @@ GXCore::GXCore ()
 	for ( ; gx_EngineSettings.potHeight < gx_EngineSettings.rendererHeight; gx_EngineSettings.potHeight <<=  1 );
 
 	gx_EngineSettings.windowed = config.bIsWindowedMode;
-	gx_EngineSettings.vSync = config.bVSync;
+	gx_EngineSettings.vSync = GX_TRUE;
 	gx_EngineSettings.resampling = config.chResampling;
 	gx_EngineSettings.anisotropy = config.chAnisotropy;
 	gx_EngineSettings.dof = config.bDoF;
