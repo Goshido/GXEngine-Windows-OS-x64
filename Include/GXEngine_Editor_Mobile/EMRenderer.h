@@ -5,6 +5,9 @@
 #include "EMLight.h"
 #include "EMMesh.h"
 #include "EMBlinnPhongDirectedLightMaterial.h"
+#include "EMVelocityMaterial.h"
+#include "EMVelocityTileMaxMaterial.h"
+#include "EMVelocityNeighborMaxMaterial.h"
 #include "EMMotionBlurMaterial.h"
 #include <GXEngine/GXUnlitTexture2DMaterial.h>
 #include <GXEngine/GXCameraOrthographic.h>
@@ -18,7 +21,10 @@ enum class eEMRenderTarget
 	Normal,
 	Specular,
 	Emission,
-	Velocity,
+	VelocityView,
+	VelocityBlur,
+	VelocityTileMax,
+	VelocityNeighborMax,
 	Depth,
 	Combine
 };
@@ -30,7 +36,10 @@ class EMRenderer
 		GXTexture							normalTexture;
 		GXTexture							specularTexture;
 		GXTexture							emissionTexture;
-		GXTexture							velocityTexture;
+		GXTexture							velocityViewTexture;
+		GXTexture							velocityBlurTexture;
+		GXTexture							velocityTileMaxTexture;
+		GXTexture							velocityNeighborMaxTexture;
 		GXTexture							objectTextures[ 2 ];
 		GXTexture							depthStencilTexture;
 		GXTexture							outTexture;
@@ -43,6 +52,9 @@ class EMRenderer
 
 		EMMesh								screenQuadMesh;
 		EMBlinnPhongDirectedLightMaterial	directedLightMaterial;
+		EMVelocityMaterial					velocityMaterial;
+		EMVelocityTileMaxMaterial			velocityTileMaxMaterial;
+		EMVelocityNeighborMaxMaterial		velocityNeighborMaxMaterial;
 		EMMotionBlurMaterial				motionBlurMaterial;
 		GXUnlitTexture2DMaterial			unlitMaterial;
 		GXCameraOrthographic				outCamera;
@@ -62,7 +74,7 @@ class EMRenderer
 		GXVoid StartHudMaskPass ();
 
 		GXVoid SetObjectMask ( GXUPointer object );
-		
+
 		GXVoid ApplyMotionBlur ( GXFloat deltaTime );
 		GXVoid PresentFrame ( eEMRenderTarget target );
 

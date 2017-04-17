@@ -207,6 +207,9 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUISeparator.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIStaticText.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUnitActor.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMVelocityMaterial.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMVelocityNeighborMaxMaterial.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMVelocityTileMaxMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMViewer.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\Main.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimSolverMovement.cpp" />
@@ -393,6 +396,9 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUISeparator.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIStaticText.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUnitActor.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMVelocityMaterial.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMVelocityNeighborMaxMaterial.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMVelocityTileMaxMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMViewer.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXBoxShape.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXCollisionData.h" />
@@ -430,6 +436,9 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Text Include="..\..\Shaders\Editor Mobile\ScreenQuad_vs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\StaticMesh_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\StaticMesh_vs.txt" />
+    <Text Include="..\..\Shaders\Editor Mobile\VelocityNeighborMax_fs.txt" />
+    <Text Include="..\..\Shaders\Editor Mobile\VelocityTileMax_fs.txt" />
+    <Text Include="..\..\Shaders\Editor Mobile\Velocity_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\VertexOnly_vs.txt" />
     <Text Include="..\..\Shaders\System\ArrayTextureOuter_fs.txt" />
     <Text Include="..\..\Shaders\System\ArrayTextureOuter_vs.txt" />

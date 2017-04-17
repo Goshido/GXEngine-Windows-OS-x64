@@ -5,20 +5,19 @@
 class EMMotionBlurMaterial : public GXMaterial
 {
 	private:
+		GXTexture*			velocityNeighborMaxTexture;
 		GXTexture*			velocityTexture;
 		GXTexture*			depthTexture;
 		GXTexture*			imageTexture;
-		GXTexture*			objectHighTexture;
-		GXTexture*			objectLowTexture;
-
-		GXFloat				blurStrength;
-		GLint				blurStrengthLocation;
 
 		GXFloat				blurMinimumVelocity;
 		GLint				blurMinimumvelocityLocation;
 
-		GXFloat				blurDepthFactorView;
-		GXInt				blurDepthFactorViewLocation;
+		GXFloat				inverseDepthLimit;
+		GLint				inverseDepthLimitLocation;
+
+		GXInt				maxBlurSamples;
+		GLint				maxBlurSamplesLocation;
 
 		GXVec2				inverseScreenResolution;
 		GLint				inverseScreenResolutionLocation;
@@ -32,12 +31,13 @@ class EMMotionBlurMaterial : public GXMaterial
 		GXVoid Bind ( const GXTransform &transform ) const override;
 		GXVoid Unbind () const override;
 
+		GXVoid SetVelocityNeighborMaxTexture ( GXTexture &texture );
 		GXVoid SetVelocityTexture ( GXTexture &texture );
 		GXVoid SetDepthTexture ( GXTexture &texture );
 		GXVoid SetImageTexture ( GXTexture &texture );
 
-		GXVoid SetBlurStrength ( GXFloat strength );
 		GXVoid SetBlurMinimumVelocity ( GXFloat velocity );
-		GXVoid SetBlurDepthFactorView ( GXFloat depthFactorView );
+		GXVoid SetDepthLimit ( GXFloat limit );
+		GXVoid SetMaxBlurSamples ( GXUByte maxSamples );
 		GXVoid SetScreenResolution ( GXUShort width, GXUShort height );
 };

@@ -1,0 +1,45 @@
+#version 330 core
+
+
+#define TILE_MAX_SLOT			0
+#define START_TILE_MAX_LENGHT	-777.777
+
+
+smooth in vec2 v_uv;
+
+uniform sampler2D velocityBlurSampler;
+uniform int maxBlurSamples;
+uniform vec2 inverseScreenResolution;
+
+layout ( location = TILE_MAX_SLOT ) out vec2 outTileMax;
+
+
+void main ()
+{
+	vec2 tileMax = vec2 ( 0.0, 0.0 );
+	float tileMaxLength = START_TILE_MAX_LENGHT;
+	vec2 uv = v_uv;
+
+	for ( int i = 0; i < maxBlurSamples; i++ )
+	{
+		uv.y = v_uv.y;
+
+		for ( int j = 0; j < maxBlurSamples; j++ )
+		{
+			vec2 sample = texture ( velocityBlurSampler, uv ).xy * 2.0 - 1.0;
+			float sampleLength = length ( sample );
+
+			if ( sampleLength > tileMaxLength )
+			{
+				tileMax = sample;
+				tileMaxLength = sampleLength;
+			}
+
+			uv.y += inverseScreenResolution.y;
+		}
+
+		uv.x += inverseScreenResolution.x;
+	}
+
+	outTileMax = tileMax * 0.5 + 0.5;
+}

@@ -1,26 +1,28 @@
 #version 330 core
 
 
-#define TOTAL_SAMPLES		8
-#define COLOR_SLOT			0
+#define CYLINDER_FUNCTION_ALPHA_FACTOR		0.95
+#define CYLINDER_FUNCTION_BETTA_FACTOR		1.05
+#define COLOR_SLOT							0
 
 
 smooth in vec2 v_uv;
 
+uniform sampler2D velocityNeighborMaxSampler;
 uniform sampler2D velocitySampler;
 uniform sampler2D depthSampler;
 uniform sampler2D imageSampler;
 
-uniform float blurStrength;
 uniform float blurMinimumVelocity;
-uniform float blurDepthFactorView;
+uniform float inverseDepthLimit;
+uniform int maxBlurSamples;
 uniform vec2 inverseScreenResolution;
 uniform mat4 inverseProjectionMatrix;
 
 layout ( location = COLOR_SLOT ) out vec3 outColor;
 
 
-float GetDepthView ( in vec2 uv )
+float GetDepthView ( const in vec2 uv )
 {
 	vec4 locationCVV;
 	locationCVV.xy = gl_FragCoord.xy * inverseScreenResolution * 2.0 - 1.0;
@@ -31,37 +33,70 @@ float GetDepthView ( in vec2 uv )
 	return homogeneousLocationView.z / homogeneousLocationView.w;
 }
 
+float GetDepthCompareFactor ( const in vec2 a, const in vec2 b )
+{
+	float depthAView = GetDepthView ( a );
+	float depthBView = GetDepthView ( b );
+
+	return clamp ( 1.0 - ( ( depthAView - depthBView ) * inverseDepthLimit ), 0.0, 1.0 );
+}
+
+float ConeFunction ( const in vec2 a, const in vec2 b, const in vec2 c )
+{
+	float alpha = length ( a - b );
+	float betta = 1.0 / length ( c );
+
+	return clamp ( 1.0 - alpha * betta, 0.0, 1.0 );
+}
+
+float CylinderFunction ( const in vec2 a, const in vec2 b, const in vec2 c )
+{
+	float gamma = length ( c );
+	float yotta = length ( a - b );
+
+	return 1.0 - smoothstep ( CYLINDER_FUNCTION_ALPHA_FACTOR * gamma, CYLINDER_FUNCTION_BETTA_FACTOR * gamma, yotta );
+}
+
 void main ()
 {
-	vec3 velocityView = texture ( velocitySampler, v_uv ).xyz;
-	float depthView = GetDepthView ( v_uv );
-	float perspectiveCorrectedVelocityMagnitude = length ( velocityView.xy ) / depthView;
+	float zetta = float ( maxBlurSamples );
+	vec2 velocityNeighborMaxSample = zetta * ( texture ( velocityNeighborMaxSampler, v_uv ).xy * 2.0 - 1.0 );
 
-	if ( perspectiveCorrectedVelocityMagnitude < blurMinimumVelocity ) 
+	if ( length ( velocityNeighborMaxSample ) <= blurMinimumVelocity )
 	{
-		outColor = texture ( imageSampler, v_uv ).xyz;
+		outColor = texture ( imageSampler, v_uv ).rgb;
 		return;
 	}
 
-	vec2 lookupStep = -blurStrength * ( velocityView.xy / depthView );
-	vec2 lookupUV = v_uv;
+	vec2 alpha = zetta * ( texture ( velocitySampler, v_uv ).xy * 2.0 - 1.0 );
 
-	float hits = 1.0;
-	vec3 colorSum = texture ( imageSampler, lookupUV ).rgb;
-	lookupUV += lookupStep;
+	float weight = 1.0 / length ( alpha );
+	vec3 sum = texture ( imageSampler, v_uv ).rgb * weight;
 
-	for ( int i = 1; i < TOTAL_SAMPLES; i++ )
+	float betta = 0.5 * noise1 ( v_uv.x + v_uv.y ) + 1.0;
+	float gamma = 1.0 / ( zetta + 1.0 );
+	
+	int ignore = ( maxBlurSamples - 1 ) / 2;
+
+	for ( int i = 0; i < maxBlurSamples; i++ )
 	{
-		float sampleDepthView = GetDepthView ( lookupUV );
-		if ( abs ( sampleDepthView - depthView ) < blurDepthFactorView )
-		{
-			hits += 1.0;
-			colorSum += texture ( imageSampler, lookupUV ).rgb;
-		}
+		if ( i == ignore ) continue;
 
-		lookupUV += lookupStep;
+		float kappa = mix ( -1.0, 1.0, ( float ( i ) + betta ) * gamma );
+		vec2 yotta = v_uv + velocityNeighborMaxSample * kappa * inverseScreenResolution;
+
+		float omega = GetDepthCompareFactor ( v_uv, yotta );
+		float lambda = GetDepthCompareFactor ( yotta, v_uv );
+
+		vec2 rho = texture ( velocitySampler, yotta ).xy * 2.0 - 1.0;
+
+		float mu = omega * ConeFunction ( yotta, v_uv, rho );
+		mu += lambda * ConeFunction ( v_uv, yotta, alpha );
+		mu += CylinderFunction ( yotta, v_uv, rho ) * CylinderFunction ( v_uv, yotta, alpha ) * 2.0;
+
+		weight += mu;
+		sum += mu * texture ( imageSampler, yotta ).rgb;
 	}
 
-	float invHits = 1.0 / hits;
-	outColor = colorSum * invHits;
+	outColor = sum / weight;
 }

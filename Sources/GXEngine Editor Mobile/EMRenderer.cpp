@@ -6,23 +6,25 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define EM_OBJECT_HI_INDEX		14
-#define EM_OBJECT_LOW_INDEX		15
+#define EM_OBJECT_HI_INDEX				14
+#define EM_OBJECT_LOW_INDEX				15
 
-#define OUT_TEXTURE_SLOT		0
+#define OUT_TEXTURE_SLOT				0
 
-#define DIFFUSE_SLOT			0
-#define NORMAL_SLOT				1
-#define SPECULAR_SLOT			2
-#define EMISSION_SLOT			3
-#define DEPTH_SLOT				4
+#define DIFFUSE_SLOT					0
+#define NORMAL_SLOT						1
+#define SPECULAR_SLOT					2
+#define EMISSION_SLOT					3
+#define DEPTH_SLOT						4
 
-#define Z_NEAR					0.0f
-#define Z_FAR					77.0f
-#define Z_RENDER				1.0f
+#define Z_NEAR							0.0f
+#define Z_FAR							77.0f
+#define Z_RENDER						1.0f
 
-#define CVV_WIDTH				2.0f
-#define CVV_HEIGHT				2.0f
+#define CVV_WIDTH						2.0f
+#define CVV_HEIGHT						2.0f
+
+#define DEFAULT_MOTION_BLUR_SAMPLES		7
 
 
 EMRenderer* EMRenderer::instance = nullptr;
@@ -61,7 +63,7 @@ GXVoid EMRenderer::StartCommonPass ()
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, normalTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, specularTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, emissionTexture.GetTextureObject (), 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, velocityTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, velocityViewTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, objectTextures[ 0 ].GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, objectTextures[ 1 ].GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, depthStencilTexture.GetTextureObject (), 0 );
@@ -211,6 +213,100 @@ GXVoid EMRenderer::SetObjectMask ( GXUPointer object )
 GXVoid EMRenderer::ApplyMotionBlur ( GXFloat deltaTime )
 {
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, velocityBlurTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
+
+	static const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers ( 1, buffers );
+
+	glColorMask ( GL_TRUE, GL_TRUE, GL_FALSE, GL_FALSE );
+	glDepthMask ( GL_FALSE );
+	glStencilMask ( 0x00 );
+
+	glDisable ( GL_BLEND );
+	glDisable ( GL_DEPTH_TEST );
+	glDisable ( GL_CULL_FACE );
+
+	glViewport ( 0, 0, (GLsizei)velocityBlurTexture.GetWidth (), (GLsizei)velocityBlurTexture.GetHeight () );
+
+	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+	if ( status != GL_FRAMEBUFFER_COMPLETE )
+		GXLogW ( L"EMRenderer::ApplyMotionBlur::Error - Что-то не так с FBO на первом проходе (ошибка 0x%08x)\n", status );
+
+	velocityMaterial.SetExplosureTime ( deltaTime );
+	velocityMaterial.Bind ( GXTransform::GetNullTransform () );
+
+	screenQuadMesh.Render ();
+
+	velocityMaterial.Unbind ();
+
+	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, velocityTileMaxTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
+
+	glDrawBuffers ( 1, buffers );
+
+	glColorMask ( GL_TRUE, GL_TRUE, GL_FALSE, GL_FALSE );
+	glDepthMask ( GL_FALSE );
+	glStencilMask ( 0x00 );
+
+	glDisable ( GL_BLEND );
+	glDisable ( GL_DEPTH_TEST );
+	glDisable ( GL_CULL_FACE );
+
+	glViewport ( 0, 0, (GLsizei)velocityTileMaxTexture.GetWidth (), (GLsizei)velocityTileMaxTexture.GetHeight () );
+
+	status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+	if ( status != GL_FRAMEBUFFER_COMPLETE )
+		GXLogW ( L"EMRenderer::ApplyMotionBlur::Error - Что-то не так с FBO на втором проходе (ошибка 0x%08x)\n", status );
+
+	velocityTileMaxMaterial.Bind ( GXTransform::GetNullTransform () );
+	screenQuadMesh.Render ();
+	velocityTileMaxMaterial.Unbind ();
+
+	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, velocityNeighborMaxTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
+
+	glDrawBuffers ( 1, buffers );
+
+	glColorMask ( GL_TRUE, GL_TRUE, GL_FALSE, GL_FALSE );
+	glDepthMask ( GL_FALSE );
+	glStencilMask ( 0x00 );
+
+	glDisable ( GL_BLEND );
+	glDisable ( GL_DEPTH_TEST );
+	glDisable ( GL_CULL_FACE );
+
+	glViewport ( 0, 0, (GLsizei)velocityNeighborMaxTexture.GetWidth (), (GLsizei)velocityNeighborMaxTexture.GetHeight () );
+
+	status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+	if ( status != GL_FRAMEBUFFER_COMPLETE )
+		GXLogW ( L"EMRenderer::ApplyMotionBlur::Error - Что-то не так с FBO на третьем проходе (ошибка 0x%08x)\n", status );
+
+	velocityNeighborMaxMaterial.Bind ( GXTransform::GetNullTransform () );
+	screenQuadMesh.Render ();
+	velocityNeighborMaxMaterial.Unbind ();
+
+	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, motionBlurredTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
@@ -224,15 +320,13 @@ GXVoid EMRenderer::ApplyMotionBlur ( GXFloat deltaTime )
 	glDepthMask ( GL_FALSE );
 	glStencilMask ( 0x00 );
 
-	GXRenderer* renderer = GXRenderer::GetInstance ();
-	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
+	glViewport ( 0, 0, (GLsizei)motionBlurredTexture.GetWidth (), (GLsizei)motionBlurredTexture.GetHeight () );
 
-	const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers ( 1, buffers );
 
-	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+	status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
-		GXLogW ( L"EMRenderer::ApplyMotionBlur::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
+		GXLogW ( L"EMRenderer::ApplyMotionBlur::Error - Что-то не так с FBO на четвёртом проходе (ошибка 0x%08x)\n", status );
 
 	glDisable ( GL_BLEND );
 	glDisable ( GL_DEPTH_TEST );
@@ -285,8 +379,20 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 			texture = &emissionTexture;
 		break;
 
-		case eEMRenderTarget::Velocity:
-			texture = &velocityTexture;
+		case eEMRenderTarget::VelocityView:
+			texture = &velocityViewTexture;
+		break;
+
+		case eEMRenderTarget::VelocityBlur:
+			texture = &velocityBlurTexture;
+		break;
+
+		case eEMRenderTarget::VelocityTileMax:
+			texture = &velocityTileMaxTexture;
+		break;
+
+		case eEMRenderTarget::VelocityNeighborMax:
+			texture = &velocityNeighborMaxTexture;
 		break;
 
 		case eEMRenderTarget::Depth:
@@ -346,9 +452,21 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" )
 	directedLightMaterial.SetEmissionTexture ( emissionTexture );
 	directedLightMaterial.SetDepthTexture ( depthStencilTexture );
 
-	motionBlurMaterial.SetVelocityTexture ( velocityTexture );
+	velocityMaterial.SetVelocityViewTexture ( velocityViewTexture );
+	velocityMaterial.SetMaxBlurSamples ( DEFAULT_MOTION_BLUR_SAMPLES );
+
+	velocityTileMaxMaterial.SetVelocityBlurTexture ( velocityBlurTexture );
+	velocityTileMaxMaterial.SetMaxBlurSamples ( DEFAULT_MOTION_BLUR_SAMPLES );
+	velocityTileMaxMaterial.SetScreenResolution ( (GXUShort)coreRenderer->GetWidth (), (GXUShort)coreRenderer->GetHeight () );
+
+	velocityNeighborMaxMaterial.SetVelocityTileMaxTexture ( velocityTileMaxTexture );
+	velocityNeighborMaxMaterial.SetVelocityTileMaxTextureResolution ( velocityTileMaxTexture.GetWidth (), velocityTileMaxTexture.GetHeight () );
+
+	motionBlurMaterial.SetVelocityNeighborMaxTexture ( velocityNeighborMaxTexture );
+	motionBlurMaterial.SetVelocityTexture ( velocityBlurTexture );
 	motionBlurMaterial.SetDepthTexture ( depthStencilTexture );
 	motionBlurMaterial.SetImageTexture ( outTexture );
+	motionBlurMaterial.SetMaxBlurSamples ( DEFAULT_MOTION_BLUR_SAMPLES );
 	motionBlurMaterial.SetScreenResolution ( outTexture.GetWidth (), outTexture.GetHeight () );
 
 	SetObjectMask ( (GXUPointer)nullptr );
@@ -364,7 +482,14 @@ GXVoid EMRenderer::CreateFBO ()
 	normalTexture.InitResources ( width, height, GL_RGB16, GX_FALSE, GL_CLAMP_TO_EDGE );
 	specularTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	emissionTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	velocityTexture.InitResources ( width, height, GL_RGBA16F, GX_FALSE, GL_CLAMP_TO_EDGE );
+	velocityViewTexture.InitResources ( width, height, GL_RGBA16F, GX_FALSE, GL_CLAMP_TO_EDGE );
+	velocityBlurTexture.InitResources ( width, height, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
+
+	GXUShort w = width / DEFAULT_MOTION_BLUR_SAMPLES;
+	GXUShort h = height / DEFAULT_MOTION_BLUR_SAMPLES;
+	velocityTileMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	velocityNeighborMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	
 	objectTextures[ 0 ].InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	objectTextures[ 1 ].InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	depthStencilTexture.InitResources ( width, height, GL_DEPTH24_STENCIL8, GX_FALSE, GL_CLAMP_TO_EDGE );
@@ -377,7 +502,7 @@ GXVoid EMRenderer::CreateFBO ()
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, normalTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, specularTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, emissionTexture.GetTextureObject (), 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, velocityTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, velocityViewTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, objectTextures[ 0 ].GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, objectTextures[ 1 ].GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, depthStencilTexture.GetTextureObject (), 0 );
