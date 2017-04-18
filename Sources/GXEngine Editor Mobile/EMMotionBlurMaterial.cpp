@@ -2,8 +2,7 @@
 #include <GXEngine/GXCamera.h>
 
 
-#define DEFAULT_BLUR_MINIMUM_VELOCITY	5.0f
-#define DEFAULT_DEPTH_LIMIT				0.1f
+#define DEFAULT_DEPTH_LIMIT				0.01f
 #define DEFAULT_MAX_BLUR_SAMPLES		15
 #define DEFAULT_SCREEN_WIDTH			1280
 #define DEFAULT_SCREEN_HEIGHT			720
@@ -40,13 +39,11 @@ EMMotionBlurMaterial::EMMotionBlurMaterial ()
 
 	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
 
-	blurMinimumvelocityLocation = shaderProgram.GetUniform ( "blurMinimumVelocity" );
 	inverseDepthLimitLocation = shaderProgram.GetUniform ( "inverseDepthLimit" );
 	maxBlurSamplesLocation = shaderProgram.GetUniform ( "maxBlurSamples" );
 	inverseScreenResolutionLocation = shaderProgram.GetUniform ( "inverseScreenResolution" );
 	inverseProjectionMatrixLocation = shaderProgram.GetUniform ( "inverseProjectionMatrix" );
 
-	SetBlurMinimumVelocity ( DEFAULT_BLUR_MINIMUM_VELOCITY );
 	SetDepthLimit ( DEFAULT_DEPTH_LIMIT );
 	SetMaxBlurSamples ( DEFAULT_MAX_BLUR_SAMPLES );
 	SetScreenResolution ( DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT );
@@ -65,10 +62,9 @@ GXVoid EMMotionBlurMaterial::Bind ( const GXTransform& /*transform*/ ) const
 
 	const GXMat4& inverseProjectionMatrix = GXCamera::GetActiveCamera ()->GetCurrentInverseProjectionMatrix ();
 
-	glUniform1f ( blurMinimumvelocityLocation, blurMinimumVelocity );
 	glUniform1f ( inverseDepthLimitLocation, inverseDepthLimit );
 	glUniform1i ( maxBlurSamplesLocation, maxBlurSamples );
-	glUniform2f ( inverseScreenResolutionLocation, inverseScreenResolution.x, inverseScreenResolution.y );
+	glUniform2fv ( inverseScreenResolutionLocation, 1, inverseScreenResolution.arr );
 	glUniformMatrix4fv ( inverseProjectionMatrixLocation, 1, GL_FALSE, inverseProjectionMatrix.arr );
 
 	velocityNeighborMaxTexture->Bind ( VELOCITY_NEIGHBOR_MAX_SLOT );
@@ -107,11 +103,6 @@ GXVoid EMMotionBlurMaterial::SetDepthTexture ( GXTexture &texture )
 GXVoid EMMotionBlurMaterial::SetImageTexture ( GXTexture &texture )
 {
 	imageTexture = &texture;
-}
-
-GXVoid EMMotionBlurMaterial::SetBlurMinimumVelocity ( GXFloat velocity )
-{
-	blurMinimumVelocity = velocity;
 }
 
 GXVoid EMMotionBlurMaterial::SetDepthLimit ( GXFloat limit )

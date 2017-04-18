@@ -10,9 +10,6 @@ class EMMotionBlurMaterial : public GXMaterial
 		GXTexture*			depthTexture;
 		GXTexture*			imageTexture;
 
-		GXFloat				blurMinimumVelocity;
-		GLint				blurMinimumvelocityLocation;
-
 		GXFloat				inverseDepthLimit;
 		GLint				inverseDepthLimitLocation;
 
@@ -36,7 +33,6 @@ class EMMotionBlurMaterial : public GXMaterial
 		GXVoid SetDepthTexture ( GXTexture &texture );
 		GXVoid SetImageTexture ( GXTexture &texture );
 
-		GXVoid SetBlurMinimumVelocity ( GXFloat velocity );
 		GXVoid SetDepthLimit ( GXFloat limit );
 		GXVoid SetMaxBlurSamples ( GXUByte maxSamples );
 		GXVoid SetScreenResolution ( GXUShort width, GXUShort height );

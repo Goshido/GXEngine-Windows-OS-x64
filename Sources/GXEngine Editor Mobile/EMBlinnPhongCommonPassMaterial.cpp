@@ -41,6 +41,9 @@
 
 #define DEFAULT_DELTA_TIME					0.1667f
 
+#define DEFAULT_EXPLOSURE_TIME				0.01667f
+#define DEFAULT_MAX_BLUR_SAMPLES			15
+
 #define VERTEX_SHADER						L"Shaders/Editor Mobile/BlinnPhongCommonPass_vs.txt"
 #define GEOMETRY_SHADER						nullptr
 #define FRAGMENT_SHADER						L"Shaders/Editor Mobile/BlinnPhongCommonPass_fs.txt"
@@ -74,6 +77,8 @@ EMBlinnPhongCommonPassMaterial::EMBlinnPhongCommonPassMaterial ()
 	currentModelViewMatrixLocation = shaderProgram.GetUniform ( "currentModelViewMatrix" );
 	lastFrameModelViewMatrixLocation = shaderProgram.GetUniform ( "lastFrameModelViewMatrix" );
 	inverseDeltaTimeLocation = shaderProgram.GetUniform ( "inverseDeltaTime" );
+	explosureTimeLocation = shaderProgram.GetUniform ( "explosureTime" );
+	maxBlurSamplesLocation = shaderProgram.GetUniform ( "maxBlurSamples" );
 
 	diffuseTexture = nullptr;
 	SetDiffuseTextureColor ( DEFAULT_DIFFUSE_COLOR_R, DEFAULT_DIFFUSE_COLOR_G, DEFAULT_DIFFUSE_COLOR_B, DEFAULT_DIFFUSE_COLOR_A );
@@ -94,6 +99,9 @@ EMBlinnPhongCommonPassMaterial::EMBlinnPhongCommonPassMaterial ()
 	SetEmissionTextureOffset ( DEFAULT_EMISSION_TEXTURE_OFFSET_X, DEFAULT_EMISSION_TEXTURE_OFFSET_Y );
 
 	SetDeltaTime ( DEFAULT_DELTA_TIME );
+
+	SetExplosureTime ( DEFAULT_EXPLOSURE_TIME );
+	SetMaxBlurSamples ( DEFAULT_MAX_BLUR_SAMPLES );
 }
 
 EMBlinnPhongCommonPassMaterial::~EMBlinnPhongCommonPassMaterial ()
@@ -141,6 +149,9 @@ GXVoid EMBlinnPhongCommonPassMaterial::Bind ( const GXTransform &transform ) con
 	glUniformMatrix3fv ( currentRotationViewMatrixLocation, 1, GL_FALSE, currentRotationViewMatrix.arr );
 	glUniformMatrix4fv ( currentModelViewMatrixLocation, 1, GL_FALSE, currentModelViewMatrix.arr );
 	glUniformMatrix4fv ( lastFrameModelViewMatrixLocation, 1, GL_FALSE, lastFrameModelViewMatrix.arr );
+
+	glUniform1f ( explosureTimeLocation, explosureTime );
+	glUniform1f ( maxBlurSamplesLocation, maxBlurSamples );
 
 	diffuseTexture->Bind ( DIFFUSE_SLOT );
 	glUniform4fv ( diffuseColorLocation, 1, diffuseColor.arr );
@@ -252,4 +263,14 @@ GXVoid EMBlinnPhongCommonPassMaterial::SetEmissionTextureColor ( GXUByte red, GX
 GXVoid EMBlinnPhongCommonPassMaterial::SetDeltaTime ( GXFloat deltaTime )
 {
 	inverseDeltaTime = 1.0f / deltaTime;
+}
+
+GXVoid EMBlinnPhongCommonPassMaterial::SetExplosureTime ( GXFloat time )
+{
+	explosureTime = time;
+}
+
+GXVoid EMBlinnPhongCommonPassMaterial::SetMaxBlurSamples ( GXUByte samples )
+{
+	maxBlurSamples = (GXFloat)samples;
 }

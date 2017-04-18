@@ -5,7 +5,6 @@
 #include "EMLight.h"
 #include "EMMesh.h"
 #include "EMBlinnPhongDirectedLightMaterial.h"
-#include "EMVelocityMaterial.h"
 #include "EMVelocityTileMaxMaterial.h"
 #include "EMVelocityNeighborMaxMaterial.h"
 #include "EMMotionBlurMaterial.h"
@@ -21,7 +20,6 @@ enum class eEMRenderTarget
 	Normal,
 	Specular,
 	Emission,
-	VelocityView,
 	VelocityBlur,
 	VelocityTileMax,
 	VelocityNeighborMax,
@@ -36,7 +34,6 @@ class EMRenderer
 		GXTexture							normalTexture;
 		GXTexture							specularTexture;
 		GXTexture							emissionTexture;
-		GXTexture							velocityViewTexture;
 		GXTexture							velocityBlurTexture;
 		GXTexture							velocityTileMaxTexture;
 		GXTexture							velocityNeighborMaxTexture;
@@ -46,13 +43,11 @@ class EMRenderer
 		GXTexture							motionBlurredTexture;
 
 		GLuint								fbo;
-		GLuint								sourceFbo;
 
 		GXUByte								objectMask[ 8 ];
 
 		EMMesh								screenQuadMesh;
 		EMBlinnPhongDirectedLightMaterial	directedLightMaterial;
-		EMVelocityMaterial					velocityMaterial;
 		EMVelocityTileMaxMaterial			velocityTileMaxMaterial;
 		EMVelocityNeighborMaxMaterial		velocityNeighborMaxMaterial;
 		EMMotionBlurMaterial				motionBlurMaterial;
@@ -80,6 +75,9 @@ class EMRenderer
 
 		GXVoid SetOnObjectCallback ( PFNEMRENDERERONOBJECTPROC callback );
 		GXVoid GetObject ( GXUShort x, GXUShort y );
+
+		GXUByte GetMaxBlurSamples () const;
+		GXFloat GetExplosureTime () const;
 
 		static EMRenderer* GXCALL GetInstance ();
 

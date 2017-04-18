@@ -1,4 +1,5 @@
 #include <GXEngine_Editor_Mobile/EMFluttershy.h>
+#include <GXEngine_Editor_Mobile/EMRenderer.h>
 
 
 #define SOLVER_ID		0
@@ -17,10 +18,14 @@ mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLV
 	specularTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Specular.tex", GX_FALSE, GL_CLAMP_TO_EDGE );
 	emissionTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE, GL_CLAMP_TO_EDGE );
 
+	EMRenderer* renderer = EMRenderer::GetInstance ();
+
 	material.SetDiffuseTexture ( diffuseTexture );
 	material.SetNormalTexture ( normalTexture );
 	material.SetSpecularTexture ( specularTexture );
 	material.SetEmissionTexture ( emissionTexture );
+	material.SetMaxBlurSamples ( renderer->GetMaxBlurSamples () );
+	material.SetExplosureTime ( renderer->GetExplosureTime () );
 }
 
 EMFluttershy::~EMFluttershy ()

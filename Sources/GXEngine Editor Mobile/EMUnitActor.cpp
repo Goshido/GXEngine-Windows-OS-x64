@@ -31,10 +31,14 @@ mesh ( L"3D Models/Editor Mobile/Unit Cube.stm" )
 	specularTexture = GXTexture::LoadTexture ( SPECULAR_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
 	emissionTexture = GXTexture::LoadTexture ( EMISSION_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
 
+	EMRenderer* renderer = EMRenderer::GetInstance ();
+
 	commonPassMaterial.SetDiffuseTexture ( diffuseTexture );
 	commonPassMaterial.SetNormalTexture ( normalTexture );
 	commonPassMaterial.SetSpecularTexture ( specularTexture );
 	commonPassMaterial.SetEmissionTexture ( emissionTexture );
+	commonPassMaterial.SetMaxBlurSamples ( renderer->GetMaxBlurSamples () );
+	commonPassMaterial.SetExplosureTime ( renderer->GetExplosureTime () );
 
 	commonPassMaterial.SetDiffuseTextureColor ( DIFFUSE_COLOR_R, DIFFUSE_COLOR_G, DIFFUSE_COLOR_B, DIFFUSE_COLOR_A );
 }

@@ -1,4 +1,5 @@
 #include <GXEngine_Editor_Mobile/EMPhysicsDrivenActor.h>
+#include <GXEngine_Editor_Mobile/EMRenderer.h>
 #include <GXPhysics/GXBoxShape.h>
 #include <GXPhysics/GXPlaneShape.h>
 #include <GXPhysics/GXSphereShape.h>
@@ -14,10 +15,14 @@ EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
 	emissionTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE, GL_REPEAT );
 	specularTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Specular.tex", GX_FALSE, GL_REPEAT );
 
+	EMRenderer* renderer = EMRenderer::GetInstance ();
+
 	material.SetDiffuseTexture ( diffuseTexture );
 	material.SetNormalTexture ( normalTexture );
 	material.SetSpecularTexture ( specularTexture );
 	material.SetEmissionTexture ( emissionTexture );
+	material.SetMaxBlurSamples ( renderer->GetMaxBlurSamples () );
+	material.SetExplosureTime ( renderer->GetExplosureTime () );
 
 	rigidBody = new GXRigidBody ();
 

@@ -37,6 +37,12 @@ class EMBlinnPhongCommonPassMaterial : public GXMaterial
 		GXFloat				inverseDeltaTime;
 		GLint				inverseDeltaTimeLocation;
 
+		GXFloat				explosureTime;
+		GLint				explosureTimeLocation;
+
+		GXFloat				maxBlurSamples;
+		GLint				maxBlurSamplesLocation;
+
 	public:
 		EMBlinnPhongCommonPassMaterial ();
 		~EMBlinnPhongCommonPassMaterial () override;
@@ -63,6 +69,9 @@ class EMBlinnPhongCommonPassMaterial : public GXMaterial
 		GXVoid SetEmissionTextureColor ( GXUByte red, GXUByte green, GXUByte blue );
 
 		GXVoid SetDeltaTime ( GXFloat deltaTime );
+
+		GXVoid SetExplosureTime ( GXFloat time );
+		GXVoid SetMaxBlurSamples ( GXUByte samples );
 };
 
 

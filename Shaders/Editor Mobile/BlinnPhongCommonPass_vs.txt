@@ -10,6 +10,9 @@
 #define OBJECT_HI_STREAM			14
 #define OBJECT_LOW_STREAM			15
 
+#define EPSILON						0.001
+#define MINIMUM_BLUR				0.5
+
 
 layout ( location = CURRENT_VERTEX_STREAM ) in vec3 currentVertex;
 layout ( location = UV_STREAM ) in vec2 uv;
@@ -32,16 +35,19 @@ uniform vec4 emissionTextureScaleOffset;
 
 uniform float inverseDeltaTime;
 
+uniform float explosureTime;
+uniform float maxBlurSamples;
+
 smooth out vec2 v_uvDiffuse;
 smooth out vec2 v_uvNormal;
 smooth out vec2 v_uvSpecular;
 smooth out vec2 v_uvEmission;
 
-smooth out vec3 v_velocityView;
-
 smooth out vec3 v_normalView;
 smooth out vec3 v_tangentView;
 smooth out vec3 v_bitangentView;
+
+smooth out vec2 v_velocityBlur;
 
 flat out vec4 v_objectHi;
 flat out vec4 v_objectLow;
@@ -57,14 +63,18 @@ void main ()
 	v_uvSpecular = uv * specularTextureScaleOffset.xy + specularTextureScaleOffset.zw;
 	v_uvEmission = uv * emissionTextureScaleOffset.xy + emissionTextureScaleOffset.zw;
 
-	vec4 currentLocationView = currentModelViewMatrix * v;
-	vec4 lastFrameLocationView = lastFrameModelViewMatrix * vec4 ( lastFrameVertex, 1.0 );
-	v_velocityView = ( currentLocationView.xyz - lastFrameLocationView.xyz ) * inverseDeltaTime;
-
 	v_normalView = currentRotationViewMatrix * currentNormal;
 	v_tangentView = currentRotationViewMatrix * currentTangent;
 	v_bitangentView = currentRotationViewMatrix * currentBitangent;
 
 	v_objectHi = objectHi;
 	v_objectLow = objectLow;
+
+	vec4 currentLocationView = currentModelViewMatrix * v;
+	vec4 lastFrameLocationView = lastFrameModelViewMatrix * vec4 ( lastFrameVertex, 1.0 );
+	vec2 alpha = ( currentLocationView.xy - lastFrameLocationView.xy ) * inverseDeltaTime * explosureTime;
+	float betta = length ( alpha );
+
+	float gamma = max ( MINIMUM_BLUR, min ( betta, maxBlurSamples ) );
+	v_velocityBlur = ( alpha * gamma ) / ( betta + EPSILON );
 }

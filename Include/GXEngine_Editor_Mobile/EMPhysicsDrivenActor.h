@@ -27,7 +27,7 @@ class EMPhysicsDrivenActor
 		GXTexture						emissionTexture;
 
 	public:
-		EMPhysicsDrivenActor ( eGXShapeType type );
+		explicit EMPhysicsDrivenActor ( eGXShapeType type );
 		~EMPhysicsDrivenActor ();
 
 		GXRigidBody& GetRigidBody ();
