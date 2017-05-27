@@ -69,7 +69,7 @@ GXVoid EMBlinnPhongDirectedLightMaterial::Bind ( const GXTransform& /*transform*
 
 	glUseProgram ( shaderProgram.GetProgram () );
 
-	const GXMat4& inverseProjectionMatrix = GXCamera::GetActiveCamera ()->GetCurrentInverseProjectionMatrix ();
+	const GXMat4& inverseProjectionMatrix = GXCamera::GetActiveCamera ()->GetCurrentFrameInverseProjectionMatrix ();
 	glUniformMatrix4fv ( inv_proj_matLocation, 1, GL_FALSE, inverseProjectionMatrix.arr );
 
 	glUniform3fv ( toLightDirectionViewLocation, 1, toLightDirectionView.arr );

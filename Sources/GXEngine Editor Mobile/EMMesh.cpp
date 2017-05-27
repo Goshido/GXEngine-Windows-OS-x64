@@ -47,5 +47,5 @@ GXVoid EMMesh::InitGraphicResources ()
 
 GXVoid EMMesh::TransformUpdated ()
 {
-	GXSetAABBTransformed ( boundsWorld, meshGeometry.GetBoundsLocal (), currentModelMatrix );
+	GXSetAABBTransformed ( boundsWorld, meshGeometry.GetBoundsLocal (), currentFrameModelMatrix );
 }

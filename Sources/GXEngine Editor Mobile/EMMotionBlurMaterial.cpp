@@ -60,7 +60,7 @@ GXVoid EMMotionBlurMaterial::Bind ( const GXTransform& /*transform*/ ) const
 
 	glUseProgram ( shaderProgram.GetProgram () );
 
-	const GXMat4& inverseProjectionMatrix = GXCamera::GetActiveCamera ()->GetCurrentInverseProjectionMatrix ();
+	const GXMat4& inverseProjectionMatrix = GXCamera::GetActiveCamera ()->GetCurrentFrameInverseProjectionMatrix ();
 
 	glUniform1f ( inverseDepthLimitLocation, inverseDepthLimit );
 	glUniform1i ( maxBlurSamplesLocation, maxBlurSamples );

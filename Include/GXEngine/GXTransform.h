@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #ifndef GX_TRANSFORM
 #define GX_TRANSFORM
@@ -10,10 +10,10 @@
 class GXTransform
 {
 	protected:
-		GXVec3				currentLocation;
-		GXVec3				currentScale;
-		GXMat4				currentRotationMatrix;
-		GXMat4				currentModelMatrix;
+		GXVec3				currentFrameLocation;
+		GXVec3				currentFrameScale;
+		GXMat4				currentFrameRotationMatrix;
+		GXMat4				currentFrameModelMatrix;
 		GXMat4				lastFrameModelMatrix;
 
 	private:

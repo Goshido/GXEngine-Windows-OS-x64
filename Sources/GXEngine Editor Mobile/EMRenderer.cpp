@@ -586,7 +586,7 @@ GXVoid EMRenderer::LightUpByDirected ( EMDirectedLight* light )
 
 	GXVec3 toLightDirectionView;
 	const GXMat4& rotation = light->GetRotation ();
-	GXMulVec3Mat4AsNormal ( toLightDirectionView, rotation.zv, GXCamera::GetActiveCamera ()->GetCurrentViewMatrix () );
+	GXMulVec3Mat4AsNormal ( toLightDirectionView, rotation.zv, GXCamera::GetActiveCamera ()->GetCurrentFrameViewMatrix () );
 	GXReverseVec3 ( toLightDirectionView );
 
 	directedLightMaterial.SetToLightDirectionView ( toLightDirectionView );

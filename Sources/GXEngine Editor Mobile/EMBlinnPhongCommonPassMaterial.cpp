@@ -40,8 +40,11 @@
 #define EMISSION_SLOT						3
 
 #define DEFAULT_DELTA_TIME					0.1667f
-
 #define DEFAULT_EXPLOSURE_TIME				0.01667f
+
+#define DEFAULT_SCREEN_RESOLUTION_WIDTH		1280
+#define DEFAULT_SCREEN_RESOLUTION_HEIGHT	720
+
 #define DEFAULT_MAX_BLUR_SAMPLES			15
 
 #define VERTEX_SHADER						L"Shaders/Editor Mobile/BlinnPhongCommonPass_vs.txt"
@@ -72,12 +75,12 @@ EMBlinnPhongCommonPassMaterial::EMBlinnPhongCommonPassMaterial ()
 	specularTextureScaleOffsetLocation = shaderProgram.GetUniform ( "specularTextureScaleOffset" );
 	emissionTextureScaleOffsetLocation = shaderProgram.GetUniform ( "emissionTextureScaleOffset" );
 	emissionColorLocation = shaderProgram.GetUniform ( "emissionColor" );
-	currentModelViewProjectionMatrixLocation = shaderProgram.GetUniform ( "currentModelViewProjectionMatrix" );
-	currentRotationViewMatrixLocation = shaderProgram.GetUniform ( "currentRotationViewMatrix" );
-	currentModelViewMatrixLocation = shaderProgram.GetUniform ( "currentModelViewMatrix" );
-	lastFrameModelViewMatrixLocation = shaderProgram.GetUniform ( "lastFrameModelViewMatrix" );
+	currentFrameModelViewProjectionMatrixLocation = shaderProgram.GetUniform ( "currentFrameModelViewProjectionMatrix" );
+	currentFrameRotationViewMatrixLocation = shaderProgram.GetUniform ( "currentFrameRotationViewMatrix" );
+	lastFrameModelViewProjectionMatrixLocation = shaderProgram.GetUniform ( "lastFrameModelViewProjectionMatrix" );
 	inverseDeltaTimeLocation = shaderProgram.GetUniform ( "inverseDeltaTime" );
 	explosureTimeLocation = shaderProgram.GetUniform ( "explosureTime" );
+	screenResolutionLocation = shaderProgram.GetUniform ( "screenResolution" );
 	maxBlurSamplesLocation = shaderProgram.GetUniform ( "maxBlurSamples" );
 
 	diffuseTexture = nullptr;
@@ -101,6 +104,7 @@ EMBlinnPhongCommonPassMaterial::EMBlinnPhongCommonPassMaterial ()
 	SetDeltaTime ( DEFAULT_DELTA_TIME );
 
 	SetExplosureTime ( DEFAULT_EXPLOSURE_TIME );
+	SetScreenResolution ( DEFAULT_SCREEN_RESOLUTION_WIDTH, DEFAULT_SCREEN_RESOLUTION_HEIGHT );
 	SetMaxBlurSamples ( DEFAULT_MAX_BLUR_SAMPLES );
 }
 
@@ -117,40 +121,38 @@ GXVoid EMBlinnPhongCommonPassMaterial::Bind ( const GXTransform &transform ) con
 
 	GXCamera* camera = GXCamera::GetActiveCamera ();
 
-	GXMat4 currentModelViewProjectionMatrix;
-	GXMat3 currentRotationViewMatrix;
-	GXMat4 currentModelViewMatrix;
-	GXMat4 lastFrameModelViewMatrix;
+	GXMat4 currentFrameModelViewProjectionMatrix;
+	GXMat3 currentFrameRotationViewMatrix;
+	GXMat4 lastFrameModelViewProjectionMatrix;
 
-	const GXMat4& currentModelMatrix = transform.GetCurrentModelMatrix ();
-	GXMulMat4Mat4 ( currentModelViewProjectionMatrix, currentModelMatrix, camera->GetCurrentViewProjectionMatrix () );
+	const GXMat4& currentFrameModelMatrix = transform.GetCurrentModelMatrix ();
+	GXMulMat4Mat4 ( currentFrameModelViewProjectionMatrix, currentFrameModelMatrix, camera->GetCurrentFrameViewProjectionMatrix () );
 
-	GXMat4 currentRotationMatrix;
-	transform.GetRotation ( currentRotationMatrix );
-	const GXMat4& currentViewMatrix = camera->GetCurrentViewMatrix ();
+	GXMat4 currentFrameRotationMatrix;
+	transform.GetRotation ( currentFrameRotationMatrix );
+	const GXMat4& currentFrameViewMatrix = camera->GetCurrentFrameViewMatrix ();
 
 	GXMat3 r;
-	r.xv = currentRotationMatrix.xv;
-	r.yv = currentRotationMatrix.yv;
-	r.zv = currentRotationMatrix.zv;
+	r.xv = currentFrameRotationMatrix.xv;
+	r.yv = currentFrameRotationMatrix.yv;
+	r.zv = currentFrameRotationMatrix.zv;
 
 	GXMat3 v;
-	v.xv = currentViewMatrix.xv;
-	v.yv = currentViewMatrix.yv;
-	v.zv = currentViewMatrix.zv;
+	v.xv = currentFrameRotationMatrix.xv;
+	v.yv = currentFrameRotationMatrix.yv;
+	v.zv = currentFrameRotationMatrix.zv;
 
-	GXMulMat3Mat3 ( currentRotationViewMatrix, r, v );
+	GXMulMat3Mat3 ( currentFrameRotationViewMatrix, r, v );
 
-	GXMulMat4Mat4 ( currentModelViewMatrix, currentModelMatrix, camera->GetCurrentViewMatrix () );
+	GXMulMat4Mat4 ( lastFrameModelViewProjectionMatrix, transform.GetLastFrameModelMatrix (), camera->GetLastFrameViewProjectionMatrix () );
 
-	GXMulMat4Mat4 ( lastFrameModelViewMatrix, transform.GetLastFrameModelMatrix (), camera->GetLastFrameViewMatrix () );
+	glUniformMatrix4fv ( currentFrameModelViewProjectionMatrixLocation, 1, GL_FALSE, currentFrameModelViewProjectionMatrix.arr );
+	glUniformMatrix3fv ( currentFrameRotationViewMatrixLocation, 1, GL_FALSE, currentFrameRotationViewMatrix.arr );
+	glUniformMatrix4fv ( lastFrameModelViewProjectionMatrixLocation, 1, GL_FALSE, lastFrameModelViewProjectionMatrix.arr );
 
-	glUniformMatrix4fv ( currentModelViewProjectionMatrixLocation, 1, GL_FALSE, currentModelViewProjectionMatrix.arr );
-	glUniformMatrix3fv ( currentRotationViewMatrixLocation, 1, GL_FALSE, currentRotationViewMatrix.arr );
-	glUniformMatrix4fv ( currentModelViewMatrixLocation, 1, GL_FALSE, currentModelViewMatrix.arr );
-	glUniformMatrix4fv ( lastFrameModelViewMatrixLocation, 1, GL_FALSE, lastFrameModelViewMatrix.arr );
-
+	glUniform1f ( inverseDeltaTimeLocation, inverseDeltaTime );
 	glUniform1f ( explosureTimeLocation, explosureTime );
+	glUniform2fv ( screenResolutionLocation, 1, screenResolution.arr );
 	glUniform1f ( maxBlurSamplesLocation, maxBlurSamples );
 
 	diffuseTexture->Bind ( DIFFUSE_SLOT );
@@ -166,8 +168,6 @@ GXVoid EMBlinnPhongCommonPassMaterial::Bind ( const GXTransform &transform ) con
 	emissionTexture->Bind ( EMISSION_SLOT );
 	glUniform3fv ( emissionColorLocation, 1, emissionColor.arr );
 	glUniform4fv ( emissionTextureScaleOffsetLocation, 1, emissionTextureScaleOffset.arr );
-
-	glUniform1f ( inverseDeltaTimeLocation, inverseDeltaTime );
 }
 
 GXVoid EMBlinnPhongCommonPassMaterial::Unbind () const
@@ -268,6 +268,12 @@ GXVoid EMBlinnPhongCommonPassMaterial::SetDeltaTime ( GXFloat deltaTime )
 GXVoid EMBlinnPhongCommonPassMaterial::SetExplosureTime ( GXFloat time )
 {
 	explosureTime = time;
+}
+
+GXVoid EMBlinnPhongCommonPassMaterial::SetScreenResolution ( GXUShort width, GXUShort height )
+{
+	screenResolution.x = (GXFloat)width;
+	screenResolution.y = (GXFloat)height;
 }
 
 GXVoid EMBlinnPhongCommonPassMaterial::SetMaxBlurSamples ( GXUByte samples )

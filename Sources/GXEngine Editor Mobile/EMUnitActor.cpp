@@ -5,6 +5,7 @@
 #include <GXEngine/GXShaderProgram.h>
 #include <GXEngine/GXTexture.h>
 #include <GXEngine/GXRenderable.h>
+#include <GXEngine/GXRenderer.h>
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXMemory.h>
 
@@ -55,7 +56,10 @@ GXVoid EMUnitActor::OnDrawCommonPass ( GXFloat deltaTime )
 {
 	EMRenderer::GetInstance ()->SetObjectMask ( (GXUPointer)this );
 
+	GXRenderer* coreRenderer = GXRenderer::GetInstance ();
+
 	commonPassMaterial.SetDeltaTime ( deltaTime );
+	commonPassMaterial.SetScreenResolution ( (GXUShort)coreRenderer->GetWidth (), (GXUShort)coreRenderer->GetHeight () );
 	commonPassMaterial.Bind ( mesh );
 	mesh.Render ();
 	commonPassMaterial.Unbind ();

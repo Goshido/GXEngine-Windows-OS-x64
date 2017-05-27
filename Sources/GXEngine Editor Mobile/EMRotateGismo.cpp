@@ -56,7 +56,7 @@ GXVoid EMRotateGismo::Render ()
 
 GXVoid EMRotateGismo::TransformUpdated ()
 {
-	mesh.SetRotation ( currentRotationMatrix );
-	mesh.SetLocation ( currentLocation );
-	mesh.SetScale ( currentScale );
+	mesh.SetRotation ( currentFrameRotationMatrix );
+	mesh.SetLocation ( currentFrameLocation );
+	mesh.SetScale ( currentFrameScale );
 }

@@ -56,7 +56,7 @@ class EMBulp : public EMLightEmitter
 
 	public:
 		EMBulp ();
-		virtual ~EMBulp ();
+		~EMBulp () override;
 
 		GXVoid SetInfluenceDistance ( GXFloat distance );
 		GXFloat GetInfluenceDistance ();
@@ -85,7 +85,7 @@ class EMSpotlight : public EMLightEmitter
 
 	public:
 		EMSpotlight ();
-		virtual ~EMSpotlight ();
+		~EMSpotlight () override;
 
 		GXVoid SetInfluenceDistance ( GXFloat distance );
 		GXVoid SetConeAngle ( GXFloat angle_rad );
@@ -116,7 +116,7 @@ class EMDirectedLight : public EMLightEmitter
 
 	public:
 		EMDirectedLight ();
-		virtual ~EMDirectedLight ();
+		~EMDirectedLight () override;
 
 		GXVoid SetAmbientBaseColor ( GXUByte r, GXUByte g, GXUByte b );
 		GXVoid SetAmbientIntensity ( GXFloat intens );

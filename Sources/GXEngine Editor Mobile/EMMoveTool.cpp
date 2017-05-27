@@ -104,7 +104,7 @@ GXVoid EMMoveTool::OnViewerTransformChanged ()
 {
 	GXVec3 deltaView ( 0.0f, 0.0f, 0.0f );
 	GXVec3 axisLocationView;
-	GXMulVec3Mat4AsPoint ( axisLocationView, startLocationWorld, GXCamera::GetActiveCamera ()->GetCurrentViewMatrix () );
+	GXMulVec3Mat4AsPoint ( axisLocationView, startLocationWorld, GXCamera::GetActiveCamera ()->GetCurrentFrameViewMatrix () );
 
 	gismoScaleCorrector = GetScaleCorrector ( axisLocationView, deltaView );
 }
@@ -250,7 +250,7 @@ GXVoid EMMoveTool::SetMode ( GXUByte mode )
 	}
 
 	GXVec3 axisLocationView;
-	GXMulVec3Mat4AsPoint ( axisLocationView, startLocationWorld, activeCamera->GetCurrentViewMatrix () );
+	GXMulVec3Mat4AsPoint ( axisLocationView, startLocationWorld, activeCamera->GetCurrentFrameViewMatrix () );
 
 	GXVec3 axisDirectionView;
 	GetAxis ( axisDirectionView );
@@ -271,7 +271,7 @@ GXVoid EMMoveTool::OnMoveActor ()
 	GXCamera* activeCamera = GXCamera::GetActiveCamera ();
 
 	GXVec3 axisLocationView;
-	GXMulVec3Mat4AsPoint ( axisLocationView, startLocationWorld, activeCamera->GetCurrentViewMatrix () );
+	GXMulVec3Mat4AsPoint ( axisLocationView, startLocationWorld, activeCamera->GetCurrentFrameViewMatrix () );
 
 	GXVec3 axisDirectionView;
 	GetAxis ( axisDirectionView );
@@ -288,7 +288,7 @@ GXVoid EMMoveTool::OnMoveActor ()
 
 	gismoScaleCorrector = GetScaleCorrector ( axisLocationView, deltaView );
 
-	GXMulVec3Mat4AsNormal ( deltaWorld, deltaView, activeCamera->GetCurrentModelMatrix () );
+	GXMulVec3Mat4AsNormal ( deltaWorld, deltaView, activeCamera->GetCurrentFrameModelMatrix () );
 	GXMat4 newTransform = actor->GetTransform ();
 	GXSumVec3Vec3 ( newTransform.wv, startLocationWorld, deltaWorld );
 
@@ -319,13 +319,13 @@ GXVoid EMMoveTool::GetAxis ( GXVec3& axisView )
 		break;
 	}
 
-	GXMulVec3Mat4AsNormal ( axisView, axisWorld, GXCamera::GetActiveCamera ()->GetCurrentViewMatrix () );
+	GXMulVec3Mat4AsNormal ( axisView, axisWorld, GXCamera::GetActiveCamera ()->GetCurrentFrameViewMatrix () );
 }
 
 GXVoid EMMoveTool::GetRayPerspective ( GXVec3 &rayView )
 {
 	GXRenderer* renderer = GXRenderer::GetInstance ();
-	const GXMat4& proj_mat = GXCamera::GetActiveCamera ()->GetCurrentProjectionMatrix ();
+	const GXMat4& proj_mat = GXCamera::GetActiveCamera ()->GetCurrentFrameProjectionMatrix ();
 
 	GXVec2 mouseCVV;
 	mouseCVV.x = ( mouseX / (GXFloat)renderer->GetWidth () ) * 2.0f - 1.0f;

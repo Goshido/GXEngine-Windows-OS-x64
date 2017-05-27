@@ -1,5 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMFluttershy.h>
 #include <GXEngine_Editor_Mobile/EMRenderer.h>
+#include <GXEngine/GXRenderer.h>
 
 
 #define SOLVER_ID		0
@@ -40,6 +41,10 @@ EMFluttershy::~EMFluttershy ()
 
 GXVoid EMFluttershy::Render ( GXFloat deltaTime )
 {
+	EMRenderer::GetInstance ()->SetObjectMask ( (GXUPointer)nullptr );
+	GXRenderer* coreRenderer = GXRenderer::GetInstance ();
+
+	material.SetScreenResolution ( (GXUShort)coreRenderer->GetWidth (), (GXUShort)coreRenderer->GetHeight () );
 	material.SetDeltaTime ( deltaTime );
 	material.Bind ( mesh );
 	mesh.Render ();
@@ -57,7 +62,7 @@ GXVoid EMFluttershy::UpdatePose ( GXFloat deltaTime )
 
 GXVoid EMFluttershy::TransformUpdated ()
 {
-	mesh.SetScale ( currentScale );
-	mesh.SetRotation ( currentRotationMatrix );
-	mesh.SetLocation ( currentLocation );
+	mesh.SetScale ( currentFrameScale );
+	mesh.SetRotation ( currentFrameRotationMatrix );
+	mesh.SetLocation ( currentFrameLocation );
 }

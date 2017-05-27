@@ -220,7 +220,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	renderer->PresentFrame ( eEMRenderTarget::Combine );
 
-	viewerCamera.UpdateLastFrameViewMatrix ();
+	viewerCamera.UpdateLastFrameMatrices ();
 }
 
 GXVoid EMGame::OnDestroy ()

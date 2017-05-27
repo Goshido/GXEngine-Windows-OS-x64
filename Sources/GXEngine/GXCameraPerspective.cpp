@@ -1,4 +1,4 @@
-//version 1.7
+//version 1.8
 
 #include <GXEngine/GXCameraPerspective.h>
 
@@ -16,12 +16,12 @@ GXCameraPerspective::GXCameraPerspective ()
 	znear = DEFAULT_Z_NEAR;
 	zfar = DEFAULT_Z_FAR;
 
-	GXSetMat4Perspective ( currentProjectionMatrix, fovy_rad, aspectRatio, znear, zfar );
-	GXSetMat4Inverse ( currentInverseProjectionMatrix, currentProjectionMatrix );
-	currentViewProjectionMatrix = currentProjectionMatrix;
+	GXSetMat4Perspective ( currentFrameProjectionMatrix, fovy_rad, aspectRatio, znear, zfar );
+	GXSetMat4Inverse ( currentFrameInverseProjectionMatrix, currentFrameProjectionMatrix );
+	currentFrameViewProjectionMatrix = currentFrameProjectionMatrix;
 
 	UpdateClipPlanes ();
-	UpdateLastFrameViewMatrix ();
+	UpdateLastFrameMatrices ();
 }
 
 GXCameraPerspective::GXCameraPerspective ( GXFloat fovy_rad, GXFloat aspectRatio, GXFloat znear, GXFloat zfar )
@@ -31,12 +31,12 @@ GXCameraPerspective::GXCameraPerspective ( GXFloat fovy_rad, GXFloat aspectRatio
 	this->znear = znear;
 	this->zfar = zfar;
 
-	GXSetMat4Perspective ( currentProjectionMatrix, fovy_rad, aspectRatio, znear, zfar );
-	GXSetMat4Inverse ( currentInverseProjectionMatrix, currentProjectionMatrix );
-	currentViewProjectionMatrix = currentProjectionMatrix;
+	GXSetMat4Perspective ( currentFrameProjectionMatrix, fovy_rad, aspectRatio, znear, zfar );
+	GXSetMat4Inverse ( currentFrameInverseProjectionMatrix, currentFrameProjectionMatrix );
+	currentFrameViewProjectionMatrix = currentFrameProjectionMatrix;
 
 	UpdateClipPlanes ();
-	UpdateLastFrameViewMatrix ();
+	UpdateLastFrameMatrices ();
 }
 
 GXCameraPerspective::~GXCameraPerspective ()
@@ -48,9 +48,9 @@ GXVoid GXCameraPerspective::SetFov ( GXFloat fovy_rad )
 {
 	this->fovy_rad = fovy_rad;
 
-	GXSetMat4Perspective ( currentProjectionMatrix, fovy_rad, aspectRatio, znear, zfar );
-	GXSetMat4Inverse ( currentInverseProjectionMatrix, currentProjectionMatrix );
-	currentViewProjectionMatrix = currentProjectionMatrix;
+	GXSetMat4Perspective ( currentFrameProjectionMatrix, fovy_rad, aspectRatio, znear, zfar );
+	GXSetMat4Inverse ( currentFrameInverseProjectionMatrix, currentFrameProjectionMatrix );
+	currentFrameViewProjectionMatrix = currentFrameProjectionMatrix;
 
 	UpdateClipPlanes ();
 }
@@ -59,9 +59,9 @@ GXVoid GXCameraPerspective::SetAspectRatio ( GXFloat aspectRatio )
 {
 	this->aspectRatio = aspectRatio;
 
-	GXSetMat4Perspective ( currentProjectionMatrix, fovy_rad, aspectRatio, znear, zfar );
-	GXSetMat4Inverse ( currentInverseProjectionMatrix, currentProjectionMatrix );
-	currentViewProjectionMatrix = currentProjectionMatrix;
+	GXSetMat4Perspective ( currentFrameProjectionMatrix, fovy_rad, aspectRatio, znear, zfar );
+	GXSetMat4Inverse ( currentFrameInverseProjectionMatrix, currentFrameProjectionMatrix );
+	currentFrameViewProjectionMatrix = currentFrameProjectionMatrix;
 
 	UpdateClipPlanes ();
 }
@@ -70,9 +70,9 @@ GXVoid GXCameraPerspective::SetZnear ( GXFloat znear )
 {
 	this->znear = znear;
 
-	GXSetMat4Perspective ( currentProjectionMatrix, fovy_rad, aspectRatio, znear, zfar );
-	GXSetMat4Inverse ( currentInverseProjectionMatrix, currentProjectionMatrix );
-	currentViewProjectionMatrix = currentProjectionMatrix;
+	GXSetMat4Perspective ( currentFrameProjectionMatrix, fovy_rad, aspectRatio, znear, zfar );
+	GXSetMat4Inverse ( currentFrameInverseProjectionMatrix, currentFrameProjectionMatrix );
+	currentFrameViewProjectionMatrix = currentFrameProjectionMatrix;
 
 	UpdateClipPlanes ();
 }
@@ -81,9 +81,9 @@ GXVoid GXCameraPerspective::SetZfar	( GXFloat zfar )
 {
 	this->zfar = zfar;
 
-	GXSetMat4Perspective ( currentProjectionMatrix, fovy_rad, aspectRatio, znear, zfar );
-	GXSetMat4Inverse ( currentInverseProjectionMatrix, currentProjectionMatrix );
-	currentViewProjectionMatrix = currentProjectionMatrix;
+	GXSetMat4Perspective ( currentFrameProjectionMatrix, fovy_rad, aspectRatio, znear, zfar );
+	GXSetMat4Inverse ( currentFrameInverseProjectionMatrix, currentFrameProjectionMatrix );
+	currentFrameViewProjectionMatrix = currentFrameProjectionMatrix;
 
 	UpdateClipPlanes ();
 }

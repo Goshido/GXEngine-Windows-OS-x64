@@ -29,10 +29,9 @@ class EMBlinnPhongCommonPassMaterial : public GXMaterial
 		GXVec3				emissionColor;
 		GLint				emissionColorLocation;
 
-		GLint				currentModelViewProjectionMatrixLocation;
-		GLint				currentRotationViewMatrixLocation;
-		GLint				currentModelViewMatrixLocation;
-		GLint				lastFrameModelViewMatrixLocation;
+		GLint				currentFrameModelViewProjectionMatrixLocation;
+		GLint				currentFrameRotationViewMatrixLocation;
+		GLint				lastFrameModelViewProjectionMatrixLocation;
 
 		GXFloat				inverseDeltaTime;
 		GLint				inverseDeltaTimeLocation;
@@ -40,6 +39,9 @@ class EMBlinnPhongCommonPassMaterial : public GXMaterial
 		GXFloat				explosureTime;
 		GLint				explosureTimeLocation;
 
+		GXVec2				screenResolution;
+		GLint				screenResolutionLocation;
+		
 		GXFloat				maxBlurSamples;
 		GLint				maxBlurSamplesLocation;
 
@@ -71,6 +73,7 @@ class EMBlinnPhongCommonPassMaterial : public GXMaterial
 		GXVoid SetDeltaTime ( GXFloat deltaTime );
 
 		GXVoid SetExplosureTime ( GXFloat time );
+		GXVoid SetScreenResolution ( GXUShort width, GXUShort height );
 		GXVoid SetMaxBlurSamples ( GXUByte samples );
 };
 

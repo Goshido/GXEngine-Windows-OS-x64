@@ -1,4 +1,4 @@
-//version 1.7
+//version 1.8
 
 #ifndef GX_CAMERA_PERSPECTIVE
 #define GX_CAMERA_PERSPECTIVE
