@@ -375,6 +375,9 @@
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMVelocityNeighborMaxMaterial.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIFPSCounter.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -798,6 +801,9 @@
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMVelocityNeighborMaxMaterial.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIFPSCounter.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
   </ItemGroup>

@@ -76,7 +76,7 @@ GXVoid EMMoveTool::Bind ()
 	activeAxis = MOVE_TOOL_ACTIVE_AXIS_UNKNOWN;
 	isLMBPressed = GX_FALSE;
 
-	EMRenderer::GetInstance ()->SetOnObjectCallback ( &OnObject );
+	EMRenderer::GetInstance ().SetOnObjectCallback ( &OnObject );
 }
 
 GXVoid EMMoveTool::SetActor ( EMActor* actor )
@@ -97,7 +97,7 @@ GXVoid EMMoveTool::SetActor ( EMActor* actor )
 
 GXVoid EMMoveTool::UnBind ()
 {
-	EMRenderer::GetInstance ()->SetOnObjectCallback ( 0 );
+	EMRenderer::GetInstance ().SetOnObjectCallback ( 0 );
 }
 
 GXVoid EMMoveTool::OnViewerTransformChanged ()
@@ -158,21 +158,21 @@ GXVoid EMMoveTool::OnDrawHudMaskPass ()
 {
 	if ( !actor ) return;
 	
-	EMRenderer* renderer = EMRenderer::GetInstance ();
+	EMRenderer& renderer = EMRenderer::GetInstance ();
 
-	renderer->SetObjectMask ( (GXUPointer)( &xAxisMask ) );
+	renderer.SetObjectMask ( (GXUPointer)( &xAxisMask ) );
 	UpdateMeshTransform ( xAxisMask );
 	objectMaskMaterial.Bind ( xAxisMask );
 	xAxisMask.Render ();
 	objectMaskMaterial.Unbind ();
 
-	renderer->SetObjectMask ( (GXUPointer)( &yAxisMask ) );
+	renderer.SetObjectMask ( (GXUPointer)( &yAxisMask ) );
 	UpdateMeshTransform ( yAxisMask );
 	objectMaskMaterial.Bind ( yAxisMask );
 	yAxisMask.Render ();
 	objectMaskMaterial.Unbind ();
 
-	renderer->SetObjectMask ( (GXUPointer)( &zAxisMask ) );
+	renderer.SetObjectMask ( (GXUPointer)( &zAxisMask ) );
 	UpdateMeshTransform ( zAxisMask );
 	objectMaskMaterial.Bind ( zAxisMask );
 	zAxisMask.Render ();
@@ -196,7 +196,7 @@ GXBool EMMoveTool::OnMouseMove ( GXFloat x, GXFloat y )
 GXBool EMMoveTool::OnLeftMouseButtonDown ( GXFloat x, GXFloat y )
 {
 	isLMBPressed = GX_TRUE;
-	EMRenderer::GetInstance ()->GetObject ( (GXUShort)x, (GXUShort)y );
+	EMRenderer::GetInstance ().GetObject ( (GXUShort)x, (GXUShort)y );
 	return GX_FALSE;
 }
 
@@ -324,12 +324,12 @@ GXVoid EMMoveTool::GetAxis ( GXVec3& axisView )
 
 GXVoid EMMoveTool::GetRayPerspective ( GXVec3 &rayView )
 {
-	GXRenderer* renderer = GXRenderer::GetInstance ();
+	GXRenderer& renderer = GXRenderer::GetInstance ();
 	const GXMat4& proj_mat = GXCamera::GetActiveCamera ()->GetCurrentFrameProjectionMatrix ();
 
 	GXVec2 mouseCVV;
-	mouseCVV.x = ( mouseX / (GXFloat)renderer->GetWidth () ) * 2.0f - 1.0f;
-	mouseCVV.y = ( mouseY / (GXFloat)renderer->GetHeight () ) * 2.0f - 1.0f;
+	mouseCVV.x = ( mouseX / (GXFloat)renderer.GetWidth () ) * 2.0f - 1.0f;
+	mouseCVV.y = ( mouseY / (GXFloat)renderer.GetHeight () ) * 2.0f - 1.0f;
 
 	GXGetRayPerspective ( rayView, proj_mat, mouseCVV );
 }

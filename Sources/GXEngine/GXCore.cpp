@@ -17,22 +17,25 @@
 #include <GXCommon/GXCFGLoader.h>
 
 
-GXBool					GXCore::loopFlag = GX_TRUE;
-GXCore*					GXCore::instance = nullptr;
+#define INPUT_SLEEP		30
+
+
+GXBool	GXCore::loopFlag = GX_TRUE;
+GXCore*	GXCore::instance = nullptr;
 
 
 GXCore::~GXCore ()
 {
-	delete GXLocale::GetInstance ();
-	delete GXTouchSurface::GetInstance ();
-	delete GXNetServer::GetInstance ();
-	delete GXNetClient::GetInstance ();
-	delete GXInput::GetInstance ();
+	delete &(GXLocale::GetInstance ());
+	delete &(GXTouchSurface::GetInstance ());
+	delete &(GXNetServer::GetInstance ());
+	delete &(GXNetClient::GetInstance ());
+	delete &(GXInput::GetInstance ());
 
 	GXDestroyPhysX ();
 
-	delete GXRenderer::GetInstance ();
-	delete GXSoundMixer::GetInstance ();
+	delete &(GXRenderer::GetInstance ());
+	delete &(GXSoundMixer::GetInstance ());
 
 	GXSoundDestroy ();
 
@@ -42,21 +45,21 @@ GXCore::~GXCore ()
 
 GXVoid GXCore::Start ( GXGame &game )
 {
-	GXSoundMixer* soundMixer = GXSoundMixer::GetInstance ();
-	soundMixer->Start ();
+	GXSoundMixer& soundMixer = GXSoundMixer::GetInstance ();
+	soundMixer.Start ();
 
-	GXRenderer* renderer = GXRenderer::GetInstance ();
-	renderer->Start ( game );
+	GXRenderer& renderer = GXRenderer::GetInstance ();
+	renderer.Start ( game );
 
-	GXInput* input = GXInput::GetInstance ();
-	input->Start ();
+	GXInput& input = GXInput::GetInstance ();
+	input.Start ();
 
 	while ( loopFlag )
-		Sleep ( 30 );
+		Sleep ( INPUT_SLEEP );
 
-	input->Shutdown ();
-	renderer->Shutdown ();
-	soundMixer->Shutdown ();
+	input.Shutdown ();
+	renderer.Shutdown ();
+	soundMixer.Shutdown ();
 
 	CheckMemoryLeak ();
 }
@@ -66,12 +69,12 @@ GXVoid GXCore::Exit ()
 	loopFlag = GX_FALSE;
 }
 
-GXCore* GXCALL GXCore::GetInstance ()
+GXCore& GXCALL GXCore::GetInstance ()
 {
 	if ( !instance )
 		instance = new GXCore ();
 
-	return instance;
+	return *instance;
 }
 
 GXCore::GXCore ()

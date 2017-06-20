@@ -148,7 +148,7 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 				if ( owner )
 				{
 					GXUIPopup* pointer = this;
-					GXTouchSurface::GetInstance ()->SendMessage ( owner, GX_MSG_POPUP_CLOSED, &pointer, sizeof ( GXUIPopup* ) );
+					GXTouchSurface::GetInstance ().SendMessage ( owner, GX_MSG_POPUP_CLOSED, &pointer, sizeof ( GXUIPopup* ) );
 				}
 
 				selectedItemIndex = GX_UI_POPUP_INVALID_INDEX;
@@ -191,7 +191,7 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 			if ( owner )
 			{
 				GXUIPopup* pointer = this;
-				GXTouchSurface::GetInstance ()->SendMessage ( owner, GX_MSG_POPUP_CLOSED, &pointer, sizeof ( GXUIPopup* ) );
+				GXTouchSurface::GetInstance ().SendMessage ( owner, GX_MSG_POPUP_CLOSED, &pointer, sizeof ( GXUIPopup* ) );
 			}
 
 			Hide ();
@@ -238,7 +238,7 @@ GXVoid GXUIPopup::AddItem ( GXVoid* handler, PFNGXONUIPOPUPACTIONPROC action )
 	GXUIPopupItem pi;
 	pi.handler = handler;
 	pi.action = action;
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_POPUP_ADD_ITEM, &pi, sizeof ( GXUIPopupItem ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_POPUP_ADD_ITEM, &pi, sizeof ( GXUIPopupItem ) );
 }
 
 GXUByte GXUIPopup::GetTotalItems () const
@@ -248,12 +248,12 @@ GXUByte GXUIPopup::GetTotalItems () const
 
 GXVoid GXUIPopup::EnableItem ( GXUByte itemIndex )
 {
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_POPUP_ENABLE_ITEM, &itemIndex, sizeof ( GXUByte ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_POPUP_ENABLE_ITEM, &itemIndex, sizeof ( GXUByte ) );
 }
 
 GXVoid GXUIPopup::DisableItem ( GXUByte itemIndex )
 {
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_POPUP_DISABLE_ITEM, &itemIndex, sizeof ( GXUByte ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_POPUP_DISABLE_ITEM, &itemIndex, sizeof ( GXUByte ) );
 }
 
 GXBool GXUIPopup::IsItemActive ( GXUByte itemIndex ) const
@@ -271,7 +271,7 @@ GXUByte GXUIPopup::GetSelectedItemIndex () const
 
 GXVoid GXUIPopup::SetItemHeight ( GXFloat height )
 {
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_POPUP_SET_ITEM_HEIGHT, &height, sizeof ( GXFloat ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_POPUP_SET_ITEM_HEIGHT, &height, sizeof ( GXFloat ) );
 }
 
 GXFloat GXUIPopup::GetItemHeight () const
@@ -286,5 +286,5 @@ GXFloat GXUIPopup::GetItemWidth () const
 
 GXVoid GXUIPopup::Show ( GXWidget* owner )
 {
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_POPUP_SHOW, &owner, sizeof ( GXWidget* ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_POPUP_SHOW, &owner, sizeof ( GXWidget* ) );
 }

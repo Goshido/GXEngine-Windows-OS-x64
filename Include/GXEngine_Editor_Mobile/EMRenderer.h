@@ -79,7 +79,7 @@ class EMRenderer
 		GXUByte GetMaxBlurSamples () const;
 		GXFloat GetExplosureTime () const;
 
-		static EMRenderer* GXCALL GetInstance ();
+		static EMRenderer& GXCALL GetInstance ();
 
 	private:
 		EMRenderer ();

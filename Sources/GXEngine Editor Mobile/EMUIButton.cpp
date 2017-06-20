@@ -196,7 +196,7 @@ GXVoid EMUIButtonRenderer::SetCaption ( const GXWChar* caption )
 	if ( caption )
 		GXWcsclone ( &this->caption, caption );
 	else
-		caption = 0;
+		caption = nullptr;
 }
 
 GXVoid EMUIButtonRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )

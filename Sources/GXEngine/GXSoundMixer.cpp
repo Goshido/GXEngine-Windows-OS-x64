@@ -100,12 +100,12 @@ GXVoid GXSoundMixer::SetMasterVolume ( GXFloat masterVolume )
 	GXAlListenerf ( AL_GAIN, masterVolume );	
 }
 
-GXSoundMixer* GXCALL GXSoundMixer::GetInstance ()
+GXSoundMixer& GXCALL GXSoundMixer::GetInstance ()
 {
 	if ( !instance )
 		instance = new GXSoundMixer ();
 
-	return instance;
+	return *instance;
 }
 
 GXSoundMixer::GXSoundMixer () :

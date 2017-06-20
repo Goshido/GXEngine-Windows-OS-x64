@@ -205,7 +205,7 @@ GXVoid GXUIMenu::AddItem ( const GXWChar* name, GXFloat itemWidth, GXUIPopup* po
 	GXAddVertexToAABB ( item.bounds, itemWidth, GX_ANY_HEIGHT, 1.0f );
 	item.popup = popup;
 
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_MENY_ADD_ITEM, &item, sizeof ( GXUIMenuItem ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_MENY_ADD_ITEM, &item, sizeof ( GXUIMenuItem ) );
 }
 
 GXUByte GXUIMenu::GetTotalItems () const

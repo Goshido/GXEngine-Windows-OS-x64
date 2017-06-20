@@ -248,7 +248,10 @@ GXVoid GXHudSurface::Reset ()
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
-	glClear ( GL_COLOR_BUFFER_BIT );
+
+	static const GXFloat clearDiffuseValue[ 4 ] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+	glClearBufferfv ( GL_COLOR, 0, clearDiffuseValue );
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, oldFBO );
 }

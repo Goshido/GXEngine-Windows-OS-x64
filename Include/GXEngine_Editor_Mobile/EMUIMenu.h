@@ -1,5 +1,5 @@
-#ifndef EM_MENU_EXT
-#define EM_MENU_EXT
+#ifndef EM_UI_MENU
+#define EM_UI_MENU
 
 
 #include "EMUI.h"
@@ -24,4 +24,4 @@ class EMUIMenu : public EMUI
 };
 
 
-#endif //EM_MENU_EXT
+#endif //EM_UI_MENU

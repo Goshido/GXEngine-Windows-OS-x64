@@ -1,5 +1,5 @@
-#ifndef EMUI_FILE_LIST_BOX
-#define EMUI_FILE_LIST_BOX
+#ifndef EM_UI_FILE_LIST_BOX
+#define EM_UI_FILE_LIST_BOX
 
 
 #include "EMUI.h"
@@ -47,4 +47,4 @@ class EMUIFileListBox : public EMUI
 };
 
 
-#endif //EMUI_FILE_LIST_BOX
+#endif //EM_UI_FILE_LIST_BOX

@@ -78,5 +78,5 @@ void main ()
 	float halfSpreadVelocityMagnitudeImage = length ( halfSpreadVelocityImage );
 	vec2 halfSpreadVelocityDirectionImage = halfSpreadVelocityImage / ( halfSpreadVelocityMagnitudeImage + EPSILON );
 
-	v_velocityBlur = halfSpreadVelocityDirectionImage * max ( 0.5, min ( halfSpreadVelocityMagnitudeImage, maxBlurSamples ) );
+	v_velocityBlur = halfSpreadVelocityDirectionImage * max ( 0.0, min ( halfSpreadVelocityMagnitudeImage, maxBlurSamples ) );
 }

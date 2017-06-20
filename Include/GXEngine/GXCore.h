@@ -19,7 +19,7 @@ class GXCore
 		GXVoid Start ( GXGame &game );
 		GXVoid Exit ();
 
-		static GXCore* GXCALL GetInstance ();
+		static GXCore& GXCALL GetInstance ();
 
 	private:
 		GXCore ();

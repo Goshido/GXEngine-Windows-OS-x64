@@ -25,7 +25,7 @@
 #define CVV_HEIGHT						2.0f
 
 #define DEFAULT_MOTION_BLUR_SAMPLES		15
-#define EXPLOSURE_TIME					0.04f
+#define EXPLOSURE_TIME					0.01f
 
 #define CLEAR_DIFFUSE_R					0.0f
 #define CLEAR_DIFFUSE_G					0.0f
@@ -61,6 +61,8 @@
 #define CLEAR_OBJECT_1_G				0.0f
 #define CLEAR_OBJECT_1_B				0.0f
 #define CLEAR_OBJECT_1_A				0.0f
+
+#define OVERLAY_TRANSPARENCY			80
 
 EMRenderer* EMRenderer::instance = nullptr;
 
@@ -107,8 +109,8 @@ GXVoid EMRenderer::StartCommonPass ()
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::StartCommonPass::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
-	GXRenderer* renderer = GXRenderer::GetInstance ();
-	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
+	GXRenderer& renderer = GXRenderer::GetInstance ();
+	glViewport ( 0, 0, renderer.GetWidth (), renderer.GetHeight () );
 
 	glDepthMask ( GL_TRUE );
 	glStencilMask ( 0xFF );
@@ -169,8 +171,8 @@ GXVoid EMRenderer::StartLightPass ()
 	glDepthMask ( GX_FALSE );
 	glStencilMask ( 0x00 );
 
-	GXRenderer* renderer = GXRenderer::GetInstance ();
-	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
+	GXRenderer& renderer = GXRenderer::GetInstance ();
+	glViewport ( 0, 0, renderer.GetWidth (), renderer.GetHeight () );
 
 	const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers ( 1, buffers );
@@ -207,8 +209,8 @@ GXVoid EMRenderer::StartHudColorPass ()
 
 	glClear ( GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 
-	GXRenderer* renderer = GXRenderer::GetInstance ();
-	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
+	GXRenderer& renderer = GXRenderer::GetInstance ();
+	glViewport ( 0, 0, renderer.GetWidth (), renderer.GetHeight () );
 
 	const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers ( 1, buffers );
@@ -240,8 +242,8 @@ GXVoid EMRenderer::StartHudMaskPass ()
 
 	glClear ( GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 
-	GXRenderer* renderer = GXRenderer::GetInstance ();
-	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
+	GXRenderer& renderer = GXRenderer::GetInstance ();
+	glViewport ( 0, 0, renderer.GetWidth (), renderer.GetHeight () );
 
 	const GLenum buffers[ 2 ] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 	glDrawBuffers ( 2, buffers );
@@ -383,8 +385,22 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 
 	glClear ( GL_COLOR_BUFFER_BIT );
 
-	GXRenderer* renderer = GXRenderer::GetInstance ();
-	glViewport ( 0, 0, renderer->GetWidth (), renderer->GetHeight () );
+	GXRenderer& renderer = GXRenderer::GetInstance ();
+	glViewport ( 0, 0, renderer.GetWidth (), renderer.GetHeight () );
+
+	unlitMaterial.SetTexture ( motionBlurredTexture );
+	unlitMaterial.SetColor ( 255, 255, 255, 255 );
+	unlitMaterial.Bind ( screenQuadMesh );
+
+	screenQuadMesh.Render ();
+
+	unlitMaterial.Unbind ();
+
+	if ( target == eEMRenderTarget::Combine )
+	{
+		GXCamera::SetActiveCamera ( oldCamera );
+		return;
+	}
 
 	GXTexture* texture = nullptr;
 
@@ -427,7 +443,11 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 		break;
 	}
 
+	glEnable ( GL_BLEND );
+	glBlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
 	unlitMaterial.SetTexture ( *texture );
+	unlitMaterial.SetColor ( 255, 255, 255, OVERLAY_TRANSPARENCY );
 	unlitMaterial.Bind ( screenQuadMesh );
 
 	screenQuadMesh.Render ();
@@ -458,12 +478,12 @@ GXFloat EMRenderer::GetExplosureTime () const
 	return EXPLOSURE_TIME;
 }
 
-EMRenderer* EMRenderer::GetInstance ()
+EMRenderer& EMRenderer::GetInstance ()
 {
 	if ( !instance )
 		instance = new EMRenderer ();
 
-	return instance;
+	return *instance;
 }
 
 EMRenderer::EMRenderer ():
@@ -475,7 +495,7 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" )
 
 	CreateFBO ();
 
-	GXRenderer* coreRenderer = GXRenderer::GetInstance ();
+	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
 	outCamera.SetProjection ( CVV_WIDTH, CVV_HEIGHT, Z_NEAR, Z_FAR );
 	screenQuadMesh.SetLocation ( 0.0f, 0.0f, Z_RENDER );
 
@@ -487,7 +507,7 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" )
 
 	velocityTileMaxMaterial.SetVelocityBlurTexture ( velocityBlurTexture );
 	velocityTileMaxMaterial.SetMaxBlurSamples ( DEFAULT_MOTION_BLUR_SAMPLES );
-	velocityTileMaxMaterial.SetScreenResolution ( (GXUShort)coreRenderer->GetWidth (), (GXUShort)coreRenderer->GetHeight () );
+	velocityTileMaxMaterial.SetScreenResolution ( (GXUShort)coreRenderer.GetWidth (), (GXUShort)coreRenderer.GetHeight () );
 
 	velocityNeighborMaxMaterial.SetVelocityTileMaxTexture ( velocityTileMaxTexture );
 	velocityNeighborMaxMaterial.SetVelocityTileMaxTextureResolution ( velocityTileMaxTexture.GetWidth (), velocityTileMaxTexture.GetHeight () );
@@ -504,9 +524,9 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" )
 
 GXVoid EMRenderer::CreateFBO ()
 {
-	GXRenderer* renderer = GXRenderer::GetInstance ();
-	GXUShort width = (GXUShort)renderer->GetWidth ();
-	GXUShort height = (GXUShort)renderer->GetHeight ();
+	GXRenderer& renderer = GXRenderer::GetInstance ();
+	GXUShort width = (GXUShort)renderer.GetWidth ();
+	GXUShort height = (GXUShort)renderer.GetHeight ();
 
 	diffuseTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	normalTexture.InitResources ( width, height, GL_RGB16, GX_FALSE, GL_CLAMP_TO_EDGE );
@@ -612,9 +632,9 @@ GXVoid EMRenderer::LightUpByBulp ( EMBulp* light )
 
 GXUPointer EMRenderer::SampleObject ()
 {
-	GXRenderer* renderer = GXRenderer::GetInstance ();
-	if ( mouseX < 0 || mouseX >= renderer->GetWidth () ) return 0;
-	if ( mouseY < 0 || mouseY >= renderer->GetHeight () ) return 0;
+	GXRenderer& renderer = GXRenderer::GetInstance ();
+	if ( mouseX < 0 || mouseX >= renderer.GetWidth () ) return 0;
+	if ( mouseY < 0 || mouseY >= renderer.GetHeight () ) return 0;
 
 	glBindFramebuffer ( GL_READ_FRAMEBUFFER, fbo );
 	glFramebufferTexture ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, objectTextures[ 0 ].GetTextureObject (), 0 );

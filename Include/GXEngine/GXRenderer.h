@@ -76,7 +76,7 @@ class GXRenderer
 		static GXBool GXCALL UpdateRendererSettings ();
 		static GXVoid GXCALL ReSizeScene ( GXInt width, GXInt height );
 
-		static GXRenderer* GXCALL GetInstance ();
+		static GXRenderer& GXCALL GetInstance ();
 
 	private:
 		GXRenderer ();

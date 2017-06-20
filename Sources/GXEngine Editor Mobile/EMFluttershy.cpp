@@ -19,14 +19,14 @@ mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLV
 	specularTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Specular.tex", GX_FALSE, GL_CLAMP_TO_EDGE );
 	emissionTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE, GL_CLAMP_TO_EDGE );
 
-	EMRenderer* renderer = EMRenderer::GetInstance ();
+	EMRenderer& renderer = EMRenderer::GetInstance ();
 
 	material.SetDiffuseTexture ( diffuseTexture );
 	material.SetNormalTexture ( normalTexture );
 	material.SetSpecularTexture ( specularTexture );
 	material.SetEmissionTexture ( emissionTexture );
-	material.SetMaxBlurSamples ( renderer->GetMaxBlurSamples () );
-	material.SetExplosureTime ( renderer->GetExplosureTime () );
+	material.SetMaxBlurSamples ( renderer.GetMaxBlurSamples () );
+	material.SetExplosureTime ( renderer.GetExplosureTime () );
 }
 
 EMFluttershy::~EMFluttershy ()
@@ -41,10 +41,10 @@ EMFluttershy::~EMFluttershy ()
 
 GXVoid EMFluttershy::Render ( GXFloat deltaTime )
 {
-	EMRenderer::GetInstance ()->SetObjectMask ( (GXUPointer)nullptr );
-	GXRenderer* coreRenderer = GXRenderer::GetInstance ();
+	EMRenderer::GetInstance ().SetObjectMask ( (GXUPointer)nullptr );
+	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
 
-	material.SetScreenResolution ( (GXUShort)coreRenderer->GetWidth (), (GXUShort)coreRenderer->GetHeight () );
+	material.SetScreenResolution ( (GXUShort)coreRenderer.GetWidth (), (GXUShort)coreRenderer.GetHeight () );
 	material.SetDeltaTime ( deltaTime );
 	material.Bind ( mesh );
 	mesh.Render ();

@@ -41,7 +41,7 @@ class GXSoundMixer
 
 		GXVoid SetMasterVolume ( GXFloat masterVolume );
 
-		static GXSoundMixer* GXCALL GetInstance ();
+		static GXSoundMixer& GXCALL GetInstance ();
 
 	private:
 		explicit GXSoundMixer ();

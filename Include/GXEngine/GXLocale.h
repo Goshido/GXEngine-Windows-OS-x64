@@ -31,7 +31,7 @@ class GXLocale
 	
 		const GXWChar* GetString ( const GXWChar* resName ) const;
 
-		static GXLocale* GXCALL GetInstance ();
+		static GXLocale& GXCALL GetInstance ();
 
 	private:
 		explicit GXLocale ();

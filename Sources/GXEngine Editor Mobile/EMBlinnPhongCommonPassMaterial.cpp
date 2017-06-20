@@ -138,9 +138,9 @@ GXVoid EMBlinnPhongCommonPassMaterial::Bind ( const GXTransform &transform ) con
 	r.zv = currentFrameRotationMatrix.zv;
 
 	GXMat3 v;
-	v.xv = currentFrameRotationMatrix.xv;
-	v.yv = currentFrameRotationMatrix.yv;
-	v.zv = currentFrameRotationMatrix.zv;
+	v.xv = currentFrameViewMatrix.xv;
+	v.yv = currentFrameViewMatrix.yv;
+	v.zv = currentFrameViewMatrix.zv;
 
 	GXMulMat3Mat3 ( currentFrameRotationViewMatrix, r, v );
 

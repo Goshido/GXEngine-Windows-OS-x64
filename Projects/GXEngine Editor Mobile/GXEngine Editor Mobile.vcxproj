@@ -185,6 +185,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMBlinnPhongDirectedLightMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMDirectedLightActor.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMFluttershy.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIFPSCounter.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMLight.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMGame.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMMesh.cpp" />
@@ -373,6 +374,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMBlinnPhongDirectedLightMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMDirectedLightActor.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMFluttershy.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIFPSCounter.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMLight.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMGame.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMesh.h" />

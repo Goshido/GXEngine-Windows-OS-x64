@@ -7,7 +7,7 @@
 #include <GXPhysics/GXPhysicsEngine.h>
 
 
-#define EM_WINDOW_NAME L"GXEditor Mobile"
+#define EM_WINDOW_NAME					L"GXEditor Mobile"
 
 
 EMGame::EMGame ()
@@ -49,77 +49,77 @@ EMGame::~EMGame ()
 
 GXVoid EMGame::OnInit ()
 {
-	GXRenderer* renderer = GXRenderer::GetInstance ();
-	renderer->SetWindowName ( EM_WINDOW_NAME );
+	GXRenderer& renderer = GXRenderer::GetInstance ();
+	renderer.SetWindowName ( EM_WINDOW_NAME );
 
-	GXLocale* locale = GXLocale::GetInstance ();
-	locale->LoadLanguage ( L"Locale/Editor Mobile/RU.lng", eGXLanguage::Russian );
-	locale->LoadLanguage ( L"Locale/Editor Mobile/EN.lng", eGXLanguage::English );
-	locale->SetLanguage ( eGXLanguage::Russian );
+	GXLocale& locale = GXLocale::GetInstance ();
+	locale.LoadLanguage ( L"Locale/Editor Mobile/RU.lng", eGXLanguage::Russian );
+	locale.LoadLanguage ( L"Locale/Editor Mobile/EN.lng", eGXLanguage::English );
+	locale.SetLanguage ( eGXLanguage::Russian );
 
-	GXInput* input = GXInput::GetInstance ();
-	input->BindKeyCallback ( this, &EMGame::OnExit, VK_ESCAPE, eGXInputButtonState::Up );
-	input->BindMouseButtonCallback ( this, &EMGame::OnMouseButton );
+	GXInput& input = GXInput::GetInstance ();
+	input.BindKeyCallback ( this, &EMGame::OnExit, VK_ESCAPE, eGXInputButtonState::Up );
+	input.BindMouseButtonCallback ( this, &EMGame::OnMouseButton );
 
 	uiInput = new GXUIInput ( nullptr, GX_FALSE );
-	GXTouchSurface::GetInstance ()->SetDefaultWidget ( uiInput );
+	GXTouchSurface::GetInstance ().SetDefaultWidget ( uiInput );
 
-	GXFloat w = (GXFloat)renderer->GetWidth ();
-	GXFloat h = (GXFloat)renderer->GetHeight ();
+	GXFloat w = (GXFloat)renderer.GetWidth ();
+	GXFloat h = (GXFloat)renderer.GetHeight ();
 
-	EMRenderer* editorRenderer = EMRenderer::GetInstance ();
-	editorRenderer->SetOnObjectCallback ( &EMGame::OnObject );
+	EMRenderer& editorRenderer = EMRenderer::GetInstance ();
+	editorRenderer.SetOnObjectCallback ( &EMGame::OnObject );
 
-	locale->SetLanguage ( eGXLanguage::Russian );
+	locale.SetLanguage ( eGXLanguage::Russian );
 
 	button1 = new EMUIButton ( nullptr );
 	button1->SetOnLeftMouseButtonCallback ( this, &EMGame::OnButton );
 	button1->Disable ();
 	button1->Resize ( 100.0f, 100.0f, 4.0f * gx_ui_Scale, gx_ui_Scale );
-	button1->SetCaption ( locale->GetString ( L"russian" ) );
+	button1->SetCaption ( locale.GetString ( L"russian" ) );
 
 	button2 = new EMUIButton ( nullptr );
 	button2->SetOnLeftMouseButtonCallback ( this, &EMGame::OnButton );
 	button2->Enable ();
 	button2->Resize ( 100.0f + 4.2f * gx_ui_Scale, 100.0f, 4.0f * gx_ui_Scale, 0.5f * gx_ui_Scale );
-	button2->SetCaption ( locale->GetString ( L"english" ) );
+	button2->SetCaption ( locale.GetString ( L"english" ) );
 
 	filePopup = new EMUIPopup ( nullptr );
-	filePopup->AddItem ( locale->GetString ( L"File->New" ), nullptr, nullptr );
-	filePopup->AddItem ( locale->GetString ( L"File->Open" ), nullptr, nullptr );
-	filePopup->AddItem ( locale->GetString ( L"File->Close" ), nullptr, nullptr );
-	filePopup->AddItem ( locale->GetString ( L"File->Save" ), nullptr, nullptr );
-	filePopup->AddItem ( locale->GetString ( L"File->Exit" ), this, &EMGame::OnExit );
+	filePopup->AddItem ( locale.GetString ( L"File->New" ), nullptr, nullptr );
+	filePopup->AddItem ( locale.GetString ( L"File->Open" ), nullptr, nullptr );
+	filePopup->AddItem ( locale.GetString ( L"File->Close" ), nullptr, nullptr );
+	filePopup->AddItem ( locale.GetString ( L"File->Save" ), nullptr, nullptr );
+	filePopup->AddItem ( locale.GetString ( L"File->Exit" ), this, &EMGame::OnExit );
 
 	createPopup = new EMUIPopup ( nullptr );
-	createPopup->AddItem ( locale->GetString ( L"Create->Unit Actor" ), nullptr, nullptr );
-	createPopup->AddItem ( locale->GetString ( L"Create->Box falling" ), this, &EMGame::StartBoxFallingSimulation );
-	createPopup->AddItem ( locale->GetString ( L"Create->Skeletal mesh" ), nullptr, nullptr );
-	createPopup->AddItem ( locale->GetString ( L"Create->Directed light" ), nullptr, nullptr );
-	createPopup->AddItem ( locale->GetString ( L"Create->Spot" ), nullptr, nullptr );
-	createPopup->AddItem ( locale->GetString ( L"Create->Bulp" ), nullptr, nullptr );
+	createPopup->AddItem ( locale.GetString ( L"Create->Unit Actor" ), nullptr, nullptr );
+	createPopup->AddItem ( locale.GetString ( L"Create->Box falling" ), this, &EMGame::StartBoxFallingSimulation );
+	createPopup->AddItem ( locale.GetString ( L"Create->Skeletal mesh" ), nullptr, nullptr );
+	createPopup->AddItem ( locale.GetString ( L"Create->Directed light" ), nullptr, nullptr );
+	createPopup->AddItem ( locale.GetString ( L"Create->Spot" ), nullptr, nullptr );
+	createPopup->AddItem ( locale.GetString ( L"Create->Bulp" ), nullptr, nullptr );
 
 	toolsPopup = new EMUIPopup ( nullptr );
-	toolsPopup->AddItem ( locale->GetString ( L"Tools->Select" ), nullptr, nullptr );
-	toolsPopup->AddItem ( locale->GetString ( L"Tools->Move" ), nullptr, nullptr );
-	toolsPopup->AddItem ( locale->GetString ( L"Tools->Rotate" ), nullptr, nullptr );
-	toolsPopup->AddItem ( locale->GetString ( L"Tools->Scale" ), nullptr, nullptr );
+	toolsPopup->AddItem ( locale.GetString ( L"Tools->Select" ), nullptr, nullptr );
+	toolsPopup->AddItem ( locale.GetString ( L"Tools->Move" ), nullptr, nullptr );
+	toolsPopup->AddItem ( locale.GetString ( L"Tools->Rotate" ), nullptr, nullptr );
+	toolsPopup->AddItem ( locale.GetString ( L"Tools->Scale" ), nullptr, nullptr );
 
 	utilityPopup = new EMUIPopup ( nullptr );
-	utilityPopup->AddItem ( locale->GetString ( L"Utility->Particle system" ), nullptr, nullptr );
-	utilityPopup->AddItem ( locale->GetString ( L"Utility->Animation graph" ), nullptr, nullptr );
+	utilityPopup->AddItem ( locale.GetString ( L"Utility->Particle system" ), nullptr, nullptr );
+	utilityPopup->AddItem ( locale.GetString ( L"Utility->Animation graph" ), nullptr, nullptr );
 
 	languagePopup = new EMUIPopup ( nullptr );
-	languagePopup->AddItem ( locale->GetString ( L"Language->Русский" ), nullptr, nullptr );
-	languagePopup->AddItem ( locale->GetString ( L"Language->English" ), nullptr, nullptr );
+	languagePopup->AddItem ( locale.GetString ( L"Language->Русский" ), nullptr, nullptr );
+	languagePopup->AddItem ( locale.GetString ( L"Language->English" ), nullptr, nullptr );
 
 	menu = new EMUIMenu ( nullptr );
 	menu->SetLocation ( 0.0f, h - 1.0f - menu->GetHeight () );
-	menu->AddItem ( locale->GetString ( L"Main menu->File" ), filePopup );
-	menu->AddItem ( locale->GetString ( L"Main menu->Create" ), createPopup );
-	menu->AddItem ( locale->GetString ( L"Main menu->Tools" ), toolsPopup );
-	menu->AddItem ( locale->GetString ( L"Main menu->Utility" ), utilityPopup );
-	menu->AddItem ( locale->GetString ( L"Main menu->Language" ), languagePopup );
+	menu->AddItem ( locale.GetString ( L"Main menu->File" ), filePopup );
+	menu->AddItem ( locale.GetString ( L"Main menu->Create" ), createPopup );
+	menu->AddItem ( locale.GetString ( L"Main menu->Tools" ), toolsPopup );
+	menu->AddItem ( locale.GetString ( L"Main menu->Utility" ), utilityPopup );
+	menu->AddItem ( locale.GetString ( L"Main menu->Language" ), languagePopup );
 
 	draggableArea = new EMUIDraggableArea ( nullptr );
 	draggableArea->SetHeaderHeight ( gx_ui_Scale * 2.0f );
@@ -129,7 +129,7 @@ GXVoid EMGame::OnInit ()
 	button3->Enable ();
 	button3->Resize ( 0.2f * gx_ui_Scale, 0.2f * gx_ui_Scale, 3.0f * gx_ui_Scale, 0.8f * gx_ui_Scale );
 	button3->SetOnLeftMouseButtonCallback ( this, &EMGame::OnButton );
-	button3->SetCaption ( locale->GetString ( L"TestButton" ) );
+	button3->SetCaption ( locale.GetString ( L"TestButton" ) );
 
 	editBox = new EMUIEditBox ( draggableArea );
 	editBox->SetText ( L"Привет, Сиськи" );
@@ -166,11 +166,13 @@ GXVoid EMGame::OnInit ()
 	GXRigidBody& body2 = physicsPlaneActor->GetRigidBody ();
 	body2.SetLocation ( 0.0f, -10.0f, 15.0f );
 
-	GXWorld& world = GXPhysicsEngine::GetInstance ()->GetWorld ();
+	GXWorld& world = GXPhysicsEngine::GetInstance ().GetWorld ();
 	world.RegisterRigidBody ( physicsBoxActor->GetRigidBody () );
 	world.RegisterRigidBody ( physicsPlaneActor->GetRigidBody () );
 
 	fluttershy = new EMFluttershy ();
+
+	fpsCounter = new EMUIFPSCounter ();
 
 	ShowCursor ( 1 );
 }
@@ -182,53 +184,54 @@ GXVoid EMGame::OnResize ( GXInt width, GXInt height )
 
 GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 {
-	GXTouchSurface::GetInstance ()->ExecuteMessages ();
+	GXTouchSurface::GetInstance ().ExecuteMessages ();
 
-	GXPhysicsEngine::GetInstance ()->RunSimulateLoop ( deltaTime );
+	GXPhysicsEngine::GetInstance ().RunSimulateLoop ( deltaTime );
 
 	//fluttershy->UpdatePose ( deltaTime );
 
 	GXCamera& viewerCamera = EMViewer::GetInstance ()->GetCamera ();
 	GXCamera::SetActiveCamera ( &viewerCamera );
 
-	EMRenderer* renderer = EMRenderer::GetInstance ();
-	renderer->StartCommonPass ();
+	EMRenderer& renderer = EMRenderer::GetInstance ();
+	renderer.StartCommonPass ();
 
 	unitActor->OnDrawCommonPass ( deltaTime );
 	physicsBoxActor->Draw ( deltaTime );
 	physicsPlaneActor->Draw ( deltaTime );
-	fluttershy->UpdatePose ( deltaTime );
-	fluttershy->Render ( deltaTime );
+	//fluttershy->Render ( deltaTime );
 
-	renderer->StartLightPass ();
+	renderer.StartLightPass ();
 
-	renderer->ApplyMotionBlur ( deltaTime );
+	renderer.ApplyMotionBlur ( deltaTime );
 
-	renderer->StartHudColorPass ();
+	renderer.StartHudColorPass ();
 
 	moveTool->OnDrawHudColorPass ();
 
 	GXCamera::SetActiveCamera ( hudCamera );
 
+	fpsCounter->Render ();
+
 	EMDrawUI ();
 
-	renderer->StartHudMaskPass ();
+	renderer.StartHudMaskPass ();
 
 	GXCamera::SetActiveCamera ( &viewerCamera );
 
 	moveTool->OnDrawHudMaskPass ();
 
-	renderer->PresentFrame ( eEMRenderTarget::Combine );
+	renderer.PresentFrame ( eEMRenderTarget::Combine );
 
 	viewerCamera.UpdateLastFrameMatrices ();
 }
 
 GXVoid EMGame::OnDestroy ()
 {
-	GXInput* input = GXInput::GetInstance ();
-	input->UnbindMouseMoveCallback ();
-	input->UnbindMouseButtonCallback ();
-	input->UnbindKeyCallback ( VK_ESCAPE, eGXInputButtonState::Up );
+	GXInput& input = GXInput::GetInstance ();
+	input.UnbindMouseMoveCallback ();
+	input.UnbindMouseButtonCallback ();
+	input.UnbindKeyCallback ( VK_ESCAPE, eGXInputButtonState::Up );
 
 	moveTool->UnBind ();
 	GXSafeDelete ( moveTool );
@@ -256,12 +259,13 @@ GXVoid EMGame::OnDestroy ()
 	delete EMViewer::GetInstance ();
 
 	GXSafeDelete ( fluttershy );
+	GXSafeDelete ( fpsCounter );
 
-	GXTouchSurface::GetInstance ()->SetDefaultWidget ( nullptr );
+	GXTouchSurface::GetInstance ().SetDefaultWidget ( nullptr );
 	GXSafeDelete ( uiInput );
 
-	delete EMRenderer::GetInstance ();
-	delete GXPhysicsEngine::GetInstance ();
+	delete &(EMRenderer::GetInstance ());
+	delete &(GXPhysicsEngine::GetInstance ());
 }
 
 GXVoid GXCALL EMGame::OnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFloat y, eGXMouseButtonState state )
@@ -272,22 +276,22 @@ GXVoid GXCALL EMGame::OnButton ( GXVoid* handler, GXUIButton* button, GXFloat x,
 
 	if ( button == game->button1->GetWidget () )
 	{
-		GXLocale* locale = GXLocale::GetInstance ();
-		locale->SetLanguage ( eGXLanguage::Russian );
+		GXLocale& locale = GXLocale::GetInstance ();
+		locale.SetLanguage ( eGXLanguage::Russian );
 
-		game->button1->SetCaption ( locale->GetString ( L"russian" ) );
-		game->button2->SetCaption ( locale->GetString ( L"english" ) );
+		game->button1->SetCaption ( locale.GetString ( L"russian" ) );
+		game->button2->SetCaption ( locale.GetString ( L"english" ) );
 
 		game->button1->Disable ();
 		game->button2->Enable ();
 	}
 	else if ( button == game->button2->GetWidget () )
 	{
-		GXLocale* locale = GXLocale::GetInstance ();
-		locale->SetLanguage ( eGXLanguage::English );
+		GXLocale& locale = GXLocale::GetInstance ();
+		locale.SetLanguage ( eGXLanguage::English );
 
-		game->button1->SetCaption ( locale->GetString ( L"russian" ) );
-		game->button2->SetCaption ( locale->GetString ( L"english" ) );
+		game->button1->SetCaption ( locale.GetString ( L"russian" ) );
+		game->button2->SetCaption ( locale.GetString ( L"english" ) );
 
 		game->button2->Disable ();
 		game->button1->Enable ();
@@ -300,7 +304,7 @@ GXVoid GXCALL EMGame::OnButton ( GXVoid* handler, GXUIButton* button, GXFloat x,
 
 GXVoid GXCALL EMGame::OnExit ( GXVoid* /*handler*/ )
 {
-	GXCore::GetInstance ()->Exit ();
+	GXCore::GetInstance ().Exit ();
 	GXLogA ( "Завершение\n" );
 }
 
@@ -308,8 +312,8 @@ GXVoid GXCALL EMGame::OnMouseButton ( GXVoid* /*handler*/, GXInputMouseFlags mou
 {
 	if ( !mouseflags.lmb ) return;
 
-	const GXVec2& mouse = GXTouchSurface::GetInstance ()->GetMousePosition ();
-	EMRenderer::GetInstance ()->GetObject ( (GXUShort)mouse.x, (GXUShort)mouse.y );
+	const GXVec2& mouse = GXTouchSurface::GetInstance ().GetMousePosition ();
+	EMRenderer::GetInstance ().GetObject ( (GXUShort)mouse.x, (GXUShort)mouse.y );
 }
 
 GXVoid GXCALL EMGame::OnObject ( GXUPointer object )

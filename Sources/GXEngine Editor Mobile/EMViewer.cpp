@@ -110,8 +110,8 @@ EMViewer::EMViewer ()
 	target = nullptr;
 	origin = GXCreateVec3 ( EM_DEFAULT_ORIGIN_X, EM_DEFAULT_ORIGIN_Y, EM_DEFAULT_ORIGIN_Z );
 
-	GXRenderer* renderer = GXRenderer::GetInstance ();
-	camera = GXCameraPerspective ( GXDegToRad ( EM_VIEWER_FOVY_DEGREES ), renderer->GetWidth () / (GXFloat)renderer->GetHeight (), EM_VIEWER_Z_NEAR, EM_VIEWER_Z_FAR );
+	GXRenderer& renderer = GXRenderer::GetInstance ();
+	camera = GXCameraPerspective ( GXDegToRad ( EM_VIEWER_FOVY_DEGREES ), renderer.GetWidth () / (GXFloat)renderer.GetHeight (), EM_VIEWER_Z_NEAR, EM_VIEWER_Z_FAR );
 
 	UpdateCamera ();
 

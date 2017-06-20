@@ -59,7 +59,7 @@ class GXTouchSurface
 
 		GXVoid SetDefaultWidget ( GXWidget* widget );
 
-		static GXTouchSurface* GXCALL GetInstance ();
+		static GXTouchSurface& GXCALL GetInstance ();
 
 	private:
 		explicit GXTouchSurface ();

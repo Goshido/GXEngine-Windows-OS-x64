@@ -56,7 +56,7 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 			memcpy ( &lastMousePosition, pos, sizeof ( GXVec2 ) );
 				
 			if ( resizeMode != GX_UI_DRAGGABLE_AREA_RESIZE_MODE_NONE && resizeMode != GX_UI_DRAGGABLE_AREA_RESIZE_MODE_NONE )
-				GXTouchSurface::GetInstance ()->LockCursor ( this );
+				GXTouchSurface::GetInstance ().LockCursor ( this );
 		}
 		break;
 
@@ -64,10 +64,10 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 		{
 			resizeMode = GX_UI_DRAGGABLE_AREA_RESIZE_MODE_NONE;
 
-			GXTouchSurface* touchSurface = GXTouchSurface::GetInstance ();
+			GXTouchSurface& touchSurface = GXTouchSurface::GetInstance ();
 
-			if ( touchSurface->GetLockedCursorWidget () == this )
-				touchSurface->ReleaseCursor ();
+			if ( touchSurface.GetLockedCursorWidget () == this )
+				touchSurface.ReleaseCursor ();
 		}
 		break;
 
@@ -347,7 +347,7 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 
 GXVoid GXUIDragableArea::SetHeaderHeight ( GXFloat height )
 {
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_MOVABLE_AREA_SET_HEADER_HEIGHT, &height, sizeof ( GXFloat ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_MOVABLE_AREA_SET_HEADER_HEIGHT, &height, sizeof ( GXFloat ) );
 }
 
 GXFloat GXUIDragableArea::GetHeaderHeight () const
@@ -357,7 +357,7 @@ GXFloat GXUIDragableArea::GetHeaderHeight () const
 
 GXVoid GXUIDragableArea::SetBorderThickness ( GXFloat thickness )
 {
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_MOVABLE_AREA_SET_BORDER_THICKNESS, &thickness, sizeof ( GXFloat ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_MOVABLE_AREA_SET_BORDER_THICKNESS, &thickness, sizeof ( GXFloat ) );
 }
 
 GXFloat GXUIDragableArea::GetBorderThickness () const

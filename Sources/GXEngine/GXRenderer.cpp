@@ -316,12 +316,12 @@ GXVoid GXCALL GXRenderer::ReSizeScene ( GXInt width, GXInt height  )
 	game->OnResize ( width, height );
 }
 
-GXRenderer* GXCALL GXRenderer::GetInstance ()
+GXRenderer& GXCALL GXRenderer::GetInstance ()
 {
 	if ( !instance )
 		instance = new GXRenderer ();
 
-	return instance;
+	return *instance;
 }
 
 GXRenderer::GXRenderer ()

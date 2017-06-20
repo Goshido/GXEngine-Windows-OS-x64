@@ -36,7 +36,7 @@ GXWidget::GXWidget ( GXWidget* parent, GXBool isNeedRegister )
 	if ( parent )
 		parent->AddChild ( this );
 	else
-		GXTouchSurface::GetInstance ()->RegisterWidget ( this );
+		GXTouchSurface::GetInstance ().RegisterWidget ( this );
 
 	gx_ui_Mutex->Release ();
 }
@@ -50,7 +50,7 @@ GXWidget::~GXWidget ()
 	if ( parent )
 		parent->RemoveChild ( this );
 	else
-		GXTouchSurface::GetInstance ()->UnRegisterWidget ( this );
+		GXTouchSurface::GetInstance ().UnRegisterWidget ( this );
 
 	gx_ui_Mutex->Release ();
 }
@@ -182,7 +182,7 @@ GXVoid GXWidget::OnMessage ( GXUInt message, const GXVoid* data )
 			}
 			else
 			{
-				GXTouchSurface::GetInstance ()->MoveWidgetToForeground ( this );
+				GXTouchSurface::GetInstance ().MoveWidgetToForeground ( this );
 			}
 		}
 		break;
@@ -200,7 +200,7 @@ GXVoid GXWidget::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat widt
 	GXAddVertexToAABB ( newBounds, bottomLeftX, bottomLeftY, -1.0f );
 	GXAddVertexToAABB ( newBounds, bottomLeftX + width, bottomLeftY + height, 1.0f );
 
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_RESIZE, &newBounds, sizeof ( GXAABB ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_RESIZE, &newBounds, sizeof ( GXAABB ) );
 }
 
 const GXAABB& GXWidget::GetBoundsWorld () const
@@ -215,17 +215,17 @@ const GXAABB& GXWidget::GetBoundsLocal () const
 
 GXVoid GXWidget::Show ()
 {
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_SHOW, nullptr, 0 );
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_SHOW, nullptr, 0 );
 }
 
 GXVoid GXWidget::Hide ()
 {
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_HIDE, nullptr, 0 );
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_HIDE, nullptr, 0 );
 }
 
 GXVoid GXWidget::ToForeground ()
 {
-	GXTouchSurface::GetInstance ()->SendMessage ( this, GX_MSG_FOREGROUND, nullptr, 0 );
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_FOREGROUND, nullptr, 0 );
 }
 
 GXBool GXWidget::IsVisible () const
@@ -412,9 +412,9 @@ GXVoid GXWidgetRenderer::OnUpdate ()
 
 		GXVec3 center;
 		GXGetAABBCenter ( center, boundsWorld );
-		GXRenderer* renderer = GXRenderer::GetInstance ();
-		center.x -= 0.5f * renderer->GetWidth ();
-		center.y -= 0.5f * renderer->GetHeight ();
+		GXRenderer& renderer = GXRenderer::GetInstance ();
+		center.x -= 0.5f * renderer.GetWidth ();
+		center.y -= 0.5f * renderer.GetHeight ();
 
 		OnResized ( center.x, center.y, width, height );
 		OnRefresh ();
@@ -423,9 +423,9 @@ GXVoid GXWidgetRenderer::OnUpdate ()
 	{
 		GXVec3 center;
 		GXGetAABBCenter ( center, widget->GetBoundsWorld () );
-		GXRenderer* renderer = GXRenderer::GetInstance ();
-		center.x -= 0.5f * renderer->GetWidth ();
-		center.y -= 0.5f * renderer->GetHeight ();
+		GXRenderer& renderer = GXRenderer::GetInstance ();
+		center.x -= 0.5f * renderer.GetWidth ();
+		center.y -= 0.5f * renderer.GetHeight ();
 		OnMoved ( center.x, center.y );
 	}
 	else

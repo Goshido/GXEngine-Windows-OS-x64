@@ -49,15 +49,15 @@ EMUI ( nullptr )
 	topSeparator = new EMUISeparator ( mainPanel );
 	fileListBox = new EMUIFileListBox ( mainPanel );
 
-	GXLocale* locale = GXLocale::GetInstance ();
+	GXLocale& locale = GXLocale::GetInstance ();
 
-	okButton->SetCaption ( locale->GetString ( EM_BTN_OK_TEXT ) );
+	okButton->SetCaption ( locale.GetString ( EM_BTN_OK_TEXT ) );
 	okButton->SetOnLeftMouseButtonCallback ( this, &EMUIOpenFile::OnButton );
 
-	cancelButton->SetCaption ( locale->GetString ( EM_BTN_CANCEL_TEXT ) );
+	cancelButton->SetCaption ( locale.GetString ( EM_BTN_CANCEL_TEXT ) );
 	cancelButton->SetOnLeftMouseButtonCallback ( this, &EMUIOpenFile::OnButton );
 
-	filePathStaticText->SetText ( 0 );
+	filePathStaticText->SetText ( nullptr );
 	filePathStaticText->SetAlingment ( GX_UI_TEXT_ALIGNMENT_LEFT );
 	
 	fileListBox->SetOnItemSelectedCallback ( this, &EMUIOpenFile::OnItemSelected );
@@ -257,6 +257,10 @@ GXVoid GXCALL EMUIOpenFile::OnItemSelected ( GXVoid* handler, GXUIListBox* listB
 
 		case eEMUIFileListBoxItemType::Folder:
 			main->filePathStaticText->SetText ( main->GetRelativePath () );
+		break;
+
+		default:
+			//NOTHING
 		break;
 	}
 }

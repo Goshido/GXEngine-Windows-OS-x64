@@ -218,12 +218,12 @@ GXVoid GXInput::UnbindRightStickCallback ()
 	DoRightStick = nullptr;
 }
 
-GXInput* GXCALL GXInput::GetInstance ()
+GXInput& GXCALL GXInput::GetInstance ()
 {
 	if ( !instance )
 		instance = new GXInput ();
 
-	return instance;
+	return *instance;
 }
 
 LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
@@ -243,7 +243,7 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
 		case WM_CLOSE:
 		case WM_QUIT:
-			GXCore::GetInstance ()->Exit ();
+			GXCore::GetInstance ().Exit ();
 			PostQuitMessage ( 0 );
 		return 0;
 
@@ -253,7 +253,7 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			activeInputDevice = eGXInputDevice::Keyboard;
 			keysMask[ wParam << 1 ] = GX_TRUE;
 
-			GXTouchSurface::GetInstance ()->OnKeyDown ( (GXInt)wParam );
+			GXTouchSurface::GetInstance ().OnKeyDown ( (GXInt)wParam );
 
 			if ( !OnType ) return 0;
 
@@ -279,7 +279,7 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		case WM_KEYUP:
 		case WM_SYSKEYUP:
 		{
-			GXTouchSurface::GetInstance ()->OnKeyUp ( (GXInt)wParam );
+			GXTouchSurface::GetInstance ().OnKeyUp ( (GXInt)wParam );
 			keysMask[ ( wParam << 1 ) + 1 ] = GX_TRUE;
 		}
 		return 0;
@@ -298,9 +298,9 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
 			GXVec2 pos;
 			pos.x = (GXFloat)LOWORD ( lParam );
-			pos.y = (GXFloat)( GXRenderer::GetInstance ()->GetHeight () - HIWORD ( lParam ) );
+			pos.y = (GXFloat)( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) );
 
-			GXTouchSurface::GetInstance ()->OnLeftMouseButtonDown ( pos );
+			GXTouchSurface::GetInstance ().OnLeftMouseButtonDown ( pos );
 		}
 		return 0;
 		
@@ -314,9 +314,9 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
 			GXVec2 pos;
 			pos.x = (GXFloat)LOWORD ( lParam );
-			pos.y = (GXFloat)( GXRenderer::GetInstance ()->GetHeight () - HIWORD ( lParam ) );
+			pos.y = (GXFloat)( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) );
 
-			GXTouchSurface::GetInstance ()->OnRightMouseButtonDown ( pos );
+			GXTouchSurface::GetInstance ().OnRightMouseButtonDown ( pos );
 		}
 		return 0;
 
@@ -330,9 +330,9 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
 			GXVec2 pos;
 			pos.x = (GXFloat)LOWORD ( lParam );
-			pos.y = (GXFloat)( GXRenderer::GetInstance ()->GetHeight () - HIWORD ( lParam ) );
+			pos.y = (GXFloat)( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) );
 
-			GXTouchSurface::GetInstance ()->OnMiddleMouseButtonDown ( pos );
+			GXTouchSurface::GetInstance ().OnMiddleMouseButtonDown ( pos );
 		}
 		return 0;
 		
@@ -346,9 +346,9 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
 			GXVec2 pos;
 			pos.x = (GXFloat)LOWORD ( lParam );
-			pos.y = (GXFloat)( GXRenderer::GetInstance ()->GetHeight () - HIWORD ( lParam ) );
+			pos.y = (GXFloat)( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) );
 
-			GXTouchSurface::GetInstance ()->OnLeftMouseButtonUp ( pos );
+			GXTouchSurface::GetInstance ().OnLeftMouseButtonUp ( pos );
 		}
 		return 0;
 		
@@ -362,9 +362,9 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
 			GXVec2 pos;
 			pos.x = (GXFloat)LOWORD ( lParam );
-			pos.y = (GXFloat)( GXRenderer::GetInstance ()->GetHeight () - HIWORD ( lParam ) );
+			pos.y = (GXFloat)( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) );
 
-			GXTouchSurface::GetInstance ()->OnRightMouseButtonUp ( pos );
+			GXTouchSurface::GetInstance ().OnRightMouseButtonUp ( pos );
 		}
 		return 0;
 
@@ -378,9 +378,9 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
 			GXVec2 pos;
 			pos.x = (GXFloat)LOWORD ( lParam );
-			pos.y = (GXFloat)( GXRenderer::GetInstance ()->GetHeight () - HIWORD ( lParam ) );
+			pos.y = (GXFloat)( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) );
 
-			GXTouchSurface::GetInstance ()->OnMiddleMouseButtonUp ( pos );
+			GXTouchSurface::GetInstance ().OnMiddleMouseButtonUp ( pos );
 		}
 		return 0;
 		
@@ -391,9 +391,9 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
 			GXVec2 pos;
 			pos.x = (GXFloat)LOWORD ( lParam );
-			pos.y = (GXFloat)( GXRenderer::GetInstance ()->GetHeight () - HIWORD ( lParam ) );
+			pos.y = (GXFloat)( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) );
 
-			GXTouchSurface::GetInstance ()->OnMouseMove ( pos );
+			GXTouchSurface::GetInstance ().OnMouseMove ( pos );
 		}
 		return 0;
 
@@ -410,9 +410,9 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
 			GXVec2 pos;
 			pos.x = (GXFloat)posRaw.x;
-			pos.y = (GXFloat)( GXRenderer::GetInstance ()->GetHeight () - posRaw.y );
+			pos.y = (GXFloat)( GXRenderer::GetInstance ().GetHeight () - posRaw.y );
 
-			GXTouchSurface::GetInstance ()->OnScroll ( pos, (GXFloat)steps );
+			GXTouchSurface::GetInstance ().OnScroll ( pos, (GXFloat)steps );
 		}
 		return 0;
 
@@ -424,9 +424,9 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		{
 			GXVec2 pos;
 			pos.x = (GXFloat)GET_X_LPARAM ( lParam ); 
-			pos.y = (GXFloat)( GXRenderer::GetInstance ()->GetHeight () - GET_Y_LPARAM ( lParam ) ); 
+			pos.y = (GXFloat)( GXRenderer::GetInstance ().GetHeight () - GET_Y_LPARAM ( lParam ) ); 
 
-			GXTouchSurface::GetInstance ()->OnDoubleClick ( pos );
+			GXTouchSurface::GetInstance ().OnDoubleClick ( pos );
 		}
 		return 0;
 	}

@@ -361,12 +361,12 @@ GXVoid GXTouchSurface::SetDefaultWidget ( GXWidget* widget )
 	defaultWidget = widget;
 }
 
-GXTouchSurface* GXCALL GXTouchSurface::GetInstance ()
+GXTouchSurface& GXCALL GXTouchSurface::GetInstance ()
 {
 	if ( !instance )
 		instance = new GXTouchSurface ();
 
-	return instance;
+	return *instance;
 }
 
 GXTouchSurface::GXTouchSurface ()

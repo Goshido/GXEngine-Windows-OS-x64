@@ -19,7 +19,7 @@ class GXPhysicsEngine
 
 	public:
 		~GXPhysicsEngine ();
-		static GXPhysicsEngine* GetInstance ();
+		static GXPhysicsEngine& GetInstance ();
 
 		GXVoid SetGravity ( GXFloat x, GXFloat y, GXFloat z );
 		const GXVec3& GetGravity () const;

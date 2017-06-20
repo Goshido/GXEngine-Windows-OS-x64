@@ -10,14 +10,14 @@
 #include <GXCommon/GXMemory.h>
 
 
-#define DIFFUSE_TEXTURE		L"Textures/Editor Mobile/Default Diffuse.tex"
+#define DIFFUSE_TEXTURE		L"Textures/System/Checker.tga"
 #define NORMAL_TEXTURE		L"Textures/Editor Mobile/Default Normals.tex"
 #define SPECULAR_TEXTURE	L"Textures/Editor Mobile/Default Specular.tex"
 #define EMISSION_TEXTURE	L"Textures/Editor Mobile/Default Emission.tex"
 
-#define DIFFUSE_COLOR_R		115
-#define DIFFUSE_COLOR_G		185
-#define DIFFUSE_COLOR_B		0
+#define DIFFUSE_COLOR_R		255
+#define DIFFUSE_COLOR_G		255
+#define DIFFUSE_COLOR_B		255
 #define DIFFUSE_COLOR_A		255
 
 
@@ -32,14 +32,15 @@ mesh ( L"3D Models/Editor Mobile/Unit Cube.stm" )
 	specularTexture = GXTexture::LoadTexture ( SPECULAR_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
 	emissionTexture = GXTexture::LoadTexture ( EMISSION_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
 
-	EMRenderer* renderer = EMRenderer::GetInstance ();
+	EMRenderer& renderer = EMRenderer::GetInstance ();
 
 	commonPassMaterial.SetDiffuseTexture ( diffuseTexture );
+	commonPassMaterial.SetDiffuseTextureScale ( 0.25f, 0.25f );
 	commonPassMaterial.SetNormalTexture ( normalTexture );
 	commonPassMaterial.SetSpecularTexture ( specularTexture );
 	commonPassMaterial.SetEmissionTexture ( emissionTexture );
-	commonPassMaterial.SetMaxBlurSamples ( renderer->GetMaxBlurSamples () );
-	commonPassMaterial.SetExplosureTime ( renderer->GetExplosureTime () );
+	commonPassMaterial.SetMaxBlurSamples ( renderer.GetMaxBlurSamples () );
+	commonPassMaterial.SetExplosureTime ( renderer.GetExplosureTime () );
 
 	commonPassMaterial.SetDiffuseTextureColor ( DIFFUSE_COLOR_R, DIFFUSE_COLOR_G, DIFFUSE_COLOR_B, DIFFUSE_COLOR_A );
 }
@@ -54,12 +55,12 @@ EMUnitActor::~EMUnitActor ()
 
 GXVoid EMUnitActor::OnDrawCommonPass ( GXFloat deltaTime )
 {
-	EMRenderer::GetInstance ()->SetObjectMask ( (GXUPointer)this );
+	EMRenderer::GetInstance ().SetObjectMask ( (GXUPointer)this );
 
-	GXRenderer* coreRenderer = GXRenderer::GetInstance ();
+	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
 
 	commonPassMaterial.SetDeltaTime ( deltaTime );
-	commonPassMaterial.SetScreenResolution ( (GXUShort)coreRenderer->GetWidth (), (GXUShort)coreRenderer->GetHeight () );
+	commonPassMaterial.SetScreenResolution ( (GXUShort)coreRenderer.GetWidth (), (GXUShort)coreRenderer.GetHeight () );
 	commonPassMaterial.Bind ( mesh );
 	mesh.Render ();
 	commonPassMaterial.Unbind ();

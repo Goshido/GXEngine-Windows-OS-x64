@@ -15,14 +15,14 @@ EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
 	emissionTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE, GL_REPEAT );
 	specularTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Specular.tex", GX_FALSE, GL_REPEAT );
 
-	EMRenderer* renderer = EMRenderer::GetInstance ();
+	EMRenderer& renderer = EMRenderer::GetInstance ();
 
 	material.SetDiffuseTexture ( diffuseTexture );
 	material.SetNormalTexture ( normalTexture );
 	material.SetSpecularTexture ( specularTexture );
 	material.SetEmissionTexture ( emissionTexture );
-	material.SetMaxBlurSamples ( renderer->GetMaxBlurSamples () );
-	material.SetExplosureTime ( renderer->GetExplosureTime () );
+	material.SetMaxBlurSamples ( renderer.GetMaxBlurSamples () );
+	material.SetExplosureTime ( renderer.GetExplosureTime () );
 
 	rigidBody = new GXRigidBody ();
 

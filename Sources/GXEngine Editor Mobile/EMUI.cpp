@@ -40,5 +40,5 @@ GXVoid EMUI::ToForeground ()
 
 GXVoid GXCALL EMDrawUI ()
 {
-	GXTouchSurface::GetInstance ()->DrawWidgets ();
+	GXTouchSurface::GetInstance ().DrawWidgets ();
 }

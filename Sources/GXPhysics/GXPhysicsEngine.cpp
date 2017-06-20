@@ -21,12 +21,12 @@ GXPhysicsEngine::~GXPhysicsEngine ()
 	//NOTHING
 }
 
-GXPhysicsEngine* GXPhysicsEngine::GetInstance ()
+GXPhysicsEngine& GXPhysicsEngine::GetInstance ()
 {
 	if ( !instance )
 		instance = new GXPhysicsEngine ();
 
-	return instance;
+	return *instance;
 }
 
 GXVoid GXPhysicsEngine::SetGravity ( GXFloat x, GXFloat y, GXFloat z )

@@ -429,12 +429,12 @@ GXVoid GXNetServer::SetOnMessageFuncUDP ( PFNGXONSERVERPMESSAGEUDPPROC callback 
 	OnMessageUDP = callback;
 }
 
-GXNetServer* GXCALL GXNetServer::GetInstance ()
+GXNetServer& GXCALL GXNetServer::GetInstance ()
 {
 	if ( !instance )
 		instance = new GXNetServer ();
 
-	return instance;
+	return *instance;
 }
 
 GXNetServer::GXNetServer ()
@@ -805,12 +805,12 @@ GXVoid GXNetClient::SetOnMessageUDPFunc ( PFNGXONCLIENTMESSAGEPROC onMessageFunc
 	OnMessageUDP = onMessageFunc;
 }
 
-GXNetClient* GXCALL GXNetClient::GetInstance ()
+GXNetClient& GXCALL GXNetClient::GetInstance ()
 {
 	if ( !instance )
 		instance = new GXNetClient ();
 
-	return instance;
+	return *instance;
 }
 
 GXNetClient::GXNetClient ()

@@ -50,7 +50,7 @@ GXRigidBody::GXRigidBody ()
 	SetLinearDamping ( DEFALUT_LINEAR_DAMPING );
 	SetAngularDamping ( DEFAULT_ANGULAR_DAMPING );
 
-	acceleration = GXPhysicsEngine::GetInstance ()->GetGravity ();
+	acceleration = GXPhysicsEngine::GetInstance ().GetGravity ();
 
 	DisableKinematic ();
 	ClearAccumulators ();
@@ -222,7 +222,7 @@ const GXMat4& GXRigidBody::GetTransform ()
 GXVoid GXRigidBody::SetAwake ()
 {
 	isAwake = GX_TRUE;
-	motion = GXPhysicsEngine::GetInstance ()->GetSleepEpsilon () * 2.0f;
+	motion = GXPhysicsEngine::GetInstance ().GetSleepEpsilon () * 2.0f;
 }
 
 GXVoid GXRigidBody::SetSleep ()
@@ -319,7 +319,7 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 		GXFloat bias = powf ( 0.5f, deltaTime );
 
 		motion = bias * motion + ( 1.0f - bias ) * currentMotion;
-		GXFloat sleepEpsilon = GXPhysicsEngine::GetInstance ()->GetSleepEpsilon ();
+		GXFloat sleepEpsilon = GXPhysicsEngine::GetInstance ().GetSleepEpsilon ();
 
 		if ( motion < sleepEpsilon )
 			SetSleep ();

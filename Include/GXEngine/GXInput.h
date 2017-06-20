@@ -187,7 +187,7 @@ class GXInput
 		GXVoid BindRightStickCallback ( GXVoid* handler, PFNGXSTICKPROC callback );
 		GXVoid UnbindRightStickCallback ();
 
-		static GXInput* GXCALL GetInstance ();
+		static GXInput& GXCALL GetInstance ();
 
 		static LRESULT CALLBACK InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam );
 

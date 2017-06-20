@@ -86,7 +86,7 @@ class GXNetServer
 		GXVoid SetOnMessageFuncTCP ( PFNGXONSERVERPMESSAGETCPPROC callback );
 		GXVoid SetOnMessageFuncUDP ( PFNGXONSERVERPMESSAGEUDPPROC callback );
 
-		static GXNetServer* GXCALL GetInstance ();
+		static GXNetServer& GXCALL GetInstance ();
 
 	private:
 		explicit GXNetServer ();
@@ -138,7 +138,7 @@ class GXNetClient
 		GXVoid SetOnMessageTCPFunc ( PFNGXONCLIENTMESSAGEPROC onMessageFunc );
 		GXVoid SetOnMessageUDPFunc ( PFNGXONCLIENTMESSAGEPROC onMessageFunc );
 
-		static GXNetClient* GXCALL GetInstance ();
+		static GXNetClient& GXCALL GetInstance ();
 
 	private:
 		explicit GXNetClient ();

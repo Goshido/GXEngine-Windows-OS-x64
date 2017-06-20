@@ -192,12 +192,12 @@ const GXWChar* GXLocale::GetString ( const GXWChar* resName ) const
 	return nullptr;
 }
 
-GXLocale* GXCALL GXLocale::GetInstance ()
+GXLocale& GXCALL GXLocale::GetInstance ()
 {
 	if ( !instance )
 		instance = new GXLocale ();
 
-	return instance;
+	return *instance;
 }
 
 GXLocale::GXLocale ():
