@@ -77,6 +77,7 @@ class EMRenderer
 		GXVoid GetObject ( GXUShort x, GXUShort y );
 
 		GXUByte GetMaxBlurSamples () const;
+		GXFloat GetDepthLimit () const;
 		GXFloat GetExplosureTime () const;
 
 		static EMRenderer& GXCALL GetInstance ();

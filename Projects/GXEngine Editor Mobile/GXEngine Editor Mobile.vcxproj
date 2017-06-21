@@ -203,6 +203,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIEditBox.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIFileListBox.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIMenu.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIMotionBlurSettings.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIOpenFile.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIPopup.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUISeparator.cpp" />
@@ -392,6 +393,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIEditBox.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIFileListBox.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIMenu.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIMotionBlurSettings.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIOpenFile.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIPopup.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUISeparator.h" />

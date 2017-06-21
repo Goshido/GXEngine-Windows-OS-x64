@@ -28,26 +28,27 @@
 #define GX_MSG_SET_TEXT								20				//const GXWChar*				new text
 #define GX_MSG_CLEAR_TEXT							21				//none							none
 #define GX_MSG_SET_TEXT_ALIGNMENT					22				//eGXUITextAlignment			see eGXUIStaticTextAlignment
-#define GX_MSG_LIST_BOX_ADD_ITEM					23				//GXVoid*						item content
-#define GX_MSG_LIST_BOX_ADD_ITEMS					24				//GXUIListBoxRawItem*			item list
-#define GX_MSG_LIST_BOX_REMOVE_ITEM					25				//GXUInt						item index
-#define GX_MSG_LIST_BOX_REMOVE_ALL_ITEMS			26				//none							none
-#define GX_MSG_LIST_BOX_SET_VIEWPORT_OFFSET			27				//GXFloat						new view port offset
-#define GX_MSG_LIST_BOX_SET_ITEM_HEIGHT				28				//GXFloat						new item height
-#define GX_MSG_DOUBLE_CLICK							29				//GXVec2						x, y - world mouse position
-#define GX_MSG_EDIT_BOX_SET_FONT					30				//GXUIEditBoxFontInfo			see GXUIEditBoxFontInfo
-#define GX_MSG_ADD_SYMBOL							31				//GXWChar						symbol
-#define GX_MSG_EDIT_BOX_SET_TEXT_LEFT_OFFSET		32				//GXFloat						text left offset
-#define GX_MSG_EDIT_BOX_SET_TEXT_RIGHT_OFFSET		33				//GXFloat						text right offset
-#define GX_MSG_POPUP_ADD_ITEM						34				//GXUIPopupItem					see GXUIPopupItem
-#define GX_MSG_POPUP_SET_ITEM_HEIGHT				35				//GXFloat						item height
-#define GX_MSG_POPUP_ENABLE_ITEM					36				//GXUByte						item index
-#define GX_MSG_POPUP_DISABLE_ITEM					37				//GXUByte						item index
-#define GX_MSG_POPUP_CLOSED							38				//GXUIPopup*					closed popup
-#define GX_MSG_POPUP_SHOW							39				//GXWidget*						owner widget
-#define GX_MSG_MENY_ADD_ITEM						40				//GXUIMenuExtItem				see GXUIMenuExtItem
-#define GX_MSG_KEY_DOWN								41				//GXInt							virtual key code
-#define GX_MSG_KEY_UP								42				//GXInt							virtual key code
+#define GX_MSG_SET_TEXT_COLOR						23				//GXVec4						text color
+#define GX_MSG_LIST_BOX_ADD_ITEM					24				//GXVoid*						item content
+#define GX_MSG_LIST_BOX_ADD_ITEMS					25				//GXUIListBoxRawItem*			item list
+#define GX_MSG_LIST_BOX_REMOVE_ITEM					26				//GXUInt						item index
+#define GX_MSG_LIST_BOX_REMOVE_ALL_ITEMS			27				//none							none
+#define GX_MSG_LIST_BOX_SET_VIEWPORT_OFFSET			28				//GXFloat						new view port offset
+#define GX_MSG_LIST_BOX_SET_ITEM_HEIGHT				29				//GXFloat						new item height
+#define GX_MSG_DOUBLE_CLICK							30				//GXVec2						x, y - world mouse position
+#define GX_MSG_EDIT_BOX_SET_FONT					31				//GXUIEditBoxFontInfo			see GXUIEditBoxFontInfo
+#define GX_MSG_ADD_SYMBOL							32				//GXWChar						symbol
+#define GX_MSG_EDIT_BOX_SET_TEXT_LEFT_OFFSET		33				//GXFloat						text left offset
+#define GX_MSG_EDIT_BOX_SET_TEXT_RIGHT_OFFSET		34				//GXFloat						text right offset
+#define GX_MSG_POPUP_ADD_ITEM						35				//GXUIPopupItem					see GXUIPopupItem
+#define GX_MSG_POPUP_SET_ITEM_HEIGHT				36				//GXFloat						item height
+#define GX_MSG_POPUP_ENABLE_ITEM					37				//GXUByte						item index
+#define GX_MSG_POPUP_DISABLE_ITEM					38				//GXUByte						item index
+#define GX_MSG_POPUP_CLOSED							39				//GXUIPopup*					closed popup
+#define GX_MSG_POPUP_SHOW							40				//GXWidget*						owner widget
+#define GX_MSG_MENY_ADD_ITEM						41				//GXUIMenuExtItem				see GXUIMenuExtItem
+#define GX_MSG_KEY_DOWN								42				//GXInt							virtual key code
+#define GX_MSG_KEY_UP								43				//GXInt							virtual key code
 
 
 #endif //GX_UI_MESSAGE

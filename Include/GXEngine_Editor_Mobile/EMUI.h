@@ -12,8 +12,6 @@
 
 class EMUI
 {
-	friend GXVoid GXCALL EMDrawUIMasks ();
-
 	private:
 		EMUI*	next;
 		EMUI*	prev;
@@ -30,9 +28,7 @@ class EMUI
 		GXVoid ToForeground ();
 };
 
-
 GXVoid GXCALL EMDrawUI ();
-GXVoid GXCALL EMDrawUIMasks ();
 
 
 #endif //EM_UI

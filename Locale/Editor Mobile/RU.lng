@@ -84,3 +84,15 @@ OpenFile->OK~OK~
 OpenFile->Cancel~Отмена~
 
 TestButton~Кнопка~
+
+Motion blur settings->Motion blur settings~Настройки motion blur~
+
+Motion blur settings->Maximum samples~Максимальное количество выборок~
+
+Motion blur settings->Depth Limit (meters)~Отсечка по глубине (метры)~
+
+Motion blur settings->Exposure (seconds)~Экспозиция (секунды)~
+
+Motion blur settings->Cancel~Отмена~
+
+Motion blur settings->Apply~Применить~

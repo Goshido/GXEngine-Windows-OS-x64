@@ -13,7 +13,7 @@ class EMMotionBlurMaterial : public GXMaterial
 		GXFloat				inverseDepthLimit;
 		GLint				inverseDepthLimitLocation;
 
-		GXInt				maxBlurSamples;
+		GXFloat				maxBlurSamples;
 		GLint				maxBlurSamplesLocation;
 
 		GXVec2				inverseScreenResolution;

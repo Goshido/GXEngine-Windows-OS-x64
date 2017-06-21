@@ -84,3 +84,15 @@ OpenFile->OK~OK~
 OpenFile->Cancel~Cancel~
 
 TestButton~Button~
+
+Motion blur settings->Motion blur settings~Motion blur settings~
+
+Motion blur settings->Maximum samples~Maximum samples~
+
+Motion blur settings->Depth Limit (meters)~Depth limit (meters)~
+
+Motion blur settings->Exposure (seconds)~Exposure (seconds)~
+
+Motion blur settings->Cancel~Cancel~
+
+Motion blur settings->Apply~Apply~

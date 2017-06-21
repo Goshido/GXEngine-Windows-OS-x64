@@ -8,10 +8,6 @@
 #define EM_STATIC_TEXT_DEFAULT_HEIGHT		0.5f
 #define EM_STATIC_TEXT_DEFAULT_FONT			L"Fonts/trebuc.ttf"
 #define EM_STATIC_TEXT_DEFAULT_TEXT_SIZE	0.33f
-#define EM_STATIC_TEXT_DEFAULT_COLOR_R		115
-#define EM_STATIC_TEXT_DEFAULT_COLOR_G		185
-#define EM_STATIC_TEXT_DEFAULT_COLOR_B		0
-#define EM_STATIC_TEXT_DEFAULT_COLOR_A		255
 
 
 class EMUIStaticTextRenderer : public GXWidgetRenderer
@@ -62,7 +58,7 @@ GXVoid EMUIStaticTextRenderer::OnRefresh ()
 	pi.font = &font;
 	pi.insertY = ( h - font.GetSize () * 0.6f ) * 0.5f;
 	pi.overlayType = eGXImageOverlayType::SimpleReplace;
-	GXColorToVec4 ( pi.color, EM_STATIC_TEXT_DEFAULT_COLOR_R, EM_STATIC_TEXT_DEFAULT_COLOR_G, EM_STATIC_TEXT_DEFAULT_COLOR_B, EM_STATIC_TEXT_DEFAULT_COLOR_A );	
+	pi.color = staticText->GetTextColor ();
 
 	switch ( staticText->GetAlignment () )
 	{
@@ -141,6 +137,16 @@ GXVoid EMUIStaticText::SetText ( const GXWChar* text )
 const GXWChar* EMUIStaticText::GetText () const
 {
 	return widget->GetText ();
+}
+
+GXVoid EMUIStaticText::SetTextColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
+{
+	widget->SetTextColor ( red, green, blue, alpha );
+}
+
+const GXVec4& EMUIStaticText::GetTextColor () const
+{
+	return widget->GetTextColor ();
 }
 
 GXVoid EMUIStaticText::SetAlingment ( eGXUITextAlignment alignment )

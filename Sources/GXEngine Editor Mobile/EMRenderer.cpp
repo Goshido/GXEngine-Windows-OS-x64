@@ -6,63 +6,64 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define EM_OBJECT_HI_INDEX				14
-#define EM_OBJECT_LOW_INDEX				15
+#define EM_OBJECT_HI_INDEX						14
+#define EM_OBJECT_LOW_INDEX						15
 
-#define OUT_TEXTURE_SLOT				0
+#define OUT_TEXTURE_SLOT						0
 
-#define DIFFUSE_SLOT					0
-#define NORMAL_SLOT						1
-#define SPECULAR_SLOT					2
-#define EMISSION_SLOT					3
-#define DEPTH_SLOT						4
+#define DIFFUSE_SLOT							0
+#define NORMAL_SLOT								1
+#define SPECULAR_SLOT							2
+#define EMISSION_SLOT							3
+#define DEPTH_SLOT								4
 
-#define Z_NEAR							0.0f
-#define Z_FAR							77.0f
-#define Z_RENDER						1.0f
+#define Z_NEAR									0.0f
+#define Z_FAR									77.0f
+#define Z_RENDER								1.0f
 
-#define CVV_WIDTH						2.0f
-#define CVV_HEIGHT						2.0f
+#define CVV_WIDTH								2.0f
+#define CVV_HEIGHT								2.0f
 
-#define DEFAULT_MOTION_BLUR_SAMPLES		15
-#define EXPLOSURE_TIME					0.01f
+#define DEFAULT_MOTION_BLUR_SAMPLES				15
+#define DEFAULT_MOTION_BLUR_DEPTH_LIMIT			0.1f
+#define DEFAULT_MOTION_BLUR_EXPLOSURE_TIME		0.03f
 
-#define CLEAR_DIFFUSE_R					0.0f
-#define CLEAR_DIFFUSE_G					0.0f
-#define CLEAR_DIFFUSE_B					0.0f
-#define CLEAR_DIFFUSE_A					1.0f
+#define CLEAR_DIFFUSE_R							0.0f
+#define CLEAR_DIFFUSE_G							0.0f
+#define CLEAR_DIFFUSE_B							0.0f
+#define CLEAR_DIFFUSE_A							1.0f
 
-#define CLEAR_NORMAL_R					0.5f
-#define CLEAR_NORMAL_G					0.5f
-#define CLEAR_NORMAL_B					0.5f
-#define CLEAR_NORMAL_A					0.0f
+#define CLEAR_NORMAL_R							0.5f
+#define CLEAR_NORMAL_G							0.5f
+#define CLEAR_NORMAL_B							0.5f
+#define CLEAR_NORMAL_A							0.0f
 
-#define CLEAR_SPECULAR_R				0.0f
-#define CLEAR_SPECULAR_G				0.0f
-#define CLEAR_SPECULAR_B				0.0f
-#define CLEAR_SPECULAR_A				0.5f
+#define CLEAR_SPECULAR_R						0.0f
+#define CLEAR_SPECULAR_G						0.0f
+#define CLEAR_SPECULAR_B						0.0f
+#define CLEAR_SPECULAR_A						0.5f
 
-#define CLEAR_EMISSION_R				0.0f
-#define CLEAR_EMISSION_G				0.0f
-#define CLEAR_EMISSION_B				0.0f
-#define CLEAR_EMISSION_A				0.0f
+#define CLEAR_EMISSION_R						0.0f
+#define CLEAR_EMISSION_G						0.0f
+#define CLEAR_EMISSION_B						0.0f
+#define CLEAR_EMISSION_A						0.0f
 
-#define CLEAR_VELOCITY_BLUR_R			0.5f
-#define CLEAR_VELOCITY_BLUR_G			0.5f
-#define CLEAR_VELOCITY_BLUR_B			0.5f
-#define CLEAR_VELOCITY_BLUR_A			0.5f
+#define CLEAR_VELOCITY_BLUR_R					0.5f
+#define CLEAR_VELOCITY_BLUR_G					0.5f
+#define CLEAR_VELOCITY_BLUR_B					0.5f
+#define CLEAR_VELOCITY_BLUR_A					0.5f
 
-#define CLEAR_OBJECT_0_R				0.0f
-#define CLEAR_OBJECT_0_G				0.0f
-#define CLEAR_OBJECT_0_B				0.0f
-#define CLEAR_OBJECT_0_A				0.0f
+#define CLEAR_OBJECT_0_R						0.0f
+#define CLEAR_OBJECT_0_G						0.0f
+#define CLEAR_OBJECT_0_B						0.0f
+#define CLEAR_OBJECT_0_A						0.0f
 
-#define CLEAR_OBJECT_1_R				0.0f
-#define CLEAR_OBJECT_1_G				0.0f
-#define CLEAR_OBJECT_1_B				0.0f
-#define CLEAR_OBJECT_1_A				0.0f
+#define CLEAR_OBJECT_1_R						0.0f
+#define CLEAR_OBJECT_1_G						0.0f
+#define CLEAR_OBJECT_1_B						0.0f
+#define CLEAR_OBJECT_1_A						0.0f
 
-#define OVERLAY_TRANSPARENCY			80
+#define OVERLAY_TRANSPARENCY					80
 
 EMRenderer* EMRenderer::instance = nullptr;
 
@@ -473,9 +474,14 @@ GXUByte EMRenderer::GetMaxBlurSamples () const
 	return DEFAULT_MOTION_BLUR_SAMPLES;
 }
 
+GXFloat EMRenderer::GetDepthLimit () const
+{
+	return DEFAULT_MOTION_BLUR_DEPTH_LIMIT;
+}
+
 GXFloat EMRenderer::GetExplosureTime () const
 {
-	return EXPLOSURE_TIME;
+	return DEFAULT_MOTION_BLUR_EXPLOSURE_TIME;
 }
 
 EMRenderer& EMRenderer::GetInstance ()
@@ -518,6 +524,7 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" )
 	motionBlurMaterial.SetImageTexture ( outTexture );
 	motionBlurMaterial.SetMaxBlurSamples ( DEFAULT_MOTION_BLUR_SAMPLES );
 	motionBlurMaterial.SetScreenResolution ( outTexture.GetWidth (), outTexture.GetHeight () );
+	motionBlurMaterial.SetDepthLimit ( DEFAULT_MOTION_BLUR_EXPLOSURE_TIME );
 
 	SetObjectMask ( (GXUPointer)nullptr );
 }
@@ -533,17 +540,16 @@ GXVoid EMRenderer::CreateFBO ()
 	specularTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	emissionTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	velocityBlurTexture.InitResources ( width, height, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
-
-	GXUShort w = width / DEFAULT_MOTION_BLUR_SAMPLES;
-	GXUShort h = height / DEFAULT_MOTION_BLUR_SAMPLES;
-	velocityTileMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	velocityNeighborMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	
 	objectTextures[ 0 ].InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	objectTextures[ 1 ].InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	depthStencilTexture.InitResources ( width, height, GL_DEPTH24_STENCIL8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	outTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	motionBlurredTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
+
+	GXUShort w = width / DEFAULT_MOTION_BLUR_SAMPLES;
+	GXUShort h = height / DEFAULT_MOTION_BLUR_SAMPLES;
+	velocityTileMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	velocityNeighborMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
 
 	glGenFramebuffers ( 1, &fbo );
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );

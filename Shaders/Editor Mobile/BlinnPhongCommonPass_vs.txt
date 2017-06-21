@@ -75,8 +75,7 @@ void main ()
 
 	vec2 velocityImage = ( currentFrameLocationImage - lastFrameLocationImage ) * inverseDeltaTime;
 	vec2 halfSpreadVelocityImage = 0.5 * explosureTime * velocityImage;
-	float halfSpreadVelocityMagnitudeImage = length ( halfSpreadVelocityImage );
-	vec2 halfSpreadVelocityDirectionImage = halfSpreadVelocityImage / ( halfSpreadVelocityMagnitudeImage + EPSILON );
+	float halfSpreadVelocityMagnitudeImage = max ( 0.0, min ( length ( halfSpreadVelocityImage ), maxBlurSamples ) );
 
-	v_velocityBlur = halfSpreadVelocityDirectionImage * max ( 0.0, min ( halfSpreadVelocityMagnitudeImage, maxBlurSamples ) );
+	v_velocityBlur = ( normalize ( velocityImage ) * halfSpreadVelocityMagnitudeImage ) / maxBlurSamples;
 }

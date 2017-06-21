@@ -2,7 +2,7 @@
 #include <GXEngine/GXCamera.h>
 
 
-#define DEFAULT_DEPTH_LIMIT				0.01f
+#define DEFAULT_DEPTH_LIMIT				1.0f
 #define DEFAULT_MAX_BLUR_SAMPLES		15
 #define DEFAULT_SCREEN_WIDTH			1280
 #define DEFAULT_SCREEN_HEIGHT			720
@@ -63,7 +63,7 @@ GXVoid EMMotionBlurMaterial::Bind ( const GXTransform& /*transform*/ ) const
 	const GXMat4& inverseProjectionMatrix = GXCamera::GetActiveCamera ()->GetCurrentFrameInverseProjectionMatrix ();
 
 	glUniform1f ( inverseDepthLimitLocation, inverseDepthLimit );
-	glUniform1i ( maxBlurSamplesLocation, maxBlurSamples );
+	glUniform1f ( maxBlurSamplesLocation, maxBlurSamples );
 	glUniform2fv ( inverseScreenResolutionLocation, 1, inverseScreenResolution.arr );
 	glUniformMatrix4fv ( inverseProjectionMatrixLocation, 1, GL_FALSE, inverseProjectionMatrix.arr );
 
@@ -112,7 +112,7 @@ GXVoid EMMotionBlurMaterial::SetDepthLimit ( GXFloat limit )
 
 GXVoid EMMotionBlurMaterial::SetMaxBlurSamples ( GXUByte maxSamples )
 {
-	maxBlurSamples = (GXInt)maxSamples;
+	maxBlurSamples = (GXFloat)maxSamples;
 }
 
 GXVoid EMMotionBlurMaterial::SetScreenResolution ( GXUShort width, GXUShort height )

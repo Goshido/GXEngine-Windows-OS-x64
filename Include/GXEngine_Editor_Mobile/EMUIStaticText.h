@@ -20,6 +20,9 @@ class EMUIStaticText : public EMUI
 		GXVoid SetText ( const GXWChar* text );
 		const GXWChar* GetText () const;
 
+		GXVoid SetTextColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
+		const GXVec4& GetTextColor () const;
+
 		GXVoid SetAlingment ( eGXUITextAlignment alignment );
 		eGXUITextAlignment GetAlignment () const;
 
