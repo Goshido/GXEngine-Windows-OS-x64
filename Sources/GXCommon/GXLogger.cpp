@@ -40,7 +40,7 @@ GXVoid GXCDECLCALL GXLogA ( const GXMBChar* format, ... )
 		if ( gx_lggr_ConsoleLocale != GX_ASCII )
 		{
 			gx_lggr_ConsoleLocale = GX_ASCII;
-			setlocale ( LC_ALL, "Russian" );
+			setlocale ( LC_CTYPE, "" );
 		}
 
 		va_list ap;
@@ -60,7 +60,7 @@ GXVoid GXCDECLCALL GXLogW ( const GXWChar* format, ... )
 		if ( gx_lggr_ConsoleLocale != GX_UNICODE_RUSSIAN )
 		{
 			gx_lggr_ConsoleLocale = GX_UNICODE_RUSSIAN;
-			setlocale ( LC_ALL, "Russian" );
+			setlocale ( LC_CTYPE, "Russian" );
 		}
 
 		va_list ap;
@@ -71,31 +71,3 @@ GXVoid GXCDECLCALL GXLogW ( const GXWChar* format, ... )
 		gx_lggr_ConsoleMutex->Release ();
 	}
 }
-/*
-GXVoid GXCALL GXSeeError ( LPTSTR lpszFunction, GXBool isDebugBox )
-{ 
-	LPVOID lpMsgBuf;
-	DWORD dw = GetLastError (); 
-
-	FormatMessage	(
-						FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-						FORMAT_MESSAGE_FROM_SYSTEM |
-						FORMAT_MESSAGE_IGNORE_INSERTS,
-						NULL,
-						dw,
-						MAKELANGID ( LANG_NEUTRAL, SUBLANG_DEFAULT ),
-						( LPTSTR )&lpMsgBuf,
-						0, NULL 
-					);
-
-	swprintf_s ( gx_logger_lpDisplayBuf, 120, L"%s 糺籵・・ ・ⅹ鞦・・%d: %s", lpszFunction, dw, lpMsgBuf );
-
-	if ( isDebugBox )
-	{
-		GXDebugBox ( gx_logger_lpDisplayBuf );
-		GXLogW ( L"%s\n", gx_logger_lpDisplayBuf );
-	}
-
-	LocalFree ( lpMsgBuf );
-}
-*/

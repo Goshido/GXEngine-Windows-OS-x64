@@ -58,6 +58,14 @@ class EMRenderer
 		GXInt								mouseY;
 		PFNEMRENDERERONOBJECTPROC			OnObject;
 
+		GXBool								isMotionBlurSettingsChanged;
+		GXUByte								maxMotionBlurSamples;
+		GXUByte								newMaxMotionBlurSamples;
+		GXFloat								motionBlurDepthLimit;
+		GXFloat								newMotionBlurDepthLimit;
+		GXFloat								motionBlurExposure;
+		GXFloat								newMotionBlurExposure;
+
 		static EMRenderer*					instance;
 
 	public:
@@ -76,9 +84,14 @@ class EMRenderer
 		GXVoid SetOnObjectCallback ( PFNEMRENDERERONOBJECTPROC callback );
 		GXVoid GetObject ( GXUShort x, GXUShort y );
 
-		GXUByte GetMaxBlurSamples () const;
-		GXFloat GetDepthLimit () const;
-		GXFloat GetExplosureTime () const;
+		GXVoid SetMaximumMotionBlurSamples ( GXUByte samples );
+		GXUByte GetMaximumMotionBlurSamples () const;
+
+		GXVoid SetMotionBlurDepthLimit ( GXFloat meters );
+		GXFloat GetMotionBlurDepthLimit () const;
+
+		GXVoid SetMotionBlurExposure ( GXFloat seconds );
+		GXFloat GetMotionBlurExplosure () const;
 
 		static EMRenderer& GXCALL GetInstance ();
 
@@ -86,6 +99,7 @@ class EMRenderer
 		EMRenderer ();
 
 		GXVoid CreateFBO ();
+		GXVoid UpdateMotionBlurSettings ();
 
 		GXVoid LightUp ();
 		GXVoid LightUpByDirected ( EMDirectedLight* light );

@@ -1,5 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMRenderer.h>
 #include <GXEngine_Editor_Mobile/EMLight.h>
+#include <GXEngine_Editor_Mobile/EMUIMotionBlurSettings.h>
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXCamera.h>
 #include <GXEngine/GXSamplerUtils.h>
@@ -24,9 +25,9 @@
 #define CVV_WIDTH								2.0f
 #define CVV_HEIGHT								2.0f
 
-#define DEFAULT_MOTION_BLUR_SAMPLES				15
+#define DEFAULT_MAX_MOTION_BLUR_SAMPLES			15
 #define DEFAULT_MOTION_BLUR_DEPTH_LIMIT			0.1f
-#define DEFAULT_MOTION_BLUR_EXPLOSURE_TIME		0.03f
+#define DEFAULT_MOTION_BLUR_EXPLOSURE			0.03f
 
 #define CLEAR_DIFFUSE_R							0.0f
 #define CLEAR_DIFFUSE_G							0.0f
@@ -82,6 +83,8 @@ EMRenderer::~EMRenderer ()
 	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
 	glDeleteFramebuffers ( 1, &fbo );
 
+	delete &( EMUIMotionBlurSettings::GetInstance () );
+
 	instance = nullptr;
 }
 
@@ -92,6 +95,9 @@ GXVoid EMRenderer::StartCommonPass ()
 		OnObject ( SampleObject () );
 		mouseX = mouseY = -1;
 	}
+
+	if ( isMotionBlurSettingsChanged )
+		UpdateMotionBlurSettings ();
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, diffuseTexture.GetTextureObject (), 0 );
@@ -469,19 +475,43 @@ GXVoid EMRenderer::GetObject ( GXUShort x, GXUShort y )
 	mouseY = y;
 }
 
-GXUByte EMRenderer::GetMaxBlurSamples () const
+GXVoid EMRenderer::SetMaximumMotionBlurSamples ( GXUByte samples )
 {
-	return DEFAULT_MOTION_BLUR_SAMPLES;
+	if ( maxMotionBlurSamples == samples ) return;
+
+	newMaxMotionBlurSamples = samples;
+	isMotionBlurSettingsChanged = GX_TRUE;
 }
 
-GXFloat EMRenderer::GetDepthLimit () const
+GXUByte EMRenderer::GetMaximumMotionBlurSamples () const
 {
-	return DEFAULT_MOTION_BLUR_DEPTH_LIMIT;
+	return maxMotionBlurSamples;
 }
 
-GXFloat EMRenderer::GetExplosureTime () const
+GXVoid EMRenderer::SetMotionBlurDepthLimit ( GXFloat meters )
 {
-	return DEFAULT_MOTION_BLUR_EXPLOSURE_TIME;
+	if ( motionBlurDepthLimit == meters ) return;
+
+	newMotionBlurDepthLimit = meters;
+	isMotionBlurSettingsChanged = GX_TRUE;
+}
+
+GXFloat EMRenderer::GetMotionBlurDepthLimit () const
+{
+	return motionBlurDepthLimit;
+}
+
+GXVoid EMRenderer::SetMotionBlurExposure ( GXFloat seconds )
+{
+	if ( motionBlurExposure == seconds ) return;
+
+	newMotionBlurExposure = seconds;
+	isMotionBlurSettingsChanged = GX_TRUE;
+}
+
+GXFloat EMRenderer::GetMotionBlurExplosure () const
+{
+	return motionBlurExposure;
 }
 
 EMRenderer& EMRenderer::GetInstance ()
@@ -499,6 +529,11 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" )
 	mouseX = mouseY = -1;
 	OnObject = nullptr;
 
+	maxMotionBlurSamples = newMaxMotionBlurSamples = DEFAULT_MAX_MOTION_BLUR_SAMPLES;
+	motionBlurDepthLimit = newMotionBlurDepthLimit = DEFAULT_MOTION_BLUR_DEPTH_LIMIT;
+	motionBlurExposure = newMotionBlurExposure = DEFAULT_MOTION_BLUR_EXPLOSURE;
+	isMotionBlurSettingsChanged = GX_FALSE;
+
 	CreateFBO ();
 
 	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
@@ -512,7 +547,7 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" )
 	directedLightMaterial.SetDepthTexture ( depthStencilTexture );
 
 	velocityTileMaxMaterial.SetVelocityBlurTexture ( velocityBlurTexture );
-	velocityTileMaxMaterial.SetMaxBlurSamples ( DEFAULT_MOTION_BLUR_SAMPLES );
+	velocityTileMaxMaterial.SetMaxBlurSamples ( maxMotionBlurSamples );
 	velocityTileMaxMaterial.SetScreenResolution ( (GXUShort)coreRenderer.GetWidth (), (GXUShort)coreRenderer.GetHeight () );
 
 	velocityNeighborMaxMaterial.SetVelocityTileMaxTexture ( velocityTileMaxTexture );
@@ -522,11 +557,13 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" )
 	motionBlurMaterial.SetVelocityTexture ( velocityBlurTexture );
 	motionBlurMaterial.SetDepthTexture ( depthStencilTexture );
 	motionBlurMaterial.SetImageTexture ( outTexture );
-	motionBlurMaterial.SetMaxBlurSamples ( DEFAULT_MOTION_BLUR_SAMPLES );
+	motionBlurMaterial.SetMaxBlurSamples ( maxMotionBlurSamples );
 	motionBlurMaterial.SetScreenResolution ( outTexture.GetWidth (), outTexture.GetHeight () );
-	motionBlurMaterial.SetDepthLimit ( DEFAULT_MOTION_BLUR_EXPLOSURE_TIME );
+	motionBlurMaterial.SetDepthLimit ( motionBlurExposure );
 
 	SetObjectMask ( (GXUPointer)nullptr );
+
+	EMUIMotionBlurSettings::GetInstance ();
 }
 
 GXVoid EMRenderer::CreateFBO ()
@@ -546,8 +583,8 @@ GXVoid EMRenderer::CreateFBO ()
 	outTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	motionBlurredTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
 
-	GXUShort w = width / DEFAULT_MOTION_BLUR_SAMPLES;
-	GXUShort h = height / DEFAULT_MOTION_BLUR_SAMPLES;
+	GXUShort w = width / (GXUShort)maxMotionBlurSamples;
+	GXUShort h = height / (GXUShort)maxMotionBlurSamples;
 	velocityTileMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	velocityNeighborMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
 
@@ -572,6 +609,41 @@ GXVoid EMRenderer::CreateFBO ()
 	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
 
 	glDrawBuffer ( GL_BACK );
+}
+
+GXVoid EMRenderer::UpdateMotionBlurSettings ()
+{
+	if ( newMaxMotionBlurSamples != maxMotionBlurSamples )
+	{
+		velocityTileMaxTexture.FreeResources ();
+		velocityNeighborMaxTexture.FreeResources ();
+
+		GXRenderer& renderer = GXRenderer::GetInstance ();
+		GXUShort width = (GXUShort)renderer.GetWidth ();
+		GXUShort height = (GXUShort)renderer.GetHeight ();
+		GXUShort w = width / (GXUShort)newMaxMotionBlurSamples;
+		GXUShort h = height / (GXUShort)newMaxMotionBlurSamples;
+
+		velocityTileMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
+		velocityNeighborMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
+
+		velocityTileMaxMaterial.SetMaxBlurSamples ( newMaxMotionBlurSamples );
+		velocityNeighborMaxMaterial.SetVelocityTileMaxTextureResolution ( velocityTileMaxTexture.GetWidth (), velocityTileMaxTexture.GetHeight () );
+		motionBlurMaterial.SetMaxBlurSamples ( newMaxMotionBlurSamples );
+
+		maxMotionBlurSamples = newMaxMotionBlurSamples;
+	}
+
+	if ( newMotionBlurDepthLimit != motionBlurDepthLimit )
+	{
+		motionBlurMaterial.SetDepthLimit ( newMotionBlurDepthLimit );
+		motionBlurDepthLimit = newMotionBlurDepthLimit;
+	}
+
+	if ( newMotionBlurExposure != motionBlurExposure )
+		motionBlurExposure = newMotionBlurExposure;
+
+	isMotionBlurSettingsChanged = GX_FALSE;
 }
 
 GXVoid EMRenderer::LightUp ()

@@ -265,6 +265,7 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			tests[ 4 ] = ( wParam >= VK_OEM_4 ) && ( wParam <= VK_OEM_8 );
 
 			GXBool result = tests[ 0 ] || tests[ 1 ] || tests[ 2 ] || tests[ 3 ] || tests[ 4 ];
+
 			if ( !result ) return 0;
 
 			static BYTE inputKeys[ 256 ];

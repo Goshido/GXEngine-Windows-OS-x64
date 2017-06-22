@@ -39,8 +39,6 @@ mesh ( L"3D Models/Editor Mobile/Unit Cube.stm" )
 	commonPassMaterial.SetNormalTexture ( normalTexture );
 	commonPassMaterial.SetSpecularTexture ( specularTexture );
 	commonPassMaterial.SetEmissionTexture ( emissionTexture );
-	commonPassMaterial.SetMaxBlurSamples ( renderer.GetMaxBlurSamples () );
-	commonPassMaterial.SetExplosureTime ( renderer.GetExplosureTime () );
 
 	commonPassMaterial.SetDiffuseTextureColor ( DIFFUSE_COLOR_R, DIFFUSE_COLOR_G, DIFFUSE_COLOR_B, DIFFUSE_COLOR_A );
 }
@@ -55,10 +53,13 @@ EMUnitActor::~EMUnitActor ()
 
 GXVoid EMUnitActor::OnDrawCommonPass ( GXFloat deltaTime )
 {
-	EMRenderer::GetInstance ().SetObjectMask ( (GXUPointer)this );
+	EMRenderer& renderer = EMRenderer::GetInstance ();
+	renderer.SetObjectMask ( (GXUPointer)this );
 
 	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
 
+	commonPassMaterial.SetMaxBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
+	commonPassMaterial.SetExplosureTime ( renderer.GetMotionBlurExplosure () );
 	commonPassMaterial.SetDeltaTime ( deltaTime );
 	commonPassMaterial.SetScreenResolution ( (GXUShort)coreRenderer.GetWidth (), (GXUShort)coreRenderer.GetHeight () );
 	commonPassMaterial.Bind ( mesh );

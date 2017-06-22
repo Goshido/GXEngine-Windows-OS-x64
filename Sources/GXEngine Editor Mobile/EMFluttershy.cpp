@@ -12,6 +12,7 @@ mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLV
 	GXLoadNativeAnimation ( L"Animations/Editor Mobile/Battle.ani", animationInfo );
 	skeleton.LoadFromSkm ( L"3D Models/Editor Mobile/Fluttershy.skm" );
 	animationSolverPlayer.SetAnimationSequence ( &animationInfo );
+	animationSolverPlayer.SetAnimationMultiplier ( 1.0f );
 
 	diffuseTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Fluttershy_Diffuse.tga", GX_TRUE, GL_REPEAT );
 	//normalTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Brick_Wall_Normals.tga", GX_TRUE, GL_REPEAT );
@@ -25,8 +26,6 @@ mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLV
 	material.SetNormalTexture ( normalTexture );
 	material.SetSpecularTexture ( specularTexture );
 	material.SetEmissionTexture ( emissionTexture );
-	material.SetMaxBlurSamples ( renderer.GetMaxBlurSamples () );
-	material.SetExplosureTime ( renderer.GetExplosureTime () );
 }
 
 EMFluttershy::~EMFluttershy ()
@@ -41,9 +40,12 @@ EMFluttershy::~EMFluttershy ()
 
 GXVoid EMFluttershy::Render ( GXFloat deltaTime )
 {
-	EMRenderer::GetInstance ().SetObjectMask ( (GXUPointer)nullptr );
+	EMRenderer& renderer = EMRenderer::GetInstance ();
+	renderer.SetObjectMask ( (GXUPointer)nullptr );
 	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
 
+	material.SetMaxBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
+	material.SetExplosureTime ( renderer.GetMotionBlurExplosure () );
 	material.SetScreenResolution ( (GXUShort)coreRenderer.GetWidth (), (GXUShort)coreRenderer.GetHeight () );
 	material.SetDeltaTime ( deltaTime );
 	material.Bind ( mesh );

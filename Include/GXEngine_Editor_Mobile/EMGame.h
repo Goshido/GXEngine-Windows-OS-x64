@@ -12,7 +12,6 @@
 #include "EMMoveTool.h"
 #include "EMPhysicsDrivenActor.h"
 #include "EMFluttershy.h"
-#include "EMUIFPSCounter.h"
 #include <GXEngine/GXGame.h>
 #include <GXEngine/GXCameraOrthographic.h>
 
@@ -21,25 +20,19 @@ class EMGame : public GXGame
 {
 	private:
 		GXCameraOrthographic*	hudCamera;
-		EMUIButton*				button1;
-		EMUIButton*				button2;
-		EMUIButton*				button3;
 		EMUIMenu*				menu;
 		EMUIOpenFile*			openFile;
-		EMUIDraggableArea*		draggableArea;
 		EMUIPopup*				filePopup;
 		EMUIPopup*				createPopup;
 		EMUIPopup*				toolsPopup;
 		EMUIPopup*				utilityPopup;
-		EMUIPopup*				languagePopup;
-		EMUIEditBox*			editBox;
+		EMUIPopup*				effectsPopup;
 		EMDirectedLightActor*	directedLight;
 		EMUnitActor*			unitActor;
 		EMMoveTool*				moveTool;
 		EMPhysicsDrivenActor*	physicsBoxActor;
 		EMPhysicsDrivenActor*	physicsPlaneActor;
 		EMFluttershy*			fluttershy;
-		EMUIFPSCounter*			fpsCounter;
 		GXUIInput*				uiInput;
 
 	public:
@@ -52,8 +45,8 @@ class EMGame : public GXGame
 		GXVoid OnDestroy () override;
 
 	private:
-		static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFloat y, eGXMouseButtonState state );
 		static GXVoid GXCALL OnExit ( GXVoid* handler );
+		static GXVoid GXCALL OnShowMotionBlurSettings ( GXVoid* handler );
 		static GXVoid GXCALL OnMouseButton ( GXVoid* handler, GXInputMouseFlags mouseflags );
 		static GXVoid GXCALL OnObject ( GXUPointer object );
 		static GXVoid GXCALL OnViewerTransformChanged ( GXVoid* handler );

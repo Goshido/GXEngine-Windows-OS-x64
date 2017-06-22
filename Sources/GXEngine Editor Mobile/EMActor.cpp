@@ -2,7 +2,7 @@
 #include <GXCommon/GXStrings.h>
 
 
-EMActor* em_Actors = 0;
+EMActor* em_Actors = nullptr;
 
 
 EMActor::EMActor ( const GXWChar* name, GXUInt type, const GXMat4 &transform )
@@ -13,10 +13,11 @@ EMActor::EMActor ( const GXWChar* name, GXUInt type, const GXMat4 &transform )
 
 	isVisible = GX_TRUE;
 
-	prev = 0;
+	prev = nullptr;
 	next = em_Actors;
 	if ( em_Actors )
 		em_Actors->prev = this;
+
 	em_Actors = this;
 }
 

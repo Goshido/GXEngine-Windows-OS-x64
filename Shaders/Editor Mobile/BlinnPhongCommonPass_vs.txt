@@ -74,8 +74,8 @@ void main ()
 	vec2 lastFrameLocationImage = ( lastFrameLocationCVV * 0.5 + 0.5 ) * screenResolution;
 
 	vec2 velocityImage = ( currentFrameLocationImage - lastFrameLocationImage ) * inverseDeltaTime;
-	vec2 halfSpreadVelocityImage = 0.5 * explosureTime * velocityImage;
+	vec2 halfSpreadVelocityImage = 0.5 * velocityImage * explosureTime;
 	float halfSpreadVelocityMagnitudeImage = max ( 0.0, min ( length ( halfSpreadVelocityImage ), maxBlurSamples ) );
 
-	v_velocityBlur = ( normalize ( velocityImage ) * halfSpreadVelocityMagnitudeImage ) / maxBlurSamples;
+	v_velocityBlur = ( normalize ( velocityImage ) ) * ( halfSpreadVelocityMagnitudeImage / maxBlurSamples );
 }

@@ -206,6 +206,7 @@ GXVoid GXUIMenu::AddItem ( const GXWChar* name, GXFloat itemWidth, GXUIPopup* po
 	item.popup = popup;
 
 	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_MENY_ADD_ITEM, &item, sizeof ( GXUIMenuItem ) );
+	popup->Hide ();
 }
 
 GXUByte GXUIMenu::GetTotalItems () const

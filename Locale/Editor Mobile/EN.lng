@@ -73,17 +73,13 @@ Utility->Particle system~Particle system~
 
 Utility->Animation graph~Animation graph~
 
-Main menu->Language~Language~
+Main menu->Effects~Effects~
 
-Language->Русский~Русский~
-
-Language->English~English~
+Effects->Motion blur~Motion blur~
 
 OpenFile->OK~OK~
 
 OpenFile->Cancel~Cancel~
-
-TestButton~Button~
 
 Motion blur settings->Motion blur settings~Motion blur settings~
 

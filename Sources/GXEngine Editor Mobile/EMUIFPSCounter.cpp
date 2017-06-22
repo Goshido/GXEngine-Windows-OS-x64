@@ -15,29 +15,22 @@
 #define DEFAULT_LAST_FPS			0xFFFFFFFF
 
 
-EMUIFPSCounter::EMUIFPSCounter ()
+EMUIFPSCounter* EMUIFPSCounter::instance = nullptr;
+
+EMUIFPSCounter& EMUIFPSCounter::GetInstance ()
 {
-	GXUShort fontSize = (GXUShort)( gx_ui_Scale * FONT_SIZE );
+	if ( !instance )
+		instance = new EMUIFPSCounter ();
 
-	font = GXFont::GetFont ( FONT, fontSize );
-	GXUInt requeredSize = font.GetTextLength ( 0, L"99999999999" );
-
-	surface = new GXHudSurface ( (GXUShort)requeredSize, fontSize );
-
-	GXRenderer& renderer = GXRenderer::GetInstance ();
-	GXVec3 location;
-	surface->GetLocation ( location );
-	location.x = renderer.GetWidth () * 0.5f - ( requeredSize * 0.5f + LEFT_OFFSET * gx_ui_Scale );
-	location.y = renderer.GetHeight () * 0.5f - ( FONT_SIZE * 0.5f + TOP_OFFSET ) * gx_ui_Scale;
-	surface->SetLocation ( location );
-
-	lastFPS = DEFAULT_LAST_FPS;
+	return *instance;
 }
 
 EMUIFPSCounter::~EMUIFPSCounter ()
 {
 	delete surface;
 	GXFont::RemoveFont ( font );
+
+	instance = nullptr;
 }
 
 void EMUIFPSCounter::Render ()
@@ -61,4 +54,23 @@ void EMUIFPSCounter::Render ()
 	}
 
 	surface->Render ();
+}
+
+EMUIFPSCounter::EMUIFPSCounter ()
+{
+	GXUShort fontSize = (GXUShort)( gx_ui_Scale * FONT_SIZE );
+
+	font = GXFont::GetFont ( FONT, fontSize );
+	GXUInt requeredSize = font.GetTextLength ( 0, L"99999999999" );
+
+	surface = new GXHudSurface ( (GXUShort)requeredSize, fontSize );
+
+	GXRenderer& renderer = GXRenderer::GetInstance ();
+	GXVec3 location;
+	surface->GetLocation ( location );
+	location.x = renderer.GetWidth () * 0.5f - ( requeredSize * 0.5f + LEFT_OFFSET * gx_ui_Scale );
+	location.y = renderer.GetHeight () * 0.5f - ( FONT_SIZE * 0.5f + TOP_OFFSET ) * gx_ui_Scale;
+	surface->SetLocation ( location );
+
+	lastFPS = DEFAULT_LAST_FPS;
 }

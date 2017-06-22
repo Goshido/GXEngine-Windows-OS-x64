@@ -8,16 +8,21 @@
 class EMUIFPSCounter
 {
 	private:
-		GXFont			font;
-		GXHudSurface*	surface;
-		GXUInt			lastFPS;
-		GXWChar			fpsBuffer[ 16 ];
+		GXFont					font;
+		GXHudSurface*			surface;
+		GXUInt					lastFPS;
+		GXWChar					fpsBuffer[ 16 ];
+
+		static EMUIFPSCounter*	instance;
 
 	public:
-		EMUIFPSCounter ();
+		static EMUIFPSCounter& GetInstance ();
 		~EMUIFPSCounter ();
 
 		void Render ();
+
+	private:
+		EMUIFPSCounter ();
 };
 
 

@@ -135,5 +135,6 @@ GXDword GXTHREADCALL GXSoundMixer::Update ( GXVoid* /*args*/ )
 
 		Sleep ( GX_SOUND_MIXER_DELAY );
 	}
+
 	return 0;
 }

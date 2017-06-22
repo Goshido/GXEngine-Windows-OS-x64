@@ -164,6 +164,7 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
 		else
 			GXColorToVec4 ( pi.color, EM_DISABLE_ITEM_COLOR_R, EM_DISABLE_ITEM_COLOR_G, EM_DISABLE_ITEM_COLOR_B, EM_DISABLE_ITEM_COLOR_A );
 
+		const GXWChar* t = names[ i ];
 		surface->AddText ( pi, 0, names[ i ] );
 		pi.insertY -= itemHeight;
 	}

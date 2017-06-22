@@ -12,21 +12,23 @@
 class EMUIMotionBlurSettings : public EMUI
 {
 	private:
-		EMUIDraggableArea*		mainPanel;
-		EMUIStaticText*			caption;
-		EMUISeparator*			topSeparator;
-		EMUIStaticText*			totalSamplesLabel;
-		EMUIEditBox*			totalSamples;
-		EMUIStaticText*			depthLimitLabel;
-		EMUIEditBox*			depthLimit;
-		EMUIStaticText*			exposureLabel;
-		EMUIEditBox*			exposure;
-		EMUISeparator*			bottomSeparator;
-		EMUIButton*				cancel;
-		EMUIButton*				apply;
+		EMUIDraggableArea*				mainPanel;
+		EMUIStaticText*					caption;
+		EMUISeparator*					topSeparator;
+		EMUIStaticText*					maxSamplesLabel;
+		EMUIEditBox*					maxSamples;
+		EMUIStaticText*					depthLimitLabel;
+		EMUIEditBox*					depthLimit;
+		EMUIStaticText*					exposureLabel;
+		EMUIEditBox*					exposure;
+		EMUISeparator*					bottomSeparator;
+		EMUIButton*						cancel;
+		EMUIButton*						apply;
+
+		static EMUIMotionBlurSettings*	instance;
 
 	public:
-		EMUIMotionBlurSettings ();
+		static EMUIMotionBlurSettings& GetInstance ();
 		~EMUIMotionBlurSettings () override;
 
 		GXWidget* GetWidget () const override;
@@ -35,7 +37,10 @@ class EMUIMotionBlurSettings : public EMUI
 		GXVoid Hide ();
 
 	private:
+		EMUIMotionBlurSettings ();
+
 		GXVoid ApplySettings () const;
+		GXVoid SyncSettings ();
 
 		static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFloat y, eGXMouseButtonState state );
 		static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea* area, GXFloat width, GXFloat height );

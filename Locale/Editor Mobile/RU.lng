@@ -73,17 +73,13 @@ Utility->Particle system~Система частиц~
 
 Utility->Animation graph~Анимационный граф~
 
-Main menu->Language~Язык~
+Main menu->Effects~Эффекты~
 
-Language->Русский~Русский~
-
-Language->English~English~
+Effects->Motion blur~Motion blur~
 
 OpenFile->OK~OK~
 
 OpenFile->Cancel~Отмена~
-
-TestButton~Кнопка~
 
 Motion blur settings->Motion blur settings~Настройки motion blur~
 
@@ -91,7 +87,7 @@ Motion blur settings->Maximum samples~Максимальное количест�
 
 Motion blur settings->Depth Limit (meters)~Отсечка по глубине (метры)~
 
-Motion blur settings->Exposure (seconds)~Экспозиция (секунды)~
+Motion blur settings->Exposure (seconds)~Выдержка (секунды)~
 
 Motion blur settings->Cancel~Отмена~
 

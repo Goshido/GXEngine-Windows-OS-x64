@@ -1,6 +1,8 @@
 #include <GXEngine_Editor_Mobile/EMGame.h>
 #include <GXEngine_Editor_Mobile/EMRenderer.h>
 #include <GXEngine_Editor_Mobile/EMViewer.h>
+#include <GXEngine_Editor_Mobile/EMUIMotionBlurSettings.h>
+#include <GXEngine_Editor_Mobile/EMUIFPSCounter.h>
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXLocale.h>
 #include <GXEngine/GXCore.h>
@@ -14,21 +16,14 @@ EMGame::EMGame ()
 {
 	hudCamera = nullptr;
 
-	button1 = nullptr;
-	button2 = nullptr;
-	button3 = nullptr;
-
 	openFile = nullptr;
-	draggableArea = nullptr;
 	filePopup = nullptr;
 
 	menu = nullptr;
 	createPopup = nullptr;
 	toolsPopup = nullptr;
 	utilityPopup = nullptr;
-	languagePopup = nullptr;
-
-	editBox = nullptr;
+	effectsPopup = nullptr;
 
 	directedLight = nullptr;
 	unitActor = nullptr;
@@ -49,8 +44,8 @@ EMGame::~EMGame ()
 
 GXVoid EMGame::OnInit ()
 {
-	GXRenderer& renderer = GXRenderer::GetInstance ();
-	renderer.SetWindowName ( EM_WINDOW_NAME );
+	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
+	coreRenderer.SetWindowName ( EM_WINDOW_NAME );
 
 	GXLocale& locale = GXLocale::GetInstance ();
 	locale.LoadLanguage ( L"Locale/Editor Mobile/RU.lng", eGXLanguage::Russian );
@@ -64,25 +59,11 @@ GXVoid EMGame::OnInit ()
 	uiInput = new GXUIInput ( nullptr, GX_FALSE );
 	GXTouchSurface::GetInstance ().SetDefaultWidget ( uiInput );
 
-	GXFloat w = (GXFloat)renderer.GetWidth ();
-	GXFloat h = (GXFloat)renderer.GetHeight ();
+	GXFloat w = (GXFloat)coreRenderer.GetWidth ();
+	GXFloat h = (GXFloat)coreRenderer.GetHeight ();
 
 	EMRenderer& editorRenderer = EMRenderer::GetInstance ();
 	editorRenderer.SetOnObjectCallback ( &EMGame::OnObject );
-
-	locale.SetLanguage ( eGXLanguage::Russian );
-
-	button1 = new EMUIButton ( nullptr );
-	button1->SetOnLeftMouseButtonCallback ( this, &EMGame::OnButton );
-	button1->Disable ();
-	button1->Resize ( 100.0f, 100.0f, 4.0f * gx_ui_Scale, gx_ui_Scale );
-	button1->SetCaption ( locale.GetString ( L"russian" ) );
-
-	button2 = new EMUIButton ( nullptr );
-	button2->SetOnLeftMouseButtonCallback ( this, &EMGame::OnButton );
-	button2->Enable ();
-	button2->Resize ( 100.0f + 4.2f * gx_ui_Scale, 100.0f, 4.0f * gx_ui_Scale, 0.5f * gx_ui_Scale );
-	button2->SetCaption ( locale.GetString ( L"english" ) );
 
 	filePopup = new EMUIPopup ( nullptr );
 	filePopup->AddItem ( locale.GetString ( L"File->New" ), nullptr, nullptr );
@@ -109,31 +90,16 @@ GXVoid EMGame::OnInit ()
 	utilityPopup->AddItem ( locale.GetString ( L"Utility->Particle system" ), nullptr, nullptr );
 	utilityPopup->AddItem ( locale.GetString ( L"Utility->Animation graph" ), nullptr, nullptr );
 
-	languagePopup = new EMUIPopup ( nullptr );
-	languagePopup->AddItem ( locale.GetString ( L"Language->Русский" ), nullptr, nullptr );
-	languagePopup->AddItem ( locale.GetString ( L"Language->English" ), nullptr, nullptr );
+	effectsPopup = new EMUIPopup ( nullptr );
+	effectsPopup->AddItem ( locale.GetString ( L"Effects->Motion blur" ), this, &EMGame::OnShowMotionBlurSettings );
 
 	menu = new EMUIMenu ( nullptr );
-	menu->SetLocation ( 0.0f, h - 1.0f - menu->GetHeight () );
+	menu->SetLocation ( 0.0f, h - menu->GetHeight () );
 	menu->AddItem ( locale.GetString ( L"Main menu->File" ), filePopup );
 	menu->AddItem ( locale.GetString ( L"Main menu->Create" ), createPopup );
 	menu->AddItem ( locale.GetString ( L"Main menu->Tools" ), toolsPopup );
 	menu->AddItem ( locale.GetString ( L"Main menu->Utility" ), utilityPopup );
-	menu->AddItem ( locale.GetString ( L"Main menu->Language" ), languagePopup );
-
-	draggableArea = new EMUIDraggableArea ( nullptr );
-	draggableArea->SetHeaderHeight ( gx_ui_Scale * 2.0f );
-	draggableArea->Resize ( 10.0f * gx_ui_Scale, 10.0f * gx_ui_Scale, 5.0f * gx_ui_Scale, 5.0f * gx_ui_Scale );
-
-	button3 = new EMUIButton ( draggableArea );
-	button3->Enable ();
-	button3->Resize ( 0.2f * gx_ui_Scale, 0.2f * gx_ui_Scale, 3.0f * gx_ui_Scale, 0.8f * gx_ui_Scale );
-	button3->SetOnLeftMouseButtonCallback ( this, &EMGame::OnButton );
-	button3->SetCaption ( locale.GetString ( L"TestButton" ) );
-
-	editBox = new EMUIEditBox ( draggableArea );
-	editBox->SetText ( L"Привет, Сиськи" );
-	editBox->Resize ( 10.0f, 60.0f, 4.5f * gx_ui_Scale, 0.6f * gx_ui_Scale );
+	menu->AddItem ( locale.GetString ( L"Main menu->Effects" ), effectsPopup );
 
 	openFile = new EMUIOpenFile ();
 
@@ -172,9 +138,10 @@ GXVoid EMGame::OnInit ()
 
 	fluttershy = new EMFluttershy ();
 
-	fpsCounter = new EMUIFPSCounter ();
+	EMUIFPSCounter::GetInstance ();
 
 	ShowCursor ( 1 );
+	SetCursor ( LoadCursorW ( 0, IDC_ARROW ) );
 }
 
 GXVoid EMGame::OnResize ( GXInt width, GXInt height )
@@ -188,7 +155,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	GXPhysicsEngine::GetInstance ().RunSimulateLoop ( deltaTime );
 
-	//fluttershy->UpdatePose ( deltaTime );
+	fluttershy->UpdatePose ( deltaTime );
 
 	GXCamera& viewerCamera = EMViewer::GetInstance ()->GetCamera ();
 	GXCamera::SetActiveCamera ( &viewerCamera );
@@ -199,7 +166,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	unitActor->OnDrawCommonPass ( deltaTime );
 	physicsBoxActor->Draw ( deltaTime );
 	physicsPlaneActor->Draw ( deltaTime );
-	//fluttershy->Render ( deltaTime );
+	fluttershy->Render ( deltaTime );
 
 	renderer.StartLightPass ();
 
@@ -211,9 +178,9 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	GXCamera::SetActiveCamera ( hudCamera );
 
-	fpsCounter->Render ();
-
 	EMDrawUI ();
+
+	EMUIFPSCounter::GetInstance ().Render ();
 
 	renderer.StartHudMaskPass ();
 
@@ -243,69 +210,35 @@ GXVoid EMGame::OnDestroy ()
 	GXSafeDelete ( directedLight );
 
 	GXSafeDelete ( menu );
-	GXSafeDelete ( button1 );
-	GXSafeDelete ( button2 );
-	GXSafeDelete ( button3 );
-	GXSafeDelete ( editBox );
-	GXSafeDelete ( draggableArea );
 	GXSafeDelete ( openFile );
 	GXSafeDelete ( filePopup );
 	GXSafeDelete ( createPopup );
 	GXSafeDelete ( toolsPopup );
 	GXSafeDelete ( utilityPopup );
-	GXSafeDelete ( languagePopup );
+	GXSafeDelete ( effectsPopup );
 	GXSafeDelete ( hudCamera );
 
 	delete EMViewer::GetInstance ();
 
 	GXSafeDelete ( fluttershy );
-	GXSafeDelete ( fpsCounter );
+	delete &( EMUIFPSCounter::GetInstance () );
 
 	GXTouchSurface::GetInstance ().SetDefaultWidget ( nullptr );
 	GXSafeDelete ( uiInput );
 
-	delete &(EMRenderer::GetInstance ());
-	delete &(GXPhysicsEngine::GetInstance ());
-}
-
-GXVoid GXCALL EMGame::OnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFloat y, eGXMouseButtonState state )
-{
-	EMGame* game = (EMGame*)handler;
-
-	if ( state == eGXMouseButtonState::Down ) return;
-
-	if ( button == game->button1->GetWidget () )
-	{
-		GXLocale& locale = GXLocale::GetInstance ();
-		locale.SetLanguage ( eGXLanguage::Russian );
-
-		game->button1->SetCaption ( locale.GetString ( L"russian" ) );
-		game->button2->SetCaption ( locale.GetString ( L"english" ) );
-
-		game->button1->Disable ();
-		game->button2->Enable ();
-	}
-	else if ( button == game->button2->GetWidget () )
-	{
-		GXLocale& locale = GXLocale::GetInstance ();
-		locale.SetLanguage ( eGXLanguage::English );
-
-		game->button1->SetCaption ( locale.GetString ( L"russian" ) );
-		game->button2->SetCaption ( locale.GetString ( L"english" ) );
-
-		game->button2->Disable ();
-		game->button1->Enable ();
-	}
-	else if ( button == game->button3->GetWidget () )
-	{
-		game->openFile->Browse ( &EMGame::OnOpenFile );
-	}
+	delete &( EMRenderer::GetInstance () );
+	delete &( GXPhysicsEngine::GetInstance () );
 }
 
 GXVoid GXCALL EMGame::OnExit ( GXVoid* /*handler*/ )
 {
 	GXCore::GetInstance ().Exit ();
 	GXLogA ( "Завершение\n" );
+}
+
+GXVoid GXCALL EMGame::OnShowMotionBlurSettings ( GXVoid* /*handler*/ )
+{
+	EMUIMotionBlurSettings::GetInstance ().Show ();
 }
 
 GXVoid GXCALL EMGame::OnMouseButton ( GXVoid* /*handler*/, GXInputMouseFlags mouseflags )

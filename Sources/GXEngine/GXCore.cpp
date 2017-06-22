@@ -26,16 +26,16 @@ GXCore*	GXCore::instance = nullptr;
 
 GXCore::~GXCore ()
 {
-	delete &(GXLocale::GetInstance ());
-	delete &(GXTouchSurface::GetInstance ());
-	delete &(GXNetServer::GetInstance ());
-	delete &(GXNetClient::GetInstance ());
-	delete &(GXInput::GetInstance ());
+	delete &( GXLocale::GetInstance () );
+	delete &( GXTouchSurface::GetInstance () );
+	delete &( GXNetServer::GetInstance () );
+	delete &( GXNetClient::GetInstance () );
+	delete &( GXInput::GetInstance () );
 
 	GXDestroyPhysX ();
 
-	delete &(GXRenderer::GetInstance ());
-	delete &(GXSoundMixer::GetInstance ());
+	delete &( GXRenderer::GetInstance () );
+	delete &( GXSoundMixer::GetInstance () );
 
 	GXSoundDestroy ();
 
