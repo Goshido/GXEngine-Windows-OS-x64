@@ -1,0 +1,18 @@
+#version 330 core
+
+
+#define COLOR_SLOT		0
+
+
+in vec2 v_uv;
+
+uniform sampler2D	ssaoSampler;
+uniform sampler2D	imageSampler;
+
+layout ( location = COLOR_SLOT ) out vec3 color;
+
+
+void main ()
+{
+	color = texture ( imageSampler, v_uv ).rgb * texture ( ssaoSampler, v_uv ).r;
+}

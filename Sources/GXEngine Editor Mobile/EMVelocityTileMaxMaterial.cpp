@@ -43,7 +43,7 @@ EMVelocityTileMaxMaterial::~EMVelocityTileMaxMaterial ()
 	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 }
 
-GXVoid EMVelocityTileMaxMaterial::Bind ( const GXTransform& /*transform*/ ) const
+GXVoid EMVelocityTileMaxMaterial::Bind ( const GXTransform& /*transform*/ )
 {
 	if ( !velocityBlurTexture ) return;
 	
@@ -53,7 +53,7 @@ GXVoid EMVelocityTileMaxMaterial::Bind ( const GXTransform& /*transform*/ ) cons
 	velocityBlurTexture->Bind ( VELOCITY_BLUR_SLOT );
 }
 
-GXVoid EMVelocityTileMaxMaterial::Unbind () const
+GXVoid EMVelocityTileMaxMaterial::Unbind ()
 {
 	if ( !velocityBlurTexture ) return;
 	

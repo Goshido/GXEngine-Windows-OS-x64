@@ -13,6 +13,7 @@ class GXTexture
 	private:
 		GXUShort			width;
 		GXUShort			height;
+		GXUByte				numChannels;
 
 		GLint				internalFormat;
 		GLint				unpackAlignment;
@@ -33,6 +34,7 @@ class GXTexture
 
 		GXUShort GetWidth () const;
 		GXUShort GetHeight () const;
+		GXUByte GetChannelNumber () const;
 
 		static GXTexture& GXCALL LoadTexture ( const GXWChar* fileName, GXBool isGenerateMipmap, GLint wrapMode );
 		static GXVoid GXCALL RemoveTexture ( GXTexture& texture );

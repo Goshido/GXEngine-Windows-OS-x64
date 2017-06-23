@@ -12,6 +12,7 @@
 #define INVALID_FORMAT			0
 #define INVALID_TYPE			0
 #define INVALID_TEXTURE_UNIT	0xFF
+#define INVALID_CHANNEL_NUMBER	0xFF
 
 #define CACHE_DIRECTORY_NAME	L"Cache"
 #define CACHE_FILE_EXTENSION	L"cache"
@@ -111,6 +112,7 @@ struct GXTextureCacheHeader
 GXTexture::GXTexture ()
 {
 	width = height = 0;
+	numChannels = INVALID_CHANNEL_NUMBER;
 	internalFormat = INVALID_INTERNAL_FORMAT;
 	format = INVALID_TYPE;
 	type = INVALID_TYPE;
@@ -138,6 +140,11 @@ GXUShort GXTexture::GetWidth () const
 GXUShort GXTexture::GetHeight () const
 {
 	return height;
+}
+
+GXUByte GXTexture::GetChannelNumber () const
+{
+	return numChannels;
 }
 
 GXTexture& GXCALL GXTexture::LoadTexture ( const GXWChar* fileName, GXBool isGenerateMipmap, GLint wrapMode )
@@ -408,6 +415,7 @@ GXVoid GXTexture::InitResources ( GXUShort width, GXUShort height, GLint interna
 			unpackAlignment = 4;
 			format = GL_RED;
 			type = GL_UNSIGNED_INT;
+			numChannels = 1;
 		}
 		break;
 
@@ -418,6 +426,7 @@ GXVoid GXTexture::InitResources ( GXUShort width, GXUShort height, GLint interna
 			unpackAlignment = 1;
 			format = GL_RED;
 			type = GL_UNSIGNED_BYTE;
+			numChannels = 1;
 		}
 		break;
 
@@ -428,6 +437,7 @@ GXVoid GXTexture::InitResources ( GXUShort width, GXUShort height, GLint interna
 			unpackAlignment = 2;
 			format = GL_RG;
 			type = GL_UNSIGNED_BYTE;
+			numChannels = 2;
 		}
 		break;
 
@@ -438,6 +448,7 @@ GXVoid GXTexture::InitResources ( GXUShort width, GXUShort height, GLint interna
 			unpackAlignment = 1;
 			format = GL_RGB;
 			type = GL_UNSIGNED_BYTE;
+			numChannels = 3;
 		}
 		break;
 
@@ -446,6 +457,7 @@ GXVoid GXTexture::InitResources ( GXUShort width, GXUShort height, GLint interna
 			unpackAlignment = 4;
 			format = GL_RGB;
 			type = GL_UNSIGNED_SHORT;
+			numChannels = 3;
 		}
 		break;
 
@@ -456,6 +468,7 @@ GXVoid GXTexture::InitResources ( GXUShort width, GXUShort height, GLint interna
 			unpackAlignment = 4;
 			format = GL_RGBA;
 			type = GL_UNSIGNED_BYTE;
+			numChannels = 4;
 		}
 		break;
 
@@ -464,6 +477,7 @@ GXVoid GXTexture::InitResources ( GXUShort width, GXUShort height, GLint interna
 			unpackAlignment = 4;
 			format = GL_RGBA;
 			type = GL_HALF_FLOAT;
+			numChannels = 4;
 		}
 		break;
 
@@ -472,6 +486,7 @@ GXVoid GXTexture::InitResources ( GXUShort width, GXUShort height, GLint interna
 			unpackAlignment = 4;
 			format = GL_DEPTH_STENCIL;
 			type = GL_UNSIGNED_INT_24_8;
+			numChannels = 1;
 		}
 		break;
 

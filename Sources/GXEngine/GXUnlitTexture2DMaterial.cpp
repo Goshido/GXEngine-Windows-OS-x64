@@ -55,7 +55,7 @@ GXUnlitTexture2DMaterial::~GXUnlitTexture2DMaterial ()
 	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 }
 
-GXVoid GXUnlitTexture2DMaterial::Bind ( const GXTransform &transfrom ) const
+GXVoid GXUnlitTexture2DMaterial::Bind ( const GXTransform &transfrom )
 {
 	if ( !texture ) return;
 
@@ -70,7 +70,7 @@ GXVoid GXUnlitTexture2DMaterial::Bind ( const GXTransform &transfrom ) const
 	texture->Bind ( TEXTURE_SLOT );
 }
 
-GXVoid GXUnlitTexture2DMaterial::Unbind () const
+GXVoid GXUnlitTexture2DMaterial::Unbind ()
 {
 	if ( !texture ) return;
 

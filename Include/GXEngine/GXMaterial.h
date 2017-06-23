@@ -17,8 +17,8 @@ class GXMaterial
 		GXMaterial ();
 		virtual ~GXMaterial ();
 
-		virtual GXVoid Bind ( const GXTransform &transform ) const = 0;
-		virtual GXVoid Unbind () const = 0;
+		virtual GXVoid Bind ( const GXTransform &transform ) = 0;
+		virtual GXVoid Unbind () = 0;
 };
 
 

@@ -29,6 +29,11 @@
 #define DEFAULT_MOTION_BLUR_DEPTH_LIMIT			0.1f
 #define DEFAULT_MOTION_BLUR_EXPLOSURE			0.03f
 
+#define DEFAULT_SSAO_MAX_CHECK_RADIUS			0.15f
+#define DEFAULT_SSAO_SAMPLES					16
+#define DEFAULT_SSAO_NOISE_TEXTURE_RESOLUTION	4
+#define DEFAULT_SSAO_MAX_DISTANCE				1000.0f
+
 #define CLEAR_DIFFUSE_R							0.0f
 #define CLEAR_DIFFUSE_G							0.0f
 #define CLEAR_DIFFUSE_B							0.0f
@@ -84,6 +89,21 @@ EMRenderer::~EMRenderer ()
 	glDeleteFramebuffers ( 1, &fbo );
 
 	delete &( EMUIMotionBlurSettings::GetInstance () );
+
+	diffuseTexture.FreeResources ();
+	normalTexture.FreeResources ();
+	specularTexture.FreeResources ();
+	emissionTexture.FreeResources ();
+	velocityBlurTexture.FreeResources ();
+	velocityTileMaxTexture.FreeResources ();
+	velocityNeighborMaxTexture.FreeResources ();
+	ssaoOmegaTexture.FreeResources ();
+	ssaoYottaTexture.FreeResources ();
+	objectTextures[ 0 ].FreeResources ();
+	objectTextures[ 1 ].FreeResources ();
+	depthStencilTexture.FreeResources ();
+	omegaTexture.FreeResources ();
+	yottaTexture.FreeResources ();
 
 	instance = nullptr;
 }
@@ -165,7 +185,7 @@ GXVoid EMRenderer::StartCommonPass ()
 GXVoid EMRenderer::StartLightPass ()
 {
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, outTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, omegaTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
@@ -201,7 +221,7 @@ GXVoid EMRenderer::StartLightPass ()
 GXVoid EMRenderer::StartHudColorPass ()
 {
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, motionBlurredTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, omegaTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
@@ -279,6 +299,80 @@ GXVoid EMRenderer::SetObjectMask ( GXUPointer object )
 	glVertexAttrib4Nub ( EM_OBJECT_LOW_INDEX, objectMask[ 4 ], objectMask[ 5 ], objectMask[ 6 ], objectMask[ 7 ] );
 }
 
+GXVoid EMRenderer::ApplySSAO ()
+{
+	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, ssaoOmegaTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
+
+	static const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers ( 1, buffers );
+
+	glColorMask ( GL_TRUE, GL_FALSE, GL_FALSE, GL_FALSE );
+	glDepthMask ( GL_FALSE );
+	glStencilMask ( 0x00 );
+
+	glDisable ( GL_BLEND );
+	glDisable ( GL_DEPTH_TEST );
+	glDisable ( GL_CULL_FACE );
+
+	glViewport ( 0, 0, (GLsizei)ssaoOmegaTexture.GetWidth (), (GLsizei)ssaoOmegaTexture.GetHeight () );
+
+	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+	if ( status != GL_FRAMEBUFFER_COMPLETE )
+		GXLogW ( L"EMRenderer::ApplySSAO::Error - Что-то не так с FBO на первом проходе (ошибка 0x%08x)\n", status );
+
+	const GXTransform& nullTransform = GXTransform::GetNullTransform ();
+
+	ssaoSharpMaterial.Bind ( nullTransform );
+	screenQuadMesh.Render ();
+	ssaoSharpMaterial.Unbind ();
+/*
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, ssaoYottaTexture.GetTextureObject (), 0 );
+
+	status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+	if ( status != GL_FRAMEBUFFER_COMPLETE )
+		GXLogW ( L"EMRenderer::ApplySSAO::Error - Что-то не так с FBO на втором проходе (ошибка 0x%08x)\n", status );
+
+	gaussHorizontalBlurMaterial.SetImageTexture ( ssaoOmegaTexture );
+	gaussHorizontalBlurMaterial.Bind ( nullTransform );
+	screenQuadMesh.Render ();
+	gaussHorizontalBlurMaterial.Unbind ();
+
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, ssaoOmegaTexture.GetTextureObject (), 0 );
+
+	status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+	if ( status != GL_FRAMEBUFFER_COMPLETE )
+		GXLogW ( L"EMRenderer::ApplySSAO::Error - Что-то не так с FBO на третьем проходе (ошибка 0x%08x)\n", status );
+
+	gaussHorizontalBlurMaterial.SetImageTexture ( ssaoYottaTexture );
+	gaussVerticalBlurMaterial.Bind ( nullTransform );
+	screenQuadMesh.Render ();
+	gaussVerticalBlurMaterial.Unbind ();
+*/
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, omegaTexture.GetTextureObject (), 0 );
+	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
+	static const GXFloat clearColor[ 4 ] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glClearBufferfv ( GL_COLOR, 0, clearColor );
+
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, yottaTexture.GetTextureObject (), 0 );
+	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
+
+	status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+	if ( status != GL_FRAMEBUFFER_COMPLETE )
+		GXLogW ( L"EMRenderer::ApplySSAO::Error - Что-то не так с FBO на четвёртом проходе (ошибка 0x%08x)\n", status );
+
+	ssaoApplyMaterial.Bind ( nullTransform );
+	screenQuadMesh.Render ();
+	ssaoApplyMaterial.Unbind ();
+}
+
 GXVoid EMRenderer::ApplyMotionBlur ( GXFloat deltaTime )
 {
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
@@ -312,27 +406,7 @@ GXVoid EMRenderer::ApplyMotionBlur ( GXFloat deltaTime )
 	screenQuadMesh.Render ();
 	velocityTileMaxMaterial.Unbind ();
 
-	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, velocityNeighborMaxTexture.GetTextureObject (), 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
-
-	glDrawBuffers ( 1, buffers );
-
-	glColorMask ( GL_TRUE, GL_TRUE, GL_FALSE, GL_FALSE );
-	glDepthMask ( GL_FALSE );
-	glStencilMask ( 0x00 );
-
-	glDisable ( GL_BLEND );
-	glDisable ( GL_DEPTH_TEST );
-	glDisable ( GL_CULL_FACE );
-
-	glViewport ( 0, 0, (GLsizei)velocityNeighborMaxTexture.GetWidth (), (GLsizei)velocityNeighborMaxTexture.GetHeight () );
 
 	status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
@@ -342,31 +416,13 @@ GXVoid EMRenderer::ApplyMotionBlur ( GXFloat deltaTime )
 	screenQuadMesh.Render ();
 	velocityNeighborMaxMaterial.Unbind ();
 
-	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, motionBlurredTexture.GetTextureObject (), 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
-
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, omegaTexture.GetTextureObject (), 0 );
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
-	glDepthMask ( GL_FALSE );
-	glStencilMask ( 0x00 );
-
-	glViewport ( 0, 0, (GLsizei)motionBlurredTexture.GetWidth (), (GLsizei)motionBlurredTexture.GetHeight () );
-
-	glDrawBuffers ( 1, buffers );
+	glViewport ( 0, 0, (GLsizei)omegaTexture.GetWidth (), (GLsizei)omegaTexture.GetHeight () );
 
 	status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::ApplyMotionBlur::Error - Что-то не так с FBO на третьем проходе (ошибка 0x%08x)\n", status );
-
-	glDisable ( GL_BLEND );
-	glDisable ( GL_DEPTH_TEST );
-	glDisable ( GL_CULL_FACE );
 
 	motionBlurMaterial.Bind ( GXTransform::GetNullTransform () );
 	screenQuadMesh.Render ();
@@ -395,7 +451,7 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 	GXRenderer& renderer = GXRenderer::GetInstance ();
 	glViewport ( 0, 0, renderer.GetWidth (), renderer.GetHeight () );
 
-	unlitMaterial.SetTexture ( motionBlurredTexture );
+	unlitMaterial.SetTexture ( omegaTexture );
 	unlitMaterial.SetColor ( 255, 255, 255, 255 );
 	unlitMaterial.Bind ( screenQuadMesh );
 
@@ -445,8 +501,12 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 			texture = &depthStencilTexture;
 		break;
 
+		case eEMRenderTarget::SSAO:
+			texture = &ssaoOmegaTexture;
+		break;
+
 		case eEMRenderTarget::Combine:
-			texture = &motionBlurredTexture;
+			texture = &omegaTexture;
 		break;
 	}
 
@@ -477,7 +537,7 @@ GXVoid EMRenderer::GetObject ( GXUShort x, GXUShort y )
 
 GXVoid EMRenderer::SetMaximumMotionBlurSamples ( GXUByte samples )
 {
-	if ( maxMotionBlurSamples == samples ) return;
+	if ( motionBlurMaterial.GetMaxBlurSamples () == samples ) return;
 
 	newMaxMotionBlurSamples = samples;
 	isMotionBlurSettingsChanged = GX_TRUE;
@@ -485,12 +545,12 @@ GXVoid EMRenderer::SetMaximumMotionBlurSamples ( GXUByte samples )
 
 GXUByte EMRenderer::GetMaximumMotionBlurSamples () const
 {
-	return maxMotionBlurSamples;
+	return motionBlurMaterial.GetMaxBlurSamples ();
 }
 
 GXVoid EMRenderer::SetMotionBlurDepthLimit ( GXFloat meters )
 {
-	if ( motionBlurDepthLimit == meters ) return;
+	if ( motionBlurMaterial.GetDepthLimit () == meters ) return;
 
 	newMotionBlurDepthLimit = meters;
 	isMotionBlurSettingsChanged = GX_TRUE;
@@ -498,7 +558,7 @@ GXVoid EMRenderer::SetMotionBlurDepthLimit ( GXFloat meters )
 
 GXFloat EMRenderer::GetMotionBlurDepthLimit () const
 {
-	return motionBlurDepthLimit;
+	return motionBlurMaterial.GetDepthLimit ();
 }
 
 GXVoid EMRenderer::SetMotionBlurExposure ( GXFloat seconds )
@@ -514,6 +574,58 @@ GXFloat EMRenderer::GetMotionBlurExplosure () const
 	return motionBlurExposure;
 }
 
+GXVoid EMRenderer::SetSSAOMaximumCheckRadius ( GXFloat meters )
+{
+	if ( ssaoSharpMaterial.GetMaximumCheckRadius () == meters ) return;
+
+	newSSAOMaxCheckRadius = meters;
+	isSSAOSettingsChanged = GX_TRUE;
+}
+
+GXFloat EMRenderer::GetSSAOMaximumCheckRadius () const
+{
+	return ssaoSharpMaterial.GetMaximumCheckRadius ();
+}
+
+GXVoid EMRenderer::SetSSAOSampleNumber ( GXUByte samples )
+{
+	if ( ssaoSharpMaterial.GetSampleNumber () == samples ) return;
+
+	newSSAOSamples = samples;
+	isSSAOSettingsChanged = GX_TRUE;
+}
+
+GXUByte EMRenderer::GetSSAOSampleNumber () const
+{
+	return ssaoSharpMaterial.GetSampleNumber ();
+}
+
+GXVoid EMRenderer::SetSSAONoiseTextureResolution ( GXUShort resolution )
+{
+	if ( ssaoSharpMaterial.GetNoiseTextureResolution () == resolution ) return;
+
+	newSSAONoiseTextureResolution = resolution;
+	isSSAOSettingsChanged = GX_TRUE;
+}
+
+GXUShort EMRenderer::GetSSAONoiseTextureResolution () const
+{
+	return ssaoSharpMaterial.GetNoiseTextureResolution ();
+}
+
+GXVoid EMRenderer::SetSSAOMaximumDistance ( GXFloat meters )
+{
+	if ( ssaoSharpMaterial.GetMaximumDistance () == meters ) return;
+
+	newSSAOMaxDistance = meters;
+	isSSAOSettingsChanged = GX_TRUE;
+}
+
+GXFloat EMRenderer::GetSSAOSSAOMaximumDistance () const
+{
+	return ssaoSharpMaterial.GetMaximumDistance ();
+}
+
 EMRenderer& EMRenderer::GetInstance ()
 {
 	if ( !instance )
@@ -523,20 +635,41 @@ EMRenderer& EMRenderer::GetInstance ()
 }
 
 EMRenderer::EMRenderer ():
-screenQuadMesh( L"3D Models/System/ScreenQuad.stm" )
+screenQuadMesh( L"3D Models/System/ScreenQuad.stm" ), gaussHorizontalBlurMaterial ( eEMGaussHorizontalBlurKernelType::ONE_CHANNEL_FIVE_PIXEL_KERNEL ), gaussVerticalBlurMaterial ( eEMGaussVerticalBlurKernelType::ONE_CHANNEL_FIVE_PIXEL_KERNEL )
 {
 	memset ( objectMask, 0, 8 * sizeof ( GXUByte ) );
 	mouseX = mouseY = -1;
 	OnObject = nullptr;
 
-	maxMotionBlurSamples = newMaxMotionBlurSamples = DEFAULT_MAX_MOTION_BLUR_SAMPLES;
-	motionBlurDepthLimit = newMotionBlurDepthLimit = DEFAULT_MOTION_BLUR_DEPTH_LIMIT;
+	newMaxMotionBlurSamples = DEFAULT_MAX_MOTION_BLUR_SAMPLES;
+	newMotionBlurDepthLimit = DEFAULT_MOTION_BLUR_DEPTH_LIMIT;
 	motionBlurExposure = newMotionBlurExposure = DEFAULT_MOTION_BLUR_EXPLOSURE;
 	isMotionBlurSettingsChanged = GX_FALSE;
 
+	newSSAOMaxCheckRadius = DEFAULT_SSAO_MAX_CHECK_RADIUS;
+	newSSAOSamples = DEFAULT_SSAO_SAMPLES;
+	newSSAONoiseTextureResolution = DEFAULT_SSAO_NOISE_TEXTURE_RESOLUTION;
+	newSSAOMaxDistance = DEFAULT_SSAO_MAX_DISTANCE;
+	isSSAOSettingsChanged = GX_FALSE;
+
+	GXRenderer& renderer = GXRenderer::GetInstance ();
+	GXUShort width = (GXUShort)renderer.GetWidth ();
+	GXUShort height = (GXUShort)renderer.GetHeight ();
+
+	velocityTileMaxMaterial.SetMaxBlurSamples ( newMaxMotionBlurSamples );
+	velocityTileMaxMaterial.SetScreenResolution ( width, height );
+
+	motionBlurMaterial.SetMaxBlurSamples ( newMaxMotionBlurSamples );
+	motionBlurMaterial.SetScreenResolution ( width, height );
+	motionBlurMaterial.SetDepthLimit ( newMotionBlurDepthLimit );
+
+	ssaoSharpMaterial.SetMaximumCheckRadius ( newSSAOMaxCheckRadius );
+	ssaoSharpMaterial.SetSampleNumber ( newSSAOSamples );
+	ssaoSharpMaterial.SetNoiseTextureResolution ( newSSAONoiseTextureResolution );
+	ssaoSharpMaterial.SetMaximumDistance ( newSSAOMaxDistance );
+
 	CreateFBO ();
 
-	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
 	outCamera.SetProjection ( CVV_WIDTH, CVV_HEIGHT, Z_NEAR, Z_FAR );
 	screenQuadMesh.SetLocation ( 0.0f, 0.0f, Z_RENDER );
 
@@ -547,8 +680,6 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" )
 	directedLightMaterial.SetDepthTexture ( depthStencilTexture );
 
 	velocityTileMaxMaterial.SetVelocityBlurTexture ( velocityBlurTexture );
-	velocityTileMaxMaterial.SetMaxBlurSamples ( maxMotionBlurSamples );
-	velocityTileMaxMaterial.SetScreenResolution ( (GXUShort)coreRenderer.GetWidth (), (GXUShort)coreRenderer.GetHeight () );
 
 	velocityNeighborMaxMaterial.SetVelocityTileMaxTexture ( velocityTileMaxTexture );
 	velocityNeighborMaxMaterial.SetVelocityTileMaxTextureResolution ( velocityTileMaxTexture.GetWidth (), velocityTileMaxTexture.GetHeight () );
@@ -556,10 +687,13 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" )
 	motionBlurMaterial.SetVelocityNeighborMaxTexture ( velocityNeighborMaxTexture );
 	motionBlurMaterial.SetVelocityTexture ( velocityBlurTexture );
 	motionBlurMaterial.SetDepthTexture ( depthStencilTexture );
-	motionBlurMaterial.SetImageTexture ( outTexture );
-	motionBlurMaterial.SetMaxBlurSamples ( maxMotionBlurSamples );
-	motionBlurMaterial.SetScreenResolution ( outTexture.GetWidth (), outTexture.GetHeight () );
-	motionBlurMaterial.SetDepthLimit ( motionBlurExposure );
+	motionBlurMaterial.SetImageTexture ( yottaTexture );
+
+	ssaoSharpMaterial.SetDepthTexture ( depthStencilTexture );
+	ssaoSharpMaterial.SetNormalTexture ( normalTexture );
+
+	ssaoApplyMaterial.SetSSAOTexture ( ssaoOmegaTexture );
+	ssaoApplyMaterial.SetImageTexture ( omegaTexture );
 
 	SetObjectMask ( (GXUPointer)nullptr );
 
@@ -577,14 +711,17 @@ GXVoid EMRenderer::CreateFBO ()
 	specularTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	emissionTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	velocityBlurTexture.InitResources ( width, height, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	ssaoOmegaTexture.InitResources ( width, height, GL_R8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	ssaoYottaTexture.InitResources ( width, height, GL_R8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	objectTextures[ 0 ].InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	objectTextures[ 1 ].InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	depthStencilTexture.InitResources ( width, height, GL_DEPTH24_STENCIL8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	outTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	motionBlurredTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	omegaTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	yottaTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
 
-	GXUShort w = width / (GXUShort)maxMotionBlurSamples;
-	GXUShort h = height / (GXUShort)maxMotionBlurSamples;
+	GXUShort maxSamples = (GXUShort)motionBlurMaterial.GetMaxBlurSamples ();
+	GXUShort w = width / maxSamples;
+	GXUShort h = height / maxSamples;
 	velocityTileMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	velocityNeighborMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
 
@@ -613,7 +750,7 @@ GXVoid EMRenderer::CreateFBO ()
 
 GXVoid EMRenderer::UpdateMotionBlurSettings ()
 {
-	if ( newMaxMotionBlurSamples != maxMotionBlurSamples )
+	if ( newMaxMotionBlurSamples != motionBlurMaterial.GetMaxBlurSamples () )
 	{
 		velocityTileMaxTexture.FreeResources ();
 		velocityNeighborMaxTexture.FreeResources ();
@@ -630,20 +767,34 @@ GXVoid EMRenderer::UpdateMotionBlurSettings ()
 		velocityTileMaxMaterial.SetMaxBlurSamples ( newMaxMotionBlurSamples );
 		velocityNeighborMaxMaterial.SetVelocityTileMaxTextureResolution ( velocityTileMaxTexture.GetWidth (), velocityTileMaxTexture.GetHeight () );
 		motionBlurMaterial.SetMaxBlurSamples ( newMaxMotionBlurSamples );
-
-		maxMotionBlurSamples = newMaxMotionBlurSamples;
 	}
 
-	if ( newMotionBlurDepthLimit != motionBlurDepthLimit )
+	if ( newMotionBlurDepthLimit != motionBlurMaterial.GetDepthLimit () )
 	{
 		motionBlurMaterial.SetDepthLimit ( newMotionBlurDepthLimit );
-		motionBlurDepthLimit = newMotionBlurDepthLimit;
 	}
 
 	if ( newMotionBlurExposure != motionBlurExposure )
 		motionBlurExposure = newMotionBlurExposure;
 
 	isMotionBlurSettingsChanged = GX_FALSE;
+}
+
+GXVoid EMRenderer::UpdateSSAOSettings ()
+{
+	if ( newSSAOMaxCheckRadius != ssaoSharpMaterial.GetMaximumCheckRadius () )
+		ssaoSharpMaterial.SetMaximumCheckRadius ( newSSAOMaxCheckRadius );
+
+	if ( newSSAOSamples != ssaoSharpMaterial.GetSampleNumber () )
+		ssaoSharpMaterial.SetSampleNumber ( newSSAOSamples );
+
+	if ( newSSAONoiseTextureResolution != ssaoSharpMaterial.GetNoiseTextureResolution () )
+		ssaoSharpMaterial.SetNoiseTextureResolution ( newSSAONoiseTextureResolution );
+
+	if ( newSSAOMaxDistance != ssaoSharpMaterial.GetMaximumDistance () )
+		ssaoSharpMaterial.SetMaximumDistance ( newSSAOMaxDistance );
+
+	isSSAOSettingsChanged = GX_FALSE;
 }
 
 GXVoid EMRenderer::LightUp ()

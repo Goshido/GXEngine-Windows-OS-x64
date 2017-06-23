@@ -49,8 +49,8 @@ class EMBlinnPhongCommonPassMaterial : public GXMaterial
 		EMBlinnPhongCommonPassMaterial ();
 		~EMBlinnPhongCommonPassMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) const override;
-		GXVoid Unbind () const override;
+		GXVoid Bind ( const GXTransform &transform ) override;
+		GXVoid Unbind () override;
 
 		GXVoid SetDiffuseTexture ( GXTexture &texture );
 		GXVoid SetDiffuseTextureScale ( GXFloat x, GXFloat y );

@@ -170,6 +170,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	renderer.StartLightPass ();
 
+	renderer.ApplySSAO ();
 	renderer.ApplyMotionBlur ( deltaTime );
 
 	renderer.StartHudColorPass ();

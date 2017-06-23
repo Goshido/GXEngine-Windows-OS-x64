@@ -19,8 +19,8 @@ class GXUnlitColorMaterial : public GXMaterial
 		GXUnlitColorMaterial ();
 		~GXUnlitColorMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) const;
-		GXVoid Unbind () const;
+		GXVoid Bind ( const GXTransform &transform ) override;
+		GXVoid Unbind () override;
 
 		GXVoid SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
 		GXVoid SetColor ( const GXVec4 &color );

@@ -34,7 +34,7 @@ GXSkinningMaterial::~GXSkinningMaterial ()
 	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 }
 
-GXVoid GXSkinningMaterial::Bind ( const GXTransform& /*transform*/ ) const
+GXVoid GXSkinningMaterial::Bind ( const GXTransform& /*transform*/ )
 {
 	if ( !skeleton ) return;
 
@@ -43,7 +43,7 @@ GXVoid GXSkinningMaterial::Bind ( const GXTransform& /*transform*/ ) const
 	glUniform1fv ( bonesLocation, floats, (const GLfloat*)skeleton->GetPose () );
 }
 
-GXVoid GXSkinningMaterial::Unbind () const
+GXVoid GXSkinningMaterial::Unbind ()
 {
 	if ( !skeleton ) return;
 	glUseProgram ( 0 );

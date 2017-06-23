@@ -39,7 +39,7 @@ EMVelocityNeighborMaxMaterial::~EMVelocityNeighborMaxMaterial ()
 	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 }
 
-GXVoid EMVelocityNeighborMaxMaterial::Bind ( const GXTransform& /*transform*/ ) const
+GXVoid EMVelocityNeighborMaxMaterial::Bind ( const GXTransform& /*transform*/ )
 {
 	if ( !velocityTileMaxTexture ) return;
 
@@ -48,7 +48,7 @@ GXVoid EMVelocityNeighborMaxMaterial::Bind ( const GXTransform& /*transform*/ ) 
 	velocityTileMaxTexture->Bind ( VELOCITY_TILE_MAX_SLOT );
 }
 
-GXVoid EMVelocityNeighborMaxMaterial::Unbind () const
+GXVoid EMVelocityNeighborMaxMaterial::Unbind ()
 {
 	if ( !velocityTileMaxTexture ) return;
 

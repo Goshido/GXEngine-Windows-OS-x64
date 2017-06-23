@@ -22,8 +22,8 @@ class GXUnlitColorMaskMaterial : public GXMaterial
 		GXUnlitColorMaskMaterial ();
 		~GXUnlitColorMaskMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) const override;
-		GXVoid Unbind () const override;
+		GXVoid Bind ( const GXTransform &transform ) override;
+		GXVoid Unbind () override;
 
 		GXVoid SetMaskTexture ( GXTexture &texture );
 		GXVoid SetMaskScale ( GXFloat x, GXFloat y );

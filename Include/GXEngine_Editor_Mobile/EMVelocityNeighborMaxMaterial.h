@@ -18,8 +18,8 @@ class EMVelocityNeighborMaxMaterial : public GXMaterial
 		EMVelocityNeighborMaxMaterial ();
 		~EMVelocityNeighborMaxMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) const override;
-		GXVoid Unbind () const override;
+		GXVoid Bind ( const GXTransform &transform ) override;
+		GXVoid Unbind () override;
 
 		GXVoid SetVelocityTileMaxTexture ( GXTexture &texture );
 		GXVoid SetVelocityTileMaxTextureResolution ( GXUShort width, GXUShort height );

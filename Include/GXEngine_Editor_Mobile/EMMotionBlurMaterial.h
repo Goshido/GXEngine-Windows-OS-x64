@@ -10,6 +10,7 @@ class EMMotionBlurMaterial : public GXMaterial
 		GXTexture*			depthTexture;
 		GXTexture*			imageTexture;
 
+		GXFloat				depthLimit;
 		GXFloat				inverseDepthLimit;
 		GLint				inverseDepthLimitLocation;
 
@@ -25,15 +26,19 @@ class EMMotionBlurMaterial : public GXMaterial
 		EMMotionBlurMaterial ();
 		~EMMotionBlurMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) const override;
-		GXVoid Unbind () const override;
+		GXVoid Bind ( const GXTransform &transform ) override;
+		GXVoid Unbind () override;
 
 		GXVoid SetVelocityNeighborMaxTexture ( GXTexture &texture );
 		GXVoid SetVelocityTexture ( GXTexture &texture );
 		GXVoid SetDepthTexture ( GXTexture &texture );
 		GXVoid SetImageTexture ( GXTexture &texture );
 
-		GXVoid SetDepthLimit ( GXFloat limit );
-		GXVoid SetMaxBlurSamples ( GXUByte maxSamples );
+		GXVoid SetDepthLimit ( GXFloat meters );
+		GXFloat GetDepthLimit () const;
+
+		GXVoid SetMaxBlurSamples ( GXUByte samples );
+		GXUByte GetMaxBlurSamples () const;
+
 		GXVoid SetScreenResolution ( GXUShort width, GXUShort height );
 };

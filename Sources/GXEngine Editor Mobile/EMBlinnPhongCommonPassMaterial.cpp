@@ -113,7 +113,7 @@ EMBlinnPhongCommonPassMaterial::~EMBlinnPhongCommonPassMaterial ()
 	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 }
 
-GXVoid EMBlinnPhongCommonPassMaterial::Bind ( const GXTransform &transform ) const
+GXVoid EMBlinnPhongCommonPassMaterial::Bind ( const GXTransform &transform )
 {
 	if ( !diffuseTexture || !normalTexture || !specularTexture || !emissionTexture ) return;
 
@@ -170,7 +170,7 @@ GXVoid EMBlinnPhongCommonPassMaterial::Bind ( const GXTransform &transform ) con
 	glUniform4fv ( emissionTextureScaleOffsetLocation, 1, emissionTextureScaleOffset.arr );
 }
 
-GXVoid EMBlinnPhongCommonPassMaterial::Unbind () const
+GXVoid EMBlinnPhongCommonPassMaterial::Unbind ()
 {
 	if ( !diffuseTexture || !normalTexture || !specularTexture || !emissionTexture ) return;
 

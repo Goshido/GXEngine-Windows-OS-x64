@@ -1,11 +1,14 @@
 #version 330 core
 
 
+#define COLOR_SLOT		0
+
+
 in vec2 v_uv;
 
 uniform sampler2D	imageSampler;
 
-layout ( location = 0 ) out vec4 fragColor;
+layout ( location = COLOR_SLOT ) out vec4 fragColor;
 
 
 void main ()

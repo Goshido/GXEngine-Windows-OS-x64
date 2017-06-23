@@ -1,4 +1,4 @@
-//version 1.30
+//version 1.31
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
@@ -34,10 +34,22 @@ GXVec2 GXCALL GXCreateVec2 ( GXFloat component_1, GXFloat component_2 )
 	return ans;
 }
 
+GXVoid GXCALL GXNormalizeVec2 ( GXVec2 &inOut )
+{
+	GXFloat invA = 1.0f / sqrtf ( inOut.x * inOut.x + inOut.y * inOut.y );
+	inOut.x *= invA;
+	inOut.y *= invA;
+}
+
 GXVoid GXCALL GXSubVec2Vec2 ( GXVec2 &out, const GXVec2 &a, const GXVec2 &b )
 {
 	out.x = a.x - b.x;
 	out.y = a.y - b.y;
+}
+
+GXFloat GXCALL GXLengthVec2 ( const GXVec2 &v )
+{
+	return sqrtf ( v.x * v.x + v.y * v.y );
 }
 
 //------------------------------------------------------------------------------------------------

@@ -40,7 +40,7 @@ GXUnlitColorMaterial::~GXUnlitColorMaterial ()
 	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 }
 
-GXVoid GXUnlitColorMaterial::Bind ( const GXTransform &transform ) const
+GXVoid GXUnlitColorMaterial::Bind ( const GXTransform &transform )
 {
 	glUseProgram ( shaderProgram.GetProgram () );
 
@@ -51,7 +51,7 @@ GXVoid GXUnlitColorMaterial::Bind ( const GXTransform &transform ) const
 	glUniform4fv ( colorLocation, 1, color.arr );
 }
 
-GXVoid GXUnlitColorMaterial::Unbind () const
+GXVoid GXUnlitColorMaterial::Unbind ()
 {
 	glUseProgram ( 0 );
 }

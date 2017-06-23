@@ -54,7 +54,7 @@ GXUnlitColorMaskMaterial::~GXUnlitColorMaskMaterial ()
 	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 }
 
-GXVoid GXUnlitColorMaskMaterial::Bind ( const GXTransform &transform ) const
+GXVoid GXUnlitColorMaskMaterial::Bind ( const GXTransform &transform )
 {
 	if ( !mask ) return;
 
@@ -70,7 +70,7 @@ GXVoid GXUnlitColorMaskMaterial::Bind ( const GXTransform &transform ) const
 	mask->Bind ( MASK_SLOT );
 }
 
-GXVoid GXUnlitColorMaskMaterial::Unbind () const
+GXVoid GXUnlitColorMaskMaterial::Unbind ()
 {
 	if ( !mask ) return;
 

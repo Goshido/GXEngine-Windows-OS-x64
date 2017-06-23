@@ -21,8 +21,8 @@ class EMVelocityTileMaxMaterial : public GXMaterial
 		EMVelocityTileMaxMaterial ();
 		~EMVelocityTileMaxMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) const override;
-		GXVoid Unbind () const override;
+		GXVoid Bind ( const GXTransform &transform ) override;
+		GXVoid Unbind () override;
 
 		GXVoid SetVelocityBlurTexture ( GXTexture &texture );
 		GXVoid SetMaxBlurSamples ( GXUByte maxSamples );

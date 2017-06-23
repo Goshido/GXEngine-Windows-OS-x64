@@ -381,6 +381,18 @@
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIMotionBlurSettings.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMSSAOSharpMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMGaussHorizontalBlurMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMGaussVerticalBlurMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMSSAOApplyMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -812,6 +824,18 @@
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIMotionBlurSettings.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMSSAOSharpMaterial.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMGaussHorizontalBlurMaterial.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMGaussVerticalBlurMaterial.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMSSAOApplyMaterial.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="..\..\Sources\GXEngine\GXRecource.res">
@@ -958,6 +982,18 @@
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\VelocityNeighborMax_fs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\GaussHorizontalBlurOneChannelFivePixelKernel_fs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\GaussVerticalBlurOneChannelFivePixelKernel_fs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\SSAOSharp_fs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\SSAOApply_fs.txt">
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
   </ItemGroup>

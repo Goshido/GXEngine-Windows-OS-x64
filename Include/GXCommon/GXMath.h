@@ -1,4 +1,4 @@
-//version 1.30
+//version 1.31
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -35,7 +35,9 @@ union GXVec2
 };
 
 GXVec2 GXCALL GXCreateVec2 ( GXFloat component_1, GXFloat component_2 );
+GXVoid GXCALL GXNormalizeVec2 ( GXVec2 &inOut );
 GXVoid GXCALL GXSubVec2Vec2 ( GXVec2 &out, const GXVec2 &a, const GXVec2 &b );
+GXFloat GXCALL GXLengthVec2 ( const GXVec2 &v );
 
 //-------------------------------------------------------------
 

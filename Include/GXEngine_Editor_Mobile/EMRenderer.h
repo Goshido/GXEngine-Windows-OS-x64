@@ -8,6 +8,10 @@
 #include "EMVelocityTileMaxMaterial.h"
 #include "EMVelocityNeighborMaxMaterial.h"
 #include "EMMotionBlurMaterial.h"
+#include "EMGaussHorizontalBlurMaterial.h"
+#include "EMGaussVerticalBlurMaterial.h"
+#include "EMSSAOSharpMaterial.h"
+#include "EMSSAOApplyMaterial.h"
 #include <GXEngine/GXUnlitTexture2DMaterial.h>
 #include <GXEngine/GXCameraOrthographic.h>
 
@@ -24,6 +28,7 @@ enum class eEMRenderTarget
 	VelocityTileMax,
 	VelocityNeighborMax,
 	Depth,
+	SSAO,
 	Combine
 };
 
@@ -37,21 +42,29 @@ class EMRenderer
 		GXTexture							velocityBlurTexture;
 		GXTexture							velocityTileMaxTexture;
 		GXTexture							velocityNeighborMaxTexture;
+		GXTexture							ssaoOmegaTexture;
+		GXTexture							ssaoYottaTexture;
 		GXTexture							objectTextures[ 2 ];
 		GXTexture							depthStencilTexture;
-		GXTexture							outTexture;
-		GXTexture							motionBlurredTexture;
+		GXTexture							omegaTexture;
+		GXTexture							yottaTexture;
 
 		GLuint								fbo;
 
 		GXUByte								objectMask[ 8 ];
 
 		EMMesh								screenQuadMesh;
+
 		EMBlinnPhongDirectedLightMaterial	directedLightMaterial;
 		EMVelocityTileMaxMaterial			velocityTileMaxMaterial;
 		EMVelocityNeighborMaxMaterial		velocityNeighborMaxMaterial;
 		EMMotionBlurMaterial				motionBlurMaterial;
+		EMGaussHorizontalBlurMaterial		gaussHorizontalBlurMaterial;
+		EMGaussVerticalBlurMaterial			gaussVerticalBlurMaterial;
+		EMSSAOSharpMaterial					ssaoSharpMaterial;
+		EMSSAOApplyMaterial					ssaoApplyMaterial;
 		GXUnlitTexture2DMaterial			unlitMaterial;
+
 		GXCameraOrthographic				outCamera;
 
 		GXInt								mouseX;
@@ -59,12 +72,16 @@ class EMRenderer
 		PFNEMRENDERERONOBJECTPROC			OnObject;
 
 		GXBool								isMotionBlurSettingsChanged;
-		GXUByte								maxMotionBlurSamples;
 		GXUByte								newMaxMotionBlurSamples;
-		GXFloat								motionBlurDepthLimit;
 		GXFloat								newMotionBlurDepthLimit;
 		GXFloat								motionBlurExposure;
 		GXFloat								newMotionBlurExposure;
+
+		GXBool								isSSAOSettingsChanged;
+		GXFloat								newSSAOMaxCheckRadius;
+		GXUByte								newSSAOSamples;
+		GXUShort							newSSAONoiseTextureResolution;
+		GXFloat								newSSAOMaxDistance;
 
 		static EMRenderer*					instance;
 
@@ -78,7 +95,9 @@ class EMRenderer
 
 		GXVoid SetObjectMask ( GXUPointer object );
 
+		GXVoid ApplySSAO ();
 		GXVoid ApplyMotionBlur ( GXFloat deltaTime );
+
 		GXVoid PresentFrame ( eEMRenderTarget target );
 
 		GXVoid SetOnObjectCallback ( PFNEMRENDERERONOBJECTPROC callback );
@@ -93,13 +112,27 @@ class EMRenderer
 		GXVoid SetMotionBlurExposure ( GXFloat seconds );
 		GXFloat GetMotionBlurExplosure () const;
 
+		GXVoid SetSSAOMaximumCheckRadius ( GXFloat meters );
+		GXFloat GetSSAOMaximumCheckRadius () const;
+
+		GXVoid SetSSAOSampleNumber ( GXUByte samples );
+		GXUByte GetSSAOSampleNumber () const;
+
+		GXVoid SetSSAONoiseTextureResolution ( GXUShort resolution );
+		GXUShort GetSSAONoiseTextureResolution () const;
+
+		GXVoid SetSSAOMaximumDistance ( GXFloat meters );
+		GXFloat GetSSAOSSAOMaximumDistance () const;
+
 		static EMRenderer& GXCALL GetInstance ();
 
 	private:
 		EMRenderer ();
 
 		GXVoid CreateFBO ();
+
 		GXVoid UpdateMotionBlurSettings ();
+		GXVoid UpdateSSAOSettings ();
 
 		GXVoid LightUp ();
 		GXVoid LightUpByDirected ( EMDirectedLight* light );

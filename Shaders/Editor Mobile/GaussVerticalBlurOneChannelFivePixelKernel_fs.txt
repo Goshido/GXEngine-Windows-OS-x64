@@ -1,0 +1,29 @@
+#version 330 core
+
+
+#define COLOR_SLOT		0
+
+
+in vec2	v_uv;
+
+uniform sampler2D imageSampler;
+
+layout ( location = COLOR_SLOT ) out float color;
+
+
+void main ()
+{
+	float sum = 0.05 * textureOffset ( imageSampler, v_uv, ivec2 ( 0, -4 ) ).r;
+	sum += 0.09 * textureOffset ( imageSampler, v_uv, ivec2 ( 0, -3 ) ).r;
+	sum += 0.12 * textureOffset ( imageSampler, v_uv, ivec2 ( 0, -2 ) ).r;
+	sum += 0.15 * textureOffset ( imageSampler, v_uv, ivec2 ( 0, -1 ) ).r;
+
+	sum += 0.18 * texture ( imageSampler, v_uv ).r;
+
+	sum += 0.15 * textureOffset ( imageSampler, v_uv, ivec2 ( 0, 1 ) ).r;
+	sum += 0.12 * textureOffset ( imageSampler, v_uv, ivec2 ( 0, 2 ) ).r;
+	sum += 0.09 * textureOffset ( imageSampler, v_uv, ivec2 ( 0, 3 ) ).r;
+	sum += 0.05 * textureOffset ( imageSampler, v_uv, ivec2 ( 0, 4 ) ).r;
+
+	color = sum;
+}

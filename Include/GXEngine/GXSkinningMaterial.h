@@ -18,8 +18,8 @@ class GXSkinningMaterial : public GXMaterial
 		GXSkinningMaterial ();
 		~GXSkinningMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) const override;
-		GXVoid Unbind () const override;
+		GXVoid Bind ( const GXTransform &transform ) override;
+		GXVoid Unbind () override;
 
 		GXVoid SetSkeleton ( const GXSkeleton &skeleton );
 };

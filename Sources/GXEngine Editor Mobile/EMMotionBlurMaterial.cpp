@@ -1,5 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMMotionBlurMaterial.h>
 #include <GXEngine/GXCamera.h>
+#include <GXCommon/GXLogger.h>
 
 
 #define DEFAULT_DEPTH_LIMIT				1.0f
@@ -54,7 +55,7 @@ EMMotionBlurMaterial::~EMMotionBlurMaterial ()
 	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 }
 
-GXVoid EMMotionBlurMaterial::Bind ( const GXTransform& /*transform*/ ) const
+GXVoid EMMotionBlurMaterial::Bind ( const GXTransform& /*transform*/ )
 {
 	if ( !velocityNeighborMaxTexture || !velocityTexture || !depthTexture || !imageTexture ) return;
 
@@ -73,7 +74,7 @@ GXVoid EMMotionBlurMaterial::Bind ( const GXTransform& /*transform*/ ) const
 	imageTexture->Bind ( IMAGE_SLOT );
 }
 
-GXVoid EMMotionBlurMaterial::Unbind () const
+GXVoid EMMotionBlurMaterial::Unbind ()
 {
 	if ( !velocityNeighborMaxTexture || !velocityTexture || !depthTexture || !imageTexture ) return;
 
@@ -105,14 +106,37 @@ GXVoid EMMotionBlurMaterial::SetImageTexture ( GXTexture &texture )
 	imageTexture = &texture;
 }
 
-GXVoid EMMotionBlurMaterial::SetDepthLimit ( GXFloat limit )
+GXVoid EMMotionBlurMaterial::SetDepthLimit ( GXFloat meters )
 {
-	inverseDepthLimit = 1.0f / limit;
+	if ( meters <= 0.0f )
+	{
+		GXLogW ( L"EMMotionBlurMaterial::SetDepthLimit::Error - ”казана не положительна€ отсечка по глубине!\n" );
+		return;
+	}
+
+	depthLimit = meters;
+	inverseDepthLimit = 1.0f / meters;
 }
 
-GXVoid EMMotionBlurMaterial::SetMaxBlurSamples ( GXUByte maxSamples )
+GXFloat EMMotionBlurMaterial::GetDepthLimit () const
 {
-	maxBlurSamples = (GXFloat)maxSamples;
+	return depthLimit;
+}
+
+GXVoid EMMotionBlurMaterial::SetMaxBlurSamples ( GXUByte samples )
+{
+	if ( samples == 0 )
+	{
+		GXLogW ( L"EMMotionBlurMaterial::SetMaxBlurSamples::Error - ”казано нулевое максимальное количество выборок!\n" );
+		return;
+	}
+
+	maxBlurSamples = (GXFloat)samples;
+}
+
+GXUByte EMMotionBlurMaterial::GetMaxBlurSamples () const
+{
+	return (GXUByte)maxBlurSamples;
 }
 
 GXVoid EMMotionBlurMaterial::SetScreenResolution ( GXUShort width, GXUShort height )

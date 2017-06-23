@@ -30,8 +30,8 @@ class EMBlinnPhongDirectedLightMaterial : public GXMaterial
 		EMBlinnPhongDirectedLightMaterial ();
 		~EMBlinnPhongDirectedLightMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) const override;
-		GXVoid Unbind () const override;
+		GXVoid Bind ( const GXTransform &transform ) override;
+		GXVoid Unbind () override;
 
 		GXVoid SetDiffuseTexture ( GXTexture &texture );
 		GXVoid SetNormalTexture ( GXTexture &texture );

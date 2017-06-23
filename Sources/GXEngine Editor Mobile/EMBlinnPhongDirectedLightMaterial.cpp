@@ -63,7 +63,7 @@ EMBlinnPhongDirectedLightMaterial::~EMBlinnPhongDirectedLightMaterial ()
 	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 }
 
-GXVoid EMBlinnPhongDirectedLightMaterial::Bind ( const GXTransform& /*transform*/ ) const
+GXVoid EMBlinnPhongDirectedLightMaterial::Bind ( const GXTransform& /*transform*/ )
 {
 	if ( !diffuseTexture || !normalTexture || !specularTexture || !emissionTexture || !depthTexture ) return;
 
@@ -83,7 +83,7 @@ GXVoid EMBlinnPhongDirectedLightMaterial::Bind ( const GXTransform& /*transform*
 	depthTexture->Bind ( DEPTH_SLOT );
 }
 
-GXVoid EMBlinnPhongDirectedLightMaterial::Unbind () const
+GXVoid EMBlinnPhongDirectedLightMaterial::Unbind ()
 {
 	if ( !diffuseTexture || !normalTexture || !specularTexture || !emissionTexture || !depthTexture ) return;
 
