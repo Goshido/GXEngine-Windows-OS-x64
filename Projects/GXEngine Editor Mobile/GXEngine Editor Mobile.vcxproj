@@ -211,6 +211,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIOpenFile.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIPopup.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUISeparator.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUISSAOSettings.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIStaticText.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUnitActor.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMVelocityNeighborMaxMaterial.cpp" />
@@ -405,6 +406,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIOpenFile.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIPopup.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUISeparator.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUISSAOSettings.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIStaticText.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUnitActor.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMVelocityNeighborMaxMaterial.h" />

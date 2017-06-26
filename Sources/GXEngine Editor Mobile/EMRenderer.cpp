@@ -1,6 +1,7 @@
 #include <GXEngine_Editor_Mobile/EMRenderer.h>
 #include <GXEngine_Editor_Mobile/EMLight.h>
 #include <GXEngine_Editor_Mobile/EMUIMotionBlurSettings.h>
+#include <GXEngine_Editor_Mobile/EMUISSAOSettings.h>
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXCamera.h>
 #include <GXEngine/GXSamplerUtils.h>
@@ -29,9 +30,9 @@
 #define DEFAULT_MOTION_BLUR_DEPTH_LIMIT			0.1f
 #define DEFAULT_MOTION_BLUR_EXPLOSURE			0.03f
 
-#define DEFAULT_SSAO_MAX_CHECK_RADIUS			0.15f
-#define DEFAULT_SSAO_SAMPLES					16
-#define DEFAULT_SSAO_NOISE_TEXTURE_RESOLUTION	4
+#define DEFAULT_SSAO_MAX_CHECK_RADIUS			0.3f
+#define DEFAULT_SSAO_SAMPLES					32
+#define DEFAULT_SSAO_NOISE_TEXTURE_RESOLUTION	9
 #define DEFAULT_SSAO_MAX_DISTANCE				1000.0f
 
 #define CLEAR_DIFFUSE_R							0.0f
@@ -88,6 +89,7 @@ EMRenderer::~EMRenderer ()
 	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
 	glDeleteFramebuffers ( 1, &fbo );
 
+	delete &( EMUISSAOSettings::GetInstance () );
 	delete &( EMUIMotionBlurSettings::GetInstance () );
 
 	diffuseTexture.FreeResources ();
@@ -118,6 +120,9 @@ GXVoid EMRenderer::StartCommonPass ()
 
 	if ( isMotionBlurSettingsChanged )
 		UpdateMotionBlurSettings ();
+
+	if ( isSSAOSettingsChanged )
+		UpdateSSAOSettings ();
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, diffuseTexture.GetTextureObject (), 0 );
@@ -333,14 +338,13 @@ GXVoid EMRenderer::ApplySSAO ()
 	ssaoSharpMaterial.Bind ( nullTransform );
 	screenQuadMesh.Render ();
 	ssaoSharpMaterial.Unbind ();
-/*
+
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, ssaoYottaTexture.GetTextureObject (), 0 );
 
 	status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::ApplySSAO::Error - Что-то не так с FBO на втором проходе (ошибка 0x%08x)\n", status );
 
-	gaussHorizontalBlurMaterial.SetImageTexture ( ssaoOmegaTexture );
 	gaussHorizontalBlurMaterial.Bind ( nullTransform );
 	screenQuadMesh.Render ();
 	gaussHorizontalBlurMaterial.Unbind ();
@@ -351,15 +355,9 @@ GXVoid EMRenderer::ApplySSAO ()
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::ApplySSAO::Error - Что-то не так с FBO на третьем проходе (ошибка 0x%08x)\n", status );
 
-	gaussHorizontalBlurMaterial.SetImageTexture ( ssaoYottaTexture );
 	gaussVerticalBlurMaterial.Bind ( nullTransform );
 	screenQuadMesh.Render ();
 	gaussVerticalBlurMaterial.Unbind ();
-*/
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, omegaTexture.GetTextureObject (), 0 );
-	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
-	static const GXFloat clearColor[ 4 ] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	glClearBufferfv ( GL_COLOR, 0, clearColor );
 
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, yottaTexture.GetTextureObject (), 0 );
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
@@ -574,17 +572,17 @@ GXFloat EMRenderer::GetMotionBlurExplosure () const
 	return motionBlurExposure;
 }
 
-GXVoid EMRenderer::SetSSAOMaximumCheckRadius ( GXFloat meters )
+GXVoid EMRenderer::SetSSAOCheckRadius ( GXFloat meters )
 {
-	if ( ssaoSharpMaterial.GetMaximumCheckRadius () == meters ) return;
+	if ( ssaoSharpMaterial.GetCheckRadius () == meters ) return;
 
-	newSSAOMaxCheckRadius = meters;
+	newSSAOCheckRadius = meters;
 	isSSAOSettingsChanged = GX_TRUE;
 }
 
-GXFloat EMRenderer::GetSSAOMaximumCheckRadius () const
+GXFloat EMRenderer::GetSSAOCheckRadius () const
 {
-	return ssaoSharpMaterial.GetMaximumCheckRadius ();
+	return ssaoSharpMaterial.GetCheckRadius ();
 }
 
 GXVoid EMRenderer::SetSSAOSampleNumber ( GXUByte samples )
@@ -646,7 +644,7 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" ), gaussHorizontalBlurMateria
 	motionBlurExposure = newMotionBlurExposure = DEFAULT_MOTION_BLUR_EXPLOSURE;
 	isMotionBlurSettingsChanged = GX_FALSE;
 
-	newSSAOMaxCheckRadius = DEFAULT_SSAO_MAX_CHECK_RADIUS;
+	newSSAOCheckRadius = DEFAULT_SSAO_MAX_CHECK_RADIUS;
 	newSSAOSamples = DEFAULT_SSAO_SAMPLES;
 	newSSAONoiseTextureResolution = DEFAULT_SSAO_NOISE_TEXTURE_RESOLUTION;
 	newSSAOMaxDistance = DEFAULT_SSAO_MAX_DISTANCE;
@@ -663,7 +661,7 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" ), gaussHorizontalBlurMateria
 	motionBlurMaterial.SetScreenResolution ( width, height );
 	motionBlurMaterial.SetDepthLimit ( newMotionBlurDepthLimit );
 
-	ssaoSharpMaterial.SetMaximumCheckRadius ( newSSAOMaxCheckRadius );
+	ssaoSharpMaterial.SetCheckRadius ( newSSAOCheckRadius );
 	ssaoSharpMaterial.SetSampleNumber ( newSSAOSamples );
 	ssaoSharpMaterial.SetNoiseTextureResolution ( newSSAONoiseTextureResolution );
 	ssaoSharpMaterial.SetMaximumDistance ( newSSAOMaxDistance );
@@ -692,12 +690,16 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" ), gaussHorizontalBlurMateria
 	ssaoSharpMaterial.SetDepthTexture ( depthStencilTexture );
 	ssaoSharpMaterial.SetNormalTexture ( normalTexture );
 
+	gaussHorizontalBlurMaterial.SetImageTexture ( ssaoOmegaTexture );
+	gaussVerticalBlurMaterial.SetImageTexture ( ssaoYottaTexture );
+
 	ssaoApplyMaterial.SetSSAOTexture ( ssaoOmegaTexture );
 	ssaoApplyMaterial.SetImageTexture ( omegaTexture );
 
 	SetObjectMask ( (GXUPointer)nullptr );
 
 	EMUIMotionBlurSettings::GetInstance ();
+	EMUISSAOSettings::GetInstance ();
 }
 
 GXVoid EMRenderer::CreateFBO ()
@@ -782,8 +784,8 @@ GXVoid EMRenderer::UpdateMotionBlurSettings ()
 
 GXVoid EMRenderer::UpdateSSAOSettings ()
 {
-	if ( newSSAOMaxCheckRadius != ssaoSharpMaterial.GetMaximumCheckRadius () )
-		ssaoSharpMaterial.SetMaximumCheckRadius ( newSSAOMaxCheckRadius );
+	if ( newSSAOCheckRadius != ssaoSharpMaterial.GetCheckRadius () )
+		ssaoSharpMaterial.SetCheckRadius ( newSSAOCheckRadius );
 
 	if ( newSSAOSamples != ssaoSharpMaterial.GetSampleNumber () )
 		ssaoSharpMaterial.SetSampleNumber ( newSSAOSamples );

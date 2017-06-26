@@ -78,7 +78,7 @@ class EMRenderer
 		GXFloat								newMotionBlurExposure;
 
 		GXBool								isSSAOSettingsChanged;
-		GXFloat								newSSAOMaxCheckRadius;
+		GXFloat								newSSAOCheckRadius;
 		GXUByte								newSSAOSamples;
 		GXUShort							newSSAONoiseTextureResolution;
 		GXFloat								newSSAOMaxDistance;
@@ -112,8 +112,8 @@ class EMRenderer
 		GXVoid SetMotionBlurExposure ( GXFloat seconds );
 		GXFloat GetMotionBlurExplosure () const;
 
-		GXVoid SetSSAOMaximumCheckRadius ( GXFloat meters );
-		GXFloat GetSSAOMaximumCheckRadius () const;
+		GXVoid SetSSAOCheckRadius ( GXFloat meters );
+		GXFloat GetSSAOCheckRadius () const;
 
 		GXVoid SetSSAOSampleNumber ( GXUByte samples );
 		GXUByte GetSSAOSampleNumber () const;

@@ -2,6 +2,7 @@
 #include <GXEngine_Editor_Mobile/EMRenderer.h>
 #include <GXEngine_Editor_Mobile/EMViewer.h>
 #include <GXEngine_Editor_Mobile/EMUIMotionBlurSettings.h>
+#include <GXEngine_Editor_Mobile/EMUISSAOSettings.h>
 #include <GXEngine_Editor_Mobile/EMUIFPSCounter.h>
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXLocale.h>
@@ -66,32 +67,33 @@ GXVoid EMGame::OnInit ()
 	editorRenderer.SetOnObjectCallback ( &EMGame::OnObject );
 
 	filePopup = new EMUIPopup ( nullptr );
-	filePopup->AddItem ( locale.GetString ( L"File->New" ), nullptr, nullptr );
-	filePopup->AddItem ( locale.GetString ( L"File->Open" ), nullptr, nullptr );
-	filePopup->AddItem ( locale.GetString ( L"File->Close" ), nullptr, nullptr );
-	filePopup->AddItem ( locale.GetString ( L"File->Save" ), nullptr, nullptr );
-	filePopup->AddItem ( locale.GetString ( L"File->Exit" ), this, &EMGame::OnExit );
+	filePopup->AddItem ( locale.GetString ( L"Main menu->File->New" ), nullptr, nullptr );
+	filePopup->AddItem ( locale.GetString ( L"Main menu->File->Open" ), nullptr, nullptr );
+	filePopup->AddItem ( locale.GetString ( L"Main menu->File->Close" ), nullptr, nullptr );
+	filePopup->AddItem ( locale.GetString ( L"Main menu->File->Save" ), nullptr, nullptr );
+	filePopup->AddItem ( locale.GetString ( L"Main menu->File->Exit" ), this, &EMGame::OnExit );
 
 	createPopup = new EMUIPopup ( nullptr );
-	createPopup->AddItem ( locale.GetString ( L"Create->Unit Actor" ), nullptr, nullptr );
-	createPopup->AddItem ( locale.GetString ( L"Create->Box falling" ), this, &EMGame::StartBoxFallingSimulation );
-	createPopup->AddItem ( locale.GetString ( L"Create->Skeletal mesh" ), nullptr, nullptr );
-	createPopup->AddItem ( locale.GetString ( L"Create->Directed light" ), nullptr, nullptr );
-	createPopup->AddItem ( locale.GetString ( L"Create->Spot" ), nullptr, nullptr );
-	createPopup->AddItem ( locale.GetString ( L"Create->Bulp" ), nullptr, nullptr );
+	createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Unit Actor" ), nullptr, nullptr );
+	createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Box falling" ), this, &EMGame::StartBoxFallingSimulation );
+	createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Skeletal mesh" ), nullptr, nullptr );
+	createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Directed light" ), nullptr, nullptr );
+	createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Spot" ), nullptr, nullptr );
+	createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Bulp" ), nullptr, nullptr );
 
 	toolsPopup = new EMUIPopup ( nullptr );
-	toolsPopup->AddItem ( locale.GetString ( L"Tools->Select" ), nullptr, nullptr );
-	toolsPopup->AddItem ( locale.GetString ( L"Tools->Move" ), nullptr, nullptr );
-	toolsPopup->AddItem ( locale.GetString ( L"Tools->Rotate" ), nullptr, nullptr );
-	toolsPopup->AddItem ( locale.GetString ( L"Tools->Scale" ), nullptr, nullptr );
+	toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Select" ), nullptr, nullptr );
+	toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Move" ), nullptr, nullptr );
+	toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Rotate" ), nullptr, nullptr );
+	toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Scale" ), nullptr, nullptr );
 
 	utilityPopup = new EMUIPopup ( nullptr );
-	utilityPopup->AddItem ( locale.GetString ( L"Utility->Particle system" ), nullptr, nullptr );
-	utilityPopup->AddItem ( locale.GetString ( L"Utility->Animation graph" ), nullptr, nullptr );
+	utilityPopup->AddItem ( locale.GetString ( L"Main menu->Utility->Particle system" ), nullptr, nullptr );
+	utilityPopup->AddItem ( locale.GetString ( L"Main menu->Utility->Animation graph" ), nullptr, nullptr );
 
 	effectsPopup = new EMUIPopup ( nullptr );
-	effectsPopup->AddItem ( locale.GetString ( L"Effects->Motion blur" ), this, &EMGame::OnShowMotionBlurSettings );
+	effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->Motion blur" ), this, &EMGame::OnShowMotionBlurSettings );
+	effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->SSAO" ), this, &EMGame::OnShowSSAOSettings );
 
 	menu = new EMUIMenu ( nullptr );
 	menu->SetLocation ( 0.0f, h - menu->GetHeight () );
@@ -164,9 +166,9 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	renderer.StartCommonPass ();
 
 	unitActor->OnDrawCommonPass ( deltaTime );
-	physicsBoxActor->Draw ( deltaTime );
-	physicsPlaneActor->Draw ( deltaTime );
-	fluttershy->Render ( deltaTime );
+	//physicsBoxActor->Draw ( deltaTime );
+	//physicsPlaneActor->Draw ( deltaTime );
+	//fluttershy->Render ( deltaTime );
 
 	renderer.StartLightPass ();
 
@@ -189,7 +191,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	moveTool->OnDrawHudMaskPass ();
 
-	renderer.PresentFrame ( eEMRenderTarget::Combine );
+	renderer.PresentFrame ( eEMRenderTarget::VelocityBlur );
 
 	viewerCamera.UpdateLastFrameMatrices ();
 }
@@ -240,6 +242,11 @@ GXVoid GXCALL EMGame::OnExit ( GXVoid* /*handler*/ )
 GXVoid GXCALL EMGame::OnShowMotionBlurSettings ( GXVoid* /*handler*/ )
 {
 	EMUIMotionBlurSettings::GetInstance ().Show ();
+}
+
+GXVoid GXCALL EMGame::OnShowSSAOSettings ( GXVoid* /*handler*/ )
+{
+	EMUISSAOSettings::GetInstance ().Show ();
 }
 
 GXVoid GXCALL EMGame::OnMouseButton ( GXVoid* /*handler*/, GXInputMouseFlags mouseflags )

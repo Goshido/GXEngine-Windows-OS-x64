@@ -13,69 +13,71 @@ russian~Russian~
 
 Main menu->File~File~
 
-File->New~New~
+Main menu->File->New~New~
 
-File->New (Hotkey)~Ctrl+N~
+Main menu->File->New (Hotkey)~Ctrl+N~
 
-File->Open~Open~
+Main menu->File->Open~Open~
 
-File->Open (Hotkey)~Ctrl+O~
+Main menu->File->Open (Hotkey)~Ctrl+O~
 
-File->Close~Close~
+Main menu->File->Close~Close~
 
-File->Close (Hotkey)~Ctrl+W~
+Main menu->File->Close (Hotkey)~Ctrl+W~
 
-File->Save~Save~
+Main menu->File->Save~Save~
 
-File->Save (Hotkey)~Ctrl+S~
+Main menu->File->Save (Hotkey)~Ctrl+S~
 
-File->Exit~Exit~
+Main menu->File->Exit~Exit~
 
-File->Exit (Hotkey)~Ecs~
+Main menu->File->Exit (Hotkey)~Ecs~
 
 Main menu->Create~Create~
 
-Create->Unit Actor~Unit actor~
+Main menu->Create->Unit Actor~Unit actor~
 
-Create->Static mesh~Static mesh~
+Main menu->Create->Static mesh~Static mesh~
 
-Create->Skeletal mesh~Skeletal mesh~
+Main menu->Create->Skeletal mesh~Skeletal mesh~
 
-Create->Directed light~Directed light~
+Main menu->Create->Directed light~Directed light~
 
-Create->Spot~Spot light~
+Main menu->Create->Spot~Spot light~
 
-Create->Bulp~Bulp~
+Main menu->Create->Bulp~Bulp~
 
-Create->Box falling~Box falling~
+Main menu->Create->Box falling~Box falling~
 
 Main menu->Tools~Tools~
 
-Tools->Select~Select~
+Main menu->Tools->Select~Select~
 
-Tools->Select (Hotkey)~Q~
+Main menu->Tools->Select (Hotkey)~Q~
 
-Tools->Move~Move~
+Main menu->Tools->Move~Move~
 
-Tools->Move (Hotkey)~W~
+Main menu->Tools->Move (Hotkey)~W~
 
-Tools->Rotate~Rotate~
+Main menu->Tools->Rotate~Rotate~
 
-Tools->Rotate (Hotkey)~E~
+Main menu->Tools->Rotate (Hotkey)~E~
 
-Tools->Scale~Scale~
+Main menu->Tools->Scale~Scale~
 
-Tools->Scale (Hotkey)~R~
+Main menu->Tools->Scale (Hotkey)~R~
 
 Main menu->Utility~Utility~
 
-Utility->Particle system~Particle system~
+Main menu->Utility->Particle system~Particle system~
 
-Utility->Animation graph~Animation graph~
+Main menu->Utility->Animation graph~Animation graph~
 
 Main menu->Effects~Effects~
 
-Effects->Motion blur~Motion blur~
+Main menu->Effects->Motion blur~Motion blur~
+
+Main menu->Effects->SSAO~SSAO~
 
 OpenFile->OK~OK~
 
@@ -92,3 +94,17 @@ Motion blur settings->Exposure (seconds)~Exposure (seconds)~
 Motion blur settings->Cancel~Cancel~
 
 Motion blur settings->Apply~Apply~
+
+SSAO settings->SSAO settings~SSAO settings~
+
+SSAO settings->Check radius (meters)~Check radius (meters)~
+
+SSAO settings->Samples~Samples~
+
+SSAO settings->Noise texture resulotion~Noise texture resolution~
+
+SSAO settings->Maximum distance (meters)~Maximum distance (meters)~
+
+SSAO settings->Cancel~Cancel~
+
+SSAO settings->Apply~Apply~

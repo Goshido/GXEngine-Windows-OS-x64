@@ -39,7 +39,6 @@ class EMUIMotionBlurSettings : public EMUI
 	private:
 		EMUIMotionBlurSettings ();
 
-		GXVoid ApplySettings () const;
 		GXVoid SyncSettings ();
 
 		static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFloat y, eGXMouseButtonState state );

@@ -51,6 +51,7 @@ GXVoid EMGaussVerticalBlurMaterial::Bind ( const GXTransform& /*transform*/ )
 	if ( !imageTexture ) return;
 
 	glUseProgram ( shaderProgram.GetProgram () );
+	imageTexture->Bind ( IMAGE_SLOT );
 }
 
 GXVoid EMGaussVerticalBlurMaterial::Unbind ()

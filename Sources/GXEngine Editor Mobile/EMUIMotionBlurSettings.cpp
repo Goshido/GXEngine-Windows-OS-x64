@@ -143,11 +143,6 @@ EMUIMotionBlurSettings::EMUIMotionBlurSettings () :
 	mainPanel->Hide ();
 }
 
-GXVoid EMUIMotionBlurSettings::ApplySettings () const
-{
-	// TODO
-}
-
 GXVoid EMUIMotionBlurSettings::SyncSettings ()
 {
 	EMRenderer& renderer = EMRenderer::GetInstance ();
@@ -169,43 +164,45 @@ GXVoid GXCALL EMUIMotionBlurSettings::OnButton ( GXVoid* handler, GXUIButton* bu
 
 	EMUIMotionBlurSettings* settings = (EMUIMotionBlurSettings*)handler;
 
-	if ( button == settings->apply->GetWidget () )
+	if ( button == settings->cancel->GetWidget () )
 	{
-		const GXWChar* stringW = settings->maxSamples->GetText ();
-		if ( !stringW ) return;
-
-		GXUByte newMaxSamples;
-		GXInt result = swscanf_s ( stringW, L"%hhu", &newMaxSamples );
-		
-		if ( result == 0 ) return;
-		
-		stringW = settings->depthLimit->GetText ();
-
-		if ( !stringW ) return;
-
-		GXFloat newDepthLimit;
-		result = swscanf_s ( stringW, L"%f", &newDepthLimit );
-
-		if ( result == 0 ) return;
-
-		stringW = settings->exposure->GetText ();
-
-		if ( !stringW ) return;
-
-		GXFloat newExplosure;
-		result = swscanf_s ( stringW, L"%f", &newExplosure );
-
-		if ( result == 0 ) return;
-
-		EMRenderer& renderer = EMRenderer::GetInstance ();
-		renderer.SetMaximumMotionBlurSamples ( newMaxSamples );
-		renderer.SetMotionBlurDepthLimit ( newDepthLimit );
-		renderer.SetMotionBlurExposure ( newExplosure );
-
+		settings->Hide ();
 		return;
 	}
 
-	settings->Hide ();
+	EMRenderer& renderer = EMRenderer::GetInstance ();
+	const GXWChar* stringW = settings->maxSamples->GetText ();
+
+	if ( stringW )
+	{
+		GXUByte newMaxSamples;
+		GXInt result = swscanf_s ( stringW, L"%hhu", &newMaxSamples );
+
+		if ( result != 0 )
+			renderer.SetMaximumMotionBlurSamples ( newMaxSamples );
+	}
+
+	stringW = settings->depthLimit->GetText ();
+
+	if ( stringW )
+	{
+		GXFloat newDepthLimit;
+		GXInt result = swscanf_s ( stringW, L"%f", &newDepthLimit );
+
+		if ( result != 0 )
+			renderer.SetMotionBlurDepthLimit ( newDepthLimit );
+	}
+
+	stringW = settings->exposure->GetText ();
+
+	if ( stringW )
+	{
+		GXFloat newExposure;
+		GXInt result = swscanf_s ( stringW, L"%f", &newExposure );
+
+		if ( result != 0 )
+			renderer.SetMotionBlurExposure ( newExposure );
+	}
 }
 
 GXVoid GXCALL EMUIMotionBlurSettings::OnResize ( GXVoid* handler, GXUIDragableArea* /*area*/, GXFloat width, GXFloat height )

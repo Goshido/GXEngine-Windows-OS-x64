@@ -44,7 +44,7 @@ EMSSAOSharpMaterial::EMSSAOSharpMaterial ()
 	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
 
 	kernelLocation = shaderProgram.GetUniform ( "kernel" );
-	maxCheckRadiusLocation = shaderProgram.GetUniform ( "maxCheckRadius" );
+	checkRadiusLocation = shaderProgram.GetUniform ( "checkRadius" );
 	samplesLocation = shaderProgram.GetUniform ( "samples" );
 	inverseSamplesLocation = shaderProgram.GetUniform ( "inverseSamples" );
 	noiseScaleLocation = shaderProgram.GetUniform ( "noiseScale" );
@@ -52,7 +52,7 @@ EMSSAOSharpMaterial::EMSSAOSharpMaterial ()
 	projectionMatrixLocation = shaderProgram.GetUniform ( "projectionMatrix" );
 	inverseProjectionMatrixLocation = shaderProgram.GetUniform ( "inverseProjectionMatrix" );
 
-	maxCheckRadius = DEFAULT_MAX_CHECK_RADIUS;
+	checkRadius = DEFAULT_MAX_CHECK_RADIUS;
 	SetSampleNumber ( DEFAULT_SAMPLES );
 	SetNoiseTextureResolution ( DEFAULT_NOISE_TEXTURE_RESOLUTION );
 	SetMaximumDistance ( DEFAULT_MAX_DISTANCE );
@@ -78,7 +78,7 @@ GXVoid EMSSAOSharpMaterial::Bind ( const GXTransform& /*transform*/ )
 	glUniformMatrix4fv ( projectionMatrixLocation, 1, GL_FALSE, projectionMatrix.arr );
 	glUniformMatrix4fv ( inverseProjectionMatrixLocation, 1, GL_FALSE, inverseProjectionMatrix.arr );
 	glUniform3fv ( kernelLocation, EM_MAX_SSAO_SAMPLES, (const GLfloat*)kernel );
-	glUniform1f ( maxCheckRadiusLocation, maxCheckRadius );
+	glUniform1f ( checkRadiusLocation, checkRadius );
 	glUniform1i ( samplesLocation, samples );
 	glUniform1f ( inverseSamplesLocation, inverseSamples );
 	glUniform2f ( noiseScaleLocation, noiseScale.x, noiseScale.y );
@@ -110,7 +110,7 @@ GXVoid EMSSAOSharpMaterial::SetNormalTexture ( GXTexture &texture )
 	normalTexture = &texture;
 }
 
-GXVoid EMSSAOSharpMaterial::SetMaximumCheckRadius ( GXFloat meters )
+GXVoid EMSSAOSharpMaterial::SetCheckRadius ( GXFloat meters )
 {
 	if ( meters <= 0.0f ) return;
 
@@ -135,12 +135,12 @@ GXVoid EMSSAOSharpMaterial::SetMaximumCheckRadius ( GXFloat meters )
 		GXMulVec3Scalar ( kernel[ i ], v, scale * meters );
 	}
 
-	maxCheckRadius = meters;
+	checkRadius = meters;
 }
 
-GXFloat EMSSAOSharpMaterial::GetMaximumCheckRadius () const
+GXFloat EMSSAOSharpMaterial::GetCheckRadius () const
 {
-	return maxCheckRadius;
+	return checkRadius;
 }
 
 GXVoid EMSSAOSharpMaterial::SetSampleNumber ( GXUByte samples )
@@ -157,7 +157,7 @@ GXVoid EMSSAOSharpMaterial::SetSampleNumber ( GXUByte samples )
 
 	inverseSamples = 1.0f / (GXFloat)this->samples;
 
-	SetMaximumCheckRadius ( maxCheckRadius );
+	SetCheckRadius ( checkRadius );
 }
 
 GXUByte EMSSAOSharpMaterial::GetSampleNumber () const
@@ -208,7 +208,7 @@ GXVoid EMSSAOSharpMaterial::SetNoiseTextureResolution ( GXUShort resolution )
 	GXFloat inverseResolution = 1.0f / (GXFloat)resolution;
 
 	noiseScale.x = renderer.GetWidth () * inverseResolution;
-	noiseScale.x = renderer.GetHeight () * inverseResolution;
+	noiseScale.y = renderer.GetHeight () * inverseResolution;
 }
 
 GXUShort EMSSAOSharpMaterial::GetNoiseTextureResolution () const

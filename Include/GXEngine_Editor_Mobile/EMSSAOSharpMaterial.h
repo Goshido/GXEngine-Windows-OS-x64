@@ -19,8 +19,8 @@ class EMSSAOSharpMaterial : public GXMaterial
 		GXVec3			kernel[ EM_MAX_SSAO_SAMPLES ];
 		GLint			kernelLocation;
 
-		GXFloat			maxCheckRadius;
-		GLint			maxCheckRadiusLocation;
+		GXFloat			checkRadius;
+		GLint			checkRadiusLocation;
 
 		GXInt			samples;
 		GLint			samplesLocation;
@@ -47,8 +47,8 @@ class EMSSAOSharpMaterial : public GXMaterial
 		GXVoid SetDepthTexture ( GXTexture &texture );
 		GXVoid SetNormalTexture ( GXTexture &texture );
 
-		GXVoid SetMaximumCheckRadius ( GXFloat meters );
-		GXFloat GetMaximumCheckRadius () const;
+		GXVoid SetCheckRadius ( GXFloat meters );
+		GXFloat GetCheckRadius () const;
 
 		GXVoid SetSampleNumber ( GXUByte samples );
 		GXUByte GetSampleNumber () const;

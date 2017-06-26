@@ -13,69 +13,71 @@ russian~Русский~
 
 Main menu->File~Файл~
 
-File->New~Создать~
+Main menu->File->New~Создать~
 
-File->New (Hotkey)~Ctrl+N~
+Main menu->File->New (Hotkey)~Ctrl+N~
 
-File->Open~Открыть~
+Main menu->File->Open~Открыть~
 
-File->Open (Hotkey)~Ctrl+O~
+Main menu->File->Open (Hotkey)~Ctrl+O~
 
-File->Close~Закрыть~
+Main menu->File->Close~Закрыть~
 
-File->Close (Hotkey)~Ctrl+W~
+Main menu->File->Close (Hotkey)~Ctrl+W~
 
-File->Save~Сохранить~
+Main menu->File->Save~Сохранить~
 
-File->Save (Hotkey)~Ctrl+S~
+Main menu->File->Save (Hotkey)~Ctrl+S~
 
-File->Exit~Выход~
+Main menu->File->Exit~Выход~
 
-File->Exit (Hotkey)~Ecs~
+Main menu->File->Exit (Hotkey)~Ecs~
 
 Main menu->Create~Создать~
 
-Create->Unit Actor~Единичный актор~
+Main menu->Create->Unit Actor~Единичный актор~
 
-Create->Static mesh~Статичный меш~
+Main menu->Create->Static mesh~Статичный меш~
 
-Create->Skeletal mesh~Скелетный меш~
+Main menu->Create->Skeletal mesh~Скелетный меш~
 
-Create->Directed light~Направленный источник света~
+Main menu->Create->Directed light~Направленный источник света~
 
-Create->Spot~Фонарь~
+Main menu->Create->Spot~Фонарь~
 
-Create->Bulp~Лампочка~
+Main menu->Create->Bulp~Лампочка~
 
-Create->Box falling~Падение коробки~
+Main menu->Create->Box falling~Падение коробки~
 
 Main menu->Tools~Инструменты~
 
-Tools->Select~Выбрать~
+Main menu->Tools->Select~Выбрать~
 
-Tools->Select (Hotkey)~Q~
+Main menu->Tools->Select (Hotkey)~Q~
 
-Tools->Move~Переместить~
+Main menu->Tools->Move~Переместить~
 
-Tools->Move (Hotkey)~W~
+Main menu->Tools->Move (Hotkey)~W~
 
-Tools->Rotate~Повернуть~
+Main menu->Tools->Rotate~Повернуть~
 
-Tools->Rotate (Hotkey)~E~
+Main menu->Tools->Rotate (Hotkey)~E~
 
-Tools->Scale~Масштабировать~
+Main menu->Tools->Scale~Масштабировать~
 
-Tools->Scale (Hotkey)~R~
+Main menu->Tools->Scale (Hotkey)~R~
 
 Main menu->Utility~Утилиты~
 
-Utility->Particle system~Система частиц~
+Main menu->Utility->Particle system~Система частиц~
 
-Utility->Animation graph~Анимационный граф~
+Main menu->Utility->Animation graph~Анимационный граф~
 
 Main menu->Effects~Эффекты~
 
-Effects->Motion blur~Motion blur~
+Main menu->Effects->Motion blur~Motion blur~
+
+Main menu->Effects->SSAO~SSAO~
 
 OpenFile->OK~OK~
 
@@ -92,3 +94,17 @@ Motion blur settings->Exposure (seconds)~Выдержка (секунды)~
 Motion blur settings->Cancel~Отмена~
 
 Motion blur settings->Apply~Применить~
+
+SSAO settings->SSAO settings~Настройки SSAO~
+
+SSAO settings->Check radius (meters)~Радиус проверки (метры)~
+
+SSAO settings->Samples~Количество выборок~
+
+SSAO settings->Noise texture resulotion~Разрешение текстуры шумов~
+
+SSAO settings->Maximum distance (meters)~Дистанция эффекта (метры)~
+
+SSAO settings->Cancel~Отмена~
+
+SSAO settings->Apply~Применить~

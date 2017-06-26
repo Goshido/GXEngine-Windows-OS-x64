@@ -257,14 +257,15 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
 			if ( !OnType ) return 0;
 
-			GXBool tests[ 5 ];
+			GXBool tests[ 6 ];
 			tests[ 0 ] = wParam == VK_SPACE;
 			tests[ 1 ] = ( wParam >= VK_KEY_0 ) && ( wParam <= VK_KEY_9 );
 			tests[ 2 ] = ( wParam >= VK_KEY_A ) && ( wParam <= VK_KEY_Z );
-			tests[ 3 ] = ( wParam >= VK_OEM_1 ) && ( wParam <= VK_OEM_3 );
-			tests[ 4 ] = ( wParam >= VK_OEM_4 ) && ( wParam <= VK_OEM_8 );
+			tests[ 3 ] = ( wParam >= VK_NUMPAD0 ) && ( wParam <= VK_DIVIDE );
+			tests[ 4 ] = ( wParam >= VK_OEM_1 ) && ( wParam <= VK_OEM_3 );
+			tests[ 5 ] = ( wParam >= VK_OEM_4 ) && ( wParam <= VK_OEM_8 );
 
-			GXBool result = tests[ 0 ] || tests[ 1 ] || tests[ 2 ] || tests[ 3 ] || tests[ 4 ];
+			GXBool result = tests[ 0 ] || tests[ 1 ] || tests[ 2 ] || tests[ 3 ] || tests[ 4 ] || tests[ 5 ];
 
 			if ( !result ) return 0;
 

@@ -12,7 +12,7 @@ uniform sampler2D normalSampler;
 uniform sampler2D noiseSampler;
 
 uniform vec3 kernel[ MAX_SAMPLES ];
-uniform float maxCheckRadius;
+uniform float checkRadius;
 uniform int samples;
 uniform float inverseSamples;
 uniform float maxDistance;
@@ -78,7 +78,7 @@ void main ()
 		vec3 testLocationView = fragmentLocationView + tbn * kernel[ i ];
 		float virtualDepthView = RestoreDepth ( testLocationView );
 
-		if ( abs ( testLocationView.z - virtualDepthView ) > maxCheckRadius )
+		if ( abs ( testLocationView.z - virtualDepthView ) > checkRadius )
 		{
 			ambient += 1.0;
 			continue;
