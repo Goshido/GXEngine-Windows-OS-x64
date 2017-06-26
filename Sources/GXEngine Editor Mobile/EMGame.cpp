@@ -166,9 +166,9 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	renderer.StartCommonPass ();
 
 	unitActor->OnDrawCommonPass ( deltaTime );
-	//physicsBoxActor->Draw ( deltaTime );
-	//physicsPlaneActor->Draw ( deltaTime );
-	//fluttershy->Render ( deltaTime );
+	physicsBoxActor->Draw ( deltaTime );
+	physicsPlaneActor->Draw ( deltaTime );
+	fluttershy->Render ( deltaTime );
 
 	renderer.StartLightPass ();
 
@@ -191,7 +191,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	moveTool->OnDrawHudMaskPass ();
 
-	renderer.PresentFrame ( eEMRenderTarget::VelocityBlur );
+	renderer.PresentFrame ( eEMRenderTarget::Combine );
 
 	viewerCamera.UpdateLastFrameMatrices ();
 }

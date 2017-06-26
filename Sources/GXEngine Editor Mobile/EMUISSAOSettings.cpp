@@ -167,7 +167,7 @@ GXVoid EMUISSAOSettings::SyncSettings ()
 	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hu", renderer.GetSSAONoiseTextureResolution () );
 	noiseTextureResolution->SetText ( buffer );
 
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetSSAOSSAOMaximumDistance () );
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetSSAOMaximumDistance () );
 	maxDistance->SetText ( buffer );
 }
 

@@ -58,7 +58,7 @@ GXVoid EMUnitActor::OnDrawCommonPass ( GXFloat deltaTime )
 
 	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
 
-	commonPassMaterial.SetMaxBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
+	commonPassMaterial.SetMaximumBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
 	commonPassMaterial.SetExplosureTime ( renderer.GetMotionBlurExplosure () );
 	commonPassMaterial.SetDeltaTime ( deltaTime );
 	commonPassMaterial.SetScreenResolution ( (GXUShort)coreRenderer.GetWidth (), (GXUShort)coreRenderer.GetHeight () );

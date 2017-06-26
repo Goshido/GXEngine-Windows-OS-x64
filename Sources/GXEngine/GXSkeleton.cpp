@@ -66,15 +66,13 @@ GXVoid GXSkeleton::UpdatePose ( GXAnimSolver &solver )
 	GXUInt boneNameOffset = 0;
 	for ( GXUShort i = 0; i < numBones; i++ )
 	{
-		const GXQuat* rotation = nullptr;
-		const GXVec3* location = nullptr;
+		GXQuat rotation;
+		GXVec3 location;
 
-		solver.GetBone ( boneNames + boneNameOffset, &rotation, &location );
-
-		if ( rotation )
+		if ( solver.GetBone ( boneNames + boneNameOffset, rotation, location ) )
 		{
-			tempPoseLocal[ i ].rotation = *rotation;
-			tempPoseLocal[ i ].location = *location;
+			tempPoseLocal[ i ].rotation = rotation;
+			tempPoseLocal[ i ].location = location;
 		}
 		else
 		{

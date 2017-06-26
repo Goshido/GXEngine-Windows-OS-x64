@@ -175,6 +175,13 @@ GXVoid GXCALL GXReverseVec3 ( GXVec3 &inOut )
 	inOut.z = -inOut.z;
 }
 
+GXVoid GXCALL GXLerpVec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b, GXFloat factor )
+{
+	GXVec3 difference;
+	GXSubVec3Vec3 ( difference, b, a );
+	GXSumVec3ScaledVec3 ( out, a, factor, difference );
+}
+
 GXVoid GXCALL GXProjectVec3Vec3 ( GXVec3 &projection, const GXVec3 &vector, const GXVec3 &unitVector )
 {
 	GXVec3 normalVector = vector;

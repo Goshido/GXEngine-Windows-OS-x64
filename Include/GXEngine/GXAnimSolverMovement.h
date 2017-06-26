@@ -11,6 +11,7 @@
 #define GX_ANIM_SOLVER_MOVEMENT_RUN		1
 #define GX_ANIM_SOLVER_MOVEMENT_IDLE	2
 
+
 class GXAnimSolverMovement : public GXAnimSolver
 {
 	private:
@@ -19,10 +20,10 @@ class GXAnimSolverMovement : public GXAnimSolver
 
 	public:
 		GXAnimSolverMovement ( GXUShort solver );
-		virtual ~GXAnimSolverMovement ();
+		~GXAnimSolverMovement () override;
 
-		virtual GXVoid GetBone ( const GXChar* boneName, const GXQuat** rot, const GXVec3** loc );
-		virtual GXVoid Update ( GXFloat delta );
+		GXBool GetBone ( const GXUTF8* boneName, GXQuat &rotation, GXVec3 &location ) override;
+		GXVoid Update ( GXFloat delta ) override;
 
 		GXVoid SetAnimStream ( GXUChar state, GXAnimSolver* animStream );
 		GXVoid SetState ( GXUChar state );

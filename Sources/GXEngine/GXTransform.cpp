@@ -123,7 +123,7 @@ GXVoid GXTransform::GetScale ( GXVec3 &scale ) const
 	scale = currentFrameScale;
 }
 
-const GXMat4& GXTransform::GetCurrentModelMatrix () const
+const GXMat4& GXTransform::GetCurrentFrameModelMatrix () const
 {
 	return currentFrameModelMatrix;
 }

@@ -14,9 +14,9 @@ GXAnimSolverMovement::~GXAnimSolverMovement ()
 	//NOTHING
 }
 
-GXVoid GXAnimSolverMovement::GetBone ( const GXChar* boneName, const GXQuat** rot, const GXVec3** loc )
+GXBool GXAnimSolverMovement::GetBone ( const GXUTF8* boneName, GXQuat &rotation, GXVec3 &location )
 {
-	animStream[ state ]->GetBone ( boneName, rot, loc );
+	return animStream[ state ]->GetBone ( boneName, rotation, location );
 }
 
 GXVoid GXAnimSolverMovement::Update ( GXFloat delta )

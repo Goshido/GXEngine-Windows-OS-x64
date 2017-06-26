@@ -122,7 +122,7 @@ class EMRenderer
 		GXUShort GetSSAONoiseTextureResolution () const;
 
 		GXVoid SetSSAOMaximumDistance ( GXFloat meters );
-		GXFloat GetSSAOSSAOMaximumDistance () const;
+		GXFloat GetSSAOMaximumDistance () const;
 
 		static EMRenderer& GXCALL GetInstance ();
 

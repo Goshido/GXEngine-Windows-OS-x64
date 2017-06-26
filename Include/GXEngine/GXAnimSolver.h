@@ -7,13 +7,7 @@
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXNativeSkeletalMesh.h>
 
-/*
-struct GXQuatLocPoseLocal
-{
-	GXChar				boneName[ MAX_BONES ][ 64 ];
-	GXQuatLocJoint		local[ MAX_BONES ];
-};
-*/
+
 class GXAnimSolver
 {
 	protected:
@@ -30,9 +24,9 @@ class GXAnimSolver
 			/*PURE VIRTUAL*/ 
 		}
 
-		virtual GXVoid GetBone ( const GXUTF8* boneName, const GXQuat** rot, const GXVec3** loc ) = 0;
+		virtual GXBool GetBone ( const GXUTF8* boneName, GXQuat &rotation, GXVec3 &location ) = 0;
 		virtual GXVoid Update ( GXFloat delta ) = 0;
 };
 
 
-#endif	//GX_ANIM_SOLVER
+#endif //GX_ANIM_SOLVER

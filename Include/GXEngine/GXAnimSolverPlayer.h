@@ -1,11 +1,10 @@
 //version 1.4
 
-#ifndef	GX_ANIM_SOLVER_PLAYER
-#define	GX_ANIM_SOLVER_PLAYER
+#ifndef GX_ANIM_SOLVER_PLAYER
+#define GX_ANIM_SOLVER_PLAYER
 
 
 #include "GXAnimSolver.h"
-//#include "GXSkeletalMeshStorage.h"
 
 
 class GXBoneFinder;
@@ -17,18 +16,24 @@ class GXAnimSolverPlayer : public GXAnimSolver
 		GXFloat							multiplier;
 		GXFloat							animPos;
 		const GXAnimationInfo*			animData;
-		GXFloat							delta2PartFartor;
+		GXFloat							delta2PartFactor;
+		GXFloat							frameInterval;
+		GXFloat							frameInterpolationFactor;
+		GXBool							isNormalize;
 
 	public:
 		GXAnimSolverPlayer ( GXUShort solverID );
 		~GXAnimSolverPlayer () override;
 
-		GXVoid GetBone ( const GXUTF8* boneName, const GXQuat** rot, const GXVec3** loc ) override;
+		GXBool GetBone ( const GXUTF8* boneName, GXQuat &rotation, GXVec3 &location ) override;
 		GXVoid Update ( GXFloat delta ) override;
 
 		GXVoid SetAnimationSequence ( const GXAnimationInfo* animData );
 		GXVoid SetAnimationMultiplier ( GXFloat multiplier );
+
+		GXVoid EnableNormalization ();
+		GXVoid DisableNormalization ();
 };
 
 
-#endif	//GX_ANIM_SOLVER_PLAYER
+#endif //GX_ANIM_SOLVER_PLAYER

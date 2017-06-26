@@ -21,7 +21,7 @@ EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
 	material.SetNormalTexture ( normalTexture );
 	material.SetSpecularTexture ( specularTexture );
 	material.SetEmissionTexture ( emissionTexture );
-	material.SetMaxBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
+	material.SetMaximumBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
 	material.SetExplosureTime ( renderer.GetMotionBlurExplosure () );
 
 	rigidBody = new GXRigidBody ();

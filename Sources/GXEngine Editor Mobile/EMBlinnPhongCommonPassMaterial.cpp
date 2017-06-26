@@ -82,6 +82,7 @@ EMBlinnPhongCommonPassMaterial::EMBlinnPhongCommonPassMaterial ()
 	explosureTimeLocation = shaderProgram.GetUniform ( "explosureTime" );
 	screenResolutionLocation = shaderProgram.GetUniform ( "screenResolution" );
 	maxBlurSamplesLocation = shaderProgram.GetUniform ( "maxBlurSamples" );
+	inverseMaxBlurSamplesLocation = shaderProgram.GetUniform ( "inverseMaxBlurSamples" );
 
 	diffuseTexture = nullptr;
 	SetDiffuseTextureColor ( DEFAULT_DIFFUSE_COLOR_R, DEFAULT_DIFFUSE_COLOR_G, DEFAULT_DIFFUSE_COLOR_B, DEFAULT_DIFFUSE_COLOR_A );
@@ -105,7 +106,7 @@ EMBlinnPhongCommonPassMaterial::EMBlinnPhongCommonPassMaterial ()
 
 	SetExplosureTime ( DEFAULT_EXPLOSURE_TIME );
 	SetScreenResolution ( DEFAULT_SCREEN_RESOLUTION_WIDTH, DEFAULT_SCREEN_RESOLUTION_HEIGHT );
-	SetMaxBlurSamples ( DEFAULT_MAX_BLUR_SAMPLES );
+	SetMaximumBlurSamples ( DEFAULT_MAX_BLUR_SAMPLES );
 }
 
 EMBlinnPhongCommonPassMaterial::~EMBlinnPhongCommonPassMaterial ()
@@ -125,7 +126,7 @@ GXVoid EMBlinnPhongCommonPassMaterial::Bind ( const GXTransform &transform )
 	GXMat3 currentFrameRotationViewMatrix;
 	GXMat4 lastFrameModelViewProjectionMatrix;
 
-	const GXMat4& currentFrameModelMatrix = transform.GetCurrentModelMatrix ();
+	const GXMat4& currentFrameModelMatrix = transform.GetCurrentFrameModelMatrix ();
 	GXMulMat4Mat4 ( currentFrameModelViewProjectionMatrix, currentFrameModelMatrix, camera->GetCurrentFrameViewProjectionMatrix () );
 
 	GXMat4 currentFrameRotationMatrix;
@@ -154,6 +155,7 @@ GXVoid EMBlinnPhongCommonPassMaterial::Bind ( const GXTransform &transform )
 	glUniform1f ( explosureTimeLocation, explosureTime );
 	glUniform2fv ( screenResolutionLocation, 1, screenResolution.arr );
 	glUniform1f ( maxBlurSamplesLocation, maxBlurSamples );
+	glUniform1f ( inverseMaxBlurSamplesLocation, inverseMaxBlurSamples );
 
 	diffuseTexture->Bind ( DIFFUSE_SLOT );
 	glUniform4fv ( diffuseColorLocation, 1, diffuseColor.arr );
@@ -276,7 +278,8 @@ GXVoid EMBlinnPhongCommonPassMaterial::SetScreenResolution ( GXUShort width, GXU
 	screenResolution.y = (GXFloat)height;
 }
 
-GXVoid EMBlinnPhongCommonPassMaterial::SetMaxBlurSamples ( GXUByte samples )
+GXVoid EMBlinnPhongCommonPassMaterial::SetMaximumBlurSamples ( GXUByte samples )
 {
 	maxBlurSamples = (GXFloat)samples;
+	inverseMaxBlurSamples = 1.0f / maxBlurSamples;
 }

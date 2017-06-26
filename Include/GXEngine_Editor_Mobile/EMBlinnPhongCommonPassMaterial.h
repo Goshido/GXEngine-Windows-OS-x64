@@ -45,6 +45,9 @@ class EMBlinnPhongCommonPassMaterial : public GXMaterial
 		GXFloat				maxBlurSamples;
 		GLint				maxBlurSamplesLocation;
 
+		GXFloat				inverseMaxBlurSamples;
+		GLint				inverseMaxBlurSamplesLocation;
+
 	public:
 		EMBlinnPhongCommonPassMaterial ();
 		~EMBlinnPhongCommonPassMaterial () override;
@@ -74,7 +77,7 @@ class EMBlinnPhongCommonPassMaterial : public GXMaterial
 
 		GXVoid SetExplosureTime ( GXFloat time );
 		GXVoid SetScreenResolution ( GXUShort width, GXUShort height );
-		GXVoid SetMaxBlurSamples ( GXUByte samples );
+		GXVoid SetMaximumBlurSamples ( GXUByte samples );
 };
 
 

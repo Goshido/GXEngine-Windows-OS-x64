@@ -87,6 +87,7 @@ GXFloat GXCALL GXSquareLengthVec3 ( const GXVec3 &v );
 GXFloat GXCALL GXDistanceVec3Vec3 ( const GXVec3 &a, const GXVec3 &b );
 GXFloat GXCALL GXSquareDistanceVec3Vec3 ( const GXVec3 &a, const GXVec3 &b );
 GXVoid GXCALL GXReverseVec3 ( GXVec3 &inOut );
+GXVoid GXCALL GXLerpVec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b, GXFloat factor );
 GXVoid GXCALL GXProjectVec3Vec3 ( GXVec3 &projection, const GXVec3 &vector, const GXVec3 &unitVector );
 GXVoid GXCALL GXMakeOrthonormalBasis ( GXVec3 &baseX, GXVec3 &adjustedY, GXVec3 &adjustedZ ); //baseX - correct direction, adjustedY - desirable, adjustedZ - calculated.
  

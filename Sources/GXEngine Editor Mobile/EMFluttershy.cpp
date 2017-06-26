@@ -13,6 +13,7 @@ mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLV
 	skeleton.LoadFromSkm ( L"3D Models/Editor Mobile/Fluttershy.skm" );
 	animationSolverPlayer.SetAnimationSequence ( &animationInfo );
 	animationSolverPlayer.SetAnimationMultiplier ( 1.0f );
+	animationSolverPlayer.EnableNormalization ();
 
 	diffuseTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Fluttershy_Diffuse.tga", GX_TRUE, GL_REPEAT );
 	//normalTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Brick_Wall_Normals.tga", GX_TRUE, GL_REPEAT );
@@ -44,7 +45,7 @@ GXVoid EMFluttershy::Render ( GXFloat deltaTime )
 	renderer.SetObjectMask ( (GXUPointer)nullptr );
 	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
 
-	material.SetMaxBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
+	material.SetMaximumBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
 	material.SetExplosureTime ( renderer.GetMotionBlurExplosure () );
 	material.SetScreenResolution ( (GXUShort)coreRenderer.GetWidth (), (GXUShort)coreRenderer.GetHeight () );
 	material.SetDeltaTime ( deltaTime );

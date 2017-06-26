@@ -41,7 +41,7 @@ class GXTransform
 
 		GXVoid GetScale ( GXVec3 &scale ) const;
 
-		const GXMat4& GetCurrentModelMatrix () const;
+		const GXMat4& GetCurrentFrameModelMatrix () const;
 		const GXMat4& GetLastFrameModelMatrix () const;
 		GXVoid UpdateLastFrameModelMatrix ();
 

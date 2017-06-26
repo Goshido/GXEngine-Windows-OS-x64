@@ -33,6 +33,7 @@ uniform vec4 emissionTextureScaleOffset;
 uniform float inverseDeltaTime;
 uniform float explosureTime;
 uniform float maxBlurSamples;
+uniform float inverseMaxBlurSamples;
 uniform vec2 screenResolution;
 
 smooth out vec2 v_uvDiffuse;
@@ -77,5 +78,8 @@ void main ()
 	vec2 halfSpreadVelocityImage = 0.5 * velocityImage * explosureTime;
 	float halfSpreadVelocityMagnitudeImage = max ( 0.0, min ( length ( halfSpreadVelocityImage ), maxBlurSamples ) );
 
-	v_velocityBlur = ( normalize ( velocityImage ) ) * ( halfSpreadVelocityMagnitudeImage / maxBlurSamples );
+	if ( halfSpreadVelocityImage == 0.0 )
+		v_velocityBlur = vec2 ( 0.0 );
+	else
+		v_velocityBlur = ( normalize ( velocityImage ) ) * halfSpreadVelocityMagnitudeImage * inverseMaxBlurSamples;
 }

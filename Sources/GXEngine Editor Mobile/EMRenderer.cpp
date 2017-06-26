@@ -72,6 +72,7 @@
 
 #define OVERLAY_TRANSPARENCY					80
 
+
 EMRenderer* EMRenderer::instance = nullptr;
 
 EMRenderer::~EMRenderer ()
@@ -619,7 +620,7 @@ GXVoid EMRenderer::SetSSAOMaximumDistance ( GXFloat meters )
 	isSSAOSettingsChanged = GX_TRUE;
 }
 
-GXFloat EMRenderer::GetSSAOSSAOMaximumDistance () const
+GXFloat EMRenderer::GetSSAOMaximumDistance () const
 {
 	return ssaoSharpMaterial.GetMaximumDistance ();
 }
