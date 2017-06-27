@@ -345,12 +345,6 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXRenderable.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMBlinnPhongCommonPassMaterial.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMBlinnPhongDirectedLightMaterial.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXGame.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
@@ -394,6 +388,12 @@
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUISSAOSettings.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMCookTorranceCommonPassMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMCookTorranceDirectedLightMaterial.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
   </ItemGroup>
@@ -791,12 +791,6 @@
     <ClInclude Include="..\..\Include\GXEngine\GXRenderable.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMBlinnPhongCommonPassMaterial.h">
-      <Filter>Header Files\GXEngine Editor Mobile</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMBlinnPhongDirectedLightMaterial.h">
-      <Filter>Header Files\GXEngine Editor Mobile</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXGame.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
@@ -842,6 +836,12 @@
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUISSAOSettings.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMCookTorranceCommonPassMaterial.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMCookTorranceDirectedLightMaterial.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="..\..\Sources\GXEngine\GXRecource.res">
@@ -850,9 +850,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\Shaders\Editor Mobile\Color_fs.txt">
-      <Filter>Shaders\GXEngine Editor Mobile</Filter>
-    </Text>
-    <Text Include="..\..\Shaders\Editor Mobile\DirectedLight_fs.txt">
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\Mask_fs.txt">
@@ -972,16 +969,10 @@
     <Text Include="..\..\Shaders\System\VertexUVScaleOffset_vs.txt">
       <Filter>Shaders\System</Filter>
     </Text>
-    <Text Include="..\..\Shaders\Editor Mobile\BlinnPhongCommonPass_fs.txt">
-      <Filter>Shaders\GXEngine Editor Mobile</Filter>
-    </Text>
     <Text Include="..\..\Shaders\System\Skinning_vs.txt">
       <Filter>Shaders\System</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\MotionBlur_fs.txt">
-      <Filter>Shaders\GXEngine Editor Mobile</Filter>
-    </Text>
-    <Text Include="..\..\Shaders\Editor Mobile\BlinnPhongCommonPass_vs.txt">
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\VelocityTileMax_fs.txt">
@@ -1000,6 +991,15 @@
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\SSAOApply_fs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\CookTorranceCommonPass_fs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\CookTorranceCommonPass_vs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\CookTorranceDirectedLight_fs.txt">
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
   </ItemGroup>

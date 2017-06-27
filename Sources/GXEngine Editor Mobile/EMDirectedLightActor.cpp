@@ -18,6 +18,7 @@ EMActor ( name, EM_DIRECTED_LIGHT_ACTOR_CLASS, transform )
 {
 	light = new EMDirectedLight ();
 	light->SetRotation ( transform );
+	light->SetIntensity ( 5.0f );
 }
 
 EMDirectedLightActor::~EMDirectedLightActor ()
@@ -25,15 +26,9 @@ EMDirectedLightActor::~EMDirectedLightActor ()
 	delete light;
 }
 
-GXVoid EMDirectedLightActor::OnDrawHudDepthIndependentPass ()
+GXVoid EMDirectedLightActor::OnSave ( GXUByte** data )
 {
-	//TODO
-}
-
-GXVoid EMDirectedLightActor::OnSave ( GXUByte** data, GXUInt &size )
-{
-	size = sizeof ( EMDirectedLightActorSaveData );
-	EMDirectedLightActorSaveData* save = (EMDirectedLightActorSaveData*)malloc ( size );
+	EMDirectedLightActorSaveData* save = (EMDirectedLightActorSaveData*)malloc ( sizeof ( EMDirectedLightActorSaveData ) );
 	
 	light->GetBaseColor ( save->baseColor[ 0 ], save->baseColor[ 1 ], save->baseColor[ 2 ] );
 	save->baseIntensity = light->GetIntensity ();

@@ -3,7 +3,7 @@
 
 
 #include "EMMesh.h"
-#include "EMBlinnPhongCommonPassMaterial.h"
+#include "EMCookTorranceCommonPassMaterial.h"
 #include <GXPhysics/GXRigidBody.h>
 #include <GXPhysics/GXShape.h>
 
@@ -18,13 +18,13 @@ enum class eEMPhysicsDrivenActorType
 class EMPhysicsDrivenActor
 {
 	private:
-		EMMesh*							mesh;
-		GXRigidBody*					rigidBody;
-		EMBlinnPhongCommonPassMaterial	material;
-		GXTexture						diffuseTexture;
-		GXTexture						normalTexture;
-		GXTexture						specularTexture;
-		GXTexture						emissionTexture;
+		EMMesh*								mesh;
+		GXRigidBody*						rigidBody;
+		EMCookTorranceCommonPassMaterial	material;
+		GXTexture							diffuseTexture;
+		GXTexture							normalTexture;
+		GXTexture							emissionTexture;
+		GXTexture							parameterTexture;
 
 	public:
 		explicit EMPhysicsDrivenActor ( eGXShapeType type );

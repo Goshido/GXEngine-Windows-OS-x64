@@ -12,13 +12,8 @@
 
 #define DIFFUSE_TEXTURE		L"Textures/System/Checker.tga"
 #define NORMAL_TEXTURE		L"Textures/Editor Mobile/Default Normals.tex"
-#define SPECULAR_TEXTURE	L"Textures/Editor Mobile/Default Specular.tex"
 #define EMISSION_TEXTURE	L"Textures/Editor Mobile/Default Emission.tex"
-
-#define DIFFUSE_COLOR_R		255
-#define DIFFUSE_COLOR_G		255
-#define DIFFUSE_COLOR_B		255
-#define DIFFUSE_COLOR_A		255
+#define PARAMETER_TEXTURE	L"Textures/Editor Mobile/Default Cook Torrance parameters.tga"
 
 
 EMUnitActor::EMUnitActor ( const GXWChar* name, const GXMat4 &transform ):
@@ -29,26 +24,24 @@ mesh ( L"3D Models/Editor Mobile/Unit Cube.stm" )
 
 	diffuseTexture = GXTexture::LoadTexture ( DIFFUSE_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
 	normalTexture = GXTexture::LoadTexture ( NORMAL_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
-	specularTexture = GXTexture::LoadTexture ( SPECULAR_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
 	emissionTexture = GXTexture::LoadTexture ( EMISSION_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	parameterTexture = GXTexture::LoadTexture ( PARAMETER_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
 
 	EMRenderer& renderer = EMRenderer::GetInstance ();
 
-	commonPassMaterial.SetDiffuseTexture ( diffuseTexture );
-	commonPassMaterial.SetDiffuseTextureScale ( 0.25f, 0.25f );
+	commonPassMaterial.SetAlbedoTexture ( diffuseTexture );
+	commonPassMaterial.SetAlbedoTextureScale ( 0.25f, 0.25f );
 	commonPassMaterial.SetNormalTexture ( normalTexture );
-	commonPassMaterial.SetSpecularTexture ( specularTexture );
 	commonPassMaterial.SetEmissionTexture ( emissionTexture );
-
-	commonPassMaterial.SetDiffuseTextureColor ( DIFFUSE_COLOR_R, DIFFUSE_COLOR_G, DIFFUSE_COLOR_B, DIFFUSE_COLOR_A );
+	commonPassMaterial.SetParameterTexture ( parameterTexture );
 }
 
 EMUnitActor::~EMUnitActor ()
 {
 	GXTexture::RemoveTexture ( diffuseTexture );
 	GXTexture::RemoveTexture ( normalTexture );
-	GXTexture::RemoveTexture ( specularTexture );
 	GXTexture::RemoveTexture ( emissionTexture );
+	GXTexture::RemoveTexture ( parameterTexture );
 }
 
 GXVoid EMUnitActor::OnDrawCommonPass ( GXFloat deltaTime )
@@ -59,7 +52,7 @@ GXVoid EMUnitActor::OnDrawCommonPass ( GXFloat deltaTime )
 	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
 
 	commonPassMaterial.SetMaximumBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
-	commonPassMaterial.SetExplosureTime ( renderer.GetMotionBlurExplosure () );
+	commonPassMaterial.SetExposure ( renderer.GetMotionBlurExposure () );
 	commonPassMaterial.SetDeltaTime ( deltaTime );
 	commonPassMaterial.SetScreenResolution ( (GXUShort)coreRenderer.GetWidth (), (GXUShort)coreRenderer.GetHeight () );
 	commonPassMaterial.Bind ( mesh );

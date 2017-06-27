@@ -25,21 +25,21 @@ uniform mat4 currentFrameModelViewProjectionMatrix;
 uniform mat3 currentFrameRotationViewMatrix;
 uniform mat4 lastFrameModelViewProjectionMatrix;
 
-uniform vec4 diffuseTextureScaleOffset;
+uniform vec4 albedoTextureScaleOffset;
 uniform vec4 normalTextureScaleOffset;
-uniform vec4 specularTextureScaleOffset;
 uniform vec4 emissionTextureScaleOffset;
+uniform vec4 parameterTextureScaleOffset;
 
 uniform float inverseDeltaTime;
-uniform float explosureTime;
-uniform float maxBlurSamples;
-uniform float inverseMaxBlurSamples;
+uniform float exposure;
+uniform float maximumBlurSamples;
+uniform float inverseMaximumBlurSamples;
 uniform vec2 screenResolution;
 
-smooth out vec2 v_uvDiffuse;
+smooth out vec2 v_uvAlbedo;
 smooth out vec2 v_uvNormal;
-smooth out vec2 v_uvSpecular;
 smooth out vec2 v_uvEmission;
+smooth out vec2 v_uvParameter;
 
 smooth out vec3 v_normalView;
 smooth out vec3 v_tangentView;
@@ -58,10 +58,10 @@ void main ()
 	vec2 currentFrameLocationCVV = alpha.xy / alpha.w;
 	vec2 currentFrameLocationImage = ( currentFrameLocationCVV * 0.5 + 0.5 ) * screenResolution;
 
-	v_uvDiffuse = uv * diffuseTextureScaleOffset.xy + diffuseTextureScaleOffset.zw;
+	v_uvAlbedo = uv * albedoTextureScaleOffset.xy + albedoTextureScaleOffset.zw;
 	v_uvNormal = uv * normalTextureScaleOffset.xy + normalTextureScaleOffset.zw;
-	v_uvSpecular = uv * specularTextureScaleOffset.xy + specularTextureScaleOffset.zw;
 	v_uvEmission = uv * emissionTextureScaleOffset.xy + emissionTextureScaleOffset.zw;
+	v_uvParameter = uv * parameterTextureScaleOffset.xy + parameterTextureScaleOffset.zw;
 
 	v_normalView = currentFrameRotationViewMatrix * currentFrameNormal;
 	v_tangentView = currentFrameRotationViewMatrix * currentFrameTangent;
@@ -75,11 +75,11 @@ void main ()
 	vec2 lastFrameLocationImage = ( lastFrameLocationCVV * 0.5 + 0.5 ) * screenResolution;
 
 	vec2 velocityImage = ( currentFrameLocationImage - lastFrameLocationImage ) * inverseDeltaTime;
-	vec2 halfSpreadVelocityImage = 0.5 * velocityImage * explosureTime;
-	float halfSpreadVelocityMagnitudeImage = max ( 0.0, min ( length ( halfSpreadVelocityImage ), maxBlurSamples ) );
+	vec2 halfSpreadVelocityImage = 0.5 * velocityImage * exposure;
+	float halfSpreadVelocityMagnitudeImage = max ( 0.0, min ( length ( halfSpreadVelocityImage ), maximumBlurSamples ) );
 
 	if ( halfSpreadVelocityImage == 0.0 )
 		v_velocityBlur = vec2 ( 0.0 );
 	else
-		v_velocityBlur = ( normalize ( velocityImage ) ) * halfSpreadVelocityMagnitudeImage * inverseMaxBlurSamples;
+		v_velocityBlur = ( normalize ( velocityImage ) ) * halfSpreadVelocityMagnitudeImage * inverseMaximumBlurSamples;
 }

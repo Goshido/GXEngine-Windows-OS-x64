@@ -1,19 +1,19 @@
 #version 330 core
 
 
-#define DISSUFE_SLOT			0
+#define ALBEDO_SLOT				0
 #define NORMAL_SLOT				1
-#define SPECULAR_SLOT			2
-#define EMISSION_SLOT			3
+#define EMISSION_SLOT			2
+#define PARAMETER_SLOT			3
 #define VELOCITY_BLUR_SLOT		4
 #define OBJECT_HI_SLOT			5
 #define OBJECT_LOW_SLOT			6
 
 
-smooth in vec2 v_uvDiffuse;
+smooth in vec2 v_uvAlbedo;
 smooth in vec2 v_uvNormal;
-smooth in vec2 v_uvSpecular;
 smooth in vec2 v_uvEmission;
+smooth in vec2 v_uvParameter;
 
 smooth in vec3 v_normalView;
 smooth in vec3 v_tangentView;
@@ -24,19 +24,21 @@ smooth in vec2 v_velocityBlur;
 flat in vec4 v_objectHi;
 flat in vec4 v_objectLow;
 
-uniform sampler2D diffuseSampler;
-uniform vec4 diffuseColor;
+uniform sampler2D albedoSampler;
+uniform vec4 albedoColor;
 
 uniform sampler2D normalSampler;
-uniform sampler2D specularSampler;
 
 uniform sampler2D emissionSampler;
-uniform vec3 emissionColor;
+uniform vec3 emissionScaledColor;
 
-layout ( location = DISSUFE_SLOT ) out vec4 outDiffuse;
+uniform sampler2D parameterSampler;
+uniform vec3 parameterScale;
+
+layout ( location = ALBEDO_SLOT ) out vec4 outAlbedo;
 layout ( location = NORMAL_SLOT ) out vec3 outNormal;
-layout ( location = SPECULAR_SLOT ) out vec4 outSpecular;
 layout ( location = EMISSION_SLOT ) out vec3 outEmission;
+layout ( location = PARAMETER_SLOT ) out vec4 outParameter;
 layout ( location = VELOCITY_BLUR_SLOT ) out vec2 outVelocityBlur;
 layout ( location = OBJECT_HI_SLOT ) out vec4 outObjectHi;
 layout ( location = OBJECT_LOW_SLOT ) out vec4 outObjectLow;
@@ -54,10 +56,15 @@ vec3 GetNormal ()
 
 void main ()
 {
-	outDiffuse = texture ( diffuseSampler, v_uvDiffuse ) * diffuseColor;
+	outAlbedo = texture ( albedoSampler, v_uvAlbedo ) * albedoColor;
 	outNormal = GetNormal ();
-	outSpecular = texture ( specularSampler, v_uvSpecular );
-	outEmission = texture ( emissionSampler, v_uvEmission ).rgb * emissionColor;
+	outEmission = texture ( emissionSampler, v_uvEmission ).rgb * emissionScaledColor;
+
+	vec4 parameterSample = texture ( parameterSampler, v_uvParameter );
+	parameterSample.w = parameterSample.w < 0.5 ? 0.0 : 1.0;
+	parameterSample.xyz *= parameterScale;
+	outParameter = parameterSample;
+
 	outVelocityBlur = v_velocityBlur * 0.5 + 0.5;
 	outObjectHi = v_objectHi;
 	outObjectLow = v_objectLow;

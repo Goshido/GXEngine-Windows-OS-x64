@@ -454,9 +454,18 @@ GXVoid GXTexture::InitResources ( GXUShort width, GXUShort height, GLint interna
 
 		case GL_RGB16:
 		{
-			unpackAlignment = 4;
+			unpackAlignment = 2;
 			format = GL_RGB;
 			type = GL_UNSIGNED_SHORT;
+			numChannels = 3;
+		}
+		break;
+
+		case GL_RGB16F:
+		{
+			unpackAlignment = 2;
+			format = GL_RGB;
+			type = GL_FLOAT;
 			numChannels = 3;
 		}
 		break;
@@ -476,7 +485,7 @@ GXVoid GXTexture::InitResources ( GXUShort width, GXUShort height, GLint interna
 		{
 			unpackAlignment = 4;
 			format = GL_RGBA;
-			type = GL_HALF_FLOAT;
+			type = GL_FLOAT;
 			numChannels = 4;
 		}
 		break;

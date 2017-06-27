@@ -1,22 +1,22 @@
 #include "EMMesh.h"
-#include "EMBlinnPhongCommonPassMaterial.h"
+#include "EMCookTorranceCommonPassMaterial.h"
 #include <GXEngine/GXAnimSolverPlayer.h>
 
 
 class EMFluttershy : public GXTransform
 {
 	private:
-		EMMesh							mesh;
-		GXSkeleton						skeleton;
-		GXAnimSolverPlayer				animationSolverPlayer;
-		GXAnimationInfo					animationInfo;
+		EMMesh								mesh;
+		GXSkeleton							skeleton;
+		GXAnimSolverPlayer					animationSolverPlayer;
+		GXAnimationInfo						animationInfo;
 
-		GXTexture						diffuseTexture;
-		GXTexture						normalTexture;
-		GXTexture						specularTexture;
-		GXTexture						emissionTexture;
+		GXTexture							albedoTexture;
+		GXTexture							normalTexture;
+		GXTexture							emissionTexture;
+		GXTexture							parameterTexture;
 
-		EMBlinnPhongCommonPassMaterial	material;
+		EMCookTorranceCommonPassMaterial	material;
 
 	public:
 		EMFluttershy ();

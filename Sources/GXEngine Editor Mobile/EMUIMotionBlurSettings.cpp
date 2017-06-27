@@ -154,7 +154,7 @@ GXVoid EMUIMotionBlurSettings::SyncSettings ()
 	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetMotionBlurDepthLimit () );
 	depthLimit->SetText ( buffer );
 
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetMotionBlurExplosure () );
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetMotionBlurExposure () );
 	exposure->SetText ( buffer );
 }
 

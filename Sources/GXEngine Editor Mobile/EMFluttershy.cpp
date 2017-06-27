@@ -12,31 +12,32 @@ mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLV
 	GXLoadNativeAnimation ( L"Animations/Editor Mobile/Battle.ani", animationInfo );
 	skeleton.LoadFromSkm ( L"3D Models/Editor Mobile/Fluttershy.skm" );
 	animationSolverPlayer.SetAnimationSequence ( &animationInfo );
-	animationSolverPlayer.SetAnimationMultiplier ( 1.0f );
+	animationSolverPlayer.SetAnimationMultiplier ( 0.8f );
 	animationSolverPlayer.EnableNormalization ();
 
-	diffuseTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Fluttershy_Diffuse.tga", GX_TRUE, GL_REPEAT );
+	albedoTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Fluttershy_Diffuse.tga", GX_TRUE, GL_REPEAT );
 	//normalTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Brick_Wall_Normals.tga", GX_TRUE, GL_REPEAT );
 	normalTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE, GL_CLAMP_TO_EDGE );
-	specularTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Specular.tex", GX_FALSE, GL_CLAMP_TO_EDGE );
 	emissionTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE, GL_CLAMP_TO_EDGE );
+	parameterTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Cook Torrance parameters.tga", GX_FALSE, GL_CLAMP_TO_EDGE );
 
 	EMRenderer& renderer = EMRenderer::GetInstance ();
 
-	material.SetDiffuseTexture ( diffuseTexture );
+	material.SetAlbedoTexture ( albedoTexture );
 	material.SetNormalTexture ( normalTexture );
-	material.SetSpecularTexture ( specularTexture );
+	//material.SetNormalTextureScale ( 5.0f, 5.0f );
 	material.SetEmissionTexture ( emissionTexture );
+	material.SetParameterTexture ( parameterTexture );
 }
 
 EMFluttershy::~EMFluttershy ()
 {
 	animationInfo.Cleanup ();
 
-	GXTexture::RemoveTexture ( diffuseTexture );
+	GXTexture::RemoveTexture ( albedoTexture );
 	GXTexture::RemoveTexture ( normalTexture );
-	GXTexture::RemoveTexture ( specularTexture );
 	GXTexture::RemoveTexture ( emissionTexture );
+	GXTexture::RemoveTexture ( parameterTexture );
 }
 
 GXVoid EMFluttershy::Render ( GXFloat deltaTime )
@@ -46,7 +47,7 @@ GXVoid EMFluttershy::Render ( GXFloat deltaTime )
 	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
 
 	material.SetMaximumBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
-	material.SetExplosureTime ( renderer.GetMotionBlurExplosure () );
+	material.SetExposure ( renderer.GetMotionBlurExposure () );
 	material.SetScreenResolution ( (GXUShort)coreRenderer.GetWidth (), (GXUShort)coreRenderer.GetHeight () );
 	material.SetDeltaTime ( deltaTime );
 	material.Bind ( mesh );

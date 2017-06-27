@@ -9,20 +9,18 @@
 #define EM_DIRECTED_LIGHT_ACTOR_CLASS		1
 
 
-class EMDirectedLightActor : EMActor
+class EMDirectedLightActor : public EMActor
 {
 	private:
 		EMDirectedLight*	light;
 
 	public:
 		EMDirectedLightActor ( const GXWChar* name, const GXMat4 &transform );
-		virtual ~EMDirectedLightActor ();
-
-		virtual GXVoid OnDrawHudDepthIndependentPass ();
+		~EMDirectedLightActor () override;
 		
-		virtual GXVoid OnSave ( GXUByte** data, GXUInt &size );
-		virtual GXVoid OnLoad ( const GXUByte* data );
-		virtual GXUInt OnRequeredSaveSize ();
+		GXVoid OnSave ( GXUByte** data ) override;
+		GXVoid OnLoad ( const GXUByte* data ) override;
+		GXUInt OnRequeredSaveSize () override;
 };
 
 

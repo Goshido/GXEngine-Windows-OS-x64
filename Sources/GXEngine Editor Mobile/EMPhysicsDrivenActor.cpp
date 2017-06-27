@@ -1,5 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMPhysicsDrivenActor.h>
 #include <GXEngine_Editor_Mobile/EMRenderer.h>
+#include <GXEngine/GXRenderer.h>
 #include <GXPhysics/GXBoxShape.h>
 #include <GXPhysics/GXPlaneShape.h>
 #include <GXPhysics/GXSphereShape.h>
@@ -12,17 +13,15 @@ EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
 {
 	diffuseTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/gui_folder_icon.png", GX_TRUE, GL_REPEAT );
 	normalTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE, GL_REPEAT );
-	emissionTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE, GL_REPEAT );
-	specularTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Specular.tex", GX_FALSE, GL_REPEAT );
+	emissionTexture = GXTexture::LoadTexture ( L"Textures/System/Default_Emission.tga", GX_FALSE, GL_REPEAT );
+	parameterTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Cook Torrance parameters.tga", GX_FALSE, GL_REPEAT );
 
 	EMRenderer& renderer = EMRenderer::GetInstance ();
 
-	material.SetDiffuseTexture ( diffuseTexture );
+	material.SetAlbedoTexture ( diffuseTexture );
 	material.SetNormalTexture ( normalTexture );
-	material.SetSpecularTexture ( specularTexture );
 	material.SetEmissionTexture ( emissionTexture );
-	material.SetMaximumBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
-	material.SetExplosureTime ( renderer.GetMotionBlurExplosure () );
+	material.SetParameterTexture ( parameterTexture );
 
 	rigidBody = new GXRigidBody ();
 
@@ -75,8 +74,8 @@ EMPhysicsDrivenActor::~EMPhysicsDrivenActor ()
 {
 	GXTexture::RemoveTexture ( diffuseTexture );
 	GXTexture::RemoveTexture ( normalTexture );
-	GXTexture::RemoveTexture ( specularTexture );
 	GXTexture::RemoveTexture ( emissionTexture );
+	GXTexture::RemoveTexture ( parameterTexture );
 	GXSafeDelete ( mesh );
 	delete rigidBody;
 }
@@ -91,6 +90,8 @@ GXVoid EMPhysicsDrivenActor::Draw ( GXFloat deltaTime )
 	if ( !mesh ) return;
 
 	GXBoxShape& s = (GXBoxShape&)rigidBody->GetShape ();
+	EMRenderer& renderer = EMRenderer::GetInstance ();
+	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
 
 	mesh->SetLocation ( rigidBody->GetLocation () );
 	mesh->SetScale ( s.GetWidth (), s.GetHeight (), s.GetDepth () );
@@ -100,6 +101,9 @@ GXVoid EMPhysicsDrivenActor::Draw ( GXFloat deltaTime )
 	mesh->SetRotation ( rot );
 
 	material.SetDeltaTime ( deltaTime );
+	material.SetExposure ( renderer.GetMotionBlurExposure () );
+	material.SetScreenResolution ( (GXUShort)coreRenderer.GetWidth (), (GXUShort)coreRenderer.GetHeight () );
+	material.SetMaximumBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
 	material.Bind ( *mesh );
 
 	mesh->Render ();

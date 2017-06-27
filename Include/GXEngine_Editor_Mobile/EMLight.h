@@ -41,10 +41,10 @@ class EMLightEmitter
 		virtual ~EMLightEmitter ();
 
 		eEMLightEmitterType GetType ();
-		GXVoid SetBaseColor ( GXUByte r, GXUByte g, GXUByte b );
+		GXVoid SetBaseColor ( GXUByte red, GXUByte green, GXUByte blue );
 		GXVoid SetIntensity ( GXFloat intensity );
 
-		GXVoid GetBaseColor ( GXUByte &r, GXUByte &g, GXUByte &b );
+		GXVoid GetBaseColor ( GXUByte &red, GXUByte &green, GXUByte &blue );
 		const GXVec3& GetColor ();
 		GXFloat GetIntensity ();
 };
@@ -121,7 +121,7 @@ class EMDirectedLight : public EMLightEmitter
 		GXVoid SetAmbientBaseColor ( GXUByte r, GXUByte g, GXUByte b );
 		GXVoid SetAmbientIntensity ( GXFloat intens );
 
-		GXVoid GetAmbientBaseColor ( GXUByte &r, GXUByte &g, GXUByte &b );
+		GXVoid GetAmbientBaseColor ( GXUByte &red, GXUByte &green, GXUByte &blue );
 		const GXVec3& GetAmbientColor ();
 		GXFloat GetAmbientIntensity ();
 

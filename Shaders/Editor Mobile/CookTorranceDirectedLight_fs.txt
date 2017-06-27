@@ -1,0 +1,113 @@
+#version 330 core
+
+
+#define PI								3.141592
+#define INVERSE_PI						0.31830
+#define METALLIC_LIMIT					0.5
+#define MAXIMUM_INDEX_OF_REFRACTION		5.0
+#define EPSILON							0.001
+
+#define COLOR_SLOT						0
+
+
+smooth in vec2 v_uv;
+
+uniform sampler2D albedoSampler;
+uniform sampler2D normalSampler;
+uniform sampler2D emissionSampler;
+uniform sampler2D parameterSampler;
+uniform sampler2D depthSampler;
+
+uniform vec3 hue;
+uniform float intencity;
+uniform vec3 hrdColor;
+uniform vec3 ambientColor;
+uniform vec3 toLightDirectionView;
+uniform mat4 inverseProjectionMatrix;
+
+out layout ( location = COLOR_SLOT ) vec3 fragmentColor;
+
+
+vec3 GetFragmentViewDirectionView ( const in float depthSample )
+{
+	vec4 locationCVV;
+	locationCVV.xy = v_uv * 2.0 - 1.0;
+	locationCVV.z = depthSample * 2.0 - 1.0;
+	locationCVV.w = 1.0;
+
+	vec4 locationView = inverseProjectionMatrix * locationCVV;
+	return normalize ( -locationView.xyz );
+}
+
+float GGX ( const in float value )
+{
+	return value > 0.0 ? 1.0 : 0.0;
+}
+
+float GGXSchlick ( const in vec3 vectorA, const in vec3 vectorB, const in float roughness )
+{
+	float alpha = max ( dot ( vectorA, vectorB ), 0.0 );
+	return alpha / ( alpha * ( 1.0 - roughness ) + roughness );
+}
+
+float Distribution ( const in vec3 normalView, const in vec3 halfVectorView, const in float roughness )
+{
+	float alpha = dot ( normalView, halfVectorView );
+	float betta = roughness * roughness;
+	float gamma = alpha * alpha;
+	float zeta = alpha * betta + 1.0 - alpha;
+
+	return ( betta * GGX ( alpha ) ) / ( PI * zeta * zeta );
+}
+
+float GeometryAttenuation ( const in vec3 viewDirectionView, const in vec3 normalView, const in vec3 lightDirectionView, const float roughness )
+{
+	return GGXSchlick ( normalView, viewDirectionView, roughness ) * GGXSchlick ( normalView, lightDirectionView, roughness );
+}
+
+float Fresnel ( const in float ior, const in vec3 normalView, const in vec3 viewDirectionView )
+{
+	float alpha = ( 1.0 - ior ) / ( 1.0 + ior );
+	float betta = alpha * alpha;
+	float gamma = pow ( 1.0 - max ( dot ( normalView, viewDirectionView ), 0.0 ), 5.0 );
+
+	return betta + ( 1.0 - betta ) * gamma;
+}
+
+void main ()
+{
+	float depthSample = texture ( depthSampler, v_uv ).x;
+
+	if ( depthSample == 1.0 )
+		discard;
+
+	vec3 fragmentViewDirectionView = GetFragmentViewDirectionView ( depthSample );
+	vec3 normalView = texture ( normalSampler, v_uv ).xyz * 2.0 - 1.0;
+	vec3 halfVectorView = normalize ( toLightDirectionView + fragmentViewDirectionView );
+
+	vec3 albedo = texture ( albedoSampler, v_uv ).rgb;
+	vec3 emission = texture ( emissionSampler, v_uv ).rgb;
+
+	vec4 parameterSample = texture ( parameterSampler, v_uv );
+	float roughness = parameterSample.x + EPSILON;
+	float ior = parameterSample.y * MAXIMUM_INDEX_OF_REFRACTION + EPSILON;
+	float specularIntensity = parameterSample.z + EPSILON;
+	float metallic = parameterSample.w;
+
+	float d = Distribution ( normalView, halfVectorView, roughness );
+	float f = Fresnel ( ior, normalView, fragmentViewDirectionView );
+	float ga = GeometryAttenuation ( fragmentViewDirectionView, normalView, toLightDirectionView, roughness );
+	float alpha = dot ( normalView, toLightDirectionView );
+	float betta = dot ( normalView, fragmentViewDirectionView );
+
+	vec3 specularColor;
+	if ( metallic < METALLIC_LIMIT )
+		specularColor = hue;
+	else
+		specularColor = albedo;
+
+	vec3 diffuse = albedo * hrdColor * INVERSE_PI * ( 1.0 - specularIntensity ) * max ( dot ( normalView, toLightDirectionView ), 0.0 );
+	vec3 specular = specularColor * intencity * specularIntensity * ( d * f * ga ) / ( 4.0 * alpha * betta );
+	
+	fragmentColor = ambientColor + emission + diffuse + specular;
+}

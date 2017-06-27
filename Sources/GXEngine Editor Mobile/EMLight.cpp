@@ -36,11 +36,11 @@ eEMLightEmitterType EMLightEmitter::GetType ()
 	return type;
 }
 
-GXVoid EMLightEmitter::SetBaseColor ( GXUByte r, GXUByte g, GXUByte b )
+GXVoid EMLightEmitter::SetBaseColor ( GXUByte red, GXUByte green, GXUByte blue )
 {
-	baseColor[ 0 ] = r;
-	baseColor[ 1 ] = g;
-	baseColor[ 2 ] = b;
+	baseColor[ 0 ] = red;
+	baseColor[ 1 ] = green;
+	baseColor[ 2 ] = blue;
 
 	#define COLOR_FACTOR	0.00392f
 
@@ -64,11 +64,11 @@ GXVoid EMLightEmitter::SetIntensity ( GXFloat intensity )
 	#undef COLOR_FACTOR
 }
 
-GXVoid EMLightEmitter::GetBaseColor ( GXUByte &r, GXUByte &g, GXUByte &b )
+GXVoid EMLightEmitter::GetBaseColor ( GXUByte &red, GXUByte &green, GXUByte &blue )
 {
-	r = baseColor[ 0 ];
-	g = baseColor[ 0 ];
-	b = baseColor[ 0 ];
+	red = baseColor[ 0 ];
+	green = baseColor[ 0 ];
+	blue = baseColor[ 0 ];
 }
 
 const GXVec3& EMLightEmitter::GetColor ()
@@ -235,11 +235,11 @@ EMDirectedLight::~EMDirectedLight ()
 	//NOTHING
 }
 
-GXVoid EMDirectedLight::SetAmbientBaseColor ( GXUByte r, GXUByte g, GXUByte b )
+GXVoid EMDirectedLight::SetAmbientBaseColor ( GXUByte red, GXUByte green, GXUByte blue )
 {
-	ambientBase[ 0 ] = r;
-	ambientBase[ 1 ] = g;
-	ambientBase[ 2 ] = b;
+	ambientBase[ 0 ] = red;
+	ambientBase[ 1 ] = green;
+	ambientBase[ 2 ] = blue;
 
 	#define COLOR_FACTOR	0.00392f
 
@@ -263,11 +263,11 @@ GXVoid EMDirectedLight::SetAmbientIntensity ( GXFloat intens )
 	#undef COLOR_FACTOR
 }
 
-GXVoid EMDirectedLight::GetAmbientBaseColor ( GXUByte &r, GXUByte &g, GXUByte &b )
+GXVoid EMDirectedLight::GetAmbientBaseColor ( GXUByte &red, GXUByte &green, GXUByte &blue )
 {
-	r = ambientBase[ 0 ];
-	g = ambientBase[ 1 ];
-	b = ambientBase[ 2 ];
+	red = ambientBase[ 0 ];
+	green = ambientBase[ 1 ];
+	blue = ambientBase[ 2 ];
 }
 
 const GXVec3& EMDirectedLight::GetAmbientColor ()

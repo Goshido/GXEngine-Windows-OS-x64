@@ -4,7 +4,7 @@
 
 #include "EMLight.h"
 #include "EMMesh.h"
-#include "EMBlinnPhongDirectedLightMaterial.h"
+#include "EMCookTorranceDirectedLightMaterial.h"
 #include "EMVelocityTileMaxMaterial.h"
 #include "EMVelocityNeighborMaxMaterial.h"
 #include "EMMotionBlurMaterial.h"
@@ -22,8 +22,8 @@ enum class eEMRenderTarget
 {
 	Albedo,
 	Normal,
-	Specular,
 	Emission,
+	Parameter,
 	VelocityBlur,
 	VelocityTileMax,
 	VelocityNeighborMax,
@@ -35,10 +35,10 @@ enum class eEMRenderTarget
 class EMRenderer
 {
 	private:
-		GXTexture							diffuseTexture;
+		GXTexture							albedoTexture;
 		GXTexture							normalTexture;
-		GXTexture							specularTexture;
 		GXTexture							emissionTexture;
+		GXTexture							parameterTexture;
 		GXTexture							velocityBlurTexture;
 		GXTexture							velocityTileMaxTexture;
 		GXTexture							velocityNeighborMaxTexture;
@@ -55,7 +55,7 @@ class EMRenderer
 
 		EMMesh								screenQuadMesh;
 
-		EMBlinnPhongDirectedLightMaterial	directedLightMaterial;
+		EMCookTorranceDirectedLightMaterial	directedLightMaterial;
 		EMVelocityTileMaxMaterial			velocityTileMaxMaterial;
 		EMVelocityNeighborMaxMaterial		velocityNeighborMaxMaterial;
 		EMMotionBlurMaterial				motionBlurMaterial;
@@ -110,7 +110,7 @@ class EMRenderer
 		GXFloat GetMotionBlurDepthLimit () const;
 
 		GXVoid SetMotionBlurExposure ( GXFloat seconds );
-		GXFloat GetMotionBlurExplosure () const;
+		GXFloat GetMotionBlurExposure () const;
 
 		GXVoid SetSSAOCheckRadius ( GXFloat meters );
 		GXFloat GetSSAOCheckRadius () const;

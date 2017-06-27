@@ -45,15 +45,15 @@
 #define CLEAR_NORMAL_B							0.5f
 #define CLEAR_NORMAL_A							0.0f
 
-#define CLEAR_SPECULAR_R						0.0f
-#define CLEAR_SPECULAR_G						0.0f
-#define CLEAR_SPECULAR_B						0.0f
-#define CLEAR_SPECULAR_A						0.5f
-
 #define CLEAR_EMISSION_R						0.0f
 #define CLEAR_EMISSION_G						0.0f
 #define CLEAR_EMISSION_B						0.0f
 #define CLEAR_EMISSION_A						0.0f
+
+#define CLEAR_PARAMETER_ROUGNESS				0.5f
+#define CLEAR_PARAMETER_IOR						0.5f
+#define CLEAR_PARAMETER_SPECULAR_INTENCITY		0.0f
+#define CLEAR_PARAMETER_METALLIC				0.0f
 
 #define CLEAR_VELOCITY_BLUR_R					0.5f
 #define CLEAR_VELOCITY_BLUR_G					0.5f
@@ -70,7 +70,7 @@
 #define CLEAR_OBJECT_1_B						0.0f
 #define CLEAR_OBJECT_1_A						0.0f
 
-#define OVERLAY_TRANSPARENCY					80
+#define OVERLAY_TRANSPARENCY					255
 
 
 EMRenderer* EMRenderer::instance = nullptr;
@@ -93,10 +93,10 @@ EMRenderer::~EMRenderer ()
 	delete &( EMUISSAOSettings::GetInstance () );
 	delete &( EMUIMotionBlurSettings::GetInstance () );
 
-	diffuseTexture.FreeResources ();
+	albedoTexture.FreeResources ();
 	normalTexture.FreeResources ();
-	specularTexture.FreeResources ();
 	emissionTexture.FreeResources ();
+	parameterTexture.FreeResources ();
 	velocityBlurTexture.FreeResources ();
 	velocityTileMaxTexture.FreeResources ();
 	velocityNeighborMaxTexture.FreeResources ();
@@ -126,10 +126,10 @@ GXVoid EMRenderer::StartCommonPass ()
 		UpdateSSAOSettings ();
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, diffuseTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, albedoTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, normalTexture.GetTextureObject (), 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, specularTexture.GetTextureObject (), 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, emissionTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, emissionTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, parameterTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, velocityBlurTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, objectTextures[ 0 ].GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, objectTextures[ 1 ].GetTextureObject (), 0 );
@@ -165,13 +165,13 @@ GXVoid EMRenderer::StartCommonPass ()
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
 	glClearBufferfv ( GL_COLOR, 1, clearNormalValue );
 
-	static const GXFloat clearSpecularValue[ 4 ] = { CLEAR_SPECULAR_R, CLEAR_SPECULAR_G, CLEAR_SPECULAR_B, CLEAR_SPECULAR_A };
-	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
-	glClearBufferfv ( GL_COLOR, 2, clearSpecularValue );
-
 	static const GXFloat clearEmissionValue[ 4 ] = { CLEAR_EMISSION_R, CLEAR_EMISSION_G, CLEAR_EMISSION_B, CLEAR_EMISSION_A };
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
-	glClearBufferfv ( GL_COLOR, 3, clearEmissionValue );
+	glClearBufferfv ( GL_COLOR, 2, clearEmissionValue );
+
+	static const GXFloat clearSpecularValue[ 4 ] = { CLEAR_PARAMETER_ROUGNESS, CLEAR_PARAMETER_IOR, CLEAR_PARAMETER_SPECULAR_INTENCITY, CLEAR_PARAMETER_METALLIC };
+	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+	glClearBufferfv ( GL_COLOR, 3, clearSpecularValue );
 
 	static const GXFloat clearVelocityBlurValue[ 4 ] = { CLEAR_VELOCITY_BLUR_R, CLEAR_VELOCITY_BLUR_G, CLEAR_VELOCITY_BLUR_B, CLEAR_VELOCITY_BLUR_A };
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
@@ -469,19 +469,19 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 	switch ( target )
 	{
 		case eEMRenderTarget::Albedo:
-			texture = &diffuseTexture;
+			texture = &albedoTexture;
 		break;
 
 		case eEMRenderTarget::Normal:
 			texture = &normalTexture;
 		break;
 
-		case eEMRenderTarget::Specular:
-			texture = &specularTexture;
-		break;
-
 		case eEMRenderTarget::Emission:
 			texture = &emissionTexture;
+		break;
+
+		case eEMRenderTarget::Parameter:
+		texture = &parameterTexture;
 		break;
 
 		case eEMRenderTarget::VelocityBlur:
@@ -568,7 +568,7 @@ GXVoid EMRenderer::SetMotionBlurExposure ( GXFloat seconds )
 	isMotionBlurSettingsChanged = GX_TRUE;
 }
 
-GXFloat EMRenderer::GetMotionBlurExplosure () const
+GXFloat EMRenderer::GetMotionBlurExposure () const
 {
 	return motionBlurExposure;
 }
@@ -672,10 +672,10 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" ), gaussHorizontalBlurMateria
 	outCamera.SetProjection ( CVV_WIDTH, CVV_HEIGHT, Z_NEAR, Z_FAR );
 	screenQuadMesh.SetLocation ( 0.0f, 0.0f, Z_RENDER );
 
-	directedLightMaterial.SetDiffuseTexture ( diffuseTexture );
+	directedLightMaterial.SetAlbedoTexture ( albedoTexture );
 	directedLightMaterial.SetNormalTexture ( normalTexture );
-	directedLightMaterial.SetSpecularTexture ( specularTexture );
 	directedLightMaterial.SetEmissionTexture ( emissionTexture );
+	directedLightMaterial.SetParameterTexture ( parameterTexture );
 	directedLightMaterial.SetDepthTexture ( depthStencilTexture );
 
 	velocityTileMaxMaterial.SetVelocityBlurTexture ( velocityBlurTexture );
@@ -709,18 +709,18 @@ GXVoid EMRenderer::CreateFBO ()
 	GXUShort width = (GXUShort)renderer.GetWidth ();
 	GXUShort height = (GXUShort)renderer.GetHeight ();
 
-	diffuseTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	albedoTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	normalTexture.InitResources ( width, height, GL_RGB16, GX_FALSE, GL_CLAMP_TO_EDGE );
-	specularTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	emissionTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	emissionTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE, GL_CLAMP_TO_EDGE );
+	parameterTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	velocityBlurTexture.InitResources ( width, height, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	ssaoOmegaTexture.InitResources ( width, height, GL_R8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	ssaoYottaTexture.InitResources ( width, height, GL_R8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	objectTextures[ 0 ].InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	objectTextures[ 1 ].InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	depthStencilTexture.InitResources ( width, height, GL_DEPTH24_STENCIL8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	omegaTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	yottaTexture.InitResources ( width, height, GL_RGB8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	omegaTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE, GL_CLAMP_TO_EDGE );
+	yottaTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE, GL_CLAMP_TO_EDGE );
 
 	GXUShort maxSamples = (GXUShort)motionBlurMaterial.GetMaxBlurSamples ();
 	GXUShort w = width / maxSamples;
@@ -730,10 +730,10 @@ GXVoid EMRenderer::CreateFBO ()
 
 	glGenFramebuffers ( 1, &fbo );
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, diffuseTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, albedoTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, normalTexture.GetTextureObject (), 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, specularTexture.GetTextureObject (), 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, emissionTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, emissionTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, parameterTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, velocityBlurTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, objectTextures[ 0 ].GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, objectTextures[ 1 ].GetTextureObject (), 0 );
@@ -836,13 +836,18 @@ GXVoid EMRenderer::LightUpByDirected ( EMDirectedLight* light )
 	glDisable ( GL_DEPTH_TEST );
 	glDisable ( GL_CULL_FACE );
 
-	GXVec3 toLightDirectionView;
+	GXVec3 lightDirectionView;
 	const GXMat4& rotation = light->GetRotation ();
-	GXMulVec3Mat4AsNormal ( toLightDirectionView, rotation.zv, GXCamera::GetActiveCamera ()->GetCurrentFrameViewMatrix () );
-	GXReverseVec3 ( toLightDirectionView );
+	GXMulVec3Mat4AsNormal ( lightDirectionView, rotation.zv, GXCamera::GetActiveCamera ()->GetCurrentFrameViewMatrix () );
+	directedLightMaterial.SetLightDirectionView ( lightDirectionView );
 
-	directedLightMaterial.SetToLightDirectionView ( toLightDirectionView );
-	directedLightMaterial.SetColor ( light->GetColor () );
+	GXUByte colorRed;
+	GXUByte colorGreen;
+	GXUByte colorBlue;
+	light->GetBaseColor ( colorRed, colorGreen, colorBlue );
+	directedLightMaterial.SetHue ( colorRed, colorGreen, colorBlue );
+
+	directedLightMaterial.SetIntencity ( light->GetIntensity () );
 	directedLightMaterial.SetAmbientColor ( light->GetAmbientColor () );
 
 	directedLightMaterial.Bind ( screenQuadMesh );
