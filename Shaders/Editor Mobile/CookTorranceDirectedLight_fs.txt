@@ -52,7 +52,7 @@ float GGXSchlick ( const in vec3 vectorA, const in vec3 vectorB, const in float 
 
 float Distribution ( const in vec3 normalView, const in vec3 halfVectorView, const in float roughness )
 {
-	float alpha = dot ( normalView, halfVectorView );
+	float alpha = max ( 0.0, dot ( normalView, halfVectorView ) );
 	float betta = roughness * roughness;
 	float gamma = alpha * alpha;
 	float zeta = alpha * betta + 1.0 - alpha;
@@ -69,7 +69,7 @@ float Fresnel ( const in float ior, const in vec3 normalView, const in vec3 view
 {
 	float alpha = ( 1.0 - ior ) / ( 1.0 + ior );
 	float betta = alpha * alpha;
-	float gamma = pow ( 1.0 - max ( dot ( normalView, viewDirectionView ), 0.0 ), 5.0 );
+	float gamma = pow ( 1.0 - max ( 0.0, dot ( normalView, viewDirectionView ) ), 5.0 );
 
 	return betta + ( 1.0 - betta ) * gamma;
 }
@@ -108,6 +108,6 @@ void main ()
 
 	vec3 diffuse = albedo * hrdColor * INVERSE_PI * ( 1.0 - specularIntensity ) * max ( dot ( normalView, toLightDirectionView ), 0.0 );
 	vec3 specular = specularColor * intencity * specularIntensity * ( d * f * ga ) / ( 4.0 * alpha * betta );
-	
+
 	fragmentColor = ambientColor + emission + diffuse + specular;
 }
