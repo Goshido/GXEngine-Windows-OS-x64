@@ -21,6 +21,14 @@ Projects/GXEngine Editor Mobile/*.sdf
 Projects/GXEngine Editor Mobile/*.opendb
 Projects/GXEngine Editor Mobile/*.db
 
+Projects/GXGimp Barycentric Fill Filter/.vs
+Projects/GXGimp Barycentric Fill Filter/Debug
+Projects/GXGimp Barycentric Fill Filter/Generated Files
+Projects/GXGimp Barycentric Fill Filter/x64
+Projects/GXGimp Barycentric Fill Filter/*.sdf
+Projects/GXGimp Barycentric Fill Filter/*.opendb
+Projects/GXGimp Barycentric Fill Filter/*.db
+
 3D Models/System/Cache
 
 Textures/Editor Mobile/Cache
