@@ -13,30 +13,30 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\GXGimp Barycentric Fill Filter">
-      <UniqueIdentifier>{588a18f7-2668-42b5-b302-1eb38942d86a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\GXCommon">
       <UniqueIdentifier>{2901ff0a-8852-4254-91ed-84d45b71f738}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\GXGimp Barycentric Fil Filter">
+    <Filter Include="Source Files\GXGIMP Barycentric Fill Filter">
+      <UniqueIdentifier>{588a18f7-2668-42b5-b302-1eb38942d86a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GXGIMP Barycentric Fil Filter">
       <UniqueIdentifier>{ad6390d3-8ae7-4297-875e-0e89ae4068e6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Sources\GXGimpBarycentricFillFilter\GXGimpBarycentricFillFilter.cpp">
-      <Filter>Source Files\GXGimp Barycentric Fill Filter</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXGimpBarycentricFillFilter\main.cpp">
-      <Filter>Source Files\GXGimp Barycentric Fill Filter</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\Include\GXGimpBarycentricFillFilter\GXGimpBarycentricFillFilter.h">
-      <Filter>Header Files\GXGimp Barycentric Fil Filter</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXCommon\GXTypes.h">
       <Filter>Header Files\GXCommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\GXGIMP_Barycentric_Fill_Filter\GXGIMPBarycentricFillFilter.h">
+      <Filter>Header Files\GXGIMP Barycentric Fil Filter</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Sources\GXGIMP_Barycentric_Fill_Filter\GXGIMPBarycentricFillFilter.cpp">
+      <Filter>Source Files\GXGIMP Barycentric Fill Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXGIMP_Barycentric_Fill_Filter\main.cpp">
+      <Filter>Source Files\GXGIMP Barycentric Fill Filter</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

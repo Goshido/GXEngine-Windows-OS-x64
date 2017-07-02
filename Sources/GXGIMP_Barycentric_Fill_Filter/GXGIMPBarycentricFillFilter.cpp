@@ -1,5 +1,4 @@
-#include <GXCommon/GXTypes.h>
-#include <libgimp/gimp.h>
+#include <GXGIMP_Barycentric_Fill_Filter/GXGimpBarycentricFillFilter.h>
 
 
 #define PLUGIN_NAME				"gx-barycentric-fill-filter"
@@ -15,7 +14,22 @@
 #define RETURN_VALUES			1
 
 
-static GXVoid GXGimpPluginQuery ()
+GXGIMPBarycentricFillFilter* GXGIMPBarycentricFillFilter::instance = nullptr;
+
+GXGIMPBarycentricFillFilter& GXGIMPBarycentricFillFilter::GetInstance ()
+{
+	if ( !instance )
+		instance = new GXGIMPBarycentricFillFilter ();
+
+	return *instance;
+}
+
+GXGIMPBarycentricFillFilter::~GXGIMPBarycentricFillFilter ()
+{
+	instance = nullptr;
+}
+
+GXVoid GXGIMPBarycentricFillFilter::Query ()
 {
 	static GimpParamDef params[ PARAM_COUNT ];
 	static gchar firstParameterName[] = "run-mode";
@@ -41,7 +55,7 @@ static GXVoid GXGimpPluginQuery ()
 	gimp_plugin_menu_register ( PLUGIN_NAME, PLUGIN_MENU_PATH );
 }
 
-static GXVoid GXGimpPluginRun ( const gchar* /*name*/, gint /*numParams*/, const GimpParam* /*params*/, gint* numReturnValues, GimpParam** returnValues )
+GXVoid GXGIMPBarycentricFillFilter::Run ( const gchar* name, gint numParams, const GimpParam* params, gint* numReturnValues, GimpParam** returnValues )
 {
 	static GimpParam values[ RETURN_VALUES ];
 	values[ 0 ].type = GIMP_PDB_STATUS;
@@ -53,6 +67,17 @@ static GXVoid GXGimpPluginRun ( const gchar* /*name*/, gint /*numParams*/, const
 	g_message ( "Hello, boobs!\n" );
 }
 
-const GimpPlugInInfo PLUG_IN_INFO = { nullptr, nullptr, &GXGimpPluginQuery, &GXGimpPluginRun };
+GXGIMPBarycentricFillFilter::GXGIMPBarycentricFillFilter ()
+{
+	//NOTHING
+}
 
-MAIN ()
+GXVoid GXGIMPBarycentricFillFilter::ShowGUI ()
+{
+	//TODO
+}
+
+GXVoid GXGIMPBarycentricFillFilter::ApplyFilter ()
+{
+	//TODO
+}
