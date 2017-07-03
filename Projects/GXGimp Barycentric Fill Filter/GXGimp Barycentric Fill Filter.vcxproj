@@ -156,7 +156,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(MINGW_X64_INCLUDE_DIR);$(SolutionDir)..\..\Include;$(GIMP_SDK_DIR);$(CAIRO_SDK_DIR);$(GEGL_SDK_DIR);$(GTK_SDK_DIR);$(GDK_PIXBUF_SDK_DIR);$(GLIB_SDK_DIR);$(GLIB_SDK_CONFIG_HEADER_DIR)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)../../Include;$(MINGW_X64_INCLUDE_DIR)/x86_64-w64-mingw32/include;$(GIMP_SDK_DIR);$(CAIRO_SDK_DIR);$(BABL_SDK_DIR);$(GEGL_SDK_DIR);$(GDK_PIXBUF_SDK_DIR);$(GLIB_SDK_DIR);$(GLIB_SDK_CONFIG_HEADER_DIR);$(GTK_SDK_DIR);$(JSON_GLIB_SDK_DIR);$(GIO_WIN_32_SDK_DIR);$(GTK_SDK_CONFIG_HEADER_DIR);$(PANGO_SDK_DIR);$(ATK_SDK_DIR);$(PIXMAN_SDK_DIR);$(FREETYPE_SDK_DIR);$(LIBPNG_SDK_DIR);$(HARBUZZ_SDK_DIR)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

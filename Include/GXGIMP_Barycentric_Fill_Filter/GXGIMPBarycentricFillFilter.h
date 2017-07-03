@@ -10,6 +10,8 @@
 class GXGIMPBarycentricFillFilter
 {
 	private:
+		GtkWidget*								mainPanel;
+
 		static GXGIMPBarycentricFillFilter*		instance;
 
 	public:
@@ -22,8 +24,10 @@ class GXGIMPBarycentricFillFilter
 	private:
 		GXGIMPBarycentricFillFilter ();
 
-		GXVoid ShowGUI ();
 		GXVoid ApplyFilter ();
+
+		static void OnDialogResponse ( GtkWidget* widget, gint responseID, gpointer data );
+		static gboolean OnCloseDialog ( GtkWidget* widget, GdkEvent* event, gpointer data );
 };
 
 

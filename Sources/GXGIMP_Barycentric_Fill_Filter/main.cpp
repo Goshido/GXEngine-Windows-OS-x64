@@ -2,22 +2,22 @@
 #include <libgimp/gimp.h>
 
 
-static GXVoid GXGIMPPluginInit ()
+static void GXGIMPPluginInit ()
 {
 	GXGIMPBarycentricFillFilter::GetInstance ();
 }
 
-static GXVoid GXGIMPPluginQuit ()
+static void GXGIMPPluginQuit ()
 {
 	delete &( GXGIMPBarycentricFillFilter::GetInstance () );
 }
 
-static GXVoid GXGIMPPluginQuery ()
+static void GXGIMPPluginQuery ()
 {
 	GXGIMPBarycentricFillFilter::GetInstance ().Query ();
 }
 
-static GXVoid GXGIMPPluginRun ( const gchar* name, gint numParams, const GimpParam* params, gint* numReturnValues, GimpParam** returnValues )
+static void GXGIMPPluginRun ( const gchar* name, gint numParams, const GimpParam* params, gint* numReturnValues, GimpParam** returnValues )
 {
 	GXGIMPBarycentricFillFilter::GetInstance ().Run ( name, numParams, params, numReturnValues, returnValues );
 }
