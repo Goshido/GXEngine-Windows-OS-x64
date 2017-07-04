@@ -127,9 +127,13 @@ GXVoid EMViewer::OnPan ( const GXVec2& mouseDelta )
 	const GXMat4& cameraTransform = camera.GetCurrentFrameModelMatrix ();
 
 	GXVec3 deltaRight;
-	GXMulVec3Scalar ( deltaRight, cameraTransform.xv, -mouseDelta.x * panSpeed );
+	GXVec3 tmp;
+	cameraTransform.GetX ( tmp );
+	GXMulVec3Scalar ( deltaRight, tmp, -mouseDelta.x * panSpeed );
+
 	GXVec3 deltaUp;
-	GXMulVec3Scalar ( deltaUp, cameraTransform.yv, -mouseDelta.y * panSpeed );
+	cameraTransform.GetY ( tmp );
+	GXMulVec3Scalar ( deltaUp, tmp, -mouseDelta.y * panSpeed );
 
 	GXSumVec3Vec3 ( origin, origin, deltaRight );
 	GXSumVec3Vec3 ( origin, origin, deltaUp );
@@ -150,7 +154,7 @@ GXVoid EMViewer::OnRotate ( const GXVec2& mouseDelta )
 
 	GXVec3 targetLocation;
 	if ( target )
-		targetLocation = target->GetTransform ().wv;
+		target->GetTransform ().GetW ( targetLocation );
 	else
 		targetLocation = origin;
 
@@ -186,10 +190,13 @@ GXVoid EMViewer::UpdateCamera ()
 	GXMat4 matrix;
 	GXSetMat4RotationXY ( matrix, pitch, yaw );
 
+	GXVec3 tmp;
 	GXVec3 stick;
-	GXMulVec3Scalar ( stick, matrix.zv, distance );
+	matrix.GetZ ( tmp );
+	GXMulVec3Scalar ( stick, tmp, distance );
 
-	GXSubVec3Vec3 ( matrix.wv, origin, stick );
+	GXSubVec3Vec3 ( tmp, origin, stick );
+	matrix.SetW ( tmp );
 
 	camera.SetCurrentFrameModelMatrix ( matrix );
 }

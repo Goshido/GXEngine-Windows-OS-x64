@@ -18,7 +18,5 @@ GXVoid GXCALL GXLogDestroy ();
 GXVoid GXCDECLCALL GXLogA ( const GXMBChar* format, ... );
 GXVoid GXCDECLCALL GXLogW ( const GXWChar* format, ... );
 
-//GXVoid GXCALL GXSeeError ( LPTSTR lpszFunction, GXBool isDebugBox );
-
 
 #endif //GX_LOGGER

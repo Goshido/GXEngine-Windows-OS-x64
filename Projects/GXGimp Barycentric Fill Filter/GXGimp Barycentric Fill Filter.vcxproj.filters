@@ -9,10 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Header Files\GXCommon">
       <UniqueIdentifier>{2901ff0a-8852-4254-91ed-84d45b71f738}</UniqueIdentifier>
     </Filter>
@@ -22,6 +18,15 @@
     <Filter Include="Header Files\GXGIMP Barycentric Fil Filter">
       <UniqueIdentifier>{ad6390d3-8ae7-4297-875e-0e89ae4068e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GXCommon">
+      <UniqueIdentifier>{2495cc41-7000-402f-aace-3caf0e38fa1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GXCommon\Posix">
+      <UniqueIdentifier>{1fd6d463-3276-48cf-bc93-22ed686b7859}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GXCommon\Posix">
+      <UniqueIdentifier>{554ddae9-1361-4887-98b2-beba9eace73f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXTypes.h">
@@ -30,6 +35,24 @@
     <ClInclude Include="..\..\Include\GXGIMP_Barycentric_Fill_Filter\GXGIMPBarycentricFillFilter.h">
       <Filter>Header Files\GXGIMP Barycentric Fil Filter</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXMath.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXLogger.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\Posix\GXMutex.h">
+      <Filter>Header Files\GXCommon\Posix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXMutex.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\Posix\GXTypes.h">
+      <Filter>Header Files\GXCommon\Posix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXMemory.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\GXGIMP_Barycentric_Fill_Filter\GXGIMPBarycentricFillFilter.cpp">
@@ -37,6 +60,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXGIMP_Barycentric_Fill_Filter\main.cpp">
       <Filter>Source Files\GXGIMP Barycentric Fill Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXLogger.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\Posix\GXMutex.cpp">
+      <Filter>Source Files\GXCommon\Posix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXMath.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXMemory.cpp">
+      <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -11,6 +11,12 @@ class GXGIMPBarycentricFillFilter
 {
 	private:
 		GtkWidget*								mainPanel;
+		GtkWidget*								colorA;
+		GtkWidget*								colorB;
+		GtkWidget*								colorC;
+		GtkWidget*								sideLength;
+
+		gint32									imageID;
 
 		static GXGIMPBarycentricFillFilter*		instance;
 

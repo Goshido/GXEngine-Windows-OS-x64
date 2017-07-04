@@ -1,7 +1,53 @@
-﻿PLUGIN_NAME=gx-barycentric-fill.exe
+PLUGIN_NAME=gx-barycentric-fill.exe
 RELEASE_DIRECTORY=../../Release/x64/
 
-CPPFLAGS=-Wall -pthread -mms-bitfields -pthread -mms-bitfields -mwindows
+# TODO: добавить -Wunused-parameter.
+# Нету из-за разворачивания макроса MAIN (),
+# который оборачивает WinMain. (GIMP SDK):
+# 1) Разобраться с логикой MAIN ()
+# 2) Написать свою WinMain
+# 3) Добавить -Wunused-parameter
+# 4) Убрать -Wno-error=unused-parameter
+
+CPPFLAGS=\
+    -Wall \
+    -Wextra \
+    -Wcast-align \
+    -Wcast-qual \
+    -Wconversion \
+    -Wdisabled-optimization \
+    -Werror \
+    -Wformat=2 \
+    -Wformat-nonliteral \
+    -Wformat-security  \
+    -Wformat-y2k \
+    -Wimport \
+    -Winit-self  \
+    -Winline \
+    -Winvalid-pch \
+    -Wmissing-field-initializers \
+    -Wmissing-include-dirs \
+    -Wmissing-noreturn \
+    -Wpacked \
+    -Wpointer-arith \
+    -Wredundant-decls \
+    -Wstack-protector \
+    -Wstrict-aliasing=2 \
+    -Wswitch-default \
+    -Wswitch-enum \
+    -Wunreachable-code \
+    -Wunused \
+    -Wvariadic-macros \
+    -Wwrite-strings \
+    -Wno-error=long-long \
+    -Wno-error=unused-parameter \
+    -pthread \
+    -mms-bitfields \
+    -pthread \
+    -mms-bitfields \
+    -mwindows \
+    -finput-charset=utf-8 \
+    -std=c++11
 
 LIBRARY_DIRECTORIES=\
     -L$(MINGW_X64_ROOT_DIR)/lib
@@ -15,7 +61,6 @@ LIBRARIES=\
     -lgtk-win32-2.0 \
     -lgdk-win32-2.0 \
     -lgdi32 \
-    -limm32 \
     -limm32 \
     -lshell32 \
     -lole32 \
@@ -33,7 +78,11 @@ LIBRARIES=\
 
 SOURCES=\
     ../../Sources/GXGIMP_Barycentric_Fill_Filter/GXGIMPBarycentricFillFilter.cpp \
-    ../../Sources/GXGIMP_Barycentric_Fill_Filter/main.cpp
+    ../../Sources/GXGIMP_Barycentric_Fill_Filter/main.cpp \
+    ../../Sources/GXCommon/GXMath.cpp \
+    ../../Sources/GXCommon/GXLogger.cpp \
+    ../../Sources/GXCommon/GXMemory.cpp \
+    ../../Sources/GXCommon/Posix/GXMutex.cpp
 
 INCLUDE_DIRECTORIES=\
     -I$(GX_ENGINE_SDK_DIR) \

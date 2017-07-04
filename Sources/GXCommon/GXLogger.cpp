@@ -3,7 +3,8 @@
 #include <GXCommon/GXLogger.h>
 #include <GXCommon/GXMutex.h>
 #include <GXCommon/GXMemory.h>
-#include <stdio.h>
+#include <cstdio>
+#include <stdarg.h>
 
 
 enum GXConsoleLocale
@@ -15,9 +16,7 @@ enum GXConsoleLocale
 
 
 GXConsoleLocale gx_lggr_ConsoleLocale = GX_UNKNOWN;
-GXMutex*		gx_lggr_ConsoleMutex = 0;	
-
-GXWChar gx_logger_lpDisplayBuf[ 120 ] = { 0 };
+GXMutex*		gx_lggr_ConsoleMutex = 0;
 
 
 GXVoid GXCALL GXLogInit ()

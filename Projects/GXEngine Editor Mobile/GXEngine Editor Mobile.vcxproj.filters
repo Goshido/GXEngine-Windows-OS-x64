@@ -49,6 +49,12 @@
     <Filter Include="Shaders\GXEngine Editor Mobile">
       <UniqueIdentifier>{2c335632-ca9d-49af-89c3-4a023d177c17}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GXCommon\Windows">
+      <UniqueIdentifier>{e708fb35-b5f6-4f86-9999-a18b816d153d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GXCommon\Windows">
+      <UniqueIdentifier>{f608cb51-442d-429e-84cb-c52a317c2322}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\GXCommon\GXAVLTree.cpp">
@@ -67,9 +73,6 @@
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\GXMemory.cpp">
-      <Filter>Source Files\GXCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXCommon\GXMutex.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshLoader.cpp">
@@ -395,6 +398,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMCookTorranceDirectedLightMaterial.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp">
+      <Filter>Source Files\GXCommon\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -841,6 +847,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMCookTorranceDirectedLightMaterial.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\Windows\GXMutex.h">
+      <Filter>Header Files\GXCommon\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\Windows\GXTypes.h">
+      <Filter>Header Files\GXCommon\Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

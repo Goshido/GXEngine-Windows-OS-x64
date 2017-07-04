@@ -20,10 +20,10 @@ enum class eGXThreadState
 class GXThread
 {
 	private:
-		HANDLE			thread;
-		eGXThreadState	state;
-		PFNGXTHREADPROC	threadProc;
-		GXVoid*			arg;
+		HANDLE				thread;
+		eGXThreadState		state;
+		PFNGXTHREADPROC		threadProc;
+		GXVoid*				arg;
 
 	public:
 		GXThread ( PFNGXTHREADPROC threadProc, GXVoid* arg );

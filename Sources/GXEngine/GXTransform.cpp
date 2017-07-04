@@ -24,7 +24,7 @@ GXTransform::~GXTransform ()
 GXVoid GXTransform::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 {
 	currentFrameLocation = GXCreateVec3 ( x, y, z );
-	currentFrameModelMatrix.wv = currentFrameLocation;
+	currentFrameModelMatrix.SetW ( currentFrameLocation );
 
 	TransformUpdated ();
 }
@@ -32,7 +32,7 @@ GXVoid GXTransform::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 GXVoid GXTransform::SetLocation ( const GXVec3 &loc )
 {
 	currentFrameLocation = loc;
-	currentFrameModelMatrix.wv = currentFrameLocation;
+	currentFrameModelMatrix.SetW ( currentFrameLocation );
 
 	TransformUpdated ();
 }
@@ -41,9 +41,20 @@ GXVoid GXTransform::SetRotation ( const GXVec3 &rot_rad  )
 {
 	GXSetMat4RotationXYZ ( currentFrameRotationMatrix, rot_rad.pitch_rad, rot_rad.yaw_rad, rot_rad.roll_rad );
 	
-	GXMulVec3Scalar ( currentFrameModelMatrix.xv, currentFrameRotationMatrix.xv, currentFrameScale.x );
-	GXMulVec3Scalar ( currentFrameModelMatrix.yv, currentFrameRotationMatrix.yv, currentFrameScale.y );
-	GXMulVec3Scalar ( currentFrameModelMatrix.zv, currentFrameRotationMatrix.zv, currentFrameScale.z );
+	GXVec3 tmpA;
+	GXVec3 tmpB;
+
+	currentFrameRotationMatrix.GetX ( tmpA );
+	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.x );
+	currentFrameModelMatrix.SetX ( tmpB );
+
+	currentFrameRotationMatrix.GetY ( tmpA );
+	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.y );
+	currentFrameModelMatrix.SetY ( tmpB );
+
+	currentFrameRotationMatrix.GetZ ( tmpA );
+	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.z );
+	currentFrameModelMatrix.SetZ ( tmpB );
 
 	TransformUpdated ();
 }
@@ -52,9 +63,20 @@ GXVoid GXTransform::SetRotation ( const GXMat4 &rot )
 {
 	currentFrameRotationMatrix = rot;
 
-	GXMulVec3Scalar ( currentFrameModelMatrix.xv, currentFrameRotationMatrix.xv, currentFrameScale.x );
-	GXMulVec3Scalar ( currentFrameModelMatrix.yv, currentFrameRotationMatrix.yv, currentFrameScale.y );
-	GXMulVec3Scalar ( currentFrameModelMatrix.zv, currentFrameRotationMatrix.zv, currentFrameScale.z );
+	GXVec3 tmpA;
+	GXVec3 tmpB;
+
+	currentFrameRotationMatrix.GetX ( tmpA );
+	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.x );
+	currentFrameModelMatrix.SetX ( tmpB );
+
+	currentFrameRotationMatrix.GetY ( tmpA );
+	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.y );
+	currentFrameModelMatrix.SetY ( tmpB );
+
+	currentFrameRotationMatrix.GetZ ( tmpA );
+	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.z );
+	currentFrameModelMatrix.SetZ ( tmpB );
 
 	TransformUpdated ();
 }
@@ -63,9 +85,20 @@ GXVoid GXTransform::SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat ro
 {
 	GXSetMat4RotationXYZ ( currentFrameRotationMatrix, pitch_rad, yaw_rad, roll_rad );
 
-	GXMulVec3Scalar ( currentFrameModelMatrix.xv, currentFrameRotationMatrix.xv, currentFrameScale.x );
-	GXMulVec3Scalar ( currentFrameModelMatrix.yv, currentFrameRotationMatrix.yv, currentFrameScale.y );
-	GXMulVec3Scalar ( currentFrameModelMatrix.zv, currentFrameRotationMatrix.zv, currentFrameScale.z );
+	GXVec3 tmpA;
+	GXVec3 tmpB;
+
+	currentFrameRotationMatrix.GetX ( tmpA );
+	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.x );
+	currentFrameModelMatrix.SetX ( tmpB );
+
+	currentFrameRotationMatrix.GetY ( tmpA );
+	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.y );
+	currentFrameModelMatrix.SetY ( tmpB );
+
+	currentFrameRotationMatrix.GetZ ( tmpA );
+	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.z );
+	currentFrameModelMatrix.SetZ ( tmpB );
 
 	TransformUpdated ();
 }
@@ -74,9 +107,20 @@ GXVoid GXTransform::SetRotation ( const GXQuat &quaternion )
 {
 	currentFrameRotationMatrix.SetRotation ( quaternion );
 
-	GXMulVec3Scalar ( currentFrameModelMatrix.xv, currentFrameRotationMatrix.xv, currentFrameScale.x );
-	GXMulVec3Scalar ( currentFrameModelMatrix.yv, currentFrameRotationMatrix.yv, currentFrameScale.y );
-	GXMulVec3Scalar ( currentFrameModelMatrix.zv, currentFrameRotationMatrix.zv, currentFrameScale.z );
+	GXVec3 tmpA;
+	GXVec3 tmpB;
+
+	currentFrameRotationMatrix.GetX ( tmpA );
+	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.x );
+	currentFrameModelMatrix.SetX ( tmpB );
+
+	currentFrameRotationMatrix.GetY ( tmpA );
+	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.y );
+	currentFrameModelMatrix.SetY ( tmpB );
+
+	currentFrameRotationMatrix.GetZ ( tmpA );
+	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.z );
+	currentFrameModelMatrix.SetZ ( tmpB );
 
 	TransformUpdated ();
 }
@@ -85,9 +129,20 @@ GXVoid GXTransform::SetScale ( GXFloat x, GXFloat y, GXFloat z )
 {
 	currentFrameScale = GXCreateVec3 ( x, y, z );
 
-	GXMulVec3Scalar ( currentFrameModelMatrix.xv, currentFrameRotationMatrix.xv, currentFrameScale.x );
-	GXMulVec3Scalar ( currentFrameModelMatrix.yv, currentFrameRotationMatrix.yv, currentFrameScale.y );
-	GXMulVec3Scalar ( currentFrameModelMatrix.zv, currentFrameRotationMatrix.zv, currentFrameScale.z );
+	GXVec3 tmpA;
+	GXVec3 tmpB;
+
+	currentFrameRotationMatrix.GetX ( tmpA );
+	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.x );
+	currentFrameModelMatrix.SetX ( tmpB );
+
+	currentFrameRotationMatrix.GetY ( tmpA );
+	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.y );
+	currentFrameModelMatrix.SetY ( tmpB );
+
+	currentFrameRotationMatrix.GetZ ( tmpA );
+	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.z );
+	currentFrameModelMatrix.SetZ ( tmpB );
 
 	TransformUpdated ();
 }
@@ -96,9 +151,20 @@ GXVoid GXTransform::SetScale ( const GXVec3 &scale )
 {
 	currentFrameScale = scale;
 
-	GXMulVec3Scalar ( currentFrameModelMatrix.xv, currentFrameRotationMatrix.xv, currentFrameScale.x );
-	GXMulVec3Scalar ( currentFrameModelMatrix.yv, currentFrameRotationMatrix.yv, currentFrameScale.y );
-	GXMulVec3Scalar ( currentFrameModelMatrix.zv, currentFrameRotationMatrix.zv, currentFrameScale.z );
+	GXVec3 tmpA;
+	GXVec3 tmpB;
+
+	currentFrameRotationMatrix.GetX ( tmpA );
+	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.x );
+	currentFrameModelMatrix.SetX ( tmpB );
+
+	currentFrameRotationMatrix.GetY ( tmpA );
+	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.y );
+	currentFrameModelMatrix.SetY ( tmpB );
+
+	currentFrameRotationMatrix.GetZ ( tmpA );
+	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.z );
+	currentFrameModelMatrix.SetZ ( tmpB );
 
 	TransformUpdated ();
 }

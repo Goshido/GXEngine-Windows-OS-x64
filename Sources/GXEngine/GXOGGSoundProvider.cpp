@@ -15,7 +15,7 @@ GXInt GXOGGSeek ( GXVoid* datasource, ogg_int64_t offset, GXInt whence )
 	return streamer->Seek ( (GXInt)offset, whence );
 }
 
-GXLong GXOGGTell ( GXVoid* datasource )
+long GXOGGTell ( GXVoid* datasource )
 {
 	GXOGGSoundStreamer* streamer = (GXOGGSoundStreamer*)datasource;
 	return streamer->Tell ();

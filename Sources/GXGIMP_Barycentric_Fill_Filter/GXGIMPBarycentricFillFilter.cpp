@@ -1,4 +1,5 @@
 #include <GXGIMP_Barycentric_Fill_Filter/GXGimpBarycentricFillFilter.h>
+#include <GXCommon/GXMath.h>
 
 
 #define PLUGIN_NAME							"gx-barycentric-fill-filter"
@@ -7,10 +8,13 @@
 #define AUTHOR								"GXEngine"
 #define COPYRIGHT							"Copyright GXEngine"
 #define DATE								"30.06.2017"
-
 #define PLUGIN_MENU_PATH					"<Image>/Filters"
+#define LAYER_NAME							"GX barycentric fill"
 
-#define PARAM_COUNT							3
+#define INVALID_IMAGE_ID					0x7FFFFFFF
+#define LAYER_OPACITY						1.0
+
+#define PARAM_COUNT							2
 #define RETURN_VALUES						1
 
 #define MAIN_PANEL_TITLE					"GX barycentric fill"
@@ -92,6 +96,8 @@
 #define SEPARATOR_ALIGNMENT_SCALE_X			1.0f
 #define SEPARATOR_ALIGNMENT_SCALE_Y			0.0f
 
+#define EQULATERAL_TRIANGLE_ANGLE_DEGREES	60.0f
+
 
 GXGIMPBarycentricFillFilter* GXGIMPBarycentricFillFilter::instance = nullptr;
 
@@ -108,6 +114,13 @@ GXGIMPBarycentricFillFilter::~GXGIMPBarycentricFillFilter ()
 	gtk_widget_destroy ( mainPanel );
 
 	mainPanel = nullptr;
+	colorA = nullptr;
+	colorB = nullptr;
+	colorC = nullptr;
+	sideLength = nullptr;
+
+	imageID = INVALID_IMAGE_ID;
+
 	instance = nullptr;
 }
 
@@ -118,8 +131,6 @@ GXVoid GXGIMPBarycentricFillFilter::Query ()
 	static gchar firstParameterDescription[] = "The run mode";
 	static gchar secondParameterName[] = "image";
 	static gchar secondParameterDescription[] = "Input image";
-	static gchar thirdParameterName[] = "drawable";
-	static gchar thirdParameterDescription[] = "Input drawable";
 
 	params[ 0 ].type = GIMP_PDB_INT32;
 	params[ 0 ].name = firstParameterName;
@@ -129,15 +140,11 @@ GXVoid GXGIMPBarycentricFillFilter::Query ()
 	params[ 1 ].name = secondParameterName;
 	params[ 1 ].description = secondParameterDescription;
 
-	params[ 2 ].type = GIMP_PDB_DRAWABLE;
-	params[ 2 ].name = thirdParameterName;
-	params[ 2 ].description = thirdParameterDescription;
-
 	gimp_install_procedure ( PLUGIN_NAME, MENU_HINT, MENU_HINT, AUTHOR, COPYRIGHT, DATE, MENU_NAME, "RGB*", GIMP_PLUGIN, PARAM_COUNT, 0, params, nullptr );
 	gimp_plugin_menu_register ( PLUGIN_NAME, PLUGIN_MENU_PATH );
 }
 
-GXVoid GXGIMPBarycentricFillFilter::Run ( const gchar* name, gint numParams, const GimpParam* params, gint* numReturnValues, GimpParam** returnValues )
+GXVoid GXGIMPBarycentricFillFilter::Run ( const gchar* /*name*/, gint /*numParams*/, const GimpParam* params, gint* numReturnValues, GimpParam** returnValues )
 {
 	static GimpParam values[ RETURN_VALUES ];
 	values[ 0 ].type = GIMP_PDB_STATUS;
@@ -146,12 +153,16 @@ GXVoid GXGIMPBarycentricFillFilter::Run ( const gchar* name, gint numParams, con
 	*numReturnValues = 1;
 	*returnValues = values;
 
+	imageID = params[ 1 ].data.d_int32;
+
 	gtk_widget_show ( mainPanel );
 	gtk_main ();
 }
 
 GXGIMPBarycentricFillFilter::GXGIMPBarycentricFillFilter ()
 {
+	imageID = INVALID_IMAGE_ID;
+
 	gimp_ui_init ( PLUGIN_NAME, TRUE );
 	mainPanel = gimp_dialog_new ( MAIN_PANEL_TITLE, MAIN_PANEL_GTK_ROLE, nullptr, MAIN_PANEL_GTK_DIALOG_FLAGS, &gimp_standard_help_func, MAIN_PANEL_HELP_ID, CANCEL_BUTTON_CAPTION, GTK_RESPONSE_CANCEL, APPLY_BUTTON_CAPTION, GTK_RESPONSE_APPLY, nullptr );
 
@@ -195,8 +206,8 @@ GXGIMPBarycentricFillFilter::GXGIMPBarycentricFillFilter ()
 	GtkWidget* inputControlAlignment = gtk_alignment_new ( INPUT_CONTROL_ALIGNMENT_X, INPUT_CONTROL_ALIGNMENT_Y, INPUT_CONTROL_ALIGNMENT_SCALE_X, INPUT_CONTROL_ALIGNMENT_SCALE_Y );
 	gtk_widget_show ( inputControlAlignment );
 
-	GtkWidget* colorButton = gtk_color_button_new ();
-	gtk_widget_show ( colorButton );
+	colorA = gtk_color_button_new ();
+	gtk_widget_show ( colorA );
 
 	GdkColor color;
 	color.red = DEFAULT_COLOR_A_RED;
@@ -204,9 +215,9 @@ GXGIMPBarycentricFillFilter::GXGIMPBarycentricFillFilter ()
 	color.blue = DEFAULT_COLOR_A_BLUE;
 	color.pixel = UNUSED_PIXEL;
 
-	gtk_color_button_set_color ( GTK_COLOR_BUTTON ( colorButton ), &color );
+	gtk_color_button_set_color ( GTK_COLOR_BUTTON ( colorA ), &color );
 
-	gtk_container_add ( GTK_CONTAINER ( inputControlAlignment ), colorButton );
+	gtk_container_add ( GTK_CONTAINER ( inputControlAlignment ), colorA );
 	gtk_table_attach ( GTK_TABLE ( tableLayout ), inputControlAlignment, 1, 2, 0, 1, attachX, GtkAttachOptions::GTK_SHRINK, 0, 0 );
 
 	labelAlignment = gtk_alignment_new ( LABEL_ALIGNMENT_X, LABEL_ALIGNMENT_Y, LABEL_ALIGNMENT_SCALE_X, LABEL_ALIGNMENT_SCALE_Y );
@@ -222,17 +233,17 @@ GXGIMPBarycentricFillFilter::GXGIMPBarycentricFillFilter ()
 	inputControlAlignment = gtk_alignment_new ( INPUT_CONTROL_ALIGNMENT_X, INPUT_CONTROL_ALIGNMENT_Y, INPUT_CONTROL_ALIGNMENT_SCALE_X, INPUT_CONTROL_ALIGNMENT_SCALE_Y );
 	gtk_widget_show ( inputControlAlignment );
 
-	colorButton = gtk_color_button_new ();
-	gtk_widget_show ( colorButton );
+	colorB = gtk_color_button_new ();
+	gtk_widget_show ( colorB );
 
 	color.red = DEFAULT_COLOR_B_RED;
 	color.green = DEFAULT_COLOR_B_GREEN;
 	color.blue = DEFAULT_COLOR_B_BLUE;
 	color.pixel = UNUSED_PIXEL;
 
-	gtk_color_button_set_color ( GTK_COLOR_BUTTON ( colorButton ), &color );
+	gtk_color_button_set_color ( GTK_COLOR_BUTTON ( colorB ), &color );
 
-	gtk_container_add ( GTK_CONTAINER ( inputControlAlignment ), colorButton );
+	gtk_container_add ( GTK_CONTAINER ( inputControlAlignment ), colorB );
 	gtk_table_attach ( GTK_TABLE ( tableLayout ), inputControlAlignment, 1, 2, 1, 2, attachX, GtkAttachOptions::GTK_SHRINK, 0, 0 );
 
 	labelAlignment = gtk_alignment_new ( LABEL_ALIGNMENT_X, LABEL_ALIGNMENT_Y, LABEL_ALIGNMENT_SCALE_X, LABEL_ALIGNMENT_SCALE_Y );
@@ -248,17 +259,17 @@ GXGIMPBarycentricFillFilter::GXGIMPBarycentricFillFilter ()
 	inputControlAlignment = gtk_alignment_new ( INPUT_CONTROL_ALIGNMENT_X, INPUT_CONTROL_ALIGNMENT_Y, INPUT_CONTROL_ALIGNMENT_SCALE_X, INPUT_CONTROL_ALIGNMENT_SCALE_Y );
 	gtk_widget_show ( inputControlAlignment );
 
-	colorButton = gtk_color_button_new ();
-	gtk_widget_show ( colorButton );
+	colorC = gtk_color_button_new ();
+	gtk_widget_show ( colorC );
 
 	color.red = DEFAULT_COLOR_C_RED;
 	color.green = DEFAULT_COLOR_C_GREEN;
 	color.blue = DEFAULT_COLOR_C_BLUE;
 	color.pixel = UNUSED_PIXEL;
 
-	gtk_color_button_set_color ( GTK_COLOR_BUTTON ( colorButton ), &color );
+	gtk_color_button_set_color ( GTK_COLOR_BUTTON ( colorC ), &color );
 
-	gtk_container_add ( GTK_CONTAINER ( inputControlAlignment ), colorButton );
+	gtk_container_add ( GTK_CONTAINER ( inputControlAlignment ), colorC );
 	gtk_table_attach ( GTK_TABLE ( tableLayout ), inputControlAlignment, 1, 2, 2, 3, attachX, GtkAttachOptions::GTK_SHRINK, 0, 0 );
 
 	labelAlignment = gtk_alignment_new ( LABEL_ALIGNMENT_X, LABEL_ALIGNMENT_Y, LABEL_ALIGNMENT_SCALE_X, LABEL_ALIGNMENT_SCALE_Y );
@@ -275,16 +286,16 @@ GXGIMPBarycentricFillFilter::GXGIMPBarycentricFillFilter ()
 	gtk_widget_show ( inputControlAlignment );
 
 	GtkObject* adjustmentObject = gtk_adjustment_new ( DEFAULT_SIDE_LENGTH, MINIMUM_SIDE_LENGTH, MAXIMUM_SIDE_LENGTH, SIDE_LENGTH_STEP, SIDE_LENGTH_STEP, 0.0 );
-	GtkWidget* spinButtonSideLength = gtk_spin_button_new ( GTK_ADJUSTMENT ( adjustmentObject ), SIDE_LENGTH_STEP, SIDE_LENGTH_PRECISION );
-	gtk_widget_show ( spinButtonSideLength );
+	sideLength = gtk_spin_button_new ( GTK_ADJUSTMENT ( adjustmentObject ), SIDE_LENGTH_STEP, SIDE_LENGTH_PRECISION );
+	gtk_widget_show ( sideLength );
 
 	GtkWidget* sideLengthAlignment = gtk_alignment_new ( SIDE_LENGTH_ALIGNMENT_X, SIDE_LENGTH_ALIGNMENT_Y, SIDE_LENGTH_ALIGNMENT_SCALE_X, SIDE_LENGTH_ALIGNMENT_SCALE_Y );
 	gtk_widget_show ( sideLengthAlignment );
 
-	gtk_spin_button_set_numeric ( GTK_SPIN_BUTTON ( spinButtonSideLength ), TRUE );
-	gtk_spin_button_set_range ( GTK_SPIN_BUTTON ( spinButtonSideLength ), MINIMUM_SIDE_LENGTH, MAXIMUM_SIDE_LENGTH );
+	gtk_spin_button_set_numeric ( GTK_SPIN_BUTTON ( sideLength ), TRUE );
+	gtk_spin_button_set_range ( GTK_SPIN_BUTTON ( sideLength ), MINIMUM_SIDE_LENGTH, MAXIMUM_SIDE_LENGTH );
 
-	gtk_container_add ( GTK_CONTAINER ( inputControlAlignment ), spinButtonSideLength );
+	gtk_container_add ( GTK_CONTAINER ( inputControlAlignment ), sideLength );
 	gtk_table_attach ( GTK_TABLE ( tableLayout ), inputControlAlignment, 1, 2, 3, 4, attachX, GtkAttachOptions::GTK_SHRINK, 0, 0 );
 
 	GtkWidget* separatorAlignment = gtk_alignment_new ( SEPARATOR_ALIGNMENT_X, SEPARATOR_ALIGNMENT_Y, SEPARATOR_ALIGNMENT_SCALE_X, SEPARATOR_ALIGNMENT_SCALE_Y );
@@ -299,7 +310,13 @@ GXGIMPBarycentricFillFilter::GXGIMPBarycentricFillFilter ()
 
 GXVoid GXGIMPBarycentricFillFilter::ApplyFilter ()
 {
-	//TODO
+	if ( imageID == INVALID_IMAGE_ID ) return;
+
+	GXInt side = (GXInt)gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON ( sideLength ) );
+	GXInt height = (GXInt)( sinf ( (GXFloat)side ) );
+
+	gint32 layerID = gimp_layer_new ( imageID, LAYER_NAME, side, height, GimpImageType::GIMP_RGBA_IMAGE, LAYER_OPACITY, GimpLayerModeEffects::GIMP_NORMAL_MODE );
+	gimp_image_insert_layer ( imageID, layerID, 0, -1 );
 }
 
 void GXGIMPBarycentricFillFilter::OnDialogResponse ( GtkWidget* /*widget*/, gint responseID, gpointer data )

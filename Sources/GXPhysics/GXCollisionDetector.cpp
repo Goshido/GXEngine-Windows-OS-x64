@@ -390,8 +390,14 @@ GXUInt GXCollisionDetector::CheckSphereAndSphere ( const GXSphereShape &sphereA,
 	const GXMat4& transformA = sphereA.GetTransformWorld ();
 	const GXMat4& transformB = sphereB.GetTransformWorld ();
 
+	GXVec3 originA;
+	GXVec3 originB;
+
+	transformA.GetW ( originA );
+	transformB.GetW ( originB );
+
 	GXVec3 midline;
-	GXSubVec3Vec3 ( midline, transformA.wv, transformB.wv );
+	GXSubVec3Vec3 ( midline, originA, originB );
 	GXFloat size = GXLengthVec3 ( midline );
 
 	GXFloat radiusSum = sphereA.GetRadius () + sphereB.GetRadius ();
@@ -405,7 +411,7 @@ GXUInt GXCollisionDetector::CheckSphereAndSphere ( const GXSphereShape &sphereA,
 	contact->SetNormal ( normal );
 
 	GXVec3 contactPoint;
-	GXSumVec3ScaledVec3 ( contactPoint, transformA.wv, 0.5f, midline );
+	GXSumVec3ScaledVec3 ( contactPoint, originA, 0.5f, midline );
 	contact->SetContactPoint ( contactPoint );
 
 	contact->SetPenetration ( radiusSum - size );
@@ -420,7 +426,8 @@ GXUInt GXCollisionDetector::CheckSphereAndHalfSpace ( const GXSphereShape &spher
 	if ( !collisionData.HasMoreContacts () ) return 0;
 
 	const GXMat4& sphereTransform = sphere.GetTransformWorld ();
-	GXVec3 position = sphereTransform.wv;
+	GXVec3 position;
+	sphereTransform.GetW ( position );
 
 	GXPlane p = plane.GetPlane ();
 	GXNormalizePlane ( p );
@@ -450,11 +457,14 @@ GXUInt GXCollisionDetector::CheckSphereAndTruePlane ( const GXSphereShape &spher
 	if ( !collisionData.HasMoreContacts () ) return 0;
 
 	const GXMat4& sphereTransform = sphere.GetTransformWorld ();
+	GXVec3 sphereOrigin;
+	sphereTransform.GetW ( sphereOrigin );
+
 	GXPlane p = plane.GetPlane ();
 	GXNormalizePlane ( p );
 	GXVec3 planeNormal ( p.a, p.b, p.c );
 
-	GXFloat centerDistance = GXDotVec3Fast ( planeNormal, sphereTransform.wv ) - p.d;
+	GXFloat centerDistance = GXDotVec3Fast ( planeNormal, sphereOrigin ) - p.d;
 
 	GXFloat sphereRadius = sphere.GetRadius ();
 
@@ -475,7 +485,7 @@ GXUInt GXCollisionDetector::CheckSphereAndTruePlane ( const GXSphereShape &spher
 	contact->SetPenetration ( penetration );
 
 	GXVec3 contactPoint;
-	GXSubVec3ScaledVec3 ( contactPoint, sphereTransform.wv, centerDistance, planeNormal );
+	GXSubVec3ScaledVec3 ( contactPoint, sphereOrigin, centerDistance, planeNormal );
 	contact->SetContactPoint ( contactPoint );
 
 	contact->SetData ( sphere, nullptr );
@@ -526,11 +536,15 @@ GXUInt GXCollisionDetector::CheckBoxAndHalfSpace ( const GXBoxShape &box, const 
 GXUInt GXCollisionDetector::CheckBoxAndSphere ( const GXBoxShape &box, const GXSphereShape &sphere, GXCollisionData &collisionData )
 {
 	const GXMat4& sphereTransform = sphere.GetTransformWorld ();
+
+	GXVec3 sphereOrigin;
+	sphereTransform.GetW ( sphereOrigin );
+
 	GXMat4 transformToBoxSpace;
 	GXSetMat4Inverse ( transformToBoxSpace, box.GetTransformWorld () );
 
 	GXVec3 relativeCenter;
-	GXMulVec3Mat4AsPoint ( relativeCenter, sphereTransform.wv, transformToBoxSpace );
+	GXMulVec3Mat4AsPoint ( relativeCenter, sphereOrigin, transformToBoxSpace );
 
 	GXFloat w = box.GetWidth () * 0.5f;
 	GXFloat h = box.GetHeight () * 0.5f;
@@ -555,7 +569,7 @@ GXUInt GXCollisionDetector::CheckBoxAndSphere ( const GXBoxShape &box, const GXS
 	GXContact* contact = collisionData.GetContactsBegin ();
 
 	GXVec3 contactNormal;
-	GXSubVec3Vec3 ( contactNormal, closestPointWorld, sphereTransform.wv );
+	GXSubVec3Vec3 ( contactNormal, closestPointWorld, sphereOrigin );
 	GXNormalizeVec3 ( contactNormal );
 	contact->SetNormal ( contactNormal );
 
@@ -573,51 +587,73 @@ GXUInt GXCollisionDetector::CheckBoxAndBox ( const GXBoxShape &boxA, const GXBox
 	const GXMat4& transformA = boxA.GetTransformWorld ();
 	const GXMat4& transformB = boxB.GetTransformWorld ();
 
+	GXVec3 originA;
+	GXVec3 originB;
+
+	transformA.GetW ( originA );
+	transformB.GetW ( originB );
+
 	GXVec3 toCentre;
-	GXSubVec3Vec3 ( toCentre, transformB.wv, transformA.wv );
+	GXSubVec3Vec3 ( toCentre, originB, originA );
 
 	GXFloat pen = FLT_MAX;
 
 	GXUInt best = 0xFFFFFF;
 
-	if ( TryAxis ( boxA, boxB, transformA.xv, toCentre, 0, pen, best ) ) return 0;
-	if ( TryAxis ( boxA, boxB, transformA.yv, toCentre, 1, pen, best ) ) return 0;
-	if ( TryAxis ( boxA, boxB, transformA.zv, toCentre, 2, pen, best ) ) return 0;
+	GXVec3 aX;
+	GXVec3 aY;
+	GXVec3 aZ;
 
-	if ( TryAxis ( boxA, boxB, transformB.xv, toCentre, 3, pen, best ) ) return 0;
-	if ( TryAxis ( boxA, boxB, transformB.yv, toCentre, 4, pen, best ) ) return 0;
-	if ( TryAxis ( boxA, boxB, transformB.zv, toCentre, 5, pen, best ) ) return 0;
+	transformA.GetX ( aX );
+	transformA.GetY ( aY );
+	transformA.GetZ ( aZ );
+
+	GXVec3 bX;
+	GXVec3 bY;
+	GXVec3 bZ;
+
+	transformA.GetX ( bX );
+	transformA.GetY ( bY );
+	transformA.GetZ ( bZ );
+
+	if ( TryAxis ( boxA, boxB, aX, toCentre, 0, pen, best ) ) return 0;
+	if ( TryAxis ( boxA, boxB, aY, toCentre, 1, pen, best ) ) return 0;
+	if ( TryAxis ( boxA, boxB, aZ, toCentre, 2, pen, best ) ) return 0;
+
+	if ( TryAxis ( boxA, boxB, bX, toCentre, 3, pen, best ) ) return 0;
+	if ( TryAxis ( boxA, boxB, bY, toCentre, 4, pen, best ) ) return 0;
+	if ( TryAxis ( boxA, boxB, bZ, toCentre, 5, pen, best ) ) return 0;
 
 	GXUInt bestSingleAxis = best;
 	GXVec3 v;
 
-	GXCrossVec3Vec3 ( v, transformA.xv, transformB.xv );
+	GXCrossVec3Vec3 ( v, aX, bX );
 	if ( TryAxis ( boxA, boxB, v, toCentre, 6, pen, best ) ) return 0;
 
-	GXCrossVec3Vec3 ( v, transformA.xv, transformB.yv );
+	GXCrossVec3Vec3 ( v, aX, bY );
 	if ( TryAxis ( boxA, boxB, v, toCentre, 7, pen, best ) ) return 0;
 
-	GXCrossVec3Vec3 ( v, transformA.xv, transformB.zv );
+	GXCrossVec3Vec3 ( v, aX, bZ );
 	if ( TryAxis ( boxA, boxB, v, toCentre, 8, pen, best ) ) return 0;
 
 
-	GXCrossVec3Vec3 ( v, transformA.yv, transformB.xv );
+	GXCrossVec3Vec3 ( v, aY, bX );
 	if ( TryAxis ( boxA, boxB, v, toCentre, 9, pen, best ) ) return 0;
 
-	GXCrossVec3Vec3 ( v, transformA.yv, transformB.yv );
+	GXCrossVec3Vec3 ( v, aY, bY );
 	if ( TryAxis ( boxA, boxB, v, toCentre, 10, pen, best ) ) return 0;
 
-	GXCrossVec3Vec3 ( v, transformA.yv, transformB.zv );
+	GXCrossVec3Vec3 ( v, aY, bZ );
 	if ( TryAxis ( boxA, boxB, v, toCentre, 11, pen, best ) ) return 0;
 
 
-	GXCrossVec3Vec3 ( v, transformA.zv, transformB.xv );
+	GXCrossVec3Vec3 ( v, aZ, bX );
 	if ( TryAxis ( boxA, boxB, v, toCentre, 12, pen, best ) ) return 0;
 
-	GXCrossVec3Vec3 ( v, transformA.zv, transformB.yv );
+	GXCrossVec3Vec3 ( v, aZ, bY );
 	if ( TryAxis ( boxA, boxB, v, toCentre, 13, pen, best ) ) return 0;
 
-	GXCrossVec3Vec3 ( v, transformA.zv, transformB.zv );
+	GXCrossVec3Vec3 ( v, aZ, bZ );
 	if ( TryAxis ( boxA, boxB, v, toCentre, 14, pen, best ) ) return 0;
 
 	if ( best == 0xFFFFFF ) return 0;
@@ -641,8 +677,11 @@ GXUInt GXCollisionDetector::CheckBoxAndBox ( const GXBoxShape &boxA, const GXBox
 		GXUInt oneAxisIndex = best / 3;
 		GXUInt twoAxisIndex = best % 3;
 
-		GXVec3 oneAxis = GetAxis ( transformA, oneAxisIndex );
-		GXVec3 twoAxis = GetAxis ( transformB, twoAxisIndex );
+		GXVec3 oneAxis;
+		GXVec3 twoAxis;
+
+		GetAxis ( oneAxis, transformA, oneAxisIndex );
+		GetAxis ( twoAxis, transformB, twoAxisIndex );
 
 		GXVec3 axis;
 		GXCrossVec3Vec3 ( axis, oneAxis, twoAxis );
@@ -658,13 +697,23 @@ GXUInt GXCollisionDetector::CheckBoxAndBox ( const GXBoxShape &boxA, const GXBox
 		{
 			if ( i == oneAxisIndex )
 				ptOnOneEdge.arr[ i ] = 0.0f;
-			else if ( GXDotVec3Fast ( GetAxis ( transformA, i ), axis ) > 0.0f )
-				ptOnOneEdge.arr[ i ] = -ptOnOneEdge.arr[ i ];
+			else
+			{
+				GXVec3 tmp;
+				GetAxis ( tmp, transformA, i );
+				if ( GXDotVec3Fast ( tmp, axis ) > 0.0f )
+					ptOnOneEdge.arr[ i ] = -ptOnOneEdge.arr[ i ];
+			}
 
 			if ( i == twoAxisIndex )
 				ptOnTwoEdge.arr[ i ] = 0.0f;
-			else if ( GXDotVec3Fast ( GetAxis ( transformB, i ), axis ) < 0.0f )
-				ptOnTwoEdge.arr[ i ] = -ptOnTwoEdge.arr[ i ];
+			else
+			{
+				GXVec3 tmp;
+				GetAxis ( tmp, transformB, i );
+				if ( GXDotVec3Fast ( tmp, axis ) < 0.0f )
+					ptOnTwoEdge.arr[ i ] = -ptOnTwoEdge.arr[ i ];
+			}
 		}
 
 		GXVec3 onOneEdge;
@@ -981,10 +1030,16 @@ GXFloat GXCollisionDetector::TransformToAxis ( const GXBoxShape &box, const GXVe
 	GXFloat d = box.GetDepth () * 0.5f;
 
 	const GXMat4& transform = box.GetTransformWorld ();
+	GXVec3 tmp;
 
-	GXFloat ans = w * fabsf ( GXDotVec3Fast ( axis, transform.xv ) );
-	ans += h * fabsf ( GXDotVec3Fast ( axis, transform.yv ) );
-	return  ans + d * fabsf ( GXDotVec3Fast ( axis, transform.zv ) );
+	transform.GetX ( tmp );
+	GXFloat ans = w * fabsf ( GXDotVec3Fast ( axis, tmp ) );
+
+	transform.GetY ( tmp );
+	ans += h * fabsf ( GXDotVec3Fast ( axis, tmp ) );
+
+	transform.GetZ ( tmp );
+	return  ans + d * fabsf ( GXDotVec3Fast ( axis, tmp ) );
 }
 
 GXVoid GXCollisionDetector::FillPointFaceBoxBox ( const GXBoxShape &one, const GXBoxShape &two, const GXVec3 &toCentre, GXCollisionData &collisionData, GXUInt best, GXFloat pen )
@@ -993,19 +1048,24 @@ GXVoid GXCollisionDetector::FillPointFaceBoxBox ( const GXBoxShape &one, const G
 
 	const GXMat4& transformOne = one.GetTransformWorld ();
 	const GXMat4& transformTwo = two.GetTransformWorld ();
-	GXVec3 normal = GetAxis ( transformOne, best );
+	GXVec3 normal;
+	GetAxis ( normal, transformOne, best );
 
 	if ( GXDotVec3Fast ( normal, toCentre ) > 0.0f )
 		GXReverseVec3 ( normal );
 
 	GXVec3 vertex ( two.GetWidth () * 0.5f, two.GetHeight () * 0.5f, two.GetDepth () * 0.5f );
-	if ( GXDotVec3Fast ( transformTwo.xv, normal ) < 0.0f )
+	GXVec3 tmp;
+	transformTwo.GetX ( tmp );
+	if ( GXDotVec3Fast ( tmp, normal ) < 0.0f )
 		vertex.x = -vertex.x;
 
-	if ( GXDotVec3Fast ( transformTwo.yv, normal ) < 0.0f )
+	transformTwo.GetY ( tmp );
+	if ( GXDotVec3Fast ( tmp, normal ) < 0.0f )
 		vertex.y = -vertex.y;
 
-	if ( GXDotVec3Fast ( transformTwo.zv, normal ) < 0.0f )
+	transformTwo.GetZ ( tmp );
+	if ( GXDotVec3Fast ( tmp, normal ) < 0.0f )
 		vertex.z = -vertex.z;
 
 	contact->SetNormal ( normal );
@@ -1018,25 +1078,28 @@ GXVoid GXCollisionDetector::FillPointFaceBoxBox ( const GXBoxShape &one, const G
 	contact->SetData ( one, &two );
 }
 
-const GXVec3& GXCollisionDetector::GetAxis ( const GXMat4 &transform, GXUInt index )
+GXVoid GXCollisionDetector::GetAxis ( GXVec3& axis, const GXMat4 &transform, GXUInt index )
 {
 	switch ( index )
 	{
 		case 0:
-		return transform.xv;
+			transform.GetX ( axis );
+		return;
 
 		case 1:
-		return transform.yv;
+			transform.GetY ( axis );
+		return;
 
 		case 2:
-		return transform.zv;
+			transform.GetZ ( axis );
+		return;
 
 		default:
 			GXLogW ( L"GXCollisionDetector::GetAxis::Warning - Wnong index %i\n", index );
 		break;
 	}
 
-	return transform.wv;
+	transform.GetW ( axis );
 }
 
 GXVec3 GXCollisionDetector::ContactPoint ( const GXVec3 &pOne, const GXVec3 &dOne, GXFloat oneSize, const GXVec3 &pTwo, const GXVec3 &dTwo, GXFloat twoSize, GXBool useOne )

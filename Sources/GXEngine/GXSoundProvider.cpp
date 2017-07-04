@@ -46,8 +46,10 @@ GXInt GXSoundStreamer::Seek ( GXInt offset, GXInt whence )
 		break;
 	}
 
-	if ( position < 0 ) position = 0;
-	else if ( position > (GXInt)totalSize ) position = totalSize;
+	if ( position < 0 ) 
+		position = 0;
+	else if ( position > (GXInt)totalSize ) 
+		position = totalSize;
 
 	return 0;
 }

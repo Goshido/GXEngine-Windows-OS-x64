@@ -67,7 +67,7 @@ const GXMat4& GXCamera::GetLastFrameViewProjectionMatrix () const
 
 GXVoid GXCamera::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 {
-	currentFrameModelMatrix.wv = GXCreateVec3 ( x, y, z );
+	currentFrameModelMatrix.SetW ( GXCreateVec3 ( x, y, z ) );
 	GXSetMat4Inverse ( currentFrameViewMatrix, currentFrameModelMatrix );
 	GXMulMat4Mat4 ( currentFrameViewProjectionMatrix, currentFrameViewMatrix, currentFrameProjectionMatrix );
 
@@ -76,7 +76,7 @@ GXVoid GXCamera::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 
 GXVoid GXCamera::SetLocation ( const GXVec3 &location )
 {
-	currentFrameModelMatrix.wv = location;
+	currentFrameModelMatrix.SetW ( location );
 	GXSetMat4Inverse ( currentFrameViewMatrix, currentFrameModelMatrix );
 	GXMulMat4Mat4 ( currentFrameViewProjectionMatrix, currentFrameViewMatrix, currentFrameProjectionMatrix );
 
@@ -85,10 +85,11 @@ GXVoid GXCamera::SetLocation ( const GXVec3 &location )
 
 GXVoid GXCamera::SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_rad )
 {
-	GXVec3 location = currentFrameModelMatrix.wv;
+	GXVec3 location;
+	currentFrameModelMatrix.GetW ( location );
 
 	GXSetMat4RotationXYZ ( currentFrameModelMatrix, pitch_rad, yaw_rad, roll_rad );
-	currentFrameModelMatrix.wv = location;
+	currentFrameModelMatrix.SetW ( location );
 
 	GXSetMat4Inverse ( currentFrameViewMatrix, currentFrameModelMatrix );
 	GXMulMat4Mat4 ( currentFrameViewProjectionMatrix, currentFrameViewMatrix, currentFrameProjectionMatrix );
@@ -98,10 +99,11 @@ GXVoid GXCamera::SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_
 
 GXVoid GXCamera::SetRotation ( const GXMat4 &rotation )
 {
-	GXVec3 location = currentFrameModelMatrix.wv;
+	GXVec3 location;
+	currentFrameModelMatrix.GetW ( location );
 
 	currentFrameModelMatrix = rotation;
-	currentFrameModelMatrix.wv = location;
+	currentFrameModelMatrix.SetW ( location );
 
 	GXSetMat4Inverse ( currentFrameViewMatrix, currentFrameModelMatrix );
 	GXMulMat4Mat4 ( currentFrameViewProjectionMatrix, currentFrameViewMatrix, currentFrameProjectionMatrix );
@@ -111,7 +113,8 @@ GXVoid GXCamera::SetRotation ( const GXMat4 &rotation )
 
 GXVoid GXCamera::SetRotation ( const GXQuat &rotation )
 {
-	GXVec3 location = currentFrameModelMatrix.wv;
+	GXVec3 location;
+	currentFrameModelMatrix.GetW ( location );
 	currentFrameModelMatrix.From ( rotation, location );
 
 	GXSetMat4Inverse ( currentFrameViewMatrix, currentFrameModelMatrix );
@@ -131,13 +134,13 @@ GXVoid GXCamera::SetCurrentFrameModelMatrix ( const GXMat4 &matrix )
 
 GXVoid GXCamera::GetLocation ( GXVec3& outLocation ) const
 {
-	outLocation = currentFrameViewMatrix.wv;
+	currentFrameViewMatrix.GetW ( outLocation );
 }
 
 GXVoid GXCamera::GetRotation ( GXMat4 &out ) const
 {
 	out = currentFrameModelMatrix;
-	out.wv = GXCreateVec3 ( 0.0f, 0.0f, 0.0f );
+	out.SetW ( GXCreateVec3 ( 0.0f, 0.0f, 0.0f ) );
 }
 
 GXVoid GXCamera::GetRotation ( GXQuat &out ) const

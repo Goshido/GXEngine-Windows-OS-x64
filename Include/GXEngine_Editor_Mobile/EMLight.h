@@ -62,7 +62,7 @@ class EMBulp : public EMLightEmitter
 		GXFloat GetInfluenceDistance ();
 
 		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
-		const GXVec3& GetLocation ();
+		GXVoid GetLocation ( GXVec3& location);
 
 		GXVoid DrawLightVolume ();
 
@@ -94,7 +94,7 @@ class EMSpotlight : public EMLightEmitter
 		GXFloat GetConeAngle ();
 
 		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
-		const GXVec3& GetLocation ();
+		GXVoid GetLocation ( GXVec3& location );
 
 		GXVoid SetRotation ( const GXMat4 &rot );
 		GXVoid SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_rad );

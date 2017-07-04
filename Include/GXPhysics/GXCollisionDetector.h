@@ -30,7 +30,7 @@ class GXCollisionDetector
 		GXFloat PenetrationOnAxis ( const GXBoxShape &one, const GXBoxShape &two, const GXVec3 &axis, const GXVec3 &toCentre );
 		GXFloat TransformToAxis ( const GXBoxShape &box, const GXVec3 &axis );
 		GXVoid FillPointFaceBoxBox ( const GXBoxShape &one, const GXBoxShape &two, const GXVec3 &toCentre, GXCollisionData &collisionData, GXUInt best, GXFloat pen );
-		const GXVec3& GetAxis ( const GXMat4 &transform, GXUInt index );
+		GXVoid GetAxis ( GXVec3 &axis, const GXMat4 &transform, GXUInt index );
 		GXVec3 ContactPoint ( const GXVec3 &pOne, const GXVec3 &dOne, GXFloat oneSize, const GXVec3 &pTwo, const GXVec3 &dTwo, GXFloat twoSize, GXBool useOne );
 
 		GXVoid CalculateSupportPoint ( GXSupportPoint &supportPoint, const GXShape &shapeA, const GXShape &shapeB, const GXVec3 &direction );

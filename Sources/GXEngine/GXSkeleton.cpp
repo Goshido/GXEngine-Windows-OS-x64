@@ -1,6 +1,7 @@
 //version 1.0
 
 #include <GXEngine/GXSkeleton.h>
+#include <GXCommon/GXMemory.h>
 
 
 GXSkeleton::GXSkeleton ()

@@ -106,7 +106,9 @@ GXUInt EMUnitActor::OnRequeredSaveSize ()
 
 GXVoid EMUnitActor::OnTransformChanged ()
 {
-	mesh.SetLocation ( transform.wv );
+	GXVec3 tmp;
+	transform.GetW ( tmp );
+	mesh.SetLocation ( tmp );
 
 	GXMat4 cleanRotation;
 	GXSetMat4ClearRotation ( cleanRotation, transform );

@@ -148,15 +148,26 @@ GXVoid EMCookTorranceCommonPassMaterial::Bind ( const GXTransform &transform )
 	transform.GetRotation ( currentFrameRotationMatrix );
 	const GXMat4& currentFrameViewMatrix = camera->GetCurrentFrameViewMatrix ();
 
+	GXVec3 tmp;
 	GXMat3 r;
-	r.xv = currentFrameRotationMatrix.xv;
-	r.yv = currentFrameRotationMatrix.yv;
-	r.zv = currentFrameRotationMatrix.zv;
+	currentFrameRotationMatrix.GetX ( tmp );
+	r.SetX ( tmp );
+
+	currentFrameRotationMatrix.GetY ( tmp );
+	r.SetY ( tmp );
+
+	currentFrameRotationMatrix.GetZ ( tmp );
+	r.SetZ ( tmp );
 
 	GXMat3 v;
-	v.xv = currentFrameViewMatrix.xv;
-	v.yv = currentFrameViewMatrix.yv;
-	v.zv = currentFrameViewMatrix.zv;
+	currentFrameViewMatrix.GetX ( tmp );
+	v.SetX ( tmp );
+
+	currentFrameViewMatrix.GetY ( tmp );
+	v.SetY ( tmp );
+
+	currentFrameViewMatrix.GetZ ( tmp );
+	v.SetZ ( tmp );
 
 	GXMulMat3Mat3 ( currentFrameRotationViewMatrix, r, v );
 

@@ -1,12 +1,13 @@
-//version 1.31
+//version 1.32
 
 #ifndef GX_MATH
 #define GX_MATH
 
 
 #include "GXTypes.h"
-#include <cmath>
-#include <limits>
+#include <math.h>
+#include <limits.h>
+#include <float.h>
 
 
 #define GX_MATH_TWO_PI	6.2831853f
@@ -65,7 +66,7 @@ struct GXVec3
 		};
 		GXFloat arr[ 3 ];
 	};
-	 
+
 	GXVec3 ();
 	explicit GXVec3 ( GXFloat component_1, GXFloat component_2, GXFloat component_3 );
 
@@ -80,7 +81,7 @@ GXVoid GXCALL GXSubVec3Vec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b );
 GXVoid GXCALL GXSubVec3ScaledVec3 ( GXVec3 &out, const GXVec3 &a, GXFloat s, const GXVec3 &b );
 GXVoid GXCALL GXMulVec3Vec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b );
 GXVoid GXCALL GXMulVec3Scalar ( GXVec3 &out, const GXVec3 &v, GXFloat factor );
-GXFloat GXCALL GXDotVec3Fast ( const GXVec3 &a, const GXVec3 &b );	//Вектора доЃEыZ быЃE единичыZЃE
+GXFloat GXCALL GXDotVec3Fast ( const GXVec3 &a, const GXVec3 &b );							//must be unit vectors
 GXVoid GXCALL GXCrossVec3Vec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b );
 GXFloat GXCALL GXLengthVec3 ( const GXVec3 &v );
 GXFloat GXCALL GXSquareLengthVec3 ( const GXVec3 &v );
@@ -164,21 +165,26 @@ struct GXMat4
 			GXFloat	m31, m32, m33, m34;
 			GXFloat	m41, m42, m43, m44;
 		};
-		struct
-		{
-			GXVec3 xv; GXFloat xw;
-			GXVec3 yv; GXFloat yw;
-			GXVec3 zv; GXFloat zw;
-			GXVec3 wv; GXFloat ww;
-		};
 	};
 
 	GXMat4 ();
-	
+
 	GXVoid SetRotation ( const GXQuat &quaternion );
 	GXVoid SetOrigin ( const GXVec3 &origin );
 	GXVoid From ( const GXQuat &quaternion, const GXVec3 &origin );
 	GXVoid From ( const GXMat3 &rotation, const GXVec3 &origin );
+
+	GXVoid GetX ( GXVec3& x ) const;
+	GXVoid SetX ( const GXVec3& x );
+
+	GXVoid GetY ( GXVec3& y ) const;
+	GXVoid SetY ( const GXVec3& y );
+
+	GXVoid GetZ ( GXVec3& z ) const;
+	GXVoid SetZ ( const GXVec3& z );
+
+	GXVoid GetW ( GXVec3& w ) const;
+	GXVoid SetW ( const GXVec3& w );
 
 	GXVoid operator = ( const GXMat4& matrix );
 };
@@ -215,25 +221,28 @@ struct GXMat3
 {
 	union 
 	{
-		float arr[9];
-		float m[3][3];
-		struct 
+		GXFloat arr[ 9 ];
+		GXFloat m[ 3 ][ 3 ];
+		struct
 		{
-			float m11, m12, m13;
-			float m21, m22, m23;
-			float m31, m32, m33;
-		};
-		struct 
-		{
-			GXVec3 xv;
-			GXVec3 yv;
-			GXVec3 zv;
+			GXFloat m11, m12, m13;
+			GXFloat m21, m22, m23;
+			GXFloat m31, m32, m33;
 		};
 	};
 
 	GXMat3 ();
 
 	GXVoid From ( const GXQuat &quaternion );
+
+	GXVoid GetX ( GXVec3& x ) const;
+	GXVoid SetX ( const GXVec3& x );
+
+	GXVoid GetY ( GXVec3& y ) const;
+	GXVoid SetY ( const GXVec3& y );
+
+	GXVoid GetZ ( GXVec3& z ) const;
+	GXVoid SetZ ( const GXVec3& z );
 
 	GXVoid operator = ( const GXMat3 &matrix );
 };
@@ -321,7 +330,7 @@ class GXProjectionClipPlanes
 		GXVoid operator = ( const GXProjectionClipPlanes &clipPlanes );
 
 	private:
-		GXUByte	PlaneTest ( GXFloat x, GXFloat y, GXFloat z );
+		GXUByte PlaneTest ( GXFloat x, GXFloat y, GXFloat z );
 };
 
 //-------------------------------------------------------------

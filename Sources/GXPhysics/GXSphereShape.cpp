@@ -31,5 +31,7 @@ GXVoid GXSphereShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction )
 {
 	GXVec3 d = direction;
 	GXNormalizeVec3 ( d );
-	GXSumVec3ScaledVec3 ( point, transformWorld.wv, radius, d );
+	GXVec3 tmp;
+	transformWorld.GetW ( tmp );
+	GXSumVec3ScaledVec3 ( point, tmp, radius, d );
 }

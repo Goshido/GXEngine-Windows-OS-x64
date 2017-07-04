@@ -207,7 +207,7 @@ GXBool EMMoveTool::OnLeftMouseButtonUp ( GXFloat /*x*/, GXFloat /*y*/ )
 	GXSumVec3Vec3 ( startLocationWorld, startLocationWorld, deltaWorld );
 
 	GXMat4 newTransform = actor->GetTransform ();
-	newTransform.wv = startLocationWorld;
+	newTransform.SetW ( startLocationWorld );
 	actor->SetTransform ( newTransform );
 
 	isLMBPressed = GX_FALSE;
@@ -235,7 +235,7 @@ GXVoid EMMoveTool::SetMode ( GXUByte mode )
 	if ( !activeCamera ) return;
 
 	const GXMat4& actorTransform = actor->GetTransform ();
-	startLocationWorld = actorTransform.wv;
+	actorTransform.GetW ( startLocationWorld );
 	memset ( &deltaWorld, 0, sizeof ( GXVec3 ) );
 
 	switch ( mode )
@@ -290,7 +290,10 @@ GXVoid EMMoveTool::OnMoveActor ()
 
 	GXMulVec3Mat4AsNormal ( deltaWorld, deltaView, activeCamera->GetCurrentFrameModelMatrix () );
 	GXMat4 newTransform = actor->GetTransform ();
-	GXSumVec3Vec3 ( newTransform.wv, startLocationWorld, deltaWorld );
+	GXVec3 w;
+	newTransform.GetW ( w );
+	GXSumVec3Vec3 ( w, startLocationWorld, deltaWorld );
+	newTransform.SetW ( w );
 
 	actor->SetTransform ( newTransform );
 }
@@ -302,15 +305,24 @@ GXVoid EMMoveTool::GetAxis ( GXVec3& axisView )
 	switch ( activeAxis )
 	{
 		case MOVE_TOOL_ACTIVE_AXIS_X:
-			axisWorld = ( mode == MOVE_TOOL_WORLD_MODE ) ? GXCreateVec3 ( 1.0f, 0.0f, 0.0f ) : gismoRotation.xv;
+			if ( mode == MOVE_TOOL_WORLD_MODE )
+				axisWorld = GXCreateVec3 ( 1.0f, 0.0f, 0.0f );
+			else
+				gismoRotation.GetX ( axisWorld );
 		break;
 
 		case MOVE_TOOL_ACTIVE_AXIS_Y:
-			axisWorld = ( mode == MOVE_TOOL_WORLD_MODE ) ? GXCreateVec3 ( 0.0f, 1.0f, 0.0f ) : gismoRotation.yv;
+			if ( mode == MOVE_TOOL_WORLD_MODE )
+				axisWorld = GXCreateVec3 ( 0.0f, 1.0f, 0.0f );
+			else
+				gismoRotation.GetY ( axisWorld );
 		break;
 
 		case MOVE_TOOL_ACTIVE_AXIS_Z:
-			axisWorld = ( mode == MOVE_TOOL_WORLD_MODE ) ? GXCreateVec3 ( 0.0f, 0.0f, 1.0f ) : gismoRotation.zv;
+			if ( mode == MOVE_TOOL_WORLD_MODE )
+				axisWorld = GXCreateVec3 ( 0.0f, 0.0f, 1.0f );
+			else
+				gismoRotation.GetZ ( axisWorld );
 		break;
 
 		default:
@@ -356,7 +368,9 @@ GXVoid EMMoveTool::UpdateMeshTransform ( EMMesh &mesh )
 	const GXMat4& actorTransform = actor->GetTransform ();
 	mesh.SetScale ( gismoScaleCorrector, gismoScaleCorrector, gismoScaleCorrector );
 	mesh.SetRotation ( gismoRotation );
-	mesh.SetLocation ( actorTransform.wv );
+	GXVec3 tmp;
+	actorTransform.GetW ( tmp );
+	mesh.SetLocation ( tmp );
 }
 
 GXVoid GXCALL EMMoveTool::OnObject ( GXUPointer object )

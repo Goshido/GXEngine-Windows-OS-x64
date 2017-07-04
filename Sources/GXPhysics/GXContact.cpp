@@ -330,9 +330,9 @@ GXVoid GXContact::CalculateContactBasis ()
 		contactTangent[ 1 ].z = normal.x * contactTangent[ 0 ].y;
 	}
 
-	contactToWorld.xv = normal;
-	contactToWorld.yv = contactTangent[ 0 ];
-	contactToWorld.zv = contactTangent[ 1 ];
+	contactToWorld.SetX ( normal );
+	contactToWorld.SetY ( contactTangent[ 0 ] );
+	contactToWorld.SetZ ( contactTangent[ 1 ] );
 }
 
 GXVoid GXContact::CalculateLocalVelocity ( GXVec3 &out, GXUInt bodyIndex, GXFloat deltaTime )

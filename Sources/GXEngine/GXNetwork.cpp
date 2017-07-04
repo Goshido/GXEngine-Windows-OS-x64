@@ -628,7 +628,7 @@ GXBool GXNetClient::ConnectTCP ( const GXChar* url, GXUShort port )
 		dest_addr.sin_addr.s_addr = inet_addr ( url );
 	else
 		if ( hst = gethostbyname ( url ) )
-			( (GXULong*)&dest_addr.sin_addr )[ 0 ] = ( (GXULong**)hst->h_addr_list )[ 0 ][ 0 ];
+			( (GXUInt*)&dest_addr.sin_addr )[ 0 ] = ( (GXUInt**)hst->h_addr_list )[ 0 ][ 0 ];
 		else
 		{
 			GXLogW ( L"GXNetClient::ConnectTCP::Error - Неверный адрес\n" );
@@ -683,7 +683,7 @@ GXBool GXNetClient::DeployUDP ( const GXChar* url, GXUShort port )
 		serverAddressUDP.sin_addr.s_addr = inet_addr ( url );
 	else
 		if ( hst = gethostbyname ( url ) )
-			( (GXULong*)&serverAddressUDP.sin_addr )[ 0 ] = ( (GXULong**)hst->h_addr_list )[ 0 ][ 0 ];
+			( (GXUInt*)&serverAddressUDP.sin_addr )[ 0 ] = ( (GXUInt**)hst->h_addr_list )[ 0 ][ 0 ];
 		else
 		{
 			GXLogW ( L"GXNetClient::ConnectTCP::Error - Неверный адрес\n" );

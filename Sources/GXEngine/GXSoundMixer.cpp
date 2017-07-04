@@ -43,8 +43,13 @@ GXVoid GXSoundMixer::SetListenerRotation ( const GXMat4 &rotation )
 {
 	GXFloat orientation[ 6 ];
 	
-	memcpy ( orientation, rotation.zv.arr, 3 * sizeof ( GXFloat ) );
-	memcpy ( orientation + 3, rotation.yv.arr, 3 * sizeof ( GXFloat ) );
+	GXVec3 tmp;
+	rotation.GetZ ( tmp );
+
+	memcpy ( orientation, &tmp, sizeof ( GXVec3 ) );
+
+	rotation.GetY ( tmp );
+	memcpy ( orientation + 3, &tmp, sizeof ( GXVec3 ) );
 
 	orientation[ 0 ] = -orientation[ 0 ];
 	orientation[ 1 ] = -orientation[ 1 ];

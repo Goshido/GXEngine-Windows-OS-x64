@@ -18,7 +18,6 @@ struct EMActorHeader
 	GXUInt		size;
 };
 
-
 class EMActor
 {
 	private:

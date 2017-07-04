@@ -1,10 +1,10 @@
-//version 1.31
+ï»¿//version 1.32
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
-#include <cstdlib>
-#include <cfloat>
+#include <stdlib.h>
 #include <cwchar>
+#include <cstring>
 
 
 #define GX_COLOR_TO_FLOAT_FACTOR 0.00392157f
@@ -65,6 +65,7 @@ GXVec3::GXVec3 ( GXFloat component_1, GXFloat component_2, GXFloat component_3 )
 	y = component_2;
 	z = component_3;
 }
+
 
 GXVoid GXVec3::operator = ( const GXVec3 &vector )
 {
@@ -278,7 +279,7 @@ GXVoid GXMat4::SetRotation ( const GXQuat& quaternion )
 
 GXVoid GXMat4::SetOrigin ( const GXVec3 &origin )
 { 
-	wv = origin;
+	SetW ( origin );
 }
 
 GXVoid GXMat4::From ( const GXQuat &quaternion, const GXVec3 &origin )
@@ -291,14 +292,60 @@ GXVoid GXMat4::From ( const GXQuat &quaternion, const GXVec3 &origin )
 
 GXVoid GXMat4::From ( const GXMat3 &rotation, const GXVec3 &origin )
 {
-	xv = rotation.xv;
-	yv = rotation.yv;
-	zv = rotation.zv;
+	GXVec3 tmp;
+	rotation.GetX ( tmp );
+	SetX ( tmp );
 
-	wv = origin;
+	rotation.GetY ( tmp );
+	SetY ( tmp );
+
+	rotation.GetZ ( tmp );
+	SetZ ( tmp );
+
+	SetW ( origin );
 
 	m14 = m24 = m34 = 0.0f;
 	m44 = 1.0f;
+}
+
+GXVoid GXMat4::GetX ( GXVec3& x ) const
+{
+	memcpy ( &x, arr, sizeof ( GXVec3 ) );
+}
+
+GXVoid GXMat4::SetX ( const GXVec3& x )
+{
+	memcpy ( arr, &x, sizeof ( GXVec3 ) );
+}
+
+GXVoid GXMat4::GetY ( GXVec3& y ) const
+{
+	memcpy ( &y, arr + 4, sizeof ( GXVec3 ) );
+}
+
+GXVoid GXMat4::SetY ( const GXVec3& y )
+{
+	memcpy ( arr + 4, &y, sizeof ( GXVec3 ) );
+}
+
+GXVoid GXMat4::GetZ ( GXVec3& z ) const
+{
+	memcpy ( &z, arr + 8, sizeof ( GXVec3 ) );
+}
+
+GXVoid GXMat4::SetZ ( const GXVec3& z )
+{
+	memcpy ( arr + 8, &z, sizeof ( GXVec3 ) );
+}
+
+GXVoid GXMat4::GetW ( GXVec3& w ) const
+{
+	memcpy ( &w, arr + 12, sizeof ( GXVec3 ) );
+}
+
+GXVoid GXMat4::SetW ( const GXVec3& w )
+{
+	memcpy ( arr + 12, &w, sizeof ( GXVec3 ) );
 }
 
 void GXMat4::operator = ( const GXMat4& matrix )
@@ -365,12 +412,13 @@ GXVoid GXCALL GXSetMat4Translation ( GXMat4 &out, GXFloat x, GXFloat y, GXFloat 
 
 GXVoid GXCALL GXSetMat4TranslateTo ( GXMat4 &out, GXFloat x, GXFloat y, GXFloat z )
 {
-	out.wv = GXCreateVec3 ( x, y, z );
+	GXVec3 origin ( x, y, z );
+	out.SetW ( origin );
 }
 
 GXVoid GXCALL GXSetMat4TranslateTo ( GXMat4 &out, const GXVec3 &location )
 {
-	out.wv = location;
+	out.SetW ( location );
 }
 
 GXVoid GXCALL GXSetMat4RotationX ( GXMat4 &out, GXFloat angle )
@@ -490,14 +538,32 @@ GXVoid GXCALL GXSetMat4RotationRelative ( GXMat4 &out, GXFloat pitch_rad, GXFloa
 
 GXVoid GXCALL GXSetMat4ClearRotation ( GXMat4 &out, const GXMat4 &mod_mat )
 {
-	GXVec3 scaleFactor;
-	scaleFactor.x = 1.0f / GXLengthVec3 ( mod_mat.xv );
-	scaleFactor.y = 1.0f / GXLengthVec3 ( mod_mat.yv );
-	scaleFactor.z = 1.0f / GXLengthVec3 ( mod_mat.zv );
+	GXVec3 outX;
+	GXVec3 outY;
+	GXVec3 outZ;
 
-	GXMulVec3Scalar ( out.xv, mod_mat.xv, scaleFactor.x );
-	GXMulVec3Scalar ( out.yv, mod_mat.yv, scaleFactor.y );
-	GXMulVec3Scalar ( out.zv, mod_mat.zv, scaleFactor.z );
+	GXVec3 modelX;
+	GXVec3 modelY;
+	GXVec3 modelZ;
+
+	mod_mat.GetX ( modelX );
+	mod_mat.GetY ( modelY );
+	mod_mat.GetZ ( modelZ );
+
+	GXVec3 scaleFactor;
+	scaleFactor.x = 1.0f / GXLengthVec3 ( modelX );
+	scaleFactor.y = 1.0f / GXLengthVec3 ( modelY );
+	scaleFactor.z = 1.0f / GXLengthVec3 ( modelZ );
+
+	GXVec3 tmp;
+	GXMulVec3Scalar ( tmp, modelX, scaleFactor.x );
+	out.SetX ( tmp );
+
+	GXMulVec3Scalar ( tmp, modelY, scaleFactor.y );
+	out.SetY ( tmp );
+
+	GXMulVec3Scalar ( tmp, modelZ, scaleFactor.z );
+	out.SetZ ( tmp );
 
 	out.m14 = out.m24 = out.m34 = 0.0f;
 	out.m41 = out.m42 = out.m43 = 0.0f;
@@ -698,6 +764,36 @@ GXVoid GXMat3::From ( const GXQuat &quaternion )
 	m31 = 2.0f * ( xz - yw );
 	m32 = 2.0f * ( yz + xw );
 	m33 = 1.0f - 2.0f * ( xx + yy );
+}
+
+GXVoid GXMat3::GetX ( GXVec3& x ) const
+{
+	memcpy ( &x, arr, sizeof ( GXVec3 ) );
+}
+
+GXVoid GXMat3::SetX ( const GXVec3& x )
+{
+	memcpy ( arr, &x, sizeof ( GXVec3 ) );
+}
+
+GXVoid GXMat3::GetY ( GXVec3& y ) const
+{
+	memcpy ( &y, arr + 3, sizeof ( GXVec3 ) );
+}
+
+GXVoid GXMat3::SetY ( const GXVec3& y )
+{
+	memcpy ( arr + 3, &y, sizeof ( GXVec3 ) );
+}
+
+GXVoid GXMat3::GetZ ( GXVec3& z ) const
+{
+	memcpy ( &z, arr + 6, sizeof ( GXVec3 ) );
+}
+
+GXVoid GXMat3::SetZ ( const GXVec3& z )
+{
+	memcpy ( arr + 6, &z, sizeof ( GXVec3 ) );
 }
 
 GXVoid GXMat3::operator = ( const GXMat3 &matrix )
@@ -1094,7 +1190,7 @@ GXVoid GXCALL GXInverseQuat ( GXQuat &out, const GXQuat &q )
 	}
 	else
 	{
-		wprintf ( L"ÎøèáêEGXInverseQuat\n" );
+		wprintf ( L"ÐžÑˆÐ¸Ð±ÐºÐ° - GXInverseQuat\n" );
 		out.x = out.y = out.z = 0.0f;
 		out.w = 1.0f;
 	}
@@ -1431,16 +1527,15 @@ GXVoid GXProjectionClipPlanes::From ( const GXMat4 &m )
 
 GXBool GXProjectionClipPlanes::IsVisible ( const GXAABB &bounds )
 {
-	//TODO
-	GXUByte flags = PlaneTest ( bounds.min.x, bounds.min.y, bounds.min.z );
-	flags &= PlaneTest ( bounds.min.x, bounds.max.y, bounds.min.z );
-	flags &= PlaneTest ( bounds.max.x, bounds.max.y, bounds.min.z );
-	flags &= PlaneTest ( bounds.max.x, bounds.min.y, bounds.min.z );
+	GXInt flags = (GXInt)PlaneTest ( bounds.min.x, bounds.min.y, bounds.min.z );
+	flags &= (GXInt)PlaneTest ( bounds.min.x, bounds.max.y, bounds.min.z );
+	flags &= (GXInt)PlaneTest ( bounds.max.x, bounds.max.y, bounds.min.z );
+	flags &= (GXInt)PlaneTest ( bounds.max.x, bounds.min.y, bounds.min.z );
 
-	flags &= PlaneTest ( bounds.min.x, bounds.min.y, bounds.max.z );
-	flags &= PlaneTest ( bounds.min.x, bounds.max.y, bounds.max.z );
-	flags &= PlaneTest ( bounds.max.x, bounds.max.y, bounds.max.z );
-	flags &= PlaneTest ( bounds.max.x, bounds.min.y, bounds.max.z );
+	flags &= (GXInt)PlaneTest ( bounds.min.x, bounds.min.y, bounds.max.z );
+	flags &= (GXInt)PlaneTest ( bounds.min.x, bounds.max.y, bounds.max.z );
+	flags &= (GXInt)PlaneTest ( bounds.max.x, bounds.max.y, bounds.max.z );
+	flags &= (GXInt)PlaneTest ( bounds.max.x, bounds.min.y, bounds.max.z );
 
 	return ( flags > 0 ) ? GX_FALSE : GX_TRUE;
 }
@@ -1450,7 +1545,7 @@ GXVoid GXProjectionClipPlanes::operator = ( const GXProjectionClipPlanes &clipPl
 	memcpy ( this, &clipPlanes, sizeof ( GXProjectionClipPlanes ) );
 }
 
-GXUByte	GXProjectionClipPlanes::PlaneTest ( GXFloat x, GXFloat y, GXFloat z )
+GXUByte GXProjectionClipPlanes::PlaneTest ( GXFloat x, GXFloat y, GXFloat z )
 {
 	GXUByte flags = 0;
 
@@ -1496,7 +1591,7 @@ GXFloat GXCALL GXRandomNormalize ()
 {
 	#define INV_RAND_MAX		3.05185e-5f;
 
-	return rand () * INV_RAND_MAX;
+	return (GXFloat)rand () * INV_RAND_MAX;
 
 	#undef INV_RAND_MAX
 }

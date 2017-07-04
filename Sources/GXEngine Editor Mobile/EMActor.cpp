@@ -1,5 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMActor.h>
 #include <GXCommon/GXStrings.h>
+#include <GXCommon/GXMemory.h>
 
 
 EMActor* em_Actors = nullptr;

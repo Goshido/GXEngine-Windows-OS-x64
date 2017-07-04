@@ -113,9 +113,9 @@ GXVoid EMBulp::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 	mod_mat.m43 = z;
 }
 
-const GXVec3& EMBulp::GetLocation ()
+GXVoid EMBulp::GetLocation ( GXVec3& location )
 {
-	return mod_mat.wv;
+	mod_mat.GetW ( location );
 }
 
 GXVoid EMBulp::DrawLightVolume ()
@@ -157,7 +157,7 @@ GXVoid EMSpotlight::SetInfluenceDistance ( GXFloat distance )
 	GXSetMat4Scale ( scale_mat, distance * compressionXY, distance * compressionXY, distance );
 
 	GXMulMat4Mat4 ( mod_mat, scale_mat, rot_mat );
-	mod_mat.wv = location;
+	mod_mat.SetW ( location );
 }
 
 GXVoid EMSpotlight::SetConeAngle ( GXFloat angle_rad )
@@ -183,12 +183,12 @@ GXVoid EMSpotlight::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 	location.y = y;
 	location.z = z;
 
-	mod_mat.wv = location;
+	mod_mat.SetW ( location );
 }
 
-const GXVec3& EMSpotlight::GetLocation ()
+GXVoid EMSpotlight::GetLocation ( GXVec3& location )
 {
-	return mod_mat.wv;
+	mod_mat.GetW ( location );
 }
 
 GXVoid EMSpotlight::SetRotation ( const GXMat4 &rot )
