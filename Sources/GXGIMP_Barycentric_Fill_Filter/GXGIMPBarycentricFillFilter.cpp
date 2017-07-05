@@ -12,7 +12,7 @@
 #define LAYER_NAME							"GX barycentric fill"
 
 #define INVALID_IMAGE_ID					0x7FFFFFFF
-#define LAYER_OPACITY						1.0
+#define LAYER_OPACITY						100.0
 
 #define PARAM_COUNT							2
 #define RETURN_VALUES						1
@@ -99,6 +99,15 @@
 #define EQULATERAL_TRIANGLE_ANGLE_DEGREES	60.0f
 
 
+struct GXColor
+{
+	guchar	r;
+	guchar	g;
+	guchar	b;
+	guchar	a;
+};
+
+
 GXGIMPBarycentricFillFilter* GXGIMPBarycentricFillFilter::instance = nullptr;
 
 GXGIMPBarycentricFillFilter& GXGIMPBarycentricFillFilter::GetInstance ()
@@ -162,8 +171,8 @@ GXVoid GXGIMPBarycentricFillFilter::Run ( const gchar* /*name*/, gint /*numParam
 GXGIMPBarycentricFillFilter::GXGIMPBarycentricFillFilter ()
 {
 	imageID = INVALID_IMAGE_ID;
-
 	gimp_ui_init ( PLUGIN_NAME, TRUE );
+
 	mainPanel = gimp_dialog_new ( MAIN_PANEL_TITLE, MAIN_PANEL_GTK_ROLE, nullptr, MAIN_PANEL_GTK_DIALOG_FLAGS, &gimp_standard_help_func, MAIN_PANEL_HELP_ID, CANCEL_BUTTON_CAPTION, GTK_RESPONSE_CANCEL, APPLY_BUTTON_CAPTION, GTK_RESPONSE_APPLY, nullptr );
 
 	gimp_window_set_transient ( GTK_WINDOW ( mainPanel ) );
@@ -312,11 +321,42 @@ GXVoid GXGIMPBarycentricFillFilter::ApplyFilter ()
 {
 	if ( imageID == INVALID_IMAGE_ID ) return;
 
-	GXInt side = (GXInt)gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON ( sideLength ) );
-	GXInt height = (GXInt)( sinf ( (GXFloat)side ) );
+	gint side = (gint)gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON ( sideLength ) );
+	gint height = (gint)( (GXFloat)side * sinf ( GXDegToRad ( EQULATERAL_TRIANGLE_ANGLE_DEGREES ) ) );
 
 	gint32 layerID = gimp_layer_new ( imageID, LAYER_NAME, side, height, GimpImageType::GIMP_RGBA_IMAGE, LAYER_OPACITY, GimpLayerModeEffects::GIMP_NORMAL_MODE );
 	gimp_image_insert_layer ( imageID, layerID, 0, -1 );
+	GimpDrawable* layer = gimp_drawable_get ( layerID );
+
+	GimpPixelRgn pixelRegion;
+	gimp_pixel_rgn_init ( &pixelRegion, layer, 0, 0, side, height, TRUE, TRUE );
+
+	GXColor* colorBuffer = (GXColor*)malloc ( side * height * sizeof ( GXColor ) );
+	GXUPointer offset = 0;
+
+	for ( gint x = 0; x < side; x++ )
+	{
+		for ( gint y = 0; y < height; y++ )
+		{
+			GXColor& c = colorBuffer[ offset ];
+			c.r = 115;
+			c.g = 185;
+			c.b = 0;
+			c.a = 255;
+
+			offset++;
+		}
+	}
+
+	gimp_pixel_rgn_set_rect ( &pixelRegion, (const guchar*)colorBuffer, 0, 0, side, height );
+
+	gimp_drawable_flush ( layer );
+	gimp_drawable_merge_shadow ( layerID, TRUE );
+	gimp_drawable_update ( layerID, 0, 0, side, height );
+	gimp_displays_flush ();
+	gimp_drawable_detach ( layer );
+
+	free ( colorBuffer );
 }
 
 void GXGIMPBarycentricFillFilter::OnDialogResponse ( GtkWidget* /*widget*/, gint responseID, gpointer data )

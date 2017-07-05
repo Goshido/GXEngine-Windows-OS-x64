@@ -41,6 +41,7 @@ CPPFLAGS=\
     -Wwrite-strings \
     -Wno-error=long-long \
     -Wno-error=unused-parameter \
+    -Wno-error=deprecated-declarations \
     -pthread \
     -mms-bitfields \
     -pthread \
@@ -58,6 +59,7 @@ LIBRARIES=\
     -lgimpmodule-2.0 \
     -lgimp-2.0 \
     -lbabl-0.1 \
+    -lgegl-0.2 \
     -lgtk-win32-2.0 \
     -lgdk-win32-2.0 \
     -lgdi32 \
@@ -77,11 +79,12 @@ LIBRARIES=\
     -lintl
 
 SOURCES=\
-    ../../Sources/GXGIMP_Barycentric_Fill_Filter/GXGIMPBarycentricFillFilter.cpp \
     ../../Sources/GXGIMP_Barycentric_Fill_Filter/main.cpp \
+    ../../Sources/GXGIMP_Barycentric_Fill_Filter/GXGIMPBarycentricFillFilter.cpp \
     ../../Sources/GXCommon/GXMath.cpp \
     ../../Sources/GXCommon/GXLogger.cpp \
     ../../Sources/GXCommon/GXMemory.cpp \
+    ../../Sources/GXCommon/GXAbstractMutex.cpp \
     ../../Sources/GXCommon/Posix/GXMutex.cpp
 
 INCLUDE_DIRECTORIES=\

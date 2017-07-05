@@ -1,7 +1,21 @@
-﻿//version 1.0
+﻿//version 1.1
 
 #ifndef GX_MUTEX
 #define GX_MUTEX
+
+
+#include "GXTypes.h"
+
+
+class GXAbstractMutex
+{
+	public:
+		GXAbstractMutex ();
+		virtual ~GXAbstractMutex ();
+
+		virtual GXVoid Lock () = 0;
+		virtual GXVoid Release () = 0;
+};
 
 
 #ifdef __GNUC__

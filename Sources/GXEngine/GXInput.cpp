@@ -484,7 +484,7 @@ GXInput::GXInput ()
 	thread = new GXThread ( &InputLoop, nullptr );
 }
 
-GXDword GXTHREADCALL GXInput::InputLoop ( GXVoid* args )
+GXUPointer GXTHREADCALL GXInput::InputLoop ( GXVoid* args )
 {
 	while ( loopFlag )
 	{

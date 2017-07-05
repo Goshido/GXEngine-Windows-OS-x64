@@ -27,6 +27,9 @@
     <Filter Include="Source Files\GXCommon\Posix">
       <UniqueIdentifier>{554ddae9-1361-4887-98b2-beba9eace73f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Babl">
+      <UniqueIdentifier>{b2168e0e-f7a9-4bf7-8e00-c2f221eafb58}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXTypes.h">
@@ -41,17 +44,32 @@
     <ClInclude Include="..\..\Include\GXCommon\GXLogger.h">
       <Filter>Header Files\GXCommon</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXCommon\Posix\GXMutex.h">
-      <Filter>Header Files\GXCommon\Posix</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXCommon\GXMutex.h">
-      <Filter>Header Files\GXCommon</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXCommon\Posix\GXTypes.h">
       <Filter>Header Files\GXCommon\Posix</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXCommon\GXMemory.h">
       <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXMutex.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\Posix\GXMutex.h">
+      <Filter>Header Files\GXCommon\Posix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Tools\MSYS2x64\mingw64\include\babl-0.1\babl\babl.h">
+      <Filter>Header Files\Babl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Tools\MSYS2x64\mingw64\include\babl-0.1\babl\babl-introspect.h">
+      <Filter>Header Files\Babl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Tools\MSYS2x64\mingw64\include\babl-0.1\babl\babl-macros.h">
+      <Filter>Header Files\Babl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Tools\MSYS2x64\mingw64\include\babl-0.1\babl\babl-types.h">
+      <Filter>Header Files\Babl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Tools\MSYS2x64\mingw64\include\babl-0.1\babl\babl-version.h">
+      <Filter>Header Files\Babl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -64,14 +82,17 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXLogger.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXCommon\Posix\GXMutex.cpp">
-      <Filter>Source Files\GXCommon\Posix</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\GXMath.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\GXMemory.cpp">
       <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractMutex.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\Posix\GXMutex.cpp">
+      <Filter>Source Files\GXCommon\Posix</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

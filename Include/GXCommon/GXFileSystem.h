@@ -17,7 +17,7 @@ struct GXDirectoryInfo
 
 	GXUInt				totalFiles;
 	const GXWChar**		fileNames;
-	const GXUPointer*	fileSizes;
+	const GXUBigInt*	fileSizes;
 
 	GXDirectoryInfo ();
 	~GXDirectoryInfo ();

@@ -449,7 +449,7 @@ GXNetServer::GXNetServer ()
 	threadTCP = threadUDP = nullptr;
 }
 
-GXDword GXTHREADCALL GXNetServer::ListenTCP ( GXVoid* arg )
+GXUPointer GXTHREADCALL GXNetServer::ListenTCP ( GXVoid* arg )
 {
 	SOCKET client_socket;
 	sockaddr_in client_addr;
@@ -489,7 +489,7 @@ GXDword GXTHREADCALL GXNetServer::ListenTCP ( GXVoid* arg )
 	return 0;
 }
 
-GXDword GXTHREADCALL GXNetServer::ServeClientTCP ( GXVoid* arg )
+GXUPointer GXTHREADCALL GXNetServer::ServeClientTCP ( GXVoid* arg )
 {
 	GXLogW ( L"GXNetServer::ServeClientTCP::Info - Клиент зарегистрирован\n" );
 
@@ -524,7 +524,7 @@ GXDword GXTHREADCALL GXNetServer::ServeClientTCP ( GXVoid* arg )
 	return 0;
 }
 
-GXDword GXTHREADCALL GXNetServer::ServeClientUDP ( GXVoid* arg )
+GXUPointer GXTHREADCALL GXNetServer::ServeClientUDP ( GXVoid* arg )
 {
 	sockaddr_in client_addr;
 	GXInt client_addr_size = sizeof ( client_addr );
@@ -822,7 +822,7 @@ GXNetClient::GXNetClient ()
 	OnMessageTCP = OnMessageUDP = nullptr;
 }
 
-GXDword GXTHREADCALL GXNetClient::ReceiveTCP ( GXVoid* arg )
+GXUPointer GXTHREADCALL GXNetClient::ReceiveTCP ( GXVoid* arg )
 {
 	GXLogW ( L"GXNetClient::ReceiveTCP::Info - Соединение успешно создано\n" );
 
@@ -839,7 +839,7 @@ GXDword GXTHREADCALL GXNetClient::ReceiveTCP ( GXVoid* arg )
 	return 0;
 }
 
-GXDword GXTHREADCALL GXNetClient::ReceiveUDP ( GXVoid* arg )
+GXUPointer GXTHREADCALL GXNetClient::ReceiveUDP ( GXVoid* arg )
 {
 	GXLogW ( L"GXNetClient::ReceiveUDP::Info - UDP сокет успешно поднят\n" );
 

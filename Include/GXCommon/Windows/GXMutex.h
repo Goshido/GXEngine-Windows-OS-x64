@@ -1,23 +1,23 @@
-﻿//version 1.0
+﻿//version 1.1
 
 #ifndef GX_MUTEX_WINDOWS
 #define GX_MUTEX_WINDOWS
 
 
-#include "../GXTypes.h"
+#include "../GXMutex.h"
 
 
-class GXMutex
+class GXMutex : public GXAbstractMutex
 {
 	private:
 		HANDLE	mutex;
 
 	public:
 		GXMutex ();
-		~GXMutex ();
+		~GXMutex () override;
 
-		GXVoid Lock ();
-		GXVoid Release ();
+		GXVoid Lock () override;
+		GXVoid Release () override;
 };
 
 

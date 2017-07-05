@@ -163,6 +163,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractMutex.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAVLTree.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXCFGLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXCFGSaver.cpp" />
@@ -176,9 +177,10 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshSaver.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXOBJLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp" />
-    <ClCompile Include="..\..\Sources\GXCommon\GXThread.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractThread.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXTime.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXThread.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMActor.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMCookTorranceCommonPassMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMCookTorranceDirectedLightMaterial.cpp" />
@@ -306,6 +308,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXCommon\GXTime.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXTypes.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXMutex.h" />
+    <ClInclude Include="..\..\Include\GXCommon\Windows\GXThread.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXTypes.h" />
     <ClInclude Include="..\..\Include\GXEngineDLL\GXEngineAPI.h" />
     <ClInclude Include="..\..\Include\GXEngineDLL\GXEngineDLL.h" />

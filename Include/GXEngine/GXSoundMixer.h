@@ -46,7 +46,7 @@ class GXSoundMixer
 	private:
 		explicit GXSoundMixer ();
 
-		static GXDword GXTHREADCALL Update ( GXVoid* args );
+		static GXUPointer GXTHREADCALL Update ( GXVoid* args );
 
 };
 

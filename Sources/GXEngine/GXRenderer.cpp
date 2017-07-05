@@ -349,7 +349,7 @@ GXRenderer::GXRenderer ()
 	SetWindowName ( GX_DEFAULT_WINDOW_NAME );
 }
 
-GXDword GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* args )
+GXUPointer GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* args )
 {
 	if ( !MakeWindow () ) return 0;
 

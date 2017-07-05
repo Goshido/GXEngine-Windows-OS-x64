@@ -81,7 +81,7 @@ class GXRenderer
 	private:
 		GXRenderer ();
 
-		static GXDword GXTHREADCALL RenderLoop ( GXVoid* args );
+		static GXUPointer GXTHREADCALL RenderLoop ( GXVoid* args );
 		static GXVoid GXCALL InitOpenGL ();
 		static GXVoid GXCALL DrawScene ();
 		static GXVoid GXCALL Destroy ();

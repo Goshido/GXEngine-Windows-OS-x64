@@ -19,6 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\Tools\MSYS2x64\mingw64\include\babl-0.1\babl\babl-introspect.h" />
+    <ClInclude Include="..\..\..\..\Tools\MSYS2x64\mingw64\include\babl-0.1\babl\babl-macros.h" />
+    <ClInclude Include="..\..\..\..\Tools\MSYS2x64\mingw64\include\babl-0.1\babl\babl-types.h" />
+    <ClInclude Include="..\..\..\..\Tools\MSYS2x64\mingw64\include\babl-0.1\babl\babl-version.h" />
+    <ClInclude Include="..\..\..\..\Tools\MSYS2x64\mingw64\include\babl-0.1\babl\babl.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXLogger.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXMath.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXMemory.h" />
@@ -29,6 +34,7 @@
     <ClInclude Include="..\..\Include\GXGIMP_Barycentric_Fill_Filter\GXGIMPBarycentricFillFilter.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractMutex.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXLogger.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXMath.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXMemory.cpp" />

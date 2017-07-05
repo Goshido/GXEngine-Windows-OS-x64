@@ -194,7 +194,7 @@ class GXInput
 	private:
 		GXInput ();
 
-		static GXDword GXTHREADCALL InputLoop ( GXVoid* args );
+		static GXUPointer GXTHREADCALL InputLoop ( GXVoid* args );
 
 		static GXBool GXCALL IsGamepadConnected ( GXDword gamepadID );
 		static GXVoid GXCALL TestGamepadButton ( GXDword buttonFlag, GXUChar buttonID );

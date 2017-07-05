@@ -5,7 +5,6 @@
 
 #define WIN32_LEAN_AND_MEAN			//to correct include WinSock2.h
 #include <Windows.h>
-#include <stdint.h>
 
 
 #define	GXCALL			WINAPI
@@ -20,8 +19,12 @@ typedef signed __int16			GXShort;
 typedef unsigned __int16		GXUShort;
 typedef signed __int32			GXInt;
 typedef unsigned __int32		GXUInt;
+typedef __int64					GXBigInt;
+typedef unsigned __int64		GXUBigInt;
 typedef long					GXLong;
 typedef unsigned long			GXULong;
+typedef long long				GXLongLong;
+typedef unsigned long long		GXULongLong;
 typedef unsigned long int		GXDword;
 typedef signed __int8			GXByte;
 typedef unsigned __int8			GXUByte;

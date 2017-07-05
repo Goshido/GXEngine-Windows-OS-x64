@@ -50,7 +50,7 @@ GXVoid GXDirectoryInfo::Clear ()
 	totalFiles = 0;
 	GXSafeFree ( fileNames );
 
-	GXUPointer* s = (GXUPointer*)fileSizes;
+	GXUBigInt* s = (GXUBigInt*)fileSizes;
 	GXSafeFree ( s );
 	fileSizes = nullptr;
 }
@@ -195,7 +195,7 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 
 	GXDynamicArray folderNames ( sizeof ( GXWChar* ) );
 	GXDynamicArray fileNames ( sizeof ( GXWChar* ) );
-	GXDynamicArray fileSizes ( sizeof ( GXUPointer ) );
+	GXDynamicArray fileSizes ( sizeof ( GXUBigInt ) );
 
 	do
 	{
@@ -211,7 +211,7 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 			GXWcsclone ( &fileName, info.cFileName );
 			fileNames.SetValue ( fileNames.GetLength (), &fileName );
 
-			GXUPointer fileSize = (GXUPointer)info.nFileSizeLow + ( (GXUPointer)info.nFileSizeHigh << 32 );
+			GXUBigInt fileSize = (GXUBigInt)info.nFileSizeLow + ( (GXUBigInt)info.nFileSizeHigh << 32 );
 			fileSizes.SetValue ( fileSizes.GetLength (), &fileSize );
 		}
 	}
@@ -269,10 +269,10 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 		memcpy ( f, fileNames.GetData (), size );
 		directoryInfo.fileNames = (const GXWChar**)f;
 
-		size = directoryInfo.totalFiles * sizeof ( GXUPointer );
-		GXUPointer* s = (GXUPointer*)malloc ( size );
+		size = directoryInfo.totalFiles * sizeof ( GXUBigInt );
+		GXUBigInt* s = (GXUBigInt*)malloc ( size );
 		memcpy ( s, fileSizes.GetData (), size );
-		directoryInfo.fileSizes = (const GXUPointer*)s;
+		directoryInfo.fileSizes = (const GXUBigInt*)s;
 	}
 	else
 	{
