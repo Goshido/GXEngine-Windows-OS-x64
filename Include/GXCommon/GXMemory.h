@@ -5,7 +5,8 @@
 
 
 #include <GXCommon/GXTypes.h>
-#include <string>
+#include <cstdlib>
+#include <cstring>
 
 
 #define GXSafeDelete(ptr)		\

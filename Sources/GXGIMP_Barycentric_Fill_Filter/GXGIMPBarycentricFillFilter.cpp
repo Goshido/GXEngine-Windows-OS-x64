@@ -1,5 +1,6 @@
 #include <GXGIMP_Barycentric_Fill_Filter/GXGimpBarycentricFillFilter.h>
 #include <GXCommon/GXMath.h>
+#include <GXCommon/GXMemory.h>
 
 
 #define PLUGIN_NAME							"gx-barycentric-fill-filter"
@@ -97,6 +98,7 @@
 #define SEPARATOR_ALIGNMENT_SCALE_Y			0.0f
 
 #define EQULATERAL_TRIANGLE_ANGLE_DEGREES	60.0f
+#define COLOR_FACTOR						1.525902e-5f
 
 
 struct GXColor
@@ -334,15 +336,41 @@ GXVoid GXGIMPBarycentricFillFilter::ApplyFilter ()
 	GXColor* colorBuffer = (GXColor*)malloc ( side * height * sizeof ( GXColor ) );
 	GXUPointer offset = 0;
 
-	for ( gint x = 0; x < side; x++ )
+	GXVec3 a ( 0.0f, (GXFloat)( height - 1 ), 0.0f );
+	GXVec3 b ( (GXFloat)( side / 2 ), 0, 0.0f );
+	GXVec3 c ( (GXFloat)( side - 1 ), (GXFloat)( height - 1 ), 0.0f );
+
+	GdkColor tmp;
+	gtk_color_button_get_color ( GTK_COLOR_BUTTON ( colorA ), &tmp );
+	GXVec3 hueA ( tmp.red * COLOR_FACTOR, tmp.green * COLOR_FACTOR, tmp.blue * COLOR_FACTOR );
+
+	gtk_color_button_get_color ( GTK_COLOR_BUTTON ( colorB ), &tmp );
+	GXVec3 hueB ( tmp.red * COLOR_FACTOR, tmp.green * COLOR_FACTOR, tmp.blue * COLOR_FACTOR );
+
+	gtk_color_button_get_color ( GTK_COLOR_BUTTON ( colorC ), &tmp );
+	GXVec3 hueC ( tmp.red * COLOR_FACTOR, tmp.green * COLOR_FACTOR, tmp.blue * COLOR_FACTOR );
+
+	for ( gint y = 0; y < height; y++ )
 	{
-		for ( gint y = 0; y < height; y++ )
+		for ( gint x = 0; x < side; x++ )
 		{
-			GXColor& c = colorBuffer[ offset ];
-			c.r = 115;
-			c.g = 185;
-			c.b = 0;
-			c.a = 255;
+			GXColor& sample = colorBuffer[ offset ];
+
+			GXVec3 screenCoord ( (GXFloat)x, (GXFloat)y, 0.0f );
+			GXVec3 barycentricCoords;
+			GXGetBarycentricCoords ( barycentricCoords, screenCoord, a, b, c );
+
+			if ( barycentricCoords.x < 0.0f || barycentricCoords.x > 1.0f || barycentricCoords.y < 0.0f || barycentricCoords.y > 1.0f || barycentricCoords.z < 0.0f || barycentricCoords.z > 1.0f )
+			{
+				memset ( &sample, 0, sizeof ( GXColor ) );
+			}
+			else
+			{
+				sample.r = (guchar)( 255.0f * ( barycentricCoords.x * hueA.r + barycentricCoords.y * hueB.r + barycentricCoords.z * hueC.r ) );
+				sample.g = (guchar)( 255.0f * ( barycentricCoords.x * hueA.g + barycentricCoords.y * hueB.g + barycentricCoords.z * hueC.g ) );
+				sample.b = (guchar)( 255.0f * ( barycentricCoords.x * hueA.b + barycentricCoords.y * hueB.b + barycentricCoords.z * hueC.b ) );
+				sample.a = 255;
+			}
 
 			offset++;
 		}
