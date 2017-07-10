@@ -4,6 +4,7 @@
 #include <GXEngine_Editor_Mobile/EMUIMotionBlurSettings.h>
 #include <GXEngine_Editor_Mobile/EMUISSAOSettings.h>
 #include <GXEngine_Editor_Mobile/EMUIFPSCounter.h>
+#include <GXEngine_Editor_Mobile/EMUIColorPicker.h>
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXLocale.h>
 #include <GXEngine/GXCore.h>
@@ -82,7 +83,7 @@ GXVoid EMGame::OnInit ()
 	createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Bulp" ), nullptr, nullptr );
 
 	toolsPopup = new EMUIPopup ( nullptr );
-	toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Select" ), nullptr, nullptr );
+	toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Select" ), nullptr, &EMGame::OnColorPicker );
 	toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Move" ), nullptr, nullptr );
 	toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Rotate" ), nullptr, nullptr );
 	toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Scale" ), nullptr, nullptr );
@@ -237,6 +238,11 @@ GXVoid GXCALL EMGame::OnExit ( GXVoid* /*handler*/ )
 {
 	GXCore::GetInstance ().Exit ();
 	GXLogA ( "Завершение\n" );
+}
+
+GXVoid GXCALL EMGame::OnColorPicker ( GXVoid* /*handler*/ )
+{
+	EMUIColorPicker::GetInstance ().PickHSVColor ( nullptr, nullptr );
 }
 
 GXVoid GXCALL EMGame::OnShowMotionBlurSettings ( GXVoid* /*handler*/ )

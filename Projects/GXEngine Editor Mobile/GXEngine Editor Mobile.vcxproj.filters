@@ -408,6 +408,9 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractMutex.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIColorPicker.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -862,6 +865,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXThread.h">
       <Filter>Header Files\GXCommon\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIColorPicker.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -190,6 +190,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMGaussVerticalBlurMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMSSAOApplyMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMSSAOSharpMaterial.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIColorPicker.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIFPSCounter.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMLight.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMGame.cpp" />
@@ -388,6 +389,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMGaussVerticalBlurMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMSSAOApplyMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMSSAOSharpMaterial.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIColorPicker.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIFPSCounter.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMLight.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMGame.h" />

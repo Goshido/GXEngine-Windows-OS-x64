@@ -108,3 +108,23 @@ SSAO settings->Maximum distance (meters)~Maximum distance (meters)~
 SSAO settings->Cancel~Cancel~
 
 SSAO settings->Apply~Apply~
+
+Color picker->Color picker~Color picker~
+
+Color picker->H~H~
+
+Color picker->S~S~
+
+Color picker->V~V~
+
+Color picker->R~R~
+
+Color picker->G~G~
+
+Color picker->B~B~
+
+Color picker->Transparency~Transparency~
+
+Color picker->Cancel~Cancel~
+
+Color picker->Pick~Pick~

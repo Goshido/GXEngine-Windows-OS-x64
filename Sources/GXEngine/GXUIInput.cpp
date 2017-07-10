@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #include <GXEngine/GXUIInput.h>
 #include <GXEngine/GXUIMessage.h>
@@ -7,19 +7,21 @@
 GXUIInput::GXUIInput ( GXWidget* parent, GXBool isNeedRegister ):
 GXWidget ( parent, isNeedRegister )
 {
-	onLMBDownCallback = nullptr;
-	onLMBUpCallback = nullptr;
-	onMMBDownCallback = nullptr;
-	onMMBUpCallback = nullptr;
-	onRMBDownCallback = nullptr;
-	onRMBUpCallback = nullptr;
+	OnLMBDown = nullptr;
+	OnLMBUp = nullptr;
+	OnMMBDown = nullptr;
+	OnMMBUp = nullptr;
+	OnRMBDown = nullptr;
+	OnRMBUp = nullptr;
 
-	onDoubleClickCallback = nullptr;
-	onMouseMoveCallback = nullptr;
-	onMouseScrollCallback = nullptr;
+	OnDoubleClick = nullptr;
+	OnMouseMove = nullptr;
+	OnMouseScroll = nullptr;
+	OnMouseOver = nullptr;
+	OnMouseLeave = nullptr;
 
-	onKeyDownCallback = nullptr;
-	onKeyUpCallback = nullptr;
+	OnKeyDown = nullptr;
+	OnKeyUp = nullptr;
 
 	handler = nullptr;
 }
@@ -35,121 +37,115 @@ GXVoid GXUIInput::OnMessage ( GXUInt message, const GXVoid* data )
 	{
 		case GX_MSG_LMBDOWN:
 		{
-			const GXVec2* v = (const GXVec2*)data;
-			if ( onLMBDownCallback )
-				onLMBDownCallback ( handler, this, v->x, v->y );
+			if ( !OnLMBDown ) break;
 
-			if ( renderer )
-				renderer->OnUpdate ();
+			const GXVec2* v = (const GXVec2*)data;
+			OnLMBDown ( handler, this, v->x, v->y );
 		}
 		break;
 
 		case GX_MSG_LMBUP:
 		{
-			const GXVec2* v = (const GXVec2*)data;
-			if ( onLMBUpCallback )
-				onLMBUpCallback ( handler, this, v->x, v->y );
+			if ( !OnLMBUp ) break;
 
-			if ( renderer )
-				renderer->OnUpdate ();
+			const GXVec2* v = (const GXVec2*)data;
+			OnLMBUp ( handler, this, v->x, v->y );
 		}
 		break;
 	
 		case GX_MSG_MMBDOWN:
 		{
-			const GXVec2* v = (const GXVec2*)data;
-			if ( onMMBDownCallback )
-				onMMBDownCallback ( handler, this, v->x, v->y );
+			if ( !OnMMBDown ) break;
 
-			if ( renderer )
-				renderer->OnUpdate ();
+			const GXVec2* v = (const GXVec2*)data;
+			OnMMBDown ( handler, this, v->x, v->y );
 		}
 		break;
 
 		case GX_MSG_MMBUP:
 		{
-			const GXVec2* v = (const GXVec2*)data;
-			if ( onMMBUpCallback )
-				onMMBUpCallback ( handler, this, v->x, v->y );
+			if ( !OnMMBUp ) break;
 
-			if ( renderer )
-				renderer->OnUpdate ();
+			const GXVec2* v = (const GXVec2*)data;
+			OnMMBUp ( handler, this, v->x, v->y );
 		}
 		break;
 
 		case GX_MSG_RMBDOWN:
 		{
-			const GXVec2* v = (const GXVec2*)data;
-			if ( onRMBDownCallback )
-				onRMBDownCallback ( handler, this, v->x, v->y );
+			if ( !OnRMBDown ) break;
 
-			if ( renderer )
-				renderer->OnUpdate ();
+			const GXVec2* v = (const GXVec2*)data;
+			OnRMBDown ( handler, this, v->x, v->y );
 		}
 		break;
 
 		case GX_MSG_RMBUP:
 		{
-			const GXVec2* v = (const GXVec2*)data;
-			if ( onRMBUpCallback )
-				onRMBUpCallback ( handler, this, v->x, v->y );
+			if ( !OnRMBUp ) break;
 
-			if ( renderer )
-				renderer->OnUpdate ();
+			const GXVec2* v = (const GXVec2*)data;
+			OnRMBUp ( handler, this, v->x, v->y );
 		}
 		break;
 
 		case GX_MSG_SCROLL:
 		{
-			const GXVec3* v = (const GXVec3*)data;
-			if ( onMouseScrollCallback )
-				onMouseScrollCallback ( handler, this, v->x, v->y, v->z );
+			if ( !OnMouseScroll ) break;
 
-			if ( renderer )
-				renderer->OnUpdate ();
+			const GXVec3* v = (const GXVec3*)data;
+			OnMouseScroll ( handler, this, v->x, v->y, v->z );
 		}
 		break;
 
 		case GX_MSG_MOUSE_MOVE:
 		{
-			const GXVec2* v = (const GXVec2*)data;
-			if ( onMouseMoveCallback )
-				onMouseMoveCallback ( handler, this, v->x, v->y );
+			if ( !OnMouseMove ) break;
 
-			if ( renderer )
-				renderer->OnUpdate ();
+			const GXVec2* v = (const GXVec2*)data;
+			OnMouseMove ( handler, this, v->x, v->y );
+		}
+
+		case GX_MSG_MOUSE_OVER:
+		{
+			if ( !OnMouseOver ) break;
+
+			const GXVec2* v = (const GXVec2*)data;
+			OnMouseOver ( handler, this, v->x, v->y );
+		}
+
+		case GX_MSG_MOUSE_LEAVE:
+		{
+			if ( !OnMouseLeave ) break;
+
+			const GXVec2* v = (const GXVec2*)data;
+			OnMouseLeave ( handler, this, v->x, v->y );
 		}
 
 		case GX_MSG_DOUBLE_CLICK:
 		{
-			const GXVec2* v = (const GXVec2*)data;
-			if ( onDoubleClickCallback )
-				onDoubleClickCallback ( handler, this, v->x, v->y );
+			if ( !OnDoubleClick ) break;
 
-			if ( renderer )
-				renderer->OnUpdate ();
+			const GXVec2* v = (const GXVec2*)data;
+			OnDoubleClick ( handler, this, v->x, v->y );
 		}
 		break;
 
 		case GX_MSG_KEY_DOWN:
 		{
-			const GXInt* keyCode = (const GXInt*)data;
-			if ( onKeyDownCallback )
-				onKeyDownCallback ( handler, this, *keyCode );
+			if ( !OnKeyDown ) break;
 
-			if ( renderer )
-				renderer->OnUpdate ();
+			const GXInt* keyCode = (const GXInt*)data;
+			OnKeyDown ( handler, this, *keyCode );
 		}
 		break;
 
 		case GX_MSG_KEY_UP:
 		{
-			const GXInt* keyCode = (const GXInt*)data;
-			if ( onKeyUpCallback )
-				onKeyUpCallback ( handler, this, *keyCode );
+			if ( !OnKeyUp ) break;
 
-			if ( renderer )
-				renderer->OnUpdate ();
+			const GXInt* keyCode = (const GXInt*)data;
+			OnKeyUp ( handler, this, *keyCode );
 		}
 		break;
 
@@ -159,59 +155,69 @@ GXVoid GXUIInput::OnMessage ( GXUInt message, const GXVoid* data )
 	}
 }
 
-GXVoid GXUIInput::SetOnLeftMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEPOSITIONPROC callback )
+GXVoid GXUIInput::SetOnLeftMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback )
 {
-	onLMBDownCallback = callback;
+	OnLMBDown = callback;
 }
 
-GXVoid GXUIInput::SetOnLeftMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEPOSITIONPROC callback )
+GXVoid GXUIInput::SetOnLeftMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback )
 {
-	onLMBUpCallback = callback;
+	OnLMBUp = callback;
 }
 
-GXVoid GXUIInput::SetOnMiddleMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEPOSITIONPROC callback )
+GXVoid GXUIInput::SetOnMiddleMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback )
 {
-	onMMBDownCallback = callback;
+	OnMMBDown = callback;
 }
 
-GXVoid GXUIInput::SetOnMiddleMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEPOSITIONPROC callback )
+GXVoid GXUIInput::SetOnMiddleMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback )
 {
-	onMMBUpCallback = callback;
+	OnMMBUp = callback;
 }
 
-GXVoid GXUIInput::SetOnRightMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEPOSITIONPROC callback )
+GXVoid GXUIInput::SetOnRightMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback )
 {
-	onRMBDownCallback = callback;
+	OnRMBDown = callback;
 }
 
-GXVoid GXUIInput::SetOnRightMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEPOSITIONPROC callback )
+GXVoid GXUIInput::SetOnRightMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback )
 {
-	onRMBUpCallback = callback;
+	OnRMBUp = callback;
 }
 
-GXVoid GXUIInput::SetOnDoubleClickCallback ( PFNGXUIINPUTONMOUSEPOSITIONPROC callback )
+GXVoid GXUIInput::SetOnDoubleClickCallback ( PFNGXUIINPUTNONDOUBLECLICKPROC callback )
 {
-	onDoubleClickCallback = callback;
+	OnDoubleClick = callback;
 }
 
-GXVoid GXUIInput::SetOnMouseMoveCallback ( PFNGXUIINPUTONMOUSEPOSITIONPROC callback )
+GXVoid GXUIInput::SetOnMouseMoveCallback ( PFNGXUIINPUTONMOUSEMOVEPROC callback )
 {
-	onMouseMoveCallback = callback;
+	OnMouseMove = callback;
 }
 
-GXVoid GXUIInput::SetOnMouseScrollCallback ( PFNGXUIINPUTONMOUSESCROLLPROC callback )
+GXVoid GXUIInput::SetOnMouseScrollCallback ( PFNGXUIINPUTNSCROLLPROC callback )
 {
-	onMouseScrollCallback = callback;
+	OnMouseScroll = callback;
 }
 
-GXVoid GXUIInput::SetOnKeyDownCallback ( PFNGXUIINPUTONKEYPROC callback )
+GXVoid GXUIInput::SetOnMouseOverCallback ( PFNGXUIINPUTNMOUSEOVERPROC callback )
 {
-	onKeyDownCallback = callback;
+	OnMouseOver = callback;
 }
 
-GXVoid GXUIInput::SetOnKeyUpCallback ( PFNGXUIINPUTONKEYPROC callback )
+GXVoid GXUIInput::SetOnMouseLeaveCallback ( PFNGXUIINPUTNMOUSELEAVEPROC callback )
 {
-	onKeyUpCallback = callback;
+	OnMouseLeave = callback;
+}
+
+GXVoid GXUIInput::SetOnKeyDownCallback ( PFNGXUIINPUTNONKEYPROC callback )
+{
+	OnKeyDown = callback;
+}
+
+GXVoid GXUIInput::SetOnKeyUpCallback ( PFNGXUIINPUTNONKEYPROC callback )
+{
+	OnKeyUp = callback;
 }
 
 GXVoid GXUIInput::SetHandler ( GXVoid* handler )

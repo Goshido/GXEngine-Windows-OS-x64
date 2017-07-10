@@ -2,6 +2,7 @@
 #include <GXEngine_Editor_Mobile/EMLight.h>
 #include <GXEngine_Editor_Mobile/EMUIMotionBlurSettings.h>
 #include <GXEngine_Editor_Mobile/EMUISSAOSettings.h>
+#include <GXEngine_Editor_Mobile/EMUIColorPicker.h>
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXCamera.h>
 #include <GXEngine/GXSamplerUtils.h>
@@ -92,6 +93,7 @@ EMRenderer::~EMRenderer ()
 
 	delete &( EMUISSAOSettings::GetInstance () );
 	delete &( EMUIMotionBlurSettings::GetInstance () );
+	delete &( EMUIColorPicker::GetInstance () );
 
 	albedoTexture.FreeResources ();
 	normalTexture.FreeResources ();
@@ -701,6 +703,7 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" ), gaussHorizontalBlurMateria
 
 	EMUIMotionBlurSettings::GetInstance ();
 	EMUISSAOSettings::GetInstance ();
+	EMUIColorPicker::GetInstance ();
 }
 
 GXVoid EMRenderer::CreateFBO ()

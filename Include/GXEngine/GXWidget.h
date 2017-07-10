@@ -66,7 +66,7 @@ class GXWidgetIterator
 		GXWidget*	widget;
 
 	public:
-		explicit GXWidgetIterator ();
+		GXWidgetIterator ();
 		~GXWidgetIterator ();
 
 		GXWidget* Init ( GXWidget* widget );

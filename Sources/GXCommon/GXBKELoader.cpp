@@ -3,6 +3,7 @@
 #include <GXCommon/GXBKELoader.h>
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXMemory.h>
+#include <GXCommon/GXLogger.h>
 
 
 GXVoid GXCALL GXLoadBKE ( const GXWChar* fileName, GXBakeInfo &out_bake_info )

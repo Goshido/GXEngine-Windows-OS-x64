@@ -108,3 +108,23 @@ SSAO settings->Maximum distance (meters)~Дистанция эффекта (ме
 SSAO settings->Cancel~Отмена~
 
 SSAO settings->Apply~Применить~
+
+Color picker->Color picker~Выбор цвета~
+
+Color picker->H~H~
+
+Color picker->S~S~
+
+Color picker->V~V~
+
+Color picker->R~R~
+
+Color picker->G~G~
+
+Color picker->B~B~
+
+Color picker->Transparency~Прозрачность~
+
+Color picker->Cancel~Отмена~
+
+Color picker->Pick~Выбрать~

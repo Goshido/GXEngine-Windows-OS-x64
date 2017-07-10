@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractMutex.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractThread.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXBKELoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXBKESaver.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXBKEStructs.cpp" />
@@ -26,13 +28,13 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXLogger.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXMath.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXMemory.cpp" />
-    <ClCompile Include="..\..\Sources\GXCommon\GXMutex.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshSaver.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXOBJLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp" />
-    <ClCompile Include="..\..\Sources\GXCommon\GXThread.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXTime.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXThread.cpp" />
     <ClCompile Include="..\..\Sources\GXEngineDLL\GXFreeType.cpp" />
     <ClCompile Include="..\..\Sources\GXEngineDLL\GXOGGVorbis.cpp" />
     <ClCompile Include="..\..\Sources\GXEngineDLL\GXOpenAL.cpp" />

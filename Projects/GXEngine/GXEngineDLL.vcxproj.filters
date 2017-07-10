@@ -34,6 +34,9 @@
     <Filter Include="Header Files\PhysX">
       <UniqueIdentifier>{790193b3-2213-4526-af1b-4c05567280b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GXCommon\Windows">
+      <UniqueIdentifier>{92abb900-5336-43a4-8e39-22a1e5efcd5c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\GXCommon\GXBKELoader.cpp">
@@ -54,9 +57,6 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXMath.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXCommon\GXMutex.cpp">
-      <Filter>Source Files\GXCommon</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshLoader.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
@@ -67,9 +67,6 @@
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp">
-      <Filter>Source Files\GXCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXCommon\GXThread.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\GXTime.cpp">
@@ -91,6 +88,18 @@
       <Filter>Source Files\GXEngineDLL</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\GXMemory.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp">
+      <Filter>Source Files\GXCommon\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXThread.cpp">
+      <Filter>Source Files\GXCommon\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractMutex.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractThread.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,4 +1,4 @@
-//version 1.32
+//version 1.33
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -60,6 +60,12 @@ struct GXVec3
 		};
 		struct
 		{
+			GXFloat h;
+			GXFloat s;
+			GXFloat v;
+		};
+		struct
+		{
 			GXFloat pitch_rad;
 			GXFloat yaw_rad;
 			GXFloat roll_rad;
@@ -107,9 +113,21 @@ struct GXVec4
 		};
 		struct
 		{
-			GXFloat r;
-			GXFloat g;
-			GXFloat b;
+			union
+			{
+				struct
+				{
+					GXFloat r;
+					GXFloat g;
+					GXFloat b;
+				};
+				struct
+				{
+					GXFloat h;
+					GXFloat s;
+					GXFloat v;
+				};
+			};
 			GXFloat a;
 		};
 		GXFloat arr[ 4 ];
@@ -338,6 +356,8 @@ class GXProjectionClipPlanes
 GXFloat GXCALL GXDegToRad ( GXFloat degrees );
 GXVoid GXCALL GXColorToVec3 ( GXVec3 &out, GXUChar r, GXUChar g, GXUChar b );
 GXVoid GXCALL GXColorToVec4 ( GXVec4 &out, GXUChar r, GXUChar g, GXUChar b, GXUChar a );
+GXVoid GXCALL GXConvertHSVToRGB ( const GXVec4 &hsvColor, GXUByte &red, GXUByte &green, GXUByte &blue, GXUByte &alpha );
+GXVoid GXCALL GXConvertRGBToHSV ( const GXVec4 &rgbColor, GXFloat &hue, GXFloat &saturation, GXFloat &value, GXFloat &alpha );
 GXVoid GXCALL GXConvert3DSMaxToGXEngine ( GXVec3 &gx_out, GXFloat max_x, GXFloat max_y, GXFloat max_z );
 GXFloat GXCALL GXRandomNormalize ();
 GXFloat GXCALL GXRandomBetween ( GXFloat from, GXFloat to );

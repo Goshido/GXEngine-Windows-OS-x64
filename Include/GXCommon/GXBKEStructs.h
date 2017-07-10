@@ -4,7 +4,7 @@
 #define GX_BKE_STRUCTS
 
 
-#include "GXCommon.h"
+#include "GXTypes.h"
 
 
 struct GXBakeHeader

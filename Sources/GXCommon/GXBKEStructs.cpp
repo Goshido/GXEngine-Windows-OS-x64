@@ -1,6 +1,7 @@
 //version 1.0
 
 #include <GXCommon/GXBKEStructs.h>
+#include <GXCommon/GXMemory.h>
 
 
 GXBakeInfo::GXBakeInfo ()

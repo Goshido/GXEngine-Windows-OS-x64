@@ -22,10 +22,10 @@
 #define START_MAIN_PANEL_LEFT_X_OFFSET		1.5f
 #define START_MAIN_PANEL_TOP_Y_OFFSET		1.5f
 
+#define MARGIN								0.24166f
+
 #define CAPTION_TOP_Y_OFFSET				0.64444f
 #define CAPTION_HEIGHT						0.5f
-
-#define MARGIN								0.24166f
 
 #define TOP_SEPARATOR_TOP_Y_OFFSET			0.85925f
 #define TOP_SEPARATOR_HEIGHT				0.2f

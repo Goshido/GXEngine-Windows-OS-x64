@@ -43,7 +43,7 @@ class GXUIDragableArea : public GXWidget
 		GXVoid*							handler;
 
 	public:
-		GXUIDragableArea ( GXWidget* parent );
+		explicit GXUIDragableArea ( GXWidget* parent );
 		~GXUIDragableArea () override;
 
 		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
