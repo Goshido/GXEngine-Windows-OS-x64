@@ -1,0 +1,72 @@
+#version 330 core
+
+
+#define DOUBLE_PI			6.283185
+#define HSV_FACTOR			0.016666
+#define COLOR_SLOT			0
+
+
+in vec2 v_uv;
+
+uniform float innerRadius;
+uniform float outerRadius;
+uniform vec2 halfResolution;
+
+layout ( location = COLOR_SLOT ) out vec4 colorSlot;
+
+
+void main ()
+{
+	vec2 direction = gl_FragCoord.xy - halfResolution;
+	float currentRadius = length ( direction );
+
+	if ( currentRadius < innerRadius || currentRadius > outerRadius )
+	{
+		colorSlot = vec4 ( 0.0, 0.0, 0.0, 0.0 );
+		return;
+	}
+
+	float cosAngle = dot ( normalize ( direction ), vec2 ( 1.0, 0.0 ) );
+	float angleRadians = acos ( cosAngle );
+
+	if ( gl_FragCoord.y < halfResolution.y )
+		angleRadians = DOUBLE_PI - angleRadians;
+
+	float angleDegrees = degrees ( angleRadians );
+
+	int selector = int ( mod ( floor ( angleDegrees * HSV_FACTOR ), 6.0 ) );
+	float increment = mod ( angleDegrees, 60.0 ) * HSV_FACTOR;
+	float decrement = 1.0 - increment;
+
+	switch ( selector )
+	{
+		case 0:
+			colorSlot = vec4 ( 1.0, increment, 0.0, 1.0 );
+		break;
+
+		case 1:
+			colorSlot = vec4 ( decrement, 1.0, 0.0, 1.0 );
+		break;
+
+		case 2:
+			colorSlot = vec4 ( 0.0, 1.0, increment, 1.0 );
+		break;
+
+		case 3:
+			colorSlot = vec4 ( 0.0, decrement, 1.0, 1.0 );
+		break;
+
+		case 4:
+			colorSlot = vec4 ( increment, 0.0, 1.0, 1.0 );
+		break;
+
+		case 5:
+			colorSlot = vec4 ( 1.0, 0.0, decrement, 1.0 );
+		break;
+
+		default:
+			//Error color actualy
+			colorSlot = vec4 ( 0.0, 0.0, 0.0, 1.0 );
+		break;
+	}
+}

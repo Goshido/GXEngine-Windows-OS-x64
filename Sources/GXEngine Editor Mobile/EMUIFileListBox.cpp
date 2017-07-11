@@ -4,47 +4,50 @@
 #include <GXCommon/GXStrings.h>
 
 
-#define EM_DEFAULT_WIDTH					7.0f
-#define EM_DEFAULT_HEIGHT					6.0f
-#define EM_DEFAULT_LEFT_BOTTOM_X			0.1f
-#define EM_DEFAULT_LEFT_BOTTOM_Y			0.1f
+#define DEFAULT_WIDTH						7.0f
+#define DEFAULT_HEIGHT						6.0f
+#define DEFAULT_LEFT_BOTTOM_X				0.1f
+#define DEFAULT_LEFT_BOTTOM_Y				0.1f
 
-#define EM_DEFAULT_FONT						L"Fonts/trebuc.ttf"
-#define EM_DEFAULT_FONT_SIZE				0.33f
-#define EM_DEFAULT_ITEM_HEIGHT				0.85f
-#define EM_DEFAULT_ITEM_NAME_OFFSET_X		0.9f
+#define FONT								L"Fonts/trebuc.ttf"
+#define FONT_SIZE							0.33f
+#define ITEM_HEIGHT							0.85f
+#define ITEM_NAME_OFFSET_X					0.9f
 
-#define EM_DEFAULT_ITEM_NAME_COLOR_R		255
-#define EM_DEFAULT_ITEM_NAME_COLOR_G		255
-#define EM_DEFAULT_ITEM_NAME_COLOR_B		255
-#define EM_DEFAULT_ITEM_NAME_COLOR_A		255
+#define ITEM_NAME_COLOR_R					255
+#define ITEM_NAME_COLOR_G					255
+#define ITEM_NAME_COLOR_B					255
+#define ITEM_NAME_COLOR_A					255
 
-#define EM_DEFAULT_BACKGROUND_COLOR_R		49
-#define EM_DEFAULT_BACKGROUND_COLOR_G		48
-#define EM_DEFAULT_BACKGROUND_COLOR_B		48
-#define EM_DEFAULT_BACKGROUND_COLOR_A		255
+#define BACKGROUND_COLOR_R					49
+#define BACKGROUND_COLOR_G					48
+#define BACKGROUND_COLOR_B					48
+#define BACKGROUND_COLOR_A					255
 
-#define EM_DEFAULT_RECTANGLE				L"Textures/System/Default_Diffuse.tga"
+#define RECTANGLE							L"Textures/System/Default_Diffuse.tga"
 
-#define EM_DEFAULT_FOLDER_ICON				L"Textures/Editor Mobile/gui_folder_icon.png"
-#define EM_DEFAULT_FOLDER_ICON_ASPECT		1.3f
-#define EM_DEFAULT_FOLDER_ICON_HEIGHT		0.54f
+#define FOLDER_ICON							L"Textures/Editor Mobile/gui_folder_icon.png"
+#define FOLDER_ICON_ASPECT					1.3f
+#define FOLDER_ICON_HEIGHT					0.54f
 
-#define EM_DEFAULT_FILE_ICON				L"Textures/Editor Mobile/gui_file_icon.png"
-#define EM_DEFAULT_FILE_ICON_ASPECT			0.75f
-#define EM_DEFAULT_FILE_ICON_HEIGHT			0.6f
+#define FILE_ICON							L"Textures/Editor Mobile/gui_file_icon.png"
+#define FILE_ICON_ASPECT					0.75f
+#define FILE_ICON_HEIGHT					0.6f
 
-#define EM_DEFAULT_HIGHLIGHTED_COLOR_R		25
-#define EM_DEFAULT_HIGHLIGHTED_COLOR_G		25
-#define EM_DEFAULT_HIGHLIGHTED_COLOR_B		25
-#define EM_DEFAULT_HIGHLIGHTED_COLOR_A		25
+#define HIGHLIGHTED_COLOR_R					25
+#define HIGHLIGHTED_COLOR_G					25
+#define HIGHLIGHTED_COLOR_B					25
+#define HIGHLIGHTED_COLOR_A					25
 
-#define EM_DEFAULT_SELECTED_COLOR_R			115
-#define EM_DEFAULT_SELECTED_COLOR_G			185
-#define EM_DEFAULT_SELECTED_COLOR_B			0
-#define EM_DEFAULT_SELECTED_COLOR_A			102
+#define SELECTED_COLOR_R					115
+#define SELECTED_COLOR_G					185
+#define SELECTED_COLOR_B					0
+#define SELECTED_COLOR_A					102
 
-#define EM_DEFAULT_ICON_OFFSET_X			0.1f
+#define ICON_OFFSET_X						0.1f
+
+#define PIXEL_PERFECT_LOCATION_OFFSET_X		0.25f
+#define PIXEL_PERFECT_LOCATION_OFFSET_Y		0.25f
 
 
 EMUIFileListBoxItem::EMUIFileListBoxItem ( eEMUIFileListBoxItemType type, const GXWChar* name )
@@ -84,11 +87,11 @@ class EMUIFileListBoxRenderer : public GXWidgetRenderer
 EMUIFileListBoxRenderer::EMUIFileListBoxRenderer ( GXUIListBox* widget ) :
 GXWidgetRenderer ( widget )
 {
-	font = GXFont::GetFont ( EM_DEFAULT_FONT, (GXUShort)( EM_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
+	font = GXFont::GetFont ( FONT, (GXUShort)( FONT_SIZE * gx_ui_Scale ) );
 
-	rectangle = GXTexture::LoadTexture ( EM_DEFAULT_RECTANGLE, GX_FALSE, GL_CLAMP_TO_EDGE );
-	fileIcon = GXTexture::LoadTexture ( EM_DEFAULT_FILE_ICON, GX_FALSE, GL_CLAMP_TO_EDGE );
-	folderIcon = GXTexture::LoadTexture ( EM_DEFAULT_FOLDER_ICON, GX_FALSE, GL_CLAMP_TO_EDGE );
+	rectangle = GXTexture::LoadTexture ( RECTANGLE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	fileIcon = GXTexture::LoadTexture ( FILE_ICON, GX_FALSE, GL_CLAMP_TO_EDGE );
+	folderIcon = GXTexture::LoadTexture ( FOLDER_ICON, GX_FALSE, GL_CLAMP_TO_EDGE );
 
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
 	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
@@ -116,7 +119,7 @@ GXVoid EMUIFileListBoxRenderer::OnRefresh ()
 
 	surface->Reset ();
 	GXImageInfo ii;
-	GXColorToVec4 ( ii.color, EM_DEFAULT_BACKGROUND_COLOR_R, EM_DEFAULT_BACKGROUND_COLOR_G, EM_DEFAULT_BACKGROUND_COLOR_B, EM_DEFAULT_BACKGROUND_COLOR_A );
+	GXColorToVec4 ( ii.color, BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
 	ii.insertX = ii.insertY = 0.0f;
 	ii.insertWidth = width;
 	ii.insertHeight = height;
@@ -125,28 +128,28 @@ GXVoid EMUIFileListBoxRenderer::OnRefresh ()
 
 	surface->AddImage ( ii );
 
-	GXFloat folderIconHeight = EM_DEFAULT_FOLDER_ICON_HEIGHT * gx_ui_Scale;
-	GXFloat folderIconWidth = folderIconHeight * EM_DEFAULT_FOLDER_ICON_ASPECT;
+	GXFloat folderIconHeight = FOLDER_ICON_HEIGHT * gx_ui_Scale;
+	GXFloat folderIconWidth = folderIconHeight * FOLDER_ICON_ASPECT;
 	GXFloat folderIconYOffset = ( itemHeight - folderIconHeight ) * 0.5f;
 
-	GXFloat fileIconHeight = EM_DEFAULT_FILE_ICON_HEIGHT * gx_ui_Scale;
-	GXFloat fileIconWidth = fileIconHeight * EM_DEFAULT_FILE_ICON_ASPECT;
+	GXFloat fileIconHeight = FILE_ICON_HEIGHT * gx_ui_Scale;
+	GXFloat fileIconWidth = fileIconHeight * FILE_ICON_ASPECT;
 	GXFloat fileIconYOffset = ( itemHeight - fileIconWidth ) * 0.5f;
 
 	GXPenInfo pi;
-	GXColorToVec4 ( pi.color, EM_DEFAULT_ITEM_NAME_COLOR_R, EM_DEFAULT_ITEM_NAME_COLOR_G, EM_DEFAULT_ITEM_NAME_COLOR_B, EM_DEFAULT_ITEM_NAME_COLOR_A );
+	GXColorToVec4 ( pi.color, ITEM_NAME_COLOR_R, ITEM_NAME_COLOR_G, ITEM_NAME_COLOR_B, ITEM_NAME_COLOR_A );
 	pi.font = &font;
-	pi.insertX = EM_DEFAULT_ITEM_NAME_OFFSET_X * gx_ui_Scale;
+	pi.insertX = ITEM_NAME_OFFSET_X * gx_ui_Scale;
 	pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
-	GXFloat iconXOffset = EM_DEFAULT_ICON_OFFSET_X * gx_ui_Scale;
+	GXFloat iconXOffset = ICON_OFFSET_X * gx_ui_Scale;
 	ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
 	GXVec4 highlightedColor;
-	GXColorToVec4 ( highlightedColor, EM_DEFAULT_HIGHLIGHTED_COLOR_R, EM_DEFAULT_HIGHLIGHTED_COLOR_G, EM_DEFAULT_HIGHLIGHTED_COLOR_B, EM_DEFAULT_HIGHLIGHTED_COLOR_A );
+	GXColorToVec4 ( highlightedColor,HIGHLIGHTED_COLOR_R, HIGHLIGHTED_COLOR_G, HIGHLIGHTED_COLOR_B, HIGHLIGHTED_COLOR_A );
 
 	GXVec4 selectedColor;
-	GXColorToVec4 ( selectedColor, EM_DEFAULT_SELECTED_COLOR_R, EM_DEFAULT_SELECTED_COLOR_G, EM_DEFAULT_SELECTED_COLOR_B, EM_DEFAULT_SELECTED_COLOR_A );
+	GXColorToVec4 ( selectedColor, SELECTED_COLOR_R, SELECTED_COLOR_G, SELECTED_COLOR_B, SELECTED_COLOR_A );
 
 	GXVec4 iconColor;
 	GXColorToVec4 ( iconColor, 255, 255, 255, 255 );
@@ -230,6 +233,9 @@ GXVoid EMUIFileListBoxRenderer::OnDraw ()
 
 GXVoid EMUIFileListBoxRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
 {
+	x = truncf ( x ) + PIXEL_PERFECT_LOCATION_OFFSET_X;
+	y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
+
 	GXSafeDelete ( surface );
 	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
@@ -239,6 +245,9 @@ GXVoid EMUIFileListBoxRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width
 
 GXVoid EMUIFileListBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
 {
+	x = truncf ( x ) + PIXEL_PERFECT_LOCATION_OFFSET_X;
+	y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
+
 	GXVec3 location;
 	surface->GetLocation ( location );
 	surface->SetLocation ( x, y, location.z );
@@ -250,8 +259,8 @@ EMUIFileListBox::EMUIFileListBox ( EMUI* parent ):
 EMUI ( parent )
 {
 	widget = new GXUIListBox ( parent ? parent->GetWidget () : nullptr, &EMUIFileListBox::ItemDestructor );
-	widget->Resize ( EM_DEFAULT_LEFT_BOTTOM_X * gx_ui_Scale, EM_DEFAULT_LEFT_BOTTOM_Y * gx_ui_Scale, EM_DEFAULT_WIDTH * gx_ui_Scale, EM_DEFAULT_HEIGHT * gx_ui_Scale );
-	widget->SetItemHeight ( EM_DEFAULT_ITEM_HEIGHT * gx_ui_Scale );
+	widget->Resize ( DEFAULT_LEFT_BOTTOM_X * gx_ui_Scale, DEFAULT_LEFT_BOTTOM_Y * gx_ui_Scale, DEFAULT_WIDTH * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
+	widget->SetItemHeight ( ITEM_HEIGHT * gx_ui_Scale );
 	widget->SetRenderer ( new EMUIFileListBoxRenderer ( widget ) );
 }
 

@@ -7,11 +7,12 @@
 #include <cstring>
 
 
-#define COLOR_TO_FLOAT_FACTOR		0.00392157f
+#define COLOR_TO_FLOAT_FACTOR			0.00392157f
 
-#define HSV_FACTOR					0.016666f
-#define HSV_TO_RGB_FACTOR			2.55f
-#define HSV_ALPHA_FACTOR			2.55f
+#define HSVA_FACTOR						0.016666f
+#define HSVA_TO_RGBA_FACTOR				2.55f
+#define HSVA_ALPHA_TO_RGBA_ALPHA_BYTE	2.55f
+#define HSVA_TO_RGBA_FLOAT				0.01f
 
 
 GXVec2::GXVec2 ()
@@ -1584,75 +1585,129 @@ GXVoid GXCALL GXColorToVec4 ( GXVec4 &out, GXUChar r, GXUChar g, GXUChar b, GXUC
 	out.a = a * COLOR_TO_FLOAT_FACTOR;
 }
 
-GXVoid GXCALL GXConvertHSVToRGB ( const GXVec4 &hsvColor, GXUByte &red, GXUByte &green, GXUByte &blue, GXUByte &alpha )
+GXVoid GXCALL GXConvertHSVAToRGBA ( GXUByte &red, GXUByte &green, GXUByte &blue, GXUByte &alpha, const GXVec4 &hsvaColor )
 {
-	GXUByte selector = (GXUByte)( (GXInt)( hsvColor.h * HSV_FACTOR ) % 6 );
-	GXFloat minValue = ( ( 100.0f - hsvColor.s ) * hsvColor.v ) * 0.01f;
-	GXFloat delta = ( hsvColor.v - minValue ) * ( ( (GXInt)hsvColor.h % 60 ) * HSV_FACTOR );
+	GXUByte selector = (GXUByte)( (GXInt)( hsvaColor.h * HSVA_FACTOR ) % 6 );
+	GXFloat minValue = ( ( 100.0f - hsvaColor.s ) * hsvaColor.v ) * 0.01f;
+	GXFloat delta = ( hsvaColor.v - minValue ) * ( ( (GXInt)hsvaColor.h % 60 ) * HSVA_FACTOR );
 	GXFloat increment = minValue + delta;
-	GXFloat decrement = hsvColor.v - delta;
+	GXFloat decrement = hsvaColor.v - delta;
 
-	alpha = (GXUByte)( hsvColor.a * HSV_ALPHA_FACTOR );
+	alpha = (GXUByte)( hsvaColor.a * HSVA_ALPHA_TO_RGBA_ALPHA_BYTE );
 
 	switch ( selector )
 	{
 		case 0:
-			red = (GXUByte)( hsvColor.v * HSV_TO_RGB_FACTOR );
-			green = (GXUByte)( increment * HSV_TO_RGB_FACTOR );
-			blue = (GXUByte)( minValue * HSV_TO_RGB_FACTOR );
+			red = (GXUByte)( hsvaColor.v * HSVA_TO_RGBA_FACTOR );
+			green = (GXUByte)( increment * HSVA_TO_RGBA_FACTOR );
+			blue = (GXUByte)( minValue * HSVA_TO_RGBA_FACTOR );
 		break;
 
 		case 1:
-			red = (GXUByte)( decrement * HSV_TO_RGB_FACTOR );
-			green = (GXUByte)( hsvColor.v * HSV_TO_RGB_FACTOR );
-			blue = (GXUByte)( minValue * HSV_TO_RGB_FACTOR );
+			red = (GXUByte)( decrement * HSVA_TO_RGBA_FACTOR );
+			green = (GXUByte)( hsvaColor.v * HSVA_TO_RGBA_FACTOR );
+			blue = (GXUByte)( minValue * HSVA_TO_RGBA_FACTOR );
 		break;
 
 		case 2:
-			red = (GXUByte)( minValue * HSV_TO_RGB_FACTOR );
-			green = (GXUByte)( hsvColor.v * HSV_TO_RGB_FACTOR );
-			blue = (GXUByte)( increment * HSV_TO_RGB_FACTOR );
+			red = (GXUByte)( minValue * HSVA_TO_RGBA_FACTOR );
+			green = (GXUByte)( hsvaColor.v * HSVA_TO_RGBA_FACTOR );
+			blue = (GXUByte)( increment * HSVA_TO_RGBA_FACTOR );
 		break;
 
 		case 3:
-			red = (GXUByte)( minValue * HSV_TO_RGB_FACTOR );
-			green = (GXUByte)( decrement * HSV_TO_RGB_FACTOR );
-			blue = (GXUByte)( hsvColor.v * HSV_TO_RGB_FACTOR );
+			red = (GXUByte)( minValue * HSVA_TO_RGBA_FACTOR );
+			green = (GXUByte)( decrement * HSVA_TO_RGBA_FACTOR );
+			blue = (GXUByte)( hsvaColor.v * HSVA_TO_RGBA_FACTOR );
 		break;
 
 		case 4:
-			red = (GXUByte)( increment * HSV_TO_RGB_FACTOR );
-			green = (GXUByte)( minValue * HSV_TO_RGB_FACTOR );
-			blue = (GXUByte)( hsvColor.v * HSV_TO_RGB_FACTOR );
+			red = (GXUByte)( increment * HSVA_TO_RGBA_FACTOR );
+			green = (GXUByte)( minValue * HSVA_TO_RGBA_FACTOR );
+			blue = (GXUByte)( hsvaColor.v * HSVA_TO_RGBA_FACTOR );
 		break;
 
 		case 5:
-			red = (GXUByte)( hsvColor.v * HSV_TO_RGB_FACTOR );
-			green = (GXUByte)( minValue * HSV_TO_RGB_FACTOR );
-			blue = (GXUByte)( decrement * HSV_TO_RGB_FACTOR );
+			red = (GXUByte)( hsvaColor.v * HSVA_TO_RGBA_FACTOR );
+			green = (GXUByte)( minValue * HSVA_TO_RGBA_FACTOR );
+			blue = (GXUByte)( decrement * HSVA_TO_RGBA_FACTOR );
 		break;
 
 		default:
-			GXLogW ( L"GXConvertHSVToRGB::Error - Что-то пошло не так!\n" );
+			GXLogW ( L"GXConvertHSVAToRGBA::Error (branch one) - Что-то пошло не так!\n" );
 		break;
 	}
 }
 
-GXVoid GXCALL GXConvertRGBToHSV ( const GXVec4 &rgbColor, GXFloat &hue, GXFloat &saturation, GXFloat &value, GXFloat &alpha )
+GXVoid GXCALL GXConvertHSVAToRGBA ( GXVec4 &rgbaColor, const GXVec4 &hsvaColor )
 {
-	GXFloat maxValue = GXMaxf ( GXMaxf ( rgbColor.r, rgbColor.g ), rgbColor.b );
-	GXFloat minValue = GXMinf ( GXMinf ( rgbColor.r, rgbColor.g ), rgbColor.b );
+	GXUByte selector = (GXUByte)( (GXInt)( hsvaColor.h * HSVA_FACTOR ) % 6 );
+	GXFloat minValue = ( ( 100.0f - hsvaColor.s ) * hsvaColor.v ) * 0.01f;
+	GXFloat delta = ( hsvaColor.v - minValue ) * ( ( (GXInt)hsvaColor.h % 60 ) * HSVA_FACTOR );
+	GXFloat increment = minValue + delta;
+	GXFloat decrement = hsvaColor.v - delta;
+
+	rgbaColor.a = hsvaColor.a * HSVA_TO_RGBA_FLOAT;
+
+	switch ( selector )
+	{
+		case 0:
+			rgbaColor.r = hsvaColor.v * HSVA_TO_RGBA_FLOAT;
+			rgbaColor.g = increment * HSVA_TO_RGBA_FLOAT;
+			rgbaColor.b = minValue * HSVA_TO_RGBA_FLOAT;
+		break;
+
+		case 1:
+			rgbaColor.r = decrement * HSVA_TO_RGBA_FLOAT;
+			rgbaColor.g = hsvaColor.v * HSVA_TO_RGBA_FLOAT;
+			rgbaColor.b = minValue * HSVA_TO_RGBA_FLOAT;
+		break;
+
+		case 2:
+			rgbaColor.r = minValue * HSVA_TO_RGBA_FLOAT;
+			rgbaColor.g = hsvaColor.v * HSVA_TO_RGBA_FLOAT;
+			rgbaColor.b = increment * HSVA_TO_RGBA_FLOAT;
+		break;
+
+		case 3:
+			rgbaColor.r = minValue * HSVA_TO_RGBA_FLOAT;
+			rgbaColor.g = decrement * HSVA_TO_RGBA_FLOAT;
+			rgbaColor.b = hsvaColor.v * HSVA_TO_RGBA_FLOAT;
+		break;
+
+		case 4:
+			rgbaColor.r = increment * HSVA_TO_RGBA_FLOAT;
+			rgbaColor.g = minValue * HSVA_TO_RGBA_FLOAT;
+			rgbaColor.b = hsvaColor.v * HSVA_TO_RGBA_FLOAT;
+		break;
+
+		case 5:
+			rgbaColor.r = hsvaColor.v * HSVA_TO_RGBA_FLOAT;
+			rgbaColor.g = minValue * HSVA_TO_RGBA_FLOAT;
+			rgbaColor.b = decrement * HSVA_TO_RGBA_FLOAT;
+		break;
+
+		default:
+			GXLogW ( L"GXConvertHSVAToRGBA::Error (branch two) - Что-то пошло не так!\n" );
+		break;
+	}
+}
+
+GXVoid GXCALL GXConvertRGBAToHSVA ( GXFloat &hue, GXFloat &saturation, GXFloat &value, GXFloat &alpha, const GXVec4 &rgbaColor )
+{
+	GXFloat maxValue = GXMaxf ( GXMaxf ( rgbaColor.r, rgbaColor.g ), rgbaColor.b );
+	GXFloat minValue = GXMinf ( GXMinf ( rgbaColor.r, rgbaColor.g ), rgbaColor.b );
 
 	if ( maxValue == minValue )
 		hue = 0.0f;
-	else if ( maxValue == rgbColor.r && rgbColor.g >= rgbColor.b )
-		hue = 60.0f * ( ( rgbColor.g - rgbColor.b ) / ( maxValue - minValue ) );
-	else if ( maxValue == rgbColor.r && rgbColor.g < rgbColor.b )
-		hue = 60.0f * ( ( rgbColor.g - rgbColor.b ) / ( maxValue - minValue ) ) + 360.0f;
-	else if ( maxValue == rgbColor.g )
-		hue = 60.0f * ( ( rgbColor.b - rgbColor.r ) / ( maxValue - minValue ) ) + 120.0f;
-	else if ( maxValue == rgbColor.b )
-		hue = 60.0f * ( ( rgbColor.r - rgbColor.g ) / ( maxValue - minValue ) ) + 240.0f;
+	else if ( maxValue == rgbaColor.r && rgbaColor.g >= rgbaColor.b )
+		hue = 60.0f * ( ( rgbaColor.g - rgbaColor.b ) / ( maxValue - minValue ) );
+	else if ( maxValue == rgbaColor.r && rgbaColor.g < rgbaColor.b )
+		hue = 60.0f * ( ( rgbaColor.g - rgbaColor.b ) / ( maxValue - minValue ) ) + 360.0f;
+	else if ( maxValue == rgbaColor.g )
+		hue = 60.0f * ( ( rgbaColor.b - rgbaColor.r ) / ( maxValue - minValue ) ) + 120.0f;
+	else if ( maxValue == rgbaColor.b )
+		hue = 60.0f * ( ( rgbaColor.r - rgbaColor.g ) / ( maxValue - minValue ) ) + 240.0f;
 
 	if ( maxValue == 0.0f )
 		saturation = 0.0f;
@@ -1661,7 +1716,7 @@ GXVoid GXCALL GXConvertRGBToHSV ( const GXVec4 &rgbColor, GXFloat &hue, GXFloat 
 
 	value = 100.0f * maxValue;
 
-	alpha = 100.0f * rgbColor.a;
+	alpha = 100.0f * rgbaColor.a;
 }
 
 GXVoid GXCALL GXConvert3DSMaxToGXEngine ( GXVec3 &gx_out, GXFloat max_x, GXFloat max_y, GXFloat max_z )

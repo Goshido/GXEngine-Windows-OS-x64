@@ -117,28 +117,28 @@ EMUI ( nullptr )
 
 	caption->SetText ( locale.GetString ( L"SSAO settings->SSAO settings" ) );
 	caption->SetTextColor ( CAPTION_LABEL_COLOR_R, CAPTION_LABEL_COLOR_G, CAPTION_LABEL_COLOR_B, CAPTION_LABEL_COLOR_A );
-	caption->SetAlingment ( eGXUITextAlignment::GX_UI_TEXT_ALIGNMENT_CENTER );
+	caption->SetAlingment ( eGXUITextAlignment::Center );
 
 	checkRadiusLabel->SetText ( locale.GetString ( L"SSAO settings->Check radius (meters)" ) );
 	checkRadiusLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
-	checkRadiusLabel->SetAlingment ( eGXUITextAlignment::GX_UI_TEXT_ALIGNMENT_LEFT );
+	checkRadiusLabel->SetAlingment ( eGXUITextAlignment::Left );
 
 	samplesLabel->SetText ( locale.GetString ( L"SSAO settings->Samples" ) );
 	samplesLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
-	samplesLabel->SetAlingment ( eGXUITextAlignment::GX_UI_TEXT_ALIGNMENT_LEFT );
+	samplesLabel->SetAlingment ( eGXUITextAlignment::Left );
 
 	noiseTextureResolutionLabel->SetText ( locale.GetString ( L"SSAO settings->Noise texture resulotion" ) );
 	noiseTextureResolutionLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
-	noiseTextureResolutionLabel->SetAlingment ( eGXUITextAlignment::GX_UI_TEXT_ALIGNMENT_LEFT );
+	noiseTextureResolutionLabel->SetAlingment ( eGXUITextAlignment::Left );
 
 	maxDistanceLabel->SetText ( locale.GetString ( L"SSAO settings->Maximum distance (meters)" ) );
 	maxDistanceLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
-	maxDistanceLabel->SetAlingment ( eGXUITextAlignment::GX_UI_TEXT_ALIGNMENT_LEFT );
+	maxDistanceLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-	checkRadius->SetAlignment ( eGXUITextAlignment::GX_UI_TEXT_ALIGNMENT_CENTER );
-	samples->SetAlignment ( eGXUITextAlignment::GX_UI_TEXT_ALIGNMENT_CENTER );
-	noiseTextureResolution->SetAlignment ( eGXUITextAlignment::GX_UI_TEXT_ALIGNMENT_CENTER );
-	maxDistance->SetAlignment ( eGXUITextAlignment::GX_UI_TEXT_ALIGNMENT_CENTER );
+	checkRadius->SetAlignment ( eGXUITextAlignment::Center );
+	samples->SetAlignment ( eGXUITextAlignment::Center );
+	noiseTextureResolution->SetAlignment ( eGXUITextAlignment::Center );
+	maxDistance->SetAlignment ( eGXUITextAlignment::Center );
 
 	cancel->SetCaption ( locale.GetString ( L"SSAO settings->Cancel" ) );
 	apply->SetCaption ( locale.GetString ( L"SSAO settings->Apply" ) );

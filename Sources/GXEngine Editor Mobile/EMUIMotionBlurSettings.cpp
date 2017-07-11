@@ -112,23 +112,23 @@ EMUIMotionBlurSettings::EMUIMotionBlurSettings () :
 
 	caption->SetText ( locale.GetString ( L"Motion blur settings->Motion blur settings" ) );
 	caption->SetTextColor ( CAPTION_LABEL_COLOR_R, CAPTION_LABEL_COLOR_G, CAPTION_LABEL_COLOR_B, CAPTION_LABEL_COLOR_A );
-	caption->SetAlingment ( eGXUITextAlignment::GX_UI_TEXT_ALIGNMENT_CENTER );
+	caption->SetAlingment ( eGXUITextAlignment::Center );
 
 	maxSamplesLabel->SetText ( locale.GetString ( L"Motion blur settings->Maximum samples" ) );
 	maxSamplesLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
-	maxSamplesLabel->SetAlingment ( eGXUITextAlignment::GX_UI_TEXT_ALIGNMENT_LEFT );
+	maxSamplesLabel->SetAlingment ( eGXUITextAlignment::Left );
 
 	depthLimitLabel->SetText ( locale.GetString ( L"Motion blur settings->Depth Limit (meters)" ) );
 	depthLimitLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
-	depthLimitLabel->SetAlingment ( eGXUITextAlignment::GX_UI_TEXT_ALIGNMENT_LEFT );
+	depthLimitLabel->SetAlingment ( eGXUITextAlignment::Left );
 
 	exposureLabel->SetText ( locale.GetString ( L"Motion blur settings->Exposure (seconds)" ) );
 	exposureLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
-	exposureLabel->SetAlingment ( eGXUITextAlignment::GX_UI_TEXT_ALIGNMENT_LEFT );
+	exposureLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-	maxSamples->SetAlignment ( eGXUITextAlignment::GX_UI_TEXT_ALIGNMENT_CENTER );
-	depthLimit->SetAlignment ( eGXUITextAlignment::GX_UI_TEXT_ALIGNMENT_CENTER );
-	exposure->SetAlignment ( eGXUITextAlignment::GX_UI_TEXT_ALIGNMENT_CENTER );
+	maxSamples->SetAlignment ( eGXUITextAlignment::Center );
+	depthLimit->SetAlignment ( eGXUITextAlignment::Center );
+	exposure->SetAlignment ( eGXUITextAlignment::Center );
 
 	cancel->SetCaption ( locale.GetString ( L"Motion blur settings->Cancel" ) );
 	apply->SetCaption ( locale.GetString ( L"Motion blur settings->Apply" ) );

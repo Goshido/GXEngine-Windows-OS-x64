@@ -2,7 +2,6 @@
 #include <GXEngine_Editor_Mobile/EMLight.h>
 #include <GXEngine_Editor_Mobile/EMUIMotionBlurSettings.h>
 #include <GXEngine_Editor_Mobile/EMUISSAOSettings.h>
-#include <GXEngine_Editor_Mobile/EMUIColorPicker.h>
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXCamera.h>
 #include <GXEngine/GXSamplerUtils.h>
@@ -93,7 +92,6 @@ EMRenderer::~EMRenderer ()
 
 	delete &( EMUISSAOSettings::GetInstance () );
 	delete &( EMUIMotionBlurSettings::GetInstance () );
-	delete &( EMUIColorPicker::GetInstance () );
 
 	albedoTexture.FreeResources ();
 	normalTexture.FreeResources ();
@@ -140,10 +138,6 @@ GXVoid EMRenderer::StartCommonPass ()
 	const GLenum buffers[ 7 ] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6 };
 	glDrawBuffers ( 7, buffers );
 
-	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
-	if ( status != GL_FRAMEBUFFER_COMPLETE )
-		GXLogW ( L"EMRenderer::StartCommonPass::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
-
 	GXRenderer& renderer = GXRenderer::GetInstance ();
 	glViewport ( 0, 0, renderer.GetWidth (), renderer.GetHeight () );
 
@@ -156,6 +150,10 @@ GXVoid EMRenderer::StartCommonPass ()
 	glEnable ( GL_CULL_FACE );
 	glEnable ( GL_DEPTH_TEST );
 	glDisable ( GL_BLEND );
+
+	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+	if ( status != GL_FRAMEBUFFER_COMPLETE )
+		GXLogW ( L"EMRenderer::StartCommonPass::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
 	glClear ( GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 
@@ -212,16 +210,16 @@ GXVoid EMRenderer::StartLightPass ()
 	const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers ( 1, buffers );
 
+	glDisable ( GL_CULL_FACE );
+	glDisable ( GL_DEPTH_TEST );
+	glEnable ( GL_BLEND );
+	glBlendFunc ( GL_ONE, GL_ONE );
+
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::StartLightPass::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
 	glClear ( GL_COLOR_BUFFER_BIT );
-
-	glDisable ( GL_CULL_FACE );
-	glDisable ( GL_DEPTH_TEST );
-	glEnable ( GL_BLEND );
-	glBlendFunc ( GL_ONE, GL_ONE );
 
 	LightUp ();
 }
@@ -250,13 +248,13 @@ GXVoid EMRenderer::StartHudColorPass ()
 	const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers ( 1, buffers );
 
-	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
-	if ( status != GL_FRAMEBUFFER_COMPLETE )
-		GXLogW ( L"EMRenderer::StartHudDepthDependentPass::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
-
 	glEnable ( GL_BLEND );
 	glBlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 	glEnable ( GL_DEPTH_TEST );
+	
+	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+	if ( status != GL_FRAMEBUFFER_COMPLETE )
+		GXLogW ( L"EMRenderer::StartHudDepthDependentPass::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 }
 
 GXVoid EMRenderer::StartHudMaskPass ()
@@ -275,7 +273,9 @@ GXVoid EMRenderer::StartHudMaskPass ()
 	glDepthMask ( GX_TRUE );
 	glStencilMask ( 0xFF );
 
-	glClear ( GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+	glDisable ( GL_BLEND );
+	glEnable ( GL_CULL_FACE );
+	glEnable ( GL_DEPTH_TEST );
 
 	GXRenderer& renderer = GXRenderer::GetInstance ();
 	glViewport ( 0, 0, renderer.GetWidth (), renderer.GetHeight () );
@@ -287,9 +287,7 @@ GXVoid EMRenderer::StartHudMaskPass ()
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::StartHudDepthDependentPass::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
-	glDisable ( GL_BLEND );
-	glEnable ( GL_CULL_FACE );
-	glEnable ( GL_DEPTH_TEST );
+	glClear ( GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 }
 
 GXVoid EMRenderer::SetObjectMask ( GXUPointer object )
@@ -703,7 +701,6 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" ), gaussHorizontalBlurMateria
 
 	EMUIMotionBlurSettings::GetInstance ();
 	EMUISSAOSettings::GetInstance ();
-	EMUIColorPicker::GetInstance ();
 }
 
 GXVoid EMRenderer::CreateFBO ()

@@ -1,4 +1,4 @@
-//version 1.8
+//version 1.9
 
 #ifndef GX_OPENGL
 #define GX_OPENGL
@@ -85,6 +85,27 @@ extern PFNGLCLEARBUFFERFVPROC				glClearBufferfv;
 
 GXVoid GXCALL GXOpenGLInit ();
 GXVoid GXCALL GXCheckOpenGLError ();
+
+
+class GXOpenGLState
+{
+	private:
+		GLuint		fbo;
+		GLint		viewport[ 4 ];
+		GLboolean	colorMask[ 4 ];
+		GLboolean	depthMask;
+		GLboolean	depthTest;
+		GLboolean	cullFace;
+		GLboolean	blending;
+		GLenum		drawBuffers[ 16 ];
+
+	public:
+		GXOpenGLState ();
+		~GXOpenGLState ();
+
+		GXVoid Save ();
+		GXVoid Restore ();
+};
 
 
 #endif //GX_OPENGL

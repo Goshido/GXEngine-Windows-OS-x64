@@ -9,9 +9,9 @@
 
 enum eGXUITextAlignment : GXUByte
 {
-	GX_UI_TEXT_ALIGNMENT_LEFT,
-	GX_UI_TEXT_ALIGNMENT_RIGHT,
-	GX_UI_TEXT_ALIGNMENT_CENTER
+	Left,
+	Right,
+	Center
 };
 
 

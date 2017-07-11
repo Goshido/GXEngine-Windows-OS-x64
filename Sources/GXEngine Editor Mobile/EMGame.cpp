@@ -142,6 +142,7 @@ GXVoid EMGame::OnInit ()
 	fluttershy = new EMFluttershy ();
 
 	EMUIFPSCounter::GetInstance ();
+	EMUIColorPicker::GetInstance ();
 
 	ShowCursor ( 1 );
 	SetCursor ( LoadCursorW ( 0, IDC_ARROW ) );
@@ -226,6 +227,7 @@ GXVoid EMGame::OnDestroy ()
 
 	GXSafeDelete ( fluttershy );
 	delete &( EMUIFPSCounter::GetInstance () );
+	delete &( EMUIColorPicker::GetInstance () );
 
 	GXTouchSurface::GetInstance ().SetDefaultWidget ( nullptr );
 	GXSafeDelete ( uiInput );

@@ -16,6 +16,9 @@
 #define FRAME_COLOR_B		128
 #define FRAME_COLOR_A		255
 
+#define PIXEL_PERFECT_LOCATION_OFFSET_X		0.25f
+#define PIXEL_PERFECT_LOCATION_OFFSET_Y		0.25f
+
 
 class EMUIDraggableAreaRenderer : public GXWidgetRenderer
 {
@@ -101,6 +104,9 @@ GXVoid EMUIDraggableAreaRenderer::OnDraw ()
 
 GXVoid EMUIDraggableAreaRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
 {
+	x = truncf ( x ) + PIXEL_PERFECT_LOCATION_OFFSET_X;
+	y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
+
 	GXVec3 location;
 	surface->GetLocation ( location );
 	delete surface;
@@ -110,6 +116,9 @@ GXVoid EMUIDraggableAreaRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort wid
 
 GXVoid EMUIDraggableAreaRenderer::OnMoved ( GXFloat x, GXFloat y )
 {
+	x = truncf ( x ) + PIXEL_PERFECT_LOCATION_OFFSET_X;
+	y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
+
 	GXVec3 location;
 	surface->GetLocation ( location );
 	surface->SetLocation ( x, y, location.z );

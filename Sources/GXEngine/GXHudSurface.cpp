@@ -261,11 +261,7 @@ GXVoid GXHudSurface::AddImage ( const GXImageInfo &imageInfo )
 	GXCamera* oldCamera = GXCamera::GetActiveCamera ();
 	GXCamera::SetActiveCamera ( &canvasCamera );
 
-	GLint oldVP[ 4 ];
-	glGetIntegerv ( GL_VIEWPORT, oldVP );
-
-	GLuint oldFBO;
-	glGetIntegerv ( GL_FRAMEBUFFER_BINDING, (GLint*)&oldFBO );
+	openGLState.Save ();
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 
@@ -281,9 +277,6 @@ GXVoid GXHudSurface::AddImage ( const GXImageInfo &imageInfo )
 	unlitTexture2DMaterial.SetColor ( imageInfo.color );
 
 	unlitTexture2DMaterial.Bind ( *image );
-
-	GLboolean isBlend;
-	glGetBooleanv ( GL_BLEND, &isBlend );
 
 	switch ( imageInfo.overlayType )
 	{
@@ -319,22 +312,9 @@ GXVoid GXHudSurface::AddImage ( const GXImageInfo &imageInfo )
 
 	image->Render ();
 
-	if ( imageInfo.overlayType == eGXImageOverlayType::AlphaTransparencyPreserveAlpha )
-		glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
-
-	if ( isBlend )
-		glEnable ( GL_BLEND );
-	else
-		glDisable ( GL_BLEND );
-
-
 	unlitTexture2DMaterial.Unbind ();
 
-	glBindFramebuffer ( GL_FRAMEBUFFER, oldFBO );
-	glViewport ( oldVP[ 0 ], oldVP[ 1 ], oldVP[ 2 ], oldVP[ 3 ] );
-
-	glEnable ( GL_CULL_FACE );
-	glEnable ( GL_DEPTH_TEST );
+	openGLState.Restore ();
 
 	GXCamera::SetActiveCamera ( oldCamera );
 }
@@ -344,11 +324,7 @@ GXVoid GXHudSurface::AddLine ( const GXLineInfo &lineInfo )
 	GXCamera* oldCamera = GXCamera::GetActiveCamera ();
 	GXCamera::SetActiveCamera ( &canvasCamera );
 
-	GLint oldVP[ 4 ];
-	glGetIntegerv ( GL_VIEWPORT, oldVP );
-
-	GLuint oldFBO;
-	glGetIntegerv ( GL_FRAMEBUFFER_BINDING, (GLint*)&oldFBO );
+	openGLState.Save ();
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 
@@ -358,9 +334,6 @@ GXVoid GXHudSurface::AddLine ( const GXLineInfo &lineInfo )
 
 	unlitColorMaterial.SetColor ( lineInfo.color );
 	unlitColorMaterial.Bind ( *line );
-
-	GLboolean isBlend;
-	glGetBooleanv ( GL_BLEND, &isBlend );
 
 	switch ( lineInfo.overlayType )
 	{
@@ -396,16 +369,9 @@ GXVoid GXHudSurface::AddLine ( const GXLineInfo &lineInfo )
 
 	line->Render ();
 
-	if ( lineInfo.overlayType == eGXImageOverlayType::AlphaTransparencyPreserveAlpha )
-		glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
-
-	glBindFramebuffer ( GL_FRAMEBUFFER, oldFBO );
-	glViewport ( oldVP[ 0 ], oldVP[ 1 ], oldVP[ 2 ], oldVP[ 3 ] );
-
-	glEnable ( GL_CULL_FACE );
-	glEnable ( GL_DEPTH_TEST );
-
 	unlitColorMaterial.Unbind ();
+
+	openGLState.Restore ();
 
 	GXCamera::SetActiveCamera ( oldCamera );
 }
@@ -415,11 +381,7 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
 	GXCamera* oldCamera = GXCamera::GetActiveCamera ();
 	GXCamera::SetActiveCamera ( &canvasCamera );
 
-	GLint oldVP[ 4 ];
-	glGetIntegerv ( GL_VIEWPORT, oldVP );
-
-	GLuint oldFBO;
-	glGetIntegerv ( GL_FRAMEBUFFER_BINDING, (GLint*)&oldFBO );
+	openGLState.Save ();
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 
@@ -427,9 +389,6 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
 	glDisable ( GL_DEPTH_TEST );
 
 	glViewport ( 0, 0, (GLsizei)width, (GLsizei)height );
-
-	GLboolean isBlend;
-	glGetBooleanv ( GL_BLEND, &isBlend );
 
 	switch ( penInfo.overlayType )
 	{
@@ -537,15 +496,7 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
 	if ( bufferNumSymbols )
 		free ( text );
 
-	if ( penInfo.overlayType == eGXImageOverlayType::AlphaTransparencyPreserveAlpha )
-		glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
-
-	glUseProgram ( 0 );
-	glBindFramebuffer ( GL_FRAMEBUFFER, oldFBO );
-	glViewport ( oldVP[ 0 ], oldVP[ 1 ], oldVP[ 2 ], oldVP[ 3 ] );
-
-	glEnable ( GL_CULL_FACE );
-	glEnable ( GL_DEPTH_TEST );
+	openGLState.Restore ();
 
 	GXCamera::SetActiveCamera ( oldCamera );
 
@@ -564,8 +515,7 @@ GXUShort GXHudSurface::GetHeight () const
 
 GXVoid GXHudSurface::Render ()
 {
-	GLboolean isBlend;
-	glGetBooleanv ( GL_BLEND, &isBlend );
+	openGLState.Save ();
 
 	glDisable ( GL_CULL_FACE );
 	glEnable ( GL_BLEND );
@@ -582,8 +532,7 @@ GXVoid GXHudSurface::Render ()
 
 	unlitTexture2DMaterial.Unbind ();
 
-	if ( !isBlend )
-		glDisable ( GL_BLEND );
+	openGLState.Restore ();
 }
 
 GXVoid GXHudSurface::TransformUpdated ()

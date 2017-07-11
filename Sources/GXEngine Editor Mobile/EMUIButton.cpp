@@ -5,61 +5,67 @@
 #include <GXCommon/GXStrings.h>
 
 
-#define EM_DEFAULT_WIDTH					4.0f
-#define EM_DEFAULT_HEIGHT					0.5f
-#define EM_DEFAULT_LEFT_BOTTOM_X			0.1f
-#define EM_DEFAULT_LEFT_BOTTOM_Y			0.1f
+#define DEFAULT_WIDTH						4.0f
+#define DEFAULT_HEIGHT						0.5f
+#define DEFAULT_LEFT_BOTTOM_X				0.1f
+#define DEFAULT_LEFT_BOTTOM_Y				0.1f
 
-#define EM_DEFAULT_CAPTION					L"Êíîïêà"
-#define EM_DEFAULT_FONT						L"Fonts/trebuc.ttf"
-#define EM_DEFAULT_FONT_SIZE				0.33f
+#define DEFAULT_CAPTION						L"Êíîïêà"
+#define DEFAULT_FONT						L"Fonts/trebuc.ttf"
+#define DEFAULT_FONT_SIZE					0.33f
 
-#define EM_DISABLE_BACKGROUND_COLOR_R		29
-#define EM_DISABLE_BACKGROUND_COLOR_G		29
-#define EM_DISABLE_BACKGROUND_COLOR_B		29
-#define EM_DISABLE_BACKGROUND_COLOR_A		255
+#define DISABLE_BACKGROUND_COLOR_R			29
+#define DISABLE_BACKGROUND_COLOR_G			29
+#define DISABLE_BACKGROUND_COLOR_B			29
+#define DISABLE_BACKGROUND_COLOR_A			255
 
-#define EM_DISABLE_FONT_COLOR_R				60
-#define EM_DISABLE_FONT_COLOR_G				100
-#define EM_DISABLE_FONT_COLOR_B				16
-#define EM_DISABLE_FONT_COLOR_A				255
+#define DISABLE_FONT_COLOR_R				60
+#define DISABLE_FONT_COLOR_G				100
+#define DISABLE_FONT_COLOR_B				16
+#define DISABLE_FONT_COLOR_A				255
 
-#define EM_HIGHLIGHTED_BACKGROUND_COLOR_R	49
-#define EM_HIGHLIGHTED_BACKGROUND_COLOR_G	48
-#define EM_HIGHLIGHTED_BACKGROUND_COLOR_B	48
-#define EM_HIGHLIGHTED_BACKGROUND_COLOR_A	255
+#define HIGHLIGHTED_BACKGROUND_COLOR_R		49
+#define HIGHLIGHTED_BACKGROUND_COLOR_G		48
+#define HIGHLIGHTED_BACKGROUND_COLOR_B		48
+#define HIGHLIGHTED_BACKGROUND_COLOR_A		255
 
-#define EM_HIGHLIGHTED_FONT_COLOR_R			115
-#define EM_HIGHLIGHTED_FONT_COLOR_G			185
-#define EM_HIGHLIGHTED_FONT_COLOR_B			0
-#define EM_HIGHLIGHTED_FONT_COLOR_A			255
+#define HIGHLIGHTED_FONT_COLOR_R			115
+#define HIGHLIGHTED_FONT_COLOR_G			185
+#define HIGHLIGHTED_FONT_COLOR_B			0
+#define HIGHLIGHTED_FONT_COLOR_A			255
 
-#define EM_PRESSED_BACKGROUND_COLOR_R		83
-#define EM_PRESSED_BACKGROUND_COLOR_G		116
-#define EM_PRESSED_BACKGROUND_COLOR_B		20
-#define EM_PRESSED_BACKGROUND_COLOR_A		255
+#define PRESSED_BACKGROUND_COLOR_R			83
+#define PRESSED_BACKGROUND_COLOR_G			116
+#define PRESSED_BACKGROUND_COLOR_B			20
+#define PRESSED_BACKGROUND_COLOR_A			255
 
-#define EM_PRESSED_FONT_COLOR_R				142
-#define EM_PRESSED_FONT_COLOR_G				255
-#define EM_PRESSED_FONT_COLOR_B				5
-#define EM_PRESSED_FONT_COLOR_A				255
+#define PRESSED_FONT_COLOR_R				142
+#define PRESSED_FONT_COLOR_G				255
+#define PRESSED_FONT_COLOR_B				5
+#define PRESSED_FONT_COLOR_A				255
 
-#define EM_NORMAL_BACKGROUND_COLOR_R		46
-#define EM_NORMAL_BACKGROUND_COLOR_G		64
-#define EM_NORMAL_BACKGROUND_COLOR_B		11
-#define EM_NORMAL_BACKGROUND_COLOR_A		255
+#define NORMAL_BACKGROUND_COLOR_R			46
+#define NORMAL_BACKGROUND_COLOR_G			64
+#define NORMAL_BACKGROUND_COLOR_B			11
+#define NORMAL_BACKGROUND_COLOR_A			255
 
-#define EM_NORMAL_FONT_COLOR_R				115
-#define EM_NORMAL_FONT_COLOR_G				185
-#define EM_NORMAL_FONT_COLOR_B				0
-#define EM_NORMAL_FONT_COLOR_A				255
+#define NORMAL_FONT_COLOR_R					115
+#define NORMAL_FONT_COLOR_G					185
+#define NORMAL_FONT_COLOR_B					0
+#define NORMAL_FONT_COLOR_A					255
 
-#define EM_BORDER_COLOR_R					128
-#define EM_BORDER_COLOR_G					128
-#define EM_BORDER_COLOR_B					128
-#define EM_BORDER_COLOR_A					255
+#define BORDER_COLOR_R						128
+#define BORDER_COLOR_G						128
+#define BORDER_COLOR_B						128
+#define BORDER_COLOR_A						255
 
-#define EM_BACKGROUND_TEXTURE				L"Textures/System/Default_Diffuse.tga"
+#define PIXEL_PERFECT_TEXT_OFFSET_X			0.5f
+#define PIXEL_PERFECT_TEXT_OFFSET_Y			0.25f
+
+#define PIXEL_PERFECT_LOCATION_OFFSET_X		0.25f
+#define PIXEL_PERFECT_LOCATION_OFFSET_Y		0.25f
+
+#define BACKGROUND_TEXTURE					L"Textures/System/Default_Diffuse.tga"
 
 
 class EMUIButtonRenderer : public GXWidgetRenderer
@@ -87,9 +93,9 @@ class EMUIButtonRenderer : public GXWidgetRenderer
 EMUIButtonRenderer::EMUIButtonRenderer ( GXUIButton* buttonWidget ):
 GXWidgetRenderer ( buttonWidget )
 {
-	font = GXFont::GetFont ( EM_DEFAULT_FONT, (GXUShort)( EM_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
-	GXWcsclone ( &caption, EM_DEFAULT_CAPTION );
-	background = GXTexture::LoadTexture ( EM_BACKGROUND_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	font = GXFont::GetFont ( DEFAULT_FONT, (GXUShort)( DEFAULT_FONT_SIZE * gx_ui_Scale ) );
+	GXWcsclone ( &caption, DEFAULT_CAPTION );
+	background = GXTexture::LoadTexture ( BACKGROUND_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
 
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
@@ -121,23 +127,23 @@ GXVoid EMUIButtonRenderer::OnRefresh ()
 
 	if ( button->IsDisabled () )
 	{
-		GXColorToVec4 ( ii.color, EM_DISABLE_BACKGROUND_COLOR_R, EM_DISABLE_BACKGROUND_COLOR_G, EM_DISABLE_BACKGROUND_COLOR_B, EM_DISABLE_BACKGROUND_COLOR_A );
-		GXColorToVec4 ( pi.color, EM_DISABLE_FONT_COLOR_R, EM_DISABLE_FONT_COLOR_G, EM_DISABLE_FONT_COLOR_B, EM_DISABLE_FONT_COLOR_A );
+		GXColorToVec4 ( ii.color, DISABLE_BACKGROUND_COLOR_R, DISABLE_BACKGROUND_COLOR_G, DISABLE_BACKGROUND_COLOR_B, DISABLE_BACKGROUND_COLOR_A );
+		GXColorToVec4 ( pi.color, DISABLE_FONT_COLOR_R, DISABLE_FONT_COLOR_G, DISABLE_FONT_COLOR_B, DISABLE_FONT_COLOR_A );
 	}
 	else if ( !button->IsHighlighted () )
 	{
-		GXColorToVec4 ( ii.color, EM_HIGHLIGHTED_BACKGROUND_COLOR_R, EM_HIGHLIGHTED_BACKGROUND_COLOR_G, EM_HIGHLIGHTED_BACKGROUND_COLOR_B, EM_HIGHLIGHTED_BACKGROUND_COLOR_A );
-		GXColorToVec4 ( pi.color, EM_HIGHLIGHTED_FONT_COLOR_R, EM_HIGHLIGHTED_FONT_COLOR_G, EM_HIGHLIGHTED_FONT_COLOR_B, EM_HIGHLIGHTED_FONT_COLOR_A );
+		GXColorToVec4 ( ii.color, HIGHLIGHTED_BACKGROUND_COLOR_R, HIGHLIGHTED_BACKGROUND_COLOR_G, HIGHLIGHTED_BACKGROUND_COLOR_B, HIGHLIGHTED_BACKGROUND_COLOR_A );
+		GXColorToVec4 ( pi.color, HIGHLIGHTED_FONT_COLOR_R, HIGHLIGHTED_FONT_COLOR_G, HIGHLIGHTED_FONT_COLOR_B, HIGHLIGHTED_FONT_COLOR_A );
 	}
 	else if ( button->IsPressed () )
 	{
-		GXColorToVec4 ( ii.color, EM_PRESSED_BACKGROUND_COLOR_R, EM_PRESSED_BACKGROUND_COLOR_G, EM_PRESSED_BACKGROUND_COLOR_B, EM_PRESSED_BACKGROUND_COLOR_A );
-		GXColorToVec4 ( pi.color, EM_PRESSED_FONT_COLOR_R, EM_PRESSED_FONT_COLOR_G, EM_PRESSED_FONT_COLOR_B, EM_PRESSED_FONT_COLOR_A );
+		GXColorToVec4 ( ii.color, PRESSED_BACKGROUND_COLOR_R, PRESSED_BACKGROUND_COLOR_G, PRESSED_BACKGROUND_COLOR_B, PRESSED_BACKGROUND_COLOR_A );
+		GXColorToVec4 ( pi.color, PRESSED_FONT_COLOR_R, PRESSED_FONT_COLOR_G, PRESSED_FONT_COLOR_B, PRESSED_FONT_COLOR_A );
 	}
 	else
 	{
-		GXColorToVec4 ( ii.color, EM_NORMAL_BACKGROUND_COLOR_R, EM_NORMAL_BACKGROUND_COLOR_G, EM_NORMAL_BACKGROUND_COLOR_B, EM_NORMAL_BACKGROUND_COLOR_A );
-		GXColorToVec4 ( pi.color, EM_NORMAL_FONT_COLOR_R, EM_NORMAL_FONT_COLOR_G, EM_NORMAL_FONT_COLOR_B, EM_NORMAL_FONT_COLOR_A );
+		GXColorToVec4 ( ii.color, NORMAL_BACKGROUND_COLOR_R, NORMAL_BACKGROUND_COLOR_G, NORMAL_BACKGROUND_COLOR_B, NORMAL_BACKGROUND_COLOR_A );
+		GXColorToVec4 ( pi.color, NORMAL_FONT_COLOR_R, NORMAL_FONT_COLOR_G, NORMAL_FONT_COLOR_B, NORMAL_FONT_COLOR_A );
 	}
 
 	ii.insertX = ii.insertY = 1.5f;
@@ -151,14 +157,14 @@ GXVoid EMUIButtonRenderer::OnRefresh ()
 
 	GXInt len = (GXInt)font.GetTextLength ( 0, caption );
 	pi.font = &font;
-	pi.insertX = ( ii.insertWidth - len ) * 0.5f;
-	pi.insertY = ( ii.insertHeight - font.GetSize () * 0.61f ) * 0.5f;
+	pi.insertX = ( ii.insertWidth - len ) * 0.5f + PIXEL_PERFECT_TEXT_OFFSET_X;
+	pi.insertY = ( ii.insertHeight - font.GetSize () * 0.61f ) * 0.5f + PIXEL_PERFECT_TEXT_OFFSET_Y;
 	pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
 	surface->AddText ( pi, 0, caption );
 
 	GXLineInfo li;
-	GXColorToVec4 ( li.color, EM_BORDER_COLOR_R, EM_BORDER_COLOR_G, EM_BORDER_COLOR_B, EM_BORDER_COLOR_A );
+	GXColorToVec4 ( li.color, BORDER_COLOR_R, BORDER_COLOR_G, BORDER_COLOR_B, BORDER_COLOR_A );
 	li.thickness = 1.0f;
 	li.startPoint = GXCreateVec2 ( 1.5f, 0.5f );
 	li.endPoint = GXCreateVec2 ( w - 0.5f, 0.5f );
@@ -201,6 +207,9 @@ GXVoid EMUIButtonRenderer::SetCaption ( const GXWChar* caption )
 
 GXVoid EMUIButtonRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
 {
+	x = truncf ( x ) + PIXEL_PERFECT_LOCATION_OFFSET_X;
+	y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
+
 	GXSafeDelete ( surface );
 	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
@@ -210,6 +219,9 @@ GXVoid EMUIButtonRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXU
 
 GXVoid EMUIButtonRenderer::OnMoved ( GXFloat x, GXFloat y )
 {
+	x = truncf ( x ) + PIXEL_PERFECT_LOCATION_OFFSET_X;
+	y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
+
 	GXVec3 location;
 	surface->GetLocation ( location );
 	surface->SetLocation ( x, y, location.z );
@@ -221,7 +233,7 @@ EMUIButton::EMUIButton ( EMUI* parent ):
 EMUI ( parent )
 {
 	widget = new GXUIButton ( parent ? parent->GetWidget () : 0 );
-	widget->Resize ( EM_DEFAULT_LEFT_BOTTOM_X * gx_ui_Scale, EM_DEFAULT_LEFT_BOTTOM_Y * gx_ui_Scale, EM_DEFAULT_WIDTH * gx_ui_Scale, EM_DEFAULT_HEIGHT * gx_ui_Scale );
+	widget->Resize ( DEFAULT_LEFT_BOTTOM_X * gx_ui_Scale, DEFAULT_LEFT_BOTTOM_Y * gx_ui_Scale, DEFAULT_WIDTH * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
 	widget->SetRenderer ( new EMUIButtonRenderer ( widget ) );
 }
 

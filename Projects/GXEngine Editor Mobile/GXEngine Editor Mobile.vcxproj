@@ -182,12 +182,14 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXThread.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMActor.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMCheckerGeneratorMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMCookTorranceCommonPassMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMCookTorranceDirectedLightMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMDirectedLightActor.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMFluttershy.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMGaussHorizontalBlurMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMGaussVerticalBlurMaterial.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMHueCircleGeneratorMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMSSAOApplyMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMSSAOSharpMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIColorPicker.cpp" />
@@ -381,12 +383,14 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXUnlitTexture2DMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXWidget.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMActor.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMCheckerGeneratorMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMCookTorranceCommonPassMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMCookTorranceDirectedLightMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMDirectedLightActor.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMFluttershy.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMGaussHorizontalBlurMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMGaussVerticalBlurMaterial.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMHueCircleGeneratorMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMSSAOApplyMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMSSAOSharpMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIColorPicker.h" />
@@ -440,12 +444,14 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Resource Include="..\..\Sources\GXEngine\GXRecource.res" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="..\..\Shaders\Editor Mobile\Checker_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\Color_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\CookTorranceCommonPass_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\CookTorranceCommonPass_vs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\CookTorranceDirectedLight_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\GaussHorizontalBlurOneChannelFivePixelKernel_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\GaussVerticalBlurOneChannelFivePixelKernel_fs.txt" />
+    <Text Include="..\..\Shaders\Editor Mobile\HueCircle_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\MaskAlphaTest_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\MaskVertexAndUV_vs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\MaskVertexOnly_vs.txt" />

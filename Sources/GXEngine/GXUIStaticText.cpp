@@ -6,7 +6,7 @@
 #include <GXCommon/GXStrings.h>
 
 
-#define GX_UI_DEFAULT_ALIGNMENT		GX_UI_TEXT_ALIGNMENT_LEFT
+#define GX_UI_DEFAULT_ALIGNMENT		eGXUITextAlignment::Left
 
 #define DEFAULT_TEXT_COLOR_R		115
 #define DEFAULT_TEXT_COLOR_G		185

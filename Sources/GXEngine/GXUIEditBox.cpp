@@ -9,7 +9,7 @@
 
 #define GX_UI_DEFAULT_FONT					L"Fonts/trebuc.ttf"
 #define GX_UI_DEFAULT_FONT_SIZE				0.33f
-#define GX_UI_DEFAULT_TEXT_ALIGNMENT		GX_UI_TEXT_ALIGNMENT_LEFT
+#define GX_UI_DEFAULT_TEXT_ALIGNMENT		eGXUITextAlignment::Left
 #define GX_UI_KEYSTATE_MASK					0x8000
 #define GX_UI_SEPARATOR_SYMBOL				L' '
 #define GX_UI_EPSILON						0.2f
@@ -474,21 +474,21 @@ GXInt GXUIEditBox::GetSelectionPosition ( const GXVec2 &mousePosition ) const
 
 	switch ( alignment )
 	{
-		case  GX_UI_TEXT_ALIGNMENT_CENTER:
+		case  eGXUITextAlignment::Center:
 		{
 			GXFloat textOffset = ( width - textLength ) * 0.5f;
 			offset = GXClampf ( mousePosition.x - boundsWorld.min.x, textOffset, width - textOffset ) - textOffset;
 		}
 		break;
 
-		case  GX_UI_TEXT_ALIGNMENT_RIGHT:
+		case  eGXUITextAlignment::Right:
 		{
 			GXFloat textOffset = width - textLength;
 			offset = GXClampf ( mousePosition.x - boundsWorld.min.x - textRightOffset, textOffset, width ) - textOffset;
 		}
 		break;
 
-		case GX_UI_TEXT_ALIGNMENT_LEFT:
+		case eGXUITextAlignment::Left:
 			textLength = (GXFloat)font.GetTextLength ( 0, text );
 			offset = GXClampf ( mousePosition.x - boundsWorld.min.x + textLeftOffset, textLeftOffset, textLength );
 		break;
@@ -522,15 +522,15 @@ GXFloat GXUIEditBox::GetSelectionOffset ( GXUInt symbolIndex ) const
 
 	switch ( alignment )
 	{
-		case GX_UI_TEXT_ALIGNMENT_CENTER:
+		case eGXUITextAlignment::Center:
 			textOffset = ( GXGetAABBWidth ( boundsWorld ) - textLength ) * 0.5f;
 		break;
 
-		case GX_UI_TEXT_ALIGNMENT_RIGHT:
+		case eGXUITextAlignment::Right:
 			textOffset = GXGetAABBWidth ( boundsWorld ) - textLength - textRightOffset;
 		break;
 
-		case GX_UI_TEXT_ALIGNMENT_LEFT:
+		case eGXUITextAlignment::Left:
 			textOffset = textLeftOffset;
 		break;
 	}

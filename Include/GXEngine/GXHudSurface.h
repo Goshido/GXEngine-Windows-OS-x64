@@ -65,6 +65,7 @@ class GXHudSurface : public GXTransform
 	private:
 		GLuint						fbo;
 		GXTexture					canvasTexture;
+		GXOpenGLState				openGLState;
 
 		GXUnlitColorMaterial		unlitColorMaterial;
 		GXUnlitColorMaskMaterial	unlitColorMaskMaterial;

@@ -1,0 +1,38 @@
+#version 330 core
+
+
+#define COLOR_SLOT 0
+
+
+smooth in vec2 v_uv;
+
+uniform vec4 colorOne;
+uniform vec4 colorTwo;
+uniform vec2 elementSize;
+uniform vec2 doubleElementSize;
+
+layout ( location = COLOR_SLOT ) out vec4 colorSlot;
+
+
+void main ()
+{
+	float switchOne = mod ( gl_FragCoord.x, doubleElementSize.x );
+	float switchTwo = mod ( gl_FragCoord.y, doubleElementSize.y );
+
+	vec4 color;
+
+	if ( switchOne <= elementSize.x )
+	{
+		if ( switchTwo <= elementSize.y )
+			colorSlot = colorOne;
+		else
+			colorSlot = colorTwo;
+
+		return;
+	} 
+
+	if ( switchTwo <= elementSize.y )
+		colorSlot = colorTwo;
+	else
+		colorSlot = colorOne;
+}

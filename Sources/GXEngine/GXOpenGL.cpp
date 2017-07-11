@@ -1,4 +1,4 @@
-//version 1.8
+//version 1.9
 
 #include <GXEngine/GXOpenGL.h>
 #include <GXCommon/GXLogger.h>
@@ -164,4 +164,53 @@ GXVoid GXCALL GXCheckOpenGLError ()
 
 	if ( ( error = glGetError () ) != GL_NO_ERROR )
 		GXLogA ( "OpenGL::Error 0x%08X\n", (GXUInt)error );
+}
+
+//-----------------------------------------------------------------------------------------
+
+GXOpenGLState::GXOpenGLState ()
+{
+	//NOTHING
+}
+
+GXOpenGLState::~GXOpenGLState ()
+{
+	//NOTHING
+}
+
+GXVoid GXOpenGLState::Save ()
+{
+	glGetIntegerv ( GL_FRAMEBUFFER_BINDING, (GLint*)&fbo );
+	glGetIntegerv ( GL_VIEWPORT, viewport );
+	glGetBooleanv ( GL_COLOR_WRITEMASK, colorMask );
+	glGetBooleanv ( GL_DEPTH_WRITEMASK, &depthMask );
+	glGetBooleanv ( GL_DEPTH_TEST, &depthTest );
+	glGetBooleanv ( GL_CULL_FACE, &cullFace );
+	glGetBooleanv ( GL_BLEND, &blending );
+
+	for ( GXUByte i = 0; i < 16; i++ )
+		glGetIntegerv ( GL_DRAW_BUFFER0 + i, (GLint*)( drawBuffers + i ) );
+}
+
+GXVoid GXOpenGLState::Restore ()
+{
+	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+	glViewport ( viewport[ 0 ], viewport[ 1 ], viewport[ 2 ], viewport[ 3 ] );
+	glColorMask ( colorMask[ 0 ], colorMask[ 1 ], colorMask[ 2 ], colorMask[ 3 ] );
+	glDepthMask ( depthMask );
+
+	if ( depthTest )
+		glEnable ( GL_DEPTH_TEST );
+	else
+		glDisable ( GL_DEPTH_TEST );
+
+	if ( cullFace )
+		glEnable ( GL_CULL_FACE );
+	else
+		glDisable ( GL_CULL_FACE );
+
+	if ( blending )
+		glEnable ( GL_BLEND );
+	else
+		glDisable ( GL_BLEND );
 }

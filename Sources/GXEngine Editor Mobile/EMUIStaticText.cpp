@@ -4,10 +4,11 @@
 #include <GXEngine/GXFont.h>
 
 
-#define EM_STATIC_TEXT_DEFAULT_WIDTH		4.0f
-#define EM_STATIC_TEXT_DEFAULT_HEIGHT		0.5f
-#define EM_STATIC_TEXT_DEFAULT_FONT			L"Fonts/trebuc.ttf"
-#define EM_STATIC_TEXT_DEFAULT_TEXT_SIZE	0.33f
+#define FONT								L"Fonts/trebuc.ttf"
+#define FONT_SIZE							0.33f
+
+#define PIXEL_PERFECT_LOCATION_OFFSET_X		0.25f
+#define PIXEL_PERFECT_LOCATION_OFFSET_Y		0.25f
 
 
 class EMUIStaticTextRenderer : public GXWidgetRenderer
@@ -33,7 +34,7 @@ GXWidgetRenderer ( staticTextWidget )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
 	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
-	font = GXFont::GetFont ( EM_STATIC_TEXT_DEFAULT_FONT, (GXUShort)( EM_STATIC_TEXT_DEFAULT_TEXT_SIZE * gx_ui_Scale ) );
+	font = GXFont::GetFont ( FONT, (GXUShort)( FONT_SIZE * gx_ui_Scale ) );
 }
 
 EMUIStaticTextRenderer::~EMUIStaticTextRenderer ()
@@ -62,11 +63,11 @@ GXVoid EMUIStaticTextRenderer::OnRefresh ()
 
 	switch ( staticText->GetAlignment () )
 	{
-		case GX_UI_TEXT_ALIGNMENT_LEFT:
+	case eGXUITextAlignment::Left:
 			pi.insertX = 0.0f;
 		break;
 
-		case GX_UI_TEXT_ALIGNMENT_RIGHT:
+		case eGXUITextAlignment::Right:
 		{
 			GXFloat w = (GXFloat)surface->GetWidth ();
 			GXFloat len = (GXFloat)font.GetTextLength ( 0, staticText->GetText () );
@@ -74,7 +75,7 @@ GXVoid EMUIStaticTextRenderer::OnRefresh ()
 		}
 		break;
 
-		case GX_UI_TEXT_ALIGNMENT_CENTER:
+		case eGXUITextAlignment::Center:
 		{
 			GXFloat w = (GXFloat)surface->GetWidth ();
 			GXFloat len = (GXFloat)font.GetTextLength ( 0, staticText->GetText () );
@@ -95,6 +96,9 @@ GXVoid EMUIStaticTextRenderer::OnDraw ()
 
 GXVoid EMUIStaticTextRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
 {
+	x = truncf ( x ) + PIXEL_PERFECT_LOCATION_OFFSET_X;
+	y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
+
 	GXVec3 location;
 	surface->GetLocation ( location );
 	delete surface;
@@ -104,6 +108,9 @@ GXVoid EMUIStaticTextRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width,
 
 GXVoid EMUIStaticTextRenderer::OnMoved ( GXFloat x, GXFloat y )
 {
+	x = truncf ( x ) + PIXEL_PERFECT_LOCATION_OFFSET_X;
+	y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
+
 	GXVec3 location;
 	surface->GetLocation ( location );
 	surface->SetLocation ( x, y, location.z );

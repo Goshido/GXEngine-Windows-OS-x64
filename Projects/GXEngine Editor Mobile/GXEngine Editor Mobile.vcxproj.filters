@@ -411,6 +411,12 @@
     <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIColorPicker.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMCheckerGeneratorMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMHueCircleGeneratorMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -869,6 +875,12 @@
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIColorPicker.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMCheckerGeneratorMaterial.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMHueCircleGeneratorMaterial.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="..\..\Sources\GXEngine\GXRecource.res">
@@ -1027,6 +1039,12 @@
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\CookTorranceDirectedLight_fs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\Checker_fs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\HueCircle_fs.txt">
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
   </ItemGroup>

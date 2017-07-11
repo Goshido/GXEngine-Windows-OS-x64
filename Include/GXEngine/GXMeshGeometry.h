@@ -19,7 +19,8 @@ enum class eGXMeshStreamIndex : GLuint
 	Bitangent			= 4,
 	SkinningIndices		= 5,
 	SkinnngWeights		= 6,
-	LastFrameVertex		= 7
+	LastFrameVertex		= 7,
+	Color				= 8
 };
 
 class GXMeshGeometryEntry;

@@ -4,44 +4,47 @@
 #include <GXEngine/GXUICommon.h>
 
 
-#define EM_DEFAULT_BACKGROUND			L"Textures/System/Default_Diffuse.tga"
+#define DEFAULT_BACKGROUND					L"Textures/System/Default_Diffuse.tga"
 
-#define EM_BACKGROUND_COLOR_R			49
-#define EM_BACKGROUND_COLOR_G			48
-#define EM_BACKGROUND_COLOR_B			48
-#define EM_BACKGROUND_COLOR_A			255
+#define BACKGROUND_COLOR_R					49
+#define BACKGROUND_COLOR_G					48
+#define BACKGROUND_COLOR_B					48
+#define BACKGROUND_COLOR_A					255
 
-#define EM_BORDER_COLOR_R				128
-#define EM_BORDER_COLOR_G				128
-#define EM_BORDER_COLOR_B				128
-#define EM_BORDER_COLOR_A				255
+#define BORDER_COLOR_R						128
+#define BORDER_COLOR_G						128
+#define BORDER_COLOR_B						128
+#define BORDER_COLOR_A						255
 
-#define EM_FONT_COLOR_R					115
-#define EM_FONT_COLOR_G					185
-#define EM_FONT_COLOR_B					0
-#define EM_FONT_COLOR_A					255
+#define FONT_COLOR_R						115
+#define FONT_COLOR_G						185
+#define FONT_COLOR_B						0
+#define FONT_COLOR_A						255
 
-#define EM_SELECTION_COLOR_R			17
-#define EM_SELECTION_COLOR_G			24
-#define EM_SELECTION_COLOR_B			2
-#define EM_SELECTION_COLOR_A			255
+#define SELECTION_COLOR_R					17
+#define SELECTION_COLOR_G					24
+#define SELECTION_COLOR_B					2
+#define SELECTION_COLOR_A					255
 
-#define EM_CURSOR_COLOR_R				255
-#define EM_CURSOR_COLOR_G				255
-#define EM_CURSOR_COLOR_B				255
-#define EM_CURSOR_COLOR_A				255
+#define CURSOR_COLOR_R						255
+#define CURSOR_COLOR_G						255
+#define CURSOR_COLOR_B						255
+#define CURSOR_COLOR_A						255
 
-#define EM_DEFAULT_WIDTH				4.5f
-#define EM_DEFAULT_HEIGHT				0.6f
-#define EM_DEFAULT_BOTTOM_LEFT_X		0.1f
-#define EM_DEFAULT_BOTTOM_LEFT_Y		0.1f
+#define DEFAULT_WIDTH						4.5f
+#define DEFAULT_HEIGHT						0.6f
+#define DEFAULT_BOTTOM_LEFT_X				0.1f
+#define DEFAULT_BOTTOM_LEFT_Y				0.1f
 
-#define EM_DEFAULT_FONT					L"Fonts/trebuc.ttf"
-#define EM_DEFAULT_FONT_SIZE			0.33f
-#define EM_DEFAULT_ALIGNMENT			GX_UI_TEXT_ALIGNMENT_LEFT
+#define DEFAULT_FONT						L"Fonts/trebuc.ttf"
+#define DEFAULT_FONT_SIZE					0.33f
+#define DEFAULT_ALIGNMENT					eGXUITextAlignment::Left
 
-#define EM_DEFAULT_TEXT_LEFT_OFFSET		0.1f
-#define EM_DEFAULT_TEXT_RIGHT_OFFSET	0.1f
+#define DEFAULT_TEXT_LEFT_OFFSET			0.1f
+#define DEFAULT_TEXT_RIGHT_OFFSET			0.1f
+
+#define PIXEL_PERFECT_LOCATION_OFFSET_X		0.25f
+#define PIXEL_PERFECT_LOCATION_OFFSET_Y		0.25f
 
 
 class EMUIEditBoxRenderer : public GXWidgetRenderer
@@ -64,7 +67,7 @@ class EMUIEditBoxRenderer : public GXWidgetRenderer
 EMUIEditBoxRenderer::EMUIEditBoxRenderer ( GXUIEditBox* widget ):
 GXWidgetRenderer ( widget )
 {
-	background = GXTexture::LoadTexture ( EM_DEFAULT_BACKGROUND, GX_FALSE, GL_CLAMP_TO_EDGE );
+	background = GXTexture::LoadTexture ( DEFAULT_BACKGROUND, GX_FALSE, GL_CLAMP_TO_EDGE );
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
 	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
 }
@@ -88,7 +91,7 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
 	GXImageInfo ii;
 
 	ii.texture = &background;
-	GXColorToVec4 ( ii.color, EM_BACKGROUND_COLOR_R, EM_BACKGROUND_COLOR_G, EM_BACKGROUND_COLOR_B, EM_BACKGROUND_COLOR_A );
+	GXColorToVec4 ( ii.color, BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
 	ii.insertX = ii.insertY = 1.5f;
 	ii.insertWidth = width - 2.0f;
 	ii.insertHeight = height - 2.0f;
@@ -103,7 +106,7 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
 
 		if ( beginOffset != endOffset )
 		{
-			GXColorToVec4 ( ii.color, EM_SELECTION_COLOR_R, EM_SELECTION_COLOR_G, EM_SELECTION_COLOR_B, EM_SELECTION_COLOR_A );
+			GXColorToVec4 ( ii.color, SELECTION_COLOR_R, SELECTION_COLOR_G, SELECTION_COLOR_B, SELECTION_COLOR_A );
 			ii.insertX = beginOffset;
 			ii.insertY = 0.0f;
 			ii.insertWidth = endOffset - beginOffset;
@@ -116,15 +119,15 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
 		pi.font = font;
 		pi.insertY = ( height - font->GetSize () * 0.6f ) * 0.5f;
 		pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
-		GXColorToVec4 ( pi.color, EM_FONT_COLOR_R, EM_FONT_COLOR_G, EM_FONT_COLOR_B, EM_FONT_COLOR_A );
+		GXColorToVec4 ( pi.color, FONT_COLOR_R, FONT_COLOR_G, FONT_COLOR_B, FONT_COLOR_A );
 
 		switch ( editBoxWidget->GetAlignment () )
 		{
-			case GX_UI_TEXT_ALIGNMENT_LEFT:
+		case eGXUITextAlignment::Left:
 				pi.insertX = editBoxWidget->GetTextLeftOffset ();
 			break;
 
-			case GX_UI_TEXT_ALIGNMENT_RIGHT:
+			case eGXUITextAlignment::Right:
 			{
 				GXFloat w = (GXFloat)surface->GetWidth ();
 				GXFloat len = (GXFloat)font->GetTextLength ( 0, text );
@@ -132,7 +135,7 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
 			}
 			break;
 
-			case GX_UI_TEXT_ALIGNMENT_CENTER:
+			case eGXUITextAlignment::Center:
 			{
 				GXFloat w = (GXFloat)surface->GetWidth ();
 				GXFloat len = (GXFloat)font->GetTextLength ( 0, text );
@@ -150,13 +153,13 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
 
 	if ( editBoxWidget->IsActive () )
 	{
-		GXColorToVec4 ( li.color, EM_CURSOR_COLOR_R, EM_CURSOR_COLOR_G, EM_CURSOR_COLOR_B, EM_CURSOR_COLOR_A );
+		GXColorToVec4 ( li.color, CURSOR_COLOR_R, CURSOR_COLOR_G, CURSOR_COLOR_B, CURSOR_COLOR_A );
 		li.startPoint = GXCreateVec2 ( editBoxWidget->GetCursorOffset () + 0.5f, 0.5f );
 		li.endPoint = GXCreateVec2 ( li.startPoint.x, height );
 		surface->AddLine ( li );
 	}
 
-	GXColorToVec4 ( li.color, EM_BORDER_COLOR_R , EM_BORDER_COLOR_G , EM_BORDER_COLOR_B, EM_BORDER_COLOR_A );
+	GXColorToVec4 ( li.color, BORDER_COLOR_R , BORDER_COLOR_G , BORDER_COLOR_B, BORDER_COLOR_A );
 	
 	li.startPoint = GXCreateVec2 ( 0.5f, 0.5f );
 	li.endPoint = GXCreateVec2 ( width - 0.5f, 0.5f );
@@ -188,6 +191,9 @@ GXVoid EMUIEditBoxRenderer::OnDraw ()
 
 GXVoid EMUIEditBoxRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
 {
+	x = truncf ( x ) + PIXEL_PERFECT_LOCATION_OFFSET_X;
+	y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
+
 	GXSafeDelete ( surface );
 	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
@@ -197,6 +203,9 @@ GXVoid EMUIEditBoxRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GX
 
 GXVoid EMUIEditBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
 {
+	x = truncf ( x ) + PIXEL_PERFECT_LOCATION_OFFSET_X;
+	y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
+
 	GXVec3 location;
 	surface->GetLocation ( location );
 	surface->SetLocation ( x, y, location.z );
@@ -209,11 +218,11 @@ EMUI ( parent )
 {
 	widget = new GXUIEditBox ( parent ? parent->GetWidget () : nullptr );
 	widget->SetRenderer ( new EMUIEditBoxRenderer ( widget ) );
-	widget->Resize ( EM_DEFAULT_BOTTOM_LEFT_X * gx_ui_Scale, EM_DEFAULT_BOTTOM_LEFT_Y * gx_ui_Scale, EM_DEFAULT_WIDTH * gx_ui_Scale, EM_DEFAULT_HEIGHT * gx_ui_Scale );
-	widget->SetFont ( EM_DEFAULT_FONT, (GXUShort)( EM_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
-	widget->SetAlignment ( EM_DEFAULT_ALIGNMENT );
-	widget->SetTextLeftOffset ( EM_DEFAULT_TEXT_LEFT_OFFSET * gx_ui_Scale );
-	widget->SetTextRightOffset ( EM_DEFAULT_TEXT_RIGHT_OFFSET * gx_ui_Scale );
+	widget->Resize ( DEFAULT_BOTTOM_LEFT_X * gx_ui_Scale, DEFAULT_BOTTOM_LEFT_Y * gx_ui_Scale, DEFAULT_WIDTH * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
+	widget->SetFont ( DEFAULT_FONT, (GXUShort)( DEFAULT_FONT_SIZE * gx_ui_Scale ) );
+	widget->SetAlignment ( DEFAULT_ALIGNMENT );
+	widget->SetTextLeftOffset ( DEFAULT_TEXT_LEFT_OFFSET * gx_ui_Scale );
+	widget->SetTextRightOffset ( DEFAULT_TEXT_RIGHT_OFFSET * gx_ui_Scale );
 }
 
 EMUIEditBox::~EMUIEditBox ()

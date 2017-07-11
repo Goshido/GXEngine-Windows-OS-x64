@@ -356,8 +356,9 @@ class GXProjectionClipPlanes
 GXFloat GXCALL GXDegToRad ( GXFloat degrees );
 GXVoid GXCALL GXColorToVec3 ( GXVec3 &out, GXUChar r, GXUChar g, GXUChar b );
 GXVoid GXCALL GXColorToVec4 ( GXVec4 &out, GXUChar r, GXUChar g, GXUChar b, GXUChar a );
-GXVoid GXCALL GXConvertHSVToRGB ( const GXVec4 &hsvColor, GXUByte &red, GXUByte &green, GXUByte &blue, GXUByte &alpha );
-GXVoid GXCALL GXConvertRGBToHSV ( const GXVec4 &rgbColor, GXFloat &hue, GXFloat &saturation, GXFloat &value, GXFloat &alpha );
+GXVoid GXCALL GXConvertHSVAToRGBA ( GXUByte &red, GXUByte &green, GXUByte &blue, GXUByte &alpha, const GXVec4 &hsvaColor );
+GXVoid GXCALL GXConvertHSVAToRGBA ( GXVec4 &rgbaColor, const GXVec4 &hsvaColor );
+GXVoid GXCALL GXConvertRGBAToHSVA ( GXFloat &hue, GXFloat &saturation, GXFloat &value, GXFloat &alpha, const GXVec4 &rgbaColor );
 GXVoid GXCALL GXConvert3DSMaxToGXEngine ( GXVec3 &gx_out, GXFloat max_x, GXFloat max_y, GXFloat max_z );
 GXFloat GXCALL GXRandomNormalize ();
 GXFloat GXCALL GXRandomBetween ( GXFloat from, GXFloat to );

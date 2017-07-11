@@ -4,42 +4,42 @@
 #include <GXEngine/GXLocale.h>
 
 
-#define EM_PANEL_LEFT_BOTTOM_X			7.6f
-#define EM_PANEL_LEFT_BOTTOM_Y			5.8f
-#define EM_PANEL_WIDTH					13.4f
-#define EM_PANEL_HEIGHT					9.5f
-#define EM_PANEL_HEADER_HEIGHT			0.5f
+#define PANEL_LEFT_BOTTOM_X				7.6f
+#define PANEL_LEFT_BOTTOM_Y				5.8f
+#define PANEL_WIDTH						13.4f
+#define PANEL_HEIGHT					9.5f
+#define PANEL_HEADER_HEIGHT				0.5f
 
-#define EM_BTN_OK_LEFT_BOTTOM_X			2.0f
-#define EM_BTN_OK_TEXT					L"OpenFile->OK"
-#define EM_BTN_CANCEL_LEFT_BOTTOM_X		3.9f
-#define EM_BTN_CANCEL_TEXT				L"OpenFile->Cancel"
-#define EM_BTN_BOTTOM_Y					0.15f
-#define EM_BTN_WIDTH					1.7f
-#define EM_BTN_HEIGHT					0.55f
+#define BTN_OK_LEFT_BOTTOM_X			2.0f
+#define BTN_OK_TEXT						L"OpenFile->OK"
+#define BTN_CANCEL_LEFT_BOTTOM_X		3.9f
+#define BTN_CANCEL_TEXT					L"OpenFile->Cancel"
+#define BTN_BOTTOM_Y					0.15f
+#define BTN_WIDTH						1.7f
+#define BTN_HEIGHT						0.55f
 
-#define EM_STT_FILE_PATH_LEFT_BOTTOM_X	0.2f
-#define EM_STT_FILE_PATH_LEFT_BOTTOM_Y	1.0f
-#define EM_STT_FILE_PATH_HEIGHT			0.3f
+#define STT_FILE_PATH_LEFT_BOTTOM_X		0.2f
+#define STT_FILE_PATH_LEFT_BOTTOM_Y		1.0f
+#define STT_FILE_PATH_HEIGHT			0.3f
 
-#define EM_SEP_BOTTOM_OFFSET_Y			0.9f
-#define EM_SEP_TOP_OFFSET_Y				1.2f
-#define EM_SEP_HEIGHT					0.06f
-#define EM_SEP_OFFSET_X					0.2f
+#define SEP_BOTTOM_OFFSET_Y				0.9f
+#define SEP_TOP_OFFSET_Y				1.2f
+#define SEP_HEIGHT						0.06f
+#define SEP_OFFSET_X					0.2f
 
-#define EM_LST_OFFSET_LEFT				0.2f
-#define EM_LST_OFFSET_RIGHT				0.7f
-#define EM_LST_OFFSET_BOTTOM			1.1f
-#define EM_LST_OFFSET_TOP				1.3f
+#define LST_OFFSET_LEFT					0.2f
+#define LST_OFFSET_RIGHT				0.7f
+#define LST_OFFSET_BOTTOM				1.1f
+#define LST_OFFSET_TOP					1.3f
 
-#define EM_PATH_BUFFER_SIZE				4096
+#define PATH_BUFFER_SIZE				4096
 
 
 EMUIOpenFile::EMUIOpenFile ():
 EMUI ( nullptr )
 {
 	mainPanel = new EMUIDraggableArea ( nullptr );
-	mainPanel->SetHeaderHeight ( EM_PANEL_HEADER_HEIGHT * gx_ui_Scale );
+	mainPanel->SetHeaderHeight ( PANEL_HEADER_HEIGHT * gx_ui_Scale );
 	mainPanel->SetOnResizeCallback ( this, &EMUIOpenFile::OnResize );
 
 	okButton = new EMUIButton ( mainPanel );
@@ -51,14 +51,14 @@ EMUI ( nullptr )
 
 	GXLocale& locale = GXLocale::GetInstance ();
 
-	okButton->SetCaption ( locale.GetString ( EM_BTN_OK_TEXT ) );
+	okButton->SetCaption ( locale.GetString ( BTN_OK_TEXT ) );
 	okButton->SetOnLeftMouseButtonCallback ( this, &EMUIOpenFile::OnButton );
 
-	cancelButton->SetCaption ( locale.GetString ( EM_BTN_CANCEL_TEXT ) );
+	cancelButton->SetCaption ( locale.GetString ( BTN_CANCEL_TEXT ) );
 	cancelButton->SetOnLeftMouseButtonCallback ( this, &EMUIOpenFile::OnButton );
 
 	filePathStaticText->SetText ( nullptr );
-	filePathStaticText->SetAlingment ( GX_UI_TEXT_ALIGNMENT_LEFT );
+	filePathStaticText->SetAlingment ( eGXUITextAlignment::Left );
 	
 	fileListBox->SetOnItemSelectedCallback ( this, &EMUIOpenFile::OnItemSelected );
 	fileListBox->SetOnItemDoubleClickedCallbak ( this, &EMUIOpenFile::OnItemDoubleClicked );
@@ -68,7 +68,7 @@ EMUI ( nullptr )
 	currentDirectory = nullptr;
 	UpdateDirectory ( rootDirectory );
 
-	mainPanel->Resize ( EM_PANEL_LEFT_BOTTOM_X * gx_ui_Scale, EM_PANEL_LEFT_BOTTOM_Y * gx_ui_Scale, EM_PANEL_WIDTH * gx_ui_Scale, EM_PANEL_HEIGHT * gx_ui_Scale );
+	mainPanel->Resize ( PANEL_LEFT_BOTTOM_X * gx_ui_Scale, PANEL_LEFT_BOTTOM_Y * gx_ui_Scale, PANEL_WIDTH * gx_ui_Scale, PANEL_HEIGHT * gx_ui_Scale );
 
 	mainPanel->Hide ();
 }
@@ -286,13 +286,13 @@ GXVoid GXCALL EMUIOpenFile::OnResize ( GXVoid* handler, GXUIDragableArea* area, 
 {
 	EMUIOpenFile* main = (EMUIOpenFile*)handler;
 
-	main->cancelButton->Resize ( width - EM_BTN_CANCEL_LEFT_BOTTOM_X * gx_ui_Scale, EM_BTN_BOTTOM_Y * gx_ui_Scale, EM_BTN_WIDTH * gx_ui_Scale, EM_BTN_HEIGHT * gx_ui_Scale );
-	main->okButton->Resize ( width - EM_BTN_OK_LEFT_BOTTOM_X * gx_ui_Scale, EM_BTN_BOTTOM_Y * gx_ui_Scale, EM_BTN_WIDTH * gx_ui_Scale, EM_BTN_HEIGHT * gx_ui_Scale );
+	main->cancelButton->Resize ( width - BTN_CANCEL_LEFT_BOTTOM_X * gx_ui_Scale, BTN_BOTTOM_Y * gx_ui_Scale, BTN_WIDTH * gx_ui_Scale, BTN_HEIGHT * gx_ui_Scale );
+	main->okButton->Resize ( width - BTN_OK_LEFT_BOTTOM_X * gx_ui_Scale, BTN_BOTTOM_Y * gx_ui_Scale, BTN_WIDTH * gx_ui_Scale, BTN_HEIGHT * gx_ui_Scale );
 
-	main->filePathStaticText->Resize ( EM_STT_FILE_PATH_LEFT_BOTTOM_X * gx_ui_Scale, height - EM_STT_FILE_PATH_LEFT_BOTTOM_Y * gx_ui_Scale, width - 2.0f * EM_STT_FILE_PATH_LEFT_BOTTOM_X * gx_ui_Scale, EM_STT_FILE_PATH_HEIGHT * gx_ui_Scale );
+	main->filePathStaticText->Resize ( STT_FILE_PATH_LEFT_BOTTOM_X * gx_ui_Scale, height - STT_FILE_PATH_LEFT_BOTTOM_Y * gx_ui_Scale, width - 2.0f * STT_FILE_PATH_LEFT_BOTTOM_X * gx_ui_Scale, STT_FILE_PATH_HEIGHT * gx_ui_Scale );
 
-	main->bottomSeparator->Resize ( EM_SEP_OFFSET_X * gx_ui_Scale, EM_SEP_BOTTOM_OFFSET_Y * gx_ui_Scale, width - 2.0f * EM_SEP_OFFSET_X * gx_ui_Scale, EM_SEP_HEIGHT * gx_ui_Scale );
-	main->topSeparator->Resize ( EM_SEP_OFFSET_X * gx_ui_Scale, height - EM_SEP_TOP_OFFSET_Y * gx_ui_Scale, width - 2.0f * EM_SEP_OFFSET_X * gx_ui_Scale, EM_SEP_HEIGHT * gx_ui_Scale );
+	main->bottomSeparator->Resize ( SEP_OFFSET_X * gx_ui_Scale, SEP_BOTTOM_OFFSET_Y * gx_ui_Scale, width - 2.0f * SEP_OFFSET_X * gx_ui_Scale, SEP_HEIGHT * gx_ui_Scale );
+	main->topSeparator->Resize ( SEP_OFFSET_X * gx_ui_Scale, height - SEP_TOP_OFFSET_Y * gx_ui_Scale, width - 2.0f * SEP_OFFSET_X * gx_ui_Scale, SEP_HEIGHT * gx_ui_Scale );
 	
-	main->fileListBox->Resize ( EM_LST_OFFSET_LEFT * gx_ui_Scale, EM_LST_OFFSET_BOTTOM * gx_ui_Scale, width - ( EM_LST_OFFSET_LEFT + EM_LST_OFFSET_RIGHT ) * gx_ui_Scale, height - ( EM_LST_OFFSET_BOTTOM + EM_LST_OFFSET_TOP ) * gx_ui_Scale );
+	main->fileListBox->Resize ( LST_OFFSET_LEFT * gx_ui_Scale, LST_OFFSET_BOTTOM * gx_ui_Scale, width - ( LST_OFFSET_LEFT + LST_OFFSET_RIGHT ) * gx_ui_Scale, height - ( LST_OFFSET_BOTTOM + LST_OFFSET_TOP ) * gx_ui_Scale );
 }

@@ -46,9 +46,9 @@ class EMUIColorPicker : public EMUI
 		EMUIButton*					cancel;
 		EMUIButton*					pick;
 
-		GXVec4						currentColorHSV;
-		GXVec4						oldColorHSV;
-		GXVec4						savedColorHSVs[ 16 ];
+		GXVec4						currentColorHSVA;
+		GXVec4						oldColorHSVA;
+		GXVec4						savedColorHSVAs[ 16 ];
 
 		PFNEMONHSVCOLORPROC			OnHSVColor;
 		PFNEMONRGBCOLORPROC			OnRGBColor;
