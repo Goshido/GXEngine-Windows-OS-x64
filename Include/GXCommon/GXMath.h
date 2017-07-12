@@ -37,7 +37,10 @@ union GXVec2
 
 GXVec2 GXCALL GXCreateVec2 ( GXFloat component_1, GXFloat component_2 );
 GXVoid GXCALL GXNormalizeVec2 ( GXVec2 &inOut );
+GXVoid GXCALL GXSumVec2Vec2 ( GXVec2 &out, const GXVec2 &a, const GXVec2 &b );
 GXVoid GXCALL GXSubVec2Vec2 ( GXVec2 &out, const GXVec2 &a, const GXVec2 &b );
+GXVoid GXCALL GXMulVec2Vec2 ( GXVec2 &out, const GXVec2 &a, const GXVec2 &b );
+GXVoid GXCALL GXMulVec2Scalar ( GXVec2 &out, const GXVec2 &v, GXFloat a );
 GXFloat GXCALL GXLengthVec2 ( const GXVec2 &v );
 
 //-------------------------------------------------------------
@@ -354,11 +357,12 @@ class GXProjectionClipPlanes
 //-------------------------------------------------------------
 
 GXFloat GXCALL GXDegToRad ( GXFloat degrees );
+GXFloat GXCALL GXRadToDeg ( GXFloat radians );
 GXVoid GXCALL GXColorToVec3 ( GXVec3 &out, GXUChar r, GXUChar g, GXUChar b );
 GXVoid GXCALL GXColorToVec4 ( GXVec4 &out, GXUChar r, GXUChar g, GXUChar b, GXUChar a );
 GXVoid GXCALL GXConvertHSVAToRGBA ( GXUByte &red, GXUByte &green, GXUByte &blue, GXUByte &alpha, const GXVec4 &hsvaColor );
 GXVoid GXCALL GXConvertHSVAToRGBA ( GXVec4 &rgbaColor, const GXVec4 &hsvaColor );
-GXVoid GXCALL GXConvertRGBAToHSVA ( GXFloat &hue, GXFloat &saturation, GXFloat &value, GXFloat &alpha, const GXVec4 &rgbaColor );
+GXVoid GXCALL GXConvertRGBAToHSVA ( GXVec4 &hsvaColor, const GXVec4 &rgbaColor );
 GXVoid GXCALL GXConvert3DSMaxToGXEngine ( GXVec3 &gx_out, GXFloat max_x, GXFloat max_y, GXFloat max_z );
 GXFloat GXCALL GXRandomNormalize ();
 GXFloat GXCALL GXRandomBetween ( GXFloat from, GXFloat to );

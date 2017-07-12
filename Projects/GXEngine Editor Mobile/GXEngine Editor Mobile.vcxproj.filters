@@ -147,45 +147,6 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXSoundMixer.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMActor.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMDirectedLightActor.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMLight.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMMoveTool.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMRenderer.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMRotateGismo.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMScaleGismo.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMTool.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUI.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIButton.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUnitActor.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMViewer.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\Main.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\GXCFGLoader.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
@@ -204,9 +165,6 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXHudSurface.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIDraggableArea.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXTouchSurface.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
@@ -219,29 +177,14 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXUIDraggableArea.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIOpenFile.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXUIStaticText.cpp">
       <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIStaticText.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUISeparator.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXUIListBox.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIFileListBox.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXUIEditBox.cpp">
       <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIEditBox.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXUIInput.cpp">
       <Filter>Source Files\GXEngine</Filter>
@@ -255,14 +198,8 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXUIPopup.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIPopup.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXUIMenu.cpp">
       <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIMenu.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXPhysics\GXPhysicsEngine.cpp">
       <Filter>Source Files\GXPhysics</Filter>
@@ -303,9 +240,6 @@
     <ClCompile Include="..\..\Sources\GXPhysics\GXContactResolver.cpp">
       <Filter>Source Files\GXPhysics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMPhysicsDrivenActor.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXPhysics\GXPolygonShape.cpp">
       <Filter>Source Files\GXPhysics</Filter>
     </ClCompile>
@@ -333,12 +267,6 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXUnlitColorMaskMaterial.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMObjectMaskMaterial.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMMesh.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXTransform.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
@@ -348,53 +276,11 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXGame.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMGame.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXSkeleton.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXSkinningMaterial.cpp">
       <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMMotionBlurMaterial.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMFluttershy.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMVelocityTileMaxMaterial.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMVelocityNeighborMaxMaterial.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIFPSCounter.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIMotionBlurSettings.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMSSAOSharpMaterial.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMGaussHorizontalBlurMaterial.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMGaussVerticalBlurMaterial.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMSSAOApplyMaterial.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUISSAOSettings.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMCookTorranceCommonPassMaterial.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMCookTorranceDirectedLightMaterial.cpp">
-      <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp">
       <Filter>Source Files\GXCommon\Windows</Filter>
@@ -408,13 +294,130 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractMutex.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMUIColorPicker.cpp">
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMRotateGismo.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMCheckerGeneratorMaterial.cpp">
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMScaleGismo.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine Editor Mobile\EMHueCircleGeneratorMaterial.cpp">
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMSSAOApplyMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMSSAOSharpMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMTool.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUI.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUIButton.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUIColorPicker.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUIDraggableArea.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUIEditBox.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUIFileListBox.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUIFPSCounter.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUIMenu.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUIMotionBlurSettings.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUIOpenFile.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUIPopup.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUISeparator.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUISSAOSettings.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUIStaticText.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUnitActor.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMVelocityNeighborMaxMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMVelocityTileMaxMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMVertexColorMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMViewer.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\Main.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMActor.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMCheckerGeneratorMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMCookTorranceCommonPassMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMCookTorranceDirectedLightMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMDirectedLightActor.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMFluttershy.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMGame.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMGaussHorizontalBlurMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMGaussVerticalBlurMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMHueCircleGeneratorMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMLight.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMMesh.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMMotionBlurMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMMoveTool.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMObjectMaskMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMPhysicsDrivenActor.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMRenderer.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
   </ItemGroup>
@@ -881,6 +884,9 @@
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMHueCircleGeneratorMaterial.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMVertexColorMaterial.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="..\..\Sources\GXEngine\GXRecource.res">
@@ -1045,6 +1051,12 @@
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\HueCircle_fs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\VertexColor_fs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\VertexColor_vs.txt">
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
   </ItemGroup>

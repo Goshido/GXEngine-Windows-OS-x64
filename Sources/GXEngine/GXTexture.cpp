@@ -372,6 +372,24 @@ GXVoid GXTexture::FillRegionPixelData ( GXUShort left, GXUShort bottom, GXUShort
 	glBindTexture ( GL_TEXTURE_2D, 0 );
 }
 
+GXVoid GXTexture::UpdateMipmaps ()
+{
+	if ( textureObject == 0 || !isGenerateMipmap ) return;
+
+	glActiveTexture ( GL_TEXTURE0 );
+	glBindTexture ( GL_TEXTURE_2D, textureObject );
+
+	glGenerateMipmap ( GL_TEXTURE_2D );
+	glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+
+	GLfloat maxAnisotropy;
+	glGetFloatv ( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy );
+	glTexParameterf ( GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy );
+
+	glBindTexture ( GL_TEXTURE_2D, 0 );
+}
+
 GXVoid GXTexture::Bind ( GXUByte textureUnit )
 {
 	this->textureUnit = textureUnit;

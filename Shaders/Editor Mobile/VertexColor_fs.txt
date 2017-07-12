@@ -1,0 +1,15 @@
+#version 330 core
+
+
+#define COLOR_SLOT 0
+
+
+smooth in vec3 v_color;
+
+layout ( location = COLOR_SLOT ) out vec4 colorSlot;
+
+
+void main ()
+{
+	colorSlot = vec4 ( v_color, 1.0 );
+}

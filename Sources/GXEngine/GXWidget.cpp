@@ -1,4 +1,4 @@
-//version 1.2
+//version 1.3
 
 #include <GXEngine/GXWidget.h>
 #include <GXEngine/GXRenderer.h>
@@ -216,6 +216,11 @@ const GXAABB& GXWidget::GetBoundsLocal () const
 GXVoid GXWidget::Show ()
 {
 	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_SHOW, nullptr, 0 );
+}
+
+GXVoid GXWidget::Refresh ()
+{
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_REDRAW, nullptr, 0 );
 }
 
 GXVoid GXWidget::Hide ()

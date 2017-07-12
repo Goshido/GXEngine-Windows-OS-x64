@@ -42,6 +42,7 @@ class GXTexture
 
 		GXVoid FillWholePixelData ( const GXVoid* data );
 		GXVoid FillRegionPixelData ( GXUShort left, GXUShort bottom, GXUShort width, GXUShort height, const GXVoid* data );
+		GXVoid UpdateMipmaps ();
 
 		GXVoid Bind ( GXUByte textureUnit );
 		GXVoid Unbind ();

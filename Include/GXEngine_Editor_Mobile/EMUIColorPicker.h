@@ -72,6 +72,7 @@ class EMUIColorPicker : public EMUI
 
 		GXVoid UpdateCurrentColor ( GXFloat hue, GXFloat saturation, GXFloat value, GXFloat alpha );
 		GXVoid UpdateCurrentColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
+		GXVoid UpdateCurrentColorWithCorrection ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
 
 		static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFloat y, eGXMouseButtonState state );
 		static GXVoid GXCALL OnLeftMouseButton ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y );

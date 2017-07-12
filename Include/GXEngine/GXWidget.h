@@ -1,4 +1,4 @@
-//version 1.2
+//version 1.3
 
 #ifndef GX_WIDGET
 #define GX_WIDGET
@@ -41,6 +41,7 @@ class GXWidget
 		const GXAABB& GetBoundsLocal () const;
 
 		GXVoid Show ();
+		GXVoid Refresh ();
 		GXVoid Hide ();
 		GXVoid ToForeground ();
 		GXBool IsVisible () const;

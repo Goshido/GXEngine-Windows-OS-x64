@@ -1,6 +1,7 @@
 #include <GXEngine_Editor_Mobile/EMUIColorPicker.h>
 #include <GXEngine_Editor_Mobile/EMCheckerGeneratorMaterial.h>
 #include <GXEngine_Editor_Mobile/EMHueCircleGeneratorMaterial.h>
+#include <GXEngine_Editor_Mobile/EMVertexColorMaterial.h>
 #include <GXEngine_Editor_Mobile/EMMesh.h>
 #include <GXEngine/GXLocale.h>
 #include <GXEngine/GXRenderer.h>
@@ -67,18 +68,14 @@
 #define BOTTOM_SEPARATOR_BOTTOM_Y_OFFSET			0.64444f
 
 #define DEFAULT_CURRENT_COLOR_H						83.0f
-#define DEFAULT_CURRENT_COLOR_S						100.0f
+#define DEFAULT_CURRENT_COLOR_S						50.0f
 #define DEFAULT_CURRENT_COLOR_V						73.0f
 #define DEFAULT_CURRENT_COLOR_A						100.0f
 
-#define HSV_FACTOR									0.016666f
-#define HSV_TO_RGB_FACTOR							2.55f
-#define ALPHA_FACTOR								2.55f
-
 #define MAX_BUFFER_SYMBOLS							128
 
-#define PIXEL_PERFECT_LOCATION_OFFSET_X				0.25f
-#define PIXEL_PERFECT_LOCATION_OFFSET_Y				0.25f
+#define PIXEL_PERFECT_LOCATION_OFFSET_X				0.1f
+#define PIXEL_PERFECT_LOCATION_OFFSET_Y				0.1f
 
 #define TEXTURE										L"Textures/System/Default_Diffuse.tga"
 
@@ -102,6 +99,40 @@
 
 #define HUE_CIRCLE_INNER_RADIUS						2.49720f
 #define HUE_CIRCLE_OUTER_RADIUS						3.11479f
+
+#define COLOR_SELECTOR_PROJECTION_NEAR				0.0f
+#define COLOR_SELECTOR_PROJECTION_FAR				7.0f
+#define COLOR_SELECTOR_VISIBLE_Z					3.0f
+
+#define COLOR_SELECTOR_UNLIT_COLOR_R				255
+#define COLOR_SELECTOR_UNLIT_COLOR_G				255
+#define COLOR_SELECTOR_UNLIT_COLOR_B				255
+#define COLOR_SELECTOR_UNLIT_COLOR_A				255
+
+#define COLOR_SELECTOR_COMPOSITE_CLEAR_COLOR_R		0.0f
+#define COLOR_SELECTOR_COMPOSITE_CLEAR_COLOR_G		0.0f
+#define COLOR_SELECTOR_COMPOSITE_CLEAR_COLOR_B		0.0f
+#define COLOR_SELECTOR_COMPOSITE_CLEAR_COLOR_A		0.0f
+
+#define COLOR_SELECTOR_HUE_MARKER_COLOR_R			255
+#define COLOR_SELECTOR_HUE_MARKER_COLOR_G			255
+#define COLOR_SELECTOR_HUE_MARKER_COLOR_B			255
+#define COLOR_SELECTOR_HUE_MARKER_COLOR_A			255
+
+#define COLOR_SELECTOR_MSAA_FACTOR					4.0f
+#define COLOR_SELECTOR_SAMPLE_BORDER_SIDE			0.13426f
+
+#define EQUILATERAL_TRIANGLE_A_X					-0.500181f
+#define EQUILATERAL_TRIANGLE_A_Y					0.864750f
+#define EQUILATERAL_TRIANGLE_A_Z					0.0f
+
+#define EQUILATERAL_TRIANGLE_B_X					1.000591f
+#define EQUILATERAL_TRIANGLE_B_Y					0.0f
+#define EQUILATERAL_TRIANGLE_B_Z					0.0f
+
+#define EQUILATERAL_TRIANGLE_C_X					-0.500181f
+#define EQUILATERAL_TRIANGLE_C_Y					-0.864750f
+#define EQUILATERAL_TRIANGLE_C_Z					0.0f
 
 
 class EMColorRenderer : public GXWidgetRenderer
@@ -264,9 +295,15 @@ class EMColorSelectorRenderer : public GXWidgetRenderer
 		EMMesh							screenQuad;
 		GXMeshGeometry					triangle;
 		EMHueCircleGeneratorMaterial	hueCircleGeneratorMaterial;
+		EMVertexColorMaterial			vertexColorMaterial;
+		GXUnlitTexture2DMaterial		unlitTexture2DMaterial;
 		GXTexture						hueTexture;
+		GXTexture						compositeTexture;
 		GXOpenGLState					openGLState;
+		GXCameraOrthographic			projectionCamera;
+		GXVec4							colorHSVA;
 		GXVec4							colorRGBA;
+		GXVec3							equilateralTriangleGeometryLocal[ 6 ];
 
 	public:
 		explicit EMColorSelectorRenderer ( GXUIInput* widget );
@@ -282,6 +319,7 @@ class EMColorSelectorRenderer : public GXWidgetRenderer
 
 	private:
 		GXVoid UpdateHueCircleTexture ();
+		GXVoid UpdateCompositeTexture ();
 };
 
 EMColorSelectorRenderer::EMColorSelectorRenderer ( GXUIInput* widget ) :
@@ -297,52 +335,38 @@ GXWidgetRenderer ( widget ), screenQuad ( L"3D Models/System/ScreenQuad.stm" )
 	triangle.SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, stride, (const GLvoid*)0 );
 	triangle.SetBufferStream ( eGXMeshStreamIndex::Color, 3, GL_FLOAT, stride, (const GLvoid*)sizeof ( GXVec3 ) );
 
-	hueCircleGeneratorMaterial.SetInnerRadius ( HUE_CIRCLE_INNER_RADIUS * gx_ui_Scale );
-	hueCircleGeneratorMaterial.SetOuterRadius ( HUE_CIRCLE_OUTER_RADIUS * gx_ui_Scale );
+	equilateralTriangleGeometryLocal[ 0 ] = GXCreateVec3 ( EQUILATERAL_TRIANGLE_A_X, EQUILATERAL_TRIANGLE_A_Y, EQUILATERAL_TRIANGLE_A_Z );
+	equilateralTriangleGeometryLocal[ 2 ] = GXCreateVec3 ( EQUILATERAL_TRIANGLE_B_X, EQUILATERAL_TRIANGLE_B_Y, EQUILATERAL_TRIANGLE_B_Z );
+	equilateralTriangleGeometryLocal[ 4 ] = GXCreateVec3 ( EQUILATERAL_TRIANGLE_C_X, EQUILATERAL_TRIANGLE_C_Y, EQUILATERAL_TRIANGLE_C_Z );
+
+	equilateralTriangleGeometryLocal[ 1 ] = GXCreateVec3 ( 0.0f, 0.0f, 0.0f );
+	equilateralTriangleGeometryLocal[ 5 ] = GXCreateVec3 ( 1.0f, 1.0f, 1.0f );
+
+	hueCircleGeneratorMaterial.SetInnerRadius ( COLOR_SELECTOR_MSAA_FACTOR * HUE_CIRCLE_INNER_RADIUS * gx_ui_Scale );
+	hueCircleGeneratorMaterial.SetOuterRadius ( COLOR_SELECTOR_MSAA_FACTOR * HUE_CIRCLE_OUTER_RADIUS * gx_ui_Scale );
+
+	unlitTexture2DMaterial.SetTexture ( hueTexture );
+	unlitTexture2DMaterial.SetColor ( COLOR_SELECTOR_UNLIT_COLOR_R, COLOR_SELECTOR_UNLIT_COLOR_G, COLOR_SELECTOR_UNLIT_COLOR_B, COLOR_SELECTOR_UNLIT_COLOR_A );
 
 	UpdateHueCircleTexture ();
 
-	GXVec4 colorHSVA ( DEFAULT_SAVED_COLOR_H, DEFAULT_SAVED_COLOR_S, DEFAULT_SAVED_COLOR_V, DEFAULT_SAVED_COLOR_A );
+	GXVec4 colorHSVA ( DEFAULT_CURRENT_COLOR_H, DEFAULT_CURRENT_COLOR_S, DEFAULT_CURRENT_COLOR_V, DEFAULT_CURRENT_COLOR_A );
 	SetColorHSVA ( colorHSVA );
 }
 
 EMColorSelectorRenderer::~EMColorSelectorRenderer ()
 {
 	hueTexture.FreeResources ();
+	compositeTexture.FreeResources ();
 	glDeleteFramebuffers ( 1, &fbo );
 	delete surface;
 }
 
 GXVoid EMColorSelectorRenderer::SetColorHSVA ( const GXVec4 &color )
 {
-	GXConvertHSVAToRGBA ( colorRGBA, color );
-
-	static GXVec3 bufferData[ 6 ];
-	bufferData[ 0 ].x = -0.500181f;
-	bufferData[ 0 ].y = 0.864750f;
-	bufferData[ 0 ].z = 0.0f;
-
-	bufferData[ 1 ].r = 0.0f;
-	bufferData[ 1 ].g = 0.0f;
-	bufferData[ 1 ].b = 0.0f;
-
-	bufferData[ 2 ].x = 1.000591f;
-	bufferData[ 2 ].y = 0.0f;
-	bufferData[ 2 ].z = 0.0f;
-
-	bufferData[ 3 ].r = colorRGBA.r;
-	bufferData[ 3 ].g = colorRGBA.g;
-	bufferData[ 3 ].b = colorRGBA.b;
-
-	bufferData[ 4 ].x = -0.500181f;
-	bufferData[ 4 ].y = -0.864750f;
-	bufferData[ 4 ].z = 0.0f;
-
-	bufferData[ 5 ].r = 1.0f;
-	bufferData[ 5 ].g = 1.0f;
-	bufferData[ 5 ].b = 1.0f;
-
-	triangle.FillVertexBuffer ( bufferData, 6 * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+	colorHSVA = color;
+	GXConvertHSVAToRGBA ( colorRGBA, colorHSVA );
+	UpdateCompositeTexture ();
 }
 
 GXVoid EMColorSelectorRenderer::OnRefresh ()
@@ -357,27 +381,103 @@ GXVoid EMColorSelectorRenderer::OnRefresh ()
 
 	GXImageInfo ii;
 	GXColorToVec4 ( ii.color, 255, 255, 255, 255 );
-	ii.texture = &hueTexture;
+	ii.texture = &compositeTexture;
 	ii.overlayType = eGXImageOverlayType::SimpleReplace;
 
-	GXFloat hueTextureWidth = (GXFloat)hueTexture.GetWidth ();
-	GXFloat hueTextureHeight = (GXFloat)hueTexture.GetHeight ();
+	GXFloat smoothCompositeTextureWidth = compositeTexture.GetWidth () / COLOR_SELECTOR_MSAA_FACTOR;
+	GXFloat smoothCompositeTextureHeight = compositeTexture.GetHeight () / COLOR_SELECTOR_MSAA_FACTOR;
 
-	if ( hueTextureWidth == w )
+	if ( smoothCompositeTextureWidth == w )
 	{
 		ii.insertX = 0.0f;
-		ii.insertY = ( h - hueTextureHeight ) * 0.5f;
+		ii.insertY = ( h - smoothCompositeTextureHeight ) * 0.5f;
 	}
 	else
 	{
-		ii.insertX = ( w - hueTextureWidth ) * 0.5f;
+		ii.insertX = ( w - smoothCompositeTextureWidth ) * 0.5f;
 		ii.insertY = 0.0f;
 	}
 
-	ii.insertWidth = hueTextureWidth;
-	ii.insertHeight = hueTextureHeight;
+	ii.insertWidth = smoothCompositeTextureWidth;
+	ii.insertHeight = smoothCompositeTextureHeight;
 
 	surface->AddImage ( ii );
+
+	GXFloat hRadians = GXDegToRad ( colorHSVA.h );
+	GXVec2 markerDirection ( gx_ui_Scale * cosf ( hRadians ), gx_ui_Scale * sinf ( hRadians ) );
+	GXVec2 center ( w * 0.5f, h * 0.5f );
+
+	GXLineInfo li;
+	GXColorToVec4 ( li.color, COLOR_SELECTOR_HUE_MARKER_COLOR_R, COLOR_SELECTOR_HUE_MARKER_COLOR_G, COLOR_SELECTOR_HUE_MARKER_COLOR_B, COLOR_SELECTOR_HUE_MARKER_COLOR_A );
+	li.thickness = 1.0f;
+	ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+
+	GXVec2 tmp;
+	GXMulVec2Scalar ( tmp, markerDirection, HUE_CIRCLE_INNER_RADIUS );
+	GXSumVec2Vec2 ( tmp, tmp, center );
+	li.startPoint = GXCreateVec2 ( floorf ( tmp.x + 0.5f ) + 0.1f, floorf ( tmp.y + 0.5f ) + 0.1f );
+
+	GXMulVec2Scalar ( tmp, markerDirection, HUE_CIRCLE_OUTER_RADIUS );
+	GXSumVec2Vec2 ( tmp, tmp, center );
+	li.endPoint = GXCreateVec2 ( floorf ( tmp.x + 0.5f ) + 0.1f, floorf ( tmp.y + 0.5f ) + 0.1f );
+
+	surface->AddLine ( li );
+
+	GXFloat triangleScale = HUE_CIRCLE_INNER_RADIUS * gx_ui_Scale;
+	GXTransform transform;
+	transform.SetRotation ( 0.0f, 0.0f, GXDegToRad ( colorHSVA.h ) );
+	transform.SetScale ( triangleScale, triangleScale, 1.0f );
+	transform.SetLocation ( center.x, center.y, 0.0f );
+
+	GXVec4 currentHueRGBA;
+	GXVec4 currentHueHSVA ( colorHSVA.h, 100.0f, 100.0f, 100.0f );
+	GXConvertHSVAToRGBA ( currentHueRGBA, currentHueHSVA );
+
+	GXVec3 colorA ( 0.0f, 0.0f, 0.0f );
+	GXVec3 colorB ( currentHueRGBA.r, currentHueRGBA.g, currentHueRGBA.b );
+	GXVec3 colorC ( 1.0f, 1.0f, 1.0f );
+	GXVec3 currentRGB ( colorRGBA.r, colorRGBA.g, colorRGBA.b );
+
+	GXVec3 barycentricCoords;
+	GXGetBarycentricCoords ( barycentricCoords, currentRGB, colorA, colorB, colorC );
+
+	GXVec3 colorCoordsLocal;
+	colorCoordsLocal.x = barycentricCoords.x * equilateralTriangleGeometryLocal[ 0 ].x + barycentricCoords.y * equilateralTriangleGeometryLocal[ 2 ].x + barycentricCoords.z * equilateralTriangleGeometryLocal[ 4 ].x;
+	colorCoordsLocal.y = barycentricCoords.x * equilateralTriangleGeometryLocal[ 0 ].y + barycentricCoords.y * equilateralTriangleGeometryLocal[ 2 ].y + barycentricCoords.z * equilateralTriangleGeometryLocal[ 4 ].y;
+	colorCoordsLocal.z = barycentricCoords.x * equilateralTriangleGeometryLocal[ 0 ].z + barycentricCoords.y * equilateralTriangleGeometryLocal[ 2 ].z + barycentricCoords.z * equilateralTriangleGeometryLocal[ 4 ].z;
+
+	GXVec3 colorCoordsSurface;
+	GXMulVec3Mat4AsPoint ( colorCoordsSurface, colorCoordsLocal, transform.GetCurrentFrameModelMatrix () );
+
+	GXVec4 borderColorHSVA ( colorHSVA.h + 180.0f, 100.0f, 100.0f, 100.0f );
+	if ( borderColorHSVA.h > 360.0f )
+		borderColorHSVA.h -= 360.0f;
+
+	GXFloat borderSideFactor = floorf ( COLOR_SELECTOR_SAMPLE_BORDER_SIDE * gx_ui_Scale * 0.5f + 0.5f );
+	colorCoordsSurface.x = floorf ( colorCoordsSurface.x + 0.5f );
+	colorCoordsSurface.y = floorf ( colorCoordsSurface.y + 0.5f );
+
+	GXConvertHSVAToRGBA ( li.color, borderColorHSVA );
+
+	li.startPoint = GXCreateVec2 ( colorCoordsSurface.x - borderSideFactor + 1.0f + 0.1f, colorCoordsSurface.y - borderSideFactor + 0.1f );
+	li.endPoint = GXCreateVec2 ( colorCoordsSurface.x + borderSideFactor - 1.0f + 0.9f, colorCoordsSurface.y - borderSideFactor + 0.1f );
+
+	surface->AddLine ( li );
+
+	li.startPoint = GXCreateVec2 ( colorCoordsSurface.x + borderSideFactor + 0.1f, colorCoordsSurface.y - borderSideFactor + 1.0f + 0.1f );
+	li.endPoint = GXCreateVec2 ( colorCoordsSurface.x + borderSideFactor + 0.1f, colorCoordsSurface.y + borderSideFactor - 1.0f + 0.9f );
+
+	surface->AddLine ( li );
+
+	li.startPoint = GXCreateVec2 ( colorCoordsSurface.x + borderSideFactor - 1.0f + 0.9f, colorCoordsSurface.y + borderSideFactor + 0.1f );
+	li.endPoint = GXCreateVec2 ( colorCoordsSurface.x - borderSideFactor + 1.0f + 0.1f, colorCoordsSurface.y + borderSideFactor + 0.1f );
+
+	surface->AddLine ( li );
+
+	li.startPoint = GXCreateVec2 ( colorCoordsSurface.x - borderSideFactor + 0.1f, colorCoordsSurface.y + borderSideFactor - 1.0f + 0.9f );
+	li.endPoint = GXCreateVec2 ( colorCoordsSurface.x - borderSideFactor + 0.1f, colorCoordsSurface.y - borderSideFactor + 1.0f + 0.1f );
+
+	surface->AddLine ( li );
 }
 
 GXVoid EMColorSelectorRenderer::OnDraw ()
@@ -398,7 +498,19 @@ GXVoid EMColorSelectorRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width
 	surface->GetLocation ( location );
 	surface->SetLocation ( x, y, location.z );
 
+	GXUShort w = surface->GetWidth ();
+	GXUShort h = surface->GetHeight ();
+	GXUShort msaaSide;
+
+	if ( w >= h )
+		msaaSide = (GXUShort)( h * COLOR_SELECTOR_MSAA_FACTOR );
+	else
+		msaaSide = (GXUShort)( w * COLOR_SELECTOR_MSAA_FACTOR );
+
+	if ( compositeTexture.GetWidth () == msaaSide ) return;
+
 	UpdateHueCircleTexture ();
+	UpdateCompositeTexture ();
 }
 
 GXVoid EMColorSelectorRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -414,24 +526,24 @@ GXVoid EMColorSelectorRenderer::OnMoved ( GXFloat x, GXFloat y )
 GXVoid EMColorSelectorRenderer::UpdateHueCircleTexture ()
 {
 	hueTexture.FreeResources ();
+	compositeTexture.FreeResources ();
 
 	openGLState.Save ();
 
 	GXUShort w = surface->GetWidth ();
 	GXUShort h = surface->GetHeight ();
+	GXUShort msaaSide;
 
 	if ( w >= h )
-	{
-		hueTexture.InitResources ( h, h, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
-		hueCircleGeneratorMaterial.SetResolution ( h, h );
-		glViewport ( 0, 0, (GLsizei)h, (GLsizei)h );
-	}
+		msaaSide = (GXUShort)( h * COLOR_SELECTOR_MSAA_FACTOR );
 	else
-	{
-		hueTexture.InitResources ( w, w, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
-		hueCircleGeneratorMaterial.SetResolution ( w, w );
-		glViewport ( 0, 0, (GLsizei)w, (GLsizei)w );
-	}
+		msaaSide = (GXUShort)( w * COLOR_SELECTOR_MSAA_FACTOR );
+
+	hueTexture.InitResources ( msaaSide, msaaSide, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	compositeTexture.InitResources ( msaaSide, msaaSide, GL_RGBA8, GX_TRUE, GL_CLAMP_TO_EDGE );
+	hueCircleGeneratorMaterial.SetResolution ( msaaSide, msaaSide );
+	glViewport ( 0, 0, (GLsizei)msaaSide, (GLsizei)msaaSide );
+	projectionCamera.SetProjection ( (GXFloat)msaaSide, (GXFloat)msaaSide, COLOR_SELECTOR_PROJECTION_NEAR, COLOR_SELECTOR_PROJECTION_FAR );
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, hueTexture.GetTextureObject (), 0 );
@@ -455,6 +567,71 @@ GXVoid EMColorSelectorRenderer::UpdateHueCircleTexture ()
 	hueCircleGeneratorMaterial.Unbind ();
 
 	openGLState.Restore ();
+}
+
+GXVoid EMColorSelectorRenderer::UpdateCompositeTexture ()
+{
+	GXVec4 hueHSVA ( colorHSVA.h, 100.0f, 100.0f, 100.0f );
+	GXVec4 hueRGBA;
+	GXConvertHSVAToRGBA ( hueRGBA, hueHSVA );
+
+	equilateralTriangleGeometryLocal[ 3 ] = GXCreateVec3 ( hueRGBA.r, hueRGBA.g, hueRGBA.b );
+	triangle.FillVertexBuffer ( equilateralTriangleGeometryLocal, 6 * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+
+	openGLState.Save ();
+
+	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, compositeTexture.GetTextureObject (), 0 );
+
+	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+	glDepthMask ( GL_FALSE );
+
+	glDisable ( GL_CULL_FACE );
+	glDisable ( GL_DEPTH_TEST );
+	glDisable ( GL_BLEND );
+
+	static const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers ( 1, buffers );
+
+	GXUShort w = compositeTexture.GetWidth ();
+	GXUShort h = compositeTexture.GetHeight ();
+
+	glViewport ( 0, 0, (GLsizei)w, (GLsizei)h );
+
+	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+	if ( status != GL_FRAMEBUFFER_COMPLETE )
+		GXLogW ( L"EMColorSelectorRenderer::UpdateCompositeTexture::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
+
+	static const GXFloat clearValue[ 4 ] = { COLOR_SELECTOR_COMPOSITE_CLEAR_COLOR_R, COLOR_SELECTOR_COMPOSITE_CLEAR_COLOR_G, COLOR_SELECTOR_COMPOSITE_CLEAR_COLOR_B, COLOR_SELECTOR_COMPOSITE_CLEAR_COLOR_A };
+	glClearBufferfv ( GL_COLOR, 0, clearValue );
+
+	GXFloat triangleScale = COLOR_SELECTOR_MSAA_FACTOR * HUE_CIRCLE_INNER_RADIUS * gx_ui_Scale;
+
+	GXTransform transform;
+	transform.SetRotation ( 0.0f, 0.0f, GXDegToRad ( colorHSVA.h ) );
+	transform.SetScale ( triangleScale, triangleScale, 1.0f );
+	transform.SetLocation ( 0.0f, 0.0f, COLOR_SELECTOR_VISIBLE_Z );
+
+	GXCamera* oldCamera = GXCamera::GetActiveCamera ();
+	GXCamera::SetActiveCamera ( &projectionCamera );
+
+	vertexColorMaterial.Bind ( transform );
+	triangle.Render ();
+	vertexColorMaterial.Unbind ();
+
+	glEnable ( GL_BLEND );
+
+	transform.SetRotation ( 0.0f, 0.0f, 0.0f );
+	transform.SetScale ( w * 0.5f, h * 0.5f, 1.0f );
+
+	unlitTexture2DMaterial.Bind ( transform );
+	screenQuad.Render ();
+	unlitTexture2DMaterial.Unbind ();
+
+	GXCamera::SetActiveCamera ( oldCamera );
+	openGLState.Restore ();
+
+	compositeTexture.UpdateMipmaps ();
 }
 
 //----------------------------------------------------------------------------------
@@ -697,8 +874,13 @@ GXVoid EMUIColorPicker::UpdateCurrentColor ( GXFloat hue, GXFloat saturation, GX
 	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", a );
 	transparency->SetText ( buffer );
 
-	EMColorRenderer* renderer = (EMColorRenderer*)currentColor->GetRenderer ();
-	renderer->SetColorHSVA ( currentColorHSVA );
+	EMColorRenderer* currentColorRenderer = (EMColorRenderer*)currentColor->GetRenderer ();
+	currentColorRenderer->SetColorHSVA ( currentColorHSVA );
+	currentColor->Refresh ();
+
+	EMColorSelectorRenderer* colorSelectorRenderer = (EMColorSelectorRenderer*)hsvColorWidget->GetRenderer ();
+	colorSelectorRenderer->SetColorHSVA ( currentColorHSVA );
+	hsvColorWidget->Refresh ();
 }
 
 GXVoid EMUIColorPicker::UpdateCurrentColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
@@ -717,34 +899,147 @@ GXVoid EMUIColorPicker::UpdateCurrentColor ( GXUByte red, GXUByte green, GXUByte
 
 	GXVec4 rgbColor;
 	GXColorToVec4 ( rgbColor, red, green, blue, alpha );
+	GXConvertRGBAToHSVA ( currentColorHSVA, rgbColor );
 
-	GXFloat h;
-	GXFloat s;
-	GXFloat v;
-	GXFloat a;
-	GXConvertRGBAToHSVA ( h, s, v, a, rgbColor );
-
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", h );
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", currentColorHSVA.h );
 	this->h->SetText ( buffer );
 
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", s );
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", currentColorHSVA.s );
 	this->s->SetText ( buffer );
 
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", v );
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", currentColorHSVA.v );
 	this->v->SetText ( buffer );
+
+	EMColorRenderer* currentColorRenderer = (EMColorRenderer*)currentColor->GetRenderer ();
+	currentColorRenderer->SetColorHSVA ( currentColorHSVA );
+	currentColor->Refresh ();
+
+	EMColorSelectorRenderer* colorSelectorRenderer = (EMColorSelectorRenderer*)hsvColorWidget->GetRenderer ();
+	colorSelectorRenderer->SetColorHSVA ( currentColorHSVA );
+	hsvColorWidget->Refresh ();
+}
+
+GXVoid EMUIColorPicker::UpdateCurrentColorWithCorrection ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
+{
+	GXVec4 rgbColor;
+	GXColorToVec4 ( rgbColor, red, green, blue, alpha );
+
+	GXFloat oldHue = currentColorHSVA.h;
+	GXConvertRGBAToHSVA ( currentColorHSVA, rgbColor );
+
+	GXUByte correctedRed;
+	GXUByte correctedGreen;
+	GXUByte correctedBlue;
+	GXUByte correctedAlpha;
+
+	currentColorHSVA.h = oldHue;
+	GXConvertHSVAToRGBA ( correctedRed, correctedGreen, correctedBlue, correctedAlpha, currentColorHSVA );
+
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", correctedRed );
+	this->r->SetText ( buffer );
+
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", correctedGreen );
+	this->g->SetText ( buffer );
+
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", correctedBlue );
+	this->b->SetText ( buffer );
+
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", correctedAlpha );
+	transparency->SetText ( buffer );
+
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", currentColorHSVA.h );
+	this->h->SetText ( buffer );
+
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", currentColorHSVA.s );
+	this->s->SetText ( buffer );
+
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", currentColorHSVA.v );
+	this->v->SetText ( buffer );
+
+	EMColorRenderer* currentColorRenderer = (EMColorRenderer*)currentColor->GetRenderer ();
+	currentColorRenderer->SetColorHSVA ( currentColorHSVA );
+	currentColor->Refresh ();
+
+	EMColorSelectorRenderer* colorSelectorRenderer = (EMColorSelectorRenderer*)hsvColorWidget->GetRenderer ();
+	colorSelectorRenderer->SetColorHSVA ( currentColorHSVA );
+	hsvColorWidget->Refresh ();
 }
 
 GXVoid GXCALL EMUIColorPicker::OnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFloat y, eGXMouseButtonState state )
 {
 	//TODO
+	if ( state == eGXMouseButtonState::Down ) return;
+
 	EMUIColorPicker* colorPicker = (EMUIColorPicker*)handler;
 	colorPicker->mainPanel->Hide ();
 }
 
 GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y )
 {
-	//TODO
-	GXLogW ( L"0x%016llX, %f, %f\n", (GXUPointer)input, x, y );
+	EMUIColorPicker* colorPicker = (EMUIColorPicker*)handler;
+
+	if ( input == colorPicker->hsvColorWidget )
+	{
+		GXVec3 center;
+		GXGetAABBCenter ( center, colorPicker->hsvColorWidget->GetBoundsWorld () );
+		GXVec3 cursorWorld ( x, y, 0.0f );
+
+		GXVec3 direction;
+		GXSubVec3Vec3 ( direction, cursorWorld, center );
+
+		GXFloat innerRadius = HUE_CIRCLE_INNER_RADIUS * gx_ui_Scale;
+		GXFloat outerRadius = HUE_CIRCLE_OUTER_RADIUS * gx_ui_Scale;
+		GXFloat radius = GXLengthVec3 ( direction );
+
+		static const GXVec3 xAxis ( 1.0f, 0.0f, 0.0f );
+		GXNormalizeVec3 ( direction );
+		GXFloat cosAngle = GXDotVec3Fast ( direction, xAxis );
+		GXFloat angleRadians = acosf ( cosAngle );
+
+		if ( y < center.y )
+			angleRadians = GX_MATH_TWO_PI - angleRadians;
+
+		if ( radius >= innerRadius && radius <= outerRadius )
+		{
+			GXFloat angleDegrees = GXRadToDeg ( angleRadians );
+			colorPicker->UpdateCurrentColor ( angleDegrees, colorPicker->currentColorHSVA.s, colorPicker->currentColorHSVA.v, colorPicker->currentColorHSVA.a );
+			return;
+		}
+
+		GXTransform transform;
+		transform.SetScale ( innerRadius, innerRadius, 1.0f );
+		transform.SetRotation ( 0.0f, 0.0f, GXDegToRad ( colorPicker->currentColorHSVA.h ) );
+		transform.SetLocation ( center );
+
+		static const GXVec3 equilateralTriangleLocal[ 3 ] = 
+		{
+			GXVec3 ( EQUILATERAL_TRIANGLE_A_X, EQUILATERAL_TRIANGLE_A_Y, EQUILATERAL_TRIANGLE_A_Z),
+			GXVec3 ( EQUILATERAL_TRIANGLE_B_X, EQUILATERAL_TRIANGLE_B_Y, EQUILATERAL_TRIANGLE_B_Z ),
+			GXVec3 ( EQUILATERAL_TRIANGLE_C_X, EQUILATERAL_TRIANGLE_C_Y, EQUILATERAL_TRIANGLE_C_Z )
+		};
+
+		const GXMat4& modelMatrix = transform.GetCurrentFrameModelMatrix ();
+
+		static GXVec3 equitaleralTriangleWorld[ 3 ];
+
+		for ( GXUByte i = 0; i < 3; i++ )
+			GXMulVec3Mat4AsPoint ( equitaleralTriangleWorld[ i ], equilateralTriangleLocal[ i ], modelMatrix );
+
+		GXVec3 barycentricCoordinates;
+		GXGetBarycentricCoords ( barycentricCoordinates, cursorWorld, equitaleralTriangleWorld[ 0 ], equitaleralTriangleWorld[ 1 ], equitaleralTriangleWorld[ 2 ] );
+
+		if ( barycentricCoordinates.x < 0.0f || barycentricCoordinates.x > 1.0f || barycentricCoordinates.y < 0.0f || barycentricCoordinates.y > 1.0f || barycentricCoordinates.z < 0.0f || barycentricCoordinates.z > 1.0f ) return;
+
+		GXVec4 currentHueRGBA;
+		GXVec4 currentHueHSVA ( colorPicker->currentColorHSVA.h, 100.0f, 100.0f, 100.0f );
+		GXConvertHSVAToRGBA ( currentHueRGBA, currentHueHSVA );
+
+		GXUByte selectedRed = (GXUByte)( 255.0f * ( barycentricCoordinates.y * currentHueRGBA.r + barycentricCoordinates.z ) );
+		GXUByte selectedGreen = (GXUByte)( 255.0f * ( barycentricCoordinates.y * currentHueRGBA.g + barycentricCoordinates.z ) );
+		GXUByte selectedBlue = (GXUByte)( 255.0f * ( barycentricCoordinates.y * currentHueRGBA.b + barycentricCoordinates.z ) );
+
+		colorPicker->UpdateCurrentColorWithCorrection ( selectedRed, selectedGreen, selectedBlue, (GXUByte)( colorPicker->currentColorHSVA.a * 2.55f ) );
+	}
 }
 
 GXVoid GXCALL EMUIColorPicker::OnResize ( GXVoid* handler, GXUIDragableArea* area, GXFloat width, GXFloat height )

@@ -14,6 +14,9 @@
 #define HSVA_ALPHA_TO_RGBA_ALPHA_BYTE	2.55f
 #define HSVA_TO_RGBA_FLOAT				0.01f
 
+#define DEGREES_TO_RADIANS_FACTOR		0.0174533f
+#define RADIANS_TO_DEGREES_FACTOR		57.295779f
+
 
 GXVec2::GXVec2 ()
 {
@@ -46,10 +49,28 @@ GXVoid GXCALL GXNormalizeVec2 ( GXVec2 &inOut )
 	inOut.y *= invA;
 }
 
+GXVoid GXCALL GXSumVec2Vec2 ( GXVec2 &out, const GXVec2 &a, const GXVec2 &b )
+{
+	out.x = a.x + b.x;
+	out.y = a.y + b.y;
+}
+
 GXVoid GXCALL GXSubVec2Vec2 ( GXVec2 &out, const GXVec2 &a, const GXVec2 &b )
 {
 	out.x = a.x - b.x;
 	out.y = a.y - b.y;
+}
+
+GXVoid GXCALL GXMulVec2Vec2 ( GXVec2 &out, const GXVec2 &a, const GXVec2 &b )
+{
+	out.x = a.x * b.x;
+	out.y = a.y * b.y;
+}
+
+GXVoid GXCALL GXMulVec2Scalar ( GXVec2 &out, const GXVec2 &v, GXFloat a )
+{
+	out.x = v.x * a;
+	out.y = v.y * a;
 }
 
 GXFloat GXCALL GXLengthVec2 ( const GXVec2 &v )
@@ -1567,7 +1588,12 @@ GXUByte GXProjectionClipPlanes::PlaneTest ( GXFloat x, GXFloat y, GXFloat z )
 
 GXFloat GXCALL GXDegToRad ( GXFloat degrees )
 {
-	return degrees * 0.0174533f;	//degrees * pi / 180
+	return degrees * DEGREES_TO_RADIANS_FACTOR;
+}
+
+GXFloat GXCALL GXRadToDeg ( GXFloat radians )
+{
+	return radians * RADIANS_TO_DEGREES_FACTOR;
 }
 
 GXVoid GXCALL GXColorToVec3 ( GXVec3 &out, GXUChar r, GXUChar g, GXUChar b )
@@ -1693,30 +1719,30 @@ GXVoid GXCALL GXConvertHSVAToRGBA ( GXVec4 &rgbaColor, const GXVec4 &hsvaColor )
 	}
 }
 
-GXVoid GXCALL GXConvertRGBAToHSVA ( GXFloat &hue, GXFloat &saturation, GXFloat &value, GXFloat &alpha, const GXVec4 &rgbaColor )
+GXVoid GXCALL GXConvertRGBAToHSVA ( GXVec4 &hsvaColor, const GXVec4 &rgbaColor )
 {
 	GXFloat maxValue = GXMaxf ( GXMaxf ( rgbaColor.r, rgbaColor.g ), rgbaColor.b );
 	GXFloat minValue = GXMinf ( GXMinf ( rgbaColor.r, rgbaColor.g ), rgbaColor.b );
 
 	if ( maxValue == minValue )
-		hue = 0.0f;
+		hsvaColor.h = 0.0f;
 	else if ( maxValue == rgbaColor.r && rgbaColor.g >= rgbaColor.b )
-		hue = 60.0f * ( ( rgbaColor.g - rgbaColor.b ) / ( maxValue - minValue ) );
+		hsvaColor.h = 60.0f * ( ( rgbaColor.g - rgbaColor.b ) / ( maxValue - minValue ) );
 	else if ( maxValue == rgbaColor.r && rgbaColor.g < rgbaColor.b )
-		hue = 60.0f * ( ( rgbaColor.g - rgbaColor.b ) / ( maxValue - minValue ) ) + 360.0f;
+		hsvaColor.h = 60.0f * ( ( rgbaColor.g - rgbaColor.b ) / ( maxValue - minValue ) ) + 360.0f;
 	else if ( maxValue == rgbaColor.g )
-		hue = 60.0f * ( ( rgbaColor.b - rgbaColor.r ) / ( maxValue - minValue ) ) + 120.0f;
+		hsvaColor.h = 60.0f * ( ( rgbaColor.b - rgbaColor.r ) / ( maxValue - minValue ) ) + 120.0f;
 	else if ( maxValue == rgbaColor.b )
-		hue = 60.0f * ( ( rgbaColor.r - rgbaColor.g ) / ( maxValue - minValue ) ) + 240.0f;
+		hsvaColor.h = 60.0f * ( ( rgbaColor.r - rgbaColor.g ) / ( maxValue - minValue ) ) + 240.0f;
 
 	if ( maxValue == 0.0f )
-		saturation = 0.0f;
+		hsvaColor.s = 0.0f;
 	else
-		saturation = 100.0f * ( 1.0f - minValue / maxValue );
+		hsvaColor.s = 100.0f * ( 1.0f - minValue / maxValue );
 
-	value = 100.0f * maxValue;
+	hsvaColor.v = 100.0f * maxValue;
 
-	alpha = 100.0f * rgbaColor.a;
+	hsvaColor.a = 100.0f * rgbaColor.a;
 }
 
 GXVoid GXCALL GXConvert3DSMaxToGXEngine ( GXVec3 &gx_out, GXFloat max_x, GXFloat max_y, GXFloat max_z )
