@@ -164,6 +164,16 @@ GXVoid EMUIDraggableArea::SetHeaderHeight ( GXFloat headerHeight )
 	widget->SetHeaderHeight ( headerHeight );
 }
 
+GXVoid EMUIDraggableArea::SetMinimumWidth ( GXFloat width )
+{
+	widget->SetMinimumWidth ( width );
+}
+
+GXVoid EMUIDraggableArea::SetMinimumHeight ( GXFloat height )
+{
+	widget->SetMinimumHeight ( height );
+}
+
 GXVoid EMUIDraggableArea::SetOnResizeCallback ( GXVoid* handler, PFNGXUIDRAGABLEAREAONRESIZEPROC callback )
 {
 	widget->SetOnResizeCallback ( handler, callback );

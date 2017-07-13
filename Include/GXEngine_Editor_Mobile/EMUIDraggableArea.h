@@ -23,6 +23,8 @@ class EMUIDraggableArea : public EMUI
 		GXVoid Hide ();
 
 		GXVoid SetHeaderHeight ( GXFloat headerHeight );
+		GXVoid SetMinimumWidth ( GXFloat width );
+		GXVoid SetMinimumHeight ( GXFloat height );
 		GXVoid SetOnResizeCallback ( GXVoid* handler, PFNGXUIDRAGABLEAREAONRESIZEPROC callback );
 };
 

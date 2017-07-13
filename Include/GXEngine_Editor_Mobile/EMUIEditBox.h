@@ -27,6 +27,11 @@ class EMUIEditBox : public EMUI
 
 		GXVoid SetFont ( const GXWChar* fontFile, GXUShort fontSize );
 		GXFont* GetFont () const;
+
+		GXVoid SetValidator ( GXTextValidator& validator );
+		GXTextValidator* GetValidator () const;
+
+		GXVoid SetOnFinishEditingCallback ( GXVoid* handler, PFNGXUIEDITBOXONFINISHEDITINGPROC callback );
 };
 
 

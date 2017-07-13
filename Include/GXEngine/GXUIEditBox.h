@@ -8,25 +8,35 @@
 #include "GXFont.h"
 
 
+class GXUIEditBox;
+typedef GXVoid ( GXCALL* PFNGXUIEDITBOXONFINISHEDITINGPROC ) ( GXVoid* handler, GXUIEditBox& editBox );
+
+
+class GXTextValidator;
 class GXUIEditBox : public GXWidget
 {
 	private:
-		GXWChar*			text;
-		GXWChar*			workingBuffer;
-		GXUInt				textSymbols;
-		GXUInt				maxSymbols;
+		GXWChar*							text;
+		GXWChar*							workingBuffer;
+		GXUInt								textSymbols;
+		GXUInt								maxSymbols;
 
-		GXFloat				textLeftOffset;
-		GXFloat				textRightOffset;
+		GXFloat								textLeftOffset;
+		GXFloat								textRightOffset;
 
-		GXFont				font;
-		GXInt				cursor;			//index before symbol
-		GXInt				selection;		//index before symbol
-		eGXUITextAlignment	alignment;
+		GXFont								font;
+		GXInt								cursor;			//index before symbol
+		GXInt								selection;		//index before symbol
+		eGXUITextAlignment					alignment;
 
-		HCURSOR				editCursor;
-		HCURSOR				arrowCursor;
-		const HCURSOR*		currentCursor;
+		HCURSOR								editCursor;
+		HCURSOR								arrowCursor;
+		const HCURSOR*						currentCursor;
+
+		GXTextValidator*					validator;
+
+		PFNGXUIEDITBOXONFINISHEDITINGPROC	OnFinishEditing;
+		GXVoid*								handler;
 
 	public:
 		GXUIEditBox ( GXWidget* parent );
@@ -54,6 +64,11 @@ class GXUIEditBox : public GXWidget
 		GXFont* GetFont ();
 
 		GXBool IsActive ();
+
+		GXVoid SetValidator ( GXTextValidator &validator );
+		GXTextValidator* GetValidator () const;
+
+		GXVoid SetOnFinishEditingCallback ( GXVoid* handler, PFNGXUIEDITBOXONFINISHEDITINGPROC callback );
 
 	private:
 		GXInt GetSelectionPosition ( const GXVec2 &mousePosition ) const;

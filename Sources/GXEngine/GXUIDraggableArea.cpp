@@ -1,34 +1,30 @@
-//version 1.0
+//version 1.1
 
 #include <GXEngine/GXUIDraggableArea.h>
 #include <GXEngine/GXUICommon.h>
 #include <GXEngine/GXUIMessage.h>
 
 
-#define GX_UI_DRAGGABLE_AREA_RESIZE_MODE_NONE								0
-#define GX_UI_DRAGGABLE_AREA_RESIZE_MODE_DRAGGING							1
-#define GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_LOCK_LEFT					2
-#define GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_LOCK_RIGHT					3
-#define GX_UI_DRAGGABLE_AREA_RESIZE_MODE_HEIGHT_LOCK_BOTTOM					4
-#define GX_UI_DRAGGABLE_AREA_RESIZE_MODE_HEIGHT_LOCK_TOP					5
-#define GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_AND_HEIGHT_LOCK_TOP_LEFT		6
-#define GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_AND_HEIGHT_LOCK_TOP_RIGHT	7
-#define GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_AND_HEIGHT_LOCK_BOTTOM_LEFT	8
-#define GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_AND_HEIGHT_LOCK_BOTTOM_RIGHT	9
+#define DEFAULT_MINIMUM_WIDTH		0.7f
+#define DEFAULT_MINIMUM_HEIGHT		1.5f
 
-#define GX_UI_DRAGGABLE_AREA_DEFAULT_BORDER_THICKNESS						0.2f	// 2 mm
-#define GX_UI_DRAGGABLE_AREA_DEFAULT_HEADER_HEIGHT							0.9f	// 9 mm
+#define DEFAULT_BORDER_THICKNESS	0.2f //2 mm
+#define DEFAULT_HEADER_HEIGHT		0.9f //9 mm
+
+#define TOLERANCE_FACTOR			0.25f
+
 
 GXUIDragableArea::GXUIDragableArea ( GXWidget* parent ):
 GXWidget ( parent )
 {
-	headerHeight = GX_UI_DRAGGABLE_AREA_DEFAULT_HEADER_HEIGHT * gx_ui_Scale;
-	borderThickness = GX_UI_DRAGGABLE_AREA_DEFAULT_BORDER_THICKNESS * gx_ui_Scale;
+	headerHeight = DEFAULT_HEADER_HEIGHT * gx_ui_Scale;
+	borderThickness = DEFAULT_BORDER_THICKNESS * gx_ui_Scale;
+	minimumSize = GXCreateVec2 ( DEFAULT_MINIMUM_WIDTH * gx_ui_Scale, DEFAULT_MINIMUM_HEIGHT * gx_ui_Scale );
 	isDraggable = GX_TRUE;
 	memset ( &lastMousePosition, 0, sizeof ( GXVec2 ) );
 	OnResize = nullptr;
 	handler = nullptr;
-	resizeMode = GX_UI_DRAGGABLE_AREA_RESIZE_MODE_NONE;
+	resizeMode = eGXDraggableAreaResizeMode::None;
 
 	standartArrow = LoadCursorW ( 0, IDC_ARROW );
 	verticalArrow = LoadCursorW ( 0, IDC_SIZENS );
@@ -55,14 +51,14 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 			resizeMode = GetResizeMode ( *pos );
 			memcpy ( &lastMousePosition, pos, sizeof ( GXVec2 ) );
 				
-			if ( resizeMode != GX_UI_DRAGGABLE_AREA_RESIZE_MODE_NONE && resizeMode != GX_UI_DRAGGABLE_AREA_RESIZE_MODE_NONE )
+			if ( resizeMode != eGXDraggableAreaResizeMode::None )
 				GXTouchSurface::GetInstance ().LockCursor ( this );
 		}
 		break;
 
 		case GX_MSG_LMBUP:
 		{
-			resizeMode = GX_UI_DRAGGABLE_AREA_RESIZE_MODE_NONE;
+			resizeMode = eGXDraggableAreaResizeMode::None;
 
 			GXTouchSurface& touchSurface = GXTouchSurface::GetInstance ();
 
@@ -92,7 +88,7 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 
 			switch ( resizeMode )
 			{
-				case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_DRAGGING:
+				case eGXDraggableAreaResizeMode::Dragging:
 				{
 					GXVec2 delta;
 					GXSubVec2Vec2 ( delta, *pos, lastMousePosition );
@@ -103,75 +99,119 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 				}
 				break;
 
-				case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_LOCK_LEFT:
+				case eGXDraggableAreaResizeMode::WidthLockLeft:
 				{
 					GXAABB bounds = boundsLocal;
 					bounds.max.x += pos->x - lastMousePosition.x;
+
+					if ( GXGetAABBWidth ( bounds ) < minimumSize.x )
+					{
+						if ( fabs ( GXGetAABBWidth ( boundsLocal ) - minimumSize.x ) < TOLERANCE_FACTOR ) break;
+
+						bounds.max.x = bounds.min.x + minimumSize.x;
+						lastMousePosition.x = boundsWorld.min.x + minimumSize.x;
+					}
+					else
+					{
+						lastMousePosition.x = pos->x;
+					}
+
 					UpdateBoundsWorld ( bounds );
 					UpdateAreas ();
-
-					memcpy ( &lastMousePosition, pos, sizeof ( GXVec2 ) );
 
 					if ( renderer )
 						renderer->OnUpdate ();
 
 					if ( OnResize )
-						OnResize ( handler, this, GXGetAABBWidth ( boundsLocal ), GXGetAABBHeight ( boundsLocal ) );
+						OnResize ( handler, *this, GXGetAABBWidth ( boundsLocal ), GXGetAABBHeight ( boundsLocal ) );
 				}
 				break;
 
-				case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_LOCK_RIGHT:
+				case eGXDraggableAreaResizeMode::WidthLockRight:
 				{
 					GXAABB bounds = boundsLocal;
 					bounds.min.x += pos->x - lastMousePosition.x;
+
+					if ( GXGetAABBWidth ( bounds ) < minimumSize.x )
+					{
+						if ( fabs ( GXGetAABBWidth ( boundsLocal ) - minimumSize.x ) < TOLERANCE_FACTOR ) break;
+
+						bounds.min.x = bounds.max.x - minimumSize.x;
+						lastMousePosition.x = boundsWorld.max.x - minimumSize.x;
+					}
+					else
+					{
+						lastMousePosition.x = pos->x;
+					}
+
 					UpdateBoundsWorld ( bounds );
 					UpdateAreas ();
-
-					memcpy ( &lastMousePosition, pos, sizeof ( GXVec2 ) );
 
 					GXVec2 dragDelta = GXCreateVec2 ( 0.0f, 0.0f );
 					OnMessage ( GX_MSG_DRAG, &dragDelta );
 
 					if ( OnResize )
-						OnResize ( handler, this, GXGetAABBWidth ( boundsLocal ), GXGetAABBHeight ( boundsLocal ) );
+						OnResize ( handler, *this, GXGetAABBWidth ( boundsLocal ), GXGetAABBHeight ( boundsLocal ) );
 				}
 				break;
 
-				case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_HEIGHT_LOCK_BOTTOM:
+				case eGXDraggableAreaResizeMode::HeightLockBottom:
 				{
 					GXAABB bounds = boundsLocal;
 					bounds.max.y += pos->y - lastMousePosition.y;
+
+					if ( GXGetAABBHeight ( bounds ) < minimumSize.y )
+					{
+						if ( fabs ( GXGetAABBHeight ( boundsLocal ) - minimumSize.y ) < TOLERANCE_FACTOR ) break;
+
+						bounds.max.y = bounds.min.y + minimumSize.y;
+						lastMousePosition.y = boundsWorld.min.y + minimumSize.y;
+					}
+					else
+					{
+						lastMousePosition.y = pos->y;
+					}
+
 					UpdateBoundsWorld ( bounds );
 					UpdateAreas ();
-
-					memcpy ( &lastMousePosition, pos, sizeof ( GXVec2 ) );
 
 					if ( renderer )
 						renderer->OnUpdate ();
 
 					if ( OnResize )
-						OnResize ( handler, this, GXGetAABBWidth ( boundsLocal ), GXGetAABBHeight ( boundsLocal ) );
+						OnResize ( handler, *this, GXGetAABBWidth ( boundsLocal ), GXGetAABBHeight ( boundsLocal ) );
 				}
 				break;
 
-				case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_HEIGHT_LOCK_TOP:
+				case eGXDraggableAreaResizeMode::HeightLockTop:
 				{
 					GXAABB bounds = boundsLocal;
 					bounds.min.y += pos->y - lastMousePosition.y;
+
+					if ( GXGetAABBHeight ( bounds ) < minimumSize.y )
+					{
+						if ( fabs ( GXGetAABBHeight ( boundsLocal ) - minimumSize.y ) < TOLERANCE_FACTOR ) break;
+
+						bounds.min.y = bounds.max.y - minimumSize.y;
+						lastMousePosition.y = boundsWorld.max.y - minimumSize.y;
+					}
+					else
+					{
+						lastMousePosition.y = pos->y;
+					}
+
 					UpdateBoundsWorld ( bounds );
 					UpdateAreas ();
-
-					memcpy ( &lastMousePosition, pos, sizeof ( GXVec2 ) );
 
 					GXVec2 dragDelta = GXCreateVec2 ( 0.0f, 0.0f );
 					OnMessage ( GX_MSG_DRAG, &dragDelta );
 
 					if ( OnResize )
-						OnResize ( handler, this, GXGetAABBWidth ( boundsLocal ), GXGetAABBHeight ( boundsLocal ) );
+						OnResize ( handler, *this, GXGetAABBWidth ( boundsLocal ), GXGetAABBHeight ( boundsLocal ) );
 				}
 				break;
 
-				case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_AND_HEIGHT_LOCK_BOTTOM_LEFT:
+				case eGXDraggableAreaResizeMode::WidthAndHeightLockBottomLeft:
 				{
 					GXVec2 delta;
 					GXSubVec2Vec2 ( delta, *pos, lastMousePosition );
@@ -180,20 +220,43 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 					bounds.max.x += delta.x;
 					bounds.max.y += delta.y;
 
+					GXFloat width = GXGetAABBWidth ( bounds );
+					GXFloat heigth = GXGetAABBHeight ( bounds );
+
+					if ( width < minimumSize.x && heigth < minimumSize.y ) break;
+
+					if ( width < minimumSize.x )
+					{
+						bounds.max.x = boundsLocal.min.x + minimumSize.x;
+						lastMousePosition.x = boundsWorld.min.x + minimumSize.x;
+					}
+					else
+					{
+						lastMousePosition.x = pos->x;
+					}
+
+					if ( heigth < minimumSize.y )
+					{
+						bounds.max.y = boundsLocal.min.y + minimumSize.y;
+						lastMousePosition.y = boundsWorld.min.y + minimumSize.y;
+					}
+					else
+					{
+						lastMousePosition.y = pos->y;
+					}
+
 					UpdateBoundsWorld ( bounds );
 					UpdateAreas ();
-
-					memcpy ( &lastMousePosition, pos, sizeof ( GXVec2 ) );
 
 					if ( renderer )
 						renderer->OnUpdate ();
 
 					if ( OnResize )
-						OnResize ( handler, this, GXGetAABBWidth ( boundsLocal ), GXGetAABBHeight ( boundsLocal ) );
+						OnResize ( handler, *this, GXGetAABBWidth ( boundsLocal ), GXGetAABBHeight ( boundsLocal ) );
 				}
 				break;
 
-				case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_AND_HEIGHT_LOCK_BOTTOM_RIGHT:
+				case eGXDraggableAreaResizeMode::WidthAndHeightLockBottomRight:
 				{
 					GXVec2 delta;
 					GXSubVec2Vec2 ( delta, *pos, lastMousePosition );
@@ -202,20 +265,43 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 					bounds.min.x += delta.x;
 					bounds.max.y += delta.y;
 
+					GXFloat width = GXGetAABBWidth ( bounds );
+					GXFloat heigth = GXGetAABBHeight ( bounds );
+
+					if ( width < minimumSize.x && heigth < minimumSize.y ) break;
+
+					if ( width < minimumSize.x )
+					{
+						bounds.min.x = boundsLocal.max.x - minimumSize.x;
+						lastMousePosition.x = boundsWorld.max.x - minimumSize.x;
+					}
+					else
+					{
+						lastMousePosition.x = pos->x;
+					}
+
+					if ( heigth < minimumSize.y )
+					{
+						bounds.max.y = boundsLocal.min.y + minimumSize.y;
+						lastMousePosition.y = boundsWorld.min.y + minimumSize.y;
+					}
+					else
+					{
+						lastMousePosition.y = pos->y;
+					}
+
 					UpdateBoundsWorld ( bounds );
 					UpdateAreas ();
-
-					memcpy ( &lastMousePosition, pos, sizeof ( GXVec2 ) );
 
 					GXVec2 dragDelta = GXCreateVec2 ( 0.0f, 0.0f );
 					OnMessage ( GX_MSG_DRAG, &dragDelta );
 
 					if ( OnResize )
-						OnResize ( handler, this, GXGetAABBWidth ( boundsLocal ), GXGetAABBHeight ( boundsLocal ) );
+						OnResize ( handler, *this, GXGetAABBWidth ( boundsLocal ), GXGetAABBHeight ( boundsLocal ) );
 				}
 				break;
 
-				case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_AND_HEIGHT_LOCK_TOP_LEFT:
+				case eGXDraggableAreaResizeMode::WidthAndHeightLockTopLeft:
 				{
 					GXVec2 delta;
 					GXSubVec2Vec2 ( delta, *pos, lastMousePosition );
@@ -224,20 +310,43 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 					bounds.max.x += delta.x;
 					bounds.min.y += delta.y;
 
+					GXFloat width = GXGetAABBWidth ( bounds );
+					GXFloat heigth = GXGetAABBHeight ( bounds );
+
+					if ( width < minimumSize.x && heigth < minimumSize.y ) break;
+
+					if ( width < minimumSize.x )
+					{
+						bounds.max.x = boundsLocal.min.x + minimumSize.x;
+						lastMousePosition.x = boundsWorld.min.x + minimumSize.x;
+					}
+					else
+					{
+						lastMousePosition.x = pos->x;
+					}
+
+					if ( heigth < minimumSize.y )
+					{
+						bounds.min.y = boundsLocal.max.y - minimumSize.y;
+						lastMousePosition.y = boundsWorld.max.y - minimumSize.y;
+					}
+					else
+					{
+						lastMousePosition.y = pos->y;
+					}
+
 					UpdateBoundsWorld ( bounds );
 					UpdateAreas ();
-
-					memcpy ( &lastMousePosition, pos, sizeof ( GXVec2 ) );
 
 					GXVec2 dragDelta = GXCreateVec2 ( 0.0f, 0.0f );
 					OnMessage ( GX_MSG_DRAG, &dragDelta );
 
 					if ( OnResize )
-						OnResize ( handler, this, GXGetAABBWidth ( boundsLocal ), GXGetAABBHeight ( boundsLocal ) );
+						OnResize ( handler, *this, GXGetAABBWidth ( boundsLocal ), GXGetAABBHeight ( boundsLocal ) );
 				}
 				break;
 
-				case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_AND_HEIGHT_LOCK_TOP_RIGHT:
+				case eGXDraggableAreaResizeMode::WidthAndHeightLockTopRight:
 				{
 					GXVec2 delta;
 					GXSubVec2Vec2 ( delta, *pos, lastMousePosition );
@@ -246,20 +355,43 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 					bounds.min.x += delta.x;
 					bounds.min.y += delta.y;
 
+					GXFloat width = GXGetAABBWidth ( bounds );
+					GXFloat heigth = GXGetAABBHeight ( bounds );
+
+					if ( width < minimumSize.x && heigth < minimumSize.y ) break;
+
+					if ( width < minimumSize.x )
+					{
+						bounds.min.x = boundsLocal.max.x - minimumSize.x;
+						lastMousePosition.x = boundsWorld.max.x - minimumSize.x;
+					}
+					else
+					{
+						lastMousePosition.x = pos->x;
+					}
+
+					if ( heigth < minimumSize.y )
+					{
+						bounds.min.y = boundsLocal.max.y - minimumSize.y;
+						lastMousePosition.y = boundsWorld.max.y - minimumSize.y;
+					}
+					else
+					{
+						lastMousePosition.y = pos->y;
+					}
+
 					UpdateBoundsWorld ( bounds );
 					UpdateAreas ();
-
-					memcpy ( &lastMousePosition, pos, sizeof ( GXVec2 ) );
 
 					GXVec2 dragDelta = GXCreateVec2 ( 0.0f, 0.0f );
 					OnMessage ( GX_MSG_DRAG, &dragDelta );
 
 					if ( OnResize )
-						OnResize ( handler, this, GXGetAABBWidth ( boundsLocal ), GXGetAABBHeight ( boundsLocal ) );
+						OnResize ( handler, *this, GXGetAABBWidth ( boundsLocal ), GXGetAABBHeight ( boundsLocal ) );
 				}
 				break;
 
-				case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_NONE:
+				case eGXDraggableAreaResizeMode::None:
 					UpdateCursor ( *pos );
 				break;
 
@@ -273,34 +405,77 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 		case GX_MSG_RESIZE:
 		{
 			const GXAABB* bounds = (const GXAABB*)data;
-			UpdateBoundsWorld ( *bounds );
+
+			GXAABB correctedBounds;
+			GXAddVertexToAABB ( correctedBounds, bounds->min );
+
+			GXVec3 maxPoint = bounds->max;
+			GXFloat length = GXGetAABBWidth ( *bounds );
+
+			if ( length < minimumSize.x )
+				maxPoint.x = bounds->min.x + length;
+
+			length = GXGetAABBHeight ( *bounds );
+
+			if ( length < minimumSize.y )
+				maxPoint.y = bounds->min.y + length;
+
+			GXAddVertexToAABB ( correctedBounds, maxPoint );
+
+			UpdateBoundsWorld ( correctedBounds );
 			UpdateAreas ();
 
 			GXVec2 dragDelta = GXCreateVec2 ( 0.0f, 0.0f );
 			OnMessage ( GX_MSG_DRAG, &dragDelta );
 
 			if ( OnResize )
-				OnResize ( handler, this, GXGetAABBWidth ( boundsLocal ), GXGetAABBHeight ( boundsLocal ) );
+				OnResize ( handler, *this, GXGetAABBWidth ( boundsLocal ), GXGetAABBHeight ( boundsLocal ) );
 		}
 		break;
 		
-		case GX_MSG_MOVABLE_AREA_SET_HEADER_HEIGHT:
+		case GX_MSG_DRAGGABLE_AREA_SET_HEADER_HEIGHT:
 		{
 			const GXFloat* height = (const GXFloat*)data;
 			headerHeight = *height;
+
 			UpdateAreas ();
+
 			if ( renderer )
 				renderer->OnUpdate ();
 		}
 		break;
 
-		case GX_MSG_MOVABLE_AREA_SET_BORDER_THICKNESS:
+		case GX_MSG_DRAGGABLE_AREA_SET_BORDER_THICKNESS:
 		{
 			const GXFloat* thickness = (const GXFloat*)data;
 			borderThickness = *thickness;
+
 			UpdateAreas ();
+
 			if ( renderer )
 				renderer->OnUpdate ();
+		}
+		break;
+
+		case GX_MSG_DRAGGABLE_AREA_SET_MINIMUM_WIDTH:
+		{
+			const GXFloat* width = (const GXFloat*)data;
+			minimumSize.x = *width;
+
+			if ( GXGetAABBWidth ( boundsLocal ) >= minimumSize.x ) break;
+
+			Resize ( boundsLocal.min.x, boundsLocal.min.y, minimumSize.x, GXGetAABBHeight ( boundsLocal ) );
+		}
+		break;
+
+		case GX_MSG_DRAGGABLE_AREA_SET_MINIMUM_HEIGHT:
+		{
+			const GXFloat* height = (const GXFloat*)data;
+			minimumSize.y = *height;
+
+			if ( GXGetAABBHeight ( boundsLocal ) >= minimumSize.y ) break;
+
+			Resize ( boundsLocal.min.x, boundsLocal.min.y, GXGetAABBWidth ( boundsLocal ), minimumSize.y );
 		}
 		break;
 
@@ -345,9 +520,29 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 	}
 }
 
+GXVoid GXUIDragableArea::SetMinimumWidth ( GXFloat width )
+{
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_DRAGGABLE_AREA_SET_MINIMUM_WIDTH, &width, sizeof ( GXFloat ) );
+}
+
+GXFloat GXUIDragableArea::GetMinimumWidth () const
+{
+	return minimumSize.x;
+}
+
+GXVoid GXUIDragableArea::SetMinimumHeight ( GXFloat height )
+{
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_DRAGGABLE_AREA_SET_MINIMUM_HEIGHT, &height, sizeof ( GXFloat ) );
+}
+
+GXFloat GXUIDragableArea::GetMinimumHeight () const
+{
+	return minimumSize.y;
+}
+
 GXVoid GXUIDragableArea::SetHeaderHeight ( GXFloat height )
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_MOVABLE_AREA_SET_HEADER_HEIGHT, &height, sizeof ( GXFloat ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_DRAGGABLE_AREA_SET_HEADER_HEIGHT, &height, sizeof ( GXFloat ) );
 }
 
 GXFloat GXUIDragableArea::GetHeaderHeight () const
@@ -357,7 +552,7 @@ GXFloat GXUIDragableArea::GetHeaderHeight () const
 
 GXVoid GXUIDragableArea::SetBorderThickness ( GXFloat thickness )
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_MOVABLE_AREA_SET_BORDER_THICKNESS, &thickness, sizeof ( GXFloat ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_DRAGGABLE_AREA_SET_BORDER_THICKNESS, &thickness, sizeof ( GXFloat ) );
 }
 
 GXFloat GXUIDragableArea::GetBorderThickness () const
@@ -371,23 +566,23 @@ GXVoid GXUIDragableArea::SetOnResizeCallback ( GXVoid* handler, PFNGXUIDRAGABLEA
 	OnResize = callback;
 }
 
-GXUByte GXUIDragableArea::GetResizeMode ( const GXVec2 &mousePosition ) const
+eGXDraggableAreaResizeMode GXUIDragableArea::GetResizeMode ( const GXVec2 &mousePosition ) const
 {
 	GXVec3 mouse3D = GXCreateVec3 ( mousePosition.x, mousePosition.y, 0.0f );
 
-	if ( GXIsOverlapedAABBVec3 ( headerArea, mouse3D ) ) return GX_UI_DRAGGABLE_AREA_RESIZE_MODE_DRAGGING;
-	if ( GXIsOverlapedAABBVec3 ( clientArea, mouse3D ) ) return GX_UI_DRAGGABLE_AREA_RESIZE_MODE_NONE;
+	if ( GXIsOverlapedAABBVec3 ( headerArea, mouse3D ) ) return eGXDraggableAreaResizeMode::Dragging;
+	if ( GXIsOverlapedAABBVec3 ( clientArea, mouse3D ) ) return eGXDraggableAreaResizeMode::None;
 
-	if ( GXIsOverlapedAABBVec3 ( cornerBottomRight, mouse3D ) ) return GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_AND_HEIGHT_LOCK_TOP_LEFT;
-	if ( GXIsOverlapedAABBVec3 ( cornerTopLeft, mouse3D ) ) return GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_AND_HEIGHT_LOCK_BOTTOM_RIGHT;
-	if ( GXIsOverlapedAABBVec3 ( cornerTopRight, mouse3D ) ) return GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_AND_HEIGHT_LOCK_BOTTOM_LEFT;
-	if ( GXIsOverlapedAABBVec3 ( cornerBottomLeft, mouse3D ) ) return GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_AND_HEIGHT_LOCK_TOP_RIGHT;
+	if ( GXIsOverlapedAABBVec3 ( cornerBottomRight, mouse3D ) ) return eGXDraggableAreaResizeMode::WidthAndHeightLockTopLeft;
+	if ( GXIsOverlapedAABBVec3 ( cornerTopLeft, mouse3D ) ) return eGXDraggableAreaResizeMode::WidthAndHeightLockBottomRight;
+	if ( GXIsOverlapedAABBVec3 ( cornerTopRight, mouse3D ) ) return eGXDraggableAreaResizeMode::WidthAndHeightLockBottomLeft;
+	if ( GXIsOverlapedAABBVec3 ( cornerBottomLeft, mouse3D ) ) return eGXDraggableAreaResizeMode::WidthAndHeightLockTopRight;
 
-	if ( GXIsOverlapedAABBVec3 ( borderRight, mouse3D ) ) return GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_LOCK_LEFT;
-	if ( GXIsOverlapedAABBVec3 ( borderLeft, mouse3D ) ) return GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_LOCK_RIGHT;
-	if ( GXIsOverlapedAABBVec3 ( borderBottom, mouse3D ) ) return GX_UI_DRAGGABLE_AREA_RESIZE_MODE_HEIGHT_LOCK_TOP;
+	if ( GXIsOverlapedAABBVec3 ( borderRight, mouse3D ) ) return eGXDraggableAreaResizeMode::WidthLockLeft;
+	if ( GXIsOverlapedAABBVec3 ( borderLeft, mouse3D ) ) return eGXDraggableAreaResizeMode::WidthLockRight;
+	if ( GXIsOverlapedAABBVec3 ( borderBottom, mouse3D ) ) return eGXDraggableAreaResizeMode::HeightLockTop;
 
-	return GX_UI_DRAGGABLE_AREA_RESIZE_MODE_HEIGHT_LOCK_BOTTOM;
+	return eGXDraggableAreaResizeMode::HeightLockBottom;
 }
 
 GXVoid GXUIDragableArea::UpdateAreas ()
@@ -442,31 +637,31 @@ GXVoid GXUIDragableArea::UpdateCursor ( const GXVec2 &mousePosition )
 
 	switch ( GetResizeMode ( mousePosition ) )
 	{
-		case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_LOCK_RIGHT:
-		case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_LOCK_LEFT:
+		case eGXDraggableAreaResizeMode::WidthLockRight:
+		case eGXDraggableAreaResizeMode::WidthLockLeft:
 			cursor = &horizontalArrow;
 		break;
 
-		case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_HEIGHT_LOCK_TOP:
-		case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_HEIGHT_LOCK_BOTTOM:
+		case eGXDraggableAreaResizeMode::HeightLockTop:
+		case eGXDraggableAreaResizeMode::HeightLockBottom:
 			cursor = &verticalArrow;
 		break;
 
-		case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_AND_HEIGHT_LOCK_TOP_RIGHT:
-		case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_AND_HEIGHT_LOCK_BOTTOM_LEFT:
+		case eGXDraggableAreaResizeMode::WidthAndHeightLockTopRight:
+		case eGXDraggableAreaResizeMode::WidthAndHeightLockBottomLeft:
 			cursor = &northeastSouthwestArrow;
 		break;
 
-		case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_AND_HEIGHT_LOCK_TOP_LEFT:
-		case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_WIDTH_AND_HEIGHT_LOCK_BOTTOM_RIGHT:
+		case eGXDraggableAreaResizeMode::WidthAndHeightLockTopLeft:
+		case eGXDraggableAreaResizeMode::WidthAndHeightLockBottomRight:
 			cursor = &northwestSoutheastArrow;
 		break;
 
-		case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_DRAGGING:
+		case eGXDraggableAreaResizeMode::Dragging:
 			cursor = &crossArrow;
 		break;
 
-		case GX_UI_DRAGGABLE_AREA_RESIZE_MODE_NONE:
+		case eGXDraggableAreaResizeMode::None:
 		default:
 			cursor = &standartArrow;
 		break;

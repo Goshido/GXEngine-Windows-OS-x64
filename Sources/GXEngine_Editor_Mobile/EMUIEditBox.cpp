@@ -270,3 +270,18 @@ GXFont* EMUIEditBox::GetFont () const
 {
 	return widget->GetFont ();
 }
+
+GXVoid EMUIEditBox::SetValidator ( GXTextValidator& validator )
+{
+	widget->SetValidator ( validator );
+}
+
+GXTextValidator* EMUIEditBox::GetValidator () const
+{
+	return widget->GetValidator ();
+}
+
+GXVoid EMUIEditBox::SetOnFinishEditingCallback ( GXVoid* handler, PFNGXUIEDITBOXONFINISHEDITINGPROC callback )
+{
+	widget->SetOnFinishEditingCallback ( handler, callback );
+}

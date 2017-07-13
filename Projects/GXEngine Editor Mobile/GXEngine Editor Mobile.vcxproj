@@ -198,6 +198,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXRenderable.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSkeleton.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSkinningMaterial.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXTextValidator.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTransform.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXMeshGeometry.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXNetwork.cpp" />
@@ -219,6 +220,8 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXUIButton.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIDraggableArea.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIEditBox.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXUIEditBoxFloatValidator.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXUIEditBoxIntegerValidator.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIInput.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIListBox.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIMenu.cpp" />
@@ -332,7 +335,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXCore.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXDoFEffect.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXDrawable.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXEditBox.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXEngineSettings.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXFont.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXGame.h" />
@@ -346,6 +348,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXRenderable.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSkeleton.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSkinningMaterial.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXTextValidator.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTransform.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMeshGeometry.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMotionBlurEffect.h" />
@@ -373,6 +376,8 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXUICommon.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIDraggableArea.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIEditBox.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXUIEditBoxFloatValidator.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXUIEditBoxIntegerValidator.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIInput.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIListBox.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIMenu.h" />

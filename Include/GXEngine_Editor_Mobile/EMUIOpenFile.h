@@ -41,10 +41,10 @@ class EMUIOpenFile : public EMUI
 		GXVoid UpdateDirectory ( const GXWChar* folder );
 		const GXWChar* GetRelativePath () const;
 
-		static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFloat y, eGXMouseButtonState state );
-		static GXVoid GXCALL OnItemSelected ( GXVoid* handler, GXUIListBox* listBox, const GXVoid* item );
-		static GXVoid GXCALL OnItemDoubleClicked ( GXVoid* handler, GXUIListBox* listBox, const GXVoid* item );
-		static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea* area, GXFloat width, GXFloat height );
+		static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state );
+		static GXVoid GXCALL OnItemSelected ( GXVoid* handler, GXUIListBox& listBox, const GXVoid* item );
+		static GXVoid GXCALL OnItemDoubleClicked ( GXVoid* handler, GXUIListBox& listBox, const GXVoid* item );
+		static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
 };
 
 

@@ -10,10 +10,9 @@
 #include <GXEngine/GXUIInput.h>
 
 
-
 class EMUIColorPicker;
-typedef GXVoid ( GXCALL* PFNEMONHSVCOLORPROC ) ( GXVoid* handler, GXFloat h, GXFloat s, GXFloat v, GXUByte alpha );
-typedef GXVoid ( GXCALL* PFNEMONRGBCOLORPROC ) ( GXVoid* handler, GXUByte r, GXUByte g, GXUByte b, GXUByte alpha );
+typedef GXVoid ( GXCALL* PFNEMONHSVACOLORPROC ) ( GXVoid* handler, GXFloat h, GXFloat s, GXFloat v, GXFloat alpha );
+typedef GXVoid ( GXCALL* PFNEMONRGBACOLORPROC ) ( GXVoid* handler, GXUByte r, GXUByte g, GXUByte b, GXUByte alpha );
 
 
 class EMUIColorPicker : public EMUI
@@ -50,8 +49,8 @@ class EMUIColorPicker : public EMUI
 		GXVec4						oldColorHSVA;
 		GXVec4						savedColorHSVAs[ 16 ];
 
-		PFNEMONHSVCOLORPROC			OnHSVColor;
-		PFNEMONRGBCOLORPROC			OnRGBColor;
+		PFNEMONHSVACOLORPROC		OnHSVAColor;
+		PFNEMONRGBACOLORPROC		OnRGBAColor;
 		GXVoid*						handler;
 
 		GXWChar*					buffer;
@@ -64,8 +63,8 @@ class EMUIColorPicker : public EMUI
 
 		GXWidget* GetWidget () const override;
 
-		GXVoid PickHSVColor ( GXVoid* handler, PFNEMONHSVCOLORPROC callback );
-		GXVoid PickRGBColor ( GXVoid* handler, PFNEMONRGBCOLORPROC callback );
+		GXVoid PickHSVAColor ( GXVoid* handler, PFNEMONHSVACOLORPROC callback, const GXVec4 oldColorHSVA );
+		GXVoid PickRGBAColor ( GXVoid* handler, PFNEMONRGBACOLORPROC callback, GXUByte oldRed, GXUByte oldGreen, GXUByte oldBlue, GXUByte oldAlpha );
 
 	private:
 		EMUIColorPicker ();
@@ -74,9 +73,10 @@ class EMUIColorPicker : public EMUI
 		GXVoid UpdateCurrentColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
 		GXVoid UpdateCurrentColorWithCorrection ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
 
-		static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFloat y, eGXMouseButtonState state );
-		static GXVoid GXCALL OnLeftMouseButton ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y );
-		static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea* area, GXFloat width, GXFloat height );
+		static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state );
+		static GXVoid GXCALL OnLeftMouseButton ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
+		static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
+		static GXVoid GXCALL OnFinishEditing ( GXVoid* handler, GXUIEditBox& editBox );
 };
 
 

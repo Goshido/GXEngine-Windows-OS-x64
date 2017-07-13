@@ -8,13 +8,13 @@
 
 
 class GXUIInput;
-typedef GXVoid ( GXCALL* PFNGXUIINPUTONMOUSEMOVEPROC ) ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y );
-typedef GXVoid ( GXCALL* PFNGXUIINPUTONMOUSEBUTTONPROC ) ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y );
-typedef GXVoid ( GXCALL* PFNGXUIINPUTNONDOUBLECLICKPROC ) ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y );
-typedef GXVoid ( GXCALL* PFNGXUIINPUTNSCROLLPROC ) ( GXVoid* handler, GXUIInput* input, GXFloat scroll, GXFloat x, GXFloat y );
-typedef GXVoid ( GXCALL* PFNGXUIINPUTNMOUSEOVERPROC ) ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y );
-typedef GXVoid ( GXCALL* PFNGXUIINPUTNMOUSELEAVEPROC ) ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y );
-typedef GXVoid ( GXCALL* PFNGXUIINPUTNONKEYPROC ) ( GXVoid* handler, GXUIInput* input, GXInt key );
+typedef GXVoid ( GXCALL* PFNGXUIINPUTONMOUSEMOVEPROC ) ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
+typedef GXVoid ( GXCALL* PFNGXUIINPUTONMOUSEBUTTONPROC ) ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
+typedef GXVoid ( GXCALL* PFNGXUIINPUTNONDOUBLECLICKPROC ) ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
+typedef GXVoid ( GXCALL* PFNGXUIINPUTNSCROLLPROC ) ( GXVoid* handler, GXUIInput& input, GXFloat scroll, GXFloat x, GXFloat y );
+typedef GXVoid ( GXCALL* PFNGXUIINPUTNMOUSEOVERPROC ) ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
+typedef GXVoid ( GXCALL* PFNGXUIINPUTNMOUSELEAVEPROC ) ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
+typedef GXVoid ( GXCALL* PFNGXUIINPUTNONKEYPROC ) ( GXVoid* handler, GXUIInput& input, GXInt key );
 
 
 class GXUIInput : public GXWidget

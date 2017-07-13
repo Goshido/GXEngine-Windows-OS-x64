@@ -3,6 +3,8 @@
 #include <GXEngine_Editor_Mobile/EMHueCircleGeneratorMaterial.h>
 #include <GXEngine_Editor_Mobile/EMVertexColorMaterial.h>
 #include <GXEngine_Editor_Mobile/EMMesh.h>
+#include <GXEngine/GXUIEditBoxIntegerValidator.h>
+#include <GXEngine/GXUIEditBoxFloatValidator.h>
 #include <GXEngine/GXLocale.h>
 #include <GXEngine/GXRenderer.h>
 #include <GXCommon/GXLogger.h>
@@ -18,8 +20,11 @@
 #define PROPERTY_LABEL_COLOR_B						255
 #define PROPERTY_LABEL_COLOR_A						255
 
-#define DEFAULT_MAIN_PANEL_WIDTH					6.71292f
-#define DEFAULT_MAIN_PANEL_HEIGHT					16.19156f
+#define DEFAULT_MAIN_PANEL_WIDTH					6.72f
+#define DEFAULT_MAIN_PANEL_HEIGHT					16.12f
+
+#define MAIN_PANEL_MINIMUM_WIDTH					6.71292f
+#define MAIN_PANEL_MINIMUM_HEIGHT					16.19156f
 
 #define START_MAIN_PANEL_LEFT_X_OFFSET				1.5f
 #define START_MAIN_PANEL_TOP_Y_OFFSET				1.5f
@@ -68,9 +73,33 @@
 #define BOTTOM_SEPARATOR_BOTTOM_Y_OFFSET			0.64444f
 
 #define DEFAULT_CURRENT_COLOR_H						83.0f
-#define DEFAULT_CURRENT_COLOR_S						50.0f
+#define DEFAULT_CURRENT_COLOR_S						100.0f
 #define DEFAULT_CURRENT_COLOR_V						73.0f
 #define DEFAULT_CURRENT_COLOR_A						100.0f
+
+#define DEFAULT_FLOAT_VALIDATOR_TEXT				L"7"
+#define DEFAULT_INTEGER_VALIDATOR_TEXT				L"3"
+
+#define MINIMUM_HUE_VALUE							0.0f
+#define MAXIMUM_HUE_VALUE							360.0f
+
+#define MINIMUM_SATURATION_VALUE					0.0f
+#define MAXIMUM_SATURATION_VALUE					100.0f
+
+#define MINIMUM_VALUE								0.0f
+#define MAXIMUM_VALUE								100.0f
+
+#define MINIMUM_RED_VALUE							0
+#define MAXIMUM_RED_VALUE							255
+
+#define MINIMUM_GREEN_VALUE							0
+#define MAXIMUM_GREEN_VALUE							255
+
+#define MINIMUM_BLUE_VALUE							0
+#define MAXIMUM_BLUE_VALUE							255
+
+#define MINIMUM_ALPHA_VALUE							0
+#define MAXIMUM_ALPHA_VALUE							255
 
 #define MAX_BUFFER_SYMBOLS							128
 
@@ -133,6 +162,8 @@
 #define EQUILATERAL_TRIANGLE_C_X					-0.500181f
 #define EQUILATERAL_TRIANGLE_C_Y					-0.864750f
 #define EQUILATERAL_TRIANGLE_C_Z					0.0f
+
+#define ALPHA_RGBA_TO_ALPHA_HSVA					0.392156f
 
 
 class EMColorRenderer : public GXWidgetRenderer
@@ -653,20 +684,35 @@ EMUIColorPicker::~EMUIColorPicker ()
 	delete pick;
 	delete cancel;
 	delete bottomSeparator;
+
+	delete transparency->GetValidator ();
 	delete transparency;
 	delete transparencyLabel;
+
+	delete b->GetValidator ();
 	delete b;
 	delete bLabel;
+
+	delete v->GetValidator ();
 	delete v;
 	delete vLabel;
+
+	delete g->GetValidator ();
 	delete g;
 	delete gLabel;
+
+	delete s->GetValidator ();
 	delete s;
 	delete sLabel;
+
+	delete r->GetValidator ();
 	delete r;
 	delete rLabel;
+
+	delete h->GetValidator ();
 	delete h;
 	delete hLabel;
+
 	delete middleSeparator;
 
 	for ( GXUByte i = 0; i < 16; i++ )
@@ -698,20 +744,32 @@ GXWidget* EMUIColorPicker::GetWidget () const
 	return mainPanel->GetWidget ();
 }
 
-GXVoid EMUIColorPicker::PickHSVColor ( GXVoid* handler, PFNEMONHSVCOLORPROC callback )
+GXVoid EMUIColorPicker::PickHSVAColor ( GXVoid* handler, PFNEMONHSVACOLORPROC callback, const GXVec4 oldColorHSVA )
 {
+	EMColorRenderer* renderer = (EMColorRenderer*)oldColor->GetRenderer ();
+	renderer->SetColorHSVA ( oldColorHSVA );
+	oldColor->Refresh ();
+
 	this->handler = handler;
-	OnHSVColor = callback;
-	OnRGBColor = nullptr;
+	OnHSVAColor = callback;
+	OnRGBAColor = nullptr;
 	mainPanel->Show ();
 }
 
-GXVoid EMUIColorPicker::PickRGBColor ( GXVoid* handler, PFNEMONRGBCOLORPROC callback )
+GXVoid EMUIColorPicker::PickRGBAColor ( GXVoid* handler, PFNEMONRGBACOLORPROC callback, GXUByte oldRed, GXUByte oldGreen, GXUByte oldBlue, GXUByte oldAlpha )
 {
+	GXVec4 oldHSVA;
+	GXVec4 oldRGBA;
+	GXColorToVec4 ( oldRGBA, oldRed, oldGreen, oldBlue, oldAlpha );
+	GXConvertRGBAToHSVA ( oldHSVA, oldRGBA );
+	EMColorRenderer* renderer = (EMColorRenderer*)oldColor->GetRenderer ();
+	renderer->SetColorHSVA ( oldHSVA );
+	oldColor->Refresh ();
+
 	this->handler = handler;
-	OnRGBColor = callback;
-	OnHSVColor = nullptr;
-	mainPanel->Hide ();
+	OnRGBAColor = callback;
+	OnHSVAColor = nullptr;
+	mainPanel->Show ();
 }
 
 EMUIColorPicker::EMUIColorPicker () :
@@ -744,24 +802,45 @@ EMUI ( nullptr )
 
 	hLabel = new EMUIStaticText ( mainPanel );
 	h = new EMUIEditBox ( mainPanel );
+	GXUIEditBoxFloatValidator* floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_TEXT, *( (GXUIEditBox*)h->GetWidget () ), MINIMUM_HUE_VALUE, MAXIMUM_HUE_VALUE );
+	h->SetValidator ( *floatValidator );
+	h->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
 	rLabel = new EMUIStaticText ( mainPanel );
 	r = new EMUIEditBox ( mainPanel );
+	GXUIEditBoxIntegerValidator* integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_TEXT, *( (GXUIEditBox*)r->GetWidget () ), MINIMUM_RED_VALUE, MAXIMUM_RED_VALUE );
+	r->SetValidator ( *integerValidator );
+	r->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
 	sLabel = new EMUIStaticText ( mainPanel );
 	s = new EMUIEditBox ( mainPanel );
+	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_TEXT, *( (GXUIEditBox*)s->GetWidget () ), MINIMUM_SATURATION_VALUE, MAXIMUM_SATURATION_VALUE );
+	s->SetValidator ( *floatValidator );
+	s->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
 	gLabel = new EMUIStaticText ( mainPanel );
 	g = new EMUIEditBox ( mainPanel );
+	integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_TEXT, *( (GXUIEditBox*)g->GetWidget () ), MINIMUM_GREEN_VALUE, MAXIMUM_GREEN_VALUE );
+	g->SetValidator ( *integerValidator );
+	g->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
 	vLabel = new EMUIStaticText ( mainPanel );
 	v = new EMUIEditBox ( mainPanel );
+	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_TEXT, *( (GXUIEditBox*)v->GetWidget () ), MINIMUM_VALUE, MAXIMUM_VALUE );
+	v->SetValidator ( *floatValidator );
+	v->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
 	bLabel = new EMUIStaticText ( mainPanel );
 	b = new EMUIEditBox ( mainPanel );
+	integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_TEXT, *( (GXUIEditBox*)b->GetWidget () ), MINIMUM_BLUE_VALUE, MAXIMUM_BLUE_VALUE );
+	b->SetValidator ( *integerValidator );
+	b->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
 	transparencyLabel = new EMUIStaticText ( mainPanel );
 	transparency = new EMUIEditBox ( mainPanel );
+	integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_TEXT, *( (GXUIEditBox*)transparency->GetWidget () ), MINIMUM_ALPHA_VALUE, MAXIMUM_ALPHA_VALUE );
+	transparency->SetValidator ( *integerValidator );
+	transparency->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
 	bottomSeparator = new EMUISeparator ( mainPanel );
 
@@ -833,13 +912,23 @@ EMUI ( nullptr )
 
 	mainPanel->SetOnResizeCallback ( this, &EMUIColorPicker::OnResize );
 
+	OnHSVAColor = nullptr;
+	OnRGBAColor = nullptr;
+	handler = nullptr;
+
 	buffer = (GXWChar*)malloc ( MAX_BUFFER_SYMBOLS * sizeof ( GXWChar ) );
 
 	UpdateCurrentColor ( DEFAULT_CURRENT_COLOR_H, DEFAULT_CURRENT_COLOR_S, DEFAULT_CURRENT_COLOR_V, DEFAULT_CURRENT_COLOR_A );
 	oldColorHSVA = currentColorHSVA;
 
+	static const GXVec4 defaultSavedColorHSVA ( DEFAULT_SAVED_COLOR_H, DEFAULT_SAVED_COLOR_S, DEFAULT_SAVED_COLOR_V, DEFAULT_SAVED_COLOR_A );
+	for ( GXUByte i = 0; i < 16; i++ )
+		savedColorHSVAs[ i ] = defaultSavedColorHSVA;
+
 	GXFloat height = DEFAULT_MAIN_PANEL_HEIGHT * gx_ui_Scale;
 	mainPanel->Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, (GXFloat)( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
+	mainPanel->SetMinimumWidth ( MAIN_PANEL_MINIMUM_WIDTH * gx_ui_Scale );
+	mainPanel->SetMinimumHeight ( MAIN_PANEL_MINIMUM_HEIGHT * gx_ui_Scale );
 	mainPanel->Hide ();
 }
 
@@ -965,20 +1054,55 @@ GXVoid EMUIColorPicker::UpdateCurrentColorWithCorrection ( GXUByte red, GXUByte 
 	hsvColorWidget->Refresh ();
 }
 
-GXVoid GXCALL EMUIColorPicker::OnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFloat y, eGXMouseButtonState state )
+GXVoid GXCALL EMUIColorPicker::OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state )
 {
-	//TODO
 	if ( state == eGXMouseButtonState::Down ) return;
 
 	EMUIColorPicker* colorPicker = (EMUIColorPicker*)handler;
+	
+	if ( &button == colorPicker->addColor->GetWidget () )
+	{
+		memmove ( colorPicker->savedColorHSVAs + 1, colorPicker->savedColorHSVAs, 15 * sizeof ( GXVec4 ) );
+		colorPicker->savedColorHSVAs[ 0 ] = colorPicker->currentColorHSVA;
+		
+		for ( GXUByte i = 0; i < 16; i++ )
+		{
+			EMColorRenderer* renderer = (EMColorRenderer*)colorPicker->savedColors[ i ]->GetRenderer ();
+			renderer->SetColorHSVA ( colorPicker->savedColorHSVAs[ i ] );
+			colorPicker->savedColors[ i ]->Refresh ();
+		}
+
+		return;
+	}
+	else if ( &button == colorPicker->pick->GetWidget () )
+	{
+		if ( colorPicker->OnHSVAColor )
+			colorPicker->OnHSVAColor ( colorPicker->handler, colorPicker->currentColorHSVA.h, colorPicker->currentColorHSVA.s, colorPicker->currentColorHSVA.v, colorPicker->currentColorHSVA.a );
+		else
+		{
+			GXUByte red;
+			GXUByte green;
+			GXUByte blue;
+			GXUByte alpha;
+			swscanf_s ( colorPicker->r->GetText (), L"%hhu", &red );
+			swscanf_s ( colorPicker->g->GetText (), L"%hhu", &green );
+			swscanf_s ( colorPicker->b->GetText (), L"%hhu", &blue );
+			swscanf_s ( colorPicker->transparency->GetText (), L"%hhu", &alpha );
+			colorPicker->OnRGBAColor ( handler, red, green, blue, alpha );
+		}
+
+		colorPicker->mainPanel->Hide ();
+		return;
+	}
+
 	colorPicker->mainPanel->Hide ();
 }
 
-GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y )
+GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y )
 {
 	EMUIColorPicker* colorPicker = (EMUIColorPicker*)handler;
 
-	if ( input == colorPicker->hsvColorWidget )
+	if ( &input == colorPicker->hsvColorWidget )
 	{
 		GXVec3 center;
 		GXGetAABBCenter ( center, colorPicker->hsvColorWidget->GetBoundsWorld () );
@@ -1039,10 +1163,25 @@ GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput* i
 		GXUByte selectedBlue = (GXUByte)( 255.0f * ( barycentricCoordinates.y * currentHueRGBA.b + barycentricCoordinates.z ) );
 
 		colorPicker->UpdateCurrentColorWithCorrection ( selectedRed, selectedGreen, selectedBlue, (GXUByte)( colorPicker->currentColorHSVA.a * 2.55f ) );
+
+		return;
+	}
+	else if ( &input == colorPicker->oldColor )
+	{
+		colorPicker->UpdateCurrentColor ( colorPicker->oldColorHSVA.h, colorPicker->oldColorHSVA.s, colorPicker->oldColorHSVA.v, colorPicker->oldColorHSVA.a );
+		return;
+	}
+
+	for ( GXUByte i = 0; i < 16; i++ )
+	{
+		if ( &input != colorPicker->savedColors[ i ] ) continue;
+
+		colorPicker->UpdateCurrentColor ( colorPicker->savedColorHSVAs[ i ].h, colorPicker->savedColorHSVAs[ i ].s, colorPicker->savedColorHSVAs[ i ].v, colorPicker->savedColorHSVAs[ i ].a );
+		return;
 	}
 }
 
-GXVoid GXCALL EMUIColorPicker::OnResize ( GXVoid* handler, GXUIDragableArea* area, GXFloat width, GXFloat height )
+GXVoid GXCALL EMUIColorPicker::OnResize ( GXVoid* handler, GXUIDragableArea& /*area*/, GXFloat width, GXFloat height )
 {
 	EMUIColorPicker* colorPicker = (EMUIColorPicker*)handler;
 
@@ -1120,4 +1259,38 @@ GXVoid GXCALL EMUIColorPicker::OnResize ( GXVoid* handler, GXUIDragableArea* are
 
 	colorPicker->cancel->Resize ( width - ( MARGIN + CANCEL_BUTTON_X_OFFSET ) * gx_ui_Scale, margin, buttonWidth, buttonHeight );
 	colorPicker->pick->Resize ( width - margin - buttonWidth, margin, buttonWidth, buttonHeight );
+}
+
+GXVoid GXCALL EMUIColorPicker::OnFinishEditing ( GXVoid* handler, GXUIEditBox& editBox )
+{
+	EMUIColorPicker* colorPicker = (EMUIColorPicker*)handler;
+
+	if ( &editBox == colorPicker->h->GetWidget () )
+	{
+		swscanf_s ( colorPicker->h->GetText (), L"%g", &( colorPicker->currentColorHSVA.h ) );
+		colorPicker->UpdateCurrentColor ( colorPicker->currentColorHSVA.h, colorPicker->currentColorHSVA.s, colorPicker->currentColorHSVA.v, colorPicker->currentColorHSVA.a );
+	}
+	else if ( &editBox == colorPicker->s->GetWidget () )
+	{
+		swscanf_s ( colorPicker->s->GetText (), L"%g", &( colorPicker->currentColorHSVA.s ) );
+		colorPicker->UpdateCurrentColor ( colorPicker->currentColorHSVA.h, colorPicker->currentColorHSVA.s, colorPicker->currentColorHSVA.v, colorPicker->currentColorHSVA.a );
+	}
+	else if ( &editBox == colorPicker->v->GetWidget () )
+	{
+		swscanf_s ( colorPicker->v->GetText (), L"%g", &( colorPicker->currentColorHSVA.v ) );
+		colorPicker->UpdateCurrentColor ( colorPicker->currentColorHSVA.h, colorPicker->currentColorHSVA.s, colorPicker->currentColorHSVA.v, colorPicker->currentColorHSVA.a );
+	}
+	else if ( &editBox == colorPicker->r->GetWidget () || &editBox == colorPicker->g->GetWidget () || &editBox == colorPicker->b->GetWidget () || &editBox == colorPicker->transparency->GetWidget () )
+	{
+		GXUByte red;
+		GXUByte green;
+		GXUByte blue;
+		GXUByte alpha;
+		swscanf_s ( colorPicker->r->GetText (), L"%hhu", &red );
+		swscanf_s ( colorPicker->g->GetText (), L"%hhu", &green );
+		swscanf_s ( colorPicker->b->GetText (), L"%hhu", &blue );
+		swscanf_s ( colorPicker->transparency->GetText (), L"%hhu", &alpha );
+
+		colorPicker->UpdateCurrentColor ( red, green, blue, alpha );
+	}
 }

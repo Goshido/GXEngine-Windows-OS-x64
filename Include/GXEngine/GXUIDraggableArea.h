@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #ifndef GX_UI_DRAGGABLE_AREA
 #define GX_UI_DRAGGABLE_AREA
@@ -8,13 +8,29 @@
 
 
 class GXUIDragableArea;
-typedef GXVoid ( GXCALL* PFNGXUIDRAGABLEAREAONRESIZEPROC ) ( GXVoid* handler, GXUIDragableArea* area, GXFloat width, GXFloat height );
+typedef GXVoid ( GXCALL* PFNGXUIDRAGABLEAREAONRESIZEPROC ) ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
+
+enum eGXDraggableAreaResizeMode : GXUByte
+{
+	None,
+	Dragging,
+	WidthLockLeft,
+	WidthLockRight,
+	HeightLockBottom,
+	HeightLockTop,
+	WidthAndHeightLockTopLeft,
+	WidthAndHeightLockTopRight,
+	WidthAndHeightLockBottomLeft,
+	WidthAndHeightLockBottomRight
+};
 
 class GXUIDragableArea : public GXWidget
 {
 	private:
 		GXFloat							headerHeight;
 		GXFloat							borderThickness;
+
+		GXVec2							minimumSize;
 
 		GXAABB							headerArea;
 		GXAABB							clientArea;
@@ -38,7 +54,7 @@ class GXUIDragableArea : public GXWidget
 		const HCURSOR*					currentCursor;
 
 		GXVec2							lastMousePosition;
-		GXUByte							resizeMode;
+		eGXDraggableAreaResizeMode		resizeMode;
 		PFNGXUIDRAGABLEAREAONRESIZEPROC	OnResize;
 		GXVoid*							handler;
 
@@ -47,6 +63,12 @@ class GXUIDragableArea : public GXWidget
 		~GXUIDragableArea () override;
 
 		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
+
+		GXVoid SetMinimumWidth ( GXFloat width );
+		GXFloat GetMinimumWidth () const;
+
+		GXVoid SetMinimumHeight ( GXFloat height );
+		GXFloat GetMinimumHeight () const;
 
 		GXVoid SetHeaderHeight ( GXFloat height );
 		GXFloat GetHeaderHeight () const;
@@ -57,7 +79,7 @@ class GXUIDragableArea : public GXWidget
 		GXVoid SetOnResizeCallback ( GXVoid* handler, PFNGXUIDRAGABLEAREAONRESIZEPROC callback );
 
 	private:
-		GXUByte GetResizeMode ( const GXVec2 &mousePosition ) const;
+		eGXDraggableAreaResizeMode GetResizeMode ( const GXVec2 &mousePosition ) const;
 		GXVoid UpdateAreas ();
 		GXVoid UpdateCursor ( const GXVec2 &mousePosition );
 };

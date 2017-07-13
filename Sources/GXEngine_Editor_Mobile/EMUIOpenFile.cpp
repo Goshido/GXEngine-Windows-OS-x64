@@ -206,13 +206,13 @@ const GXWChar* EMUIOpenFile::GetRelativePath () const
 	return currentDirectory + rootDirectoryPathOffset + 1;
 }
 
-GXVoid GXCALL EMUIOpenFile::OnButton ( GXVoid* handler, GXUIButton* button, GXFloat x, GXFloat y, eGXMouseButtonState state )
+GXVoid GXCALL EMUIOpenFile::OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state )
 {
 	if ( state != eGXMouseButtonState::Up ) return;
 
 	EMUIOpenFile* main = (EMUIOpenFile*)handler;
 
-	if ( button == main->okButton->GetWidget () )
+	if ( &button == main->okButton->GetWidget () )
 	{
 		EMUIFileListBoxItem* i = (EMUIFileListBoxItem*)main->fileListBox->GetSelectedItem ();
 		if ( i && i->type == eEMUIFileListBoxItemType::File )
@@ -220,14 +220,14 @@ GXVoid GXCALL EMUIOpenFile::OnButton ( GXVoid* handler, GXUIButton* button, GXFl
 
 		main->mainPanel->Hide ();
 	}
-	else if ( button == main->cancelButton->GetWidget () )
+	else if ( &button == main->cancelButton->GetWidget () )
 	{
 		EMUIOpenFile* main = (EMUIOpenFile*)handler;
 		main->mainPanel->Hide ();
 	}
 }
 
-GXVoid GXCALL EMUIOpenFile::OnItemSelected ( GXVoid* handler, GXUIListBox* listBox, const GXVoid* item )
+GXVoid GXCALL EMUIOpenFile::OnItemSelected ( GXVoid* handler, GXUIListBox& /*listBox*/, const GXVoid* item )
 {
 	EMUIOpenFile* main = (EMUIOpenFile*)handler;
 	const EMUIFileListBoxItem* element = (const EMUIFileListBoxItem*)item;
@@ -265,7 +265,7 @@ GXVoid GXCALL EMUIOpenFile::OnItemSelected ( GXVoid* handler, GXUIListBox* listB
 	}
 }
 
-GXVoid GXCALL EMUIOpenFile::OnItemDoubleClicked ( GXVoid* handler, GXUIListBox* listBox, const GXVoid* item )
+GXVoid GXCALL EMUIOpenFile::OnItemDoubleClicked ( GXVoid* handler, GXUIListBox& /*listBox*/, const GXVoid* item )
 {
 	EMUIOpenFile* main = (EMUIOpenFile*)handler;
 	const EMUIFileListBoxItem* element = (const EMUIFileListBoxItem*)item;
@@ -273,7 +273,7 @@ GXVoid GXCALL EMUIOpenFile::OnItemDoubleClicked ( GXVoid* handler, GXUIListBox* 
 	switch ( element->type )
 	{
 		case eEMUIFileListBoxItemType::File:
-			OnButton ( main, (GXUIButton*)main->okButton->GetWidget (), 0.0f, 0.0f, eGXMouseButtonState::Up );
+			OnButton ( main, *( (GXUIButton*)main->okButton->GetWidget () ), 0.0f, 0.0f, eGXMouseButtonState::Up );
 		break;
 
 		case eEMUIFileListBoxItemType::Folder:
@@ -282,7 +282,7 @@ GXVoid GXCALL EMUIOpenFile::OnItemDoubleClicked ( GXVoid* handler, GXUIListBox* 
 	}
 }
 
-GXVoid GXCALL EMUIOpenFile::OnResize ( GXVoid* handler, GXUIDragableArea* area, GXFloat width, GXFloat height )
+GXVoid GXCALL EMUIOpenFile::OnResize ( GXVoid* handler, GXUIDragableArea& /*area*/, GXFloat width, GXFloat height )
 {
 	EMUIOpenFile* main = (EMUIOpenFile*)handler;
 

@@ -111,7 +111,7 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 				if ( item ) item->isSelected = GX_TRUE;
 
 				if ( OnItemSelected )
-					OnItemSelected ( itemSelectedHandler, this, item->data );
+					OnItemSelected ( itemSelectedHandler, *this, item->data );
 
 				if ( renderer )
 					renderer->OnUpdate ();
@@ -126,7 +126,7 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 			if ( item )
 			{
 				if ( OnItemDoubleClicked )
-					OnItemDoubleClicked ( itemDoubleClickedHandler, this, item->data );
+					OnItemDoubleClicked ( itemDoubleClickedHandler, *this, item->data );
 			}
 		}
 		break;

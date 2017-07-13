@@ -221,33 +221,33 @@ GXUByte EMViewer::ResolveMode ( GXBool isAltPressed, GXBool isMMBPressed, GXBool
 	return EM_VIEWER_NOTHING_MODE;
 }
 
-GXVoid GXCALL EMViewer::OnLMBDownCallback ( GXVoid* /*handler*/, GXUIInput* /*input*/, GXFloat x, GXFloat y )
+GXVoid GXCALL EMViewer::OnLMBDownCallback ( GXVoid* /*handler*/, GXUIInput& /*input*/, GXFloat x, GXFloat y )
 {
 	EMTool* tool = EMTool::GetActiveTool ();
 	if ( !tool ) return;
 	tool->OnLeftMouseButtonDown ( x, y );
 }
 
-GXVoid GXCALL EMViewer::OnLMBUpCallback ( GXVoid* /*handler*/, GXUIInput* /*input*/, GXFloat x, GXFloat y )
+GXVoid GXCALL EMViewer::OnLMBUpCallback ( GXVoid* /*handler*/, GXUIInput& /*input*/, GXFloat x, GXFloat y )
 {
 	EMTool* tool = EMTool::GetActiveTool ();
 	if ( !tool ) return;
 	tool->OnLeftMouseButtonUp ( x, y );
 }
 
-GXVoid GXCALL EMViewer::OnMMBDownCallback ( GXVoid* handler, GXUIInput* /*input*/, GXFloat x, GXFloat y )
+GXVoid GXCALL EMViewer::OnMMBDownCallback ( GXVoid* handler, GXUIInput& /*input*/, GXFloat x, GXFloat y )
 {
 	EMViewer* viewer = (EMViewer*)handler;
 	viewer->isMMBPressed = GX_TRUE;
 }
 
-GXVoid GXCALL EMViewer::OnMMBUpCallback ( GXVoid* handler, GXUIInput* /*input*/, GXFloat x, GXFloat y )
+GXVoid GXCALL EMViewer::OnMMBUpCallback ( GXVoid* handler, GXUIInput& /*input*/, GXFloat x, GXFloat y )
 {
 	EMViewer* viewer = (EMViewer*)handler;
 	viewer->isMMBPressed = GX_FALSE;
 }
 
-GXVoid GXCALL EMViewer::OnMouseScrollCallback ( GXVoid* handler, GXUIInput* /*input*/, GXFloat x, GXFloat y, GXFloat scroll )
+GXVoid GXCALL EMViewer::OnMouseScrollCallback ( GXVoid* handler, GXUIInput& /*input*/, GXFloat x, GXFloat y, GXFloat scroll )
 {
 	EMTool* tool = EMTool::GetActiveTool ();
 
@@ -259,7 +259,7 @@ GXVoid GXCALL EMViewer::OnMouseScrollCallback ( GXVoid* handler, GXUIInput* /*in
 		viewer->OnZoom ( scroll );
 }
 
-GXVoid GXCALL EMViewer::OnMouseMoveCallback ( GXVoid* handler, GXUIInput* /*input*/, GXFloat x, GXFloat y )
+GXVoid GXCALL EMViewer::OnMouseMoveCallback ( GXVoid* handler, GXUIInput& /*input*/, GXFloat x, GXFloat y )
 {
 	EMTool* tool = EMTool::GetActiveTool ();
 
@@ -294,7 +294,7 @@ GXVoid GXCALL EMViewer::OnMouseMoveCallback ( GXVoid* handler, GXUIInput* /*inpu
 	viewer->UpdateMouse ( mousePosition );
 }
 
-GXVoid GXCALL EMViewer::OnKeyDownCallback ( GXVoid* handler, GXUIInput* /*input*/, GXInt keyCode )
+GXVoid GXCALL EMViewer::OnKeyDownCallback ( GXVoid* handler, GXUIInput& /*input*/, GXInt keyCode )
 {
 	EMTool* tool = EMTool::GetActiveTool ();
 
@@ -306,7 +306,7 @@ GXVoid GXCALL EMViewer::OnKeyDownCallback ( GXVoid* handler, GXUIInput* /*input*
 	viewer->isAltPressed = GX_TRUE;
 }
 
-GXVoid GXCALL EMViewer::OnKeyUpCallback ( GXVoid* handler, GXUIInput* /*input*/, GXInt keyCode )
+GXVoid GXCALL EMViewer::OnKeyUpCallback ( GXVoid* handler, GXUIInput& /*input*/, GXInt keyCode )
 {
 	EMTool* tool = EMTool::GetActiveTool ();
 

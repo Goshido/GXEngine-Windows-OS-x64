@@ -60,16 +60,16 @@ class EMViewer
 
 		GXUByte ResolveMode ( GXBool isAltPressed, GXBool isMMBPressed, GXBool isWheel );
 
-		static GXVoid GXCALL OnLMBDownCallback ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y );
-		static GXVoid GXCALL OnLMBUpCallback ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y );
-		static GXVoid GXCALL OnMMBDownCallback ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y );
-		static GXVoid GXCALL OnMMBUpCallback ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y );
+		static GXVoid GXCALL OnLMBDownCallback ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
+		static GXVoid GXCALL OnLMBUpCallback ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
+		static GXVoid GXCALL OnMMBDownCallback ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
+		static GXVoid GXCALL OnMMBUpCallback ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
 
-		static GXVoid GXCALL OnMouseScrollCallback ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y, GXFloat scroll );
-		static GXVoid GXCALL OnMouseMoveCallback ( GXVoid* handler, GXUIInput* input, GXFloat x, GXFloat y );
+		static GXVoid GXCALL OnMouseScrollCallback ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y, GXFloat scroll );
+		static GXVoid GXCALL OnMouseMoveCallback ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
 
-		static GXVoid GXCALL OnKeyDownCallback ( GXVoid* handler, GXUIInput* input, GXInt keyCode );
-		static GXVoid GXCALL OnKeyUpCallback ( GXVoid* handler, GXUIInput* input, GXInt keyCode );
+		static GXVoid GXCALL OnKeyDownCallback ( GXVoid* handler, GXUIInput& input, GXInt keyCode );
+		static GXVoid GXCALL OnKeyUpCallback ( GXVoid* handler, GXUIInput& input, GXInt keyCode );
 };
 
 

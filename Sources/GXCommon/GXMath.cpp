@@ -1613,9 +1613,17 @@ GXVoid GXCALL GXColorToVec4 ( GXVec4 &out, GXUChar r, GXUChar g, GXUChar b, GXUC
 
 GXVoid GXCALL GXConvertHSVAToRGBA ( GXUByte &red, GXUByte &green, GXUByte &blue, GXUByte &alpha, const GXVec4 &hsvaColor )
 {
-	GXUByte selector = (GXUByte)( (GXInt)( hsvaColor.h * HSVA_FACTOR ) % 6 );
+	GXFloat correctedHue = hsvaColor.h;
+
+	while ( correctedHue >= 360.0f )
+		correctedHue -= 360.0f;
+
+	while ( correctedHue < 0.0f )
+		correctedHue += 360.0f;
+
+	GXUByte selector = (GXUByte)( (GXInt)( correctedHue * HSVA_FACTOR ) % 6 );
 	GXFloat minValue = ( ( 100.0f - hsvaColor.s ) * hsvaColor.v ) * 0.01f;
-	GXFloat delta = ( hsvaColor.v - minValue ) * ( ( (GXInt)hsvaColor.h % 60 ) * HSVA_FACTOR );
+	GXFloat delta = ( hsvaColor.v - minValue ) * ( ( (GXInt)correctedHue % 60 ) * HSVA_FACTOR );
 	GXFloat increment = minValue + delta;
 	GXFloat decrement = hsvaColor.v - delta;
 
@@ -1667,9 +1675,17 @@ GXVoid GXCALL GXConvertHSVAToRGBA ( GXUByte &red, GXUByte &green, GXUByte &blue,
 
 GXVoid GXCALL GXConvertHSVAToRGBA ( GXVec4 &rgbaColor, const GXVec4 &hsvaColor )
 {
-	GXUByte selector = (GXUByte)( (GXInt)( hsvaColor.h * HSVA_FACTOR ) % 6 );
+	GXFloat correctedHue = hsvaColor.h;
+
+	while ( correctedHue >= 360.0f )
+		correctedHue -= 360.0f;
+
+	while ( correctedHue < 0.0f )
+		correctedHue += 360.0f;
+
+	GXUByte selector = (GXUByte)( (GXInt)( correctedHue * HSVA_FACTOR ) % 6 );
 	GXFloat minValue = ( ( 100.0f - hsvaColor.s ) * hsvaColor.v ) * 0.01f;
-	GXFloat delta = ( hsvaColor.v - minValue ) * ( ( (GXInt)hsvaColor.h % 60 ) * HSVA_FACTOR );
+	GXFloat delta = ( hsvaColor.v - minValue ) * ( ( (GXInt)correctedHue % 60 ) * HSVA_FACTOR );
 	GXFloat increment = minValue + delta;
 	GXFloat decrement = hsvaColor.v - delta;
 

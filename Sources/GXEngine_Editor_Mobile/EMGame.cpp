@@ -239,12 +239,17 @@ GXVoid EMGame::OnDestroy ()
 GXVoid GXCALL EMGame::OnExit ( GXVoid* /*handler*/ )
 {
 	GXCore::GetInstance ().Exit ();
-	GXLogA ( "Завершение\n" );
+	GXLogW ( L"Завершение\n" );
 }
 
 GXVoid GXCALL EMGame::OnColorPicker ( GXVoid* /*handler*/ )
 {
-	EMUIColorPicker::GetInstance ().PickHSVColor ( nullptr, nullptr );
+	EMUIColorPicker::GetInstance ().PickRGBAColor ( nullptr, &EMGame::OnPickRGBA, 115, 185, 0, 255 );
+}
+
+GXVoid GXCALL EMGame::OnPickRGBA ( GXVoid* /*handler*/, GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
+{
+	GXLogW ( L"EMGame::OnPickRGBA::Info - Выбран цвет RGBA:\n\tКрасный - %hhu\n\tЗелёный - %hhu\n\tСиний - %hhu\n\tПрозрачность - %hhu\n", red, green, blue, alpha );
 }
 
 GXVoid GXCALL EMGame::OnShowMotionBlurSettings ( GXVoid* /*handler*/ )

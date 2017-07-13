@@ -3,6 +3,7 @@
 #include <GXEngine/GXUIEditBox.h>
 #include <GXEngine/GXUIMessage.h>
 #include <GXEngine/GXUICommon.h>
+#include <GXEngine/GXTextValidator.h>
 #include <GXEngine/GXInput.h>
 #include <GXCommon/GXStrings.h>
 
@@ -51,6 +52,9 @@ GXWidget ( parent )
 	editCursor = LoadCursorW ( 0, IDC_IBEAM );
 	arrowCursor = LoadCursorW ( 0, IDC_ARROW );
 	currentCursor = &arrowCursor;
+	validator = nullptr;
+	OnFinishEditing = nullptr;
+	handler = nullptr;
 }
 
 GXUIEditBox::~GXUIEditBox ()
@@ -80,6 +84,9 @@ GXVoid GXUIEditBox::OnMessage ( GXUInt message, const GXVoid* data )
 
 			memcpy ( text, (const GXWChar*)data, size );
 			cursor = selection = 0;
+
+			if ( validator )
+				validator->Validate ( text );
 
 			if ( renderer )
 				renderer->OnUpdate ();
@@ -143,6 +150,12 @@ GXVoid GXUIEditBox::OnMessage ( GXUInt message, const GXVoid* data )
 			else
 			{
 				ReleaseInput ();
+
+				if ( validator && validator->Validate ( text ) && OnFinishEditing )
+					OnFinishEditing ( handler, *this );
+				else if ( OnFinishEditing )
+					OnFinishEditing ( handler, *this );
+
 				GXTouchSurface::GetInstance ().OnLeftMouseButtonDown ( *pos );
 			}
 
@@ -462,6 +475,22 @@ GXFont* GXUIEditBox::GetFont ()
 GXBool GXUIEditBox::IsActive ()
 {
 	return GXTouchSurface::GetInstance ().GetLockedCursorWidget () == this;
+}
+
+GXVoid GXUIEditBox::SetValidator ( GXTextValidator &validator )
+{
+	this->validator = &validator;
+}
+
+GXTextValidator* GXUIEditBox::GetValidator () const
+{
+	return validator;
+}
+
+GXVoid GXUIEditBox::SetOnFinishEditingCallback ( GXVoid* handler, PFNGXUIEDITBOXONFINISHEDITINGPROC callback )
+{
+	this->handler = handler;
+	OnFinishEditing = callback;
 }
 
 GXInt GXUIEditBox::GetSelectionPosition ( const GXVec2 &mousePosition ) const

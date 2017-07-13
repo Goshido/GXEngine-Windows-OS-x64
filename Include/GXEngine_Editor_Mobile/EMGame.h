@@ -47,6 +47,7 @@ class EMGame : public GXGame
 	private:
 		static GXVoid GXCALL OnExit ( GXVoid* handler );
 		static GXVoid GXCALL OnColorPicker ( GXVoid* handler );
+		static GXVoid GXCALL OnPickRGBA ( GXVoid* handler, GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
 		static GXVoid GXCALL OnShowMotionBlurSettings ( GXVoid* handler );
 		static GXVoid GXCALL OnShowSSAOSettings ( GXVoid* handler );
 		static GXVoid GXCALL OnMouseButton ( GXVoid* handler, GXInputMouseFlags mouseflags );
