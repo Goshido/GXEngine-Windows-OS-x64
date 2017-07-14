@@ -113,7 +113,7 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 	#define GX_STRING_STATE	1
 
 	GXUTF8* data;
-	GXUInt size;
+	GXUBigInt size;
 	GXLoadFile ( fileName, (GXVoid**)&data, size, GX_TRUE );
 
 	GXStringTree* tree = new GXStringTree ();

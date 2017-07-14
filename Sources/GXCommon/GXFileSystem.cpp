@@ -57,11 +57,11 @@ GXVoid GXDirectoryInfo::Clear ()
 
 //-----------------------------------------------------------------------
 
-GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUInt &size, GXBool notsilent )
+GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUBigInt &size, GXBool notsilent )
 {
 	FILE* input = nullptr;
-	GXUInt fileSize = 0;
-	GXUInt readed = 0;
+	GXUBigInt fileSize = 0;
+	GXUBigInt readed = 0;
 
 	_wfopen_s ( &input, fileName, L"rb" );
 	if ( input == nullptr )
@@ -79,7 +79,7 @@ GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUInt &siz
 	}
 
 	fseek ( input, 0, SEEK_END );
-	fileSize = (GXUInt)ftell ( input );
+	fileSize = (GXUBigInt)ftell ( input );
 	rewind ( input );
 
 	if ( fileSize == 0 )
@@ -95,7 +95,7 @@ GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUInt &siz
 	}
 
 	*buffer = (GXVoid*)malloc ( fileSize );
-	readed = (GXUInt)fread ( *buffer, 1, fileSize, input );
+	readed = (GXUBigInt)fread ( *buffer, 1, fileSize, input );
 	fclose ( input );
 
 	if ( readed != fileSize )

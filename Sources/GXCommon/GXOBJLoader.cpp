@@ -7,15 +7,15 @@
 #include <GXCommon/GXMemory.h>
 
 
-GXInt	gx_objloader_Index = 0;
-GXChar* gx_objloader_ObjSource = 0;
-GXUInt	gx_objloader_FileSize = 0;
-GXChar	gx_objloader_T[ 30 ] = { 0 };
+GXInt		gx_objloader_Index = 0;
+GXChar*		gx_objloader_ObjSource = nullptr;
+GXUBigInt	gx_objloader_FileSize = 0;
+GXChar		gx_objloader_T[ 30 ] = { 0 };
 
-GXUInt  gx_objloader_TotalVertexes = 0;
-GXUInt  gx_objloader_TotalNormals = 0;
-GXUInt  gx_objloader_TotalUVs = 0;
-GXUInt  gx_objloader_TotalTriangles = 0;
+GXUInt		gx_objloader_TotalVertexes = 0;
+GXUInt		gx_objloader_TotalNormals = 0;
+GXUInt		gx_objloader_TotalUVs = 0;
+GXUInt		gx_objloader_TotalTriangles = 0;
 
 
 #define SKIP_COMMENT()																												\

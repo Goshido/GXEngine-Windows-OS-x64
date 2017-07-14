@@ -22,7 +22,7 @@ GXVoid GXNativeStaticMeshInfo::Cleanup ()
 
 GXVoid GXCALL GXLoadNativeStaticMesh ( const GXWChar* fileName, GXNativeStaticMeshInfo &info )
 {
-	GXUInt size = 0;
+	GXUBigInt size = 0;
 	GXUByte* data = nullptr;
 
 	if ( !GXLoadFile ( fileName, (GXVoid**)&data, size, GX_TRUE ) )

@@ -415,7 +415,7 @@ GXFont::GXFont ( const GXWChar* fileName, GXUShort size )
 
 	GXUShort temp = (GXUShort)( size * 0.5f );
 	parameters->spaceAdvance = temp == 0 ? 1 : temp;
-	GXUInt totalSize = 0;
+	GXUBigInt totalSize = 0;
 
 	if ( !GXLoadFile ( fileName, &parameters->mappedFile, totalSize, GX_TRUE ) )
 	{
@@ -423,7 +423,7 @@ GXFont::GXFont ( const GXWChar* fileName, GXUShort size )
 		face = nullptr;
 		GXSafeDelete ( parameters );
 	}
-	else if ( GXFtNewMemoryFace ( gx_ft_Library, (FT_Byte*)parameters->mappedFile, totalSize, 0, &face ) )
+	else if ( GXFtNewMemoryFace ( gx_ft_Library, (FT_Byte*)parameters->mappedFile, (FT_Long)totalSize, 0, &face ) )
 	{
 		GXLogW ( L"GXFontUnit::GXFontUnit::Error - GXFtNewMemoryFace выполнилась с ошибкой для шрифта %s failed\n", fileName );
 		free ( parameters->mappedFile );

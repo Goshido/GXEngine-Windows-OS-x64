@@ -51,7 +51,7 @@ GXVoid GXAnimationInfo::Cleanup ()
 GXVoid GXCALL GXLoadNativeSkeletalMesh ( const GXWChar* fileName, GXSkeletalMeshData &info )
 {
 	GXUByte* data;
-	GXUInt size;
+	GXUBigInt size;
 
 	if ( !GXLoadFile ( fileName, (GXVoid**)&data, size, GX_TRUE ) )
 	{
@@ -90,7 +90,7 @@ GXVoid GXCALL GXLoadNativeSkeletalMesh ( const GXWChar* fileName, GXSkeletalMesh
 GXVoid GXCALL GXLoadNativeAnimation ( const GXWChar* fileName, GXAnimationInfo &info )
 {
 	GXUByte* data;
-	GXUInt size;
+	GXUBigInt size;
 
 	if ( !GXLoadFile ( fileName, (GXVoid**)&data, size, GX_TRUE ) )
 	{

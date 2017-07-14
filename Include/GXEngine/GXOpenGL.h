@@ -81,6 +81,9 @@ extern PFNGLSAMPLERPARAMETERIPROC			glSamplerParameteri;
 extern PFNGLSAMPLERPARAMETERFPROC			glSamplerParameterf;
 extern PFNGLBLITFRAMEBUFFERPROC				glBlitFramebuffer;
 extern PFNGLCLEARBUFFERFVPROC				glClearBufferfv;
+extern PFNGLGETPROGRAMBINARYPROC			glGetProgramBinary;
+extern PFNGLPROGRAMBINARYPROC				glProgramBinary;
+extern PFNGLPROGRAMPARAMETERIPROC			glProgramParameteri;
 
 
 GXVoid GXCALL GXOpenGLInit ();

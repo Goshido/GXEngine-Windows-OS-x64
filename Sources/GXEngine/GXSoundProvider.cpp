@@ -21,7 +21,7 @@ GXSoundStreamer::~GXSoundStreamer ()
 
 GXUInt GXSoundStreamer::Read ( GXVoid* out, GXUInt size )
 {
-	GXUInt temp = totalSize - position ;
+	GXUInt temp = (GXUInt)totalSize - position ;
 	if ( size > temp ) size = temp;
 	
 	memcpy ( out, mappedFile + position, size );
@@ -42,14 +42,14 @@ GXInt GXSoundStreamer::Seek ( GXInt offset, GXInt whence )
 		break;
 
 		case SEEK_END:
-			position = totalSize + offset;
+			position = (GXLong)totalSize + offset;
 		break;
 	}
 
 	if ( position < 0 ) 
 		position = 0;
 	else if ( position > (GXInt)totalSize ) 
-		position = totalSize;
+		position = (GXLong)totalSize;
 
 	return 0;
 }

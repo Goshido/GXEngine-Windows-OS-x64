@@ -25,7 +25,7 @@ struct GXDirectoryInfo
 	GXVoid Clear ();
 };
 
-GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUInt &size, GXBool notsilent );
+GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUBigInt &size, GXBool notsilent );
 GXBool GXCALL GXWriteToFile ( const GXWChar* fileName, const GXVoid* buffer, GXUInt size );
 GXBool GXCALL GXDoesFileExist ( const GXWChar* fileName );
 GXVoid GXCALL GXGetCurrentDirectory ( GXWChar** currentDirectory );

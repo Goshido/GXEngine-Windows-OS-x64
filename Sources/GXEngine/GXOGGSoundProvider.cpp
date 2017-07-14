@@ -105,7 +105,7 @@ GXSoundTrack ( trackFile )
 GXSoundStreamer* GXOGGSoundTrack::GetStreamer ()
 {
 	readyBuffer = 0;
-	return new GXOGGSoundStreamer ( mappedFile, totalSize ); 
+	return new GXOGGSoundStreamer ( mappedFile, (GXUInt)totalSize ); 
 }
 
 ALuint GXOGGSoundTrack::GetBuffer ()
@@ -113,7 +113,7 @@ ALuint GXOGGSoundTrack::GetBuffer ()
 	if ( readyBuffer ) return readyBuffer;
 	
 	GXAlGenBuffers ( 1, &readyBuffer );
-	GXOGGSoundStreamer* streamer = new GXOGGSoundStreamer ( mappedFile, totalSize );
+	GXOGGSoundStreamer* streamer = new GXOGGSoundStreamer ( mappedFile, (GXUInt)totalSize );
 	streamer->DecompressAll ( readyBuffer );
 	delete streamer;
 	return readyBuffer;

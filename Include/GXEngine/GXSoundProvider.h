@@ -14,7 +14,7 @@ class GXSoundStreamer
 {
 	protected:
 		GXChar*		mappedFile;
-		GXUInt		totalSize;
+		GXUBigInt	totalSize;
 		GXLong		position;
 		GXChar		pcmData[ GX_SOUND_PROVIDER_BUFFER_SIZE ];
 
@@ -46,7 +46,7 @@ class GXSoundTrack
 		GXUInt				numRef;
 
 		GXVoid*				mappedFile;
-		GXUInt				totalSize;
+		GXUBigInt			totalSize;
 
 		ALuint				readyBuffer;
 		

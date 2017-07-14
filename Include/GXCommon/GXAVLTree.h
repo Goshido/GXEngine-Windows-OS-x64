@@ -1,4 +1,4 @@
-//version 1.2
+//version 1.3
 
 #ifndef GX_AVL_TREE
 #define GX_AVL_TREE
@@ -40,7 +40,7 @@ class GXAVLTree
 		GXUInt GetTotalNodes () const;
 
 	protected:
-		GXAVLTree ( PFNGXAVLTREECOMPAREPROC compareFunc, GXBool isAutoClean = GX_TRUE );
+		explicit GXAVLTree ( PFNGXAVLTREECOMPAREPROC compareFunc, GXBool isAutoClean = GX_TRUE );
 		virtual ~GXAVLTree ();
 
 		const GXAVLTreeNode* FindByKey ( const GXVoid* key ) const;

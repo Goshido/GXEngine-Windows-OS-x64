@@ -6,9 +6,9 @@
 
 #define OPENGL_GET_PROC(p,n)					\
 {												\
-	n = ( p )wglGetProcAddress ( #n );			\
+	n = (p)wglGetProcAddress ( #n );			\
 	if ( !n )									\
-		GXLogA ( "#n не найдена\n" );			\
+		GXLogA ( "#n not found\n" );			\
 }
 
 
@@ -82,6 +82,9 @@ PFNGLSAMPLERPARAMETERIPROC			glSamplerParameteri			= nullptr;
 PFNGLSAMPLERPARAMETERFPROC			glSamplerParameterf			= nullptr;
 PFNGLBLITFRAMEBUFFERPROC			glBlitFramebuffer			= nullptr;
 PFNGLCLEARBUFFERFVPROC				glClearBufferfv				= nullptr;
+PFNGLGETPROGRAMBINARYPROC			glGetProgramBinary			= nullptr;
+PFNGLPROGRAMBINARYPROC				glProgramBinary				= nullptr;
+PFNGLPROGRAMPARAMETERIPROC			glProgramParameteri			= nullptr;
 
 
 GXVoid GXCALL GXOpenGLInit ()
@@ -156,6 +159,9 @@ GXVoid GXCALL GXOpenGLInit ()
 	OPENGL_GET_PROC ( PFNGLSAMPLERPARAMETERFPROC,			glSamplerParameterf			);
 	OPENGL_GET_PROC ( PFNGLBLITFRAMEBUFFERPROC,				glBlitFramebuffer			);
 	OPENGL_GET_PROC ( PFNGLCLEARBUFFERFVPROC,				glClearBufferfv				);
+	OPENGL_GET_PROC ( PFNGLGETPROGRAMBINARYPROC,			glGetProgramBinary			);
+	OPENGL_GET_PROC ( PFNGLPROGRAMBINARYPROC,				glProgramBinary				);
+	OPENGL_GET_PROC ( PFNGLPROGRAMPARAMETERIPROC,			glProgramParameteri			);
 }
 
 GXVoid GXCALL GXCheckOpenGLError ()

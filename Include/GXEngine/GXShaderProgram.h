@@ -1,11 +1,42 @@
-//version 1.0
+//version 1.1
 
 #ifndef GX_SHADER_PROGRAM
 #define GX_SHADER_PROGRAM
 
 
 #include "GXOpenGL.h"
+#include <GXCommon/GXMemory.h>
+#include <GXCommon/GXAVLTree.h>
 
+
+class GXPrecompiledShaderProgramNode : public GXAVLTreeNode
+{
+	friend class GXPrecompiledShaderProgramFinder;
+
+	private:
+		GXWChar*	name;
+		GXWChar*	binaryPath;
+		GLenum		binaryFormat;
+
+	public:
+		GXPrecompiledShaderProgramNode ( const GXWChar* vs, const GXWChar* fs, const GXWChar* gs, const GXWChar* binaryPath, GLenum binaryFormat );
+		~GXPrecompiledShaderProgramNode () override;
+
+		const GXVoid* GetKey () const override;
+
+	private:
+		static GXInt GXCALL Compare ( const GXVoid* a, const GXVoid* b );
+};
+
+class GXPrecompiledShaderProgramFinder : public GXAVLTree
+{
+	public:
+		GXPrecompiledShaderProgramFinder ();
+		~GXPrecompiledShaderProgramFinder () override;
+
+		GXVoid FindProgram ( const GXWChar** binaryPath, GLenum &binaryFormat, const GXWChar* vs, const GXWChar* fs, const GXWChar* gs ) const;
+		GXVoid AddProgram ( GXPrecompiledShaderProgramNode &program );
+};
 
 struct GXShaderProgramInfo 
 {
@@ -24,11 +55,12 @@ struct GXShaderProgramInfo
 class GXShaderProgram
 {
 	private:
-		GXWChar*	vs;
-		GXWChar*	gs;
-		GXWChar*	fs;
+		GXWChar*					vs;
+		GXWChar*					gs;
+		GXWChar*					fs;
 
-		GLuint		program;
+		GLuint						program;
+		static GXDynamicArray		stringArray;
 
 	public:
 		GXShaderProgram ();
@@ -36,6 +68,9 @@ class GXShaderProgram
 
 		GLuint GetProgram () const;
 		GLint GetUniform ( const GLchar* name ) const;
+
+		static GXVoid InitShaderProgramCache ();
+		static GXVoid DestroyShaderProgramCache ();
 
 		static GXShaderProgram& GXCALL GetShaderProgram ( const GXShaderProgramInfo &info );
 		static GXVoid GXCALL RemoveShaderProgram ( GXShaderProgram &program );

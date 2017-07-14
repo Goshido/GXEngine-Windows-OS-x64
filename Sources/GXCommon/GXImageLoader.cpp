@@ -21,7 +21,7 @@
 
 GXBool GXCALL GXLoadImage ( const GXWChar* fileName, GXUInt &width, GXUInt &height, GXUByte &numChannels, GXUByte** data )
 {
-	GXUInt len;
+	GXUBigInt len;
 	stbi_uc* mappedFile;
 
 	if ( !GXLoadFile ( fileName, (GXVoid**)&mappedFile, len, GX_TRUE ) )
@@ -31,7 +31,7 @@ GXBool GXCALL GXLoadImage ( const GXWChar* fileName, GXUInt &width, GXUInt &heig
 	}
 
 	GXInt comp;
-	*data = (GXUByte*)stbi_load_from_memory ( mappedFile, len, (GXInt*)&width, (GXInt*)&height, &comp, 0 );
+	*data = (GXUByte*)stbi_load_from_memory ( mappedFile, (int)len, (GXInt*)&width, (GXInt*)&height, &comp, 0 );
 	free ( mappedFile );
 
 	if ( !( *data ) )

@@ -160,7 +160,7 @@ GXTexture& GXCALL GXTexture::LoadTexture ( const GXWChar* fileName, GXBool isGen
 
 	GXWChar* path = nullptr;
 	GXGetFileDirectoryPath ( &path, fileName );
-	GXUInt size = GXWcslen ( path ) * sizeof ( GXWChar );
+	GXUBigInt size = GXWcslen ( path ) * sizeof ( GXWChar );
 
 	size += sizeof ( GXWChar );		//L'/' symbol
 	size += GXWcslen ( CACHE_DIRECTORY_NAME ) * sizeof ( GXWChar );
