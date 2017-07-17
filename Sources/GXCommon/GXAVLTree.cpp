@@ -1,4 +1,4 @@
-//vesrion 1.3
+//vesrion 1.4
 
 #include <GXCommon/GXAVLTree.h>
 #include <GXCommon/GXStrings.h>
@@ -22,9 +22,9 @@ GXUInt GXAVLTree::GetTotalNodes () const
 	return totalNodes;
 }
 
-GXAVLTree::GXAVLTree ( PFNGXAVLTREECOMPAREPROC compareFunc, GXBool isAutoClean )
+GXAVLTree::GXAVLTree ( PFNGXAVLTREECOMPAREPROC comparator, GXBool isAutoClean )
 {
-	Compare = compareFunc;
+	Compare = comparator;
 	this->isAutoClean = isAutoClean;
 	root = nullptr;
 	totalNodes = 0;
@@ -36,13 +36,13 @@ GXAVLTree::~GXAVLTree ()
 		DeleteTree ( root );
 }
 
-const GXAVLTreeNode* GXAVLTree::FindByKey ( const GXVoid* key ) const
+const GXAVLTreeNode* GXAVLTree::Find ( const GXAVLTreeNode &node ) const
 {
 	GXAVLTreeNode* p = root;
 
 	while ( p )
 	{
-		GXInt compareResult = Compare ( key, p->GetKey () );
+		GXInt compareResult = Compare ( node, *p );
 
 		if ( compareResult < 0 )
 			p = p->left;
@@ -52,14 +52,14 @@ const GXAVLTreeNode* GXAVLTree::FindByKey ( const GXVoid* key ) const
 			return p;
 	}
 	
-	return 0;
+	return nullptr;
 }
 
-GXVoid GXAVLTree::Add ( GXAVLTreeNode* node )
+GXVoid GXAVLTree::Add ( GXAVLTreeNode &node )
 {
-	if ( FindByKey ( node->GetKey () ) ) return;
+	if ( Find ( node ) ) return;
 
-	root = Insert ( node, root );
+	root = Insert ( &node, root );
 	totalNodes++;
 }
 
@@ -130,7 +130,7 @@ GXAVLTreeNode* GXAVLTree::Insert ( GXAVLTreeNode* node, GXAVLTreeNode* root )
 {
 	if ( !root ) return node;
 
-	if ( Compare ( node->GetKey (), root->GetKey () ) < 0 )
+	if ( Compare ( *node, *root ) < 0 )
 		root->left = Insert ( node, root->left );
 	else
 		root->right = Insert ( node, root->right );

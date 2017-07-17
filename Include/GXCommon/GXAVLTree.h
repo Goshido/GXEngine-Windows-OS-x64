@@ -1,4 +1,4 @@
-//version 1.3
+//version 1.4
 
 #ifndef GX_AVL_TREE
 #define GX_AVL_TREE
@@ -17,13 +17,11 @@ class GXAVLTreeNode
 	public:
 		GXAVLTreeNode ();
 		virtual ~GXAVLTreeNode ();
-	
-		virtual const GXVoid* GetKey () const = 0;
 };
 
 
 typedef GXVoid ( GXCALL* PFNGXAVLTREEITERATORPROC ) ( const GXAVLTreeNode* node, GXVoid* args );
-typedef GXInt ( GXCALL* PFNGXAVLTREECOMPAREPROC ) ( const GXVoid* a, const GXVoid* b );
+typedef GXInt ( GXCALL* PFNGXAVLTREECOMPAREPROC ) ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
 
 
 class GXAVLTree
@@ -40,11 +38,11 @@ class GXAVLTree
 		GXUInt GetTotalNodes () const;
 
 	protected:
-		explicit GXAVLTree ( PFNGXAVLTREECOMPAREPROC compareFunc, GXBool isAutoClean = GX_TRUE );
+		explicit GXAVLTree ( PFNGXAVLTREECOMPAREPROC comparator, GXBool isAutoClean );
 		virtual ~GXAVLTree ();
 
-		const GXAVLTreeNode* FindByKey ( const GXVoid* key ) const;
-		GXVoid Add ( GXAVLTreeNode* node );
+		const GXAVLTreeNode* Find ( const GXAVLTreeNode &node ) const;
+		GXVoid Add ( GXAVLTreeNode &node );
 		
 		GXVoid DoPrefix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const;
 		GXVoid DoInfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const;

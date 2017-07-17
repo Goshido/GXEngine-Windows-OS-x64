@@ -11,6 +11,8 @@
 #define DEFAULT_FRAME_INTERVAL				0.016f
 #define DEFAULT_FRAME_INTERPOLATION_FACTOR	0.0f
 
+#define INVALID_BONE_INDEX					0xFFFF
+
 
 class GXBoneFinderNode : public GXAVLTreeNode
 {
@@ -19,12 +21,18 @@ class GXBoneFinderNode : public GXAVLTreeNode
 		GXUShort		boneIndex;
 
 	public:
-		GXBoneFinderNode ( const GXUTF8* boneName, GXUShort boneIndex );
-	
-		const GXVoid* GetKey () const override;
+		GXBoneFinderNode ();
+		explicit GXBoneFinderNode ( const GXUTF8* boneName, GXUShort boneIndex );
+		~GXBoneFinderNode () override;
 
-		static GXInt GXCALL Compare ( const GXVoid* a, const GXVoid* b );
+		static GXInt GXCALL Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
 };
+
+GXBoneFinderNode::GXBoneFinderNode ()
+{
+	boneName = nullptr;
+	boneIndex = INVALID_BONE_INDEX;
+}
 
 GXBoneFinderNode::GXBoneFinderNode ( const GXUTF8* boneName, GXUShort boneIndex )
 {
@@ -32,14 +40,16 @@ GXBoneFinderNode::GXBoneFinderNode ( const GXUTF8* boneName, GXUShort boneIndex 
 	this->boneIndex = boneIndex;
 }
 
-const GXVoid* GXBoneFinderNode::GetKey () const
+GXBoneFinderNode::~GXBoneFinderNode ()
 {
-	return boneName;
+	// NOTHING
 }
 
-GXInt GXCALL GXBoneFinderNode::Compare ( const GXVoid* a, const GXVoid* b )
+GXInt GXCALL GXBoneFinderNode::Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b )
 {
-	return strcmp ( (const GXUTF8*)a, (const GXUTF8*)b );
+	GXBoneFinderNode& aNode = (GXBoneFinderNode&)a;
+	GXBoneFinderNode& bNode = (GXBoneFinderNode&)b;
+	return strcmp ( aNode.boneName, bNode.boneName );
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -50,10 +60,10 @@ class GXBoneFinder : public GXAVLTree
 		GXBoneFinderNode*	cacheFriendlyNodes;
 
 	public:
-		GXBoneFinder ( const GXAnimationInfo &animInfo );
-		virtual ~GXBoneFinder ();
+		explicit GXBoneFinder ( const GXAnimationInfo &animInfo );
+		~GXBoneFinder () override;
 
-		GXUShort FindBoneIndex ( const GXUTF8* boneName );
+		GXUShort FindBoneIndex ( const GXUTF8* boneName ) const;
 };
 
 GXBoneFinder::GXBoneFinder ( const GXAnimationInfo &animInfo ) :
@@ -63,7 +73,7 @@ GXAVLTree ( &GXBoneFinderNode::Compare, GX_FALSE )
 	for ( GXUShort i = 0; i < animInfo.numBones; i++ )
 	{
 		new ( cacheFriendlyNodes + i ) GXBoneFinderNode ( animInfo.boneNames + i * GX_BONE_NAME_SIZE, i );
-		Add ( cacheFriendlyNodes + i );
+		Add ( *( cacheFriendlyNodes + i ) );
 	}
 }
 
@@ -72,9 +82,11 @@ GXBoneFinder::~GXBoneFinder ()
 	free ( cacheFriendlyNodes );
 }
 
-GXUShort GXBoneFinder::FindBoneIndex ( const GXUTF8* boneName )
+GXUShort GXBoneFinder::FindBoneIndex ( const GXUTF8* boneName ) const
 {
-	const GXBoneFinderNode* node = (const GXBoneFinderNode*)FindByKey ( boneName );
+	GXBoneFinderNode finderNode;
+	finderNode.boneName = boneName;
+	const GXBoneFinderNode* node = (const GXBoneFinderNode*)Find ( finderNode );
 
 	if ( !node )
 		return 0xFFFF;

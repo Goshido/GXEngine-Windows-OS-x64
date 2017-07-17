@@ -14,28 +14,34 @@ class GXPrecompiledShaderProgramNode : public GXAVLTreeNode
 	friend class GXPrecompiledShaderProgramFinder;
 
 	private:
-		GXWChar*	name;
+		GXWChar*	vs;
+		GXWChar*	gs;
+		GXWChar*	fs;
 		GXWChar*	binaryPath;
 		GLenum		binaryFormat;
 
-	public:
-		GXPrecompiledShaderProgramNode ( const GXWChar* vs, const GXWChar* fs, const GXWChar* gs, const GXWChar* binaryPath, GLenum binaryFormat );
+	private:
+		GXPrecompiledShaderProgramNode ();
+		explicit GXPrecompiledShaderProgramNode ( const GXUTF8* vs, const GXUTF8* fs, const GXUTF8* gs, const GXUTF8* binaryPath, GLenum binaryFormat );
+		explicit GXPrecompiledShaderProgramNode ( const GXWChar* vs, const GXWChar* fs, const GXWChar* gs, const GXWChar* binaryPath, GLenum binaryFormat );
 		~GXPrecompiledShaderProgramNode () override;
 
-		const GXVoid* GetKey () const override;
-
-	private:
-		static GXInt GXCALL Compare ( const GXVoid* a, const GXVoid* b );
+		static GXInt GXCALL Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
+		static GXVoid GXCALL InitFinderNode ( GXPrecompiledShaderProgramNode& node, const GXWChar* vs, const GXWChar* fs, const GXWChar* gs );
+		static GXVoid GXCALL DestroyFinderNode ( GXPrecompiledShaderProgramNode& node );
 };
 
 class GXPrecompiledShaderProgramFinder : public GXAVLTree
 {
-	public:
+	private:
+		GXUBigInt						counter;
+
+	private:
 		GXPrecompiledShaderProgramFinder ();
 		~GXPrecompiledShaderProgramFinder () override;
 
 		GXVoid FindProgram ( const GXWChar** binaryPath, GLenum &binaryFormat, const GXWChar* vs, const GXWChar* fs, const GXWChar* gs ) const;
-		GXVoid AddProgram ( GXPrecompiledShaderProgramNode &program );
+		GXVoid AddProgram ( const GXWChar* vs, const GXWChar* fs, const GXWChar* gs, const GXWChar* binaryPath, GLenum binaryFormat );
 };
 
 struct GXShaderProgramInfo 

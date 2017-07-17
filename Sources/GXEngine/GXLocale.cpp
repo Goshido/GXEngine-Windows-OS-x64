@@ -11,17 +11,26 @@
 
 class GXStringNode : public GXAVLTreeNode
 {
-	private:
+	public:
 		GXWChar*	key;
 		GXWChar*	value;
 
 	public:
+		GXStringNode ();
 		GXStringNode ( const GXUTF8* key, const GXUTF8* value );
 		~GXStringNode () override;
 
-		const GXVoid* GetKey () const override;
 		const GXWChar* GetValue () const;
+
+		static GXVoid GXCALL InitFinderNode ( GXStringNode &node, const GXWChar* key );
+		static GXVoid GXCALL DestroyFinderNode ( GXStringNode &node );
 };
+
+GXStringNode::GXStringNode ()
+{
+	key = nullptr;
+	value = nullptr;
+}
 
 GXStringNode::GXStringNode ( const GXUTF8* key, const GXUTF8* value )
 {
@@ -31,18 +40,25 @@ GXStringNode::GXStringNode ( const GXUTF8* key, const GXUTF8* value )
 
 GXStringNode::~GXStringNode ()
 {
-	free ( key );
-	free ( value );
-}
-
-const GXVoid* GXStringNode::GetKey () const
-{
-	return key;
+	GXSafeFree ( key );
+	GXSafeFree ( value );
 }
 
 const GXWChar* GXStringNode::GetValue () const
 {
 	return value;
+}
+
+GXVoid GXCALL GXStringNode::InitFinderNode ( GXStringNode &node, const GXWChar* key )
+{
+	node.key = (GXWChar*)key;
+	node.value = nullptr;
+}
+
+GXVoid GXCALL GXStringNode::DestroyFinderNode ( GXStringNode &node )
+{
+	node.key = nullptr;
+	node.value = nullptr;
 }
 
 //--------------------------------------------------------------------------------
@@ -51,14 +67,13 @@ class GXStringTree : public GXAVLTree
 {
 	public:
 		GXStringTree ();
-		virtual ~GXStringTree ();
+		~GXStringTree () override;
 
 		GXVoid AddString ( const GXUTF8* key, const GXUTF8* string );
-		const GXWChar* GetString ( const GXWChar* key );
+		const GXWChar* GetString ( const GXWChar* key ) const;
 
 	private:
-		static GXInt GXCALL Compare ( const GXVoid* a, const GXVoid* b );
-		static GXVoid GXCALL Iterator ( const GXAVLTreeNode* node, GXVoid* args );
+		static GXInt GXCALL Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
 };
 
 GXStringTree::GXStringTree ():
@@ -75,19 +90,28 @@ GXStringTree::~GXStringTree ()
 GXVoid GXStringTree::AddString ( const GXUTF8* key, const GXUTF8* string )
 {
 	GXStringNode* node = new GXStringNode ( key, string );
-	Add ( node );
+	Add ( *node );
 }
 
-const GXWChar* GXStringTree::GetString ( const GXWChar* key )
+const GXWChar* GXStringTree::GetString ( const GXWChar* key ) const
 {
-	GXStringNode* node = (GXStringNode*)FindByKey ( key );
-	if ( node ) return node->GetValue ();
+	GXStringNode finderNode;
+	GXStringNode::InitFinderNode ( finderNode, key );
+	GXStringNode* node = (GXStringNode*)Find ( finderNode );
+	GXStringNode::DestroyFinderNode ( finderNode );
+
+	if ( node )
+		return node->GetValue ();
+
 	return 0;
 }
 
-GXInt GXCALL GXStringTree::Compare ( const GXVoid* a, const GXVoid* b )
+GXInt GXCALL GXStringTree::Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b )
 {
-	return GXWcscmp ( (const GXWChar*)a, (const GXWChar*)b );
+	GXStringNode& aNode = (GXStringNode&)a;
+	GXStringNode& bNode = (GXStringNode&)b;
+
+	return GXWcscmp ( aNode.key, bNode.key );
 }
 
 //--------------------------------------------------------------------------------

@@ -7,10 +7,12 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define SHADER_PROGRAM_CACHE_DICTIONARY		L"Shaders/Shader Cache.bin"
-#define SHADER_PROGRAM_CACHE_INFO			L"Shaders/Shader Cache.txt"
-#define SHADER_PROGRAM_CACHE_FOLDER			L"Shaders/Shader cache"
-#define SHADER_PROGRAM_CACHE_EXTENSION		L"spr"
+#define PRECOMPILED_SHADER_PROGRAM_DICTIONARY		L"Shaders/Precompiled shader dictionary.bin"
+#define PRECOMPILED_SHADER_PROGRAM_INFO				L"Shaders/Precompiled shaders.txt"
+#define PRECOMPILED_SHADER_PROGRAM_FOLDER			L"Shaders/Precompiled shaders"
+#define PRECOMPILED_SHADER_PROGRAM_EXTENSION		L"spr"
+
+#define NULL_STRING_OFFSET							0
 
 
 class GXShaderProgramEntry;
@@ -84,89 +86,140 @@ GXShaderProgramEntry::~GXShaderProgramEntry ()
 
 //-------------------------------------------------------------------------------
 
+GXPrecompiledShaderProgramNode::GXPrecompiledShaderProgramNode ()
+{
+	vs = nullptr;
+	gs = nullptr;
+	fs = nullptr;
+	binaryPath = nullptr;
+	binaryFormat = GL_INVALID_ENUM;
+}
+
+GXPrecompiledShaderProgramNode::GXPrecompiledShaderProgramNode ( const GXUTF8* vs, const GXUTF8* fs, const GXUTF8* gs, const GXUTF8* binaryPath, GLenum binaryFormat )
+{
+	GXToWcs ( &this->vs, vs );
+	GXToWcs ( &this->gs, gs );
+	GXToWcs ( &this->fs, fs );
+	GXToWcs ( &this->binaryPath, binaryPath );
+	this->binaryFormat = binaryFormat;
+}
+
 GXPrecompiledShaderProgramNode::GXPrecompiledShaderProgramNode ( const GXWChar* vs, const GXWChar* fs, const GXWChar* gs, const GXWChar* binaryPath, GLenum binaryFormat )
 {
-	GXUInt vertexShaderSymbols = GXWcslen ( vs );
-	GXUInt geometryShaderSymbols = GXWcslen ( gs );
-	GXUInt fragmentShaderSymbols = GXWcslen ( fs );
-	GXUInt offset = 0;
-
-	name = (GXWChar*)malloc ( ( vertexShaderSymbols + geometryShaderSymbols + fragmentShaderSymbols + 1 ) * sizeof ( GXWChar ) );
-
-	memcpy ( name, vs, vertexShaderSymbols * sizeof ( GXWChar ) );
-	offset += vertexShaderSymbols;
-
-	if ( gs )
-	{
-		memcpy ( name + offset, gs, geometryShaderSymbols * sizeof ( GXWChar ) );
-		offset += geometryShaderSymbols;
-	}
-
-	memcpy ( name + offset, fs, fragmentShaderSymbols * sizeof ( GXWChar ) );
-	offset += fragmentShaderSymbols;
-
-	name[ offset ] = (GXWChar)0;
-
-	GXWcsclone ( &( this->binaryPath ), binaryPath );
+	GXWcsclone ( &this->vs, vs );
+	GXWcsclone ( &this->gs, gs );
+	GXWcsclone ( &this->fs, fs );
+	GXWcsclone ( &this->binaryPath, binaryPath );
 
 	this->binaryFormat = binaryFormat;
 }
 
 GXPrecompiledShaderProgramNode::~GXPrecompiledShaderProgramNode ()
 {
-	free ( name );
-	free ( binaryPath );
+	GXSafeFree ( vs );
+	GXSafeFree ( gs );
+	GXSafeFree ( fs );
+	GXSafeFree ( binaryPath );
 }
 
-const GXVoid* GXPrecompiledShaderProgramNode::GetKey () const
+GXInt GXCALL GXPrecompiledShaderProgramNode::Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b )
 {
-	return name;
+	GXPrecompiledShaderProgramNode& aNode = (GXPrecompiledShaderProgramNode&)a;
+	GXPrecompiledShaderProgramNode& bNode = (GXPrecompiledShaderProgramNode&)b;
+
+	GXInt compare = GXWcscmp ( aNode.fs, bNode.fs );
+
+	if ( compare != 0 )
+		return compare;
+
+	compare = GXWcscmp ( aNode.vs, bNode.vs );
+
+	if ( compare != 0 )
+		return compare;
+
+	return GXWcscmp ( aNode.gs, bNode.gs );
 }
 
-GXInt GXCALL GXPrecompiledShaderProgramNode::Compare ( const GXVoid* a, const GXVoid* b )
+GXVoid GXCALL GXPrecompiledShaderProgramNode::InitFinderNode ( GXPrecompiledShaderProgramNode& node, const GXWChar* vs, const GXWChar* fs, const GXWChar* gs )
 {
-	return GXWcscmp ( (const GXWChar*)a, (const GXWChar*)b );
+	node.vs = (GXWChar*)vs;
+	node.gs = (GXWChar*)gs;
+	node.fs = (GXWChar*)fs;
+	node.binaryPath = nullptr;
+}
+
+GXVoid GXCALL GXPrecompiledShaderProgramNode::DestroyFinderNode ( GXPrecompiledShaderProgramNode& node )
+{
+	node.vs = nullptr;
+	node.gs = nullptr;
+	node.fs = nullptr;
+	node.binaryPath = nullptr;
 }
 
 //-------------------------------------------------------------------------------
 
+#pragma pack(push)
+#pragma pack(1)
+
+struct GXDictionaryHeader
+{
+	GXUBigInt	counter;
+	GXUInt		totalPrecompiledPrograms;
+	GXUBigInt	chunkOffset;
+};
+
+struct GXChunk
+{
+	GXUBigInt	vsOffset;
+	GXUBigInt	gsOffset;
+	GXUBigInt	fsOffset;
+	GXUBigInt	binaryPathOffset;
+	GLenum		binaryFormat;
+};
+
+#pragma pack(pop)
+
 GXPrecompiledShaderProgramFinder::GXPrecompiledShaderProgramFinder () :
 GXAVLTree ( &GXPrecompiledShaderProgramNode::Compare, GX_TRUE )
 {
-	//NOTHING
+	GXUByte* data = nullptr;
+	GXUBigInt size = 0;
+
+	if ( !GXLoadFile ( PRECOMPILED_SHADER_PROGRAM_DICTIONARY, (GXVoid**)&data, size, GX_FALSE ) ) return;
+
+	GXDictionaryHeader* header = (GXDictionaryHeader*)data;
+	GXChunk* chuncks = (GXChunk*)( data + header->chunkOffset );
+	counter = header->counter;
+
+	for ( GXUInt i = 0; i < header->totalPrecompiledPrograms; i++ )
+	{
+		const GXChunk& chunk = chuncks[ i ];
+
+		const GXUTF8* vs = chunk.vsOffset == NULL_STRING_OFFSET ? nullptr : (const GXUTF8*)( data + chunk.vsOffset );
+		const GXUTF8* gs = chunk.gsOffset == NULL_STRING_OFFSET ? nullptr : (const GXUTF8*)( data + chunk.gsOffset );
+		const GXUTF8* fs = chunk.fsOffset == NULL_STRING_OFFSET ? nullptr : (const GXUTF8*)( data + chunk.fsOffset );
+		const GXUTF8* binaryPath = (const GXUTF8*)( data + chunk.binaryPathOffset );
+
+		GXPrecompiledShaderProgramNode* node = new GXPrecompiledShaderProgramNode ( vs, fs, gs, binaryPath, chunk.binaryFormat );
+		Add ( *node );
+	}
+
+	free ( data );
 }
 
 GXPrecompiledShaderProgramFinder::~GXPrecompiledShaderProgramFinder ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid GXPrecompiledShaderProgramFinder::FindProgram ( const GXWChar** binaryPath, GLenum &binaryFormat, const GXWChar* vs, const GXWChar* fs, const GXWChar* gs ) const
 {
-	GXUInt vertexShaderSymbols = GXWcslen ( vs );
-	GXUInt geometryShaderSymbols = GXWcslen ( gs );
-	GXUInt fragmentShaderSymbols = GXWcslen ( fs );
-	GXUInt offset = 0;
+	GXPrecompiledShaderProgramNode finderNode;
+	GXPrecompiledShaderProgramNode::InitFinderNode ( finderNode, vs, gs, fs );
+	GXPrecompiledShaderProgramNode* program = (GXPrecompiledShaderProgramNode*)Find ( finderNode );
+	GXPrecompiledShaderProgramNode::DestroyFinderNode ( finderNode );
 
-	GXWChar* programName = (GXWChar*)malloc ( ( vertexShaderSymbols + geometryShaderSymbols + fragmentShaderSymbols + 1 ) * sizeof ( GXWChar ) );
-
-	memcpy ( programName, vs, vertexShaderSymbols * sizeof ( GXWChar ) );
-	offset += vertexShaderSymbols;
-
-	if ( gs )
-	{
-		memcpy ( programName + offset, gs, geometryShaderSymbols * sizeof ( GXWChar ) );
-		offset += geometryShaderSymbols;
-	}
-
-	memcpy ( programName + offset, fs, fragmentShaderSymbols * sizeof ( GXWChar ) );
-	offset += fragmentShaderSymbols;
-
-	programName[ offset ] = (GXWChar)0;
-
-	GXPrecompiledShaderProgramNode* program = (GXPrecompiledShaderProgramNode*)FindByKey ( programName );
-
-	if ( programName )
+	if ( program )
 	{
 		*binaryPath = program->binaryPath;
 		binaryFormat = program->binaryFormat;
@@ -176,13 +229,14 @@ GXVoid GXPrecompiledShaderProgramFinder::FindProgram ( const GXWChar** binaryPat
 		*binaryPath = nullptr;
 		binaryFormat = GL_INVALID_ENUM;
 	}
-
-	free ( programName );
 }
 
-GXVoid GXPrecompiledShaderProgramFinder::AddProgram ( GXPrecompiledShaderProgramNode &program )
+GXVoid GXPrecompiledShaderProgramFinder::AddProgram ( const GXWChar* vs, const GXWChar* fs, const GXWChar* gs, const GXWChar* binaryPath, GLenum binaryFormat )
 {
-	Add ( &program );
+	GXPrecompiledShaderProgramNode* node = new GXPrecompiledShaderProgramNode ( vs, fs, gs, binaryPath, binaryFormat );
+	Add ( *node );
+
+	//TODO Update files
 }
 
 //-------------------------------------------------------------------------------
@@ -234,7 +288,7 @@ GXVoid GXShaderProgram::InitShaderProgramCache ()
 
 	GXUByte* dictionary = nullptr;
 	GXUBigInt size = 0;
-	if ( !GXLoadFile ( SHADER_PROGRAM_CACHE_DICTIONARY, (GXVoid**)&dictionary, size, GX_FALSE ) )
+	if ( !GXLoadFile ( PRECOMPILED_SHADER_PROGRAM_DICTIONARY, (GXVoid**)&dictionary, size, GX_FALSE ) )
 	{
 		GXLogW ( L"GXShaderProgram::InitShaderProgramCache::Error - Не могу загрузить словарь откомпилированных шейдерных программ\n" );
 		return;
