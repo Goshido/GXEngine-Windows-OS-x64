@@ -42,6 +42,9 @@ class GXPrecompiledShaderProgramFinder : public GXAVLTree
 
 		GXVoid FindProgram ( const GXWChar** binaryPath, GLenum &binaryFormat, const GXWChar* vs, const GXWChar* fs, const GXWChar* gs ) const;
 		GXVoid AddProgram ( const GXWChar* vs, const GXWChar* fs, const GXWChar* gs, const GXWChar* binaryPath, GLenum binaryFormat );
+
+		static GXVoid GXCALL GetDictionarySize ( const GXAVLTreeNode &node, GXVoid* args );
+		static GXVoid GXCALL SaveDictionary ( const GXAVLTreeNode &node, GXVoid* args );
 };
 
 struct GXShaderProgramInfo 

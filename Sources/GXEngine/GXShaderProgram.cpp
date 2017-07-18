@@ -239,6 +239,27 @@ GXVoid GXPrecompiledShaderProgramFinder::AddProgram ( const GXWChar* vs, const G
 	//TODO Update files
 }
 
+GXVoid GXCALL GXPrecompiledShaderProgramFinder::GetDictionarySize ( const GXAVLTreeNode &node, GXVoid* args )
+{
+	GXUBigInt* size = (GXUBigInt*)args;
+	const GXPrecompiledShaderProgramNode& item = (const GXPrecompiledShaderProgramNode&)node;
+	
+	if ( item.vs )
+	{
+		GXUTF8* stringU;
+		GXToUTF8 ( &stringU, item.vs );
+		*size += GXUTF8len ( stringU );
+		free ( stringU );
+
+		//TODO
+	}
+};
+
+GXVoid GXCALL GXPrecompiledShaderProgramFinder::SaveDictionary ( const GXAVLTreeNode &node, GXVoid* args )
+{
+
+}
+
 //-------------------------------------------------------------------------------
 
 GXDynamicArray GXShaderProgram::stringArray ( sizeof ( GXWChar ) );

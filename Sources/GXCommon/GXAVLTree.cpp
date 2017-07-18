@@ -67,7 +67,7 @@ GXVoid GXAVLTree::DoPrefix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC
 {
 	if ( !root ) return;
 
-	iterator ( root, args );
+	iterator ( *root, args );
 	DoPrefix ( root->left, iterator, args );
 	DoPrefix ( root->right, iterator, args );
 }
@@ -77,7 +77,7 @@ GXVoid GXAVLTree::DoInfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC 
 	if ( !root ) return;
 
 	DoInfix ( root->left, iterator, args );
-	iterator ( root, args );
+	iterator ( *root, args );
 	DoInfix ( root->right, iterator, args );
 }
 
@@ -87,7 +87,7 @@ GXVoid GXAVLTree::DoPostfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPRO
 
 	DoPostfix ( root->left, iterator, args );
 	DoPostfix ( root->right, iterator, args );
-	iterator ( root, args );
+	iterator ( *root, args );
 }
 
 GXUInt GXAVLTree::GetHeight ( GXAVLTreeNode* node ) const
