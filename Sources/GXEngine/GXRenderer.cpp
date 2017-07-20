@@ -6,6 +6,7 @@
 #include <GXEngine/GXResource.h>
 #include <GXEngine/GXUICommon.h>
 #include <GXEngine/GXInput.h>
+#include <GXEngine/GXShaderProgram.h>
 #include <GXEngine/GXEngineSettings.h>
 #include <GXCommon/GXTime.h>
 #include <GXCommon/GXStrings.h>
@@ -424,6 +425,9 @@ GXVoid GXCALL GXRenderer::DrawScene ()
 GXVoid GXCALL GXRenderer::Destroy ()
 {
 	DeleteRenderableObjects ();
+
+	GXShaderProgram::DestroyShaderProgramProgramSubsystem ();
+
 	if ( isFullScreen )
 	{
 		ChangeDisplaySettingsW ( 0, 0 );
@@ -632,6 +636,8 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
 			return GX_FALSE;
 	}
+
+	GXShaderProgram::InitPrecompiledShaderProgramSubsystem ();
 
 	ShowWindow ( hwnd, SW_SHOWNORMAL );
 	SetForegroundWindow ( hwnd );
