@@ -1,0 +1,11 @@
+GXShaderProgram->GXPrecompiledShaderProgramFinder::SaveDictionary->-------------------------------------~-------------------------------------~
+
+GXShaderProgram->GXPrecompiledShaderProgramFinder::SaveDictionary->Vertex shader: ~Вершинный шейдер: ~
+
+GXShaderProgram->GXPrecompiledShaderProgramFinder::SaveDictionary->Geometry Shader: ~Геометрический шейдер: ~
+
+GXShaderProgram->GXPrecompiledShaderProgramFinder::SaveDictionary->Fragment Shader: ~Фрагментный шейдер: ~
+
+GXShaderProgram->GXPrecompiledShaderProgramFinder::SaveDictionary->Not needed~Не требуется~
+
+GXShaderProgram->GXPrecompiledShaderProgramFinder::SaveDictionary->Precompiled shader program: ~Прекомпилированная шейдерная программа: ~

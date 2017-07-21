@@ -115,6 +115,15 @@ GXInt GXCALL GXStringTree::Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode
 }
 
 //--------------------------------------------------------------------------------
+
+enum eGXParserState : GXUByte
+{
+	Key,
+	String
+};
+
+//--------------------------------------------------------------------------------
+
 GXLocale* GXLocale::instance = nullptr;
 
 GXLocale::~GXLocale ()
@@ -133,17 +142,24 @@ GXLocale::~GXLocale ()
 
 GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 {
-	#define GX_KEY_STATE	0
-	#define GX_STRING_STATE	1
-
 	GXUTF8* data;
-	GXUBigInt size;
+	GXUPointer size;
 	GXLoadFile ( fileName, (GXVoid**)&data, size, GX_TRUE );
 
-	GXStringTree* tree = new GXStringTree ();
-	storage.SetValue ( (GXUInt)language, &tree );
+	GXStringTree* tree = nullptr;
+	GXVoid* tmp = storage.GetValue ( (GXUInt)language );
 
-	GXUByte state = GX_KEY_STATE;
+	if ( !tmp )
+	{
+		tree = new GXStringTree ();
+		storage.SetValue ( (GXUInt)language, &tree );
+	}
+	else
+	{
+		tree = *( (GXStringTree**)tmp );
+	}
+
+	eGXParserState state = eGXParserState::Key;
 	GXUInt offset = 0;
 	GXUInt start = 0;
 	GXUTF8* key = data;
@@ -154,16 +170,16 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 		if ( data[ offset ] == GX_DEFAULT_SEPARATOR )
 		{
 			data[ offset ] = 0;
-			if ( state == GX_KEY_STATE )
+			if ( state == eGXParserState::Key )
 			{
 				string = data + offset + 1;
-				state = GX_STRING_STATE;
+				state = eGXParserState::String;
 			}
 			else
 			{
 				tree->AddString ( key, string );
 
-				while ( 1 )
+				while ( GX_TRUE )
 				{
 					offset++;
 
@@ -179,7 +195,7 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 				if ( offset >= size ) break;
 
 				key = data + offset + 1;
-				state = GX_KEY_STATE;
+				state = eGXParserState::Key;
 			}
 		}
 
@@ -187,9 +203,6 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 	}
 
 	free ( data );
-
-	#undef GX_KEY_STATE
-	#undef GX_STRING_STATE
 }
 
 GXVoid GXLocale::SetLanguage ( eGXLanguage language )
@@ -228,8 +241,4 @@ GXLocale::GXLocale ():
 storage ( sizeof ( GXStringTree* ) )
 {
 	language = eGXLanguage::Russian;
-
-	GXStringTree* node = nullptr;
-	storage.SetValue ( (GXUInt)eGXLanguage::Russian, &node );
-	storage.SetValue ( (GXUInt)eGXLanguage::English, &node );
 }

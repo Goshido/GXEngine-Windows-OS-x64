@@ -57,11 +57,11 @@ GXVoid GXDirectoryInfo::Clear ()
 
 //-----------------------------------------------------------------------
 
-GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUBigInt &size, GXBool notsilent )
+GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUPointer &size, GXBool notsilent )
 {
 	FILE* input = nullptr;
-	GXUBigInt fileSize = 0;
-	GXUBigInt readed = 0;
+	GXUPointer fileSize = 0;
+	GXUPointer readed = 0;
 
 	_wfopen_s ( &input, fileName, L"rb" );
 	if ( input == nullptr )
@@ -79,7 +79,7 @@ GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUBigInt &
 	}
 
 	fseek ( input, 0, SEEK_END );
-	fileSize = (GXUBigInt)ftell ( input );
+	fileSize = (GXUPointer)ftell ( input );
 	rewind ( input );
 
 	if ( fileSize == 0 )
@@ -95,7 +95,7 @@ GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUBigInt &
 	}
 
 	*buffer = (GXVoid*)malloc ( fileSize );
-	readed = (GXUBigInt)fread ( *buffer, 1, fileSize, input );
+	readed = (GXUPointer)fread ( *buffer, 1, fileSize, input );
 	fclose ( input );
 
 	if ( readed != fileSize )
@@ -114,7 +114,7 @@ GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUBigInt &
 	return GX_TRUE;
 }
 
-GXBool GXCALL GXWriteToFile ( const GXWChar* fileName, const GXVoid* buffer, GXUInt size )
+GXBool GXCALL GXWriteToFile ( const GXWChar* fileName, const GXVoid* buffer, GXUPointer size )
 {
 	FILE* input;
 	_wfopen_s ( &input, fileName, L"wb" );
@@ -403,30 +403,30 @@ GXVoid GXCALL GXGetFileExtension ( GXWChar** extension, const GXWChar* fileName 
 
 //------------------------------------------------------------------------------------------------
 
-GXWriteStream::GXWriteStream ( const GXWChar* fileName )
+GXWriteFileStream::GXWriteFileStream ( const GXWChar* fileName )
 {
-	_wfopen_s ( &input, fileName, L"wb" );
+	_wfopen_s ( &file, fileName, L"wb" );
 
-	if ( !input )
+	if ( !file )
 		GXLogW ( L"GXWriteToFile::Error - Не могу создать файл %s\n", fileName );
 }
 
-GXWriteStream::~GXWriteStream ()
+GXWriteFileStream::~GXWriteFileStream ()
 {
 	Close ();
 }
 
-GXVoid GXWriteStream::Write ( const GXVoid* data, GXUInt size )
+GXVoid GXWriteFileStream::Write ( const GXVoid* data, GXUPointer size )
 {
-	if ( !input ) return;
+	if ( !file ) return;
 
-	fwrite ( data, size, 1, input );
+	fwrite ( data, size, 1, file );
 }
 
-GXVoid GXWriteStream::Close ()
+GXVoid GXWriteFileStream::Close ()
 {
-	if ( !input ) return;
+	if ( !file ) return;
 
-	fclose ( input );
-	input = nullptr;
+	fclose ( file );
+	file = nullptr;
 }

@@ -160,7 +160,7 @@ GXTexture& GXCALL GXTexture::LoadTexture ( const GXWChar* fileName, GXBool isGen
 
 	GXWChar* path = nullptr;
 	GXGetFileDirectoryPath ( &path, fileName );
-	GXUBigInt size = GXWcslen ( path ) * sizeof ( GXWChar );
+	GXUPointer size = GXWcslen ( path ) * sizeof ( GXWChar );
 
 	size += sizeof ( GXWChar );		//L'/' symbol
 	size += GXWcslen ( CACHE_DIRECTORY_NAME ) * sizeof ( GXWChar );
@@ -254,7 +254,7 @@ GXTexture& GXCALL GXTexture::LoadTexture ( const GXWChar* fileName, GXBool isGen
 	cacheHeader.height = (GXUShort)height;
 	GLuint internalFormat = INVALID_INTERNAL_FORMAT;
 
-	GXWriteStream cacheFile ( cacheFileName );
+	GXWriteFileStream cacheFile ( cacheFileName );
 	cacheFile.Write ( &cacheHeader, sizeof ( GXTextureCacheHeader ) );
 	cacheFile.Write ( data, cacheHeader.numChannels * width * height );
 	cacheFile.Close ();

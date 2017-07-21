@@ -34,7 +34,7 @@ class GXLocale
 		static GXLocale& GXCALL GetInstance ();
 
 	private:
-		explicit GXLocale ();
+		GXLocale ();
 };
 
 

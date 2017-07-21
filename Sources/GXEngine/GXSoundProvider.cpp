@@ -7,7 +7,7 @@
 GXSoundTrack*	gx_strgSoundTracks = 0;
 
 
-GXSoundStreamer::GXSoundStreamer ( GXVoid* mappedFile, GXUInt totalSize )
+GXSoundStreamer::GXSoundStreamer ( GXVoid* mappedFile, GXUPointer totalSize )
 {
 	this->mappedFile = (GXChar*)mappedFile;
 	this->totalSize = totalSize;

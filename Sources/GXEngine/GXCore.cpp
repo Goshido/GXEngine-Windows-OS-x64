@@ -17,7 +17,10 @@
 #include <GXCommon/GXCFGLoader.h>
 
 
-#define INPUT_SLEEP		30
+#define INPUT_SLEEP				30
+
+#define SYSTEM_LANGUAGE_RU		L"../../Locale/System/RU.lng"
+#define SYSTEM_LANGUAGE_EN		L"../../Locale/System/EN.lng"
 
 
 GXBool	GXCore::loopFlag = GX_TRUE;
@@ -107,6 +110,10 @@ GXCore::GXCore ()
 		GXDebugBox ( L"Инициализация модуля физики провалена" );
 	}
 
+	GXLocale& locale = GXLocale::GetInstance ();
+	locale.LoadLanguage ( SYSTEM_LANGUAGE_EN, eGXLanguage::English );
+	locale.LoadLanguage ( SYSTEM_LANGUAGE_RU, eGXLanguage::Russian );
+
 	GXRenderer::GetInstance ();
 
 	if ( !GXSoundInit () )
@@ -127,7 +134,6 @@ GXCore::GXCore ()
 	GXNetClient::GetInstance ();
 
 	GXTouchSurface::GetInstance ();
-	GXLocale::GetInstance ();
 
 	SetCurrentDirectoryW ( L"../.." );
 

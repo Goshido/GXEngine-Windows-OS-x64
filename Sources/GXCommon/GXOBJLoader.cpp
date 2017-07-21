@@ -9,7 +9,7 @@
 
 GXInt		gx_objloader_Index = 0;
 GXChar*		gx_objloader_ObjSource = nullptr;
-GXUBigInt	gx_objloader_FileSize = 0;
+GXUPointer	gx_objloader_FileSize = 0;
 GXChar		gx_objloader_T[ 30 ] = { 0 };
 
 GXUInt		gx_objloader_TotalVertexes = 0;
@@ -344,7 +344,7 @@ GXInt GXCALL GXLoadOBJ ( const GXWChar* fileName, GXOBJPoint** points )
 {
 	if ( !GXLoadFile ( fileName, (GXVoid**)&gx_objloader_ObjSource, gx_objloader_FileSize, GX_TRUE ) )
 	{
-		GXLogW ( L"GXLoadOBJ::Error - НЃEЃEгу загрузит файл %s\n", fileName );
+		GXLogW ( L"GXLoadOBJ::Error - Не могу загрузить файл %s\n", fileName );
 		return 0;
 	}
 

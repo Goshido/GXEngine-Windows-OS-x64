@@ -415,7 +415,7 @@ GXFont::GXFont ( const GXWChar* fileName, GXUShort size )
 
 	GXUShort temp = (GXUShort)( size * 0.5f );
 	parameters->spaceAdvance = temp == 0 ? 1 : temp;
-	GXUBigInt totalSize = 0;
+	GXUPointer totalSize = 0;
 
 	if ( !GXLoadFile ( fileName, &parameters->mappedFile, totalSize, GX_TRUE ) )
 	{

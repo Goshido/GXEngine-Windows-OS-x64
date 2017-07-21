@@ -25,8 +25,8 @@ struct GXDirectoryInfo
 	GXVoid Clear ();
 };
 
-GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUBigInt &size, GXBool notsilent );
-GXBool GXCALL GXWriteToFile ( const GXWChar* fileName, const GXVoid* buffer, GXUInt size );
+GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUPointer &size, GXBool notsilent );
+GXBool GXCALL GXWriteToFile ( const GXWChar* fileName, const GXVoid* buffer, GXUPointer size );
 GXBool GXCALL GXDoesFileExist ( const GXWChar* fileName );
 GXVoid GXCALL GXGetCurrentDirectory ( GXWChar** currentDirectory );
 GXBool GXCALL GXDoesDirectoryExist ( const GXWChar* directory );
@@ -36,16 +36,16 @@ GXVoid GXCALL GXGetFileDirectoryPath ( GXWChar** path, const GXWChar* fileName )
 GXVoid GXCALL GXGetBaseFileName ( GXWChar** baseFileName, const GXWChar* fileName );
 GXVoid GXCALL GXGetFileExtension ( GXWChar** extension, const GXWChar* fileName );
 
-class GXWriteStream
+class GXWriteFileStream
 {
 	private:
-		FILE* input;
+		FILE* file;
 
 	public:
-		GXWriteStream ( const GXWChar* fileName );
-		~GXWriteStream ();
+		GXWriteFileStream ( const GXWChar* fileName );
+		~GXWriteFileStream ();
 
-		GXVoid Write ( const GXVoid* data, GXUInt size );
+		GXVoid Write ( const GXVoid* data, GXUPointer size );
 		GXVoid Close ();
 };
 

@@ -14,12 +14,12 @@ class GXSoundStreamer
 {
 	protected:
 		GXChar*		mappedFile;
-		GXUBigInt	totalSize;
+		GXUPointer	totalSize;
 		GXLong		position;
 		GXChar		pcmData[ GX_SOUND_PROVIDER_BUFFER_SIZE ];
 
 	public:
-		GXSoundStreamer ( GXVoid* mappedFile, GXUInt totalSize );
+		explicit GXSoundStreamer ( GXVoid* mappedFile, GXUPointer totalSize );
 		virtual ~GXSoundStreamer ();
 
 		GXUInt Read ( GXVoid* out, GXUInt size );
@@ -51,7 +51,7 @@ class GXSoundTrack
 		ALuint				readyBuffer;
 		
 	public:
-		GXSoundTrack ( const GXWChar* trackFile );
+		explicit GXSoundTrack ( const GXWChar* trackFile );
 
 		GXVoid AddRef ();
 		GXVoid Release ();

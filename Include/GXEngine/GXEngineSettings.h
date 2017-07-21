@@ -26,4 +26,5 @@ struct GXEngineSettings
 
 extern GXEngineSettings gx_EngineSettings;
 
+
 #endif //GX_ENGINE_SETTINGS

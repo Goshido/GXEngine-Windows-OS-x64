@@ -349,7 +349,6 @@ GXVoid GXCALL GXMbsclone ( GXMBChar** dest, const GXMBChar* src )
 GXUInt GXCALL GXCalculateSpaceForUTF8 ( const GXWChar* str )
 {
 	GXUInt symbols = GXWcslen ( str );
-
 	GXUInt space = 1;
 
 	for ( GXUInt i = 0; i < symbols; i++ )
@@ -472,6 +471,12 @@ GXUInt GXCALL GXToUTF8 ( GXUTF8** dest, const GXWChar* str )
 
 GXVoid GXCALL GXToWcs ( GXWChar** dest, const GXUTF8* str )
 {
+	if ( !str )
+	{
+		*dest = nullptr;
+		return;
+	}
+
 	GXUTF8Parser parser ( str );
 	GXUInt len = parser.GetLength ();
 

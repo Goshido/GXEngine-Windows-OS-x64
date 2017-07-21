@@ -426,7 +426,7 @@ GXVoid GXCALL GXRenderer::Destroy ()
 {
 	DeleteRenderableObjects ();
 
-	GXShaderProgram::DestroyShaderProgramProgramSubsystem ();
+	GXShaderProgram::DestroyPrecompiledShaderProgramSubsystem ();
 
 	if ( isFullScreen )
 	{

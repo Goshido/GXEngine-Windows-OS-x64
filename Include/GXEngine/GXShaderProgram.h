@@ -1,4 +1,4 @@
-//version 1.1
+//version 1.2
 
 #ifndef GX_SHADER_PROGRAM
 #define GX_SHADER_PROGRAM
@@ -42,8 +42,8 @@ class GXPrecompiledShaderProgramFinder : public GXAVLTree
 		GXPrecompiledShaderProgramFinder ();
 		~GXPrecompiledShaderProgramFinder () override;
 
-		GXVoid FindProgram ( const GXWChar** binaryPath, GLenum &binaryFormat, const GXWChar* vs, const GXWChar* fs, const GXWChar* gs ) const;
-		GXVoid AddProgram ( const GXWChar* vs, const GXWChar* fs, const GXWChar* gs, const GXWChar* binaryPath, GLenum binaryFormat );
+		GXBool FindProgram ( const GXWChar** binaryPath, GLenum &binaryFormat, const GXWChar* vs, const GXWChar* gs, const GXWChar* fs ) const;
+		GXVoid AddProgram ( const GXWChar* vs, const GXWChar* gs, const GXWChar* fs, const GXWChar* binaryPath, GLenum binaryFormat );
 		GXUBigInt GetCounter ();
 
 		static GXVoid GXCALL GetDictionarySize ( const GXAVLTreeNode &node, GXVoid* args );
@@ -73,6 +73,7 @@ class GXShaderProgram
 
 		GLuint										program;
 		static GXPrecompiledShaderProgramFinder*	precompiledShaderProgramFinder;
+		static GXWChar*								stringBuffer;
 
 	public:
 		GXShaderProgram ();
@@ -82,7 +83,7 @@ class GXShaderProgram
 		GLint GetUniform ( const GLchar* name ) const;
 
 		static GXVoid InitPrecompiledShaderProgramSubsystem ();
-		static GXVoid DestroyShaderProgramProgramSubsystem ();
+		static GXVoid DestroyPrecompiledShaderProgramSubsystem ();
 
 		static GXShaderProgram& GXCALL GetShaderProgram ( const GXShaderProgramInfo &info );
 		static GXVoid GXCALL RemoveShaderProgram ( GXShaderProgram &program );
