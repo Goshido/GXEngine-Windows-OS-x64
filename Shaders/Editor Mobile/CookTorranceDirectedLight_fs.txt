@@ -19,7 +19,7 @@ uniform sampler2D parameterSampler;
 uniform sampler2D depthSampler;
 
 uniform vec3 hue;
-uniform float intencity;
+uniform float intensity;
 uniform vec3 hrdColor;
 uniform vec3 ambientColor;
 uniform vec3 toLightDirectionView;
@@ -107,7 +107,7 @@ void main ()
 		specularColor = albedo;
 
 	vec3 diffuse = albedo * hrdColor * INVERSE_PI * ( 1.0 - specularIntensity ) * max ( dot ( normalView, toLightDirectionView ), 0.0 );
-	vec3 specular = specularColor * intencity * specularIntensity * ( d * f * ga ) / ( 4.0 * alpha * betta );
+	vec3 specular = specularColor * intensity * specularIntensity * ( d * f * ga ) / ( 4.0 * alpha * betta );
 
 	fragmentColor = ambientColor + emission + diffuse + specular;
 }

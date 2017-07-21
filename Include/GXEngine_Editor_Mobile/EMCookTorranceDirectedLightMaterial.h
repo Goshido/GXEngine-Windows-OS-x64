@@ -18,8 +18,8 @@ class EMCookTorranceDirectedLightMaterial : public GXMaterial
 		GXVec3			hue;
 		GLint			hueLocation;
 
-		GXFloat			intencity;
-		GXInt			intencityLocation;
+		GXFloat			intensity;
+		GXInt			intensityLocation;
 
 		GXVec3			hdrColor;
 		GLint			hdrColorLocation;

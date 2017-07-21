@@ -51,7 +51,7 @@ EMCookTorranceDirectedLightMaterial::EMCookTorranceDirectedLightMaterial ()
 	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
 
 	hueLocation = shaderProgram.GetUniform ( "hue" );
-	intencityLocation = shaderProgram.GetUniform ( "intencity" );
+	intensityLocation = shaderProgram.GetUniform ( "intencity" );
 	hdrColorLocation = shaderProgram.GetUniform ( "hrdColor" );
 	ambientColorLocation = shaderProgram.GetUniform ( "ambientColor" );
 	toLightDirectionViewLocation = shaderProgram.GetUniform ( "toLightDirectionView" );
@@ -60,7 +60,7 @@ EMCookTorranceDirectedLightMaterial::EMCookTorranceDirectedLightMaterial ()
 	GXVec3 defaultLightDirectionView ( DEFAULT_LIGHT_DIRECTION_VIEW_X, DEFAULT_LIGHT_DIRECTION_VIEW_Y, DEFAULT_LIGHT_DIRECTION_VIEW_Z );
 	SetLightDirectionView ( defaultLightDirectionView );
 
-	intencity = DEFAULT_INTENCITY;
+	intensity = DEFAULT_INTENCITY;
 	SetHue ( DEFAULT_HUE_R, DEFAULT_HUE_G, DEFAULT_HUE_B );
 
 	GXVec3 defaultAmbientColor ( DEFAULT_AMBIENT_COLOR_R, DEFAULT_AMBIENT_COLOR_G, DEFAULT_AMBIENT_COLOR_B );
@@ -82,7 +82,7 @@ GXVoid EMCookTorranceDirectedLightMaterial::Bind ( const GXTransform &transform 
 	glUniformMatrix4fv ( inverseProjectionMatrixLocation, 1, GL_FALSE, inverseProjectionMatrix.arr );
 
 	glUniform3fv ( hueLocation, 1, hue.arr );
-	glUniform1f ( intencityLocation, intencity );
+	glUniform1f ( intensityLocation, intensity );
 	glUniform3fv ( hdrColorLocation, 1, hdrColor.arr );
 	glUniform3fv ( ambientColorLocation, 1, ambientColor.arr );
 	glUniform3fv ( toLightDirectionViewLocation, 1, toLightDirectionView.arr );
@@ -142,12 +142,12 @@ GXVoid EMCookTorranceDirectedLightMaterial::SetLightDirectionView ( const GXVec3
 GXVoid EMCookTorranceDirectedLightMaterial::SetHue ( GXUByte red, GXUByte green, GXUByte blue )
 {
 	GXColorToVec3 ( hue, red, green, blue );
-	GXMulVec3Scalar ( hdrColor, hue, intencity );
+	GXMulVec3Scalar ( hdrColor, hue, intensity );
 }
 
 GXVoid EMCookTorranceDirectedLightMaterial::SetIntencity ( GXFloat intencity )
 {
-	this->intencity = intencity;
+	this->intensity = intencity;
 	GXMulVec3Scalar ( hdrColor, hue, intencity );
 }
 
