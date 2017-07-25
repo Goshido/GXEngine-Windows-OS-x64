@@ -77,6 +77,8 @@ GXDouble		GXRenderer::fpsTimer = 0.0;
 
 GXBool			GXRenderer::isRenderableObjectInited = GX_FALSE;
 
+GXSplashScreen*	GXRenderer::splashScreen = nullptr;
+
 GXRenderer*		GXRenderer::instance = nullptr;
 
 
@@ -475,6 +477,8 @@ GXVoid GXCALL GXRenderer::Destroy ()
 
 GXBool GXCALL GXRenderer::MakeWindow ()
 {
+	splashScreen = new GXSplashScreen ();
+
 	GLuint PixelFomat;
 	WNDCLASSW wc;
 	DWORD dwExStyle;
@@ -527,7 +531,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 		else
 		{
 			dwExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
-			dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE | WS_SYSMENU | WS_CAPTION;
+			dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_SYSMENU | WS_CAPTION;
 		}
 	}
 
@@ -550,7 +554,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 	GXInt deltaHeight = height - ( clientRect.bottom - clientRect.top );
 	GXInt deltaWidth = width - ( clientRect.right - clientRect.left );
 
-	SetWindowPos ( hwnd, HWND_TOP, 0, 0, ( windowRect.right - windowRect.left ) + deltaWidth, ( windowRect.bottom  - windowRect.top ) + deltaHeight, SWP_SHOWWINDOW );
+	SetWindowPos ( hwnd, HWND_TOP, 0, 0, ( windowRect.right - windowRect.left ) + deltaWidth, ( windowRect.bottom  - windowRect.top ) + deltaHeight, SWP_HIDEWINDOW );
 
 	static  PIXELFORMATDESCRIPTOR pfd;
 	memset ( &pfd, 0, sizeof ( pfd ) );
@@ -639,7 +643,6 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
 	GXShaderProgram::InitPrecompiledShaderProgramSubsystem ();
 
-	ShowWindow ( hwnd, SW_SHOWNORMAL );
 	SetForegroundWindow ( hwnd );
 	SetFocus ( hwnd );
 	ReSizeScene ( width, height );
@@ -649,6 +652,10 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
 	gx_ui_Scale = GetDeviceCaps ( hDC, LOGPIXELSX ) / 2.54f;
 	InitRenderableObjects ();
+
+	delete splashScreen;
+	ShowWindow ( hwnd, SW_SHOW );
+
 	ShowCursor ( 0 );
 
 	return GX_TRUE;

@@ -429,6 +429,9 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXUIEditBoxIntegerValidator.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXSplashScreen.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -900,6 +903,9 @@
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXUIEditBoxIntegerValidator.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXSplashScreen.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
   </ItemGroup>

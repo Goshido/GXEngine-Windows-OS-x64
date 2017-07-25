@@ -5,6 +5,7 @@
 
 
 #include "GXGame.h"
+#include "GXSplashScreen.h"
 #include <GXCommon/GXThread.h>
 
 
@@ -28,32 +29,34 @@ class GXRendererResolutions
 class GXRenderer
 {	
 	private:
-		static GXGame*		game;
+		static GXGame*				game;
 
-		static GXThread*	thread;
-		static GXBool		loopFlag;
+		static GXThread*			thread;
+		static GXBool				loopFlag;
 
-		static HWND			hwnd;
-		static HGLRC		hglRC;
-		static HINSTANCE	hinst;
-		static HDC			hDC;
+		static HWND					hwnd;
+		static HGLRC				hglRC;
+		static HINSTANCE			hinst;
+		static HDC					hDC;
 
-		static GXBool		isFullScreen;
-		static GXBool		isSettingsChanged;
+		static GXBool				isFullScreen;
+		static GXBool				isSettingsChanged;
 
-		static GXInt		width;
-		static GXInt		height;
-		static GXInt		vsync;
+		static GXInt				width;
+		static GXInt				height;
+		static GXInt				vsync;
 
-		static GXWChar*		title;
+		static GXWChar*				title;
 
-		static GXDouble		lastTime;
-		static GXDouble		accumulator;
-		static GXUInt		currentFPS;
-		static GXUShort		fpsCounter;
-		static GXDouble		fpsTimer;
+		static GXDouble				lastTime;
+		static GXDouble				accumulator;
+		static GXUInt				currentFPS;
+		static GXUShort				fpsCounter;
+		static GXDouble				fpsTimer;
 
-		static GXBool		isRenderableObjectInited;
+		static GXBool				isRenderableObjectInited;
+
+		static GXSplashScreen*		splashScreen;
 
 		static GXRenderer*	instance;
 

@@ -51,7 +51,7 @@ EMCookTorranceDirectedLightMaterial::EMCookTorranceDirectedLightMaterial ()
 	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
 
 	hueLocation = shaderProgram.GetUniform ( "hue" );
-	intensityLocation = shaderProgram.GetUniform ( "intencity" );
+	intensityLocation = shaderProgram.GetUniform ( "intensity" );
 	hdrColorLocation = shaderProgram.GetUniform ( "hrdColor" );
 	ambientColorLocation = shaderProgram.GetUniform ( "ambientColor" );
 	toLightDirectionViewLocation = shaderProgram.GetUniform ( "toLightDirectionView" );

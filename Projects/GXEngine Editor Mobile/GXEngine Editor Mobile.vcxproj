@@ -198,6 +198,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXRenderable.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSkeleton.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSkinningMaterial.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXSplashScreen.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTextValidator.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTransform.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXMeshGeometry.cpp" />
@@ -348,6 +349,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXRenderable.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSkeleton.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSkinningMaterial.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXSplashScreen.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTextValidator.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTransform.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMeshGeometry.h" />

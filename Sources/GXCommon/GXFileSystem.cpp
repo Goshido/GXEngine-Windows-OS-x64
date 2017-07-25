@@ -168,7 +168,7 @@ GXVoid GXCALL GXGetCurrentDirectory ( GXWChar** currentDirectory )
 
 GXBool GXCALL GXDoesDirectoryExist ( const GXWChar* directory )
 {
-	DWORD ret = GetFileAttributesW ( directory ) != INVALID_FILE_ATTRIBUTES;
+	DWORD ret = GetFileAttributesW ( directory );
 	return ( ret != INVALID_FILE_ATTRIBUTES ) && ( ret & FILE_ATTRIBUTE_DIRECTORY );
 }
 
