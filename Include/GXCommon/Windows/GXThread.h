@@ -17,6 +17,7 @@ class GXThread : public GXAbstractThread
 		~GXThread () override;
 
 		GXVoid Start () override;
+		GXVoid Switch () override;
 		GXVoid Join () override;
 
 	private:

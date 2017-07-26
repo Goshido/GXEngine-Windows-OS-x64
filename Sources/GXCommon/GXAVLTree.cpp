@@ -1,7 +1,8 @@
-//vesrion 1.4
+//vesrion 1.5
 
 #include <GXCommon/GXAVLTree.h>
 #include <GXCommon/GXStrings.h>
+#include <GXCommon/GXLogger.h>
 
 
 GXAVLTreeNode::GXAVLTreeNode ()
@@ -57,10 +58,58 @@ const GXAVLTreeNode* GXAVLTree::Find ( const GXAVLTreeNode &node ) const
 
 GXVoid GXAVLTree::Add ( GXAVLTreeNode &node )
 {
-	if ( Find ( node ) ) return;
+	GXAVLTreeNode* parentNode = nullptr;
+	eGXAVLTreeSide side = eGXAVLTreeSide::Unknown;
+	GXAVLTreeNode* oldNode;
 
-	root = Insert ( &node, root );
-	totalNodes++;
+	FindInternal ( &oldNode, &parentNode, side, node );
+
+	if ( oldNode )
+	{
+		if ( isAutoClean )
+		{
+			if ( !parentNode )
+			{
+				root = &node;
+			}
+			else
+			{
+				switch ( side )
+				{
+					case eGXAVLTreeSide::Left:
+						parentNode->left = &node;
+					break;
+
+					case eGXAVLTreeSide::Right:
+						parentNode->right = &node;
+					break;
+
+					case eGXAVLTreeSide::Unknown:
+						GXLogW ( L"GXAVLTree::Add::Error - Как код попал в ветку eGXAVLTreeSide::Unknown?\n" );
+					break;
+
+					default:
+						//NOTHING
+					break;
+				}
+			}
+
+			node.left = oldNode->left;
+			node.right = oldNode->right;
+			node.height = oldNode->height;
+
+			delete oldNode;
+		}
+		else
+		{
+			GXLogW ( L"GXAVLTree::Add::Error - Обнаружен элемент с идентичным ключом. Не могу выполнить обмен элементов, так как требуется удаление старого элемента, а режим авточистки запрещён.\n" );
+		}
+	}
+	else
+	{
+		root = Insert ( &node, root );
+		totalNodes++;
+	}
 }
 
 GXVoid GXAVLTree::DoPrefix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const
@@ -88,6 +137,39 @@ GXVoid GXAVLTree::DoPostfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPRO
 	DoPostfix ( root->left, iterator, args );
 	DoPostfix ( root->right, iterator, args );
 	iterator ( *root, args );
+}
+
+GXVoid GXAVLTree::FindInternal ( GXAVLTreeNode** oldNode, GXAVLTreeNode** parent, eGXAVLTreeSide &side, const GXAVLTreeNode &node )
+{
+	*parent = nullptr;
+	GXAVLTreeNode* currentNode = root;
+
+	while ( currentNode )
+	{
+		GXInt compareResult = Compare ( node, *currentNode );
+
+		if ( compareResult < 0 )
+		{
+			*parent = currentNode;
+			side = eGXAVLTreeSide::Left;
+			currentNode = currentNode->left;
+		}
+		else if ( compareResult > 0 )
+		{
+			*parent = currentNode;
+			side = eGXAVLTreeSide::Right;
+			currentNode = currentNode->right;
+		}
+		else
+		{
+			*oldNode = currentNode;
+			return;
+		}
+	}
+
+	*parent = nullptr;
+	side = eGXAVLTreeSide::Unknown;
+	*oldNode = nullptr;
 }
 
 GXUInt GXAVLTree::GetHeight ( GXAVLTreeNode* node ) const

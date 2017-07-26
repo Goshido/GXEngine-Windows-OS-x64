@@ -1,4 +1,4 @@
-//version 1.4
+//version 1.5
 
 #ifndef GX_AVL_TREE
 #define GX_AVL_TREE
@@ -22,6 +22,14 @@ class GXAVLTreeNode
 
 typedef GXVoid ( GXCALL* PFNGXAVLTREEITERATORPROC ) ( const GXAVLTreeNode &node, GXVoid* args );
 typedef GXInt ( GXCALL* PFNGXAVLTREECOMPAREPROC ) ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
+
+
+enum class eGXAVLTreeSide : GXUByte
+{
+	Left,
+	Right,
+	Unknown
+};
 
 
 class GXAVLTree
@@ -49,6 +57,8 @@ class GXAVLTree
 		GXVoid DoPostfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const;
 
 	private:
+		GXVoid FindInternal ( GXAVLTreeNode** oldNode, GXAVLTreeNode** parent, eGXAVLTreeSide &side, const GXAVLTreeNode &node );
+
 		GXUInt GetHeight ( GXAVLTreeNode* node ) const;
 		GXInt GetBalance ( GXAVLTreeNode* node );
 

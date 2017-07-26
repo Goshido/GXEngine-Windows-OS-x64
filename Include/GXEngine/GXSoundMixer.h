@@ -44,9 +44,9 @@ class GXSoundMixer
 		static GXSoundMixer& GXCALL GetInstance ();
 
 	private:
-		explicit GXSoundMixer ();
+		GXSoundMixer ();
 
-		static GXUPointer GXTHREADCALL Update ( GXVoid* args );
+		static GXUPointer GXTHREADCALL Update ( GXVoid* args, GXThread &thread );
 
 };
 

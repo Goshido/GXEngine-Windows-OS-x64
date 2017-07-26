@@ -33,6 +33,11 @@ GXVoid GXThread::Start ()
 		state = eGXThreadState::Started;
 }
 
+GXVoid GXThread::Switch ()
+{
+	SwitchToThread ();
+}
+
 GXVoid GXThread::Join ()
 {
 	if ( state == eGXThreadState::Waiting )
@@ -49,7 +54,7 @@ GXVoid GXThread::Join ()
 DWORD WINAPI GXThread::RootThreadStarter ( LPVOID lpThreadParameter )
 {
 	GXThread* thread = (GXThread*)lpThreadParameter;
-	GXUPointer result = thread->Procedure ( thread->argument );
+	GXUPointer result = thread->Procedure ( thread->argument, *thread );
 	GXLogW ( L"GXThread::RootThreadStarter::Info - Поток %X завершился с кодом %X\n", (GXUPointer)lpThreadParameter, result );
 
 	return 0;

@@ -7,6 +7,7 @@
 #include <GXEngine/GXNetwork.h>
 #include <GXEngine/GXTouchSurface.h>
 #include <GXEngine/GXLocale.h>
+#include <GXEngine/GXSplashScreen.h>
 #include <GXEngine/GXEngineSettings.h>
 #include <GXEngine/GXPhysXFrontend.h>
 #include <GXEngine/GXFont.h>
@@ -43,6 +44,9 @@ GXCore::~GXCore ()
 	GXSoundDestroy ();
 
 	GXFont::DestroyFreeTypeLibrary ();
+
+	delete &( GXSplashScreen::GetInstance () );
+
 	GXLogDestroy ();
 }
 
@@ -83,6 +87,8 @@ GXCore& GXCALL GXCore::GetInstance ()
 GXCore::GXCore ()
 {
 	GXLogInit ();
+
+	GXSplashScreen::GetInstance ().Show ();
 
 	GXEngineConfiguration config;
 	GXLoadCFG ( config );

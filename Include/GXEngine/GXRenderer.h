@@ -5,7 +5,6 @@
 
 
 #include "GXGame.h"
-#include "GXSplashScreen.h"
 #include <GXCommon/GXThread.h>
 
 
@@ -56,8 +55,6 @@ class GXRenderer
 
 		static GXBool				isRenderableObjectInited;
 
-		static GXSplashScreen*		splashScreen;
-
 		static GXRenderer*	instance;
 
 	public:
@@ -70,6 +67,9 @@ class GXRenderer
 		GXVoid SetVSync ( GXBool enabled );
 		GXVoid SetResolution ( GXInt width, GXInt height );
 		GXVoid SetWindowName ( const GXWChar* name );
+		GXVoid Show () const;
+		GXVoid Hide () const;
+		GXBool IsVisible () const;
 
 		GXUInt GetCurrentFPS () const;
 		GXVoid GetSupportedResolutions ( GXRendererResolutions &out ) const;
@@ -84,7 +84,7 @@ class GXRenderer
 	private:
 		GXRenderer ();
 
-		static GXUPointer GXTHREADCALL RenderLoop ( GXVoid* args );
+		static GXUPointer GXTHREADCALL RenderLoop ( GXVoid* args, GXThread &thread );
 		static GXVoid GXCALL InitOpenGL ();
 		static GXVoid GXCALL DrawScene ();
 		static GXVoid GXCALL Destroy ();

@@ -8,6 +8,7 @@
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXLocale.h>
 #include <GXEngine/GXCore.h>
+#include <GXEngine/GXSplashScreen.h>
 #include <GXPhysics/GXPhysicsEngine.h>
 
 
@@ -196,10 +197,20 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	renderer.PresentFrame ( eEMRenderTarget::Combine );
 
 	viewerCamera.UpdateLastFrameMatrices ();
+
+	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
+
+	if ( coreRenderer.IsVisible () ) return;
+
+	coreRenderer.Show ();
+	GXSplashScreen::GetInstance ().Hide ();
 }
 
 GXVoid EMGame::OnDestroy ()
 {
+	GXSplashScreen::GetInstance ().Show ();
+	GXRenderer::GetInstance ().Hide ();
+
 	GXInput& input = GXInput::GetInstance ();
 	input.UnbindMouseMoveCallback ();
 	input.UnbindMouseButtonCallback ();

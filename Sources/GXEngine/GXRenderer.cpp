@@ -77,8 +77,6 @@ GXDouble		GXRenderer::fpsTimer = 0.0;
 
 GXBool			GXRenderer::isRenderableObjectInited = GX_FALSE;
 
-GXSplashScreen*	GXRenderer::splashScreen = nullptr;
-
 GXRenderer*		GXRenderer::instance = nullptr;
 
 
@@ -224,6 +222,25 @@ GXVoid GXRenderer::SetWindowName ( const GXWChar* name )
 	SetWindowTextW ( hwnd, title );
 }
 
+GXVoid GXRenderer::Show () const
+{
+	if ( hwnd == (HWND)INVALID_HANDLE_VALUE ) return;
+
+	ShowWindow ( hwnd, SW_SHOW );
+}
+
+GXVoid GXRenderer::Hide () const
+{
+	if ( hwnd == (HWND)INVALID_HANDLE_VALUE ) return;
+
+	ShowWindow ( hwnd, SW_HIDE );
+}
+
+GXBool GXRenderer::IsVisible () const
+{
+	return IsWindowVisible ( hwnd ) == TRUE;
+}
+
 GXUInt GXRenderer::GetCurrentFPS () const
 {
 	return currentFPS;
@@ -352,7 +369,7 @@ GXRenderer::GXRenderer ()
 	SetWindowName ( GX_DEFAULT_WINDOW_NAME );
 }
 
-GXUPointer GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* args )
+GXUPointer GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* args, GXThread &thread )
 {
 	if ( !MakeWindow () ) return 0;
 
@@ -382,8 +399,10 @@ GXUPointer GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* args )
 				SwapBuffers ( hDC );
 			}
 		}
-		SwitchToThread ();
+		
+		thread.Switch();
 	}
+
 	Destroy ();
 	return 0;
 }
@@ -477,8 +496,6 @@ GXVoid GXCALL GXRenderer::Destroy ()
 
 GXBool GXCALL GXRenderer::MakeWindow ()
 {
-	splashScreen = new GXSplashScreen ();
-
 	GLuint PixelFomat;
 	WNDCLASSW wc;
 	DWORD dwExStyle;
@@ -653,8 +670,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 	gx_ui_Scale = GetDeviceCaps ( hDC, LOGPIXELSX ) / 2.54f;
 	InitRenderableObjects ();
 
-	delete splashScreen;
-	ShowWindow ( hwnd, SW_SHOW );
+	DrawScene ();
 
 	ShowCursor ( 0 );
 

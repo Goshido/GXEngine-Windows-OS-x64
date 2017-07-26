@@ -14,7 +14,6 @@
 #define PRECOMPILED_SHADER_PROGRAM_EXTENSION		L"spr"
 
 #define NULL_STRING_OFFSET							0
-
 #define STRING_BUFFER_SYMBOLS						260
 
 
@@ -101,12 +100,17 @@ GXPrecompiledShaderProgramNode::GXPrecompiledShaderProgramNode ()
 GXPrecompiledShaderProgramNode::GXPrecompiledShaderProgramNode ( const GXUTF8* vs, const GXUTF8* gs, const GXUTF8* fs, const GXUTF8* binaryPath, GLenum binaryFormat )
 {
 	GXToWcs ( &this->vs, vs );
+
 	if ( gs )
 		GXToWcs ( &this->gs, gs );
 	else
 		this->gs = nullptr;
 
-	GXToWcs ( &this->fs, fs );
+	if ( fs )
+		GXToWcs ( &this->fs, fs );
+	else
+		this->fs = nullptr;
+	
 	GXToWcs ( &this->binaryPath, binaryPath );
 	this->binaryFormat = binaryFormat;
 }
@@ -120,9 +124,12 @@ GXPrecompiledShaderProgramNode::GXPrecompiledShaderProgramNode ( const GXWChar* 
 	else
 		this->gs = nullptr;
 
-	GXWcsclone ( &this->fs, fs );
-	GXWcsclone ( &this->binaryPath, binaryPath );
+	if ( fs )
+		GXWcsclone ( &this->fs, fs );
+	else
+		this->fs = nullptr;
 
+	GXWcsclone ( &this->binaryPath, binaryPath );
 	this->binaryFormat = binaryFormat;
 }
 
@@ -130,7 +137,7 @@ GXPrecompiledShaderProgramNode::~GXPrecompiledShaderProgramNode ()
 {
 	free ( vs );
 	GXSafeFree ( gs );
-	free ( fs );
+	GXSafeFree ( fs );
 	free ( binaryPath );
 }
 
@@ -462,7 +469,7 @@ GXShaderProgram::~GXShaderProgram ()
 {
 	free ( vs );
 	GXSafeFree ( gs );
-	free ( fs );
+	GXSafeFree ( fs );
 
 	if ( program == 0 ) return;
 
@@ -578,9 +585,11 @@ GXShaderProgram::GXShaderProgram ( const GXShaderProgramInfo &info )
 	else
 		gs = nullptr;
 
-	GXWcsclone ( &fs, info.fs );
+	if ( info.fs )
+		GXWcsclone ( &fs, info.fs );
+	else
+		fs = nullptr;
 
-	program = glCreateProgram ();
 	GXBool doesPrecompiledShaderProgramExist = GX_FALSE;
 
 	if ( precompiledShaderProgramFinder )
@@ -588,116 +597,59 @@ GXShaderProgram::GXShaderProgram ( const GXShaderProgramInfo &info )
 		const GXWChar* binaryPath = nullptr;
 		GLenum binaryFormat = GL_INVALID_ENUM;
 
-		doesPrecompiledShaderProgramExist = precompiledShaderProgramFinder->FindProgram ( &binaryPath, binaryFormat, info.vs, info.gs, info.fs );
+		doesPrecompiledShaderProgramExist = precompiledShaderProgramFinder->FindProgram ( &binaryPath, binaryFormat, vs, gs, fs );
 		if ( doesPrecompiledShaderProgramExist )
 		{
 			GXUByte* precompiledShaderProgram;
-			GXUBigInt size = 0;
+			GXUPointer size = 0;
 
-			if ( !GXLoadFile ( binaryPath, (GXVoid**)&precompiledShaderProgram, size, GX_TRUE ) )
+			if ( GXLoadFile ( binaryPath, (GXVoid**)&precompiledShaderProgram, size, GX_FALSE ) )
 			{
-				GXLogW ( L"GXShaderProgram::GXShaderProgram::Error - Не могу загрузить файл с прекомпилированной шейдерной программой %s + %s + %s [%s]\n", info.vs, info.gs, info.fs, binaryPath );
-				return;
+				program = glCreateProgram ();
+
+				glProgramBinary ( program, binaryFormat, precompiledShaderProgram, (GLsizei)size );
+
+				free ( precompiledShaderProgram );
+
+				GLint status = 0;
+				glGetProgramiv ( program, GL_LINK_STATUS, &status );
+
+				if ( status != GL_TRUE )
+				{
+					GXInt size = 0;
+					glGetShaderiv ( program, GL_INFO_LOG_LENGTH, &size );
+
+					GLchar* log = (GLchar*)malloc ( size );
+					glGetProgramInfoLog ( program, size, &size, log );
+
+					GXLogW ( L"GXShaderProgramStatus::Warning - Не могу использовать прекомпилированную шейдерную программу:\n%s\n%s\n%s\n[%s]\n\n", vs, gs, fs, binaryPath );
+					GXLogA ( "%s\n\n", log );
+					GXLogW ( L"Возможно обновился драйвер видеокарты. Пробую сделать перекомпиляцию шейдерной программы...\n\n" );
+
+					free ( log );
+
+					glDeleteProgram ( program );
+					program = CompileShaderProgram ( info );
+					SavePrecompiledShaderProgram ( program, info, binaryPath );
+				}
 			}
-
-			glProgramBinary ( program, binaryFormat, precompiledShaderProgram, (GLsizei)size );
-
-			free ( precompiledShaderProgram );
-
-			if ( info.numTransformFeedbackOutputs > 0 )
-				glTransformFeedbackVaryings ( program, info.numTransformFeedbackOutputs, info.transformFeedbackOutputNames, GL_INTERLEAVED_ATTRIBS );
-
-			GLint status = 0;
-			glGetProgramiv ( program, GL_LINK_STATUS, &status );
-
-			if ( status != GL_TRUE )
+			else
 			{
-				GXInt size = 0;
-				glGetShaderiv ( program, GL_INFO_LOG_LENGTH, &size );
-
-				GLchar* log = (GLchar*)malloc ( size );
-				glGetProgramInfoLog ( program, size, &size, log );
-
-				GXLogW ( L"GXShaderProgramStatus::Error - Не могу использовать прекомпилированную шейдерную программу %s + %s + %s [%s].\nВозможно обновился драйвер видеокарты. Пробую сделать перекомпиляцию шейдерной программы...\n", vs, gs, fs, binaryPath );
-				GXLogA ( "%s\n", log );
-
-				free ( log );
-
-				doesPrecompiledShaderProgramExist = GX_FALSE;
+				GXLogW ( L"GXShaderProgram::GXShaderProgram::Warning - Не могу загрузить файл с прекомпилированной шейдерной программой:\n%s\n%s\n%s\n[%s]\nПопробую сделать перекомпиляцию шейдерной программы...\n\n", vs, gs, fs, binaryPath );
+				program = CompileShaderProgram ( info );
+				SavePrecompiledShaderProgram ( program, info, binaryPath );
 			}
 		}
 	}
 
 	if ( !doesPrecompiledShaderProgramExist )
 	{
-		GLuint vertexShader = GetShader ( GL_VERTEX_SHADER, vs );
-		GLuint geometryShader = GetShader ( GL_GEOMETRY_SHADER, gs );
-		GLuint fragmentShader = GetShader ( GL_FRAGMENT_SHADER, fs );
-
-		glAttachShader ( program, vertexShader );
-		glDeleteShader ( vertexShader );
-
-		if ( geometryShader )
-		{
-			glAttachShader ( program, geometryShader );
-			glDeleteShader ( geometryShader );
-		}
-
-		if ( fragmentShader )
-		{
-			glAttachShader ( program, fragmentShader );
-			glDeleteShader ( fragmentShader );
-		}
-
-		if ( info.numTransformFeedbackOutputs > 0 )
-			glTransformFeedbackVaryings ( program, info.numTransformFeedbackOutputs, info.transformFeedbackOutputNames, GL_INTERLEAVED_ATTRIBS );
-
-		glLinkProgram ( program );
-
-		GLint status = 0;
-		glGetProgramiv ( program, GL_LINK_STATUS, &status );
-
-		if ( status != GL_TRUE )
-		{
-			GXInt size = 0;
-			glGetShaderiv ( program, GL_INFO_LOG_LENGTH, &size );
-
-			GLchar* log = (GLchar*)malloc ( size );
-			glGetProgramInfoLog ( program, size, &size, log );
-
-			GXLogW ( L"GXShaderProgramStatus::Error - Не могу слинковать шейдерную программу %s + %s + %s\n", vs, gs, fs );
-			GXLogA ( "%s\n", log );
-
-			free ( log );
-
-			glDeleteProgram ( program );
-			program = 0;
-
-			return;
-		}
+		program = CompileShaderProgram ( info );
 
 		if ( precompiledShaderProgramFinder )
 		{
-			GLint value = (GLint)GL_TRUE;
-			glProgramParameteri ( program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, value );
-
-			GLint precompiledShaderProgramSize = 0;
-			glGetProgramiv ( program, GL_PROGRAM_BINARY_LENGTH, &precompiledShaderProgramSize );
-
-			GXUByte* precompiledShaderProgram = (GXUByte*)malloc ( (size_t)precompiledShaderProgramSize );
-
-			GLsizei length;
-			GLenum binaryFormat;
-			glGetProgramBinary ( program, (GLsizei)precompiledShaderProgramSize, &length, &binaryFormat, precompiledShaderProgram );
-
-			GXUBigInt counter = precompiledShaderProgramFinder->GetCounter ();
-			swprintf_s ( stringBuffer, STRING_BUFFER_SYMBOLS, L"%s/%llu.%s", PRECOMPILED_SHADER_PROGRAM_DIRECTORY, counter, PRECOMPILED_SHADER_PROGRAM_EXTENSION );
-
-			GXWriteToFile ( stringBuffer, precompiledShaderProgram, (GXUPointer)length );
-
-			precompiledShaderProgramFinder->AddProgram ( info.vs, info.gs, info.fs, stringBuffer, binaryFormat );
-
-			free ( precompiledShaderProgram );
+			swprintf_s ( stringBuffer, STRING_BUFFER_SYMBOLS, L"%s/%llu.%s", PRECOMPILED_SHADER_PROGRAM_DIRECTORY, precompiledShaderProgramFinder->GetCounter (), PRECOMPILED_SHADER_PROGRAM_EXTENSION );
+			SavePrecompiledShaderProgram ( program, info, stringBuffer );
 		}
 	}
 
@@ -711,9 +663,9 @@ GXShaderProgram::GXShaderProgram ( const GXShaderProgramInfo &info )
 
 GXBool GXShaderProgram::operator == ( const GXShaderProgramInfo &other ) const
 {
+	if ( !GXWcscmp ( other.fs, fs ) != 0 ) return GX_FALSE;
 	if ( !GXWcscmp ( other.vs, vs ) != 0 ) return GX_FALSE;
 	if ( !GXWcscmp ( other.gs, gs ) != 0 ) return GX_FALSE;
-	if ( !GXWcscmp ( other.fs, fs ) != 0 ) return GX_FALSE;
 
 	return GX_TRUE;
 }
@@ -786,4 +738,77 @@ GLuint GXShaderProgram::GetShader ( GLenum type, const GXWChar* fileName )
 	}
 
 	return shader;
+}
+
+GLuint GXShaderProgram::CompileShaderProgram ( const GXShaderProgramInfo &info )
+{
+	GLuint shaderProgram = glCreateProgram ();
+
+	GLuint vertexShader = GetShader ( GL_VERTEX_SHADER, vs );
+	GLuint geometryShader = GetShader ( GL_GEOMETRY_SHADER, gs );
+	GLuint fragmentShader = GetShader ( GL_FRAGMENT_SHADER, fs );
+
+	glAttachShader ( shaderProgram, vertexShader );
+	glDeleteShader ( vertexShader );
+
+	if ( geometryShader )
+	{
+		glAttachShader ( shaderProgram, geometryShader );
+		glDeleteShader ( geometryShader );
+	}
+
+	if ( fragmentShader )
+	{
+		glAttachShader ( shaderProgram, fragmentShader );
+		glDeleteShader ( fragmentShader );
+	}
+
+	if ( info.numTransformFeedbackOutputs > 0 )
+		glTransformFeedbackVaryings ( shaderProgram, info.numTransformFeedbackOutputs, info.transformFeedbackOutputNames, GL_INTERLEAVED_ATTRIBS );
+
+	glLinkProgram ( shaderProgram );
+
+	GLint status = 0;
+	glGetProgramiv ( shaderProgram, GL_LINK_STATUS, &status );
+
+	if ( status != GL_TRUE )
+	{
+		GXInt size = 0;
+		glGetShaderiv ( shaderProgram, GL_INFO_LOG_LENGTH, &size );
+
+		GLchar* log = (GLchar*)malloc ( size );
+		glGetProgramInfoLog ( shaderProgram, size, &size, log );
+
+		GXLogW ( L"GXShaderProgram::CompileShaderProgram::Error - Не могу слинковать шейдерную программу %s + %s + %s\n", vs, gs, fs );
+		GXLogA ( "%s\n", log );
+
+		free ( log );
+
+		glDeleteProgram ( shaderProgram );
+
+		return 0;
+	}
+
+	return shaderProgram;
+}
+
+GXVoid GXShaderProgram::SavePrecompiledShaderProgram ( GLuint shaderProgram, const GXShaderProgramInfo &info, const GXWChar* binaryPath )
+{
+	GLint value = (GLint)GL_TRUE;
+	glProgramParameteri ( shaderProgram, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, value );
+
+	GLint precompiledShaderProgramSize = 0;
+	glGetProgramiv ( shaderProgram, GL_PROGRAM_BINARY_LENGTH, &precompiledShaderProgramSize );
+
+	GXUByte* precompiledShaderProgram = (GXUByte*)malloc ( (size_t)precompiledShaderProgramSize );
+
+	GLsizei length;
+	GLenum binaryFormat;
+	glGetProgramBinary ( shaderProgram, (GLsizei)precompiledShaderProgramSize, &length, &binaryFormat, precompiledShaderProgram );
+
+	GXWriteToFile ( binaryPath, precompiledShaderProgram, (GXUPointer)length );
+
+	precompiledShaderProgramFinder->AddProgram ( info.vs, info.gs, info.fs, binaryPath, binaryFormat );
+
+	free ( precompiledShaderProgram );
 }

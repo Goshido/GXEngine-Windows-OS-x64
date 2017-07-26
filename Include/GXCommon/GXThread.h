@@ -7,7 +7,8 @@
 #include "GXTypes.h"
 
 
-typedef GXUPointer ( GXTHREADCALL* PFNGXTHREADPROC ) ( GXVoid* arg );
+class GXThread;
+typedef GXUPointer ( GXTHREADCALL* PFNGXTHREADPROC ) ( GXVoid* arg, GXThread& thread );
 
 
 enum class eGXThreadState
@@ -31,6 +32,7 @@ class GXAbstractThread
 		eGXThreadState GetState () const;
 
 		virtual GXVoid Start () = 0;
+		virtual GXVoid Switch () = 0;
 		virtual GXVoid Join () = 0;
 };
 

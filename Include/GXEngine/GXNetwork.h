@@ -91,10 +91,10 @@ class GXNetServer
 	private:
 		GXNetServer ();
 
-		static GXUPointer GXTHREADCALL ListenTCP ( GXVoid* arg );
+		static GXUPointer GXTHREADCALL ListenTCP ( GXVoid* arg, GXThread &thread );
 		
-		static GXUPointer GXTHREADCALL ServeClientTCP ( GXVoid* arg );
-		static GXUPointer GXTHREADCALL ServeClientUDP ( GXVoid* arg );
+		static GXUPointer GXTHREADCALL ServeClientTCP ( GXVoid* arg, GXThread &thread );
+		static GXUPointer GXTHREADCALL ServeClientUDP ( GXVoid* arg, GXThread &thread );
 
 		static GXInt GetFreeClientTCP ();
 		static GXInt FindClientTCP ( SOCKET socket );
@@ -143,8 +143,8 @@ class GXNetClient
 	private:
 		GXNetClient ();
 
-		static GXUPointer GXTHREADCALL ReceiveTCP ( GXVoid* arg );
-		static GXUPointer GXTHREADCALL ReceiveUDP ( GXVoid* arg );
+		static GXUPointer GXTHREADCALL ReceiveTCP ( GXVoid* arg, GXThread &thread );
+		static GXUPointer GXTHREADCALL ReceiveUDP ( GXVoid* arg, GXThread &thread );
 };
 
 

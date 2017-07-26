@@ -5,7 +5,6 @@
 
 
 #include "GXOpenGL.h"
-#include <GXCommon/GXMemory.h>
 #include <GXCommon/GXAVLTree.h>
 
 
@@ -98,6 +97,8 @@ class GXShaderProgram
 		GXBool operator == ( const GXShaderProgram &other ) const;
 
 		GLuint GetShader ( GLenum type, const GXWChar* fileName );
+		GLuint CompileShaderProgram ( const GXShaderProgramInfo &info );
+		GXVoid SavePrecompiledShaderProgram ( GLuint shaderProgram, const GXShaderProgramInfo &info, const GXWChar* binaryPath );
 };
 
 
