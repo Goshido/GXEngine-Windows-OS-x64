@@ -252,9 +252,6 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXMeshGeometry.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine\GXTexture.cpp">
-      <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXMaterial.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
@@ -430,6 +427,12 @@
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXSplashScreen.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXTexture2D.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXTextureCubeMap.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -794,9 +797,6 @@
     <ClInclude Include="..\..\Include\GXEngine\GXMeshGeometry.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXTexture.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXMaterial.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
@@ -906,6 +906,12 @@
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXSplashScreen.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXTexture2D.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXTextureCubeMap.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
   </ItemGroup>

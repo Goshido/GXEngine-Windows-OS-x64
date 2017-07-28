@@ -51,7 +51,7 @@ class EMUIPopupRenderer : public GXWidgetRenderer
 	private:
 		GXFont			font;
 		GXHudSurface*	surface;
-		GXTexture		texture;
+		GXTexture2D		texture;
 		GXDynamicArray	itemNames;
 
 	public:
@@ -71,7 +71,7 @@ EMUIPopupRenderer::EMUIPopupRenderer ( GXUIPopup* widget ):
 GXWidgetRenderer ( widget ), itemNames ( sizeof ( GXWChar* ) )
 {
 	font = GXFont::GetFont ( FONT, (GXUShort)( FONT_SIZE * gx_ui_Scale ) );
-	texture = GXTexture::LoadTexture ( DEFAULT_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	texture = GXTexture2D::LoadTexture ( DEFAULT_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
 	surface = new GXHudSurface ( (GXShort)widget->GetItemWidth (), (GXUShort)widget->GetItemHeight () );
 }
 
@@ -79,7 +79,7 @@ EMUIPopupRenderer::~EMUIPopupRenderer ()
 {
 	GXFont::RemoveFont ( font );
 	delete surface;
-	GXTexture::RemoveTexture ( texture );
+	GXTexture2D::RemoveTexture ( texture );
 
 	GXWChar** names = (GXWChar**)itemNames.GetData ();
 	GXUInt totalNames = itemNames.GetLength ();

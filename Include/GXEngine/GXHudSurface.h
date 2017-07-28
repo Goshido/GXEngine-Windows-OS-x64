@@ -8,7 +8,7 @@
 #include "GXCameraOrthographic.h"
 #include "GXTransform.h"
 #include "GXMeshGeometry.h"
-#include "GXTexture.h"
+#include "GXTexture2D.h"
 #include "GXFont.h"
 #include "GXUnlitColorMaterial.h"
 #include "GXUnlitColorMaskMaterial.h"
@@ -26,7 +26,7 @@ enum class eGXImageOverlayType
 
 struct GXImageInfo
 {
-	GXTexture*			texture;
+	GXTexture2D*		texture;
 
 	GXVec4				color;
 	GXFloat				insertX;
@@ -64,7 +64,7 @@ class GXHudSurface : public GXTransform
 {
 	private:
 		GLuint						fbo;
-		GXTexture					canvasTexture;
+		GXTexture2D					canvasTexture;
 		GXOpenGLState				openGLState;
 
 		GXUnlitColorMaterial		unlitColorMaterial;

@@ -4,13 +4,13 @@
 #define GX_FONT
 
 
-#include <GXEngine/GXTexture.h>
+#include <GXEngine/GXTexture2D.h>
 #include <GXEngineDLL/GXEngineAPI.h>
 
 
 struct GXGlyphInfo
 {
-	GXTexture*		atlas;
+	GXTexture2D*	atlas;
 	GXVec2			min;
 	GXVec2			max;
 	GXFloat			offsetY;
@@ -36,7 +36,7 @@ class GXFont
 		GXInt GetKerning ( GXUInt symbol, GXUInt prevSymbol ) const;
 		GXUShort GetSpaceAdvance () const;
 		GXUShort GetSize () const;
-		GXTexture* GetAtlasTexture ( GXByte atlasID );
+		GXTexture2D* GetAtlasTexture ( GXByte atlasID );
 		GXUInt GXCDECLCALL GetTextLength ( GXUInt bufferNumSymbols, const GXWChar* format, ... ) const;
 
 		static GXFont& GXCALL GetFont ( const GXWChar* fileName, GXUShort size );

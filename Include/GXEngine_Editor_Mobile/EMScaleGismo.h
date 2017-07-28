@@ -3,7 +3,7 @@
 
 
 #include "EMMesh.h"
-#include <GXEngine/GXTexture.h>
+#include <GXEngine/GXTexture2D.h>
 #include <GXEngine/GXUnlitTexture2DMaterial.h>
 
 
@@ -12,7 +12,7 @@ class EMScaleGismo : public GXTransform
 	private:
 		GXBool						isVisible;
 		EMMesh						mesh;
-		GXTexture					texture;
+		GXTexture2D					texture;
 		GXUnlitTexture2DMaterial	unlitMaterial;
 
 	public:

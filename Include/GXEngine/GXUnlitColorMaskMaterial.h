@@ -4,7 +4,7 @@
 #define GX_UNLIT_COLOR_MASK_MATERIAL
 
 #include "GXMaterial.h"
-#include "GXTexture.h"
+#include "GXTexture2D.h"
 
 
 class GXUnlitColorMaskMaterial : public GXMaterial
@@ -14,7 +14,7 @@ class GXUnlitColorMaskMaterial : public GXMaterial
 		GLint			uvScaleOffsetLocation;
 		GLint			colorLocation;
 
-		GXTexture*		mask;
+		GXTexture2D*	mask;
 		GXVec4			uvScaleOffset;
 		GXVec4			color;
 
@@ -25,7 +25,7 @@ class GXUnlitColorMaskMaterial : public GXMaterial
 		GXVoid Bind ( const GXTransform &transform ) override;
 		GXVoid Unbind () override;
 
-		GXVoid SetMaskTexture ( GXTexture &texture );
+		GXVoid SetMaskTexture ( GXTexture2D &texture );
 		GXVoid SetMaskScale ( GXFloat x, GXFloat y );
 		GXVoid SetMaskOffset ( GXFloat x, GXFloat y );
 

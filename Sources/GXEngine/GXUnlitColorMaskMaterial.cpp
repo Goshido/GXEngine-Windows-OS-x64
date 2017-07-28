@@ -78,7 +78,7 @@ GXVoid GXUnlitColorMaskMaterial::Unbind ()
 	glUseProgram ( 0 );
 }
 
-GXVoid GXUnlitColorMaskMaterial::SetMaskTexture ( GXTexture &texture )
+GXVoid GXUnlitColorMaskMaterial::SetMaskTexture ( GXTexture2D &texture )
 {
 	mask = &texture;
 }

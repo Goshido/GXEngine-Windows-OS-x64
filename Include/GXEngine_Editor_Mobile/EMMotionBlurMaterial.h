@@ -1,14 +1,18 @@
+#ifndef EM_MOTION_BLUR_MATERIAL
+#define EM_MOTION_BLUR_MATERIAL
+
+
 #include <GXEngine/GXMaterial.h>
-#include <GXEngine/GXTexture.h>
+#include <GXEngine/GXTexture2D.h>
 
 
 class EMMotionBlurMaterial : public GXMaterial
 {
 	private:
-		GXTexture*			velocityNeighborMaxTexture;
-		GXTexture*			velocityTexture;
-		GXTexture*			depthTexture;
-		GXTexture*			imageTexture;
+		GXTexture2D*			velocityNeighborMaxTexture;
+		GXTexture2D*			velocityTexture;
+		GXTexture2D*			depthTexture;
+		GXTexture2D*			imageTexture;
 
 		GXFloat				depthLimit;
 		GXFloat				inverseDepthLimit;
@@ -29,10 +33,10 @@ class EMMotionBlurMaterial : public GXMaterial
 		GXVoid Bind ( const GXTransform &transform ) override;
 		GXVoid Unbind () override;
 
-		GXVoid SetVelocityNeighborMaxTexture ( GXTexture &texture );
-		GXVoid SetVelocityTexture ( GXTexture &texture );
-		GXVoid SetDepthTexture ( GXTexture &texture );
-		GXVoid SetImageTexture ( GXTexture &texture );
+		GXVoid SetVelocityNeighborMaxTexture ( GXTexture2D &texture );
+		GXVoid SetVelocityTexture ( GXTexture2D &texture );
+		GXVoid SetDepthTexture ( GXTexture2D &texture );
+		GXVoid SetImageTexture ( GXTexture2D &texture );
 
 		GXVoid SetDepthLimit ( GXFloat meters );
 		GXFloat GetDepthLimit () const;
@@ -42,3 +46,6 @@ class EMMotionBlurMaterial : public GXMaterial
 
 		GXVoid SetScreenResolution ( GXUShort width, GXUShort height );
 };
+
+
+#endif //EM_MOTION_BLUR_MATERIAL

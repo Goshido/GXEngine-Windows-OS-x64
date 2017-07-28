@@ -464,7 +464,7 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 		return;
 	}
 
-	GXTexture* texture = nullptr;
+	GXTexture2D* texture = nullptr;
 
 	switch ( target )
 	{

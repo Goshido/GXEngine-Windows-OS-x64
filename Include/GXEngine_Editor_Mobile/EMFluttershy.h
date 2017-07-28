@@ -11,10 +11,10 @@ class EMFluttershy : public GXTransform
 		GXAnimSolverPlayer					animationSolverPlayer;
 		GXAnimationInfo						animationInfo;
 
-		GXTexture							albedoTexture;
-		GXTexture							normalTexture;
-		GXTexture							emissionTexture;
-		GXTexture							parameterTexture;
+		GXTexture2D							albedoTexture;
+		GXTexture2D							normalTexture;
+		GXTexture2D							emissionTexture;
+		GXTexture2D							parameterTexture;
 
 		EMCookTorranceCommonPassMaterial	material;
 

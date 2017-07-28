@@ -11,10 +11,10 @@
 
 EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
 {
-	diffuseTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/gui_folder_icon.png", GX_TRUE, GL_REPEAT );
-	normalTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE, GL_REPEAT );
-	emissionTexture = GXTexture::LoadTexture ( L"Textures/System/Default_Emission.tga", GX_FALSE, GL_REPEAT );
-	parameterTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Cook Torrance parameters.tga", GX_FALSE, GL_REPEAT );
+	diffuseTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/gui_folder_icon.png", GX_TRUE, GL_REPEAT );
+	normalTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE, GL_REPEAT );
+	emissionTexture = GXTexture2D::LoadTexture ( L"Textures/System/Default_Emission.tga", GX_FALSE, GL_REPEAT );
+	parameterTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Cook Torrance parameters.tga", GX_FALSE, GL_REPEAT );
 
 	EMRenderer& renderer = EMRenderer::GetInstance ();
 
@@ -72,10 +72,10 @@ EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
 
 EMPhysicsDrivenActor::~EMPhysicsDrivenActor ()
 {
-	GXTexture::RemoveTexture ( diffuseTexture );
-	GXTexture::RemoveTexture ( normalTexture );
-	GXTexture::RemoveTexture ( emissionTexture );
-	GXTexture::RemoveTexture ( parameterTexture );
+	GXTexture2D::RemoveTexture ( diffuseTexture );
+	GXTexture2D::RemoveTexture ( normalTexture );
+	GXTexture2D::RemoveTexture ( emissionTexture );
+	GXTexture2D::RemoveTexture ( parameterTexture );
 	GXSafeDelete ( mesh );
 	delete rigidBody;
 }

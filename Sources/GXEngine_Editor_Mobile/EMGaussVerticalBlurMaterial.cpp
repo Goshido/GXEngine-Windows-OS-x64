@@ -62,7 +62,7 @@ GXVoid EMGaussVerticalBlurMaterial::Unbind ()
 	imageTexture->Unbind ();
 }
 
-GXVoid EMGaussVerticalBlurMaterial::SetImageTexture ( GXTexture &texture )
+GXVoid EMGaussVerticalBlurMaterial::SetImageTexture ( GXTexture2D &texture )
 {
 	switch ( kernelType )
 	{

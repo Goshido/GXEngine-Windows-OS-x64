@@ -3,17 +3,17 @@
 
 
 #include <GXEngine/GXMaterial.h>
-#include <GXEngine/GXTexture.h>
+#include <GXEngine/GXTexture2D.h>
 
 
 class EMCookTorranceDirectedLightMaterial : public GXMaterial
 {
 	private:
-		GXTexture*		albedoTexture;
-		GXTexture*		normalTexture;
-		GXTexture*		emissionTexture;
-		GXTexture*		parameterTexture;
-		GXTexture*		depthTexture;
+		GXTexture2D*	albedoTexture;
+		GXTexture2D*	normalTexture;
+		GXTexture2D*	emissionTexture;
+		GXTexture2D*	parameterTexture;
+		GXTexture2D*	depthTexture;
 
 		GXVec3			hue;
 		GLint			hueLocation;
@@ -39,11 +39,11 @@ class EMCookTorranceDirectedLightMaterial : public GXMaterial
 		GXVoid Bind ( const GXTransform &transform ) override;
 		GXVoid Unbind () override;
 
-		GXVoid SetAlbedoTexture ( GXTexture &texture );
-		GXVoid SetNormalTexture ( GXTexture &texture );
-		GXVoid SetEmissionTexture ( GXTexture &texture );
-		GXVoid SetParameterTexture ( GXTexture &texture );
-		GXVoid SetDepthTexture ( GXTexture &texture );
+		GXVoid SetAlbedoTexture ( GXTexture2D &texture );
+		GXVoid SetNormalTexture ( GXTexture2D &texture );
+		GXVoid SetEmissionTexture ( GXTexture2D &texture );
+		GXVoid SetParameterTexture ( GXTexture2D &texture );
+		GXVoid SetDepthTexture ( GXTexture2D &texture );
 
 		GXVoid SetLightDirectionView ( const GXVec3 &direction );
 		GXVoid SetHue ( GXUByte red, GXUByte green, GXUByte blue );

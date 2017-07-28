@@ -35,19 +35,19 @@ enum class eEMRenderTarget
 class EMRenderer
 {
 	private:
-		GXTexture							albedoTexture;
-		GXTexture							normalTexture;
-		GXTexture							emissionTexture;
-		GXTexture							parameterTexture;
-		GXTexture							velocityBlurTexture;
-		GXTexture							velocityTileMaxTexture;
-		GXTexture							velocityNeighborMaxTexture;
-		GXTexture							ssaoOmegaTexture;
-		GXTexture							ssaoYottaTexture;
-		GXTexture							objectTextures[ 2 ];
-		GXTexture							depthStencilTexture;
-		GXTexture							omegaTexture;
-		GXTexture							yottaTexture;
+		GXTexture2D							albedoTexture;
+		GXTexture2D							normalTexture;
+		GXTexture2D							emissionTexture;
+		GXTexture2D							parameterTexture;
+		GXTexture2D							velocityBlurTexture;
+		GXTexture2D							velocityTileMaxTexture;
+		GXTexture2D							velocityNeighborMaxTexture;
+		GXTexture2D							ssaoOmegaTexture;
+		GXTexture2D							ssaoYottaTexture;
+		GXTexture2D							objectTextures[ 2 ];
+		GXTexture2D							depthStencilTexture;
+		GXTexture2D							omegaTexture;
+		GXTexture2D							yottaTexture;
 
 		GLuint								fbo;
 

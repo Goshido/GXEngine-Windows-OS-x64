@@ -86,22 +86,22 @@ GXVoid EMMotionBlurMaterial::Unbind ()
 	imageTexture->Unbind ();
 }
 
-GXVoid EMMotionBlurMaterial::SetVelocityNeighborMaxTexture ( GXTexture &texture )
+GXVoid EMMotionBlurMaterial::SetVelocityNeighborMaxTexture ( GXTexture2D &texture )
 {
 	velocityNeighborMaxTexture = &texture;
 }
 
-GXVoid EMMotionBlurMaterial::SetVelocityTexture ( GXTexture &texture )
+GXVoid EMMotionBlurMaterial::SetVelocityTexture ( GXTexture2D &texture )
 {
 	velocityTexture = &texture;
 }
 
-GXVoid EMMotionBlurMaterial::SetDepthTexture ( GXTexture &texture )
+GXVoid EMMotionBlurMaterial::SetDepthTexture ( GXTexture2D &texture )
 {
 	depthTexture = &texture;
 }
 
-GXVoid EMMotionBlurMaterial::SetImageTexture ( GXTexture &texture )
+GXVoid EMMotionBlurMaterial::SetImageTexture ( GXTexture2D &texture )
 {
 	imageTexture = &texture;
 }

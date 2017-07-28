@@ -3,7 +3,6 @@
 #include <GXEngine/GXCamera.h>
 #include <GXEngine/GXSamplerUtils.h>
 #include <GXEngine/GXShaderProgram.h>
-#include <GXEngine/GXTexture.h>
 #include <GXEngine/GXRenderable.h>
 #include <GXEngine/GXRenderer.h>
 #include <GXCommon/GXStrings.h>
@@ -22,10 +21,10 @@ mesh ( L"3D Models/Editor Mobile/Unit Cube.stm" )
 {
 	OnTransformChanged ();
 
-	diffuseTexture = GXTexture::LoadTexture ( DIFFUSE_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
-	normalTexture = GXTexture::LoadTexture ( NORMAL_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
-	emissionTexture = GXTexture::LoadTexture ( EMISSION_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
-	parameterTexture = GXTexture::LoadTexture ( PARAMETER_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	diffuseTexture = GXTexture2D::LoadTexture ( DIFFUSE_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	normalTexture = GXTexture2D::LoadTexture ( NORMAL_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	emissionTexture = GXTexture2D::LoadTexture ( EMISSION_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	parameterTexture = GXTexture2D::LoadTexture ( PARAMETER_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
 
 	EMRenderer& renderer = EMRenderer::GetInstance ();
 
@@ -38,10 +37,10 @@ mesh ( L"3D Models/Editor Mobile/Unit Cube.stm" )
 
 EMUnitActor::~EMUnitActor ()
 {
-	GXTexture::RemoveTexture ( diffuseTexture );
-	GXTexture::RemoveTexture ( normalTexture );
-	GXTexture::RemoveTexture ( emissionTexture );
-	GXTexture::RemoveTexture ( parameterTexture );
+	GXTexture2D::RemoveTexture ( diffuseTexture );
+	GXTexture2D::RemoveTexture ( normalTexture );
+	GXTexture2D::RemoveTexture ( emissionTexture );
+	GXTexture2D::RemoveTexture ( parameterTexture );
 }
 
 GXVoid EMUnitActor::OnDrawCommonPass ( GXFloat deltaTime )

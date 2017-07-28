@@ -74,7 +74,7 @@ class EMUIButtonRenderer : public GXWidgetRenderer
 		GXHudSurface*		surface;
 		GXFont				font;
 		GXWChar*			caption;
-		GXTexture			background;
+		GXTexture2D			background;
 
 	public:
 		explicit EMUIButtonRenderer ( GXUIButton* buttonWidget );
@@ -95,7 +95,7 @@ GXWidgetRenderer ( buttonWidget )
 {
 	font = GXFont::GetFont ( DEFAULT_FONT, (GXUShort)( DEFAULT_FONT_SIZE * gx_ui_Scale ) );
 	GXWcsclone ( &caption, DEFAULT_CAPTION );
-	background = GXTexture::LoadTexture ( BACKGROUND_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	background = GXTexture2D::LoadTexture ( BACKGROUND_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
 
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
@@ -105,7 +105,7 @@ EMUIButtonRenderer::~EMUIButtonRenderer ()
 {
 	GXSafeFree ( caption );
 
-	GXTexture::RemoveTexture ( background );
+	GXTexture2D::RemoveTexture ( background );
 	GXFont::RemoveFont ( font );
 
 	delete surface;

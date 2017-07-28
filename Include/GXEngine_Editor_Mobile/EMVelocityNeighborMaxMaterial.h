@@ -3,13 +3,13 @@
 
 
 #include <GXEngine/GXMaterial.h>
-#include <GXEngine/GXTexture.h>
+#include <GXEngine/GXTexture2D.h>
 
 
 class EMVelocityNeighborMaxMaterial : public GXMaterial
 {
 	private:
-		GXTexture*		velocityTileMaxTexture;
+		GXTexture2D*	velocityTileMaxTexture;
 
 		GXVec2			inverseVelocityTileMaxTextureResolution;
 		GLint			inverseVelocityTileMaxTextureResolutionLocation;
@@ -21,7 +21,7 @@ class EMVelocityNeighborMaxMaterial : public GXMaterial
 		GXVoid Bind ( const GXTransform &transform ) override;
 		GXVoid Unbind () override;
 
-		GXVoid SetVelocityTileMaxTexture ( GXTexture &texture );
+		GXVoid SetVelocityTileMaxTexture ( GXTexture2D &texture );
 		GXVoid SetVelocityTileMaxTextureResolution ( GXUShort width, GXUShort height );
 };
 

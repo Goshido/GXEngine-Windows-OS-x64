@@ -211,7 +211,7 @@ GXVoid EMCookTorranceCommonPassMaterial::Unbind ()
 	parameterTexture->Unbind ();
 }
 
-GXVoid EMCookTorranceCommonPassMaterial::SetAlbedoTexture ( GXTexture &texture )
+GXVoid EMCookTorranceCommonPassMaterial::SetAlbedoTexture ( GXTexture2D &texture )
 {
 	albedoTexture = &texture;
 }
@@ -253,7 +253,7 @@ GXVoid EMCookTorranceCommonPassMaterial::GetAlbedoColor ( GXUByte &red, GXUByte 
 	alpha = (GXUByte)( albedoColor.a * 255.0f );
 }
 
-GXVoid EMCookTorranceCommonPassMaterial::SetNormalTexture ( GXTexture &texture )
+GXVoid EMCookTorranceCommonPassMaterial::SetNormalTexture ( GXTexture2D &texture )
 {
 	normalTexture = &texture;
 }
@@ -282,7 +282,7 @@ GXVoid EMCookTorranceCommonPassMaterial::GetNormalTextureOffset ( GXVec2 &offset
 	offsetUV.y = normalTextureScaleOffset.w;
 }
 
-GXVoid EMCookTorranceCommonPassMaterial::SetEmissionTexture ( GXTexture &texture )
+GXVoid EMCookTorranceCommonPassMaterial::SetEmissionTexture ( GXTexture2D &texture )
 {
 	emissionTexture = &texture;
 }
@@ -335,7 +335,7 @@ GXFloat EMCookTorranceCommonPassMaterial::GetEmissionColorScale () const
 	return emissionColorScale;
 }
 
-GXVoid EMCookTorranceCommonPassMaterial::SetParameterTexture ( GXTexture &texture )
+GXVoid EMCookTorranceCommonPassMaterial::SetParameterTexture ( GXTexture2D &texture )
 {
 	parameterTexture = &texture;
 }

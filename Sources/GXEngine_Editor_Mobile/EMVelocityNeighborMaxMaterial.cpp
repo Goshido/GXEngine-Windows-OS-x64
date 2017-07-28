@@ -56,7 +56,7 @@ GXVoid EMVelocityNeighborMaxMaterial::Unbind ()
 	velocityTileMaxTexture->Unbind ();
 }
 
-GXVoid EMVelocityNeighborMaxMaterial::SetVelocityTileMaxTexture ( GXTexture &texture )
+GXVoid EMVelocityNeighborMaxMaterial::SetVelocityTileMaxTexture ( GXTexture2D &texture )
 {
 	velocityTileMaxTexture = &texture;
 }

@@ -3,7 +3,7 @@
 
 
 #include <GXEngine/GXMaterial.h>
-#include <GXEngine/GXTexture.h>
+#include <GXEngine/GXTexture2D.h>
 
 
 #define EM_MAX_SSAO_SAMPLES	64
@@ -12,9 +12,9 @@
 class EMSSAOSharpMaterial : public GXMaterial
 {
 	private:
-		GXTexture*		depthTexture;
-		GXTexture*		normalTexture;
-		GXTexture		noiseTexture;
+		GXTexture2D*	depthTexture;
+		GXTexture2D*	normalTexture;
+		GXTexture2D		noiseTexture;
 
 		GXVec3			kernel[ EM_MAX_SSAO_SAMPLES ];
 		GLint			kernelLocation;
@@ -44,8 +44,8 @@ class EMSSAOSharpMaterial : public GXMaterial
 		GXVoid Bind ( const GXTransform &transform ) override;
 		GXVoid Unbind () override;
 
-		GXVoid SetDepthTexture ( GXTexture &texture );
-		GXVoid SetNormalTexture ( GXTexture &texture );
+		GXVoid SetDepthTexture ( GXTexture2D &texture );
+		GXVoid SetNormalTexture ( GXTexture2D &texture );
 
 		GXVoid SetCheckRadius ( GXFloat meters );
 		GXFloat GetCheckRadius () const;

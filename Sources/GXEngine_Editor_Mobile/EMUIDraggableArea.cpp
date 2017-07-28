@@ -1,6 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMUIDraggableArea.h>
 #include <GXEngine/GXHudSurface.h>
-#include <GXEngine/GXTexture.h>
+#include <GXEngine/GXTexture2D.h>
 #include <GXEngine/GXUICommon.h>
 
 
@@ -24,10 +24,10 @@ class EMUIDraggableAreaRenderer : public GXWidgetRenderer
 {
 	private:
 		GXHudSurface*		surface;
-		GXTexture			background;
+		GXTexture2D			background;
 
 	public:
-		EMUIDraggableAreaRenderer ( GXUIDragableArea* draggableAreaWidget );
+		explicit EMUIDraggableAreaRenderer ( GXUIDragableArea* draggableAreaWidget );
 		~EMUIDraggableAreaRenderer () override;
 
 		GXVoid OnRefresh () override;
@@ -41,7 +41,7 @@ class EMUIDraggableAreaRenderer : public GXWidgetRenderer
 EMUIDraggableAreaRenderer::EMUIDraggableAreaRenderer ( GXUIDragableArea* draggableAreaWidget ):
 GXWidgetRenderer ( draggableAreaWidget )
 {
-	background = GXTexture::LoadTexture ( BACKGROUND_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	background = GXTexture2D::LoadTexture ( BACKGROUND_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
 }
@@ -49,7 +49,7 @@ GXWidgetRenderer ( draggableAreaWidget )
 EMUIDraggableAreaRenderer::~EMUIDraggableAreaRenderer ()
 {
 	delete surface;
-	GXTexture::RemoveTexture ( background );
+	GXTexture2D::RemoveTexture ( background );
 }
 
 GXVoid EMUIDraggableAreaRenderer::OnRefresh ()

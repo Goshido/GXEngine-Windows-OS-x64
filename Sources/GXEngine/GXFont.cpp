@@ -136,7 +136,7 @@ struct GXGlyph
 struct GXFontParameters
 {
 	GXGlyph			glyphs[ 0x7FFF ];
-	GXTexture*		atlases;
+	GXTexture2D*	atlases;
 	GXByte			atlasID;
 	GXUShort		left;
 	GXUShort		top;
@@ -231,7 +231,7 @@ GXUShort GXFont::GetSize () const
 	return size;
 }
 
-GXTexture* GXFont::GetAtlasTexture ( GXByte atlasID )
+GXTexture2D* GXFont::GetAtlasTexture ( GXByte atlasID )
 {
 	if ( atlasID > this->parameters->atlasID )
 	{
@@ -495,11 +495,11 @@ GXVoid GXFont::CreateAtlas () const
 	if ( parameters->atlasID == ATLAS_UNDEFINED )
 	{
 		parameters->atlasID = 0;
-		parameters->atlases = (GXTexture*)malloc ( sizeof ( GXTexture ) );
+		parameters->atlases = (GXTexture2D*)malloc ( sizeof ( GXTexture2D ) );
 	}
 	else
 	{
-		GXTexture* temp = (GXTexture*)malloc ( ( parameters->atlasID + 2 ) * sizeof ( GXTexture ) );
+		GXTexture2D* temp = (GXTexture2D*)malloc ( ( parameters->atlasID + 2 ) * sizeof ( GXTexture2D ) );
 		for ( GXUShort i = 0; i < parameters->atlasID; i++ )
 			temp[ i ] = parameters->atlases[ i ];
 

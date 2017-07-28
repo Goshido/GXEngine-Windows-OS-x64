@@ -170,8 +170,8 @@ class EMColorRenderer : public GXWidgetRenderer
 {
 	private:
 		GXHudSurface*				surface;
-		GXTexture					texture;
-		GXTexture					checkerTexture;
+		GXTexture2D					texture;
+		GXTexture2D					checkerTexture;
 		GXVec4						colorRGBA;
 		EMCheckerGeneratorMaterial	checkerGeneratorMaterial;
 		GLuint						fbo;
@@ -199,7 +199,7 @@ GXWidgetRenderer ( widget ), screenQuad ( L"3D Models/System/ScreenQuad.stm" )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
-	texture = GXTexture::LoadTexture ( TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	texture = GXTexture2D::LoadTexture ( TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
 	
 	GXVec4 colorHSVA ( DEFAULT_SAVED_COLOR_H, DEFAULT_SAVED_COLOR_S, DEFAULT_SAVED_COLOR_V, DEFAULT_SAVED_COLOR_A );
 	SetColorHSVA ( colorHSVA );
@@ -217,7 +217,7 @@ EMColorRenderer::~EMColorRenderer ()
 {
 	checkerTexture.FreeResources ();
 	glDeleteFramebuffers ( 1, &fbo );
-	GXTexture::RemoveTexture ( texture );
+	GXTexture2D::RemoveTexture ( texture );
 	delete surface;
 }
 
@@ -328,8 +328,8 @@ class EMColorSelectorRenderer : public GXWidgetRenderer
 		EMHueCircleGeneratorMaterial	hueCircleGeneratorMaterial;
 		EMVertexColorMaterial			vertexColorMaterial;
 		GXUnlitTexture2DMaterial		unlitTexture2DMaterial;
-		GXTexture						hueTexture;
-		GXTexture						compositeTexture;
+		GXTexture2D						hueTexture;
+		GXTexture2D						compositeTexture;
 		GXOpenGLState					openGLState;
 		GXCameraOrthographic			projectionCamera;
 		GXVec4							colorHSVA;

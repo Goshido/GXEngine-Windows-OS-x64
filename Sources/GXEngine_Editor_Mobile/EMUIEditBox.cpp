@@ -1,6 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMUIEditBox.h>
 #include <GXEngine/GXHudSurface.h>
-#include <GXEngine/GXTexture.h>
+#include <GXEngine/GXTexture2D.h>
 #include <GXEngine/GXUICommon.h>
 
 
@@ -51,7 +51,7 @@ class EMUIEditBoxRenderer : public GXWidgetRenderer
 {
 	private:
 		GXHudSurface*		surface;
-		GXTexture			background;
+		GXTexture2D			background;
 
 	public:
 		explicit EMUIEditBoxRenderer ( GXUIEditBox* widget );
@@ -67,7 +67,7 @@ class EMUIEditBoxRenderer : public GXWidgetRenderer
 EMUIEditBoxRenderer::EMUIEditBoxRenderer ( GXUIEditBox* widget ):
 GXWidgetRenderer ( widget )
 {
-	background = GXTexture::LoadTexture ( DEFAULT_BACKGROUND, GX_FALSE, GL_CLAMP_TO_EDGE );
+	background = GXTexture2D::LoadTexture ( DEFAULT_BACKGROUND, GX_FALSE, GL_CLAMP_TO_EDGE );
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
 	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
 }
@@ -75,7 +75,7 @@ GXWidgetRenderer ( widget )
 EMUIEditBoxRenderer::~EMUIEditBoxRenderer ()
 {
 	delete surface;
-	GXTexture::RemoveTexture ( background );
+	GXTexture2D::RemoveTexture ( background );
 }
 
 GXVoid EMUIEditBoxRenderer::OnRefresh ()

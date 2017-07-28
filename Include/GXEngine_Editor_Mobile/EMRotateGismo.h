@@ -3,7 +3,7 @@
 
 
 #include "EMMesh.h"
-#include <GXEngine/GXTexture.h>
+#include <GXEngine/GXTexture2D.h>
 #include <GXEngine/GXUnlitTexture2DMaterial.h>
 
 
@@ -13,7 +13,7 @@ class EMRotateGismo : public GXTransform
 		GXBool						isVisible;
 		EMMesh						mesh;
 		GXUnlitTexture2DMaterial	unlitMaterial;
-		GXTexture					texture;
+		GXTexture2D					texture;
 
 	public:
 		EMRotateGismo ();

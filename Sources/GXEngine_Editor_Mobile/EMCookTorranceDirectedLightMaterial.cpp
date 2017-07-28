@@ -107,27 +107,27 @@ GXVoid EMCookTorranceDirectedLightMaterial::Unbind ()
 	depthTexture->Unbind ();
 }
 
-GXVoid EMCookTorranceDirectedLightMaterial::SetAlbedoTexture ( GXTexture &texture )
+GXVoid EMCookTorranceDirectedLightMaterial::SetAlbedoTexture ( GXTexture2D &texture )
 {
 	albedoTexture = &texture;
 }
 
-GXVoid EMCookTorranceDirectedLightMaterial::SetNormalTexture ( GXTexture &texture )
+GXVoid EMCookTorranceDirectedLightMaterial::SetNormalTexture ( GXTexture2D &texture )
 {
 	normalTexture = &texture;
 }
 
-GXVoid EMCookTorranceDirectedLightMaterial::SetEmissionTexture ( GXTexture &texture )
+GXVoid EMCookTorranceDirectedLightMaterial::SetEmissionTexture ( GXTexture2D &texture )
 {
 	emissionTexture = &texture;
 }
 
-GXVoid EMCookTorranceDirectedLightMaterial::SetParameterTexture ( GXTexture &texture )
+GXVoid EMCookTorranceDirectedLightMaterial::SetParameterTexture ( GXTexture2D &texture )
 {
 	parameterTexture = &texture;
 }
 
-GXVoid EMCookTorranceDirectedLightMaterial::SetDepthTexture ( GXTexture &texture )
+GXVoid EMCookTorranceDirectedLightMaterial::SetDepthTexture ( GXTexture2D &texture )
 {
 	depthTexture = &texture;
 }

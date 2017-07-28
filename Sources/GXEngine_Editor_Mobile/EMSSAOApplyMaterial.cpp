@@ -53,12 +53,12 @@ GXVoid EMSSAOApplyMaterial::Unbind ()
 	imageTexture->Unbind ();
 }
 
-GXVoid EMSSAOApplyMaterial::SetSSAOTexture ( GXTexture &texture )
+GXVoid EMSSAOApplyMaterial::SetSSAOTexture ( GXTexture2D &texture )
 {
 	ssaoTexture = &texture;
 }
 
-GXVoid EMSSAOApplyMaterial::SetImageTexture ( GXTexture &texture )
+GXVoid EMSSAOApplyMaterial::SetImageTexture ( GXTexture2D &texture )
 {
 	imageTexture = &texture;
 }

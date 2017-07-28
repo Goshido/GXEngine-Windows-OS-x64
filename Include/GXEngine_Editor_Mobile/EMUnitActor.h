@@ -5,7 +5,7 @@
 #include "EMActor.h"
 #include "EMMesh.h"
 #include "EMCookTorranceCommonPassMaterial.h"
-#include <GXEngine/GXTexture.h>
+#include <GXEngine/GXTexture2D.h>
 
 
 #define EM_UNIT_ACTOR_CLASS		0
@@ -16,10 +16,10 @@ class EMUnitActor : public EMActor
 	private:
 		EMMesh								mesh;
 		EMCookTorranceCommonPassMaterial	commonPassMaterial;
-		GXTexture							diffuseTexture;
-		GXTexture							normalTexture;
-		GXTexture							emissionTexture;
-		GXTexture							parameterTexture;
+		GXTexture2D							diffuseTexture;
+		GXTexture2D							normalTexture;
+		GXTexture2D							emissionTexture;
+		GXTexture2D							parameterTexture;
 
 	public:
 		explicit EMUnitActor ( const GXWChar* name, const GXMat4 &transform );

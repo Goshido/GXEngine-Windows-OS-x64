@@ -68,9 +68,9 @@ class EMUIFileListBoxRenderer : public GXWidgetRenderer
 	private:
 		GXHudSurface*		surface;
 		GXFont				font;
-		GXTexture			rectangle;
-		GXTexture			fileIcon;
-		GXTexture			folderIcon;
+		GXTexture2D			rectangle;
+		GXTexture2D			fileIcon;
+		GXTexture2D			folderIcon;
 
 	public:
 		explicit EMUIFileListBoxRenderer ( GXUIListBox* widget );
@@ -89,9 +89,9 @@ GXWidgetRenderer ( widget )
 {
 	font = GXFont::GetFont ( FONT, (GXUShort)( FONT_SIZE * gx_ui_Scale ) );
 
-	rectangle = GXTexture::LoadTexture ( RECTANGLE, GX_FALSE, GL_CLAMP_TO_EDGE );
-	fileIcon = GXTexture::LoadTexture ( FILE_ICON, GX_FALSE, GL_CLAMP_TO_EDGE );
-	folderIcon = GXTexture::LoadTexture ( FOLDER_ICON, GX_FALSE, GL_CLAMP_TO_EDGE );
+	rectangle = GXTexture2D::LoadTexture ( RECTANGLE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	fileIcon = GXTexture2D::LoadTexture ( FILE_ICON, GX_FALSE, GL_CLAMP_TO_EDGE );
+	folderIcon = GXTexture2D::LoadTexture ( FOLDER_ICON, GX_FALSE, GL_CLAMP_TO_EDGE );
 
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
 	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
@@ -102,9 +102,9 @@ EMUIFileListBoxRenderer::~EMUIFileListBoxRenderer ()
 	delete surface;
 	GXFont::RemoveFont ( font );
 
-	GXTexture::RemoveTexture ( rectangle );
-	GXTexture::RemoveTexture ( folderIcon );
-	GXTexture::RemoveTexture ( fileIcon );
+	GXTexture2D::RemoveTexture ( rectangle );
+	GXTexture2D::RemoveTexture ( folderIcon );
+	GXTexture2D::RemoveTexture ( fileIcon );
 }
 
 GXVoid EMUIFileListBoxRenderer::OnRefresh ()

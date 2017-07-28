@@ -3,7 +3,7 @@
 
 
 #include <GXEngine/GXMaterial.h>
-#include <GXEngine/GXTexture.h>
+#include <GXEngine/GXTexture2D.h>
 
 
 enum class eEMGaussHorizontalBlurKernelType
@@ -14,7 +14,7 @@ enum class eEMGaussHorizontalBlurKernelType
 class EMGaussHorizontalBlurMaterial : public GXMaterial
 {
 	private:
-		GXTexture*							imageTexture;
+		GXTexture2D*						imageTexture;
 		eEMGaussHorizontalBlurKernelType	kernelType;
 
 	public:
@@ -24,7 +24,7 @@ class EMGaussHorizontalBlurMaterial : public GXMaterial
 		GXVoid Bind ( const GXTransform &transform ) override;
 		GXVoid Unbind () override;
 
-		GXVoid SetImageTexture ( GXTexture &texture );
+		GXVoid SetImageTexture ( GXTexture2D &texture );
 };
 
 

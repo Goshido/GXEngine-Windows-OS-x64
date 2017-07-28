@@ -13,7 +13,8 @@
 #include <GXEngine/GXFont.h>
 #include <GXEngine/GXShaderProgram.h>
 #include <GXEngine/GXSoundStorage.h>
-#include <GXEngine/GXTexture.h>
+#include <GXEngine/GXTexture2D.h>
+#include <GXEngine/GXTextureCubeMap.h>
 #include <GXEngine/GXMeshGeometry.h>
 #include <GXCommon/GXCFGLoader.h>
 
@@ -160,13 +161,15 @@ GXVoid GXCore::CheckMemoryLeak ()
 	GXWChar* lastSound = nullptr;
 	GXUInt sounds = GXGetTotalSoundStorageObjects ( &lastSound );
 
-	const GXWChar* lastTexture = nullptr;
-	GXUInt textures = GXTexture::GetTotalLoadedTextures ( &lastTexture );
+	const GXWChar* lastTexture2D = nullptr;
+	GXUInt texture2Ds = GXTexture2D::GetTotalLoadedTextures ( &lastTexture2D );
+
+	GXUInt textureCubeMaps = GXTextureCubeMap::GetTotalLoadedTextures ();
 
 	const GXWChar* lastMeshGeometry = nullptr;
 	GXUInt meshGeometries = GXMeshGeometry::GetTotalLoadedMeshGeometries ( &lastMeshGeometry );
 
-	if ( ( fonts + shaders + sounds + textures + meshGeometries ) != 0 )
+	if ( ( fonts + shaders + sounds + texture2Ds + textureCubeMaps + meshGeometries ) != 0 )
 	{
 		GXLogW ( L"GXCore::CheckMemoryLeak::Warning - Обнаружена утечка памяти\n" );
 
@@ -179,8 +182,11 @@ GXVoid GXCore::CheckMemoryLeak ()
 		if ( sounds > 0 )
 			GXLogW ( L"Звуковые файлы - %i [%s]\n", sounds, lastSound );
 
-		if ( textures > 0 )
-			GXLogW ( L"Текстурные объекты  - %i [%s]\n", textures, lastTexture );
+		if ( texture2Ds > 0 )
+			GXLogW ( L"Текстурные объекты (2D текстуры)  - %i [%s]\n", texture2Ds, lastTexture2D );
+
+		if ( textureCubeMaps > 0 )
+			GXLogW ( L"Текстурные объекты (Cube map текстуры)- %i\n", textureCubeMaps );
 
 		if ( meshGeometries > 0 )
 			GXLogW ( L"Меши - %i [%s]\n", meshGeometries, lastMeshGeometry );

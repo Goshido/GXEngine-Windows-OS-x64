@@ -78,7 +78,7 @@ GXVoid GXUnlitTexture2DMaterial::Unbind ()
 	glUseProgram ( 0 );
 }
 
-GXVoid GXUnlitTexture2DMaterial::SetTexture ( GXTexture &texture )
+GXVoid GXUnlitTexture2DMaterial::SetTexture ( GXTexture2D &texture )
 {
 	this->texture = &texture;
 }

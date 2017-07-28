@@ -15,11 +15,11 @@ mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLV
 	animationSolverPlayer.SetAnimationMultiplier ( 0.8f );
 	animationSolverPlayer.EnableNormalization ();
 
-	albedoTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Fluttershy_Diffuse.tga", GX_TRUE, GL_REPEAT );
+	albedoTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Fluttershy_Diffuse.tga", GX_TRUE, GL_REPEAT );
 	//normalTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Brick_Wall_Normals.tga", GX_TRUE, GL_REPEAT );
-	normalTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE, GL_CLAMP_TO_EDGE );
-	emissionTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE, GL_CLAMP_TO_EDGE );
-	parameterTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Default Cook Torrance parameters.tga", GX_FALSE, GL_CLAMP_TO_EDGE );
+	normalTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE, GL_CLAMP_TO_EDGE );
+	emissionTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE, GL_CLAMP_TO_EDGE );
+	parameterTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Cook Torrance parameters.tga", GX_FALSE, GL_CLAMP_TO_EDGE );
 
 	EMRenderer& renderer = EMRenderer::GetInstance ();
 
@@ -34,10 +34,10 @@ EMFluttershy::~EMFluttershy ()
 {
 	animationInfo.Cleanup ();
 
-	GXTexture::RemoveTexture ( albedoTexture );
-	GXTexture::RemoveTexture ( normalTexture );
-	GXTexture::RemoveTexture ( emissionTexture );
-	GXTexture::RemoveTexture ( parameterTexture );
+	GXTexture2D::RemoveTexture ( albedoTexture );
+	GXTexture2D::RemoveTexture ( normalTexture );
+	GXTexture2D::RemoveTexture ( emissionTexture );
+	GXTexture2D::RemoveTexture ( parameterTexture );
 }
 
 GXVoid EMFluttershy::Render ( GXFloat deltaTime )

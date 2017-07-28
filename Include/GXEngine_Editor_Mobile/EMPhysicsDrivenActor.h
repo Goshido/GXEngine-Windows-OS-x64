@@ -21,10 +21,10 @@ class EMPhysicsDrivenActor
 		EMMesh*								mesh;
 		GXRigidBody*						rigidBody;
 		EMCookTorranceCommonPassMaterial	material;
-		GXTexture							diffuseTexture;
-		GXTexture							normalTexture;
-		GXTexture							emissionTexture;
-		GXTexture							parameterTexture;
+		GXTexture2D							diffuseTexture;
+		GXTexture2D							normalTexture;
+		GXTexture2D							emissionTexture;
+		GXTexture2D							parameterTexture;
 
 	public:
 		explicit EMPhysicsDrivenActor ( eGXShapeType type );

@@ -61,7 +61,7 @@ GXVoid EMVelocityTileMaxMaterial::Unbind ()
 	velocityBlurTexture->Unbind ();
 }
 
-GXVoid EMVelocityTileMaxMaterial::SetVelocityBlurTexture ( GXTexture &texture )
+GXVoid EMVelocityTileMaxMaterial::SetVelocityBlurTexture ( GXTexture2D &texture )
 {
 	velocityBlurTexture = &texture;
 }

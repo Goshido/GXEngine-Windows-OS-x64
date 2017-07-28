@@ -3,14 +3,14 @@
 
 
 #include <GXEngine/GXMaterial.h>
-#include <GXEngine/GXTexture.h>
+#include <GXEngine/GXTexture2D.h>
 
 
 class EMSSAOApplyMaterial : public GXMaterial
 {
 	private:
-		GXTexture*	ssaoTexture;
-		GXTexture*	imageTexture;
+		GXTexture2D*	ssaoTexture;
+		GXTexture2D*	imageTexture;
 
 	public:
 		EMSSAOApplyMaterial ();
@@ -19,8 +19,8 @@ class EMSSAOApplyMaterial : public GXMaterial
 		GXVoid Bind ( const GXTransform &transform ) override;
 		GXVoid Unbind () override;
 
-		GXVoid SetSSAOTexture ( GXTexture &texture );
-		GXVoid SetImageTexture ( GXTexture &texture );
+		GXVoid SetSSAOTexture ( GXTexture2D &texture );
+		GXVoid SetImageTexture ( GXTexture2D &texture );
 };
 
 

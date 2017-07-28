@@ -199,6 +199,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXSkeleton.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSkinningMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSplashScreen.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXTextureCubeMap.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTextValidator.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTransform.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXMeshGeometry.cpp" />
@@ -216,7 +217,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXSoundProvider.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSoundStorage.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTextureDuplicator.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngine\GXTexture.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXTexture2D.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTouchSurface.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIButton.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXUIDraggableArea.cpp" />
@@ -350,6 +351,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXSkeleton.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSkinningMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSplashScreen.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXTextureCubeMap.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTextValidator.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTransform.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMeshGeometry.h" />
@@ -372,7 +374,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXSoundStorage.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTextureDuplicator.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTextureOuter.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXTexture.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXTexture2D.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTouchSurface.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIButton.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUICommon.h" />

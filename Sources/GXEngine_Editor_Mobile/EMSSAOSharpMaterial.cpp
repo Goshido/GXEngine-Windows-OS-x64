@@ -100,12 +100,12 @@ GXVoid EMSSAOSharpMaterial::Unbind ()
 	noiseTexture.Unbind ();
 }
 
-GXVoid EMSSAOSharpMaterial::SetDepthTexture ( GXTexture &texture )
+GXVoid EMSSAOSharpMaterial::SetDepthTexture ( GXTexture2D &texture )
 {
 	depthTexture = &texture;
 }
 
-GXVoid EMSSAOSharpMaterial::SetNormalTexture ( GXTexture &texture )
+GXVoid EMSSAOSharpMaterial::SetNormalTexture ( GXTexture2D &texture )
 {
 	normalTexture = &texture;
 }

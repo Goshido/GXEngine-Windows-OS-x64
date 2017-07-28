@@ -43,7 +43,7 @@ class EMUIMenuRenderer : public GXWidgetRenderer
 	private:
 		GXHudSurface*		surface;
 		GXFont				font;
-		GXTexture			texture;
+		GXTexture2D			texture;
 
 	public:
 		explicit EMUIMenuRenderer ( GXUIMenu* widget );
@@ -64,14 +64,14 @@ GXWidgetRenderer ( widget )
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 	surface = new GXHudSurface ( (GXShort)GXGetAABBWidth ( boundsLocal ), (GXShort)GXGetAABBHeight ( boundsLocal ) );
 	font = GXFont::GetFont ( FONT, (GXUShort)( FONT_SIZE * gx_ui_Scale ) );
-	texture = GXTexture::LoadTexture ( DEFAULT_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	texture = GXTexture2D::LoadTexture ( DEFAULT_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
 }
 
 EMUIMenuRenderer::~EMUIMenuRenderer ()
 {
 	delete surface;
 	GXFont::RemoveFont ( font );
-	GXTexture::RemoveTexture ( texture );
+	GXTexture2D::RemoveTexture ( texture );
 }
 
 GXFloat EMUIMenuRenderer::GetTextWidth ( const GXWChar* text ) const
