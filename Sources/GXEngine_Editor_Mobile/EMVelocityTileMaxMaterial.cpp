@@ -7,7 +7,7 @@
 
 #define VELOCITY_BLUR_SLOT					0
 
-#define VERTEX_SHADER						L"Shaders/Editor Mobile/ScreenQuad_vs.txt"
+#define VERTEX_SHADER						L"Shaders/System/ScreenQuad_vs.txt"
 #define GEOMETRY_SHADER						nullptr
 #define FRAGMENT_SHADER						L"Shaders/Editor Mobile/VelocityTileMax_fs.txt"
 

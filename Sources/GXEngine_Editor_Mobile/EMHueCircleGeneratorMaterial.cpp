@@ -1,7 +1,7 @@
 #include <GXEngine_Editor_Mobile/EMHueCircleGeneratorMaterial.h>
 
 
-#define VERTEX_SHADER				L"Shaders/Editor Mobile/ScreenQuad_vs.txt"
+#define VERTEX_SHADER				L"Shaders/System/ScreenQuad_vs.txt"
 #define GEOMETRY_SHADER				nullptr
 #define FRAGMENT_SHADER				L"Shaders/Editor Mobile/HueCircle_fs.txt"
 

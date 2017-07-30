@@ -2,7 +2,7 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define VERTEX_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL		L"Shaders/Editor Mobile/ScreenQuad_vs.txt"
+#define VERTEX_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL		L"Shaders/System/ScreenQuad_vs.txt"
 #define GEOMETRY_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL	nullptr
 #define FRAGMENT_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL	L"Shaders/Editor Mobile/GaussVerticalBlurOneChannelFivePixelKernel_fs.txt"
 

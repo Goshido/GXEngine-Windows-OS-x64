@@ -140,7 +140,7 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
 
 	while ( loopFlag )
 	{
-		if ( !GXLoadImage ( SPLASH_SCREEN_IMAGE, w, h, numChannels, &data ) )
+		if ( !GXLoadLDRImage ( SPLASH_SCREEN_IMAGE, w, h, numChannels, &data ) )
 		{
 			status = eGXStatus::CanNotLoadImage;
 			loopFlag = GX_FALSE;

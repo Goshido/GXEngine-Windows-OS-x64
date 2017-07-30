@@ -189,6 +189,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXCameraPerspective.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXCore.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXEngineSettings.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXEquirectangularToCubeMapMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXFont.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXGame.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXHudSurface.cpp" />
@@ -338,6 +339,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXDoFEffect.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXDrawable.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXEngineSettings.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXEquirectangularToCubeMapMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXFont.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXGame.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXHudSurface.h" />
@@ -470,7 +472,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Text Include="..\..\Shaders\Editor Mobile\MotionBlur_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\Null_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\OneSampler_fs.txt" />
-    <Text Include="..\..\Shaders\Editor Mobile\ScreenQuad_vs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\SSAOApply_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\SSAOSharp_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\StaticMesh_fs.txt" />
@@ -485,6 +486,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Text Include="..\..\Shaders\System\ColorMask_fs.txt" />
     <Text Include="..\..\Shaders\System\DOF_fs.txt" />
     <Text Include="..\..\Shaders\System\DOF_vs.txt" />
+    <Text Include="..\..\Shaders\System\EquirectangularToCubeMap_fs.txt" />
     <Text Include="..\..\Shaders\System\GaussDownsamplerX16_First_Pass_fs.txt" />
     <Text Include="..\..\Shaders\System\GaussDownsamplerX16_First_Pass_vs.txt" />
     <Text Include="..\..\Shaders\System\GaussDownsamplerX16_Second_Pass_fs.txt" />
@@ -499,6 +501,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Text Include="..\..\Shaders\System\NativeSkin_vs.txt" />
     <Text Include="..\..\Shaders\System\Particle_fs.txt" />
     <Text Include="..\..\Shaders\System\Particle_vs.txt" />
+    <Text Include="..\..\Shaders\System\ScreenQuad_vs.txt" />
     <Text Include="..\..\Shaders\System\Skeleton_fs.txt" />
     <Text Include="..\..\Shaders\System\Skeleton_vs.txt" />
     <Text Include="..\..\Shaders\System\SkinExt_fs.txt" />

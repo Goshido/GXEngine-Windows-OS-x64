@@ -5,7 +5,7 @@
 #define VELOCITY_TILE_MAX_TEXTURE_WIDTH		85
 #define VELOCITY_TILE_MAX_TEXTURE_HEIGHT	48
 
-#define VERTEX_SHADER				L"Shaders/Editor Mobile/ScreenQuad_vs.txt"
+#define VERTEX_SHADER				L"Shaders/System/ScreenQuad_vs.txt"
 #define GEOMETRY_SHADER				nullptr
 #define FRAGMENT_SHADER				L"Shaders/Editor Mobile/VelocityNeighborMax_fs.txt"
 

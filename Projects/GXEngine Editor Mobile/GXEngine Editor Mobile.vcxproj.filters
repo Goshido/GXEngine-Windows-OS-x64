@@ -435,6 +435,9 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXTextureCubeMap.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXEquirectangularToCubeMapMaterial.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -914,6 +917,9 @@
     <ClInclude Include="..\..\Include\GXEngine\GXTextureCubeMap.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXEquirectangularToCubeMapMaterial.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="..\..\Sources\GXEngine\GXRecource.res">
@@ -940,9 +946,6 @@
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\OneSampler_fs.txt">
-      <Filter>Shaders\GXEngine Editor Mobile</Filter>
-    </Text>
-    <Text Include="..\..\Shaders\Editor Mobile\ScreenQuad_vs.txt">
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\StaticMesh_fs.txt">
@@ -1085,6 +1088,12 @@
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\VertexColor_vs.txt">
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\EquirectangularToCubeMap_fs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\ScreenQuad_vs.txt">
+      <Filter>Shaders\System</Filter>
     </Text>
   </ItemGroup>
 </Project>

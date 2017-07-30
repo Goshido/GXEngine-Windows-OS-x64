@@ -164,7 +164,8 @@ GXVoid GXCore::CheckMemoryLeak ()
 	const GXWChar* lastTexture2D = nullptr;
 	GXUInt texture2Ds = GXTexture2D::GetTotalLoadedTextures ( &lastTexture2D );
 
-	GXUInt textureCubeMaps = GXTextureCubeMap::GetTotalLoadedTextures ();
+	const GXWChar* lastTextureCubeMap = nullptr;
+	GXUInt textureCubeMaps = GXTextureCubeMap::GetTotalLoadedTextures ( &lastTextureCubeMap );
 
 	const GXWChar* lastMeshGeometry = nullptr;
 	GXUInt meshGeometries = GXMeshGeometry::GetTotalLoadedMeshGeometries ( &lastMeshGeometry );
@@ -186,7 +187,7 @@ GXVoid GXCore::CheckMemoryLeak ()
 			GXLogW ( L"Текстурные объекты (2D текстуры)  - %i [%s]\n", texture2Ds, lastTexture2D );
 
 		if ( textureCubeMaps > 0 )
-			GXLogW ( L"Текстурные объекты (Cube map текстуры)- %i\n", textureCubeMaps );
+			GXLogW ( L"Текстурные объекты (Cube map текстуры)- %i [%s]\n", textureCubeMaps, lastTextureCubeMap );
 
 		if ( meshGeometries > 0 )
 			GXLogW ( L"Меши - %i [%s]\n", meshGeometries, lastMeshGeometry );

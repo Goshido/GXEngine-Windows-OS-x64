@@ -19,22 +19,22 @@
 #define CACHE_FILE_EXTENSION	L"cache"
 
 
-static GXTextureEntry* gx_TextureHead = nullptr;
+static GXTexture2DEntry* gx_TextureHead = nullptr;
 
-class GXTextureEntry
+class GXTexture2DEntry
 {
 	public:
-		GXTextureEntry*		next;
-		GXTextureEntry*		prev;
+		GXTexture2DEntry*		next;
+		GXTexture2DEntry*		prev;
 
 	private:
-		GXWChar*			fileName;
-		GXTexture2D*		texture;
+		GXWChar*				fileName;
+		GXTexture2D*			texture;
 
-		GXInt				refs;
+		GXInt					refs;
 
 	public:
-		explicit GXTextureEntry ( GXTexture2D &texture, const GXWChar* fileName );
+		explicit GXTexture2DEntry ( GXTexture2D &texture, const GXWChar* fileName );
 
 		const GXWChar* GetFileName () const;
 		GXTexture2D& GetTexture () const;
@@ -43,10 +43,10 @@ class GXTextureEntry
 		GXVoid Release ();
 
 	private:
-		~GXTextureEntry ();
+		~GXTexture2DEntry ();
 };
 
-GXTextureEntry::GXTextureEntry ( GXTexture2D &texture, const GXWChar* fileName )
+GXTexture2DEntry::GXTexture2DEntry ( GXTexture2D &texture, const GXWChar* fileName )
 {
 	GXWcsclone ( &this->fileName, fileName );
 	this->texture = &texture;
@@ -62,22 +62,22 @@ GXTextureEntry::GXTextureEntry ( GXTexture2D &texture, const GXWChar* fileName )
 	gx_TextureHead = this;
 }
 
-const GXWChar* GXTextureEntry::GetFileName () const
+const GXWChar* GXTexture2DEntry::GetFileName () const
 {
 	return fileName;
 }
 
-GXTexture2D& GXTextureEntry::GetTexture () const
+GXTexture2D& GXTexture2DEntry::GetTexture () const
 {
 	return *texture;
 }
 
-GXVoid GXTextureEntry::AddRef ()
+GXVoid GXTexture2DEntry::AddRef ()
 {
 	refs++;
 }
 
-GXVoid GXTextureEntry::Release ()
+GXVoid GXTexture2DEntry::Release ()
 {
 	refs--;
 
@@ -85,7 +85,7 @@ GXVoid GXTextureEntry::Release ()
 		delete this;
 }
 
-GXTextureEntry::~GXTextureEntry ()
+GXTexture2DEntry::~GXTexture2DEntry ()
 {
 	GXSafeFree ( fileName );
 	delete texture;
@@ -101,12 +101,17 @@ GXTextureEntry::~GXTextureEntry ()
 
 //----------------------------------------------------------------------
 
-struct GXTextureCacheHeader
+#pragma pack(push)
+#pragma pack(1)
+
+struct GXTexture2DCacheHeader
 {
 	GXUByte		numChannels;
 	GXUShort	width;
 	GXUShort	height;
 };
+
+#pragma pack(pop)
 
 //----------------------------------------------------------------------
 
@@ -152,7 +157,7 @@ GXUByte GXTexture2D::GetChannelNumber () const
 
 GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool isGenerateMipmap, GLint wrapMode )
 {
-	for ( GXTextureEntry* p = gx_TextureHead; p; p = p->next )
+	for ( GXTexture2DEntry* p = gx_TextureHead; p; p = p->next )
 	{
 		if ( GXWcscmp ( p->GetFileName (), fileName ) == 0 )
 		{
@@ -188,8 +193,8 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 		free ( path );
 		free ( baseFileName );
 
-		const GXTextureCacheHeader* cacheHeader = (const GXTextureCacheHeader*)data;
-		const GXUByte* pixelData = (const GXUByte*)( data + sizeof ( GXTextureCacheHeader ) );
+		const GXTexture2DCacheHeader* cacheHeader = (const GXTexture2DCacheHeader*)data;
+		const GXUByte* pixelData = (const GXUByte*)( data + sizeof ( GXTexture2DCacheHeader ) );
 		GLuint internalFormat = INVALID_INTERNAL_FORMAT;
 
 		switch ( cacheHeader->numChannels )
@@ -220,23 +225,23 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 
 		free ( data );
 
-		new GXTextureEntry ( *texture, fileName );
+		new GXTexture2DEntry ( *texture, fileName );
 
 		return *texture;
 	}
 
-	GXTextureCacheHeader cacheHeader;
+	GXTexture2DCacheHeader cacheHeader;
 	GXUInt width = 0;
 	GXUInt height = 0;
 
-	if ( !GXLoadImage ( fileName, width, height, cacheHeader.numChannels, &data ) )
+	if ( !GXLoadLDRImage ( fileName, width, height, cacheHeader.numChannels, &data ) )
 	{
 		free ( cacheFileName );
 		free ( path );
 		free ( baseFileName );
 
 		GXTexture2D* texture = new GXTexture2D ();
-		new GXTextureEntry ( *texture, fileName );
+		new GXTexture2DEntry ( *texture, fileName );
 		return *texture;
 	}
 
@@ -258,7 +263,7 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 	GLuint internalFormat = INVALID_INTERNAL_FORMAT;
 
 	GXWriteFileStream cacheFile ( cacheFileName );
-	cacheFile.Write ( &cacheHeader, sizeof ( GXTextureCacheHeader ) );
+	cacheFile.Write ( &cacheHeader, sizeof ( GXTexture2DCacheHeader ) );
 	cacheFile.Write ( data, cacheHeader.numChannels * width * height );
 	cacheFile.Close ();
 
@@ -293,14 +298,14 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 	free ( path );
 	free ( baseFileName );
 
-	new GXTextureEntry ( *texture, fileName );
+	new GXTexture2DEntry ( *texture, fileName );
 
 	return *texture;
 }
 
 GXVoid GXCALL GXTexture2D::RemoveTexture ( GXTexture2D& texture )
 {
-	for ( GXTextureEntry* p = gx_TextureHead; p; p = p->next )
+	for ( GXTexture2DEntry* p = gx_TextureHead; p; p = p->next )
 	{
 		if ( texture == *p )
 		{
@@ -314,7 +319,7 @@ GXVoid GXCALL GXTexture2D::RemoveTexture ( GXTexture2D& texture )
 GXUInt GXCALL GXTexture2D::GetTotalLoadedTextures ( const GXWChar** lastTexture )
 {
 	GXUInt total = 0;
-	for ( GXTextureEntry* p = gx_TextureHead; p; p = p->next )
+	for ( GXTexture2DEntry* p = gx_TextureHead; p; p = p->next )
 		total++;
 
 	if ( total > 0 )
@@ -567,7 +572,7 @@ GXVoid GXTexture2D::FreeResources ()
 	sampler = 0;
 }
 
-GXBool GXTexture2D::operator == ( const GXTextureEntry &other ) const
+GXBool GXTexture2D::operator == ( const GXTexture2DEntry &other ) const
 {
 	if ( textureObject != other.GetTexture ().textureObject ) return GX_FALSE;
 	if ( isGenerateMipmap != other.GetTexture ().isGenerateMipmap ) return GX_FALSE;

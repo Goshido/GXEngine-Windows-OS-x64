@@ -1,0 +1,80 @@
+#version 330 core
+
+
+#define COLOR_SLOT			0
+
+#define POSITIVE_X_SIDE		0
+#define NEGATIVE_X_SIDE		1
+#define POSITIVE_Y_SIDE		2
+#define NEGATIVE_Y_SIDE		3
+#define POSITIVE_Z_SIDE		4
+#define NEGATIVE_Z_SIDE		5
+
+#define FOURTH_PI			0.785398
+#define HALF_PI				1.570796
+#define THREE_QUATERS_PI	2.356194
+#define PI					3.141592
+#define DOUBLE_PI			6.283185
+#define INVERSE_PI			0.318309
+#define INVERSE_HALF_PI		0.636619
+
+
+smooth in vec2 v_uv;
+
+uniform sampler2D sampler;
+uniform int side;
+
+layout ( location = COLOR_SLOT ) out vec4 colorSlot;
+
+
+void main ()
+{
+	vec2 equirectangularCoords;
+
+	switch ( side )
+	{
+		case POSITIVE_X_SIDE:
+			equirectangularCoords.x = FOURTH_PI + HALF_PI * v_uv.x;
+			equirectangularCoords.y = -FOURTH_PI + HALF_PI * v_uv.y;
+		break;
+
+		case NEGATIVE_X_SIDE:
+			equirectangularCoords.x = -THREE_QUATERS_PI + HALF_PI * v_uv.x;
+			equirectangularCoords.y = -FOURTH_PI + HALF_PI * v_uv.y;
+		break;
+
+		case POSITIVE_Y_SIDE:
+			equirectangularCoords.x = -PI + DOUBLE_PI * v_uv.x;
+			equirectangularCoords.y = FOURTH_PI + FOURTH_PI * v_uv.y;
+		break;
+
+		case NEGATIVE_Y_SIDE:
+			equirectangularCoords.x = -PI + DOUBLE_PI * v_uv.x;
+			equirectangularCoords.y = -FOURTH_PI - FOURTH_PI * v_uv.y;
+		break;
+
+		case POSITIVE_Z_SIDE:
+			equirectangularCoords.x = -THREE_QUATERS_PI - HALF_PI * v_uv.x;
+
+			if ( equirectangularCoords.x < -PI )
+				equirectangularCoords.x = DOUBLE_PI + equirectangularCoords.x;
+
+			equirectangularCoords.y = -FOURTH_PI + HALF_PI * v_uv.y;
+		break;
+
+		case NEGATIVE_Z_SIDE:
+			equirectangularCoords.x = -FOURTH_PI + HALF_PI * v_uv.x;
+			equirectangularCoords.y = -FOURTH_PI + HALF_PI * v_uv.y;
+		break;
+
+		default:
+			//NOTHING
+		break;
+	}
+
+	vec2 uv;
+	uv.x = ( equirectangularCoords.x * INVERSE_PI ) * 0.5 + 0.5;
+	uv.y = ( equirectangularCoords.y * INVERSE_HALF_PI ) * 0.5 + 0.5;
+
+	colorSlot = texture ( sampler, uv );
+}

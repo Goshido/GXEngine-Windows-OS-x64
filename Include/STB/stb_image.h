@@ -988,7 +988,7 @@ static unsigned char *stbi__load_flip(stbi__context *s, int *x, int *y, int *com
 
    return result;
 }
-/*
+
 static void stbi__float_postprocess(float *result, int *x, int *y, int *comp, int req_comp)
 {
    if (stbi__vertically_flip_on_load && result != NULL) {
@@ -1009,7 +1009,7 @@ static void stbi__float_postprocess(float *result, int *x, int *y, int *comp, in
       }
    }
 }
-*/
+
 
 #ifndef STBI_NO_STDIO
 

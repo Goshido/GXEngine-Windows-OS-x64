@@ -7,7 +7,7 @@
 #include "GXOpenGL.h"
 
 
-class GXTextureEntry;
+class GXTexture2DEntry;
 class GXTexture2D
 {
 	private:
@@ -52,7 +52,7 @@ class GXTexture2D
 		GXVoid InitResources ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap, GLint wrapMode );
 		GXVoid FreeResources ();
 
-		GXBool operator == ( const GXTextureEntry &other ) const;
+		GXBool operator == ( const GXTexture2DEntry &other ) const;
 		GXVoid operator = ( const GXTexture2D &other );
 };
 

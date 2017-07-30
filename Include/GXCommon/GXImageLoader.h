@@ -1,4 +1,4 @@
-//version 1.2
+//version 1.3
 
 #ifndef GX_IMAGE_LOADER
 #define GX_IMAGE_LOADER
@@ -13,7 +13,8 @@
 //4	red, green, blue, alpha
 
 
-GXBool GXCALL GXLoadImage ( const GXWChar* file_name, GXUInt &width, GXUInt &height, GXUByte &numChannels, GXUByte** data );
+GXBool GXCALL GXLoadLDRImage ( const GXWChar* fileName, GXUInt &width, GXUInt &height, GXUByte &numChannels, GXUByte** data );
+GXBool GXCALL GXLoadHDRImage ( const GXWChar* fileName, GXUInt &width, GXUInt &height, GXUByte &numChannels, GXFloat** data );
 
 
 #endif //GX_IMAGE_LOADER

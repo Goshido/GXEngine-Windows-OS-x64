@@ -509,13 +509,11 @@ GXVoid GXMeshGeometry::InitSkeletalResources ()
 	glGenBuffers ( 1, &skeletalVBO );
 
 	GLsizei stride = sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 );
-	//GLsizei stride = sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec4 ) + sizeof ( GXVec4 );
 	GXPointer offset = 0;
 
 	glBindVertexArray ( skeletalVAO[ 0 ] );
 	//{
 		glBindBuffer ( GL_ARRAY_BUFFER, poseVBO[ 0 ] );
-		//glBindBuffer ( GL_ARRAY_BUFFER, skeletalVBO );
 
 		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::CurrenVertex );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );
@@ -548,7 +546,6 @@ GXVoid GXMeshGeometry::InitSkeletalResources ()
 	glBindVertexArray ( skeletalVAO[ 1 ] );
 	//{
 		glBindBuffer ( GL_ARRAY_BUFFER, poseVBO[ 1 ] );
-		//glBindBuffer ( GL_ARRAY_BUFFER, skeletalVBO );
 
 		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::CurrenVertex );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, GL_FALSE, stride, (const GLvoid*)offset );

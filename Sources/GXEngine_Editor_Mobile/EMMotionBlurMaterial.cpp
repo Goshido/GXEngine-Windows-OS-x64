@@ -13,7 +13,7 @@
 #define DEPTH_SLOT						2
 #define IMAGE_SLOT						3
 
-#define VERTEX_SHADER					L"Shaders/Editor Mobile/ScreenQuad_vs.txt"
+#define VERTEX_SHADER					L"Shaders/System/ScreenQuad_vs.txt"
 #define GEOMETRY_SHADER					nullptr
 #define FRAGMENT_SHADER					L"Shaders/Editor Mobile/MotionBlur_fs.txt"
 
