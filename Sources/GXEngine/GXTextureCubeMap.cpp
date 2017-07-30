@@ -15,8 +15,8 @@
 #define INVALID_TEXTURE_UNIT		0xFF
 #define INVALID_CHANNEL_NUMBER		0xFF
 
-#define CACHE_DIRECTORY_NAME	L"Cache"
-#define CACHE_FILE_EXTENSION	L"cache"
+#define CACHE_DIRECTORY_NAME		L"Cache"
+#define CACHE_FILE_EXTENSION		L"cache"
 
 
 static GXTextureCubeMapEntry* gx_TextureHead = nullptr;
