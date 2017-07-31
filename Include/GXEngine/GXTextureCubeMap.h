@@ -10,19 +10,11 @@
 #include <GXCommon/GXFileSystem.h>
 
 
-enum class eGXChannelDataType : GXUByte
-{
-	UnsignedByte,
-	Float
-};
-
-
 class GXTextureCubeMapEntry;
 class GXTextureCubeMap
 {
 	private:
-		GXUShort			width;
-		GXUShort			height;
+		GXUShort			faceLength;
 
 		GXUByte				numChannels;
 
@@ -41,11 +33,10 @@ class GXTextureCubeMap
 
 	public:
 		GXTextureCubeMap ();
-		explicit GXTextureCubeMap ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap );
+		explicit GXTextureCubeMap ( GXUShort faceLength, GLint internalFormat, GXBool isGenerateMipmap );
 		~GXTextureCubeMap ();
 
-		GXUShort GetWidth () const;
-		GXUShort GetHeight () const;
+		GXUShort GetFaceLength () const;
 		GXUByte GetChannelNumber () const;
 
 		static GXTextureCubeMap& GXCALL LoadEquirectangularTexture ( const GXWChar* fileName, GXBool isGenerateMipmap );
@@ -60,14 +51,14 @@ class GXTextureCubeMap
 
 		GLuint GetTextureObject () const;
 
-		GXVoid InitResources ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap );
+		GXVoid InitResources ( GXUShort faceLength, GLint internalFormat, GXBool isGenerateMipmap );
 		GXVoid FreeResources ();
 
 		GXBool operator == ( const GXTextureCubeMapEntry &other ) const;
 		GXVoid operator = ( const GXTextureCubeMap &other );
 
 	private:
-		static GXVoid GXCALL SaveSide ( GLuint fbo, GXUShort width, GXUShort height, GLuint textureObject, GXTexture2D &equirectangularTexture, GXWriteFileStream &writeStream, eGXCubeMapSide side, GXUByte numChannels, eGXChannelDataType type );
+		static GXVoid GXCALL ProjectFace ( GLuint fbo, GLuint textureObject, eGXCubeMapFace face, GXTexture2D &equirectangularTexture );
 };
 
 

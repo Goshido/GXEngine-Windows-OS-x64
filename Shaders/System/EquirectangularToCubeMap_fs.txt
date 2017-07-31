@@ -1,80 +1,29 @@
 #version 330 core
 
 
-#define COLOR_SLOT			0
-
-#define POSITIVE_X_SIDE		0
-#define NEGATIVE_X_SIDE		1
-#define POSITIVE_Y_SIDE		2
-#define NEGATIVE_Y_SIDE		3
-#define POSITIVE_Z_SIDE		4
-#define NEGATIVE_Z_SIDE		5
-
-#define FOURTH_PI			0.785398
-#define HALF_PI				1.570796
-#define THREE_QUATERS_PI	2.356194
-#define PI					3.141592
-#define DOUBLE_PI			6.283185
-#define INVERSE_PI			0.318309
-#define INVERSE_HALF_PI		0.636619
+#define COLOR_SLOT						0
+#define FRONT_TO_POSITIVE_Z_ROTATION	-1.570796
+#define INVERSE_PI						0.318309
+#define INVERSE_DOUBLE_PI				0.159154
 
 
-smooth in vec2 v_uv;
+const vec2 invAtan = vec2 ( INVERSE_DOUBLE_PI, INVERSE_PI );
 
-uniform sampler2D sampler;
-uniform int side;
+
+smooth in vec3 v_locationWorld;
+
+uniform sampler2D equirectangularSampler;
 
 layout ( location = COLOR_SLOT ) out vec4 colorSlot;
 
 
 void main ()
 {
-	vec2 equirectangularCoords;
+	vec3 directionWorld = normalize ( v_locationWorld );
 
-	switch ( side )
-	{
-		case POSITIVE_X_SIDE:
-			equirectangularCoords.x = FOURTH_PI + HALF_PI * v_uv.x;
-			equirectangularCoords.y = -FOURTH_PI + HALF_PI * v_uv.y;
-		break;
+	vec2 uv = vec2 ( atan ( directionWorld.z, directionWorld.x ), asin ( directionWorld.y ) );
+	uv.x += FRONT_TO_POSITIVE_Z_ROTATION;
+	uv = 1.0 - ( uv * invAtan + 0.5 );
 
-		case NEGATIVE_X_SIDE:
-			equirectangularCoords.x = -THREE_QUATERS_PI + HALF_PI * v_uv.x;
-			equirectangularCoords.y = -FOURTH_PI + HALF_PI * v_uv.y;
-		break;
-
-		case POSITIVE_Y_SIDE:
-			equirectangularCoords.x = -PI + DOUBLE_PI * v_uv.x;
-			equirectangularCoords.y = FOURTH_PI + FOURTH_PI * v_uv.y;
-		break;
-
-		case NEGATIVE_Y_SIDE:
-			equirectangularCoords.x = -PI + DOUBLE_PI * v_uv.x;
-			equirectangularCoords.y = -FOURTH_PI - FOURTH_PI * v_uv.y;
-		break;
-
-		case POSITIVE_Z_SIDE:
-			equirectangularCoords.x = -THREE_QUATERS_PI - HALF_PI * v_uv.x;
-
-			if ( equirectangularCoords.x < -PI )
-				equirectangularCoords.x = DOUBLE_PI + equirectangularCoords.x;
-
-			equirectangularCoords.y = -FOURTH_PI + HALF_PI * v_uv.y;
-		break;
-
-		case NEGATIVE_Z_SIDE:
-			equirectangularCoords.x = -FOURTH_PI + HALF_PI * v_uv.x;
-			equirectangularCoords.y = -FOURTH_PI + HALF_PI * v_uv.y;
-		break;
-
-		default:
-			//NOTHING
-		break;
-	}
-
-	vec2 uv;
-	uv.x = ( equirectangularCoords.x * INVERSE_PI ) * 0.5 + 0.5;
-	uv.y = ( equirectangularCoords.y * INVERSE_HALF_PI ) * 0.5 + 0.5;
-
-	colorSlot = texture ( sampler, uv );
+	colorSlot = texture ( equirectangularSampler, uv );
 }

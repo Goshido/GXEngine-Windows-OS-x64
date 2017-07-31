@@ -12,12 +12,13 @@
 #include <GXCommon/GXStrings.h>
 
 
-#define GX_WINDOW_OPENGL_CLASS	L"GX_RENDERER_CLASS"
-#define GX_DEFAULT_WINDOW_NAME	L"GXEngine"
+#define WINDOW_OPENGL_CLASS	L"GX_RENDERER_CLASS"
+#define DEFAULT_WINDOW_NAME	L"GXEngine"
 
-#define GX_DEFAULT_COLOR_BITS	32
-#define GX_DEFAULT_DEPTH_BITS	24
-#define GX_DEFAULT_STENCIL_BITS	8
+#define DEFAULT_COLOR_BITS		32
+#define DEFAULT_DEPTH_BITS		24
+#define DEFAULT_STENCIL_BITS	8
+#define CLEAR_DEPTH_VALUE		1.0f
 
 
 GXRendererResolutions::GXRendererResolutions ()
@@ -366,7 +367,7 @@ GXRenderer::GXRenderer ()
 	loopFlag = GX_TRUE;
 	thread = new GXThread ( &RenderLoop, nullptr );
 
-	SetWindowName ( GX_DEFAULT_WINDOW_NAME );
+	SetWindowName ( DEFAULT_WINDOW_NAME );
 }
 
 GXUPointer GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* args, GXThread &thread )
@@ -409,11 +410,13 @@ GXUPointer GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* args, GXThread &thread 
 
 GXVoid GXCALL GXRenderer::InitOpenGL ()
 {
-	glClearDepth ( 1.0f );
+	glClearDepth ( CLEAR_DEPTH_VALUE );
 	glEnable ( GL_DEPTH_TEST );
 	glDepthFunc ( GL_LEQUAL );
 	glEnable ( GL_CULL_FACE );
+	glEnable ( GL_TEXTURE_CUBE_MAP_SEAMLESS );
 	glCullFace ( GL_FRONT );
+
 	GXCheckOpenGLError ();
 }
 
@@ -486,7 +489,7 @@ GXVoid GXCALL GXRenderer::Destroy ()
 		hwnd = (HWND)INVALID_HANDLE_VALUE;
 	}
 
-	if ( !UnregisterClassW ( GX_WINDOW_OPENGL_CLASS, hinst ) )
+	if ( !UnregisterClassW ( WINDOW_OPENGL_CLASS, hinst ) )
 	{
 		GXDebugBox ( L"Снятие регистрации класса окна провалено" );
 		GXLogW ( L"GXRenderer::Destroy::Error - Снятие регистрации класса окна провалено\n" );
@@ -504,7 +507,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 	memset ( &wc, 0, sizeof ( wc ) );
 	wc.hInstance = hinst;
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
-	wc.lpszClassName = GX_WINDOW_OPENGL_CLASS;
+	wc.lpszClassName = WINDOW_OPENGL_CLASS;
 	wc.lpfnWndProc = &GXInput::InputProc;
 	wc.hCursor = LoadCursorW ( 0, IDC_ARROW );
 	wc.hIcon = LoadIconW ( hinst, MAKEINTRESOURCE ( GX_RID_EXE_MAINICON ) );
@@ -522,7 +525,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 	dm.dmFields = DM_PELSHEIGHT | DM_PELSWIDTH | DM_BITSPERPEL;
 	if ( isFullScreen )
 	{
-		dm.dmBitsPerPel = GX_DEFAULT_COLOR_BITS;
+		dm.dmBitsPerPel = DEFAULT_COLOR_BITS;
 		dm.dmPelsHeight = height;
 		dm.dmPelsWidth = width;
 		if ( ChangeDisplaySettingsW ( &dm, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL )
@@ -552,7 +555,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 		}
 	}
 
-	hwnd = CreateWindowExW ( dwExStyle, GX_WINDOW_OPENGL_CLASS, title, dwStyle, 0, 0, width, height, 0, 0, hinst, 0 );
+	hwnd = CreateWindowExW ( dwExStyle, WINDOW_OPENGL_CLASS, title, dwStyle, 0, 0, width, height, 0, 0, hinst, 0 );
 
 	if ( !hwnd )
 	{
@@ -577,9 +580,9 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 	memset ( &pfd, 0, sizeof ( pfd ) );
 	pfd.nSize = sizeof ( PIXELFORMATDESCRIPTOR );
 	pfd.nVersion = 1;
-	pfd.cColorBits = GX_DEFAULT_COLOR_BITS;
-	pfd.cDepthBits = GX_DEFAULT_DEPTH_BITS;
-	pfd.cStencilBits = GX_DEFAULT_STENCIL_BITS;
+	pfd.cColorBits = DEFAULT_COLOR_BITS;
+	pfd.cDepthBits = DEFAULT_DEPTH_BITS;
+	pfd.cStencilBits = DEFAULT_STENCIL_BITS;
 	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL |	PFD_DOUBLEBUFFER; 
 	pfd.iPixelType = PFD_TYPE_RGBA;
 	pfd.iLayerType = PFD_MAIN_PLANE;

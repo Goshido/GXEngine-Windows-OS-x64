@@ -6,6 +6,7 @@
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXImageLoader.h>
 #include <GXCommon/GXFileSystem.h>
+#include <GXCommon/GXLogger.h>
 
 
 #define INVALID_INTERNAL_FORMAT		0
@@ -15,8 +16,8 @@
 #define INVALID_TEXTURE_UNIT		0xFF
 #define INVALID_CHANNEL_NUMBER		0xFF
 
-#define CACHE_DIRECTORY_NAME	L"Cache"
-#define CACHE_FILE_EXTENSION	L"cache"
+#define CACHE_DIRECTORY_NAME		L"Cache"
+#define CACHE_FILE_EXTENSION		L"cache"
 
 
 static GXTexture2DEntry* gx_TextureHead = nullptr;
@@ -104,11 +105,19 @@ GXTexture2DEntry::~GXTexture2DEntry ()
 #pragma pack(push)
 #pragma pack(1)
 
+enum class eGXChannelDataType : GXUByte
+{
+	UnsignedByte,
+	Float
+};
+
 struct GXTexture2DCacheHeader
 {
-	GXUByte		numChannels;
-	GXUShort	width;
-	GXUShort	height;
+	GXUByte				numChannels;
+	eGXChannelDataType	channelDataType;
+	GXUShort			width;
+	GXUShort			height;
+	GXUBigInt			pixelOffset;
 };
 
 #pragma pack(pop)
@@ -185,63 +194,108 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 	GXWChar* cacheFileName = (GXWChar*)malloc ( size );
 	wsprintfW ( cacheFileName, L"%s/%s/%s.%s", path, CACHE_DIRECTORY_NAME, baseFileName, CACHE_FILE_EXTENSION );
 
+	free ( baseFileName );
+
 	GXUByte* data = nullptr;
+	GLuint internalFormat = INVALID_INTERNAL_FORMAT;
 
 	if ( GXLoadFile ( cacheFileName, (GXVoid**)&data, size, GX_FALSE ) )
 	{
 		free ( cacheFileName );
 		free ( path );
-		free ( baseFileName );
 
 		const GXTexture2DCacheHeader* cacheHeader = (const GXTexture2DCacheHeader*)data;
-		const GXUByte* pixelData = (const GXUByte*)( data + sizeof ( GXTexture2DCacheHeader ) );
-		GLuint internalFormat = INVALID_INTERNAL_FORMAT;
 
 		switch ( cacheHeader->numChannels )
 		{
 			case 1:
-				internalFormat = GL_R8;
+			{
+				switch ( cacheHeader->channelDataType )
+				{
+					case eGXChannelDataType::UnsignedByte:
+						internalFormat = GL_R8;
+					break;
+
+					case eGXChannelDataType::Float:
+						internalFormat = GL_R16F;
+					break;
+
+					default:
+						//NOTHING
+					break;
+				}
+			}
 			break;
 
 			case 2:
-				internalFormat = GL_RG8;
+			{
+				switch ( cacheHeader->channelDataType )
+				{
+					case eGXChannelDataType::UnsignedByte:
+						internalFormat = GL_RG8;
+					break;
+
+					case eGXChannelDataType::Float:
+						internalFormat = GL_RG16F;
+					break;
+
+					default:
+						//NOTHING
+					break;
+				}
+			}
 			break;
 
 			case 3:
-				internalFormat = GL_RGB8;
+			{
+				switch ( cacheHeader->channelDataType )
+				{
+					case eGXChannelDataType::UnsignedByte:
+						internalFormat = GL_RGB8;
+					break;
+
+					case eGXChannelDataType::Float:
+						internalFormat = GL_RGB16F;
+					break;
+
+					default:
+						//NOTHING
+					break;
+				}
+			}
 			break;
 
 			case 4:
-				internalFormat = GL_RGBA8;
+			{
+				switch ( cacheHeader->channelDataType )
+				{
+					case eGXChannelDataType::UnsignedByte:
+						internalFormat = GL_RGBA8;
+					break;
+
+					case eGXChannelDataType::Float:
+						internalFormat = GL_RGBA16F;
+					break;
+
+					default:
+						//NOTHING
+					break;
+				}
+			}
 			break;
 
 			default:
-				// NOTHING
+				//NOTHING
 			break;
 		}
 
 		GXTexture2D* texture = new GXTexture2D ( cacheHeader->width, cacheHeader->height, internalFormat, isGenerateMipmap, wrapMode );
-		texture->FillWholePixelData ( pixelData );
+		texture->FillWholePixelData ( data + cacheHeader->pixelOffset );
 
 		free ( data );
 
 		new GXTexture2DEntry ( *texture, fileName );
 
-		return *texture;
-	}
-
-	GXTexture2DCacheHeader cacheHeader;
-	GXUInt width = 0;
-	GXUInt height = 0;
-
-	if ( !GXLoadLDRImage ( fileName, width, height, cacheHeader.numChannels, &data ) )
-	{
-		free ( cacheFileName );
-		free ( path );
-		free ( baseFileName );
-
-		GXTexture2D* texture = new GXTexture2D ();
-		new GXTexture2DEntry ( *texture, fileName );
 		return *texture;
 	}
 
@@ -253,53 +307,131 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 	GXWChar* cacheDirectory = (GXWChar*)malloc ( size );
 	wsprintfW ( cacheDirectory, L"%s/%s", path, CACHE_DIRECTORY_NAME );
 
+	free ( path );
+
 	if ( !GXDoesDirectoryExist ( cacheDirectory ) )
 		GXCreateDirectory ( cacheDirectory );
 
 	free ( cacheDirectory );
 
-	cacheHeader.width = (GXUShort)width;
-	cacheHeader.height = (GXUShort)height;
-	GLuint internalFormat = INVALID_INTERNAL_FORMAT;
+	GXTexture2DCacheHeader cacheHeader;
+	GXUInt width = 0;
+	GXUInt height = 0;
 
-	GXWriteFileStream cacheFile ( cacheFileName );
-	cacheFile.Write ( &cacheHeader, sizeof ( GXTexture2DCacheHeader ) );
-	cacheFile.Write ( data, cacheHeader.numChannels * width * height );
-	cacheFile.Close ();
+	GXWChar* extension = nullptr;
+	GXGetFileExtension ( &extension, fileName );
+	GXBool success = GX_FALSE;
+	GXUPointer pixelSize = 0;
+	GXTexture2D* texture = nullptr;
 
-	switch ( cacheHeader.numChannels )
+	if ( GXWcscmp ( extension, L"hdr" ) == 0 || GXWcscmp ( extension, L"HDR" ) == 0 )
 	{
-		case 1:
-			internalFormat = GL_R8;
-		break;
+		GXFloat* hdrPixels = nullptr;
+		success = GXLoadHDRImage ( fileName, width, height, cacheHeader.numChannels, &hdrPixels );
 
-		case 2:
-			internalFormat = GL_RG8;
-		break;
+		if ( success )
+		{
+			switch ( cacheHeader.numChannels )
+			{
+				case 1:
+					internalFormat = GL_R16F;
+				break;
 
-		case 3:
-			internalFormat = GL_RGB8;
-		break;
+				case 2:
+					internalFormat = GL_RG16F;
+				break;
 
-		case 4:
-			internalFormat = GL_RGBA8;
-		break;
+				case 3:
+					internalFormat = GL_RGB16F;
+				break;
 
-		default:
-			// NOTHING
-		break;
+				case 4:
+					internalFormat = GL_RGBA16F;
+				break;
+
+				default:
+					//NOTHING
+				break;
+			}
+
+			cacheHeader.channelDataType = eGXChannelDataType::Float;
+			cacheHeader.width = (GXUShort)width;
+			cacheHeader.height = (GXUShort)height;
+			cacheHeader.pixelOffset = sizeof ( GXTexture2DCacheHeader );
+
+			GXWriteFileStream cacheFile ( cacheFileName );
+			free ( cacheFileName );
+
+			cacheFile.Write ( &cacheHeader, sizeof ( GXTexture2DCacheHeader ) );
+			cacheFile.Write ( hdrPixels, width * height * cacheHeader.numChannels * sizeof ( GXFloat ) );
+			cacheFile.Close ();
+
+			texture = new GXTexture2D ( cacheHeader.width, cacheHeader.height, internalFormat, isGenerateMipmap, wrapMode );
+			texture->FillWholePixelData ( hdrPixels );
+
+			free ( hdrPixels );
+		}
+	}
+	else
+	{
+		GXUByte* ldrPixels = nullptr;
+		success = GXLoadLDRImage ( fileName, width, height, cacheHeader.numChannels, &ldrPixels );
+
+		if ( success )
+		{
+			switch ( cacheHeader.numChannels )
+			{
+				case 1:
+					internalFormat = GL_R8;
+				break;
+
+				case 2:
+					internalFormat = GL_RG8;
+				break;
+
+				case 3:
+					internalFormat = GL_RGB8;
+				break;
+
+				case 4:
+					internalFormat = GL_RGBA8;
+				break;
+
+				default:
+					//NOTHING
+				break;
+			}
+
+			cacheHeader.channelDataType = eGXChannelDataType::UnsignedByte;
+			cacheHeader.width = (GXUShort)width;
+			cacheHeader.height = (GXUShort)height;
+			cacheHeader.pixelOffset = sizeof ( GXTexture2DCacheHeader );
+
+			GXWriteFileStream cacheFile ( cacheFileName );
+			free ( cacheFileName );
+
+			cacheFile.Write ( &cacheHeader, sizeof ( GXTexture2DCacheHeader ) );
+			cacheFile.Write ( ldrPixels, width * height * cacheHeader.numChannels * sizeof ( GXUByte ) );
+			cacheFile.Close ();
+
+			texture = new GXTexture2D ( cacheHeader.width, cacheHeader.height, internalFormat, isGenerateMipmap, wrapMode );
+			texture->FillWholePixelData ( ldrPixels );
+
+			free ( ldrPixels );
+		}
 	}
 
-	GXTexture2D* texture = new GXTexture2D ( cacheHeader.width, cacheHeader.height, internalFormat, isGenerateMipmap, wrapMode );
-	texture->FillWholePixelData ( data );
+	GXSafeFree ( extension );
 
-	free ( data );
-	free ( cacheFileName );
-	free ( path );
-	free ( baseFileName );
+	if ( !success )
+	{
+		GXLogW ( L"GXTexture2D::LoadTexture::Error - ѕоддерживаютс€ текстуры с количеством каналов 1, 3 и 4 (текущее количество %hhu)\n", cacheHeader.numChannels );
+		free ( cacheFileName );
+
+		GXTexture2D* texture = new GXTexture2D ();
+	}
 
 	new GXTexture2DEntry ( *texture, fileName );
-
 	return *texture;
 }
 
@@ -339,6 +471,7 @@ GXVoid GXTexture2D::FillWholePixelData ( const GXVoid* data )
 
 	glPixelStorei ( GL_UNPACK_ALIGNMENT, unpackAlignment );
 	glTexImage2D ( GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, data );
+
 	glGetError ();
 
 	if ( isGenerateMipmap )
@@ -456,6 +589,13 @@ GXVoid GXTexture2D::InitResources ( GXUShort width, GXUShort height, GLint inter
 		}
 		break;
 
+		case GL_R16F:
+			unpackAlignment = 2;
+			format = GL_RED;
+			type = GL_FLOAT;
+			numChannels = 1;
+		break;
+
 		case GL_RG8:
 		case GL_RG8I:
 		case GL_RG8UI:
@@ -465,6 +605,13 @@ GXVoid GXTexture2D::InitResources ( GXUShort width, GXUShort height, GLint inter
 			type = GL_UNSIGNED_BYTE;
 			numChannels = 2;
 		}
+		break;
+
+		case GL_RG16F:
+			unpackAlignment = 4;
+			format = GL_RG;
+			type = GL_FLOAT;
+			numChannels = 2;
 		break;
 
 		case GL_RGB8:

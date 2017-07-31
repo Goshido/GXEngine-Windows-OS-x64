@@ -1,16 +1,21 @@
 #include <GXEngine/GXEquirectangularToCubeMapMaterial.h>
 
 
-#define VERTEX_SHADER			L"Shaders/System/ScreenQuad_vs.txt"
+#define VERTEX_SHADER			L"Shaders/System/EquirectangularToCubeMap_vs.txt"
 #define GEOMETRY_SHADER			nullptr
 #define FRAGMENT_SHADER			L"Shaders/System/EquirectangularToCubeMap_fs.txt"
 
 #define TEXTURE_SLOT			0
 
+#define QUAD_ASPECT_RATIO		1.0f
+#define Z_NEAR					0.1f
+#define Z_FAR					777.777f
+#define PROJECTION_FOV_Y		GX_MATH_HALFPI
+
 
 GXEquirectangularToCubeMapMaterial::GXEquirectangularToCubeMapMaterial ()
 {
-	static const GLchar* samplerNames[ 1 ] = { "sampler" };
+	static const GLchar* samplerNames[ 1 ] = { "equirectangularSampler" };
 	static const GLuint samplerLocations[ 1 ] = { TEXTURE_SLOT };
 
 	GXShaderProgramInfo si;
@@ -25,10 +30,10 @@ GXEquirectangularToCubeMapMaterial::GXEquirectangularToCubeMapMaterial ()
 
 	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
 
-	sideLocation = shaderProgram.GetUniform ( "side" );
+	viewProjectionMatrixLocation = shaderProgram.GetUniform ( "viewProjectionMatrix" );
 
 	texture = nullptr;
-	SetSide ( eGXCubeMapSide::PositiveX );
+	SetSide ( eGXCubeMapFace::PositiveX );
 }
 
 GXEquirectangularToCubeMapMaterial::~GXEquirectangularToCubeMapMaterial ()
@@ -41,7 +46,7 @@ GXVoid GXEquirectangularToCubeMapMaterial::Bind ( const GXTransform& /*transform
 	if ( !texture ) return;
 
 	glUseProgram ( shaderProgram.GetProgram () );
-	glUniform1i ( sideLocation, side );
+	glUniformMatrix4fv ( viewProjectionMatrixLocation, 1, GL_FALSE, viewProjectionMatrix.arr );
 	texture->Bind ( TEXTURE_SLOT );
 }
 
@@ -58,7 +63,43 @@ GXVoid GXEquirectangularToCubeMapMaterial::SetEquirectangularTexture ( GXTexture
 	this->texture = &texture;
 }
 
-GXVoid GXEquirectangularToCubeMapMaterial::SetSide ( eGXCubeMapSide side )
+GXVoid GXEquirectangularToCubeMapMaterial::SetSide ( eGXCubeMapFace side )
 {
-	this->side = (GLint)side;
+	GXMat4 projectionMatrix;
+	GXSetMat4Perspective ( projectionMatrix, PROJECTION_FOV_Y, QUAD_ASPECT_RATIO, Z_NEAR, Z_FAR );
+
+	GXMat4 viewMatrix;
+
+	switch ( side )
+	{
+		case eGXCubeMapFace::PositiveX:
+			GXSetMat4RotationXYZ ( viewMatrix, 0.0f, -GX_MATH_HALFPI, 0.0f );
+		break;
+
+		case eGXCubeMapFace::NegativeX:
+			GXSetMat4RotationXYZ ( viewMatrix, 0.0f, GX_MATH_HALFPI, 0.0f );
+		break;
+
+		case eGXCubeMapFace::PositiveY:
+			GXSetMat4RotationXYZ ( viewMatrix, -GX_MATH_HALFPI, 0.0f, 0.0f );
+		break;
+
+		case eGXCubeMapFace::NegativeY:
+			GXSetMat4RotationXYZ ( viewMatrix, GX_MATH_HALFPI, 0.0f, 0.0f );
+		break;
+
+		case eGXCubeMapFace::PositiveZ:
+			GXSetMat4RotationXYZ ( viewMatrix, 0.0f, 0.0f, 0.0f );
+		break;
+
+		case eGXCubeMapFace::NegativeZ:
+			GXSetMat4RotationXYZ ( viewMatrix, 0.0f, GX_MATH_PI, 0.0f );
+		break;
+
+		default:
+			//NOTHING
+		break;
+	}
+
+	GXMulMat4Mat4 ( viewProjectionMatrix, viewMatrix, projectionMatrix );
 }

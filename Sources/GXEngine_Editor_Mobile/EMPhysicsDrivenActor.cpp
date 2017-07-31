@@ -29,7 +29,7 @@ EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
 	{
 		case eGXShapeType::Box:
 		{
-			mesh = new EMMesh ( L"3D Models/Editor Mobile/Unit Cube.stm" );
+			mesh = new EMMesh ( L"3D Models/System/Unit Cube.stm" );
 			GXBoxShape* box = new GXBoxShape ( rigidBody, 1.0f, 1.0f, 1.0f );
 			rigidBody->SetShape ( *box );
 		}
@@ -52,7 +52,7 @@ EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
 
 		case eGXShapeType::Sphere:
 		{
-			mesh = new EMMesh ( L"3D Models/Editor Mobile/Unit Cube.stm" );
+			mesh = new EMMesh ( L"3D Models/System/Unit Cube.stm" );
 			GXSphereShape* p = new GXSphereShape ( rigidBody, 0.5f );
 			rigidBody->SetShape ( *p );
 		}
@@ -60,7 +60,7 @@ EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
 
 		case eGXShapeType::Polygon:
 		{
-			mesh = new EMMesh ( L"3D Models/Editor Mobile/Unit Cube.stm" );
+			mesh = new EMMesh ( L"3D Models/System/Unit Cube.stm" );
 			//GXPolygonShape* p = new GXPolygonShape ( nullptr, 30.0f, 30.0f );
 
 			GXBoxShape* box = new GXBoxShape ( rigidBody, 100.0f, 1.0f, 100.0f );

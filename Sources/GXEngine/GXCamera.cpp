@@ -134,7 +134,7 @@ GXVoid GXCamera::SetCurrentFrameModelMatrix ( const GXMat4 &matrix )
 
 GXVoid GXCamera::GetLocation ( GXVec3& outLocation ) const
 {
-	currentFrameViewMatrix.GetW ( outLocation );
+	currentFrameModelMatrix.GetW ( outLocation );
 }
 
 GXVoid GXCamera::GetRotation ( GXMat4 &out ) const

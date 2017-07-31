@@ -22,7 +22,7 @@
 
 GXBool GXCALL GXLoadLDRImage ( const GXWChar* fileName, GXUInt &width, GXUInt &height, GXUByte &numChannels, GXUByte** data )
 {
-	GXUBigInt len;
+	GXUPointer len;
 	stbi_uc* mappedFile;
 
 	if ( !GXLoadFile ( fileName, (GXVoid**)&mappedFile, len, GX_TRUE ) )
@@ -61,7 +61,7 @@ GXBool GXCALL GXLoadLDRImage ( const GXWChar* fileName, GXUInt &width, GXUInt &h
 
 GXBool GXCALL GXLoadHDRImage ( const GXWChar* fileName, GXUInt &width, GXUInt &height, GXUByte &numChannels, GXFloat** data )
 {
-	GXUBigInt len;
+	GXUPointer len;
 	stbi_uc* mappedFile;
 
 	if ( !GXLoadFile ( fileName, (GXVoid**)&mappedFile, len, GX_TRUE ) )
@@ -71,7 +71,7 @@ GXBool GXCALL GXLoadHDRImage ( const GXWChar* fileName, GXUInt &width, GXUInt &h
 	}
 
 	GXInt comp;
-	*data = (GXFloat*)stbi_load_from_memory ( mappedFile, (int)len, (GXInt*)&width, (GXInt*)&height, &comp, 0 );
+	*data = (GXFloat*)stbi_loadf_from_memory ( mappedFile, (int)len, (GXInt*)&width, (GXInt*)&height, &comp, 0 );
 	free ( mappedFile );
 
 	if ( !( *data ) )
@@ -81,7 +81,7 @@ GXBool GXCALL GXLoadHDRImage ( const GXWChar* fileName, GXUInt &width, GXUInt &h
 	GXUPointer lineSize = floatsPerLine * sizeof ( GXFloat );
 	GXFloat* tmp = (GXFloat*)malloc ( lineSize );
 	GXFloat* p = *data;
-	GXFloat* n = *data + lineSize * ( height - 1 );
+	GXFloat* n = *data + floatsPerLine * ( height - 1 );
 
 	while ( p < n )
 	{

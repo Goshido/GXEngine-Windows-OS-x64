@@ -8,7 +8,7 @@
 #include "GXTexture2D.h"
 
 
-enum class eGXCubeMapSide : GXInt
+enum class eGXCubeMapFace : GXInt
 {
 	PositiveX = 0,
 	NegativeX = 1,
@@ -24,8 +24,8 @@ class GXEquirectangularToCubeMapMaterial : public GXMaterial
 	private:
 		GXTexture2D*	texture;
 
-		GLint			side;
-		GLint			sideLocation;
+		GXMat4			viewProjectionMatrix;
+		GLint			viewProjectionMatrixLocation;
 
 	public:
 		GXEquirectangularToCubeMapMaterial ();
@@ -35,7 +35,7 @@ class GXEquirectangularToCubeMapMaterial : public GXMaterial
 		GXVoid Unbind () override;
 
 		GXVoid SetEquirectangularTexture ( GXTexture2D &texture );
-		GXVoid SetSide ( eGXCubeMapSide side );
+		GXVoid SetSide ( eGXCubeMapFace side );
 };
 
 

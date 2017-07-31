@@ -9,6 +9,7 @@
 #include <GXEngine/GXLocale.h>
 #include <GXEngine/GXCore.h>
 #include <GXEngine/GXSplashScreen.h>
+#include <GXEngine/GXTextureCubeMap.h>
 #include <GXPhysics/GXPhysicsEngine.h>
 
 
@@ -125,6 +126,7 @@ GXVoid EMGame::OnInit ()
 	viewer->SetOnViewerTransformChangedCallback ( this, &EMGame::OnViewerTransformChanged );
 	viewer->SetInputWidget ( *uiInput );
 	viewer->SetTarget ( unitActor );
+	GXCamera::SetActiveCamera ( &viewer->GetCamera () );
 
 	EMTool::SetActiveTool ( moveTool );
 
@@ -141,6 +143,9 @@ GXVoid EMGame::OnInit ()
 	world.RegisterRigidBody ( physicsPlaneActor->GetRigidBody () );
 
 	fluttershy = new EMFluttershy ();
+
+	//environment = new EMEnvironment ( L"Textures/Editor Mobile/Default HDR environment map.hdr" );
+	environment = new EMEnvironment ( L"Textures/Editor Mobile/Default LDR environment map.jpg" );
 
 	EMUIFPSCounter::GetInstance ();
 	EMUIColorPicker::GetInstance ();
@@ -177,6 +182,10 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	renderer.ApplySSAO ();
 	renderer.ApplyMotionBlur ( deltaTime );
+
+	renderer.StartEnvironmentPass ();
+
+	environment->Render ();
 
 	renderer.StartHudColorPass ();
 
@@ -236,6 +245,7 @@ GXVoid EMGame::OnDestroy ()
 
 	delete EMViewer::GetInstance ();
 
+	GXSafeDelete ( environment );
 	GXSafeDelete ( fluttershy );
 	delete &( EMUIFPSCounter::GetInstance () );
 	delete &( EMUIColorPicker::GetInstance () );
@@ -293,6 +303,7 @@ GXVoid GXCALL EMGame::OnViewerTransformChanged ( GXVoid* handler )
 {
 	EMGame* game = (EMGame*)handler;
 	game->moveTool->OnViewerTransformChanged ();
+	game->environment->OnViewerLocationChanged ();
 }
 
 GXVoid GXCALL EMGame::OnOpenFile ( const GXWChar* filePath )

@@ -239,6 +239,8 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMCookTorranceCommonPassMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMCookTorranceDirectedLightMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMDirectedLightActor.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMEnvironment.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMEnvironmentMapMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMFluttershy.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMGame.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMGaussHorizontalBlurMaterial.cpp" />
@@ -399,6 +401,8 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMCookTorranceCommonPassMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMCookTorranceDirectedLightMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMDirectedLightActor.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMEnvironment.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMEnvironmentMapMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMFluttershy.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMGaussHorizontalBlurMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMGaussVerticalBlurMaterial.h" />
@@ -462,6 +466,8 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Text Include="..\..\Shaders\Editor Mobile\CookTorranceCommonPass_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\CookTorranceCommonPass_vs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\CookTorranceDirectedLight_fs.txt" />
+    <Text Include="..\..\Shaders\Editor Mobile\EnvironmentMap_fs.txt" />
+    <Text Include="..\..\Shaders\Editor Mobile\EnvironmentMap_vs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\GaussHorizontalBlurOneChannelFivePixelKernel_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\GaussVerticalBlurOneChannelFivePixelKernel_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\HueCircle_fs.txt" />
@@ -487,6 +493,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Text Include="..\..\Shaders\System\DOF_fs.txt" />
     <Text Include="..\..\Shaders\System\DOF_vs.txt" />
     <Text Include="..\..\Shaders\System\EquirectangularToCubeMap_fs.txt" />
+    <Text Include="..\..\Shaders\System\EquirectangularToCubeMap_vs.txt" />
     <Text Include="..\..\Shaders\System\GaussDownsamplerX16_First_Pass_fs.txt" />
     <Text Include="..\..\Shaders\System\GaussDownsamplerX16_First_Pass_vs.txt" />
     <Text Include="..\..\Shaders\System\GaussDownsamplerX16_Second_Pass_fs.txt" />

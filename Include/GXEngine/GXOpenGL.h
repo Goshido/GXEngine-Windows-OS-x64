@@ -96,10 +96,17 @@ class GXOpenGLState
 		GLuint		fbo;
 		GLint		viewport[ 4 ];
 		GLboolean	colorMask[ 4 ];
+
 		GLboolean	depthMask;
 		GLboolean	depthTest;
+		GLfloat		depthClearValue;
+		GLint		depthFunction;
+
 		GLboolean	cullFace;
+		GLint		cullFaceMode;
+
 		GLboolean	blending;
+
 		GLenum		drawBuffers[ 16 ];
 
 	public:

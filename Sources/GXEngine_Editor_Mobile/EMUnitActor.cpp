@@ -17,7 +17,7 @@
 
 EMUnitActor::EMUnitActor ( const GXWChar* name, const GXMat4 &transform ):
 EMActor ( name, EM_UNIT_ACTOR_CLASS, transform ),
-mesh ( L"3D Models/Editor Mobile/Unit Cube.stm" )
+mesh ( L"3D Models/System/Unit Cube.stm" )
 {
 	OnTransformChanged ();
 

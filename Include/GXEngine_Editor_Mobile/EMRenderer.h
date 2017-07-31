@@ -90,6 +90,7 @@ class EMRenderer
 
 		GXVoid StartCommonPass ();
 		GXVoid StartLightPass ();
+		GXVoid StartEnvironmentPass ();
 		GXVoid StartHudColorPass ();
 		GXVoid StartHudMaskPass ();
 
@@ -123,6 +124,8 @@ class EMRenderer
 
 		GXVoid SetSSAOMaximumDistance ( GXFloat meters );
 		GXFloat GetSSAOMaximumDistance () const;
+
+		GXTexture2D& GetDepthTexture ();
 
 		static EMRenderer& GXCALL GetInstance ();
 

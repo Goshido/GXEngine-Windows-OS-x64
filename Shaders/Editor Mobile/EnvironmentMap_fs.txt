@@ -1,0 +1,23 @@
+#version 330 core
+
+
+#define COLOR_SLOT	0
+
+
+smooth in vec3 v_locationView;
+
+uniform samplerCube environmentSampler;
+uniform sampler2D depthSampler;
+uniform vec2 inverseScreenResolution;
+
+out layout ( location = COLOR_SLOT ) vec4 fragmentColor;
+
+
+void main ()
+{
+	vec2 uv = gl_FragCoord.xy * inverseScreenResolution;
+
+	if ( texture ( depthSampler, uv).x != 1.0 ) discard;
+
+	fragmentColor = texture ( environmentSampler, v_locationView );
+}

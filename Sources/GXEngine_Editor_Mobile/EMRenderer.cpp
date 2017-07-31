@@ -224,6 +224,37 @@ GXVoid EMRenderer::StartLightPass ()
 	LightUp ();
 }
 
+GXVoid EMRenderer::StartEnvironmentPass ()
+{
+	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, omegaTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
+
+	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
+	glDepthMask ( GX_TRUE );
+	glStencilMask ( 0xFF );
+
+	GXRenderer& renderer = GXRenderer::GetInstance ();
+	glViewport ( 0, 0, renderer.GetWidth (), renderer.GetHeight () );
+
+	const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers ( 1, buffers );
+
+	glEnable ( GL_BLEND );
+	glBlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+	glDisable ( GL_DEPTH_TEST );
+
+	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+	if ( status != GL_FRAMEBUFFER_COMPLETE )
+		GXLogW ( L"EMRenderer::StartEnvironmentPass::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
+}
+
 GXVoid EMRenderer::StartHudColorPass ()
 {
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
@@ -631,6 +662,11 @@ EMRenderer& EMRenderer::GetInstance ()
 		instance = new EMRenderer ();
 
 	return *instance;
+}
+
+GXTexture2D& EMRenderer::GetDepthTexture ()
+{
+	return depthStencilTexture;
 }
 
 EMRenderer::EMRenderer ():
