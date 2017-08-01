@@ -14,13 +14,20 @@ class EMEnvironment
 		GXTextureCubeMap			environment;
 		EMEnvironmentMapMaterial	environmentMapMaterial;
 
+		static EMEnvironment*		instance;
+
 	public:
-		EMEnvironment ( const GXWChar* environmentMap );
+		static EMEnvironment& GXCALL GetInstance ();
 		~EMEnvironment ();
 
-		GXVoid Render ();
+		GXVoid SetEnvironmentMap ( const GXWChar* cubeMap );
+		GXVoid SetEnvironmentQuasiDistance ( GXFloat meters );
 
+		GXVoid Render ( GXFloat deltaTime );
 		GXVoid OnViewerLocationChanged ();
+
+	private:
+		EMEnvironment ();
 };
 
 

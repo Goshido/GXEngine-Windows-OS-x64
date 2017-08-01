@@ -358,6 +358,7 @@ GXWidgetRenderer ( widget ), screenQuad ( L"3D Models/System/ScreenQuad.stm" )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
+
 	glGenFramebuffers ( 1, &fbo );
 
 	triangle.SetTotalVertices ( 3 );
@@ -383,6 +384,8 @@ GXWidgetRenderer ( widget ), screenQuad ( L"3D Models/System/ScreenQuad.stm" )
 
 	GXVec4 colorHSVA ( DEFAULT_CURRENT_COLOR_H, DEFAULT_CURRENT_COLOR_S, DEFAULT_CURRENT_COLOR_V, DEFAULT_CURRENT_COLOR_A );
 	SetColorHSVA ( colorHSVA );
+
+	GXCheckOpenGLError ();
 }
 
 EMColorSelectorRenderer::~EMColorSelectorRenderer ()
@@ -571,6 +574,7 @@ GXVoid EMColorSelectorRenderer::UpdateHueCircleTexture ()
 		msaaSide = (GXUShort)( w * COLOR_SELECTOR_MSAA_FACTOR );
 
 	hueTexture.InitResources ( msaaSide, msaaSide, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
+
 	compositeTexture.InitResources ( msaaSide, msaaSide, GL_RGBA8, GX_TRUE, GL_CLAMP_TO_EDGE );
 	hueCircleGeneratorMaterial.SetResolution ( msaaSide, msaaSide );
 	glViewport ( 0, 0, (GLsizei)msaaSide, (GLsizei)msaaSide );
@@ -581,7 +585,6 @@ GXVoid EMColorSelectorRenderer::UpdateHueCircleTexture ()
 
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 	glDepthMask ( GL_FALSE );
-	
 	glDisable ( GL_CULL_FACE );
 	glDisable ( GL_DEPTH_TEST );
 	glDisable ( GL_BLEND );

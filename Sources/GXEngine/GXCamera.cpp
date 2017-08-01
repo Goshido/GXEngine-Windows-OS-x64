@@ -19,6 +19,7 @@ GXCamera::GXCamera ()
 	GXSetMat4Identity ( currentFrameProjectionMatrix );
 	GXSetMat4Identity ( currentFrameInverseProjectionMatrix );
 	GXSetMat4Identity ( currentFrameViewProjectionMatrix );
+	GXSetMat4Identity ( lastFrameModelMatrix );
 	GXSetMat4Identity ( lastFrameViewMatrix );
 	GXSetMat4Identity ( lastFrameViewProjectionMatrix );
 
@@ -53,6 +54,11 @@ const GXMat4& GXCamera::GetCurrentFrameModelMatrix () const
 const GXMat4& GXCamera::GetCurrentFrameViewMatrix () const
 {
 	return currentFrameViewMatrix;
+}
+
+const GXMat4& GXCamera::GetLastFrameModelMatrix () const
+{
+	return lastFrameModelMatrix;
 }
 
 const GXMat4& GXCamera::GetLastFrameViewMatrix () const
@@ -170,6 +176,7 @@ GXFloat GXCamera::GetZfar () const
 
 GXVoid GXCamera::UpdateLastFrameMatrices ()
 {
+	lastFrameModelMatrix = currentFrameModelMatrix;
 	lastFrameViewMatrix = currentFrameViewMatrix;
 	lastFrameViewProjectionMatrix = currentFrameViewProjectionMatrix;
 }

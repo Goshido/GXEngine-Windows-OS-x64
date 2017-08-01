@@ -21,6 +21,7 @@ class GXCamera
 		GXMat4					currentFrameProjectionMatrix;
 		GXMat4					currentFrameInverseProjectionMatrix;
 		GXMat4					currentFrameViewProjectionMatrix;
+		GXMat4					lastFrameModelMatrix;
 		GXMat4					lastFrameViewMatrix;
 		GXMat4					lastFrameViewProjectionMatrix;
 
@@ -35,6 +36,7 @@ class GXCamera
 		const GXMat4& GetCurrentFrameInverseProjectionMatrix () const;
 		const GXMat4& GetCurrentFrameModelMatrix () const;
 		const GXMat4& GetCurrentFrameViewMatrix () const;
+		const GXMat4& GetLastFrameModelMatrix () const;
 		const GXMat4& GetLastFrameViewMatrix () const;
 		const GXMat4& GetLastFrameViewProjectionMatrix () const;
 

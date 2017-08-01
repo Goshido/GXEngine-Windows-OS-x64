@@ -472,8 +472,6 @@ GXVoid GXTexture2D::FillWholePixelData ( const GXVoid* data )
 	glPixelStorei ( GL_UNPACK_ALIGNMENT, unpackAlignment );
 	glTexImage2D ( GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, data );
 
-	glGetError ();
-
 	if ( isGenerateMipmap )
 	{
 		glGenerateMipmap ( GL_TEXTURE_2D );
@@ -486,6 +484,8 @@ GXVoid GXTexture2D::FillWholePixelData ( const GXVoid* data )
 	}
 
 	glBindTexture ( GL_TEXTURE_2D, 0 );
+
+	GXCheckOpenGLError ();
 }
 
 GXVoid GXTexture2D::FillRegionPixelData ( GXUShort left, GXUShort bottom, GXUShort width, GXUShort height, const GXVoid* data )

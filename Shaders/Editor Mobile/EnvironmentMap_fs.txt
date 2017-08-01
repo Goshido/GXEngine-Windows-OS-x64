@@ -1,7 +1,8 @@
 #version 330 core
 
 
-#define COLOR_SLOT	0
+#define EMISSION_SLOT			0
+#define VELOCITY_BLUR_SLOT		1
 
 
 smooth in vec3 v_locationView;
@@ -9,8 +10,10 @@ smooth in vec3 v_locationView;
 uniform samplerCube environmentSampler;
 uniform sampler2D depthSampler;
 uniform vec2 inverseScreenResolution;
+uniform vec2 velocityBlur;
 
-out layout ( location = COLOR_SLOT ) vec4 fragmentColor;
+layout ( location = EMISSION_SLOT ) out vec3 outEmission;
+layout ( location = VELOCITY_BLUR_SLOT ) out vec2 outVelocityBlur;
 
 
 void main ()
@@ -19,5 +22,6 @@ void main ()
 
 	if ( texture ( depthSampler, uv).x != 1.0 ) discard;
 
-	fragmentColor = texture ( environmentSampler, v_locationView );
+	outEmission = texture ( environmentSampler, v_locationView ).rgb;
+	outVelocityBlur = velocityBlur;
 }

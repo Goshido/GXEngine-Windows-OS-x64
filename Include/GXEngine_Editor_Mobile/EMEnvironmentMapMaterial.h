@@ -15,8 +15,14 @@ class EMEnvironmentMapMaterial : public GXMaterial
 
 		GLint					modelViewProjectionMatrixLocation;
 
+		GXVec2					screenResolution;
 		GXVec2					inverseScreenResolution;
 		GLint					inverseScreenResolutionLocation;
+
+		GLint					velocityBlurLocation;
+
+		GXFloat					inverseDeltaTime;
+		GXFloat					environmentQuasiDistance;
 
 	public:
 		EMEnvironmentMapMaterial ();
@@ -29,6 +35,10 @@ class EMEnvironmentMapMaterial : public GXMaterial
 		GXVoid SetDepthTexture ( GXTexture2D &texture );
 
 		GXVoid SetScreenResolution ( GXUShort width, GXUShort height );
+		GXVoid SetDeltaTime ( GXFloat seconds );
+
+		// Distance to environment map border to calculate positions and then velocity blur.
+		GXVoid SetEnvironmentQuasiDistance ( GXFloat meters );
 };
 
 

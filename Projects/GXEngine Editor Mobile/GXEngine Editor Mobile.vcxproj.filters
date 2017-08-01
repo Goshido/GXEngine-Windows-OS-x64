@@ -1101,20 +1101,20 @@
     <Text Include="..\..\Shaders\Editor Mobile\VertexColor_vs.txt">
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
-    <Text Include="..\..\Shaders\System\EquirectangularToCubeMap_fs.txt">
-      <Filter>Shaders\System</Filter>
-    </Text>
     <Text Include="..\..\Shaders\System\ScreenQuad_vs.txt">
       <Filter>Shaders\System</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\EnvironmentMap_vs.txt">
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
-    <Text Include="..\..\Shaders\Editor Mobile\EnvironmentMap_fs.txt">
-      <Filter>Shaders\GXEngine Editor Mobile</Filter>
-    </Text>
     <Text Include="..\..\Shaders\System\EquirectangularToCubeMap_vs.txt">
       <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\EquirectangularToCubeMap_fs.txt">
+      <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\EnvironmentMap_fs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
   </ItemGroup>
 </Project>

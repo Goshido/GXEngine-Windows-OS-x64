@@ -77,16 +77,20 @@ float Fresnel ( const in float ior, const in vec3 normalView, const in vec3 view
 void main ()
 {
 	float depthSample = texture ( depthSampler, v_uv ).x;
+	vec3 emission = texture ( emissionSampler, v_uv ).rgb;
 
 	if ( depthSample == 1.0 )
-		discard;
+	{
+		fragmentColor = emission;
+		return;
+	}
 
 	vec3 fragmentViewDirectionView = GetFragmentViewDirectionView ( depthSample );
 	vec3 normalView = texture ( normalSampler, v_uv ).xyz * 2.0 - 1.0;
 	vec3 halfVectorView = normalize ( toLightDirectionView + fragmentViewDirectionView );
 
 	vec3 albedo = texture ( albedoSampler, v_uv ).rgb;
-	vec3 emission = texture ( emissionSampler, v_uv ).rgb;
+
 
 	vec4 parameterSample = texture ( parameterSampler, v_uv );
 	float roughness = parameterSample.x + EPSILON;

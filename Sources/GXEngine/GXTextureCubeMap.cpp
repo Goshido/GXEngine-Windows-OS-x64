@@ -332,7 +332,8 @@ GXTextureCubeMap& GXCALL GXTextureCubeMap::LoadEquirectangularTexture ( const GX
 
 		equirectangularTexture.FillWholePixelData ( hdrPixels );
 		free ( hdrPixels );
-		faceSize = width * height * cacheHeader.numChannels * sizeof ( GXFloat );
+		GXUInt faceLength = width / 4;
+		faceSize = faceLength * faceLength * cacheHeader.numChannels * sizeof ( GXFloat );
 	}
 	else
 	{
@@ -360,7 +361,8 @@ GXTextureCubeMap& GXCALL GXTextureCubeMap::LoadEquirectangularTexture ( const GX
 
 		equirectangularTexture.FillWholePixelData ( ldrPixels );
 		free ( ldrPixels );
-		faceSize = width * height * cacheHeader.numChannels * sizeof ( GXUByte );
+		GXUInt faceLength = width / 4;
+		faceSize = faceLength * faceLength * cacheHeader.numChannels * sizeof ( GXUByte );
 	}
 
 	GXSafeFree ( extension );

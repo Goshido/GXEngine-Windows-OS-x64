@@ -5,6 +5,7 @@
 #include <GXEngine_Editor_Mobile/EMUISSAOSettings.h>
 #include <GXEngine_Editor_Mobile/EMUIFPSCounter.h>
 #include <GXEngine_Editor_Mobile/EMUIColorPicker.h>
+#include <GXEngine_Editor_Mobile/EMEnvironment.h>
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXLocale.h>
 #include <GXEngine/GXCore.h>
@@ -14,6 +15,7 @@
 
 
 #define EM_WINDOW_NAME					L"GXEditor Mobile"
+#define ENVIRONMENT_QUASI_DISTANCE		7.77f
 
 
 EMGame::EMGame ()
@@ -144,8 +146,10 @@ GXVoid EMGame::OnInit ()
 
 	fluttershy = new EMFluttershy ();
 
-	//environment = new EMEnvironment ( L"Textures/Editor Mobile/Default HDR environment map.hdr" );
-	environment = new EMEnvironment ( L"Textures/Editor Mobile/Default LDR environment map.jpg" );
+	EMEnvironment& environment = EMEnvironment::GetInstance ();
+	//environment.SetEnvironmentMap ( L"Textures/Editor Mobile/Default HDR environment map.hdr" );
+	environment.SetEnvironmentMap ( L"Textures/Editor Mobile/Default LDR environment map.jpg" );
+	environment.SetEnvironmentQuasiDistance ( ENVIRONMENT_QUASI_DISTANCE );
 
 	EMUIFPSCounter::GetInstance ();
 	EMUIColorPicker::GetInstance ();
@@ -178,14 +182,14 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	physicsPlaneActor->Draw ( deltaTime );
 	fluttershy->Render ( deltaTime );
 
+	renderer.StartEnvironmentPass ();
+
+	EMEnvironment::GetInstance ().Render ( deltaTime );
+
 	renderer.StartLightPass ();
 
 	renderer.ApplySSAO ();
 	renderer.ApplyMotionBlur ( deltaTime );
-
-	renderer.StartEnvironmentPass ();
-
-	environment->Render ();
 
 	renderer.StartHudColorPass ();
 
@@ -245,8 +249,8 @@ GXVoid EMGame::OnDestroy ()
 
 	delete EMViewer::GetInstance ();
 
-	GXSafeDelete ( environment );
 	GXSafeDelete ( fluttershy );
+	delete &( EMEnvironment::GetInstance () );
 	delete &( EMUIFPSCounter::GetInstance () );
 	delete &( EMUIColorPicker::GetInstance () );
 
@@ -303,7 +307,7 @@ GXVoid GXCALL EMGame::OnViewerTransformChanged ( GXVoid* handler )
 {
 	EMGame* game = (EMGame*)handler;
 	game->moveTool->OnViewerTransformChanged ();
-	game->environment->OnViewerLocationChanged ();
+	EMEnvironment::GetInstance ().OnViewerLocationChanged ();
 }
 
 GXVoid GXCALL EMGame::OnOpenFile ( const GXWChar* filePath )

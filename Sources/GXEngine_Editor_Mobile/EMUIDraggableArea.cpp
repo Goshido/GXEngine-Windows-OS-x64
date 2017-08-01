@@ -41,9 +41,12 @@ class EMUIDraggableAreaRenderer : public GXWidgetRenderer
 EMUIDraggableAreaRenderer::EMUIDraggableAreaRenderer ( GXUIDragableArea* draggableAreaWidget ):
 GXWidgetRenderer ( draggableAreaWidget )
 {
+	GXCheckOpenGLError ();
 	background = GXTexture2D::LoadTexture ( BACKGROUND_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	GXCheckOpenGLError ();
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
+	GXCheckOpenGLError ();
 }
 
 EMUIDraggableAreaRenderer::~EMUIDraggableAreaRenderer ()

@@ -4,38 +4,52 @@
 #include <GXEngine/GXRenderer.h>
 
 
-#define CUBE_SCALE	7.77f
+#define CUBE_SCALE				7.77f
+#define INVALID_TEXTURE_OBJECT	0
 
 
-EMEnvironment::EMEnvironment ( const GXWChar* environmentMap ) :
-cube ( L"3D Models/System/Unit Cube.stm" )
+EMEnvironment* EMEnvironment::instance = nullptr;
+
+EMEnvironment& GXCALL EMEnvironment::GetInstance ()
 {
-	environment = GXTextureCubeMap::LoadEquirectangularTexture ( environmentMap, GX_TRUE );
+	if ( !instance )
+		instance = new EMEnvironment ();
 
-	GXRenderer& renderer = GXRenderer::GetInstance ();
-
-	environmentMapMaterial.SetEnvironmentMap ( environment );
-	environmentMapMaterial.SetDepthTexture ( EMRenderer::GetInstance ().GetDepthTexture () );
-	environmentMapMaterial.SetScreenResolution ( (GXUShort)renderer.GetWidth (), (GXUShort)renderer.GetHeight () );
-
-	cube.SetScale ( CUBE_SCALE, CUBE_SCALE, CUBE_SCALE );
-
-	OnViewerLocationChanged ();
+	return *instance;
 }
 
 EMEnvironment::~EMEnvironment ()
 {
-	GXTextureCubeMap::RemoveTexture ( environment );
+	if ( environment.GetTextureObject () != INVALID_TEXTURE_OBJECT )
+		GXTextureCubeMap::RemoveTexture ( environment );
+
+	instance = nullptr;
 }
 
-GXVoid EMEnvironment::Render ()
+GXVoid EMEnvironment::SetEnvironmentMap ( const GXWChar* cubeMap )
 {
+	if ( environment.GetTextureObject () != INVALID_TEXTURE_OBJECT )
+		GXTextureCubeMap::RemoveTexture ( environment );
+
+	environment = GXTextureCubeMap::LoadEquirectangularTexture ( cubeMap, GX_TRUE );
+}
+
+GXVoid EMEnvironment::SetEnvironmentQuasiDistance ( GXFloat meters )
+{
+	environmentMapMaterial.SetEnvironmentQuasiDistance ( meters );
+}
+
+GXVoid EMEnvironment::Render ( GXFloat deltaTime )
+{
+	if ( environment.GetTextureObject () == INVALID_TEXTURE_OBJECT ) return;
+
 	GXOpenGLState state;
 	state.Save ();
 
 	glEnable ( GL_CULL_FACE );
 	glCullFace ( GL_BACK );
 
+	environmentMapMaterial.SetDeltaTime ( deltaTime );
 	environmentMapMaterial.Bind ( cube );
 	cube.Render ();
 	environmentMapMaterial.Unbind ();
@@ -48,4 +62,18 @@ GXVoid EMEnvironment::OnViewerLocationChanged ()
 	GXVec3 viewerLocation;
 	EMViewer::GetInstance ()->GetCamera ().GetLocation ( viewerLocation );
 	cube.SetLocation ( viewerLocation );
+}
+
+EMEnvironment::EMEnvironment () :
+cube ( L"3D Models/System/Unit Cube.stm" )
+{
+	GXRenderer& renderer = GXRenderer::GetInstance ();
+
+	environmentMapMaterial.SetEnvironmentMap ( environment );
+	environmentMapMaterial.SetDepthTexture ( EMRenderer::GetInstance ().GetDepthTexture () );
+	environmentMapMaterial.SetScreenResolution ( (GXUShort)renderer.GetWidth (), (GXUShort)renderer.GetHeight () );
+
+	cube.SetScale ( CUBE_SCALE, CUBE_SCALE, CUBE_SCALE );
+
+	OnViewerLocationChanged ();
 }

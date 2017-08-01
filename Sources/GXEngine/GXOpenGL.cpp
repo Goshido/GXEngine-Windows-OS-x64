@@ -198,8 +198,13 @@ GXVoid GXOpenGLState::Save ()
 	glGetBooleanv ( GL_CULL_FACE, &cullFace );
 	glGetIntegerv ( GL_CULL_FACE_MODE, &cullFaceMode );
 
-	for ( GXUByte i = 0; i < 16; i++ )
+	GLint maxDrawBuffers = 0;
+	glGetIntegerv ( GL_MAX_DRAW_BUFFERS, &maxDrawBuffers );
+
+	for ( GLint i = 0; i < maxDrawBuffers; i++ )
 		glGetIntegerv ( GL_DRAW_BUFFER0 + i, (GLint*)( drawBuffers + i ) );
+
+	GXCheckOpenGLError ();
 }
 
 GXVoid GXOpenGLState::Restore ()
@@ -229,4 +234,10 @@ GXVoid GXOpenGLState::Restore ()
 		glEnable ( GL_BLEND );
 	else
 		glDisable ( GL_BLEND );
+
+	GLint maxDrawBuffers = 0;
+	glGetIntegerv ( GL_MAX_DRAW_BUFFERS, &maxDrawBuffers );
+	glDrawBuffers ( (GLsizei)maxDrawBuffers, drawBuffers );
+
+	GXCheckOpenGLError ();
 }

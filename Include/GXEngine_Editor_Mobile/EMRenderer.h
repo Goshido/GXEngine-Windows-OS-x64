@@ -89,8 +89,8 @@ class EMRenderer
 		~EMRenderer ();
 
 		GXVoid StartCommonPass ();
-		GXVoid StartLightPass ();
 		GXVoid StartEnvironmentPass ();
+		GXVoid StartLightPass ();
 		GXVoid StartHudColorPass ();
 		GXVoid StartHudMaskPass ();
 
