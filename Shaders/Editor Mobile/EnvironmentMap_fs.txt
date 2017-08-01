@@ -5,7 +5,7 @@
 #define VELOCITY_BLUR_SLOT		1
 
 
-smooth in vec3 v_locationView;
+smooth in vec3 v_locationWorld;
 
 uniform samplerCube environmentSampler;
 uniform sampler2D depthSampler;
@@ -22,6 +22,6 @@ void main ()
 
 	if ( texture ( depthSampler, uv).x != 1.0 ) discard;
 
-	outEmission = texture ( environmentSampler, v_locationView ).rgb;
+	outEmission = texture ( environmentSampler, v_locationWorld ).rgb;
 	outVelocityBlur = velocityBlur;
 }

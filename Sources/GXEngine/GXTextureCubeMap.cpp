@@ -503,41 +503,58 @@ GXTextureCubeMap& GXCALL GXTextureCubeMap::LoadEquirectangularTexture ( const GX
 
 	GXUByte* facePixels = (GXUByte*)malloc ( faceSize );
 
-	ProjectFace ( fbo, texture->GetTextureObject (), eGXCubeMapFace::PositiveX, equirectangularTexture );
+	GLint cubeMapTextureObject = texture->GetTextureObject ();
+	ProjectFaces ( fbo, cubeMapTextureObject, equirectangularTexture );
+
+	GXOpenGLState state;
+	state.Save ();
+
 	glBindFramebuffer ( GL_READ_FRAMEBUFFER, fbo );
+
+	switch ( cacheHeader.numChannels )
+	{
+		case 1:
+			glColorMask ( GL_TRUE, GL_FALSE, GL_FALSE, GL_FALSE );
+		break;
+
+		case 3:
+			glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
+		break;
+
+		case 4:
+			glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+		break;
+
+		default:
+			//NOTHING
+		break;
+	}
+
+	glFramebufferTexture2D ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X, cubeMapTextureObject, 0 );
 	glReadPixels ( 0, 0, (GLsizei)cacheHeader.faceLength, (GLsizei)cacheHeader.faceLength, readPixelFormat, readPixelType, facePixels );
-	glBindFramebuffer ( GL_READ_FRAMEBUFFER, 0 );
 	cacheFile.Write ( facePixels, faceSize );
 
-	ProjectFace ( fbo, texture->GetTextureObject (), eGXCubeMapFace::NegativeX, equirectangularTexture );
-	glBindFramebuffer ( GL_READ_FRAMEBUFFER, fbo );
+	glFramebufferTexture2D ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, cubeMapTextureObject, 0 );
 	glReadPixels ( 0, 0, (GLsizei)cacheHeader.faceLength, (GLsizei)cacheHeader.faceLength, readPixelFormat, readPixelType, facePixels );
-	glBindFramebuffer ( GL_READ_FRAMEBUFFER, 0 );
 	cacheFile.Write ( facePixels, faceSize );
 
-	ProjectFace ( fbo, texture->GetTextureObject (), eGXCubeMapFace::PositiveY, equirectangularTexture );
-	glBindFramebuffer ( GL_READ_FRAMEBUFFER, fbo );
+	glFramebufferTexture2D ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, cubeMapTextureObject, 0 );
 	glReadPixels ( 0, 0, (GLsizei)cacheHeader.faceLength, (GLsizei)cacheHeader.faceLength, readPixelFormat, readPixelType, facePixels );
-	glBindFramebuffer ( GL_READ_FRAMEBUFFER, 0 );
 	cacheFile.Write ( facePixels, faceSize );
 
-	ProjectFace ( fbo, texture->GetTextureObject (), eGXCubeMapFace::NegativeY, equirectangularTexture );
-	glBindFramebuffer ( GL_READ_FRAMEBUFFER, fbo );
+	glFramebufferTexture2D ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, cubeMapTextureObject, 0 );
 	glReadPixels ( 0, 0, (GLsizei)cacheHeader.faceLength, (GLsizei)cacheHeader.faceLength, readPixelFormat, readPixelType, facePixels );
-	glBindFramebuffer ( GL_READ_FRAMEBUFFER, 0 );
 	cacheFile.Write ( facePixels, faceSize );
 
-	ProjectFace ( fbo, texture->GetTextureObject (), eGXCubeMapFace::PositiveZ, equirectangularTexture );
-	glBindFramebuffer ( GL_READ_FRAMEBUFFER, fbo );
+	glFramebufferTexture2D ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, cubeMapTextureObject, 0 );
 	glReadPixels ( 0, 0, (GLsizei)cacheHeader.faceLength, (GLsizei)cacheHeader.faceLength, readPixelFormat, readPixelType, facePixels );
-	glBindFramebuffer ( GL_READ_FRAMEBUFFER, 0 );
 	cacheFile.Write ( facePixels, faceSize );
 
-	ProjectFace ( fbo, texture->GetTextureObject (), eGXCubeMapFace::NegativeZ, equirectangularTexture );
-	glBindFramebuffer ( GL_READ_FRAMEBUFFER, fbo );
+	glFramebufferTexture2D ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, cubeMapTextureObject, 0 );
 	glReadPixels ( 0, 0, (GLsizei)cacheHeader.faceLength, (GLsizei)cacheHeader.faceLength, readPixelFormat, readPixelType, facePixels );
-	glBindFramebuffer ( GL_READ_FRAMEBUFFER, 0 );
 	cacheFile.Write ( facePixels, faceSize );
+
+	state.Restore ();
 
 	cacheFile.Close ();
 	free ( facePixels );
@@ -815,43 +832,13 @@ GXVoid GXTextureCubeMap::operator = ( const GXTextureCubeMap &other )
 	memcpy ( this, &other, sizeof ( GXTextureCubeMap ) );
 }
 
-GXVoid GXCALL GXTextureCubeMap::ProjectFace ( GLuint fbo, GLuint textureObject, eGXCubeMapFace face, GXTexture2D &equirectangularTexture )
+GXVoid GXCALL GXTextureCubeMap::ProjectFaces ( GLuint fbo, GLuint textureObject, GXTexture2D &equirectangularTexture )
 {
 	GXOpenGLState state;
 	state.Save ();
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
-
-	switch ( face )
-	{
-		case eGXCubeMapFace::PositiveX:
-			glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X, textureObject, 0 );
-		break;
-
-		case eGXCubeMapFace::NegativeX:
-			glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, textureObject, 0 );
-		break;
-
-		case eGXCubeMapFace::PositiveY:
-			glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, textureObject, 0 );
-		break;
-
-		case eGXCubeMapFace::NegativeY:
-			glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, textureObject, 0 );
-		break;
-
-		case eGXCubeMapFace::PositiveZ:
-			glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, textureObject, 0 );
-		break;
-
-		case eGXCubeMapFace::NegativeZ:
-			glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, textureObject, 0 );
-		break;
-
-		default:
-			//NOTHING
-		break;
-	}
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureObject, 0 );
 
 	switch ( equirectangularTexture.GetChannelNumber () )
 	{
@@ -897,7 +884,6 @@ GXVoid GXCALL GXTextureCubeMap::ProjectFace ( GLuint fbo, GLuint textureObject, 
 
 	GXEquirectangularToCubeMapMaterial equirectangularToCubeMapMaterial;
 	equirectangularToCubeMapMaterial.SetEquirectangularTexture ( equirectangularTexture );
-	equirectangularToCubeMapMaterial.SetSide ( face );
 	equirectangularToCubeMapMaterial.Bind ( GXTransform::GetNullTransform () );
 	unitCube.Render ();
 	equirectangularToCubeMapMaterial.Unbind ();

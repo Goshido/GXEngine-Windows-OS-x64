@@ -10,7 +10,7 @@
 const vec2 invAtan = vec2 ( INVERSE_DOUBLE_PI, INVERSE_PI );
 
 
-smooth in vec3 v_locationWorld;
+smooth in vec3 g_locationWorld;
 
 uniform sampler2D equirectangularSampler;
 
@@ -19,7 +19,7 @@ layout ( location = COLOR_SLOT ) out vec4 colorSlot;
 
 void main ()
 {
-	vec3 directionWorld = normalize ( v_locationWorld );
+	vec3 directionWorld = normalize ( g_locationWorld );
 
 	vec2 uv = vec2 ( atan ( directionWorld.z, directionWorld.x ), asin ( directionWorld.y ) );
 	uv.x += FRONT_TO_POSITIVE_Z_ROTATION;

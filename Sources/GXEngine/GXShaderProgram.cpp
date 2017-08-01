@@ -663,9 +663,9 @@ GXShaderProgram::GXShaderProgram ( const GXShaderProgramInfo &info )
 
 GXBool GXShaderProgram::operator == ( const GXShaderProgramInfo &other ) const
 {
-	if ( !GXWcscmp ( other.fs, fs ) != 0 ) return GX_FALSE;
-	if ( !GXWcscmp ( other.vs, vs ) != 0 ) return GX_FALSE;
-	if ( !GXWcscmp ( other.gs, gs ) != 0 ) return GX_FALSE;
+	if ( GXWcscmp ( other.fs, fs ) != 0 ) return GX_FALSE;
+	if ( GXWcscmp ( other.vs, vs ) != 0 ) return GX_FALSE;
+	if ( GXWcscmp ( other.gs, gs ) != 0 ) return GX_FALSE;
 
 	return GX_TRUE;
 }

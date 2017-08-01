@@ -203,13 +203,13 @@ GXVoid EMViewer::UpdateCamera ()
 
 GXFloat EMViewer::FixPitch ( GXFloat pitch )
 {
-	return GXClampf ( pitch, -GX_MATH_HALFPI, GX_MATH_HALFPI );
+	return GXClampf ( pitch, -GX_MATH_HALF_PI, GX_MATH_HALF_PI );
 }
 
 GXFloat EMViewer::FixYaw ( GXFloat yaw )
 {
-	while ( yaw < -GX_MATH_PI ) yaw += GX_MATH_TWO_PI;
-	while ( yaw > GX_MATH_PI ) yaw -= GX_MATH_TWO_PI;
+	while ( yaw < -GX_MATH_PI ) yaw += GX_MATH_DOUBLE_PI;
+	while ( yaw > GX_MATH_PI ) yaw -= GX_MATH_DOUBLE_PI;
 	return yaw;
 }
 

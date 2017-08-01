@@ -58,7 +58,7 @@ class GXTextureCubeMap
 		GXVoid operator = ( const GXTextureCubeMap &other );
 
 	private:
-		static GXVoid GXCALL ProjectFace ( GLuint fbo, GLuint textureObject, eGXCubeMapFace face, GXTexture2D &equirectangularTexture );
+		static GXVoid GXCALL ProjectFaces ( GLuint fbo, GLuint textureObject, GXTexture2D &equirectangularTexture );
 };
 
 

@@ -1,19 +1,18 @@
 #version 330 core
 
 
-#define VERTEX_STREAM		0
+#define CURRENT_VERTEX_STREAM	0
 
 
-layout ( location = VERTEX_STREAM ) in vec3 vertex;
+layout ( location = CURRENT_VERTEX_STREAM ) in vec3 vertex;
 
 uniform mat4 modelViewProjectionMatrix;
 
-smooth out vec3 v_locationView;
+smooth out vec3 v_locationWorld;
 
 
 void main ()
 {
-	vec4 v = vec4 ( vertex, 1.0 );
-	gl_Position = modelViewProjectionMatrix * v;
-	v_locationView = vertex;
+	gl_Position = modelViewProjectionMatrix * vec4 ( vertex, 1.0 );
+	v_locationWorld = vertex;
 }

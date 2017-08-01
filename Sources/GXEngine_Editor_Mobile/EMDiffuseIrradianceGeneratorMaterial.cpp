@@ -1,11 +1,12 @@
-#include <GXEngine/GXEquirectangularToCubeMapMaterial.h>
+#include <GXEngine_Editor_Mobile/EMDiffuseIrradianceGeneratorMaterial.h>
 
 
 #define VERTEX_SHADER			L"Shaders/System/VertexPass_vs.txt"
 #define GEOMETRY_SHADER			L"Shaders/System/CubeMapSplitter_gs.txt"
-#define FRAGMENT_SHADER			L"Shaders/System/EquirectangularToCubeMap_fs.txt"
+#define FRAGMENT_SHADER			L"Shaders/Editor Mobile/DiffuseIrradianceGenerator_fs.txt"
 
 #define TEXTURE_SLOT			0
+#define DEFAULT_ANGLE_STEP		0.025f	//4.363323e-4f degrees
 
 #define QUAD_ASPECT_RATIO		1.0f
 #define Z_NEAR					0.1f
@@ -13,9 +14,11 @@
 #define PROJECTION_FOV_Y		GX_MATH_HALF_PI
 
 
-GXEquirectangularToCubeMapMaterial::GXEquirectangularToCubeMapMaterial ()
+EMDiffuseIrradianceGeneratorMaterial::EMDiffuseIrradianceGeneratorMaterial ()
 {
-	static const GLchar* samplerNames[ 1 ] = { "equirectangularSampler" };
+	environmentMap = nullptr;
+
+	static const GLchar* samplerNames[ 1 ] = { "environmentSampler" };
 	static const GLuint samplerLocations[ 1 ] = { TEXTURE_SLOT };
 
 	GXShaderProgramInfo si;
@@ -31,14 +34,16 @@ GXEquirectangularToCubeMapMaterial::GXEquirectangularToCubeMapMaterial ()
 	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
 
 	modelProjectionMatricesLocation = shaderProgram.GetUniform ( "modelProjectionMatrices" );
+	//angleStepLocation = shaderProgram.GetUniform ( "angleStep" );
 
-	texture = nullptr;
+	SetAngleStep ( DEFAULT_ANGLE_STEP );
 
 	GXMat4 projectionMatrix;
 	GXSetMat4Perspective ( projectionMatrix, PROJECTION_FOV_Y, QUAD_ASPECT_RATIO, Z_NEAR, Z_FAR );
-	
+
 	GXMat4 modelMatrix;
-	GXSetMat4RotationXYZ( modelMatrix, 0.0f, -GX_MATH_HALF_PI, 0.0f );
+	GXMat4 v;
+	GXSetMat4RotationXYZ ( modelMatrix, 0.0f, -GX_MATH_HALF_PI, 0.0f );
 	GXMulMat4Mat4 ( modelProjectionMatrices[ 0 ], modelMatrix, projectionMatrix );
 
 	GXSetMat4RotationXYZ ( modelMatrix, 0.0f, GX_MATH_HALF_PI, 0.0f );
@@ -57,29 +62,39 @@ GXEquirectangularToCubeMapMaterial::GXEquirectangularToCubeMapMaterial ()
 	GXMulMat4Mat4 ( modelProjectionMatrices[ 5 ], modelMatrix, projectionMatrix );
 }
 
-GXEquirectangularToCubeMapMaterial::~GXEquirectangularToCubeMapMaterial ()
+EMDiffuseIrradianceGeneratorMaterial::~EMDiffuseIrradianceGeneratorMaterial ()
 {
 	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 }
 
-GXVoid GXEquirectangularToCubeMapMaterial::Bind ( const GXTransform& /*transform*/ )
+GXVoid EMDiffuseIrradianceGeneratorMaterial::Bind ( const GXTransform &transform )
 {
-	if ( !texture ) return;
+	if ( !environmentMap ) return;
 
 	glUseProgram ( shaderProgram.GetProgram () );
+
 	glUniformMatrix4fv ( modelProjectionMatricesLocation, 6, GL_FALSE, (const GLfloat*)modelProjectionMatrices );
-	texture->Bind ( TEXTURE_SLOT );
+	//glUniform1f ( angleStepLocation, angleStep );
+
+	environmentMap->Bind ( TEXTURE_SLOT );
 }
 
-GXVoid GXEquirectangularToCubeMapMaterial::Unbind ()
+GXVoid EMDiffuseIrradianceGeneratorMaterial::Unbind ()
 {
-	if ( !texture ) return;
+	if ( !environmentMap ) return;
 
 	glUseProgram ( 0 );
-	texture->Unbind ();
+	environmentMap->Unbind ();
 }
 
-GXVoid GXEquirectangularToCubeMapMaterial::SetEquirectangularTexture ( GXTexture2D &texture )
+GXVoid EMDiffuseIrradianceGeneratorMaterial::SetEnvironmentMap ( GXTextureCubeMap &cubeMap )
 {
-	this->texture = &texture;
+	environmentMap = &cubeMap;
+}
+
+GXUInt EMDiffuseIrradianceGeneratorMaterial::SetAngleStep ( GXFloat radians )
+{
+	angleStep = radians;
+	GXFloat invAngleStep = 1.0f / angleStep;
+	return (GXUInt)( floorf ( GX_MATH_HALF_PI * invAngleStep ) + floorf ( GX_MATH_DOUBLE_PI * invAngleStep ) );
 }

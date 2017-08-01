@@ -1,4 +1,4 @@
-﻿//version 1.33
+﻿//version 1.34
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>

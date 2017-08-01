@@ -1124,7 +1124,7 @@ GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput& i
 		GXFloat angleRadians = acosf ( cosAngle );
 
 		if ( y < center.y )
-			angleRadians = GX_MATH_TWO_PI - angleRadians;
+			angleRadians = GX_MATH_DOUBLE_PI - angleRadians;
 
 		if ( radius >= innerRadius && radius <= outerRadius )
 		{

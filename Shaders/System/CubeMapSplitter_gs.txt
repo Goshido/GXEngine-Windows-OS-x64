@@ -1,0 +1,39 @@
+#version 330 core
+
+
+#define CUBE_MAP_FACES			6
+#define MAX_VERTICES			18	//CUBE_MAP_FACES * "vertices per triangle"
+
+
+layout ( triangles ) in;
+
+uniform mat4 modelProjectionMatrices[ CUBE_MAP_FACES ];
+
+layout ( triangle_strip, max_vertices = MAX_VERTICES ) out;
+smooth out vec3 g_locationWorld;
+
+
+void MakeVertex ( const in int layer, const in int vertexIndex )
+{
+	gl_Layer = layer;
+
+	gl_Position = modelProjectionMatrices[ layer ] * gl_in[ vertexIndex ].gl_Position;
+	g_locationWorld = gl_in[ vertexIndex ].gl_Position.xyz;
+
+	EmitVertex ();
+}
+
+void MakeTriangle ( const in int layer )
+{
+	MakeVertex ( layer, 0 );
+	MakeVertex ( layer, 1 );
+	MakeVertex ( layer, 2 );
+
+	EndPrimitive ();
+}
+
+void main ()
+{
+	for ( int i = 0; i < CUBE_MAP_FACES; i++ )
+		MakeTriangle ( i );
+}

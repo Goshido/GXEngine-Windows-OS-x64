@@ -1,4 +1,4 @@
-//version 1.33
+//version 1.34
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -10,9 +10,9 @@
 #include <float.h>
 
 
-#define GX_MATH_TWO_PI	6.2831853f
-#define GX_MATH_PI		3.1415927f
-#define GX_MATH_HALFPI	1.5707963f
+#define GX_MATH_DOUBLE_PI	6.2831853f
+#define GX_MATH_PI			3.1415927f
+#define GX_MATH_HALF_PI		1.5707963f
 
 
 union GXVec2
