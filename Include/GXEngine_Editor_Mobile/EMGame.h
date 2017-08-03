@@ -12,7 +12,9 @@
 #include "EMMoveTool.h"
 #include "EMPhysicsDrivenActor.h"
 #include "EMFluttershy.h"
+#include "EMLightProbe.h"
 #include <GXEngine/GXGame.h>
+#include <GXEngine/GXTextureCubeMap.h>
 #include <GXEngine/GXCameraOrthographic.h>
 
 
@@ -33,6 +35,9 @@ class EMGame : public GXGame
 		EMPhysicsDrivenActor*	physicsBoxActor;
 		EMPhysicsDrivenActor*	physicsPlaneActor;
 		EMFluttershy*			fluttershy;
+		GXTextureCubeMap*		environmentMap;
+		GXTextureCubeMap*		lightProbeSourceTexture;
+		EMLightProbe*			lightProbe;
 		GXUIInput*				uiInput;
 
 	public:

@@ -7,7 +7,7 @@
 
 layout ( triangles ) in;
 
-uniform mat4 modelProjectionMatrices[ CUBE_MAP_FACES ];
+uniform mat4 viewProjectionMatrices[ CUBE_MAP_FACES ];
 
 layout ( triangle_strip, max_vertices = MAX_VERTICES ) out;
 smooth out vec3 g_locationWorld;
@@ -17,7 +17,7 @@ void MakeVertex ( const in int layer, const in int vertexIndex )
 {
 	gl_Layer = layer;
 
-	gl_Position = modelProjectionMatrices[ layer ] * gl_in[ vertexIndex ].gl_Position;
+	gl_Position = viewProjectionMatrices[ layer ] * gl_in[ vertexIndex ].gl_Position;
 	g_locationWorld = gl_in[ vertexIndex ].gl_Position.xyz;
 
 	EmitVertex ();

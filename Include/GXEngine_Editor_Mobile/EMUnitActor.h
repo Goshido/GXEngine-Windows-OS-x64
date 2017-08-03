@@ -31,6 +31,8 @@ class EMUnitActor : public EMActor
 		GXVoid OnLoad ( const GXUByte* data ) override;
 		GXUInt OnRequeredSaveSize () override;
 		GXVoid OnTransformChanged () override;
+
+		EMCookTorranceCommonPassMaterial& GetMaterial ();
 };
 
 

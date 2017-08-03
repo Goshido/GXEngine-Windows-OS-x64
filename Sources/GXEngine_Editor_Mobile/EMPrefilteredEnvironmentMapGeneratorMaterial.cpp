@@ -1,13 +1,15 @@
-#include <GXEngine_Editor_Mobile/EMDiffuseIrradianceGeneratorMaterial.h>
+#include <GXEngine_Editor_Mobile/EMPrefilteredEnvironmentMapGeneratorMaterial.h>
 #include <GXEngine/GXCameraPerspective.h>
 
 
 #define VERTEX_SHADER			L"Shaders/System/VertexPass_vs.txt"
 #define GEOMETRY_SHADER			L"Shaders/System/CubeMapSplitter_gs.txt"
-#define FRAGMENT_SHADER			L"Shaders/Editor Mobile/DiffuseIrradianceGenerator_fs.txt"
+#define FRAGMENT_SHADER			L"Shaders/Editor Mobile/PrefilteredEnvironmentMap_fs.txt"
 
 #define TEXTURE_SLOT			0
-#define DEFAULT_ANGLE_STEP		0.025f
+
+#define DEFAULT_ROUGHNESS		0.5f
+#define DEFAULT_TOTAL_SAMPLES	512
 
 #define SQUARE_ASPECT_RATIO		1.0f
 #define Z_NEAR					0.1f
@@ -15,10 +17,8 @@
 #define PROJECTION_FOV_Y		GX_MATH_HALF_PI
 
 
-EMDiffuseIrradianceGeneratorMaterial::EMDiffuseIrradianceGeneratorMaterial ()
+EMPrefilteredEnvironmentMapGeneratorMaterial::EMPrefilteredEnvironmentMapGeneratorMaterial ()
 {
-	environmentMap = nullptr;
-
 	static const GLchar* samplerNames[ 1 ] = { "environmentSampler" };
 	static const GLuint samplerLocations[ 1 ] = { TEXTURE_SLOT };
 
@@ -35,9 +35,11 @@ EMDiffuseIrradianceGeneratorMaterial::EMDiffuseIrradianceGeneratorMaterial ()
 	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
 
 	viewProjectionMatricesLocation = shaderProgram.GetUniform ( "viewProjectionMatrices" );
-	angleStepLocation = shaderProgram.GetUniform ( "angleStep" );
+	roughnessLocation = shaderProgram.GetUniform ( "roughness" );
+	totalSamplesLocation = shaderProgram.GetUniform ( "totalSamples" );
+	inverseTotalSamplesLocation = shaderProgram.GetUniform ( "inverseTotalSamples" );
 
-	SetAngleStep ( DEFAULT_ANGLE_STEP );
+	environmentMap = nullptr;
 
 	GXCameraPerspective camera ( PROJECTION_FOV_Y, SQUARE_ASPECT_RATIO, Z_NEAR, Z_FAR );
 	camera.SetRotation ( 0.0f, GX_MATH_HALF_PI, 0.0f );
@@ -57,41 +59,51 @@ EMDiffuseIrradianceGeneratorMaterial::EMDiffuseIrradianceGeneratorMaterial ()
 
 	camera.SetRotation ( 0.0f, GX_MATH_PI, 0.0f );
 	viewProjectionMatrices[ 5 ] = camera.GetCurrentFrameViewProjectionMatrix ();
+
+	SetRoughness ( DEFAULT_ROUGHNESS );
+	SetTotalSamples ( DEFAULT_TOTAL_SAMPLES );
 }
 
-EMDiffuseIrradianceGeneratorMaterial::~EMDiffuseIrradianceGeneratorMaterial ()
+EMPrefilteredEnvironmentMapGeneratorMaterial::~EMPrefilteredEnvironmentMapGeneratorMaterial ()
 {
 	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 }
 
-GXVoid EMDiffuseIrradianceGeneratorMaterial::Bind ( const GXTransform &transform )
+GXVoid EMPrefilteredEnvironmentMapGeneratorMaterial::Bind ( const GXTransform& /*transform*/ )
 {
 	if ( !environmentMap ) return;
 
 	glUseProgram ( shaderProgram.GetProgram () );
 
 	glUniformMatrix4fv ( viewProjectionMatricesLocation, 6, GL_FALSE, (const GLfloat*)viewProjectionMatrices );
-	glUniform1f ( angleStepLocation, angleStep );
+	glUniform1f ( roughnessLocation, roughness );
+	glUniform1i ( totalSamplesLocation, totalSamples );
+	glUniform1f ( inverseTotalSamplesLocation, inverseTotalSamples );
 
 	environmentMap->Bind ( TEXTURE_SLOT );
 }
 
-GXVoid EMDiffuseIrradianceGeneratorMaterial::Unbind ()
+GXVoid EMPrefilteredEnvironmentMapGeneratorMaterial::Unbind ()
 {
 	if ( !environmentMap ) return;
 
 	glUseProgram ( 0 );
+
 	environmentMap->Unbind ();
 }
 
-GXVoid EMDiffuseIrradianceGeneratorMaterial::SetEnvironmentMap ( GXTextureCubeMap &cubeMap )
+GXVoid EMPrefilteredEnvironmentMapGeneratorMaterial::SetEnvironmentMap ( GXTextureCubeMap &cubeMap )
 {
 	environmentMap = &cubeMap;
 }
 
-GXUInt EMDiffuseIrradianceGeneratorMaterial::SetAngleStep ( GXFloat radians )
+GXVoid EMPrefilteredEnvironmentMapGeneratorMaterial::SetRoughness ( GXFloat roughness )
 {
-	angleStep = radians;
-	GXFloat invAngleStep = 1.0f / angleStep;
-	return (GXUInt)( floorf ( GX_MATH_HALF_PI * invAngleStep ) + floorf ( GX_MATH_DOUBLE_PI * invAngleStep ) );
+	this->roughness = roughness * roughness;
+}
+
+GXVoid EMPrefilteredEnvironmentMapGeneratorMaterial::SetTotalSamples ( GXUShort samples )
+{
+	totalSamples = (GXInt)samples;
+	inverseTotalSamples = 1.0f / (GXFloat)samples;
 }

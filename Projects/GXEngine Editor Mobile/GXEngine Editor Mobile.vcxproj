@@ -235,6 +235,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXUnlitTexture2DMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXWidget.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMActor.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMBRDFIntegratorMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMCheckerGeneratorMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMCookTorranceCommonPassMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMCookTorranceDirectedLightMaterial.cpp" />
@@ -248,11 +249,13 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMGaussVerticalBlurMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMHueCircleGeneratorMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMLight.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMLightProbe.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMMesh.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMMotionBlurMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMMoveTool.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMObjectMaskMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMPhysicsDrivenActor.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMPrefilteredEnvironmentMapGeneratorMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMRenderer.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMRotateGismo.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMScaleGismo.cpp" />
@@ -398,6 +401,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXUnlitTexture2DMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXWidget.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMActor.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMBRDFIntegratorMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMCheckerGeneratorMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMCookTorranceCommonPassMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMCookTorranceDirectedLightMaterial.h" />
@@ -409,6 +413,8 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMGaussHorizontalBlurMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMGaussVerticalBlurMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMHueCircleGeneratorMaterial.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMLightProbe.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMPrefilteredEnvironmentMapGeneratorMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMSSAOApplyMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMSSAOSharpMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIColorPicker.h" />
@@ -463,6 +469,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Resource Include="..\..\Sources\GXEngine\GXRecource.res" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="..\..\Shaders\Editor Mobile\BRDFIntegrator_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\Checker_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\Color_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\CookTorranceCommonPass_fs.txt" />
@@ -481,6 +488,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Text Include="..\..\Shaders\Editor Mobile\MotionBlur_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\Null_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\OneSampler_fs.txt" />
+    <Text Include="..\..\Shaders\Editor Mobile\PrefilteredEnvironmentMap_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\SSAOApply_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\SSAOSharp_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\StaticMesh_fs.txt" />

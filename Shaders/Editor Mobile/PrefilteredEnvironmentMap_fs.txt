@@ -1,0 +1,98 @@
+#version 330 core
+
+
+#define COLOR_SLOT					0
+#define HAMMERSLEY_FLOAT_FACTOR		2.3283064365386963e-10		// 0x100000000
+#define DOUBLE_PI					6.283185
+
+const vec3 absoluteForward = vec3 ( 0.0, 0.0, 1.0);
+const vec3 absoluteBackward = vec3 ( 0.0, 0.0, -1.0 );
+const vec3 absoluteUp = vec3 ( 0.0, 1.0, 0.0 );
+const vec3 absoluteDown = vec3 ( 0.0, -1.0, 0.0 );
+const vec3 absoluteLeft = vec3 ( -1.0, 0.0, 0.0 );
+
+
+smooth in vec3 g_locationWorld;
+
+uniform samplerCube environmentSampler;
+uniform float roughness;
+uniform int totalSamples;
+uniform float inverseTotalSamples;
+
+out layout ( location = COLOR_SLOT ) vec3 fragmentColor;
+
+
+vec2 Hammersley ( const in uint sampleIndex )
+{
+	uint bits = ( sampleIndex << 16 ) | ( sampleIndex >> 16 );
+	bits = ( ( bits & 0x55555555u ) << 1 ) | ( ( bits & 0xAAAAAAAAu ) >> 1 );
+	bits = ( ( bits & 0x33333333u ) << 2 ) | ( ( bits & 0xCCCCCCCCu ) >> 2 );
+	bits = ( ( bits & 0x0F0F0F0Fu ) << 4 ) | ( ( bits & 0xF0F0F0F0u ) >> 4 );
+	bits = ( ( bits & 0x00FF00FFu ) << 8 ) | ( ( bits & 0xFF00FF00u ) >> 8 );
+
+	return vec2 ( float ( sampleIndex ) / inverseTotalSamples, float ( bits ) * HAMMERSLEY_FLOAT_FACTOR );
+}
+
+vec3 ImportanceSampleGGX ( const in vec2 deviation, const in mat3 tbn )
+{
+	float phi = DOUBLE_PI * deviation.x;
+	float cosTheta = sqrt ( ( 1.0 - deviation.x ) / ( 1.0 + ( roughness * roughness - 1.0 ) * deviation.y ) );
+	float sinTheta = sqrt ( 1.0 - cosTheta * cosTheta );
+
+	vec3 sampleCoordLocal;
+	sampleCoordLocal.x = cos ( phi ) * sinTheta;
+	sampleCoordLocal.y = sin ( phi ) * sinTheta;
+	sampleCoordLocal.z = cosTheta;
+
+	return normalize ( tbn * sampleCoordLocal );
+}
+
+void main ()
+{
+	// V axis is flipped (see 169 page of OpenGL standart)
+	vec3 adjustedCubeMapCoords = normalize ( vec3 ( g_locationWorld.x, -g_locationWorld.y, g_locationWorld.z ) );
+
+	vec3 tangent;
+	vec3 bitangent;
+
+	if ( all ( equal ( adjustedCubeMapCoords, absoluteUp ) ) )
+	{
+		tangent = absoluteLeft;
+		bitangent = absoluteBackward;
+	}
+	else if ( all ( equal ( adjustedCubeMapCoords, absoluteDown ) ) )
+	{
+		tangent = absoluteLeft;
+		bitangent = absoluteForward;
+	}
+	else
+	{
+		vec3 v = cross ( absoluteUp, adjustedCubeMapCoords );
+		bitangent = normalize ( cross ( adjustedCubeMapCoords, v ) );
+		tangent = cross ( bitangent, adjustedCubeMapCoords );
+	}
+
+	mat3 tbn = mat3 ( tangent, bitangent, adjustedCubeMapCoords );
+
+	// UE4 approximation
+	vec3 viewerDirectionWorld = adjustedCubeMapCoords;
+
+	vec3 prefilteredColor = vec3 ( 0.0, 0.0, 0.0 );
+	float totalWeight = 0.0;
+
+	for ( int i = 0; i < totalSamples; i++ )
+	{
+		vec3 alpha = ImportanceSampleGGX ( Hammersley ( uint ( i ) ), tbn );
+		vec3 sampleCoord = normalize ( -reflect ( viewerDirectionWorld, alpha ) );
+
+		float betta = max ( dot ( adjustedCubeMapCoords, sampleCoord ), 0.0 );
+		if ( betta > 0.0 )
+		{
+			prefilteredColor += texture ( environmentSampler, sampleCoord ).rgb * betta;
+			totalWeight += betta;
+		}
+	}
+
+	float inverseTotalWeight = 1.0 / totalWeight;
+	fragmentColor = prefilteredColor * inverseTotalWeight;
+}

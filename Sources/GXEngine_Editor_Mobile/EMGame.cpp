@@ -146,10 +146,21 @@ GXVoid EMGame::OnInit ()
 
 	fluttershy = new EMFluttershy ();
 
+	environmentMap = new GXTextureCubeMap ();
+	*environmentMap = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default LDR environment map 2K.jpg", GX_FALSE );
+
+	lightProbeSourceTexture = new GXTextureCubeMap ();
+	*lightProbeSourceTexture = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default LDR environment map.jpg", GX_TRUE );
+
+	lightProbe = new EMLightProbe ();
+	lightProbe->SetEnvironmentMap ( *environmentMap );
+
 	EMEnvironment& environment = EMEnvironment::GetInstance ();
-	//environment.SetEnvironmentMap ( L"Textures/Editor Mobile/Default HDR environment map.hdr" );
-	environment.SetEnvironmentMap ( L"Textures/Editor Mobile/Default LDR environment map.jpg" );
+	environment.SetEnvironmentMap ( *lightProbeSourceTexture );
 	environment.SetEnvironmentQuasiDistance ( ENVIRONMENT_QUASI_DISTANCE );
+
+	unitActor->GetMaterial ().SetAlbedoTextureScale ( 1.0f, 1.0f );
+	unitActor->GetMaterial ().SetAlbedoTexture ( lightProbe->GetBRDFIntegrationMap () );
 
 	EMUIFPSCounter::GetInstance ();
 	EMUIColorPicker::GetInstance ();
@@ -250,9 +261,17 @@ GXVoid EMGame::OnDestroy ()
 	delete EMViewer::GetInstance ();
 
 	GXSafeDelete ( fluttershy );
+	GXSafeDelete ( lightProbe );
+
 	delete &( EMEnvironment::GetInstance () );
 	delete &( EMUIFPSCounter::GetInstance () );
 	delete &( EMUIColorPicker::GetInstance () );
+
+	GXTextureCubeMap::RemoveTexture ( *environmentMap );
+	GXSafeDelete ( environmentMap );
+
+	GXTextureCubeMap::RemoveTexture ( *lightProbeSourceTexture );
+	GXSafeDelete ( lightProbeSourceTexture );
 
 	GXTouchSurface::GetInstance ().SetDefaultWidget ( nullptr );
 	GXSafeDelete ( uiInput );

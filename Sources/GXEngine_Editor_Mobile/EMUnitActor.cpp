@@ -114,3 +114,8 @@ GXVoid EMUnitActor::OnTransformChanged ()
 
 	mesh.SetRotation ( cleanRotation );
 }
+
+EMCookTorranceCommonPassMaterial& EMUnitActor::GetMaterial ()
+{
+	return commonPassMaterial;
+}

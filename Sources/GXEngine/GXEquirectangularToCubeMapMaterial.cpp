@@ -1,4 +1,5 @@
 #include <GXEngine/GXEquirectangularToCubeMapMaterial.h>
+#include <GXEngine/GXCameraPerspective.h>
 
 
 #define VERTEX_SHADER			L"Shaders/System/VertexPass_vs.txt"
@@ -7,7 +8,7 @@
 
 #define TEXTURE_SLOT			0
 
-#define QUAD_ASPECT_RATIO		1.0f
+#define SQUARE_ASPECT_RATIO		1.0f
 #define Z_NEAR					0.1f
 #define Z_FAR					777.777f
 #define PROJECTION_FOV_Y		GX_MATH_HALF_PI
@@ -30,31 +31,28 @@ GXEquirectangularToCubeMapMaterial::GXEquirectangularToCubeMapMaterial ()
 
 	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
 
-	modelProjectionMatricesLocation = shaderProgram.GetUniform ( "modelProjectionMatrices" );
+	viewProjectionMatricesLocation = shaderProgram.GetUniform ( "viewProjectionMatrices" );
+
+	GXCameraPerspective camera ( PROJECTION_FOV_Y, SQUARE_ASPECT_RATIO, Z_NEAR, Z_FAR );
+	camera.SetRotation ( 0.0f, GX_MATH_HALF_PI, 0.0f );
+	viewProjectionMatrices[ 0 ] = camera.GetCurrentFrameViewProjectionMatrix ();
+
+	camera.SetRotation ( 0.0f, -GX_MATH_HALF_PI, 0.0f );
+	viewProjectionMatrices[ 1 ] = camera.GetCurrentFrameViewProjectionMatrix ();
+
+	camera.SetRotation ( GX_MATH_HALF_PI, 0.0f, 0.0f );
+	viewProjectionMatrices[ 2 ] = camera.GetCurrentFrameViewProjectionMatrix ();
+
+	camera.SetRotation ( -GX_MATH_HALF_PI, 0.0f, 0.0f );
+	viewProjectionMatrices[ 3 ] = camera.GetCurrentFrameViewProjectionMatrix ();
+
+	camera.SetRotation ( 0.0f, 0.0f, 0.0f );
+	viewProjectionMatrices[ 4 ] = camera.GetCurrentFrameViewProjectionMatrix ();
+
+	camera.SetRotation ( 0.0f, GX_MATH_PI, 0.0f );
+	viewProjectionMatrices[ 5 ] = camera.GetCurrentFrameViewProjectionMatrix ();
 
 	texture = nullptr;
-
-	GXMat4 projectionMatrix;
-	GXSetMat4Perspective ( projectionMatrix, PROJECTION_FOV_Y, QUAD_ASPECT_RATIO, Z_NEAR, Z_FAR );
-	
-	GXMat4 modelMatrix;
-	GXSetMat4RotationXYZ( modelMatrix, 0.0f, -GX_MATH_HALF_PI, 0.0f );
-	GXMulMat4Mat4 ( modelProjectionMatrices[ 0 ], modelMatrix, projectionMatrix );
-
-	GXSetMat4RotationXYZ ( modelMatrix, 0.0f, GX_MATH_HALF_PI, 0.0f );
-	GXMulMat4Mat4 ( modelProjectionMatrices[ 1 ], modelMatrix, projectionMatrix );
-
-	GXSetMat4RotationXYZ ( modelMatrix, -GX_MATH_HALF_PI, 0.0f, 0.0f );
-	GXMulMat4Mat4 ( modelProjectionMatrices[ 2 ], modelMatrix, projectionMatrix );
-
-	GXSetMat4RotationXYZ ( modelMatrix, GX_MATH_HALF_PI, 0.0f, 0.0f );
-	GXMulMat4Mat4 ( modelProjectionMatrices[ 3 ], modelMatrix, projectionMatrix );
-
-	GXSetMat4RotationXYZ ( modelMatrix, 0.0f, 0.0f, 0.0f );
-	GXMulMat4Mat4 ( modelProjectionMatrices[ 4 ], modelMatrix, projectionMatrix );
-
-	GXSetMat4RotationXYZ ( modelMatrix, 0.0f, GX_MATH_PI, 0.0f );
-	GXMulMat4Mat4 ( modelProjectionMatrices[ 5 ], modelMatrix, projectionMatrix );
 }
 
 GXEquirectangularToCubeMapMaterial::~GXEquirectangularToCubeMapMaterial ()
@@ -67,7 +65,7 @@ GXVoid GXEquirectangularToCubeMapMaterial::Bind ( const GXTransform& /*transform
 	if ( !texture ) return;
 
 	glUseProgram ( shaderProgram.GetProgram () );
-	glUniformMatrix4fv ( modelProjectionMatricesLocation, 6, GL_FALSE, (const GLfloat*)modelProjectionMatrices );
+	glUniformMatrix4fv ( viewProjectionMatricesLocation, 6, GL_FALSE, (const GLfloat*)viewProjectionMatrices );
 	texture->Bind ( TEXTURE_SLOT );
 }
 

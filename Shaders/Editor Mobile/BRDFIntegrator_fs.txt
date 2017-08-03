@@ -1,0 +1,90 @@
+#version 330 core
+
+
+#define COLOR_SLOT					0
+#define HAMMERSLEY_FLOAT_FACTOR		2.3283064365386963e-10		// 0x100000000
+#define DOUBLE_PI					6.283185
+
+
+const vec3 tangentWorld = vec3 ( 1.0, 0.0, 0.0 );
+const vec3 bitangentWorld = vec3 ( 0.0, 1.0, 0.0 );
+const vec3 normalWorld = vec3 ( 0.0, 0.0, 1.0 );
+const mat3 tbn = mat3 ( tangentWorld, bitangentWorld, normalWorld );
+
+smooth in vec2 v_uv;
+
+uniform int totalSamples;
+uniform float inverseTotalSamples;
+
+layout ( location = COLOR_SLOT ) out vec2 colorSlot;
+
+
+vec2 Hammersley ( const in uint sampleIndex )
+{
+	uint bits = ( sampleIndex << 16 ) | ( sampleIndex >> 16 );
+	bits = ( ( bits & 0x55555555u ) << 1 ) | ( ( bits & 0xAAAAAAAAu ) >> 1 );
+	bits = ( ( bits & 0x33333333u ) << 2 ) | ( ( bits & 0xCCCCCCCCu ) >> 2 );
+	bits = ( ( bits & 0x0F0F0F0Fu ) << 4 ) | ( ( bits & 0xF0F0F0F0u ) >> 4 );
+	bits = ( ( bits & 0x00FF00FFu ) << 8 ) | ( ( bits & 0xFF00FF00u ) >> 8 );
+
+	return vec2 ( float ( sampleIndex ) / inverseTotalSamples, float ( bits ) * HAMMERSLEY_FLOAT_FACTOR );
+}
+
+vec3 ImportanceSampleGGX ( const in vec2 deviation )
+{
+	float phi = DOUBLE_PI * deviation.x;
+	float cosTheta = sqrt ( ( 1.0 - deviation.x ) / ( 1.0 + ( v_uv.y * v_uv.y - 1.0 ) * deviation.y ) );
+	float sinTheta = sqrt ( 1.0 - cosTheta * cosTheta );
+
+	vec3 sampleCoordLocal;
+	sampleCoordLocal.x = cos ( phi ) * sinTheta;
+	sampleCoordLocal.y = sin ( phi ) * sinTheta;
+	sampleCoordLocal.z = cosTheta;
+
+	return normalize ( tbn * sampleCoordLocal );
+}
+
+float GeometrySchlickGGX ( const in float dotProduct, const in float roughness )
+{
+	float alpha = ( roughness * roughness ) / 2.0;
+	float betta = dotProduct * ( 1.0 - alpha ) + alpha;
+
+	return dotProduct / betta;
+}
+
+float GeometrySmith ( const in vec3 viewerDirectionWorld, const in vec3 l, const in float roughness )
+{
+	float alpha = max ( dot ( normalWorld, viewerDirectionWorld ), 0.0 );
+	float betta = max ( dot ( normalWorld, l ), 0.0 );
+
+	return GeometrySchlickGGX ( alpha, roughness ) * GeometrySchlickGGX ( betta, roughness );
+}
+
+void main ()
+{
+	vec3 viewerDirectionWorld;
+	viewerDirectionWorld.x = sqrt ( 1.0 - v_uv.x * v_uv.x );
+	viewerDirectionWorld.y = 0.0;
+	viewerDirectionWorld.z = v_uv.x;
+
+	float alpha = 0.0;
+	float betta = 0.0;
+
+	for ( int i = 0; i < totalSamples; i++ )
+	{
+		vec3 h = ImportanceSampleGGX ( Hammersley ( uint ( i ) ) );
+		vec3 l = normalize ( -reflect ( viewerDirectionWorld, h ) );
+
+		if ( max ( l.z, 0.0 ) > 0.0 )
+		{
+			float gamma = max ( dot ( viewerDirectionWorld, h ), 0.0 );
+			float yotta = ( GeometrySmith ( viewerDirectionWorld, l, v_uv.y ) * gamma ) / ( max ( l.z, 0.0 ) * v_uv.x );
+			float zetta = pow ( 1.0 - gamma, 5.0 );
+
+			alpha += ( 1.0 - zetta ) * yotta;
+			betta += yotta * zetta;
+		}
+	}
+
+	colorSlot = vec2 ( alpha, betta ) * inverseTotalSamples;
+}

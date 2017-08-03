@@ -774,12 +774,24 @@ GXVoid GXTextureCubeMap::InitResources ( GXUShort faceLength, GLint internalForm
 		break;
 	}
 
+
+
+	glBindTexture ( GL_TEXTURE_CUBE_MAP, 0 );
+
+	FillWholePixelData ( nullptr, GL_TEXTURE_CUBE_MAP_POSITIVE_X );
+	FillWholePixelData ( nullptr, GL_TEXTURE_CUBE_MAP_NEGATIVE_X );
+	FillWholePixelData ( nullptr, GL_TEXTURE_CUBE_MAP_POSITIVE_Y );
+	FillWholePixelData ( nullptr, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y );
+	FillWholePixelData ( nullptr, GL_TEXTURE_CUBE_MAP_POSITIVE_Z );
+	FillWholePixelData ( nullptr, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z );
+
 	GXGLSamplerInfo samplerInfo;
 
 	if ( isGenerateMipmap )
 	{
 		samplerInfo.anisotropy = 16.0f;
 		samplerInfo.resampling = eGXSamplerResampling::Trilinear;
+		UpdateMipmaps ();
 	}
 	else
 	{
@@ -790,15 +802,6 @@ GXVoid GXTextureCubeMap::InitResources ( GXUShort faceLength, GLint internalForm
 
 	samplerInfo.wrap = GL_CLAMP_TO_EDGE;
 	sampler = GXCreateSampler ( samplerInfo );
-
-	glBindTexture ( GL_TEXTURE_CUBE_MAP, 0 );
-
-	FillWholePixelData ( nullptr, GL_TEXTURE_CUBE_MAP_POSITIVE_X );
-	FillWholePixelData ( nullptr, GL_TEXTURE_CUBE_MAP_NEGATIVE_X );
-	FillWholePixelData ( nullptr, GL_TEXTURE_CUBE_MAP_POSITIVE_Y );
-	FillWholePixelData ( nullptr, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y );
-	FillWholePixelData ( nullptr, GL_TEXTURE_CUBE_MAP_POSITIVE_Z );
-	FillWholePixelData ( nullptr, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z );
 }
 
 GXVoid GXTextureCubeMap::FreeResources ()

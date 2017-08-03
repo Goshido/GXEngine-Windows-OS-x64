@@ -20,8 +20,10 @@ class EMEnvironment
 		static EMEnvironment& GXCALL GetInstance ();
 		~EMEnvironment ();
 
-		GXVoid SetEnvironmentMap ( const GXWChar* cubeMap );
+		GXVoid SetEnvironmentMap ( GXTextureCubeMap& cubeMap );
 		GXVoid SetEnvironmentQuasiDistance ( GXFloat meters );
+
+		GXTextureCubeMap& GetEnvironmentMap ();
 
 		GXVoid Render ( GXFloat deltaTime );
 		GXVoid OnViewerLocationChanged ();

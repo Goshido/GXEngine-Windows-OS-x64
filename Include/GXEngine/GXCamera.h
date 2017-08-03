@@ -43,7 +43,11 @@ class GXCamera
 		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
 		GXVoid SetLocation ( const GXVec3 &location );
 
+		// pitch_rad increasing -> down to top rotation.
+		// yaw_rad increasing -> left to right rotation.
+		// roll_rad increasing -> clockwise rotation.
 		GXVoid SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_rad );
+
 		GXVoid SetRotation ( const GXMat4 &rotation );
 		GXVoid SetRotation ( const GXQuat &rotation );
 
