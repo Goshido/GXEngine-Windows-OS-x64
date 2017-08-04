@@ -4,19 +4,20 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define DEFAULT_LOCATION_X							0.0f
-#define DEFAULT_LOCATION_Y							0.0f
-#define DEFAULT_LOCATION_Z							0.0f
+#define DEFAULT_LOCATION_X								0.0f
+#define DEFAULT_LOCATION_Y								0.0f
+#define DEFAULT_LOCATION_Z								0.0f
 
-#define DEFAULT_BOUND_RANGE_X						7.0f
-#define DEFAULT_BOUND_RANGE_Y						7.0f
-#define DEFAULT_BOUND_RANGE_Z						7.0f
+#define DEFAULT_BOUND_RANGE_X							7.0f
+#define DEFAULT_BOUND_RANGE_Y							7.0f
+#define DEFAULT_BOUND_RANGE_Z							7.0f
 
-#define INVALID_TEXTURE_OBJECT						0
+#define INVALID_TEXTURE_OBJECT							0
 
-#define DIFFUSE_CONVOLUTION_ANGLE_STEP				0.025f
+#define DIFFUSE_CONVOLUTION_ANGLE_STEP					0.025f
 
-#define DEFAULT_BRDF_INTEGRATION_MAP_RESOLUTION		512
+#define DEFAULT_BRDF_INTEGRATION_MAP_RESOLUTION			1024
+#define DEFAULT_BRDF_INTEGRATION_MAP_SAMPLES_PER_PIXEL	8196
 
 
 EMLightProbe::EMLightProbe ()
@@ -35,6 +36,7 @@ EMLightProbe::EMLightProbe ()
 	cube = GXMeshGeometry::LoadFromStm ( L"3D Models/System/Unit Cube.stm" );
 	screenQuad = GXMeshGeometry::LoadFromStm ( L"3D Models/System/ScreenQuad.stm" );
 
+	brdfIntegratorMaterial.SetSamplesPerPixel ( DEFAULT_BRDF_INTEGRATION_MAP_SAMPLES_PER_PIXEL );
 	SetBRDFIntegrationMapResolution ( DEFAULT_BRDF_INTEGRATION_MAP_RESOLUTION );
 }
 
@@ -90,13 +92,13 @@ GXVoid EMLightProbe::SetBRDFIntegrationMapResolution ( GXUShort length )
 	if ( brdfIntegrationMap.GetTextureObject () != INVALID_TEXTURE_OBJECT )
 		brdfIntegrationMap.FreeResources ();
 
-	brdfIntegrationMap.InitResources ( length, length, GL_RG8, GL_TRUE, GL_CLAMP_TO_EDGE );
+	brdfIntegrationMap.InitResources ( length, length, GL_RG16F, GL_TRUE, GL_CLAMP_TO_EDGE );
 	UpdateBRDFIntegrationMap ();
 }
 
-GXVoid EMLightProbe::SetBRDFIntegrationMapSamples ( GXUShort samples )
+GXVoid EMLightProbe::SetBRDFIntegrationMapSamplesPerPixel ( GXUShort samples )
 {
-	brdfIntegratorMaterial.SetTotalSamples ( samples );
+	brdfIntegratorMaterial.SetSamplesPerPixel ( samples );
 	UpdateBRDFIntegrationMap ();
 }
 
@@ -179,15 +181,9 @@ GXVoid EMLightProbe::UpdatePrefilteredEnvironmentMap ()
 
 	GXUShort length = environmentMap.GetFaceLength ();
 
-	if ( diffuseIrradiance.GetTextureObject () != INVALID_TEXTURE_OBJECT )
-		diffuseIrradiance.FreeResources ();
-
-	diffuseIrradiance.InitResources ( length, GL_RGB16F, GL_FALSE );
-
 	GLuint fbo;
 	glGenFramebuffers ( 1, &fbo );
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, diffuseIrradiance.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
@@ -209,10 +205,6 @@ GXVoid EMLightProbe::UpdatePrefilteredEnvironmentMap ()
 
 	static const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers ( 1, buffers );
-
-	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
-	if ( status != GL_FRAMEBUFFER_COMPLETE )
-		GXLogW ( L"EMLightProbe::UpdatePrefilteredEnvironmentMap::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
 	if ( prefilteredEnvironmentMap.GetTextureObject () != INVALID_TEXTURE_OBJECT )
 		prefilteredEnvironmentMap.FreeResources ();
@@ -238,7 +230,7 @@ GXVoid EMLightProbe::UpdatePrefilteredEnvironmentMap ()
 
 		glViewport ( 0, 0, (GLsizei)currentResolution, (GLsizei)currentResolution );
 
-		status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+		GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 		if ( status != GL_FRAMEBUFFER_COMPLETE )
 		{
 			GXLogW ( L"EMLightProbe::UpdatePrefilteredEnvironmentMap::Error - Что-то не так на проходе генерации %i mipmap уровня FBO (ошибка 0x%08x)\n", mipmapLevel, status );

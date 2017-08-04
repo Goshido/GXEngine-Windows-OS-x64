@@ -16,6 +16,10 @@
 #define NULL_STRING_OFFSET							0
 #define STRING_BUFFER_SYMBOLS						260
 
+#define INVALID_SHADER								0
+#define SHADER_NOT_NEEDED							0
+#define INVALID_SHADER_PROGRAM						0
+
 
 class GXShaderProgramEntry;
 static GXShaderProgramEntry* gx_ShaderProgramHead = nullptr;
@@ -630,6 +634,9 @@ GXShaderProgram::GXShaderProgram ( const GXShaderProgramInfo &info )
 
 					glDeleteProgram ( program );
 					program = CompileShaderProgram ( info );
+
+					if ( program == INVALID_SHADER_PROGRAM ) return;
+
 					SavePrecompiledShaderProgram ( program, info, binaryPath );
 				}
 			}
@@ -637,6 +644,9 @@ GXShaderProgram::GXShaderProgram ( const GXShaderProgramInfo &info )
 			{
 				GXLogW ( L"GXShaderProgram::GXShaderProgram::Warning - Не могу загрузить файл с прекомпилированной шейдерной программой:\n%s\n%s\n%s\n[%s]\nПопробую сделать перекомпиляцию шейдерной программы...\n\n", vs, gs, fs, binaryPath );
 				program = CompileShaderProgram ( info );
+
+				if ( program == INVALID_SHADER_PROGRAM ) return;
+
 				SavePrecompiledShaderProgram ( program, info, binaryPath );
 			}
 		}
@@ -645,6 +655,8 @@ GXShaderProgram::GXShaderProgram ( const GXShaderProgramInfo &info )
 	if ( !doesPrecompiledShaderProgramExist )
 	{
 		program = CompileShaderProgram ( info );
+
+		if ( program == INVALID_SHADER_PROGRAM ) return;
 
 		if ( precompiledShaderProgramFinder )
 		{
@@ -745,8 +757,38 @@ GLuint GXShaderProgram::CompileShaderProgram ( const GXShaderProgramInfo &info )
 	GLuint shaderProgram = glCreateProgram ();
 
 	GLuint vertexShader = GetShader ( GL_VERTEX_SHADER, vs );
-	GLuint geometryShader = GetShader ( GL_GEOMETRY_SHADER, gs );
-	GLuint fragmentShader = GetShader ( GL_FRAGMENT_SHADER, fs );
+
+	GLuint geometryShader = INVALID_SHADER;
+
+	if ( gs )
+	{
+		geometryShader = GetShader ( GL_GEOMETRY_SHADER, gs );
+		if ( geometryShader == INVALID_SHADER )
+		{
+			glDeleteProgram ( shaderProgram );
+			return INVALID_SHADER_PROGRAM;
+		}
+	}
+	else
+	{
+		geometryShader = SHADER_NOT_NEEDED;
+	}
+
+	GLuint fragmentShader = INVALID_SHADER;
+
+	if ( fs )
+	{
+		fragmentShader = GetShader ( GL_FRAGMENT_SHADER, fs );
+		if ( fragmentShader == INVALID_SHADER )
+		{
+			glDeleteProgram ( shaderProgram );
+			return INVALID_SHADER_PROGRAM;
+		}
+	}
+	else
+	{
+		fragmentShader = SHADER_NOT_NEEDED;
+	}
 
 	glAttachShader ( shaderProgram, vertexShader );
 	glDeleteShader ( vertexShader );
@@ -786,7 +828,7 @@ GLuint GXShaderProgram::CompileShaderProgram ( const GXShaderProgramInfo &info )
 
 		glDeleteProgram ( shaderProgram );
 
-		return 0;
+		return INVALID_SHADER_PROGRAM;
 	}
 
 	return shaderProgram;

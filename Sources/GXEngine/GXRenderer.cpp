@@ -417,6 +417,79 @@ GXVoid GXCALL GXRenderer::InitOpenGL ()
 	glEnable ( GL_TEXTURE_CUBE_MAP_SEAMLESS );
 	glCullFace ( GL_FRONT );
 
+	GXLogW ( L"GXRenderer::InitOpenGL::Info - Аппаратные возможности:\n--------Текстурирование:\n" );
+
+	GLint value[2];
+	glGetIntegerv ( GL_MAX_TEXTURE_SIZE, value );
+	GXLogW ( L"Максимальный размер 2D текстуры: %u (минимум стандарта - 1024)\n", value[ 0 ] );
+
+	glGetIntegerv ( GL_MAX_ARRAY_TEXTURE_LAYERS, value );
+	GXLogW ( L"Максимальное количество слоёв для текстурных массивов: %u (минимум стандарта - 256)\n", value[ 0 ] );
+
+	glGetIntegerv ( GL_MAX_CUBE_MAP_TEXTURE_SIZE, value );
+	GXLogW ( L"Максимальный размер cube map текстуры: %u (минимум стандарта - 1024)\n", value[ 0 ] );
+
+	GXLogW ( L"\n--------Буфер кадра:\n" );
+
+	glGetIntegerv ( GL_MAX_FRAMEBUFFER_WIDTH, value );
+	glGetIntegerv ( GL_MAX_FRAMEBUFFER_HEIGHT, value + 1 );
+	GXLogW ( L"Максимальное разрешение буфера кадра: %u х %u (минимум стандарта - 16384 х 16384)\n", value[ 0 ], value[ 1 ] );
+
+	glGetIntegerv ( GL_MAX_DRAW_BUFFERS, value );
+	GXLogW ( L"Максимальное количество выходных буферов, доступных фрагментному шейдеру: %u (минимум стандарта - 8)\n", value[ 0 ] );
+
+	glGetIntegerv ( GL_MAX_VIEWPORT_DIMS, value );
+	GXLogW ( L"Максимальное разрешение viewport'а: %u x %u\n", value[ 0 ], value[ 1 ] );
+
+	GXLogW ( L"\n--------Шейдерная программа:\n" );
+
+	// There is not GL_MAX_VARYING_VECTORS in OpenGL 3.3 core profile standart. But GL_MAX_VARYING_COMPONENTS did not work at all (Error 0x500 - Invalid Enum)!
+	// Tested on NVIDIA GeForce 770 GTX (Driver version 384.94)
+	glGetIntegerv ( GL_MAX_VARYING_VECTORS, value );
+	GXLogW ( L"Максимальное количество векторов-интерполяторов, доступных шейдерной программе: %u (минимум стандарта - 15)\n", value[ 0 ] );
+
+	GXLogW ( L"\n--------Вершинный шейдер:\n" );
+
+	glGetIntegerv ( GL_MAX_VERTEX_ATTRIBS, value );
+	GXLogW ( L"Максимальное количество входных атрибутов-векторов, доступных вершинному шейдеру: %u (минимум стандарта - 16)\n", value[ 0 ] );
+
+	glGetIntegerv ( GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, value );
+	GXLogW ( L"Максимальное количество текстур, доступных вершинному шейдеру: %u (минимум стандарта - 16)\n", value[ 0 ] );
+
+	glGetIntegerv ( GL_MAX_VERTEX_UNIFORM_VECTORS, value );
+	GXLogW ( L"Максимальное количество юниформ-векторов, доступных вершинному шейдеру: %u (минимум стандарта - 256)\n", value[ 0 ] );
+
+	glGetIntegerv ( GL_MAX_VERTEX_UNIFORM_COMPONENTS, value );
+	GXLogW ( L"Максимальное количество юниформ-компонент, доступных вершинному шейдеру: %u (минимум стандарта - 1024)\n", value[ 0 ] );
+
+	GXLogW ( L"\n--------Геометрический шейдер:\n" );
+
+	glGetIntegerv ( GL_MAX_GEOMETRY_INPUT_COMPONENTS, value );
+	GXLogW ( L"Максимальное количество входных атрибутов-компонент, доступных геометрическому шейдеру: %u (минимум стандарта - 64)\n", value[ 0 ] );
+
+	glGetIntegerv ( GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS, value );
+	GXLogW ( L"Максимальное количество текстур, доступных геометрическому шейдеру: %u (минимум стандарта - 16)\n", value[ 0 ] );
+
+	glGetIntegerv ( GL_MAX_GEOMETRY_OUTPUT_COMPONENTS, value );
+	GXLogW ( L"Максимальное количество выходных атрибутов-компонент, доступных геометрическому шейдеру: %u (минимум стандарта - 128)\n", value[ 0 ] );
+
+	glGetIntegerv ( GL_MAX_GEOMETRY_UNIFORM_COMPONENTS, value );
+	GXLogW ( L"Максимальное количество юниформ-компонент, доступных геометрическому шейдеру: %u (минимум стандарта - 1024)\n", value[ 0 ] );
+
+	GXLogW ( L"\n--------Фрагментный шейдер:\n" );
+
+	glGetIntegerv ( GL_MAX_FRAGMENT_INPUT_COMPONENTS, value );
+	GXLogW ( L"Максимальное количество входных атрибутов-компонент, доступных фрагментному шейдеру: %u (минимум стандарта - 128)\n", value[ 0 ] );
+
+	glGetIntegerv ( GL_MAX_TEXTURE_IMAGE_UNITS, value );
+	GXLogW ( L"Максимальное количество текстур, доступных фрагментному шейдеру: %u (минимум стандарта - 16)\n", value[ 0 ] );
+
+	glGetIntegerv ( GL_MAX_FRAGMENT_UNIFORM_VECTORS, value );
+	GXLogW ( L"Максимальное количество юниформ-векторов, доступных фрагментному шейдеру: %u (минимум стандарта - 256)\n", value[ 0 ] );
+
+	glGetIntegerv ( GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, value );
+	GXLogW ( L"Максимальное количество юниформ-компонент, доступных фрагментному шейдеру: %u (минимум стандарта - 1024)\n", value[ 0 ] );
+
 	GXCheckOpenGLError ();
 }
 

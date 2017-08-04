@@ -1,11 +1,11 @@
 #include <GXEngine_Editor_Mobile/EMBRDFIntegratorMaterial.h>
 
 
-#define VERTEX_SHADER			L"Shaders/System/ScreenQuad_vs.txt"
-#define GEOMETRY_SHADER			nullptr
-#define FRAGMENT_SHADER			L"Shaders/Editor Mobile/BRDFIntegrator_fs.txt"
+#define VERTEX_SHADER				L"Shaders/System/ScreenQuad_vs.txt"
+#define GEOMETRY_SHADER				nullptr
+#define FRAGMENT_SHADER				L"Shaders/Editor Mobile/BRDFIntegrator_fs.txt"
 
-#define DEFAULT_TOTAL_SAMPLES	1024
+#define DEFAULT_SAMPLES_PER_PIXEL	1024
 
 
 EMBRDFIntegratorMaterial::EMBRDFIntegratorMaterial ()
@@ -22,10 +22,10 @@ EMBRDFIntegratorMaterial::EMBRDFIntegratorMaterial ()
 
 	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
 
-	totalSamplesLocation = shaderProgram.GetUniform ( "totalSamples" );
-	inverseTotalSamplesLocation = shaderProgram.GetUniform ( "inverseTotalSamples" );
+	samplesLocation = shaderProgram.GetUniform ( "samples" );
+	inverseSamplesLocation = shaderProgram.GetUniform ( "inverseSamples" );
 
-	SetTotalSamples ( DEFAULT_TOTAL_SAMPLES );
+	SetSamplesPerPixel ( DEFAULT_SAMPLES_PER_PIXEL );
 }
 
 EMBRDFIntegratorMaterial::~EMBRDFIntegratorMaterial ()
@@ -36,8 +36,8 @@ EMBRDFIntegratorMaterial::~EMBRDFIntegratorMaterial ()
 GXVoid EMBRDFIntegratorMaterial::Bind ( const GXTransform& /*transform*/ )
 {
 	glUseProgram ( shaderProgram.GetProgram () );
-	glUniform1i ( totalSamplesLocation, totalSamples );
-	glUniform1f ( inverseTotalSamplesLocation, inverseTotalSamples );
+	glUniform1i ( samplesLocation, samples );
+	glUniform1f ( inverseSamplesLocation, inverseSamples );
 }
 
 GXVoid EMBRDFIntegratorMaterial::Unbind ()
@@ -45,8 +45,8 @@ GXVoid EMBRDFIntegratorMaterial::Unbind ()
 	glUseProgram ( 0 );
 }
 
-GXVoid EMBRDFIntegratorMaterial::SetTotalSamples ( GXUShort samples )
+GXVoid EMBRDFIntegratorMaterial::SetSamplesPerPixel ( GXUShort samples )
 {
-	totalSamples = (GXInt)samples;
-	inverseTotalSamples = 1.0f / (GXFloat)samples;
+	this->samples = (GXInt)samples;
+	inverseSamples = 1.0f / (GXFloat)samples;
 }

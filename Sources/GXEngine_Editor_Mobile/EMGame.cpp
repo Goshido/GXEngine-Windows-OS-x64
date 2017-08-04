@@ -147,16 +147,16 @@ GXVoid EMGame::OnInit ()
 	fluttershy = new EMFluttershy ();
 
 	environmentMap = new GXTextureCubeMap ();
-	*environmentMap = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default LDR environment map 2K.jpg", GX_FALSE );
+	*environmentMap = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default LDR environment map.jpg", GX_FALSE );
 
 	lightProbeSourceTexture = new GXTextureCubeMap ();
-	*lightProbeSourceTexture = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default LDR environment map.jpg", GX_TRUE );
+	*lightProbeSourceTexture = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default LDR environment map 2K.jpg", GX_TRUE );
 
 	lightProbe = new EMLightProbe ();
-	lightProbe->SetEnvironmentMap ( *environmentMap );
+	lightProbe->SetEnvironmentMap ( *lightProbeSourceTexture );
 
 	EMEnvironment& environment = EMEnvironment::GetInstance ();
-	environment.SetEnvironmentMap ( *lightProbeSourceTexture );
+	environment.SetEnvironmentMap ( *environmentMap );
 	environment.SetEnvironmentQuasiDistance ( ENVIRONMENT_QUASI_DISTANCE );
 
 	unitActor->GetMaterial ().SetAlbedoTextureScale ( 1.0f, 1.0f );

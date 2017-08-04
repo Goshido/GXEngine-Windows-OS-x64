@@ -6,20 +6,19 @@
 #define DOUBLE_PI					6.283185
 
 
-const vec3 tangentWorld = vec3 ( 1.0, 0.0, 0.0 );
-const vec3 bitangentWorld = vec3 ( 0.0, 1.0, 0.0 );
 const vec3 normalWorld = vec3 ( 0.0, 0.0, 1.0 );
-const mat3 tbn = mat3 ( tangentWorld, bitangentWorld, normalWorld );
+const mat3 tbn = mat3 ( vec3 ( 1.0, 0.0, 0.0 ), vec3 ( 0.0, 1.0, 0.0 ), vec3 ( 0.0, 0.0, 1.0 ) );
+
 
 smooth in vec2 v_uv;
 
-uniform int totalSamples;
-uniform float inverseTotalSamples;
+uniform int samples;
+uniform float inverseSamples;
 
 layout ( location = COLOR_SLOT ) out vec2 colorSlot;
 
 
-vec2 Hammersley ( const in uint sampleIndex )
+vec2 Hammersley ( const in uint sampleIndex, const in float inverseSamples )
 {
 	uint bits = ( sampleIndex << 16 ) | ( sampleIndex >> 16 );
 	bits = ( ( bits & 0x55555555u ) << 1 ) | ( ( bits & 0xAAAAAAAAu ) >> 1 );
@@ -27,34 +26,34 @@ vec2 Hammersley ( const in uint sampleIndex )
 	bits = ( ( bits & 0x0F0F0F0Fu ) << 4 ) | ( ( bits & 0xF0F0F0F0u ) >> 4 );
 	bits = ( ( bits & 0x00FF00FFu ) << 8 ) | ( ( bits & 0xFF00FF00u ) >> 8 );
 
-	return vec2 ( float ( sampleIndex ) / inverseTotalSamples, float ( bits ) * HAMMERSLEY_FLOAT_FACTOR );
+	return vec2 ( float ( sampleIndex ) * inverseSamples, float ( bits ) * HAMMERSLEY_FLOAT_FACTOR );
 }
 
-vec3 ImportanceSampleGGX ( const in vec2 deviation )
+vec3 ImportanceSampleGGX ( const in vec2 deviation, const in vec3 normalWorld, const in float roughness )
 {
+	float alpha = roughness * roughness;
+
 	float phi = DOUBLE_PI * deviation.x;
-	float cosTheta = sqrt ( ( 1.0 - deviation.x ) / ( 1.0 + ( v_uv.y * v_uv.y - 1.0 ) * deviation.y ) );
+	float cosTheta = sqrt ( ( 1.0 - deviation.y ) / ( 1.0 + ( alpha * alpha - 1.0 ) * deviation.y ) );
 	float sinTheta = sqrt ( 1.0 - cosTheta * cosTheta );
 
-	vec3 sampleCoordLocal;
-	sampleCoordLocal.x = cos ( phi ) * sinTheta;
-	sampleCoordLocal.y = sin ( phi ) * sinTheta;
-	sampleCoordLocal.z = cosTheta;
-
-	return normalize ( tbn * sampleCoordLocal );
+	vec3 directionLocal;
+	directionLocal.x = cos ( phi ) * sinTheta;
+	directionLocal.y = sin ( phi ) * sinTheta;
+	directionLocal.z = cosTheta;
+	
+	return normalize ( tbn * directionLocal );
 }
 
 float GeometrySchlickGGX ( const in float dotProduct, const in float roughness )
 {
-	float alpha = ( roughness * roughness ) / 2.0;
-	float betta = dotProduct * ( 1.0 - alpha ) + alpha;
-
-	return dotProduct / betta;
+	float alpha = roughness * roughness * 0.5;
+	return dotProduct / ( dotProduct * ( 1.0 - alpha ) + alpha );
 }
 
-float GeometrySmith ( const in vec3 viewerDirectionWorld, const in vec3 l, const in float roughness )
+float GeometrySmith ( const in vec3 normalWorld, const in vec3 viewDirectionWorld, const in vec3 l, const in float roughness )
 {
-	float alpha = max ( dot ( normalWorld, viewerDirectionWorld ), 0.0 );
+	float alpha = max ( dot ( normalWorld, viewDirectionWorld ), 0.0 );
 	float betta = max ( dot ( normalWorld, l ), 0.0 );
 
 	return GeometrySchlickGGX ( alpha, roughness ) * GeometrySchlickGGX ( betta, roughness );
@@ -62,29 +61,29 @@ float GeometrySmith ( const in vec3 viewerDirectionWorld, const in vec3 l, const
 
 void main ()
 {
-	vec3 viewerDirectionWorld;
-	viewerDirectionWorld.x = sqrt ( 1.0 - v_uv.x * v_uv.x );
-	viewerDirectionWorld.y = 0.0;
-	viewerDirectionWorld.z = v_uv.x;
+	vec3 viewDirectionWorld;
+	viewDirectionWorld.x = sqrt ( 1.0 - v_uv.x * v_uv.x );
+	viewDirectionWorld.y = 0.0;
+	viewDirectionWorld.z = v_uv.x;
 
 	float alpha = 0.0;
 	float betta = 0.0;
 
-	for ( int i = 0; i < totalSamples; i++ )
+	for ( int i = 0; i < samples; i++ )
 	{
-		vec3 h = ImportanceSampleGGX ( Hammersley ( uint ( i ) ) );
-		vec3 l = normalize ( -reflect ( viewerDirectionWorld, h ) );
+		vec3 h = ImportanceSampleGGX ( Hammersley ( uint ( i ), inverseSamples ), normalWorld, v_uv.y );
+		vec3 l = normalize ( -reflect ( viewDirectionWorld, h ) );
 
 		if ( max ( l.z, 0.0 ) > 0.0 )
 		{
-			float gamma = max ( dot ( viewerDirectionWorld, h ), 0.0 );
-			float yotta = ( GeometrySmith ( viewerDirectionWorld, l, v_uv.y ) * gamma ) / ( max ( l.z, 0.0 ) * v_uv.x );
-			float zetta = pow ( 1.0 - gamma, 5.0 );
+			float yotta = max ( dot ( viewDirectionWorld, h ), 0.0 );
+			float gamma = ( GeometrySmith ( normalWorld, viewDirectionWorld, l, v_uv.y ) * yotta ) / ( max ( h.z, 0.0 ) * v_uv.x );
+			float zetta = pow ( 1.0 - yotta, 5.0 );
 
-			alpha += ( 1.0 - zetta ) * yotta;
-			betta += yotta * zetta;
+			alpha += ( 1.0 - zetta ) * gamma;
+			betta += gamma * zetta;
 		}
 	}
 
-	colorSlot = vec2 ( alpha, betta ) * inverseTotalSamples;
+	colorSlot = vec2 ( alpha, betta ) * inverseSamples;
 }

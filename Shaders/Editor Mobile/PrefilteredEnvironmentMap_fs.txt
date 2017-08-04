@@ -22,7 +22,7 @@ uniform float inverseTotalSamples;
 out layout ( location = COLOR_SLOT ) vec3 fragmentColor;
 
 
-vec2 Hammersley ( const in uint sampleIndex )
+vec2 Hammersley ( const in uint sampleIndex, const in float inverseSamples )
 {
 	uint bits = ( sampleIndex << 16 ) | ( sampleIndex >> 16 );
 	bits = ( ( bits & 0x55555555u ) << 1 ) | ( ( bits & 0xAAAAAAAAu ) >> 1 );
@@ -30,21 +30,23 @@ vec2 Hammersley ( const in uint sampleIndex )
 	bits = ( ( bits & 0x0F0F0F0Fu ) << 4 ) | ( ( bits & 0xF0F0F0F0u ) >> 4 );
 	bits = ( ( bits & 0x00FF00FFu ) << 8 ) | ( ( bits & 0xFF00FF00u ) >> 8 );
 
-	return vec2 ( float ( sampleIndex ) / inverseTotalSamples, float ( bits ) * HAMMERSLEY_FLOAT_FACTOR );
+	return vec2 ( float ( sampleIndex ) * inverseSamples, float ( bits ) * HAMMERSLEY_FLOAT_FACTOR );
 }
 
-vec3 ImportanceSampleGGX ( const in vec2 deviation, const in mat3 tbn )
+vec3 ImportanceSampleGGX ( const in vec2 deviation, const in mat3 tbn, const in float roughness )
 {
+	float alpha = roughness * roughness;
+
 	float phi = DOUBLE_PI * deviation.x;
-	float cosTheta = sqrt ( ( 1.0 - deviation.x ) / ( 1.0 + ( roughness * roughness - 1.0 ) * deviation.y ) );
+	float cosTheta = sqrt ( ( 1.0 - deviation.y ) / ( 1.0 + ( alpha * alpha - 1.0 ) * deviation.y ) );
 	float sinTheta = sqrt ( 1.0 - cosTheta * cosTheta );
 
-	vec3 sampleCoordLocal;
-	sampleCoordLocal.x = cos ( phi ) * sinTheta;
-	sampleCoordLocal.y = sin ( phi ) * sinTheta;
-	sampleCoordLocal.z = cosTheta;
-
-	return normalize ( tbn * sampleCoordLocal );
+	vec3 directionLocal;
+	directionLocal.x = cos ( phi ) * sinTheta;
+	directionLocal.y = sin ( phi ) * sinTheta;
+	directionLocal.z = cosTheta;
+	
+	return normalize ( tbn * directionLocal );
 }
 
 void main ()
@@ -82,7 +84,7 @@ void main ()
 
 	for ( int i = 0; i < totalSamples; i++ )
 	{
-		vec3 alpha = ImportanceSampleGGX ( Hammersley ( uint ( i ) ), tbn );
+		vec3 alpha = ImportanceSampleGGX ( Hammersley ( uint ( i ), inverseTotalSamples ), tbn, roughness );
 		vec3 sampleCoord = normalize ( -reflect ( viewerDirectionWorld, alpha ) );
 
 		float betta = max ( dot ( adjustedCubeMapCoords, sampleCoord ), 0.0 );

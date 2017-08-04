@@ -656,7 +656,7 @@ GXVoid GXTexture2D::InitResources ( GXUShort width, GXUShort height, GLint inter
 
 		case GL_RGBA16F:
 		{
-			unpackAlignment = 4;
+			unpackAlignment = 8;
 			format = GL_RGBA;
 			type = GL_FLOAT;
 			numChannels = 4;

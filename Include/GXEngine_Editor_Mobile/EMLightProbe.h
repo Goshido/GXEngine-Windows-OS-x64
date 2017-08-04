@@ -43,7 +43,7 @@ class EMLightProbe
 		// This texture is square 2D texture.
 		GXVoid SetBRDFIntegrationMapResolution ( GXUShort length );
 
-		GXVoid SetBRDFIntegrationMapSamples ( GXUShort samples );
+		GXVoid SetBRDFIntegrationMapSamplesPerPixel ( GXUShort samples );
 
 		GXTextureCubeMap& GetDiffuseIrradiance ();
 		GXTextureCubeMap& GetPrefilteredEnvironmentMap ();

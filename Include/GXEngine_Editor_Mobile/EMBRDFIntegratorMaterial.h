@@ -8,11 +8,11 @@
 class EMBRDFIntegratorMaterial : public GXMaterial
 {
 	private:
-		GXInt		totalSamples;
-		GLint		totalSamplesLocation;
+		GXInt		samples;
+		GLint		samplesLocation;
 
-		GXFloat		inverseTotalSamples;
-		GLint		inverseTotalSamplesLocation;
+		GXFloat		inverseSamples;
+		GLint		inverseSamplesLocation;
 
 	public:
 		EMBRDFIntegratorMaterial ();
@@ -21,7 +21,7 @@ class EMBRDFIntegratorMaterial : public GXMaterial
 		GXVoid Bind ( const GXTransform &transform ) override;
 		GXVoid Unbind () override;
 
-		GXVoid SetTotalSamples ( GXUShort samples );
+		GXVoid SetSamplesPerPixel ( GXUShort samples );
 };
 
 
