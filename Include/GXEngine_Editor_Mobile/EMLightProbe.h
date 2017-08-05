@@ -10,7 +10,12 @@
 
 class EMLightProbe
 {
+	friend class EMRenderer;
+
 	private:
+		EMLightProbe*									next;
+		EMLightProbe*									prev;
+
 		GXVec3											locationWorld;
 		GXAABB											boundsWorld;
 
@@ -22,11 +27,13 @@ class EMLightProbe
 		GXTextureCubeMap								prefilteredEnvironmentMap;
 		EMPrefilteredEnvironmentMapGeneratorMaterial	prefilteredEnvironmentMapGeneratorMaterial;
 
-		GXTexture2D										brdfIntegrationMap;
+		static GXTexture2D								brdfIntegrationMap;
 		EMBRDFIntegratorMaterial						brdfIntegratorMaterial;
 
 		GXMeshGeometry									cube;
 		GXMeshGeometry									screenQuad;
+
+		static EMLightProbe*							probes;
 
 	public:
 		EMLightProbe ();
@@ -36,11 +43,14 @@ class EMLightProbe
 		GXVoid SetEnvironmentMap ( GXTextureCubeMap &cubeMap );
 		GXVoid SetBoundLocal ( GXFloat xRange, GXFloat yRange, GXFloat zRange );
 
-		// Less step - more precisely convolution result.
-		// Returns total samples will be done.
+		//Less step - more precisely convolution result.
+		//Returns total samples will be done.
 		GXUInt SetDiffuseIrradianceConvolutionAngleStep ( GXFloat radians );
 
-		// This texture is square 2D texture.
+		//This is 2D square texture
+		GXVoid SetDiffuseIrradianceResolution ( GXUShort resolution );
+
+		//This texture is square 2D texture.
 		GXVoid SetBRDFIntegrationMapResolution ( GXUShort length );
 
 		GXVoid SetBRDFIntegrationMapSamplesPerPixel ( GXUShort samples );
@@ -53,6 +63,8 @@ class EMLightProbe
 		GXVoid UpdateDiffuseIrradiance ();
 		GXVoid UpdatePrefilteredEnvironmentMap ();
 		GXVoid UpdateBRDFIntegrationMap ();
+
+		static EMLightProbe* GetProbes ();
 };
 
 

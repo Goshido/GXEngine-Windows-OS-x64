@@ -1,5 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMRenderer.h>
 #include <GXEngine_Editor_Mobile/EMLight.h>
+#include <GXEngine_Editor_Mobile/EMLightProbe.h>
 #include <GXEngine_Editor_Mobile/EMUIMotionBlurSettings.h>
 #include <GXEngine_Editor_Mobile/EMUISSAOSettings.h>
 #include <GXEngine/GXRenderer.h>
@@ -713,6 +714,12 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" ), gaussHorizontalBlurMateria
 	directedLightMaterial.SetParameterTexture ( parameterTexture );
 	directedLightMaterial.SetDepthTexture ( depthStencilTexture );
 
+	lightProbeMaterial.SetAlbedoTexture ( albedoTexture );
+	lightProbeMaterial.SetNormalTexture ( normalTexture );
+	lightProbeMaterial.SetEmissionTexture ( emissionTexture );
+	lightProbeMaterial.SetParameterTexture ( parameterTexture );
+	lightProbeMaterial.SetDepthTexture ( depthStencilTexture );
+
 	velocityTileMaxMaterial.SetVelocityBlurTexture ( velocityBlurTexture );
 
 	velocityNeighborMaxMaterial.SetVelocityTileMaxTexture ( velocityTileMaxTexture );
@@ -837,9 +844,7 @@ GXVoid EMRenderer::UpdateSSAOSettings ()
 
 GXVoid EMRenderer::LightUp ()
 {
-	EMLightEmitter* light = em_LightEmitters;
-
-	for ( EMLightEmitter* light = em_LightEmitters; light; light = light->next )
+	/*for ( EMLightEmitter* light = EMLightEmitter::GetEmitters (); light; light = light->next )
 	{
 		switch ( light->GetType () )
 		{
@@ -859,6 +864,17 @@ GXVoid EMRenderer::LightUp ()
 				//NOTHING
 			break;
 		}
+	}*/
+
+	for ( EMLightProbe* probe = EMLightProbe::GetProbes (); probe; probe = probe->next )
+	{
+		lightProbeMaterial.SetDiffuseIrradianceTexture ( probe->GetDiffuseIrradiance () );
+		lightProbeMaterial.SetPrefilteredEnvironmentMapTexture ( probe->GetPrefilteredEnvironmentMap () );
+		lightProbeMaterial.SetBRDFIntegrationMapTexture ( probe->GetBRDFIntegrationMap () );
+
+		lightProbeMaterial.Bind ( screenQuadMesh );
+		screenQuadMesh.Render ();
+		lightProbeMaterial.Unbind ();
 	}
 }
 

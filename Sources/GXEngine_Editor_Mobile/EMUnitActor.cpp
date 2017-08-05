@@ -12,7 +12,7 @@
 #define DIFFUSE_TEXTURE		L"Textures/System/Checker.tga"
 #define NORMAL_TEXTURE		L"Textures/Editor Mobile/Default Normals.tex"
 #define EMISSION_TEXTURE	L"Textures/Editor Mobile/Default Emission.tex"
-#define PARAMETER_TEXTURE	L"Textures/Editor Mobile/Default Cook Torrance parameters.tga"
+#define PARAMETER_TEXTURE	L"Textures/Editor Mobile/Default Diffuse.tex"
 
 
 EMUnitActor::EMUnitActor ( const GXWChar* name, const GXMat4 &transform ):

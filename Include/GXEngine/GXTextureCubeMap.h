@@ -15,8 +15,8 @@ class GXTextureCubeMap
 {
 	private:
 		GXUShort			faceLength;
-
 		GXUByte				numChannels;
+		GXUByte				lods;
 
 		GLint				internalFormat;
 		GLint				unpackAlignment;
@@ -29,8 +29,6 @@ class GXTextureCubeMap
 		GXBool				isGenerateMipmap;
 		GLuint				sampler;
 
-		static GXUInt		refs;
-
 	public:
 		GXTextureCubeMap ();
 		explicit GXTextureCubeMap ( GXUShort faceLength, GLint internalFormat, GXBool isGenerateMipmap );
@@ -38,6 +36,7 @@ class GXTextureCubeMap
 
 		GXUShort GetFaceLength () const;
 		GXUByte GetChannelNumber () const;
+		GXUByte GetLevelOfDetailNumber () const;
 
 		static GXTextureCubeMap& GXCALL LoadEquirectangularTexture ( const GXWChar* fileName, GXBool isGenerateMipmap );
 		static GXVoid GXCALL RemoveTexture ( GXTextureCubeMap& texture );

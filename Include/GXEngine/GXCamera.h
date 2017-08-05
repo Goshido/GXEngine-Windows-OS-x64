@@ -1,4 +1,4 @@
-//version 1.12
+//version 1.13
 
 #ifndef GX_CAMERA
 #define GX_CAMERA
@@ -21,6 +21,7 @@ class GXCamera
 		GXMat4					currentFrameProjectionMatrix;
 		GXMat4					currentFrameInverseProjectionMatrix;
 		GXMat4					currentFrameViewProjectionMatrix;
+		GXMat4					currentFrameInverseViewProjectionMatrix;
 		GXMat4					lastFrameModelMatrix;
 		GXMat4					lastFrameViewMatrix;
 		GXMat4					lastFrameViewProjectionMatrix;
@@ -32,6 +33,7 @@ class GXCamera
 		virtual ~GXCamera ();
 
 		const GXMat4& GetCurrentFrameViewProjectionMatrix () const;
+		const GXMat4& GetCurrentFrameInverseViewProjectionMatrix () const;
 		const GXMat4& GetCurrentFrameProjectionMatrix () const;
 		const GXMat4& GetCurrentFrameInverseProjectionMatrix () const;
 		const GXMat4& GetCurrentFrameModelMatrix () const;

@@ -2,16 +2,17 @@
 #include <GXEngine/GXShaderProgram.h>
 
 
-EMLightEmitter* em_LightEmitters = 0;
-
+EMLightEmitter* EMLightEmitter::emitters = nullptr;
 
 EMLightEmitter::EMLightEmitter ()
 {
-	prev = 0;
-	next = em_LightEmitters;
-	if ( em_LightEmitters )
-		em_LightEmitters->prev = this;
-	em_LightEmitters = this;
+	prev = nullptr;
+	next = emitters;
+
+	if ( emitters )
+		emitters->prev = this;
+
+	emitters = this;
 
 	type = eEMLightEmitterType::Unknown;
 
@@ -28,7 +29,7 @@ EMLightEmitter::~EMLightEmitter ()
 	if ( prev ) 
 		prev->next = next;
 	else
-		em_LightEmitters = next;
+		emitters = next;
 }
 
 eEMLightEmitterType EMLightEmitter::GetType ()
@@ -79,6 +80,11 @@ const GXVec3& EMLightEmitter::GetColor ()
 GXFloat EMLightEmitter::GetIntensity ()
 {
 	return intensity;
+}
+
+EMLightEmitter* EMLightEmitter::GetEmitters ()
+{
+	return emitters;
 }
 
 //---------------------------------------------------------------

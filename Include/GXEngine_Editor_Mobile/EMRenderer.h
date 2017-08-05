@@ -5,6 +5,7 @@
 #include "EMLight.h"
 #include "EMMesh.h"
 #include "EMCookTorranceDirectedLightMaterial.h"
+#include "EMLightProbeMaterial.h"
 #include "EMVelocityTileMaxMaterial.h"
 #include "EMVelocityNeighborMaxMaterial.h"
 #include "EMMotionBlurMaterial.h"
@@ -56,6 +57,7 @@ class EMRenderer
 		EMMesh								screenQuadMesh;
 
 		EMCookTorranceDirectedLightMaterial	directedLightMaterial;
+		EMLightProbeMaterial				lightProbeMaterial;
 		EMVelocityTileMaxMaterial			velocityTileMaxMaterial;
 		EMVelocityNeighborMaxMaterial		velocityNeighborMaxMaterial;
 		EMMotionBlurMaterial				motionBlurMaterial;

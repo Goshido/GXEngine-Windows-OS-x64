@@ -33,7 +33,7 @@ uniform sampler2D emissionSampler;
 uniform vec3 emissionScaledColor;
 
 uniform sampler2D parameterSampler;
-uniform vec3 parameterScale;
+uniform vec4 parameterScale;
 
 layout ( location = ALBEDO_SLOT ) out vec4 outAlbedo;
 layout ( location = NORMAL_SLOT ) out vec3 outNormal;
@@ -62,8 +62,7 @@ void main ()
 
 	vec4 parameterSample = texture ( parameterSampler, v_uvParameter );
 	parameterSample.w = parameterSample.w < 0.5 ? 0.0 : 1.0;
-	parameterSample.xyz *= parameterScale;
-	outParameter = parameterSample;
+	outParameter = parameterSample * parameterScale;
 
 	outVelocityBlur = v_velocityBlur * 0.5 + 0.5;
 	outObjectHi = v_objectHi;

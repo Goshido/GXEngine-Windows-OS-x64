@@ -250,6 +250,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMHueCircleGeneratorMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMLight.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMLightProbe.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMLightProbeMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMMesh.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMMotionBlurMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMMoveTool.cpp" />
@@ -414,6 +415,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMGaussVerticalBlurMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMHueCircleGeneratorMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMLightProbe.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMLightProbeMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMPrefilteredEnvironmentMapGeneratorMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMSSAOApplyMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMSSAOSharpMaterial.h" />
@@ -481,6 +483,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Text Include="..\..\Shaders\Editor Mobile\GaussHorizontalBlurOneChannelFivePixelKernel_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\GaussVerticalBlurOneChannelFivePixelKernel_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\HueCircle_fs.txt" />
+    <Text Include="..\..\Shaders\Editor Mobile\LightProbe_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\MaskAlphaTest_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\MaskVertexAndUV_vs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\MaskVertexOnly_vs.txt" />

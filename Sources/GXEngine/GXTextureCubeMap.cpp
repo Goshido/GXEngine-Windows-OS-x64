@@ -8,15 +8,16 @@
 #include <GXCommon/GXImageLoader.h>
 
 
-#define INVALID_INTERNAL_FORMAT		0
-#define INVALID_UNPACK_ALIGNMENT	0x7FFFFFFF
-#define INVALID_FORMAT				0
-#define INVALID_TYPE				0
-#define INVALID_TEXTURE_UNIT		0xFF
-#define INVALID_CHANNEL_NUMBER		0xFF
+#define INVALID_INTERNAL_FORMAT				0
+#define INVALID_UNPACK_ALIGNMENT			0x7FFFFFFF
+#define INVALID_FORMAT						0
+#define INVALID_TYPE						0
+#define INVALID_TEXTURE_UNIT				0xFF
+#define INVALID_CHANNEL_NUMBER				0
+#define INVALID_LEVEL_OF_DETAIL_NUMBER		0
 
-#define CACHE_DIRECTORY_NAME		L"Cache"
-#define CACHE_FILE_EXTENSION		L"cache"
+#define CACHE_DIRECTORY_NAME				L"Cache"
+#define CACHE_FILE_EXTENSION				L"cache"
 
 
 static GXTextureCubeMapEntry* gx_TextureHead = nullptr;
@@ -129,12 +130,11 @@ struct GXTextureCubeMapCacheHeader
 
 //-------------------------------------------------------------------------------
 
-GXUInt GXTextureCubeMap::refs = 0;
-
 GXTextureCubeMap::GXTextureCubeMap ()
 {
 	faceLength = 0;
 	numChannels = INVALID_CHANNEL_NUMBER;
+	lods = INVALID_LEVEL_OF_DETAIL_NUMBER;
 	internalFormat = INVALID_INTERNAL_FORMAT;
 	unpackAlignment = INVALID_UNPACK_ALIGNMENT;
 	format = INVALID_FORMAT;
@@ -143,8 +143,6 @@ GXTextureCubeMap::GXTextureCubeMap ()
 	textureObject = 0;
 	isGenerateMipmap = GX_FALSE;
 	sampler = 0;
-
-	refs++;
 }
 
 GXTextureCubeMap::GXTextureCubeMap ( GXUShort faceLength, GLint internalFormat, GXBool isGenerateMipmap )
@@ -155,7 +153,6 @@ GXTextureCubeMap::GXTextureCubeMap ( GXUShort faceLength, GLint internalFormat, 
 GXTextureCubeMap::~GXTextureCubeMap ()
 {
 	FreeResources ();
-	refs--;
 }
 
 GXUShort GXTextureCubeMap::GetFaceLength () const
@@ -166,6 +163,11 @@ GXUShort GXTextureCubeMap::GetFaceLength () const
 GXUByte GXTextureCubeMap::GetChannelNumber () const
 {
 	return numChannels;
+}
+
+GXUByte GXTextureCubeMap::GetLevelOfDetailNumber () const
+{
+	return lods;
 }
 
 GXTextureCubeMap& GXCALL GXTextureCubeMap::LoadEquirectangularTexture ( const GXWChar* fileName, GXBool isGenerateMipmap )
@@ -612,21 +614,21 @@ GXVoid GXTextureCubeMap::FillWholePixelData ( const GXVoid* data, GLenum target 
 
 GXVoid GXTextureCubeMap::UpdateMipmaps ()
 {
+	GXCheckOpenGLError ();
+
 	if ( textureObject == 0 || !isGenerateMipmap ) return;
 
 	glActiveTexture ( GL_TEXTURE0 );
 	glBindTexture ( GL_TEXTURE_CUBE_MAP, textureObject );
+	glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+	glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+	glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+	glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
 
 	glGenerateMipmap ( GL_TEXTURE_CUBE_MAP );
-	glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-
-	GLfloat maxAnisotropy;
-	glGetFloatv ( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy );
-	glTexParameterf ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy );
 
 	glBindTexture ( GL_TEXTURE_CUBE_MAP, 0 );
-
 	GXCheckOpenGLError ();
 }
 
@@ -774,8 +776,6 @@ GXVoid GXTextureCubeMap::InitResources ( GXUShort faceLength, GLint internalForm
 		break;
 	}
 
-
-
 	glBindTexture ( GL_TEXTURE_CUBE_MAP, 0 );
 
 	FillWholePixelData ( nullptr, GL_TEXTURE_CUBE_MAP_POSITIVE_X );
@@ -792,12 +792,21 @@ GXVoid GXTextureCubeMap::InitResources ( GXUShort faceLength, GLint internalForm
 		samplerInfo.anisotropy = 16.0f;
 		samplerInfo.resampling = eGXSamplerResampling::Trilinear;
 		UpdateMipmaps ();
+
+		lods = 0;
+		GXUShort currentResolution = 1;
+		while ( currentResolution <= faceLength )
+		{
+			lods++;
+			currentResolution *= 2;
+		}
 	}
 	else
 	{
 		glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0 );
 		samplerInfo.anisotropy = 1.0f;
 		samplerInfo.resampling = eGXSamplerResampling::None;
+		lods = 1;
 	}
 
 	samplerInfo.wrap = GL_CLAMP_TO_EDGE;
@@ -812,6 +821,8 @@ GXVoid GXTextureCubeMap::FreeResources ()
 	textureObject = 0;
 
 	faceLength = 0;
+	numChannels = INVALID_CHANNEL_NUMBER;
+	lods = INVALID_LEVEL_OF_DETAIL_NUMBER;
 	internalFormat = INVALID_INTERNAL_FORMAT;
 	format = INVALID_TYPE;
 	type = INVALID_TYPE;

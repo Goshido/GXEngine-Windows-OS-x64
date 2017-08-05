@@ -14,6 +14,7 @@ class GXTexture2D
 		GXUShort			width;
 		GXUShort			height;
 		GXUByte				numChannels;
+		GXUByte				lods;
 
 		GLint				internalFormat;
 		GLint				unpackAlignment;
@@ -35,6 +36,7 @@ class GXTexture2D
 		GXUShort GetWidth () const;
 		GXUShort GetHeight () const;
 		GXUByte GetChannelNumber () const;
+		GXUByte GetLevelOfDetailNumber () const;
 
 		static GXTexture2D& GXCALL LoadTexture ( const GXWChar* fileName, GXBool isGenerateMipmap, GLint wrapMode );
 		static GXVoid GXCALL RemoveTexture ( GXTexture2D& texture );

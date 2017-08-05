@@ -8,9 +8,6 @@
 #include <GXCommon/GXMath.h>
 
 
-class EMLightEmitter;
-extern EMLightEmitter* em_LightEmitters;
-
 enum class eEMLightEmitterType
 {
 	Bulp,
@@ -24,17 +21,19 @@ class EMLightEmitter
 	friend class EMRenderer;
 
 	private:
-		EMLightEmitter*		next;
-		EMLightEmitter*		prev;
+		EMLightEmitter*			next;
+		EMLightEmitter*			prev;
+
+		static EMLightEmitter*	emitters;
 
 	protected:
-		eEMLightEmitterType	type;
+		eEMLightEmitterType		type;
 
-		GXUByte				baseColor[ 3 ];
-		GXFloat				intensity;		//[ 0.0f, +inf )
-		GXVec3				color;
+		GXUByte					baseColor[ 3 ];
+		GXFloat					intensity;		//[ 0.0f, +inf )
+		GXVec3					color;
 
-		GXMat4				mod_mat;
+		GXMat4					mod_mat;
 
 	public:
 		EMLightEmitter ();
@@ -47,6 +46,9 @@ class EMLightEmitter
 		GXVoid GetBaseColor ( GXUByte &red, GXUByte &green, GXUByte &blue );
 		const GXVec3& GetColor ();
 		GXFloat GetIntensity ();
+
+	private:
+		static EMLightEmitter* GetEmitters ();
 };
 
 class EMBulp : public EMLightEmitter

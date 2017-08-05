@@ -48,6 +48,7 @@
 #define DEFAULT_ROUGHNESS_SCALE				1.0f
 #define DEFAULT_INDEX_OF_REFRACTION_SCALE	1.0f
 #define DEFAULT_SPECULAR_INTECITY_SCALE		1.0f
+#define DEFAULT_METALLIC_SCALE				1.0f
 
 #define DEFAULT_DELTA_TIME					0.1667f
 #define DEFAULT_EXPLOSURE					0.01667f
@@ -117,6 +118,7 @@ EMCookTorranceCommonPassMaterial::EMCookTorranceCommonPassMaterial ()
 	SetRoughnessScale ( DEFAULT_ROUGHNESS_SCALE );
 	SetIndexOfRefractionScale ( DEFAULT_INDEX_OF_REFRACTION_SCALE );
 	SetSpecularIntencityScale ( DEFAULT_SPECULAR_INTECITY_SCALE );
+	SetMetallicScale ( DEFAULT_METALLIC_SCALE );
 
 	SetDeltaTime ( DEFAULT_DELTA_TIME );
 	SetExposure ( DEFAULT_EXPLOSURE );
@@ -196,7 +198,7 @@ GXVoid EMCookTorranceCommonPassMaterial::Bind ( const GXTransform &transform )
 
 	parameterTexture->Bind ( PARAMETER_SLOT );
 	glUniform4fv ( parameterTextureScaleOffsetLocation, 1, parameterTextureScaleOffset.arr );
-	glUniform3fv ( parameterScaleLocation, 1, parameterScale.arr );
+	glUniform4fv ( parameterScaleLocation, 1, parameterScale.arr );
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::Unbind ()
@@ -392,6 +394,16 @@ GXVoid EMCookTorranceCommonPassMaterial::SetSpecularIntencityScale ( GXFloat sca
 GXFloat EMCookTorranceCommonPassMaterial::GetSpecularIntencityScale () const
 {
 	return parameterScale.z;
+}
+
+GXVoid EMCookTorranceCommonPassMaterial::SetMetallicScale ( GXFloat scale )
+{
+	parameterScale.w = scale;
+}
+
+GXFloat EMCookTorranceCommonPassMaterial::GetMetallicScale () const
+{
+	return parameterScale.w;
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetDeltaTime ( GXFloat seconds )

@@ -1,0 +1,92 @@
+#version 330 core
+
+
+#define MAXIMUM_INDEX_OF_REFRACTION		5.0
+#define COLOR_SLOT						0
+
+
+const vec3 pureDielectricSpecularColor = vec3 ( 1.0, 1.0, 1.0 );
+
+
+smooth in vec2 v_uv;
+
+uniform samplerCube diffuseIrradianceSampler;
+uniform samplerCube prefilteredEnvironmentMapSampler;
+uniform sampler2D brdfIntegrationMapSampler;
+uniform sampler2D albedoSampler;
+uniform sampler2D normalSampler;
+uniform sampler2D emissionSampler;
+uniform sampler2D parameterSampler;
+uniform sampler2D depthSampler;
+
+uniform vec3 viewerLocationWorld;
+uniform float prefilteredEnvironmentMapLODs;
+uniform mat3 inverseViewMatrix;
+uniform mat4 inverseViewProjectionMatrix;
+
+out layout ( location = COLOR_SLOT ) vec3 fragmentColor;
+
+
+vec3 GetFragmentNormalWorld ()
+{
+	vec3 normalView = texture ( normalSampler, v_uv ).xyz * 2.0 - 1.0;
+	return inverseViewMatrix * normalView;
+}
+
+vec3 GetFragmentLocationWorld ( const in float depthSample )
+{
+	vec4 fragmentLocationCVV;
+	fragmentLocationCVV.xy = v_uv * 2.0 - 1.0;
+	fragmentLocationCVV.z = depthSample * 2.0 - 1.0;
+	fragmentLocationCVV.w = 1.0;
+
+	vec4 fragmentLocationWorld = inverseViewProjectionMatrix * fragmentLocationCVV;
+	float invW = 1.0 / fragmentLocationWorld.w;
+
+	return fragmentLocationWorld.xyz * invW;
+}
+
+float GetFresnel ( const in float ior, const in float fragmentToViewerDirectionDotNormalWorld )
+{
+	float alpha = ( 1.0 - ior ) / ( 1.0 + ior );
+	float betta = alpha * alpha;
+	float gamma = pow ( 1.0 - fragmentToViewerDirectionDotNormalWorld, 5.0 );
+
+	return betta + ( 1.0 - betta ) * gamma;
+}
+
+void main ()
+{
+	float depthSample = texture ( depthSampler, v_uv ).x;
+	vec3 emission = texture ( emissionSampler, v_uv ).rgb;
+
+	if ( depthSample == 1.0 )
+	{
+		fragmentColor = emission;
+		return;
+	}
+
+	vec4 parameters = texture ( parameterSampler, v_uv );
+	vec3 albedo = texture ( albedoSampler, v_uv ).rgb;
+
+	vec3 normalWorld = GetFragmentNormalWorld ();
+	vec3 locationWorld = GetFragmentLocationWorld ( depthSample );
+
+	vec3 specularColor = mix ( pureDielectricSpecularColor, albedo, parameters.w );
+
+	vec3 viewerToFragmentDirectionWorld = normalize ( locationWorld - viewerLocationWorld );
+	vec3 reflectionDirectionWorld = reflect ( viewerToFragmentDirectionWorld, normalWorld );
+	vec3 reflectionSample = textureLod ( prefilteredEnvironmentMapSampler, reflectionDirectionWorld, parameters.x * prefilteredEnvironmentMapLODs ).rgb;
+
+	vec3 fragmentToViewerDirectionWorld = -viewerToFragmentDirectionWorld;
+	float fragmentToViewerDirectionDotNormalWorld = max ( dot ( fragmentToViewerDirectionWorld, normalWorld ), 0.0 );
+	vec2 brdfSampleCoord = vec2 ( fragmentToViewerDirectionDotNormalWorld, parameters.x );
+	vec2 brdfSample = texture ( brdfIntegrationMapSampler, brdfSampleCoord ).xy;
+
+	float fresnel = GetFresnel ( parameters.y * MAXIMUM_INDEX_OF_REFRACTION, fragmentToViewerDirectionDotNormalWorld );
+
+	vec3 diffuse = albedo.rgb * texture ( diffuseIrradianceSampler, normalWorld ).rgb;
+	vec3 specular = specularColor * reflectionSample * ( fresnel * brdfSample.x + brdfSample.y );
+
+	fragmentColor = emission + ( 1.0 - parameters.z ) * diffuse + parameters.z * specular;
+}

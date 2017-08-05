@@ -1,27 +1,37 @@
 #include <GXEngine_Editor_Mobile/EMLightProbe.h>
-#include <GXEngine_Editor_Mobile/EMDiffuseIrradianceGeneratorMaterial.h>
-#include <GXEngine/GXMeshGeometry.h>
 #include <GXCommon/GXLogger.h>
 
 
-#define DEFAULT_LOCATION_X								0.0f
-#define DEFAULT_LOCATION_Y								0.0f
-#define DEFAULT_LOCATION_Z								0.0f
+#define DEFAULT_LOCATION_X										0.0f
+#define DEFAULT_LOCATION_Y										0.0f
+#define DEFAULT_LOCATION_Z										0.0f
 
-#define DEFAULT_BOUND_RANGE_X							7.0f
-#define DEFAULT_BOUND_RANGE_Y							7.0f
-#define DEFAULT_BOUND_RANGE_Z							7.0f
+#define DEFAULT_BOUND_RANGE_X									7.0f
+#define DEFAULT_BOUND_RANGE_Y									7.0f
+#define DEFAULT_BOUND_RANGE_Z									7.0f
 
-#define INVALID_TEXTURE_OBJECT							0
+#define INVALID_TEXTURE_OBJECT									0
 
-#define DIFFUSE_CONVOLUTION_ANGLE_STEP					0.025f
+#define DEFAULT_DIFFUSE_IRRADIANCE_CONVOLUTION_ANGLE_STEP		0.1f
+#define DEFAULT_DIFFUSE_IRRADIANCE_RESOLUTION					256
 
-#define DEFAULT_BRDF_INTEGRATION_MAP_RESOLUTION			1024
-#define DEFAULT_BRDF_INTEGRATION_MAP_SAMPLES_PER_PIXEL	8196
+#define DEFAULT_BRDF_INTEGRATION_MAP_RESOLUTION					1024
+#define DEFAULT_BRDF_INTEGRATION_MAP_SAMPLES_PER_PIXEL			8196
 
+
+GXTexture2D EMLightProbe::brdfIntegrationMap;
+EMLightProbe* EMLightProbe::probes = nullptr;
 
 EMLightProbe::EMLightProbe ()
 {
+	prev = nullptr;
+	next = probes;
+
+	if ( probes )
+		probes->prev = this;
+
+	probes = this;
+
 	locationWorld = GXCreateVec3 ( DEFAULT_LOCATION_X, DEFAULT_LOCATION_Y, DEFAULT_LOCATION_Z );
 	
 	GXSetAABBEmpty ( boundsWorld );
@@ -36,12 +46,21 @@ EMLightProbe::EMLightProbe ()
 	cube = GXMeshGeometry::LoadFromStm ( L"3D Models/System/Unit Cube.stm" );
 	screenQuad = GXMeshGeometry::LoadFromStm ( L"3D Models/System/ScreenQuad.stm" );
 
-	brdfIntegratorMaterial.SetSamplesPerPixel ( DEFAULT_BRDF_INTEGRATION_MAP_SAMPLES_PER_PIXEL );
-	SetBRDFIntegrationMapResolution ( DEFAULT_BRDF_INTEGRATION_MAP_RESOLUTION );
+	if ( brdfIntegrationMap.GetTextureObject () == INVALID_TEXTURE_OBJECT )
+	{
+		brdfIntegratorMaterial.SetSamplesPerPixel ( DEFAULT_BRDF_INTEGRATION_MAP_SAMPLES_PER_PIXEL );
+		SetBRDFIntegrationMapResolution ( DEFAULT_BRDF_INTEGRATION_MAP_RESOLUTION );
+	}
 }
 
 EMLightProbe::~EMLightProbe ()
 {
+	if ( next ) next->prev = prev;
+	if ( prev )
+		prev->next = next;
+	else
+		probes = next;
+
 	GXMeshGeometry::RemoveMeshGeometry ( cube );
 	GXMeshGeometry::RemoveMeshGeometry ( screenQuad );
 
@@ -51,7 +70,7 @@ EMLightProbe::~EMLightProbe ()
 	if ( prefilteredEnvironmentMap.GetTextureObject () != INVALID_TEXTURE_OBJECT )
 		prefilteredEnvironmentMap.FreeResources ();
 
-	if ( brdfIntegrationMap.GetTextureObject () != INVALID_TEXTURE_OBJECT )
+	if ( !probes && brdfIntegrationMap.GetTextureObject () != INVALID_TEXTURE_OBJECT )
 		brdfIntegrationMap.FreeResources ();
 }
 
@@ -64,8 +83,12 @@ GXVoid EMLightProbe::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 GXVoid EMLightProbe::SetEnvironmentMap ( GXTextureCubeMap &cubeMap )
 {
 	environmentMap = cubeMap;
-	UpdateDiffuseIrradiance ();
 	UpdatePrefilteredEnvironmentMap ();
+
+	if ( diffuseIrradiance.GetTextureObject () == INVALID_TEXTURE_OBJECT )
+		diffuseIrradiance.InitResources ( DEFAULT_DIFFUSE_IRRADIANCE_RESOLUTION, GL_RGB16F, GL_FALSE );
+
+	UpdateDiffuseIrradiance ();
 }
 
 GXVoid EMLightProbe::SetBoundLocal ( GXFloat xRange, GXFloat yRange, GXFloat zRange )
@@ -85,6 +108,15 @@ GXUInt EMLightProbe::SetDiffuseIrradianceConvolutionAngleStep ( GXFloat radians 
 	UpdateDiffuseIrradiance ();
 
 	return samples;
+}
+
+GXVoid EMLightProbe::SetDiffuseIrradianceResolution ( GXUShort resolution )
+{
+	if ( diffuseIrradiance.GetTextureObject () != INVALID_TEXTURE_OBJECT )
+		diffuseIrradiance.FreeResources ();
+
+	diffuseIrradiance.InitResources ( resolution, GL_RGB16F, GX_FALSE );
+	UpdateDiffuseIrradiance ();
 }
 
 GXVoid EMLightProbe::SetBRDFIntegrationMapResolution ( GXUShort length )
@@ -119,17 +151,8 @@ GXTexture2D& EMLightProbe::GetBRDFIntegrationMap ()
 
 GXVoid EMLightProbe::UpdateDiffuseIrradiance ()
 {
-	if ( environmentMap.GetTextureObject () == INVALID_TEXTURE_OBJECT ) return;
-
 	GXOpenGLState state;
 	state.Save ();
-
-	GXUShort length = environmentMap.GetFaceLength ();
-
-	if ( diffuseIrradiance.GetTextureObject () != INVALID_TEXTURE_OBJECT )
-		diffuseIrradiance.FreeResources ();
-
-	diffuseIrradiance.InitResources ( length, GL_RGB16F, GL_FALSE );
 
 	GLuint fbo;
 	glGenFramebuffers ( 1, &fbo );
@@ -152,7 +175,8 @@ GXVoid EMLightProbe::UpdateDiffuseIrradiance ()
 	glStencilMask ( 0x00 );
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
 
-	glViewport ( 0, 0, (GLsizei)length, (GLsizei)length );
+	GLsizei length = (GLsizei)diffuseIrradiance.GetFaceLength ();
+	glViewport ( 0, 0, length, length );
 
 	static const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers ( 1, buffers );
@@ -162,6 +186,7 @@ GXVoid EMLightProbe::UpdateDiffuseIrradiance ()
 		GXLogW ( L"EMLightProbe::UpdateDiffuseIrradiance::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
 	diffuseIrradianceGeneratorMaterial.SetEnvironmentMap ( environmentMap );
+	diffuseIrradianceGeneratorMaterial.SetAngleStep ( DEFAULT_DIFFUSE_IRRADIANCE_CONVOLUTION_ANGLE_STEP );
 	diffuseIrradianceGeneratorMaterial.Bind ( GXTransform::GetNullTransform () );
 	cube.Render ();
 	diffuseIrradianceGeneratorMaterial.Unbind ();
@@ -174,8 +199,6 @@ GXVoid EMLightProbe::UpdateDiffuseIrradiance ()
 
 GXVoid EMLightProbe::UpdatePrefilteredEnvironmentMap ()
 {
-	if ( environmentMap.GetTextureObject () == INVALID_TEXTURE_OBJECT ) return;
-
 	GXOpenGLState state;
 	state.Save ();
 
@@ -211,24 +234,16 @@ GXVoid EMLightProbe::UpdatePrefilteredEnvironmentMap ()
 
 	prefilteredEnvironmentMap.InitResources ( length, GL_RGB16F, GL_TRUE );
 
-	GXUChar mipmaps = 0;
-	GXUShort currentResolution = 1;
-	while ( currentResolution <= length )
-	{
-		mipmaps++;
-		currentResolution *= 2;
-	}
-
 	prefilteredEnvironmentMapGeneratorMaterial.SetEnvironmentMap ( environmentMap );
 
-	GXFloat roughnessStep = 1.0f / (GXFloat)( mipmaps - 1 );
-	GXInt mipmapLevel = 0;
-	currentResolution = length;
+	GXFloat roughnessStep = 1.0f / (GXFloat)( prefilteredEnvironmentMap.GetLevelOfDetailNumber () - 1 );
+	GLint mipmapLevel = 0;
+	GLsizei currentResolution = (GLsizei)length;
 	for ( GXFloat rougness = 0.0f; rougness < 1.0f; rougness += roughnessStep )
 	{
 		glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, prefilteredEnvironmentMap.GetTextureObject (), mipmapLevel );
 
-		glViewport ( 0, 0, (GLsizei)currentResolution, (GLsizei)currentResolution );
+		glViewport ( 0, 0, currentResolution, currentResolution );
 
 		GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 		if ( status != GL_FRAMEBUFFER_COMPLETE )
@@ -299,4 +314,9 @@ GXVoid EMLightProbe::UpdateBRDFIntegrationMap ()
 	state.Restore ();
 
 	brdfIntegrationMap.UpdateMipmaps ();
+}
+
+EMLightProbe* EMLightProbe::GetProbes ()
+{
+	return probes;
 }

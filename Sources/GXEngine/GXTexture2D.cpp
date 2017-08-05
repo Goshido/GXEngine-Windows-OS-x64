@@ -9,15 +9,16 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define INVALID_INTERNAL_FORMAT		0
-#define INVALID_UNPACK_ALIGNMENT	0x7FFFFFFF
-#define INVALID_FORMAT				0
-#define INVALID_TYPE				0
-#define INVALID_TEXTURE_UNIT		0xFF
-#define INVALID_CHANNEL_NUMBER		0xFF
+#define INVALID_INTERNAL_FORMAT				0
+#define INVALID_UNPACK_ALIGNMENT			0x7FFFFFFF
+#define INVALID_FORMAT						0
+#define INVALID_TYPE						0
+#define INVALID_TEXTURE_UNIT				0xFF
+#define INVALID_CHANNEL_NUMBER				0
+#define INVALID_LEVEL_OF_DETAIL_NUMBER		0
 
-#define CACHE_DIRECTORY_NAME		L"Cache"
-#define CACHE_FILE_EXTENSION		L"cache"
+#define CACHE_DIRECTORY_NAME				L"Cache"
+#define CACHE_FILE_EXTENSION				L"cache"
 
 
 static GXTexture2DEntry* gx_TextureHead = nullptr;
@@ -128,6 +129,7 @@ GXTexture2D::GXTexture2D ()
 {
 	width = height = 0;
 	numChannels = INVALID_CHANNEL_NUMBER;
+	lods = INVALID_LEVEL_OF_DETAIL_NUMBER;
 	internalFormat = INVALID_INTERNAL_FORMAT;
 	unpackAlignment = INVALID_UNPACK_ALIGNMENT;
 	format = INVALID_TYPE;
@@ -472,16 +474,13 @@ GXVoid GXTexture2D::FillWholePixelData ( const GXVoid* data )
 	glPixelStorei ( GL_UNPACK_ALIGNMENT, unpackAlignment );
 	glTexImage2D ( GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, data );
 
-	if ( isGenerateMipmap )
-	{
-		glGenerateMipmap ( GL_TEXTURE_2D );
-		glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-		glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+	glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+	glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+	glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-		GLfloat maxAnisotropy;
-		glGetFloatv ( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy );
-		glTexParameterf ( GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy );
-	}
+	if ( isGenerateMipmap )
+		glGenerateMipmap ( GL_TEXTURE_2D );
 
 	glBindTexture ( GL_TEXTURE_2D, 0 );
 
@@ -683,12 +682,23 @@ GXVoid GXTexture2D::InitResources ( GXUShort width, GXUShort height, GLint inter
 	{
 		samplerInfo.anisotropy = 16.0f;
 		samplerInfo.resampling = eGXSamplerResampling::Trilinear;
+
+		GXUShort maxSide = width >= height ? width : height;
+
+		lods = 0;
+		GXUShort currentResolution = 1;
+		while ( currentResolution <= maxSide )
+		{
+			lods++;
+			currentResolution *= 2;
+		}
 	}
 	else
 	{
 		glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0 );
 		samplerInfo.anisotropy = 1.0f;
 		samplerInfo.resampling = eGXSamplerResampling::None;
+		lods = 1;
 	}
 
 	samplerInfo.wrap = wrapMode;
@@ -707,6 +717,8 @@ GXVoid GXTexture2D::FreeResources ()
 	textureObject = 0;
 
 	width = height = 0;
+	numChannels = INVALID_CHANNEL_NUMBER;
+	lods = 0;
 	internalFormat = INVALID_INTERNAL_FORMAT;
 	unpackAlignment = INVALID_UNPACK_ALIGNMENT;
 	format = INVALID_TYPE;

@@ -1,4 +1,4 @@
-//version 1.12
+//version 1.13
 
 #include <GXEngine/GXCamera.h>
 
@@ -19,6 +19,7 @@ GXCamera::GXCamera ()
 	GXSetMat4Identity ( currentFrameProjectionMatrix );
 	GXSetMat4Identity ( currentFrameInverseProjectionMatrix );
 	GXSetMat4Identity ( currentFrameViewProjectionMatrix );
+	GXSetMat4Identity ( currentFrameInverseViewProjectionMatrix );
 	GXSetMat4Identity ( lastFrameModelMatrix );
 	GXSetMat4Identity ( lastFrameViewMatrix );
 	GXSetMat4Identity ( lastFrameViewProjectionMatrix );
@@ -34,6 +35,11 @@ GXCamera::~GXCamera ()
 const GXMat4& GXCamera::GetCurrentFrameViewProjectionMatrix () const
 {
 	return currentFrameViewProjectionMatrix;
+}
+
+const GXMat4& GXCamera::GetCurrentFrameInverseViewProjectionMatrix () const
+{
+	return currentFrameInverseViewProjectionMatrix;
 }
 
 const GXMat4& GXCamera::GetCurrentFrameProjectionMatrix () const
@@ -76,6 +82,7 @@ GXVoid GXCamera::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 	currentFrameModelMatrix.SetW ( GXCreateVec3 ( x, y, z ) );
 	GXSetMat4Inverse ( currentFrameViewMatrix, currentFrameModelMatrix );
 	GXMulMat4Mat4 ( currentFrameViewProjectionMatrix, currentFrameViewMatrix, currentFrameProjectionMatrix );
+	GXSetMat4Inverse ( currentFrameInverseViewProjectionMatrix, currentFrameViewProjectionMatrix );
 
 	UpdateClipPlanes ();
 }
@@ -85,6 +92,7 @@ GXVoid GXCamera::SetLocation ( const GXVec3 &location )
 	currentFrameModelMatrix.SetW ( location );
 	GXSetMat4Inverse ( currentFrameViewMatrix, currentFrameModelMatrix );
 	GXMulMat4Mat4 ( currentFrameViewProjectionMatrix, currentFrameViewMatrix, currentFrameProjectionMatrix );
+	GXSetMat4Inverse ( currentFrameInverseViewProjectionMatrix, currentFrameViewProjectionMatrix );
 
 	UpdateClipPlanes ();
 }
@@ -99,6 +107,7 @@ GXVoid GXCamera::SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_
 
 	GXSetMat4Inverse ( currentFrameViewMatrix, currentFrameModelMatrix );
 	GXMulMat4Mat4 ( currentFrameViewProjectionMatrix, currentFrameViewMatrix, currentFrameProjectionMatrix );
+	GXSetMat4Inverse ( currentFrameInverseViewProjectionMatrix, currentFrameViewProjectionMatrix );
 
 	UpdateClipPlanes ();
 }
@@ -113,6 +122,7 @@ GXVoid GXCamera::SetRotation ( const GXMat4 &rotation )
 
 	GXSetMat4Inverse ( currentFrameViewMatrix, currentFrameModelMatrix );
 	GXMulMat4Mat4 ( currentFrameViewProjectionMatrix, currentFrameViewMatrix, currentFrameProjectionMatrix );
+	GXSetMat4Inverse ( currentFrameInverseViewProjectionMatrix, currentFrameViewProjectionMatrix );
 
 	UpdateClipPlanes ();
 }
@@ -125,6 +135,7 @@ GXVoid GXCamera::SetRotation ( const GXQuat &rotation )
 
 	GXSetMat4Inverse ( currentFrameViewMatrix, currentFrameModelMatrix );
 	GXMulMat4Mat4 ( currentFrameViewProjectionMatrix, currentFrameViewMatrix, currentFrameProjectionMatrix );
+	GXSetMat4Inverse ( currentFrameInverseViewProjectionMatrix, currentFrameViewProjectionMatrix );
 
 	UpdateClipPlanes ();
 }
@@ -134,6 +145,7 @@ GXVoid GXCamera::SetCurrentFrameModelMatrix ( const GXMat4 &matrix )
 	currentFrameModelMatrix = matrix;
 	GXSetMat4Inverse ( currentFrameViewMatrix, currentFrameModelMatrix );
 	GXMulMat4Mat4 ( currentFrameViewProjectionMatrix, currentFrameViewMatrix, currentFrameProjectionMatrix );
+	GXSetMat4Inverse ( currentFrameInverseViewProjectionMatrix, currentFrameViewProjectionMatrix );
 
 	UpdateClipPlanes ();
 }

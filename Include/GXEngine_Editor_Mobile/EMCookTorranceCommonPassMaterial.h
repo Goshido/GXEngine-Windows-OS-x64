@@ -43,7 +43,8 @@ class EMCookTorranceCommonPassMaterial : public GXMaterial
 		//x - roughness scale
 		//y - index of refraction scale
 		//z - specular intencity scale
-		GXVec3				parameterScale;
+		//w - metallic scale
+		GXVec4				parameterScale;
 		GLint				parameterScaleLocation;
 
 		GXFloat				inverseDeltaTime;
@@ -107,6 +108,8 @@ class EMCookTorranceCommonPassMaterial : public GXMaterial
 		GXFloat GetIndexOfRefractionScale () const;
 		GXVoid SetSpecularIntencityScale ( GXFloat scale );
 		GXFloat GetSpecularIntencityScale () const;
+		GXVoid SetMetallicScale ( GXFloat scale );
+		GXFloat GetMetallicScale () const;
 
 		GXVoid SetDeltaTime ( GXFloat seconds );
 		GXVoid SetExposure ( GXFloat seconds );

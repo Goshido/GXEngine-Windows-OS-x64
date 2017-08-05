@@ -456,6 +456,9 @@
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMBRDFIntegratorMaterial.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMLightProbeMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -956,6 +959,9 @@
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMBRDFIntegratorMaterial.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMLightProbeMaterial.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="..\..\Sources\GXEngine\GXRecource.res">
@@ -1150,6 +1156,9 @@
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\BRDFIntegrator_fs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\LightProbe_fs.txt">
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
   </ItemGroup>

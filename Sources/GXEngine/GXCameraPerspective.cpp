@@ -1,4 +1,4 @@
-//version 1.8
+//version 1.9
 
 #include <GXEngine/GXCameraPerspective.h>
 
@@ -18,7 +18,9 @@ GXCameraPerspective::GXCameraPerspective ()
 
 	GXSetMat4Perspective ( currentFrameProjectionMatrix, fovy_rad, aspectRatio, znear, zfar );
 	GXSetMat4Inverse ( currentFrameInverseProjectionMatrix, currentFrameProjectionMatrix );
+	
 	currentFrameViewProjectionMatrix = currentFrameProjectionMatrix;
+	currentFrameInverseViewProjectionMatrix = currentFrameInverseProjectionMatrix;
 
 	UpdateClipPlanes ();
 	UpdateLastFrameMatrices ();
@@ -33,7 +35,9 @@ GXCameraPerspective::GXCameraPerspective ( GXFloat fovy_rad, GXFloat aspectRatio
 
 	GXSetMat4Perspective ( currentFrameProjectionMatrix, fovy_rad, aspectRatio, znear, zfar );
 	GXSetMat4Inverse ( currentFrameInverseProjectionMatrix, currentFrameProjectionMatrix );
+	
 	currentFrameViewProjectionMatrix = currentFrameProjectionMatrix;
+	currentFrameInverseViewProjectionMatrix = currentFrameInverseProjectionMatrix;
 
 	UpdateClipPlanes ();
 	UpdateLastFrameMatrices ();
@@ -50,7 +54,8 @@ GXVoid GXCameraPerspective::SetFov ( GXFloat fovy_rad )
 
 	GXSetMat4Perspective ( currentFrameProjectionMatrix, fovy_rad, aspectRatio, znear, zfar );
 	GXSetMat4Inverse ( currentFrameInverseProjectionMatrix, currentFrameProjectionMatrix );
-	currentFrameViewProjectionMatrix = currentFrameProjectionMatrix;
+	GXMulMat4Mat4 ( currentFrameViewProjectionMatrix, currentFrameViewMatrix, currentFrameProjectionMatrix );
+	GXSetMat4Inverse ( currentFrameInverseViewProjectionMatrix, currentFrameViewProjectionMatrix );
 
 	UpdateClipPlanes ();
 }
@@ -61,7 +66,8 @@ GXVoid GXCameraPerspective::SetAspectRatio ( GXFloat aspectRatio )
 
 	GXSetMat4Perspective ( currentFrameProjectionMatrix, fovy_rad, aspectRatio, znear, zfar );
 	GXSetMat4Inverse ( currentFrameInverseProjectionMatrix, currentFrameProjectionMatrix );
-	currentFrameViewProjectionMatrix = currentFrameProjectionMatrix;
+	GXMulMat4Mat4 ( currentFrameViewProjectionMatrix, currentFrameViewMatrix, currentFrameProjectionMatrix );
+	GXSetMat4Inverse ( currentFrameInverseViewProjectionMatrix, currentFrameViewProjectionMatrix );
 
 	UpdateClipPlanes ();
 }
@@ -72,7 +78,8 @@ GXVoid GXCameraPerspective::SetZnear ( GXFloat znear )
 
 	GXSetMat4Perspective ( currentFrameProjectionMatrix, fovy_rad, aspectRatio, znear, zfar );
 	GXSetMat4Inverse ( currentFrameInverseProjectionMatrix, currentFrameProjectionMatrix );
-	currentFrameViewProjectionMatrix = currentFrameProjectionMatrix;
+	GXMulMat4Mat4 ( currentFrameViewProjectionMatrix, currentFrameViewMatrix, currentFrameProjectionMatrix );
+	GXSetMat4Inverse ( currentFrameInverseViewProjectionMatrix, currentFrameViewProjectionMatrix );
 
 	UpdateClipPlanes ();
 }
@@ -83,7 +90,8 @@ GXVoid GXCameraPerspective::SetZfar	( GXFloat zfar )
 
 	GXSetMat4Perspective ( currentFrameProjectionMatrix, fovy_rad, aspectRatio, znear, zfar );
 	GXSetMat4Inverse ( currentFrameInverseProjectionMatrix, currentFrameProjectionMatrix );
-	currentFrameViewProjectionMatrix = currentFrameProjectionMatrix;
+	GXMulMat4Mat4 ( currentFrameViewProjectionMatrix, currentFrameViewMatrix, currentFrameProjectionMatrix );
+	GXSetMat4Inverse ( currentFrameInverseViewProjectionMatrix, currentFrameViewProjectionMatrix );
 
 	UpdateClipPlanes ();
 }

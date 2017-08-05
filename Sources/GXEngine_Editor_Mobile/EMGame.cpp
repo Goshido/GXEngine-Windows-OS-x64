@@ -150,7 +150,7 @@ GXVoid EMGame::OnInit ()
 	*environmentMap = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default LDR environment map.jpg", GX_FALSE );
 
 	lightProbeSourceTexture = new GXTextureCubeMap ();
-	*lightProbeSourceTexture = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default LDR environment map 2K.jpg", GX_TRUE );
+	*lightProbeSourceTexture = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default HDR environment map.hdr", GX_TRUE );
 
 	lightProbe = new EMLightProbe ();
 	lightProbe->SetEnvironmentMap ( *lightProbeSourceTexture );
@@ -159,8 +159,12 @@ GXVoid EMGame::OnInit ()
 	environment.SetEnvironmentMap ( *environmentMap );
 	environment.SetEnvironmentQuasiDistance ( ENVIRONMENT_QUASI_DISTANCE );
 
-	unitActor->GetMaterial ().SetAlbedoTextureScale ( 1.0f, 1.0f );
-	unitActor->GetMaterial ().SetAlbedoTexture ( lightProbe->GetBRDFIntegrationMap () );
+	EMCookTorranceCommonPassMaterial& m = unitActor->GetMaterial ();
+	m.SetAlbedoColor ( 253, 190, 2, 255 );
+	m.SetRoughnessScale ( 0.2f );
+	m.SetIndexOfRefractionScale ( 0.094f );
+	m.SetSpecularIntencityScale ( 0.75f );
+	m.SetMetallicScale ( 1.0f );
 
 	EMUIFPSCounter::GetInstance ();
 	EMUIColorPicker::GetInstance ();
