@@ -9,7 +9,8 @@
 #include <GXCommon/GXMemory.h>
 
 
-#define DIFFUSE_TEXTURE		L"Textures/System/Checker.tga"
+//#define DIFFUSE_TEXTURE		L"Textures/System/Checker.tga"
+#define DIFFUSE_TEXTURE		L"Textures/System/Default_Diffuse.tga"
 #define NORMAL_TEXTURE		L"Textures/Editor Mobile/Default Normals.tex"
 #define EMISSION_TEXTURE	L"Textures/Editor Mobile/Default Emission.tex"
 #define PARAMETER_TEXTURE	L"Textures/Editor Mobile/Default Diffuse.tex"
@@ -17,7 +18,8 @@
 
 EMUnitActor::EMUnitActor ( const GXWChar* name, const GXMat4 &transform ):
 EMActor ( name, EM_UNIT_ACTOR_CLASS, transform ),
-mesh ( L"3D Models/System/Unit Cube.stm" )
+//mesh ( L"3D Models/System/Unit Cube.stm" )
+mesh ( L"3D Models/System/Unit Sphere.obj" )
 {
 	OnTransformChanged ();
 

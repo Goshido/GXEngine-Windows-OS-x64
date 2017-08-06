@@ -160,10 +160,10 @@ GXVoid EMGame::OnInit ()
 	environment.SetEnvironmentQuasiDistance ( ENVIRONMENT_QUASI_DISTANCE );
 
 	EMCookTorranceCommonPassMaterial& m = unitActor->GetMaterial ();
-	m.SetAlbedoColor ( 253, 190, 2, 255 );
-	m.SetRoughnessScale ( 0.2f );
+	m.SetAlbedoColor ( 253, 175, 0, 255 );
+	m.SetRoughnessScale ( 0.3f );
 	m.SetIndexOfRefractionScale ( 0.094f );
-	m.SetSpecularIntencityScale ( 0.75f );
+	m.SetSpecularIntencityScale ( 0.95f );
 	m.SetMetallicScale ( 1.0f );
 
 	EMUIFPSCounter::GetInstance ();
