@@ -147,10 +147,10 @@ GXVoid EMGame::OnInit ()
 	fluttershy = new EMFluttershy ();
 
 	environmentMap = new GXTextureCubeMap ();
-	*environmentMap = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default LDR environment map.jpg", GX_FALSE );
+	*environmentMap = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default LDR environment map.jpg", GX_FALSE, GX_TRUE );
 
 	lightProbeSourceTexture = new GXTextureCubeMap ();
-	*lightProbeSourceTexture = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default HDR environment map.hdr", GX_TRUE );
+	*lightProbeSourceTexture = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default HDR environment map.hdr", GX_TRUE, GX_FALSE );
 
 	lightProbe = new EMLightProbe ();
 	lightProbe->SetEnvironmentMap ( *lightProbeSourceTexture );
@@ -205,6 +205,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	renderer.ApplySSAO ();
 	renderer.ApplyMotionBlur ( deltaTime );
+	renderer.ApplyToneMapping ();
 
 	renderer.StartHudColorPass ();
 

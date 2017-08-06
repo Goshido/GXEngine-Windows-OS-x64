@@ -38,7 +38,7 @@ class GXTexture2D
 		GXUByte GetChannelNumber () const;
 		GXUByte GetLevelOfDetailNumber () const;
 
-		static GXTexture2D& GXCALL LoadTexture ( const GXWChar* fileName, GXBool isGenerateMipmap, GLint wrapMode );
+		static GXTexture2D& GXCALL LoadTexture ( const GXWChar* fileName, GXBool isGenerateMipmap, GLint wrapMode, GXBool isApplyGammaCorrection );
 		static GXVoid GXCALL RemoveTexture ( GXTexture2D& texture );
 		static GXUInt GXCALL GetTotalLoadedTextures ( const GXWChar** lastTexture );
 

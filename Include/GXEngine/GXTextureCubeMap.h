@@ -38,7 +38,7 @@ class GXTextureCubeMap
 		GXUByte GetChannelNumber () const;
 		GXUByte GetLevelOfDetailNumber () const;
 
-		static GXTextureCubeMap& GXCALL LoadEquirectangularTexture ( const GXWChar* fileName, GXBool isGenerateMipmap );
+		static GXTextureCubeMap& GXCALL LoadEquirectangularTexture ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection );
 		static GXVoid GXCALL RemoveTexture ( GXTextureCubeMap& texture );
 		static GXUInt GetTotalLoadedTextures ( const GXWChar** lastTexture );
 
@@ -57,7 +57,7 @@ class GXTextureCubeMap
 		GXVoid operator = ( const GXTextureCubeMap &other );
 
 	private:
-		static GXVoid GXCALL ProjectFaces ( GLuint fbo, GLuint textureObject, GXTexture2D &equirectangularTexture );
+		static GXVoid GXCALL ProjectFaces ( GLuint fbo, GLuint textureObject, GXTexture2D &equirectangularTexture, GXBool isApplyGammaCorrection );
 };
 
 

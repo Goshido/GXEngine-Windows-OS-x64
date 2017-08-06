@@ -18,7 +18,7 @@
 EMRotateGismo::EMRotateGismo () :
 mesh ( L"3D Models/Editor Mobile/Rotate Gismo.stm" )
 {
-	texture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Gismo Texture.tex", GX_FALSE, GL_CLAMP_TO_EDGE );
+	texture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Gismo Texture.tex", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 
 	unlitMaterial.SetColor ( TEXTURE_COLOR_R, TEXTURE_COLOR_G, TEXTURE_COLOR_B, TEXTURE_COLOR_A );
 	unlitMaterial.SetTexture ( texture );

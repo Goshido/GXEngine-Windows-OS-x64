@@ -200,6 +200,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXSkeleton.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSkinningMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSplashScreen.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXTexture2DGammaCorrectorMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTextureCubeMap.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTextValidator.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTransform.cpp" />
@@ -262,6 +263,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMScaleGismo.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMSSAOApplyMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMSSAOSharpMaterial.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMToneMapperMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMTool.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUI.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUIButton.cpp" />
@@ -360,6 +362,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXSkeleton.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSkinningMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSplashScreen.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXTexture2DGammaCorrectorMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTextureCubeMap.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTextValidator.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTransform.h" />
@@ -419,6 +422,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMPrefilteredEnvironmentMapGeneratorMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMSSAOApplyMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMSSAOSharpMaterial.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMToneMapperMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIColorPicker.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIFPSCounter.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMLight.h" />
@@ -496,6 +500,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Text Include="..\..\Shaders\Editor Mobile\SSAOSharp_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\StaticMesh_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\StaticMesh_vs.txt" />
+    <Text Include="..\..\Shaders\Editor Mobile\ToneMapper_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\VelocityNeighborMax_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\VelocityTileMax_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\VertexColor_fs.txt" />
@@ -508,6 +513,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Text Include="..\..\Shaders\System\DOF_vs.txt" />
     <Text Include="..\..\Shaders\System\EquirectangularToCubeMap_fs.txt" />
     <Text Include="..\..\Shaders\System\CubeMapSplitter_gs.txt" />
+    <Text Include="..\..\Shaders\System\Texture2DGammaCorrector_fs.txt" />
     <Text Include="..\..\Shaders\System\VertexPass_vs.txt" />
     <Text Include="..\..\Shaders\System\GaussDownsamplerX16_First_Pass_fs.txt" />
     <Text Include="..\..\Shaders\System\GaussDownsamplerX16_First_Pass_vs.txt" />

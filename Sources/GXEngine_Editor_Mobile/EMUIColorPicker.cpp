@@ -199,7 +199,7 @@ GXWidgetRenderer ( widget ), screenQuad ( L"3D Models/System/ScreenQuad.stm" )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
-	texture = GXTexture2D::LoadTexture ( TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	texture = GXTexture2D::LoadTexture ( TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 	
 	GXVec4 colorHSVA ( DEFAULT_SAVED_COLOR_H, DEFAULT_SAVED_COLOR_S, DEFAULT_SAVED_COLOR_V, DEFAULT_SAVED_COLOR_A );
 	SetColorHSVA ( colorHSVA );

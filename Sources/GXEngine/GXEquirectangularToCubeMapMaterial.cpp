@@ -1,17 +1,22 @@
+//version 1.1
+
 #include <GXEngine/GXEquirectangularToCubeMapMaterial.h>
 #include <GXEngine/GXCameraPerspective.h>
 
 
-#define VERTEX_SHADER			L"Shaders/System/VertexPass_vs.txt"
-#define GEOMETRY_SHADER			L"Shaders/System/CubeMapSplitter_gs.txt"
-#define FRAGMENT_SHADER			L"Shaders/System/EquirectangularToCubeMap_fs.txt"
+#define VERTEX_SHADER					L"Shaders/System/VertexPass_vs.txt"
+#define GEOMETRY_SHADER					L"Shaders/System/CubeMapSplitter_gs.txt"
+#define FRAGMENT_SHADER					L"Shaders/System/EquirectangularToCubeMap_fs.txt"
 
-#define TEXTURE_SLOT			0
+#define TEXTURE_SLOT					0
 
-#define SQUARE_ASPECT_RATIO		1.0f
-#define Z_NEAR					0.1f
-#define Z_FAR					777.777f
-#define PROJECTION_FOV_Y		GX_MATH_HALF_PI
+#define SQUARE_ASPECT_RATIO				1.0f
+#define Z_NEAR							0.1f
+#define Z_FAR							777.777f
+#define PROJECTION_FOV_Y				GX_MATH_HALF_PI
+
+#define ENABLE_GAMMA_CORRECTION_VALUE	2.2f
+#define DISABLE_GAMMA_CORRECTION_VALUE	1.0f
 
 
 GXEquirectangularToCubeMapMaterial::GXEquirectangularToCubeMapMaterial ()
@@ -32,6 +37,7 @@ GXEquirectangularToCubeMapMaterial::GXEquirectangularToCubeMapMaterial ()
 	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
 
 	viewProjectionMatricesLocation = shaderProgram.GetUniform ( "viewProjectionMatrices" );
+	gammaLocation = shaderProgram.GetUniform ( "gamma" );
 
 	GXCameraPerspective camera ( PROJECTION_FOV_Y, SQUARE_ASPECT_RATIO, Z_NEAR, Z_FAR );
 	camera.SetRotation ( 0.0f, GX_MATH_HALF_PI, 0.0f );
@@ -53,6 +59,7 @@ GXEquirectangularToCubeMapMaterial::GXEquirectangularToCubeMapMaterial ()
 	viewProjectionMatrices[ 5 ] = camera.GetCurrentFrameViewProjectionMatrix ();
 
 	texture = nullptr;
+	EnableGammaCorrection ();
 }
 
 GXEquirectangularToCubeMapMaterial::~GXEquirectangularToCubeMapMaterial ()
@@ -66,6 +73,7 @@ GXVoid GXEquirectangularToCubeMapMaterial::Bind ( const GXTransform& /*transform
 
 	glUseProgram ( shaderProgram.GetProgram () );
 	glUniformMatrix4fv ( viewProjectionMatricesLocation, 6, GL_FALSE, (const GLfloat*)viewProjectionMatrices );
+	glUniform1f ( gammaLocation, gamma );
 	texture->Bind ( TEXTURE_SLOT );
 }
 
@@ -80,4 +88,14 @@ GXVoid GXEquirectangularToCubeMapMaterial::Unbind ()
 GXVoid GXEquirectangularToCubeMapMaterial::SetEquirectangularTexture ( GXTexture2D &texture )
 {
 	this->texture = &texture;
+}
+
+GXVoid GXEquirectangularToCubeMapMaterial::EnableGammaCorrection ()
+{
+	gamma = ENABLE_GAMMA_CORRECTION_VALUE;
+}
+
+GXVoid GXEquirectangularToCubeMapMaterial::DisableGammaCorrection ()
+{
+	gamma = DISABLE_GAMMA_CORRECTION_VALUE;
 }

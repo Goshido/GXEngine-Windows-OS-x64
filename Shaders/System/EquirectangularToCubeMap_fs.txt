@@ -13,6 +13,7 @@ const vec2 invAtan = vec2 ( INVERSE_DOUBLE_PI, INVERSE_PI );
 smooth in vec3 g_locationWorld;
 
 uniform sampler2D equirectangularSampler;
+uniform float gamma;
 
 layout ( location = COLOR_SLOT ) out vec4 colorSlot;
 
@@ -25,5 +26,10 @@ void main ()
 	uv.x += FRONT_TO_POSITIVE_Z_ROTATION;
 	uv = 1.0 - ( uv * invAtan + 0.5 );
 
-	colorSlot = texture ( equirectangularSampler, uv );
+	vec4 sample = texture ( equirectangularSampler, uv );
+
+	if ( gamma == 1.0)
+		colorSlot = sample;
+	else
+		colorSlot = vec4 ( pow ( sample.rgb, vec3 ( gamma ) ), sample.a );
 }

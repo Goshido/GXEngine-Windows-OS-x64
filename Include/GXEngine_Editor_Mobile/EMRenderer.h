@@ -13,6 +13,7 @@
 #include "EMGaussVerticalBlurMaterial.h"
 #include "EMSSAOSharpMaterial.h"
 #include "EMSSAOApplyMaterial.h"
+#include "EMToneMapperMaterial.h"
 #include <GXEngine/GXUnlitTexture2DMaterial.h>
 #include <GXEngine/GXCameraOrthographic.h>
 
@@ -65,6 +66,7 @@ class EMRenderer
 		EMGaussVerticalBlurMaterial			gaussVerticalBlurMaterial;
 		EMSSAOSharpMaterial					ssaoSharpMaterial;
 		EMSSAOApplyMaterial					ssaoApplyMaterial;
+		EMToneMapperMaterial				toneMapperMaterial;
 		GXUnlitTexture2DMaterial			unlitMaterial;
 
 		GXCameraOrthographic				outCamera;
@@ -100,6 +102,7 @@ class EMRenderer
 
 		GXVoid ApplySSAO ();
 		GXVoid ApplyMotionBlur ( GXFloat deltaTime );
+		GXVoid ApplyToneMapping ();
 
 		GXVoid PresentFrame ( eEMRenderTarget target );
 

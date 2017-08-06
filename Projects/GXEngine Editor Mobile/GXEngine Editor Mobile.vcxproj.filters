@@ -459,6 +459,12 @@
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMLightProbeMaterial.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMToneMapperMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXTexture2DGammaCorrectorMaterial.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -962,6 +968,12 @@
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMLightProbeMaterial.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMToneMapperMaterial.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXTexture2DGammaCorrectorMaterial.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="..\..\Sources\GXEngine\GXRecource.res">
@@ -1160,6 +1172,12 @@
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\LightProbe_fs.txt">
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\ToneMapper_fs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\Texture2DGammaCorrector_fs.txt">
+      <Filter>Shaders\System</Filter>
     </Text>
   </ItemGroup>
 </Project>

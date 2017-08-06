@@ -1,0 +1,18 @@
+#version 330 core
+
+
+#define COLOR_SLOT	0
+
+
+smooth in vec2 v_uv;
+
+uniform sampler2D linearSpaceSampler;
+uniform float inverseGamma;
+
+layout ( location = COLOR_SLOT ) out vec3 outColor;
+
+
+void main ()
+{
+	outColor = pow ( texture ( linearSpaceSampler, v_uv ).rgb, vec3 ( inverseGamma ) );
+}

@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #ifndef GX_EQUIRECTANGULAR_TO_CUBE_MAP_MATERIAL
 #define GX_EQUIRECTANGULAR_TO_CUBE_MAP_MATERIAL
@@ -16,6 +16,9 @@ class GXEquirectangularToCubeMapMaterial : public GXMaterial
 		GXMat4			viewProjectionMatrices[ 6 ];
 		GLint			viewProjectionMatricesLocation;
 
+		GXFloat			gamma;
+		GLint			gammaLocation;
+
 	public:
 		GXEquirectangularToCubeMapMaterial ();
 		~GXEquirectangularToCubeMapMaterial () override;
@@ -24,6 +27,8 @@ class GXEquirectangularToCubeMapMaterial : public GXMaterial
 		GXVoid Unbind () override;
 
 		GXVoid SetEquirectangularTexture ( GXTexture2D &texture );
+		GXVoid EnableGammaCorrection ();
+		GXVoid DisableGammaCorrection ();
 };
 
 

@@ -258,7 +258,7 @@ GXVoid EMRenderer::StartLightPass ()
 GXVoid EMRenderer::StartHudColorPass ()
 {
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, omegaTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, yottaTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
@@ -459,6 +459,40 @@ GXVoid EMRenderer::ApplyMotionBlur ( GXFloat deltaTime )
 	motionBlurMaterial.Unbind ();
 }
 
+GXVoid EMRenderer::ApplyToneMapping ()
+{
+	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, yottaTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
+
+	static const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers ( 1, buffers );
+
+	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
+	glDepthMask ( GL_FALSE );
+	glStencilMask ( 0x00 );
+
+	glDisable ( GL_BLEND );
+	glDisable ( GL_DEPTH_TEST );
+	glDisable ( GL_CULL_FACE );
+
+	glViewport ( 0, 0, (GLsizei)yottaTexture.GetWidth (), (GLsizei)yottaTexture.GetHeight () );
+
+	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+	if ( status != GL_FRAMEBUFFER_COMPLETE )
+		GXLogW ( L"EMRenderer::ApplyToneMapping::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
+
+	toneMapperMaterial.Bind ( GXTransform::GetNullTransform () );
+	screenQuadMesh.Render ();
+	toneMapperMaterial.Unbind ();
+}
+
 GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 {
 	GXCamera* oldCamera = GXCamera::GetActiveCamera ();
@@ -481,7 +515,7 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 	GXRenderer& renderer = GXRenderer::GetInstance ();
 	glViewport ( 0, 0, renderer.GetWidth (), renderer.GetHeight () );
 
-	unlitMaterial.SetTexture ( omegaTexture );
+	unlitMaterial.SetTexture ( yottaTexture );
 	unlitMaterial.SetColor ( 255, 255, 255, 255 );
 	unlitMaterial.Bind ( screenQuadMesh );
 
@@ -535,8 +569,8 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 			texture = &ssaoOmegaTexture;
 		break;
 
-		case eEMRenderTarget::Combine:
-			texture = &omegaTexture;
+		default:
+			//NOTHING
 		break;
 	}
 
@@ -738,6 +772,8 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" ), gaussHorizontalBlurMateria
 
 	ssaoApplyMaterial.SetSSAOTexture ( ssaoOmegaTexture );
 	ssaoApplyMaterial.SetImageTexture ( omegaTexture );
+
+	toneMapperMaterial.SetLinearSpaceTexture ( omegaTexture );
 
 	SetObjectMask ( (GXUPointer)nullptr );
 

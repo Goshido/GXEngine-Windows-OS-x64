@@ -11,10 +11,10 @@
 
 EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
 {
-	diffuseTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/gui_folder_icon.png", GX_TRUE, GL_REPEAT );
-	normalTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE, GL_REPEAT );
-	emissionTexture = GXTexture2D::LoadTexture ( L"Textures/System/Default_Emission.tga", GX_FALSE, GL_REPEAT );
-	parameterTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Cook Torrance parameters.tga", GX_FALSE, GL_REPEAT );
+	diffuseTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/gui_folder_icon.png", GX_TRUE, GL_REPEAT, GX_FALSE );
+	normalTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE, GL_REPEAT, GX_FALSE );
+	emissionTexture = GXTexture2D::LoadTexture ( L"Textures/System/Default_Emission.tga", GX_FALSE, GL_REPEAT, GX_FALSE );
+	parameterTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Cook Torrance parameters.tga", GX_FALSE, GL_REPEAT, GX_FALSE );
 
 	EMRenderer& renderer = EMRenderer::GetInstance ();
 

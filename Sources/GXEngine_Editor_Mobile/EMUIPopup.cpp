@@ -71,7 +71,7 @@ EMUIPopupRenderer::EMUIPopupRenderer ( GXUIPopup* widget ):
 GXWidgetRenderer ( widget ), itemNames ( sizeof ( GXWChar* ) )
 {
 	font = GXFont::GetFont ( FONT, (GXUShort)( FONT_SIZE * gx_ui_Scale ) );
-	texture = GXTexture2D::LoadTexture ( DEFAULT_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE );
+	texture = GXTexture2D::LoadTexture ( DEFAULT_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 	surface = new GXHudSurface ( (GXShort)widget->GetItemWidth (), (GXUShort)widget->GetItemHeight () );
 }
 

@@ -170,7 +170,7 @@ GXUByte GXTextureCubeMap::GetLevelOfDetailNumber () const
 	return lods;
 }
 
-GXTextureCubeMap& GXCALL GXTextureCubeMap::LoadEquirectangularTexture ( const GXWChar* fileName, GXBool isGenerateMipmap )
+GXTextureCubeMap& GXCALL GXTextureCubeMap::LoadEquirectangularTexture ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection )
 {
 	for ( GXTextureCubeMapEntry* p = gx_TextureHead; p; p = p->next )
 	{
@@ -477,7 +477,7 @@ GXTextureCubeMap& GXCALL GXTextureCubeMap::LoadEquirectangularTexture ( const GX
 					internalFormat = GL_RGBA16F;
 					readPixelFormat = GL_RGBA;
 					readPixelType = GL_FLOAT;
-					packAlignment = 4;
+					packAlignment = 8;
 				break;
 
 				default:
@@ -506,7 +506,7 @@ GXTextureCubeMap& GXCALL GXTextureCubeMap::LoadEquirectangularTexture ( const GX
 	GXUByte* facePixels = (GXUByte*)malloc ( faceSize );
 
 	GLint cubeMapTextureObject = texture->GetTextureObject ();
-	ProjectFaces ( fbo, cubeMapTextureObject, equirectangularTexture );
+	ProjectFaces ( fbo, cubeMapTextureObject, equirectangularTexture, isApplyGammaCorrection );
 
 	GXOpenGLState state;
 	state.Save ();
@@ -846,7 +846,7 @@ GXVoid GXTextureCubeMap::operator = ( const GXTextureCubeMap &other )
 	memcpy ( this, &other, sizeof ( GXTextureCubeMap ) );
 }
 
-GXVoid GXCALL GXTextureCubeMap::ProjectFaces ( GLuint fbo, GLuint textureObject, GXTexture2D &equirectangularTexture )
+GXVoid GXCALL GXTextureCubeMap::ProjectFaces ( GLuint fbo, GLuint textureObject, GXTexture2D &equirectangularTexture, GXBool isApplyGammaCorrection )
 {
 	GXOpenGLState state;
 	state.Save ();
@@ -898,6 +898,12 @@ GXVoid GXCALL GXTextureCubeMap::ProjectFaces ( GLuint fbo, GLuint textureObject,
 
 	GXEquirectangularToCubeMapMaterial equirectangularToCubeMapMaterial;
 	equirectangularToCubeMapMaterial.SetEquirectangularTexture ( equirectangularTexture );
+
+	if ( isApplyGammaCorrection )
+		equirectangularToCubeMapMaterial.EnableGammaCorrection ();
+	else
+		equirectangularToCubeMapMaterial.DisableGammaCorrection ();
+
 	equirectangularToCubeMapMaterial.Bind ( GXTransform::GetNullTransform () );
 	unitCube.Render ();
 	equirectangularToCubeMapMaterial.Unbind ();

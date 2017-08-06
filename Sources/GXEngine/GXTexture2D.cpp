@@ -2,6 +2,8 @@
 
 #include <GXEngine/GXTexture2D.h>
 #include <GXEngine/GXSamplerUtils.h>
+#include <GXEngine/GXMeshGeometry.h>
+#include <GXEngine/GXTexture2DGammaCorrectorMaterial.h>
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXImageLoader.h>
@@ -166,7 +168,12 @@ GXUByte GXTexture2D::GetChannelNumber () const
 	return numChannels;
 }
 
-GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool isGenerateMipmap, GLint wrapMode )
+GXUByte GXTexture2D::GetLevelOfDetailNumber () const
+{
+	return lods;
+}
+
+GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool isGenerateMipmap, GLint wrapMode, GXBool isApplyGammaCorrection )
 {
 	for ( GXTexture2DEntry* p = gx_TextureHead; p; p = p->next )
 	{
@@ -200,6 +207,9 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 
 	GXUByte* data = nullptr;
 	GLuint internalFormat = INVALID_INTERNAL_FORMAT;
+	GLenum readPixelFormat = GL_INVALID_ENUM;
+	GLenum readPixelType = GL_INVALID_ENUM;
+	GLint packAlignment = 1;
 
 	if ( GXLoadFile ( cacheFileName, (GXVoid**)&data, size, GX_FALSE ) )
 	{
@@ -323,8 +333,10 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 	GXWChar* extension = nullptr;
 	GXGetFileExtension ( &extension, fileName );
 	GXBool success = GX_FALSE;
-	GXUPointer pixelSize = 0;
 	GXTexture2D* texture = nullptr;
+	GXUByte* pixels = nullptr;
+	GXUPointer pixelSize = 0;
+	GXWriteFileStream cacheFile ( cacheFileName );
 
 	if ( GXWcscmp ( extension, L"hdr" ) == 0 || GXWcscmp ( extension, L"HDR" ) == 0 )
 	{
@@ -337,18 +349,30 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 			{
 				case 1:
 					internalFormat = GL_R16F;
+					readPixelFormat = GL_RED;
+					readPixelType = GL_FLOAT;
+					packAlignment = 2;
 				break;
 
 				case 2:
 					internalFormat = GL_RG16F;
+					readPixelFormat = GL_RG;
+					readPixelType = GL_FLOAT;
+					packAlignment = 4;
 				break;
 
 				case 3:
 					internalFormat = GL_RGB16F;
+					readPixelFormat = GL_RGB;
+					readPixelType = GL_FLOAT;
+					packAlignment = 2;
 				break;
 
 				case 4:
 					internalFormat = GL_RGBA16F;
+					readPixelFormat = GL_RGBA;
+					readPixelType = GL_FLOAT;
+					packAlignment = 8;
 				break;
 
 				default:
@@ -361,17 +385,26 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 			cacheHeader.height = (GXUShort)height;
 			cacheHeader.pixelOffset = sizeof ( GXTexture2DCacheHeader );
 
-			GXWriteFileStream cacheFile ( cacheFileName );
+			pixelSize = width * height * cacheHeader.numChannels * sizeof ( GXFloat );
+
 			free ( cacheFileName );
 
 			cacheFile.Write ( &cacheHeader, sizeof ( GXTexture2DCacheHeader ) );
-			cacheFile.Write ( hdrPixels, width * height * cacheHeader.numChannels * sizeof ( GXFloat ) );
-			cacheFile.Close ();
 
 			texture = new GXTexture2D ( cacheHeader.width, cacheHeader.height, internalFormat, isGenerateMipmap, wrapMode );
 			texture->FillWholePixelData ( hdrPixels );
 
-			free ( hdrPixels );
+			if ( !isApplyGammaCorrection )
+			{
+				cacheFile.Write ( hdrPixels, pixelSize );
+				cacheFile.Close ();
+
+				free ( hdrPixels );
+			}
+			else
+			{
+				pixels = (GXUByte*)hdrPixels;
+			}
 		}
 	}
 	else
@@ -385,18 +418,30 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 			{
 				case 1:
 					internalFormat = GL_R8;
+					readPixelFormat = GL_RED;
+					readPixelType = GL_UNSIGNED_BYTE;
+					packAlignment = 1;
 				break;
 
 				case 2:
 					internalFormat = GL_RG8;
+					readPixelFormat = GL_RG;
+					readPixelType = GL_UNSIGNED_BYTE;
+					packAlignment = 2;
 				break;
 
 				case 3:
 					internalFormat = GL_RGB8;
+					readPixelFormat = GL_RGB;
+					readPixelType = GL_UNSIGNED_BYTE;
+					packAlignment = 1;
 				break;
 
 				case 4:
 					internalFormat = GL_RGBA8;
+					readPixelFormat = GL_RGBA;
+					readPixelType = GL_UNSIGNED_BYTE;
+					packAlignment = 4;
 				break;
 
 				default:
@@ -409,17 +454,26 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 			cacheHeader.height = (GXUShort)height;
 			cacheHeader.pixelOffset = sizeof ( GXTexture2DCacheHeader );
 
-			GXWriteFileStream cacheFile ( cacheFileName );
+			pixelSize = width * height * cacheHeader.numChannels * sizeof ( GXUByte );
+
 			free ( cacheFileName );
 
 			cacheFile.Write ( &cacheHeader, sizeof ( GXTexture2DCacheHeader ) );
-			cacheFile.Write ( ldrPixels, width * height * cacheHeader.numChannels * sizeof ( GXUByte ) );
-			cacheFile.Close ();
 
 			texture = new GXTexture2D ( cacheHeader.width, cacheHeader.height, internalFormat, isGenerateMipmap, wrapMode );
 			texture->FillWholePixelData ( ldrPixels );
 
-			free ( ldrPixels );
+			if ( !isApplyGammaCorrection )
+			{
+				cacheFile.Write ( ldrPixels, pixelSize );
+				cacheFile.Close ();
+
+				free ( ldrPixels );
+			}
+			else
+			{
+				pixels = ldrPixels;
+			}
 		}
 	}
 
@@ -432,6 +486,100 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 
 		GXTexture2D* texture = new GXTexture2D ();
 	}
+
+	if ( !isApplyGammaCorrection )
+	{
+		new GXTexture2DEntry ( *texture, fileName );
+		return *texture;
+	}
+
+	GXOpenGLState state;
+	state.Save ();
+
+	GXTexture2D gammaCorrectedTexture ( cacheHeader.width, cacheHeader.height, internalFormat, isGenerateMipmap, wrapMode );
+
+	GLuint fbo;
+	glGenFramebuffers ( 1, &fbo );
+	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, gammaCorrectedTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT7, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
+
+	switch ( gammaCorrectedTexture.GetChannelNumber () )
+	{
+		case 1:
+			glColorMask ( GL_TRUE, GL_FALSE, GL_FALSE, GL_FALSE );
+		break;
+
+		case 2:
+			glColorMask ( GL_TRUE, GL_TRUE, GL_FALSE, GL_FALSE );
+		break;
+
+		case 3:
+			glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
+		break;
+
+		case 4:
+			glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+		break;
+
+		default:
+			//NOTHING
+		break;
+	}
+
+	glDepthMask ( GL_FALSE );
+	glStencilMask ( 0x00 );
+
+	static const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers ( 1, buffers );
+
+	glDisable ( GL_BLEND );
+	glDisable ( GL_DEPTH_TEST );
+	glDisable ( GL_CULL_FACE );
+
+	glViewport ( 0, 0, (GLsizei)gammaCorrectedTexture.GetWidth (), (GLsizei)gammaCorrectedTexture.GetHeight () );
+
+	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+	if ( status != GL_FRAMEBUFFER_COMPLETE )
+		GXLogW ( L"GXTexture2D::LoadTexture::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
+
+	GXMeshGeometry screenQuad = GXMeshGeometry::LoadFromStm ( L"3D Models/System/ScreenQuad.stm" );
+	GXTexture2DGammaCorrectorMaterial gammaCorrectorMaterial;
+
+	gammaCorrectorMaterial.SetsRGBTexture ( *texture );
+	gammaCorrectorMaterial.Bind ( GXTransform::GetNullTransform () );
+	screenQuad.Render ();
+	gammaCorrectorMaterial.Unbind ();
+
+	GXMeshGeometry::RemoveMeshGeometry ( screenQuad );
+
+	glPixelStorei ( GL_PACK_ALIGNMENT, packAlignment );
+	glReadPixels ( 0, 0, (GLsizei)cacheHeader.width, (GLsizei)cacheHeader.height, readPixelFormat, readPixelType, pixels );
+
+	cacheFile.Write ( pixels, pixelSize );
+	cacheFile.Close ();
+
+	free ( pixels );
+
+	glDeleteTextures ( 1, &texture->textureObject );
+	texture->textureObject = gammaCorrectedTexture.textureObject;
+	
+	if ( isGenerateMipmap )
+		texture->UpdateMipmaps ();
+
+	gammaCorrectedTexture.textureObject = 0;
+	glDeleteSamplers ( 1, &gammaCorrectedTexture.sampler );
+	gammaCorrectedTexture.sampler = 0;
+
+	state.Restore ();
+	glDeleteFramebuffers ( 1, &fbo );
 
 	new GXTexture2DEntry ( *texture, fileName );
 	return *texture;

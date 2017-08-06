@@ -1,0 +1,19 @@
+#version 330 core
+
+
+#define COLOR_SLOT	0
+
+
+smooth in vec2 v_uv;
+
+uniform sampler2D sRGBSampler;
+uniform float gamma;
+
+layout ( location = COLOR_SLOT ) out vec4 outColor;
+
+
+void main ()
+{
+	vec4 sample = textureLod ( sRGBSampler, v_uv, 0.0 );
+	outColor = vec4 ( pow ( sample.rgb, vec3 ( gamma ) ), sample.a );
+}

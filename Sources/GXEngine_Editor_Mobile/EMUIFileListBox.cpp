@@ -89,9 +89,9 @@ GXWidgetRenderer ( widget )
 {
 	font = GXFont::GetFont ( FONT, (GXUShort)( FONT_SIZE * gx_ui_Scale ) );
 
-	rectangle = GXTexture2D::LoadTexture ( RECTANGLE, GX_FALSE, GL_CLAMP_TO_EDGE );
-	fileIcon = GXTexture2D::LoadTexture ( FILE_ICON, GX_FALSE, GL_CLAMP_TO_EDGE );
-	folderIcon = GXTexture2D::LoadTexture ( FOLDER_ICON, GX_FALSE, GL_CLAMP_TO_EDGE );
+	rectangle = GXTexture2D::LoadTexture ( RECTANGLE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
+	fileIcon = GXTexture2D::LoadTexture ( FILE_ICON, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
+	folderIcon = GXTexture2D::LoadTexture ( FOLDER_ICON, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
 	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
