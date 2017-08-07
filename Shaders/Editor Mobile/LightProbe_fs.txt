@@ -29,8 +29,8 @@ out layout ( location = COLOR_SLOT ) vec3 fragmentColor;
 
 vec3 GetFragmentNormalWorld ()
 {
-	vec3 normalView = texture ( normalSampler, v_uv ).xyz * 2.0 - 1.0;
-	return inverseViewMatrix * normalView;
+	vec3 normalView = textureLod ( normalSampler, v_uv, 0.0 ).xyz * 2.0 - 1.0;
+	return normalize ( inverseViewMatrix * normalView );
 }
 
 vec3 GetFragmentLocationWorld ( const in float depthSample )
@@ -57,8 +57,8 @@ float GetFresnel ( const in float ior, const in float fragmentToViewerDirectionD
 
 void main ()
 {
-	float depthSample = texture ( depthSampler, v_uv ).x;
-	vec3 emission = texture ( emissionSampler, v_uv ).rgb;
+	float depthSample = textureLod ( depthSampler, v_uv, 0.0 ).x;
+	vec3 emission = textureLod ( emissionSampler, v_uv, 0.0 ).rgb;
 
 	if ( depthSample == 1.0 )
 	{
@@ -66,8 +66,8 @@ void main ()
 		return;
 	}
 
-	vec4 parameters = texture ( parameterSampler, v_uv );
-	vec3 albedo = texture ( albedoSampler, v_uv ).rgb;
+	vec4 parameters = textureLod ( parameterSampler, v_uv, 0.0 );
+	vec3 albedo = textureLod ( albedoSampler, v_uv, 0.0 ).rgb;
 
 	vec3 normalWorld = GetFragmentNormalWorld ();
 	vec3 locationWorld = GetFragmentLocationWorld ( depthSample );
@@ -84,8 +84,7 @@ void main ()
 	vec2 brdfSample = texture ( brdfIntegrationMapSampler, brdfSampleCoord ).xy;
 
 	float fresnel = GetFresnel ( parameters.y * MAXIMUM_INDEX_OF_REFRACTION, fragmentToViewerDirectionDotNormalWorld );
-
-	vec3 diffuse = albedo.rgb * texture ( diffuseIrradianceSampler, normalWorld ).rgb;
+	vec3 diffuse = albedo.rgb * textureLod ( diffuseIrradianceSampler, normalWorld, 0.0 ).rgb;
 	vec3 specular = specularColor * reflectionSample * ( fresnel * brdfSample.x + brdfSample.y );
 
 	fragmentColor = emission + ( 1.0 - parameters.z ) * diffuse + parameters.z * specular;

@@ -4,6 +4,7 @@
 #define CYLINDER_FUNCTION_ALPHA_FACTOR		0.95
 #define CYLINDER_FUNCTION_BETTA_FACTOR		1.05
 #define NO_BLUR_THRESHOLD					0.5
+#define BIG_WEIGHT							777.777
 
 #define COLOR_SLOT							0
 
@@ -27,7 +28,7 @@ float GetDepthView ( const in vec2 uv )
 {
 	vec4 locationCVV;
 	locationCVV.xy = gl_FragCoord.xy * inverseScreenResolution * 2.0 - 1.0;
-	locationCVV.z = texture ( depthSampler, uv ).r * 2.0 - 1.0;
+	locationCVV.z = textureLod ( depthSampler, uv, 0.0 ).r * 2.0 - 1.0;
 	locationCVV.w = 1.0;
 
 	vec4 homogeneousLocationView = inverseProjectionMatrix * locationCVV;
@@ -54,19 +55,23 @@ float CylinderFunction ( const in vec2 a, const in vec2 b, const in vec2 c )
 
 void main ()
 {
-	vec2 neighborMaxScreen = maxBlurSamples * ( texture ( velocityNeighborMaxSampler, v_uv ).xy * 2.0 - 1.0 );
+	vec2 neighborMaxScreen = maxBlurSamples * ( textureLod ( velocityNeighborMaxSampler, v_uv, 0.0 ).xy * 2.0 - 1.0 );
 	float neigborMaxLengthScreen = length ( neighborMaxScreen );
 
 	if ( neigborMaxLengthScreen < NO_BLUR_THRESHOLD )
 	{
-		outColor = texture ( imageSampler, v_uv ).rgb;
+		outColor = textureLod ( imageSampler, v_uv, 0.0 ).rgb;
 		return;
 	}
 
-	vec2 velocitySampleScreen = maxBlurSamples * ( texture ( velocitySampler, v_uv ).xy * 2.0 - 1.0 );
-	float weight = 1.0 / length ( velocitySampleScreen );
-	vec3 sum = texture ( imageSampler, v_uv ).rgb * weight;
+	vec2 velocitySampleScreen = maxBlurSamples * textureLod ( velocitySampler, v_uv, 0.0 ).xy;
+	float velocitySampleScreenLength = length ( velocitySampleScreen );
+	float weight = BIG_WEIGHT;
 
+	if ( velocitySampleScreenLength != 0.0 )
+		weight = 1.0 / velocitySampleScreenLength;
+
+	vec3 sum = textureLod ( imageSampler, v_uv, 0.0 ).rgb * weight;
 	float noiseFactor = noise1 ( v_uv.x + v_uv.y ) * 0.5;
 	float neighborMaxSamplesScreen = trunc ( neigborMaxLengthScreen );
 	float excludeSample = trunc ( ( neighborMaxSamplesScreen - 1.0 ) * 0.5 );
@@ -80,7 +85,7 @@ void main ()
 		vec2 blurUV = v_uv + neigborMaxUV * t;
 
 		float depthBlurView = GetDepthView ( blurUV );
-		vec2 velocityBlurUV = maxBlurSamples * ( texture ( velocitySampler, blurUV ).xy * 2.0 - 1.0 ) * inverseScreenResolution;
+		vec2 velocityBlurUV = maxBlurSamples * ( textureLod ( velocitySampler, blurUV, 0.0 ).xy * 2.0 - 1.0 ) * inverseScreenResolution;
 
 		float foregroundFactor = GetDepthCompareFactor ( depthView, depthBlurView );
 		float backgroundFactor = GetDepthCompareFactor ( depthBlurView, depthView );
@@ -90,7 +95,7 @@ void main ()
 		weightFraction += CylinderFunction ( blurUV, v_uv, velocityBlurUV ) * CylinderFunction ( v_uv, blurUV, velocityUV ) * 2.0;
 
 		weight += weightFraction;
-		sum += weightFraction * texture ( imageSampler, blurUV ).rgb;
+		sum += weightFraction * textureLod ( imageSampler, blurUV, 0.0 ).rgb;
 	}
 
 	for ( float i = excludeSample + 1.0; i < neighborMaxSamplesScreen; i += 1.0 )
@@ -99,7 +104,7 @@ void main ()
 		vec2 blurUV = v_uv + neigborMaxUV * t;
 
 		float depthBlurView = GetDepthView ( blurUV );
-		vec2 velocityBlurUV = maxBlurSamples * ( texture ( velocitySampler, blurUV ).xy * 2.0 - 1.0 ) * inverseScreenResolution;
+		vec2 velocityBlurUV = maxBlurSamples * ( textureLod ( velocitySampler, blurUV, 0.0 ).xy * 2.0 - 1.0 ) * inverseScreenResolution;
 
 		float foregroundFactor = GetDepthCompareFactor ( depthView, depthBlurView );
 		float backgroundFactor = GetDepthCompareFactor ( depthBlurView, depthView );
@@ -109,7 +114,7 @@ void main ()
 		weightFraction += CylinderFunction ( blurUV, v_uv, velocityBlurUV ) * CylinderFunction ( v_uv, blurUV, velocityUV ) * 2.0;
 
 		weight += weightFraction;
-		sum += weightFraction * texture ( imageSampler, blurUV ).rgb;
+		sum += weightFraction * textureLod ( imageSampler, blurUV, 0.0 ).rgb;
 	}
 
 	outColor = sum / weight;

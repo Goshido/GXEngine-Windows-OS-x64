@@ -26,7 +26,7 @@ void main ()
 
 		for ( int j = 0; j < maxBlurSamples; j++ )
 		{
-			vec2 sample = texture ( velocityBlurSampler, uv ).xy * 2.0 - 1.0;
+			vec2 sample = texture ( velocityBlurSampler, uv ).xy;
 			float sampleLength = length ( sample );
 
 			if ( sampleLength > tileMaxLength )

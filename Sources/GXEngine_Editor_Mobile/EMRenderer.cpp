@@ -71,7 +71,7 @@
 #define CLEAR_OBJECT_1_B						0.0f
 #define CLEAR_OBJECT_1_A						0.0f
 
-#define OVERLAY_TRANSPARENCY					255
+#define OVERLAY_TRANSPARENCY					180
 
 
 EMRenderer* EMRenderer::instance = nullptr;
@@ -461,6 +461,22 @@ GXVoid EMRenderer::ApplyMotionBlur ( GXFloat deltaTime )
 
 GXVoid EMRenderer::ApplyToneMapping ()
 {
+	velocityBlurTexture.UpdateMipmaps ();
+
+	glPixelStorei ( GL_UNPACK_ALIGNMENT, 4 );
+	glBindFramebuffer ( GL_READ_FRAMEBUFFER, fbo );
+	glFramebufferTexture ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, velocityBlurTexture.GetTextureObject (), (GLint)( velocityBlurTexture.GetLevelOfDetailNumber () - 1 ) );
+	GXVec2 averageVelocity;
+	glReadPixels ( 0, 0, 1, 1, GL_RG, GL_FLOAT, averageVelocity.arr );
+	GXMulVec2Scalar ( averageVelocity, averageVelocity, 2.0f );
+	static const GXVec2 offset ( -1.0f, -1.0f );
+
+	GXSumVec2Vec2 ( averageVelocity, averageVelocity, offset );
+
+
+
+	glFramebufferTexture ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0 );
+
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, yottaTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
@@ -788,10 +804,10 @@ GXVoid EMRenderer::CreateFBO ()
 	GXUShort height = (GXUShort)renderer.GetHeight ();
 
 	albedoTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	normalTexture.InitResources ( width, height, GL_RGB16, GX_FALSE, GL_CLAMP_TO_EDGE );
-	emissionTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE, GL_CLAMP_TO_EDGE );
+	normalTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE, GL_CLAMP_TO_EDGE );
+	emissionTexture.InitResources ( width, height, GL_RGB16, GX_FALSE, GL_CLAMP_TO_EDGE );
 	parameterTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	velocityBlurTexture.InitResources ( width, height, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	velocityBlurTexture.InitResources ( width, height, GL_RG16F, GX_TRUE, GL_CLAMP_TO_EDGE );
 	ssaoOmegaTexture.InitResources ( width, height, GL_R8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	ssaoYottaTexture.InitResources ( width, height, GL_R8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	objectTextures[ 0 ].InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );

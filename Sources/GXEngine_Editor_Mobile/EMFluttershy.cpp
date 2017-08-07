@@ -3,7 +3,7 @@
 #include <GXEngine/GXRenderer.h>
 
 
-#define SOLVER_ID		0
+#define SOLVER_ID	0
 
 
 EMFluttershy::EMFluttershy () :
@@ -16,7 +16,6 @@ mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLV
 	animationSolverPlayer.EnableNormalization ();
 
 	albedoTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Fluttershy_Diffuse.tga", GX_TRUE, GL_REPEAT, GX_FALSE );
-	//normalTexture = GXTexture::LoadTexture ( L"Textures/Editor Mobile/Brick_Wall_Normals.tga", GX_TRUE, GL_REPEAT );
 	normalTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 	emissionTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 	parameterTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Cook Torrance parameters.tga", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
@@ -25,7 +24,6 @@ mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLV
 
 	material.SetAlbedoTexture ( albedoTexture );
 	material.SetNormalTexture ( normalTexture );
-	//material.SetNormalTextureScale ( 5.0f, 5.0f );
 	material.SetEmissionTexture ( emissionTexture );
 	material.SetParameterTexture ( parameterTexture );
 }

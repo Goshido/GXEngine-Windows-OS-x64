@@ -14,5 +14,5 @@ layout ( location = COLOR_SLOT ) out vec3 outColor;
 
 void main ()
 {
-	outColor = pow ( texture ( linearSpaceSampler, v_uv ).rgb, vec3 ( inverseGamma ) );
+	outColor = pow ( textureLod ( linearSpaceSampler, v_uv, 0.0 ).rgb, vec3 ( inverseGamma ) );
 }

@@ -15,8 +15,8 @@
 #define DEFAULT_DELTA_TIME					1.0f
 #define DEFAULT_ENVIRONMENT_QUASI_DISTANCE	77.7f
 
-#define ZERO_VELOCITY_BLUR_X				0.5f
-#define ZERO_VELOCITY_BLUR_Y				0.5f
+#define ZERO_VELOCITY_BLUR_X				0.0f
+#define ZERO_VELOCITY_BLUR_Y				0.0f
 
 
 EMEnvironmentMapMaterial::EMEnvironmentMapMaterial ()
@@ -114,9 +114,6 @@ GXVoid EMEnvironmentMapMaterial::Bind ( const GXTransform &transform )
 		velocityBlur = velocityImage;
 		GXNormalizeVec2 ( velocityBlur );
 		GXMulVec2Scalar ( velocityBlur, velocityBlur, halfSpreadVelocityMagnitudeImage / maximumMotionBlurSamples );
-
-		GXMulVec2Vec2 ( velocityBlur, velocityBlur, biasScale );
-		GXSumVec2Vec2 ( velocityBlur, velocityBlur, biasOffset );
 	}
 
 	glUniformMatrix4fv ( modelViewProjectionMatrixLocation, 1, GL_FALSE, modelViewProjectionMatrix.arr );

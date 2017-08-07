@@ -20,7 +20,7 @@ void main ()
 {
 	vec2 uv = gl_FragCoord.xy * inverseScreenResolution;
 
-	if ( texture ( depthSampler, uv).x != 1.0 ) discard;
+	if ( textureLod ( depthSampler, uv, 0.0 ).x != 1.0 ) discard;
 
 	outEmission = texture ( environmentSampler, v_locationWorld ).rgb;
 	outVelocityBlur = velocityBlur;
