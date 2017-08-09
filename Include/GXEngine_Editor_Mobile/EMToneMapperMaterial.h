@@ -15,6 +15,12 @@ class EMToneMapperMaterial : public GXMaterial
 		GXFloat				inverseGamma;
 		GLint				inverseGammaLocation;
 
+		GXFloat				inverseAverageLuminance;
+		GLint				inverseAverageLuminanceLocation;
+
+		GXFloat				inverseAbsoluteWhiteSquareIntensity;
+		GLint				inverseAbsoluteWhiteSquareIntensityLocation;
+
 	public:
 		EMToneMapperMaterial ();
 		~EMToneMapperMaterial () override;
@@ -25,6 +31,9 @@ class EMToneMapperMaterial : public GXMaterial
 		GXVoid SetLinearSpaceTexture ( GXTexture2D &texture );
 		GXVoid SetGamma ( GXFloat gamma );
 		GXFloat GetGamma () const;
+
+		GXVoid SetAverageColor ( const GXVec3 &averageColor );
+		GXVoid SetAbsoluteWhiteIntensity ( GXFloat intensity );
 };
 
 

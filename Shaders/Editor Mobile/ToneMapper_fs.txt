@@ -1,18 +1,31 @@
 #version 330 core
 
 
-#define COLOR_SLOT	0
+#define COLOR_SLOT				0
+#define EPSILON					1.0e-4
+
+
+const vec3 luminanceConverter = vec3 ( 0.27, 0.67, 0.06 );
 
 
 smooth in vec2 v_uv;
 
 uniform sampler2D linearSpaceSampler;
 uniform float inverseGamma;
+uniform float inverseAverageLuminance;
+uniform float inverseAbsoluteWhiteSquareIntensity;
 
 layout ( location = COLOR_SLOT ) out vec3 outColor;
 
 
 void main ()
 {
-	outColor = pow ( textureLod ( linearSpaceSampler, v_uv, 0.0 ).rgb, vec3 ( inverseGamma ) );
+	vec3 colorHDR = textureLod ( linearSpaceSampler, v_uv, 0.0 ).rgb;
+
+	float luminanceHDR = dot ( colorHDR, luminanceConverter );
+	float alpha = luminanceHDR * inverseAverageLuminance;
+	float luminanceLDR = ( alpha * ( 1.0 + alpha * inverseAbsoluteWhiteSquareIntensity ) ) / ( 1.0 + alpha );
+	float toneFactor = luminanceLDR / ( luminanceHDR + EPSILON );
+
+	outColor = pow ( colorHDR * toneFactor, vec3 ( inverseGamma ) );
 }

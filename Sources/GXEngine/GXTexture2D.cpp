@@ -743,6 +743,13 @@ GXVoid GXTexture2D::InitResources ( GXUShort width, GXUShort height, GLint inter
 			numChannels = 1;
 		break;
 
+		case GL_R32F:
+			unpackAlignment = 4;
+			format = GL_RED;
+			type = GL_FLOAT;
+			numChannels = 1;
+		break;
+
 		case GL_RG8:
 		case GL_RG8I:
 		case GL_RG8UI:

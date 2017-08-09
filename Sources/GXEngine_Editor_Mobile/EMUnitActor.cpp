@@ -31,7 +31,6 @@ mesh ( L"3D Models/System/Unit Sphere.obj" )
 	EMRenderer& renderer = EMRenderer::GetInstance ();
 
 	commonPassMaterial.SetAlbedoTexture ( diffuseTexture );
-	commonPassMaterial.SetAlbedoTextureScale ( 0.25f, 0.25f );
 	commonPassMaterial.SetNormalTexture ( normalTexture );
 	commonPassMaterial.SetEmissionTexture ( emissionTexture );
 	commonPassMaterial.SetParameterTexture ( parameterTexture );

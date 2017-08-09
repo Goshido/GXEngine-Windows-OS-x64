@@ -36,6 +36,9 @@
 #define DEFAULT_SSAO_NOISE_TEXTURE_RESOLUTION	9
 #define DEFAULT_SSAO_MAX_DISTANCE				1000.0f
 
+#define DEFAULT_EYE_ADAPTATION_SPEED			1.25f
+#define DEFAULT_ABSOLUTE_WHITE_INTENSITY		1.0e+5f
+
 #define CLEAR_DIFFUSE_R							0.0f
 #define CLEAR_DIFFUSE_G							0.0f
 #define CLEAR_DIFFUSE_B							0.0f
@@ -73,6 +76,9 @@
 
 #define OVERLAY_TRANSPARENCY					180
 
+#define INVALID_COLOR_COMPONENT					-1.0f
+#define DEFAULT_AVERAGE_COLOR_COMPONENT			0.0f
+
 
 EMRenderer* EMRenderer::instance = nullptr;
 
@@ -105,6 +111,7 @@ EMRenderer::~EMRenderer ()
 	ssaoYottaTexture.FreeResources ();
 	objectTextures[ 0 ].FreeResources ();
 	objectTextures[ 1 ].FreeResources ();
+	importantAreaTexture.FreeResources ();
 	depthStencilTexture.FreeResources ();
 	omegaTexture.FreeResources ();
 	yottaTexture.FreeResources ();
@@ -459,26 +466,10 @@ GXVoid EMRenderer::ApplyMotionBlur ( GXFloat deltaTime )
 	motionBlurMaterial.Unbind ();
 }
 
-GXVoid EMRenderer::ApplyToneMapping ()
+GXVoid EMRenderer::ApplyToneMapping ( GXFloat deltaTime )
 {
-	velocityBlurTexture.UpdateMipmaps ();
-
-	glPixelStorei ( GL_UNPACK_ALIGNMENT, 4 );
-	glBindFramebuffer ( GL_READ_FRAMEBUFFER, fbo );
-	glFramebufferTexture ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, velocityBlurTexture.GetTextureObject (), (GLint)( velocityBlurTexture.GetLevelOfDetailNumber () - 1 ) );
-	GXVec2 averageVelocity;
-	glReadPixels ( 0, 0, 1, 1, GL_RG, GL_FLOAT, averageVelocity.arr );
-	GXMulVec2Scalar ( averageVelocity, averageVelocity, 2.0f );
-	static const GXVec2 offset ( -1.0f, -1.0f );
-
-	GXSumVec2Vec2 ( averageVelocity, averageVelocity, offset );
-
-
-
-	glFramebufferTexture ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0 );
-
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, yottaTexture.GetTextureObject (), 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, importantAreaTexture.GetTextureObject (), 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
@@ -498,13 +489,67 @@ GXVoid EMRenderer::ApplyToneMapping ()
 	glDisable ( GL_DEPTH_TEST );
 	glDisable ( GL_CULL_FACE );
 
-	glViewport ( 0, 0, (GLsizei)yottaTexture.GetWidth (), (GLsizei)yottaTexture.GetHeight () );
+	glViewport ( 0, 0, (GLsizei)importantAreaTexture.GetWidth (), (GLsizei)importantAreaTexture.GetHeight () );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
-		GXLogW ( L"EMRenderer::ApplyToneMapping::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
+		GXLogW ( L"EMRenderer::ApplyToneMapping::Error - Что-то не так с FBO на проходе фильтрации важных областей (ошибка 0x%08x)\n", status );
 
-	toneMapperMaterial.Bind ( GXTransform::GetNullTransform () );
+	const GXTransform& nullTransform = GXTransform::GetNullTransform ();
+
+	importantAreaFilterMaterial.Bind ( nullTransform );
+	screenQuadMesh.Render ();
+	importantAreaFilterMaterial.Unbind ();
+
+	importantAreaTexture.UpdateMipmaps ();
+
+	glBindFramebuffer ( GL_READ_FRAMEBUFFER, fbo );
+	glPixelStorei ( GL_PACK_ALIGNMENT, 2 );
+	glFramebufferTexture ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, importantAreaTexture.GetTextureObject (), (GLint)( importantAreaTexture.GetLevelOfDetailNumber () - 1 ) );
+	glReadBuffer ( GL_COLOR_ATTACHMENT0 );
+
+	GXVec3 averageColor;
+	glReadPixels ( 0, 0, 1, 1, GL_RGB, GL_FLOAT, averageColor.arr );
+
+	glFramebufferTexture ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0 );
+	glReadBuffer ( GL_NONE );
+	glBindFramebuffer ( GL_READ_FRAMEBUFFER, 0 );
+
+	GXBool isBadValue = isnan ( averageColor.x + averageColor.y + averageColor.z );
+	if ( effectiveAverageColor.x == INVALID_COLOR_COMPONENT )
+	{
+		if ( isBadValue )
+		{
+			GXLogW ( L"EMRenderer::ApplyToneMapping::Error - Обнаружен неверный средний цвет (красный: %f, зелёный: %f, синий: %f) (Первая ветвь).\n", averageColor.r, averageColor.g, averageColor.b );
+			effectiveAverageColor = GXCreateVec3 ( DEFAULT_AVERAGE_COLOR_COMPONENT, DEFAULT_AVERAGE_COLOR_COMPONENT, DEFAULT_AVERAGE_COLOR_COMPONENT );
+		}
+		else
+		{
+			effectiveAverageColor = averageColor;
+		}
+	}
+	else if ( !isBadValue )
+	{
+		GXVec3 delta;
+		GXSubVec3Vec3 ( delta, averageColor, effectiveAverageColor );
+		GXMulVec3Scalar ( delta, delta, eyeAdaptationSpeed * deltaTime );
+		GXSumVec3Vec3 ( effectiveAverageColor, effectiveAverageColor, delta );
+	}
+	else
+	{
+		GXLogW ( L"EMRenderer::ApplyToneMapping::Error - Обнаружен неверный средний цвет (красный: %f, зелёный: %f, синий: %f) (Вторая ветвь)\n", averageColor.r, averageColor.g, averageColor.b );
+	}
+
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, yottaTexture.GetTextureObject (), 0 );
+
+	glViewport ( 0, 0, (GLsizei)yottaTexture.GetWidth (), (GLsizei)yottaTexture.GetHeight () );
+
+	status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+	if ( status != GL_FRAMEBUFFER_COMPLETE )
+		GXLogW ( L"EMRenderer::ApplyToneMapping::Error - Что-то не так с FBO на проходе тонирования (ошибка 0x%08x)\n", status );
+
+	toneMapperMaterial.SetAverageColor ( effectiveAverageColor );
+	toneMapperMaterial.Bind ( nullTransform );
 	screenQuadMesh.Render ();
 	toneMapperMaterial.Unbind ();
 }
@@ -719,6 +764,19 @@ GXTexture2D& EMRenderer::GetDepthTexture ()
 	return depthStencilTexture;
 }
 
+GXVoid EMRenderer::SetEyeAdaptationSpeed ( GXFloat speed )
+{
+	if ( speed < 0.0f )
+		speed = 0.0f;
+
+	eyeAdaptationSpeed = speed;
+}
+
+GXFloat EMRenderer::GetEyeAdaptationSpeed () const
+{
+	return eyeAdaptationSpeed;
+}
+
 EMRenderer::EMRenderer ():
 screenQuadMesh( L"3D Models/System/ScreenQuad.stm" ), gaussHorizontalBlurMaterial ( eEMGaussHorizontalBlurKernelType::ONE_CHANNEL_FIVE_PIXEL_KERNEL ), gaussVerticalBlurMaterial ( eEMGaussVerticalBlurKernelType::ONE_CHANNEL_FIVE_PIXEL_KERNEL )
 {
@@ -789,7 +847,13 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" ), gaussHorizontalBlurMateria
 	ssaoApplyMaterial.SetSSAOTexture ( ssaoOmegaTexture );
 	ssaoApplyMaterial.SetImageTexture ( omegaTexture );
 
+	SetEyeAdaptationSpeed ( DEFAULT_EYE_ADAPTATION_SPEED );
+	toneMapperMaterial.SetAbsoluteWhiteIntensity ( DEFAULT_ABSOLUTE_WHITE_INTENSITY );
 	toneMapperMaterial.SetLinearSpaceTexture ( omegaTexture );
+
+	effectiveAverageColor = GXCreateVec3 ( INVALID_COLOR_COMPONENT, INVALID_COLOR_COMPONENT, INVALID_COLOR_COMPONENT );
+
+	importantAreaFilterMaterial.SetImageTexture ( omegaTexture );
 
 	SetObjectMask ( (GXUPointer)nullptr );
 
@@ -803,15 +867,18 @@ GXVoid EMRenderer::CreateFBO ()
 	GXUShort width = (GXUShort)renderer.GetWidth ();
 	GXUShort height = (GXUShort)renderer.GetHeight ();
 
+	GXUShort importantAreaSide = height < width ? height : width;
+
 	albedoTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	normalTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE, GL_CLAMP_TO_EDGE );
-	emissionTexture.InitResources ( width, height, GL_RGB16, GX_FALSE, GL_CLAMP_TO_EDGE );
+	emissionTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE, GL_CLAMP_TO_EDGE );
 	parameterTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	velocityBlurTexture.InitResources ( width, height, GL_RG16F, GX_TRUE, GL_CLAMP_TO_EDGE );
+	velocityBlurTexture.InitResources ( width, height, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	ssaoOmegaTexture.InitResources ( width, height, GL_R8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	ssaoYottaTexture.InitResources ( width, height, GL_R8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	objectTextures[ 0 ].InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	objectTextures[ 1 ].InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	importantAreaTexture.InitResources ( importantAreaSide, importantAreaSide, GL_RGB16F, GX_TRUE, GL_CLAMP_TO_EDGE );
 	depthStencilTexture.InitResources ( width, height, GL_DEPTH24_STENCIL8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	omegaTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE, GL_CLAMP_TO_EDGE );
 	yottaTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE, GL_CLAMP_TO_EDGE );

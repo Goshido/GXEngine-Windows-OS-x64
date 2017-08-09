@@ -1,0 +1,21 @@
+#version 330 core
+
+
+#define COLOR_SLOT			0
+
+
+in vec2 v_uv;
+
+uniform sampler2D imageSampler;
+uniform sampler2D retinaFilterSampler;
+
+layout ( location = COLOR_SLOT ) out vec3 colorSlot;
+
+
+void main ()
+{
+	vec3 imageSample = textureLod ( imageSampler, v_uv, 0.0 ).rgb;
+	float retinaFactor = textureLod ( retinaFilterSampler, v_uv, 0.0 ).x;
+
+	colorSlot = imageSample * retinaFactor;
+}

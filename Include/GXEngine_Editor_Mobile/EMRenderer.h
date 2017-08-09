@@ -14,6 +14,7 @@
 #include "EMSSAOSharpMaterial.h"
 #include "EMSSAOApplyMaterial.h"
 #include "EMToneMapperMaterial.h"
+#include "EMImportantAreaFilterMaterial.h"
 #include <GXEngine/GXUnlitTexture2DMaterial.h>
 #include <GXEngine/GXCameraOrthographic.h>
 
@@ -47,6 +48,7 @@ class EMRenderer
 		GXTexture2D							ssaoOmegaTexture;
 		GXTexture2D							ssaoYottaTexture;
 		GXTexture2D							objectTextures[ 2 ];
+		GXTexture2D							importantAreaTexture;
 		GXTexture2D							depthStencilTexture;
 		GXTexture2D							omegaTexture;
 		GXTexture2D							yottaTexture;
@@ -67,6 +69,7 @@ class EMRenderer
 		EMSSAOSharpMaterial					ssaoSharpMaterial;
 		EMSSAOApplyMaterial					ssaoApplyMaterial;
 		EMToneMapperMaterial				toneMapperMaterial;
+		EMImportantAreaFilterMaterial		importantAreaFilterMaterial;
 		GXUnlitTexture2DMaterial			unlitMaterial;
 
 		GXCameraOrthographic				outCamera;
@@ -87,6 +90,10 @@ class EMRenderer
 		GXUShort							newSSAONoiseTextureResolution;
 		GXFloat								newSSAOMaxDistance;
 
+		GXFloat								eyeAdaptationSpeed;
+		GXVec3								effectiveAverageColor;
+
+	private:
 		static EMRenderer*					instance;
 
 	public:
@@ -102,7 +109,7 @@ class EMRenderer
 
 		GXVoid ApplySSAO ();
 		GXVoid ApplyMotionBlur ( GXFloat deltaTime );
-		GXVoid ApplyToneMapping ();
+		GXVoid ApplyToneMapping ( GXFloat deltaTime );
 
 		GXVoid PresentFrame ( eEMRenderTarget target );
 
@@ -129,6 +136,10 @@ class EMRenderer
 
 		GXVoid SetSSAOMaximumDistance ( GXFloat meters );
 		GXFloat GetSSAOMaximumDistance () const;
+
+		// Clamped to [ 0.0f, +infinite )
+		GXVoid SetEyeAdaptationSpeed ( GXFloat speed );
+		GXFloat GetEyeAdaptationSpeed () const;
 
 		GXTexture2D& GetDepthTexture ();
 

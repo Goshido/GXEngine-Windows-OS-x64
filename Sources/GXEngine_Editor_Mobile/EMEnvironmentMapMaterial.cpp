@@ -105,7 +105,9 @@ GXVoid EMEnvironmentMapMaterial::Bind ( const GXTransform &transform )
 	GXVec2 velocityBlur;
 
 	if ( halfSpreadVelocityImage.x == 0.0f && halfSpreadVelocityImage.y == 0.0f )
+	{
 		velocityBlur = GXCreateVec2 ( ZERO_VELOCITY_BLUR_X, ZERO_VELOCITY_BLUR_Y );
+	}
 	else
 	{
 		GXFloat maximumMotionBlurSamples = (GXFloat)renderer.GetMaximumMotionBlurSamples ();

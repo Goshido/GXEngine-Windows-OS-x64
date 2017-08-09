@@ -465,6 +465,9 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXTexture2DGammaCorrectorMaterial.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMImportantAreaFilterMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -974,6 +977,9 @@
     <ClInclude Include="..\..\Include\GXEngine\GXTexture2DGammaCorrectorMaterial.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMImportantAreaFilterMaterial.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="..\..\Sources\GXEngine\GXRecource.res">
@@ -1178,6 +1184,9 @@
     </Text>
     <Text Include="..\..\Shaders\System\Texture2DGammaCorrector_fs.txt">
       <Filter>Shaders\System</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\Editor Mobile\ImportantAreaFilter_fs.txt">
+      <Filter>Shaders\GXEngine Editor Mobile</Filter>
     </Text>
   </ItemGroup>
 </Project>

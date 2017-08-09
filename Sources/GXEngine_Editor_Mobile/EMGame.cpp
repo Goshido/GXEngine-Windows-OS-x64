@@ -148,6 +148,7 @@ GXVoid EMGame::OnInit ()
 
 	environmentMap = new GXTextureCubeMap ();
 	*environmentMap = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default LDR environment map.jpg", GX_FALSE, GX_TRUE );
+	//*environmentMap = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default HDR environment map.hdr", GX_TRUE, GX_FALSE );
 
 	lightProbeSourceTexture = new GXTextureCubeMap ();
 	*lightProbeSourceTexture = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default HDR environment map.hdr", GX_TRUE, GX_FALSE );
@@ -160,10 +161,11 @@ GXVoid EMGame::OnInit ()
 	environment.SetEnvironmentQuasiDistance ( ENVIRONMENT_QUASI_DISTANCE );
 
 	EMCookTorranceCommonPassMaterial& m = unitActor->GetMaterial ();
-	m.SetAlbedoColor ( 253, 175, 0, 255 );
-	m.SetRoughnessScale ( 0.3f );
+	m.SetAlbedoColor ( 253, 180, 17, 255 );
+	//m.SetAlbedoTextureScale ( 0.25f, 0.25f );
+	m.SetRoughnessScale ( 0.25f );
 	m.SetIndexOfRefractionScale ( 0.094f );
-	m.SetSpecularIntencityScale ( 0.95f );
+	m.SetSpecularIntencityScale ( 0.998f );
 	m.SetMetallicScale ( 1.0f );
 
 	EMUIFPSCounter::GetInstance ();
@@ -205,7 +207,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	renderer.ApplySSAO ();
 	renderer.ApplyMotionBlur ( deltaTime );
-	renderer.ApplyToneMapping ();
+	renderer.ApplyToneMapping ( deltaTime );
 
 	renderer.StartHudColorPass ();
 
@@ -226,6 +228,24 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	renderer.PresentFrame ( eEMRenderTarget::Combine );
 
 	viewerCamera.UpdateLastFrameMatrices ();
+
+	/*GXFloat max = renderer.averageColor.r > renderer.averageColor.g ? renderer.averageColor.r : renderer.averageColor.g;
+	if ( max < renderer.averageColor.b )
+		max = renderer.averageColor.b;
+
+	GXUByte red = (GXUByte)( ( 255.0f * renderer.averageColor.r ) / max );
+	GXUByte green = (GXUByte)( ( 255.0f * renderer.averageColor.g ) / max );
+	GXUByte blue = (GXUByte)( ( 255.0f * renderer.averageColor.b ) / max );*/
+	/*
+	GXUByte red = 255;
+	GXUByte green = 255;
+	GXUByte blue = 255;
+	GXFloat max = 0.0f;
+	*/
+	/*
+	unitActor->GetMaterial ().SetEmissionColor ( red, green, blue );
+	unitActor->GetMaterial ().SetEmissionColorScale ( max );
+	*/
 
 	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
 
