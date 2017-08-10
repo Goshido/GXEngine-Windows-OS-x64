@@ -12,7 +12,7 @@ smooth in vec2 v_uv;
 
 uniform sampler2D linearSpaceSampler;
 uniform float inverseGamma;
-uniform float inverseAverageLuminance;
+uniform float prescaleFactor;
 uniform float inverseAbsoluteWhiteSquareIntensity;
 
 layout ( location = COLOR_SLOT ) out vec3 outColor;
@@ -22,10 +22,9 @@ void main ()
 {
 	vec3 colorHDR = textureLod ( linearSpaceSampler, v_uv, 0.0 ).rgb;
 
-	float luminanceHDR = dot ( colorHDR, luminanceConverter );
-	float alpha = luminanceHDR * inverseAverageLuminance;
-	float luminanceLDR = ( alpha * ( 1.0 + alpha * inverseAbsoluteWhiteSquareIntensity ) ) / ( 1.0 + alpha );
-	float toneFactor = luminanceLDR / ( luminanceHDR + EPSILON );
+	float luminanceHDR = prescaleFactor * dot ( colorHDR, luminanceConverter );
+	float luminanceLDR = ( luminanceHDR * ( 1.0 + luminanceHDR * inverseAbsoluteWhiteSquareIntensity ) ) / ( 1.0 + luminanceHDR );
+	float toneFactor = luminanceHDR / ( luminanceLDR + EPSILON );
 
 	outColor = pow ( colorHDR * toneFactor, vec3 ( inverseGamma ) );
 }

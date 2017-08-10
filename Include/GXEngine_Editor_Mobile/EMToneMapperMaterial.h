@@ -15,11 +15,14 @@ class EMToneMapperMaterial : public GXMaterial
 		GXFloat				inverseGamma;
 		GLint				inverseGammaLocation;
 
-		GXFloat				inverseAverageLuminance;
-		GLint				inverseAverageLuminanceLocation;
+		GXFloat				prescaleFactor;
+		GLint				prescaleFactorLocation;
 
+		GXFloat				absoluteWhiteIntensity;
 		GXFloat				inverseAbsoluteWhiteSquareIntensity;
 		GLint				inverseAbsoluteWhiteSquareIntensityLocation;
+
+		GXFloat				eyeSensitivity;
 
 	public:
 		EMToneMapperMaterial ();
@@ -29,11 +32,17 @@ class EMToneMapperMaterial : public GXMaterial
 		GXVoid Unbind () override;
 
 		GXVoid SetLinearSpaceTexture ( GXTexture2D &texture );
+		GXVoid SetLuminanceTriplet ( GXFloat averageLuminance, GXFloat minimumLuminance, GXFloat maximumLuminance );
+
 		GXVoid SetGamma ( GXFloat gamma );
 		GXFloat GetGamma () const;
 
-		GXVoid SetAverageColor ( const GXVec3 &averageColor );
+		// Artistic purpose parameter. There is no physical explanation.
+		GXVoid SetEyeSensitivity ( GXFloat sensitivity );
+		GXFloat GetEyeSensitivity () const;
+
 		GXVoid SetAbsoluteWhiteIntensity ( GXFloat intensity );
+		GXFloat GetAbsoluteWhiteIntensity () const;
 };
 
 

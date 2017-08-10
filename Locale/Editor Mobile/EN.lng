@@ -79,6 +79,8 @@ Main menu->Effects->Motion blur~Motion blur~
 
 Main menu->Effects->SSAO~SSAO~
 
+Main menu->Effects->HDR tone mapper~HDR tone mapper~
+
 OpenFile->OK~OK~
 
 OpenFile->Cancel~Cancel~
@@ -128,3 +130,17 @@ Color picker->Transparency~Transparency~
 Color picker->Cancel~Cancel~
 
 Color picker->Pick~Pick~
+
+Tone mapper settings->HDR tone mapper settings~HDR tone mapper settings~
+
+Tone mapper settings->Gamma~Gamma~
+
+Tone mapper settings->Sensitivity~Sensitivity~
+
+Tone mapper settings->Adoptation speed~Adoptation speed~
+
+Tone mapper settings->White intensity~White intensity~
+
+Tone mapper settings->Cancel~Cancel~
+
+Tone mapper settings->Apply~Apply~

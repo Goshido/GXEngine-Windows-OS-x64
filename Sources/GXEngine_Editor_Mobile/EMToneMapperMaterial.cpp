@@ -17,9 +17,11 @@
 
 #define DEFAULT_ABSOLUTE_WHITE_INTENSITY	1.0e+5f
 
-#define DEFAULT_AVERAGE_COLOR_RED			0.5f
-#define DEFAULT_AVERAGE_COLOR_GREEN			0.5f
-#define DEFAULT_AVERAGE_COLOR_BLUE			0.5f
+#define DEFAULT_AVERAGE_LUMINANCE			0.5f
+#define DEFAULT_MINIMUM_LUMINANCE			0.5f
+#define DEFAULT_MAXIMUM_LUMINANCE			0.5f
+
+#define DEFAULT_EYE_SENSETIVITY				0.0072f
 
 
 EMToneMapperMaterial::EMToneMapperMaterial ()
@@ -40,15 +42,13 @@ EMToneMapperMaterial::EMToneMapperMaterial ()
 	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
 
 	inverseGammaLocation = shaderProgram.GetUniform ( "inverseGamma" );
-	inverseAverageLuminanceLocation = shaderProgram.GetUniform ( "inverseAverageLuminance" );
+	prescaleFactorLocation = shaderProgram.GetUniform ( "prescaleFactor" );
 	inverseAbsoluteWhiteSquareIntensityLocation = shaderProgram.GetUniform ( "inverseAbsoluteWhiteSquareIntensity" );
 
 	linearSpaceTexture = nullptr;
 	SetGamma ( DEFAULT_GAMMA );
-
-	GXVec3 defaultAverageColor ( DEFAULT_AVERAGE_COLOR_RED, DEFAULT_AVERAGE_COLOR_GREEN, DEFAULT_AVERAGE_COLOR_BLUE );
-	SetAverageColor ( defaultAverageColor );
-
+	SetEyeSensitivity ( DEFAULT_EYE_SENSETIVITY );
+	SetLuminanceTriplet ( DEFAULT_AVERAGE_LUMINANCE, DEFAULT_MINIMUM_LUMINANCE, DEFAULT_MAXIMUM_LUMINANCE );
 	SetAbsoluteWhiteIntensity ( DEFAULT_ABSOLUTE_WHITE_INTENSITY );
 }
 
@@ -64,7 +64,7 @@ GXVoid EMToneMapperMaterial::Bind ( const GXTransform& /*transform*/ )
 	glUseProgram ( shaderProgram.GetProgram () );
 
 	glUniform1f ( inverseGammaLocation, inverseGamma );
-	glUniform1f ( inverseAverageLuminanceLocation, inverseAverageLuminance );
+	glUniform1f ( prescaleFactorLocation, prescaleFactor );
 	glUniform1f ( inverseAbsoluteWhiteSquareIntensityLocation, inverseAbsoluteWhiteSquareIntensity );
 	linearSpaceTexture->Bind ( TEXTURE_SLOT );
 }
@@ -82,6 +82,15 @@ GXVoid EMToneMapperMaterial::SetLinearSpaceTexture ( GXTexture2D &texture )
 	linearSpaceTexture = &texture;
 }
 
+GXVoid EMToneMapperMaterial::SetLuminanceTriplet ( GXFloat averageLuminance, GXFloat minimumLuminance, GXFloat maximumLuminance )
+{
+	GXFloat alpha = ( maximumLuminance - averageLuminance );
+	GXFloat betta = ( averageLuminance - minimumLuminance );
+	GXFloat yotta = eyeSensitivity * powf ( 2.0f, 2.0f * ( betta - alpha ) / ( alpha + betta ) );
+
+	prescaleFactor = yotta / ( averageLuminance + EPSILON );
+}
+
 GXVoid EMToneMapperMaterial::SetGamma ( GXFloat gamma )
 {
 	this->gamma = gamma;
@@ -93,13 +102,23 @@ GXFloat EMToneMapperMaterial::GetGamma () const
 	return gamma;
 }
 
-GXVoid EMToneMapperMaterial::SetAverageColor ( const GXVec3 &averageColor )
+GXVoid EMToneMapperMaterial::SetEyeSensitivity ( GXFloat sensitivity )
 {
-	GXFloat luminance = LIMINANCE_RED_FACTOR * averageColor.r + LIMINANCE_GREEN_FACTOR* averageColor.g + LIMINANCE_BLUE_FACTOR * averageColor.b;
-	inverseAverageLuminance = 1.0f / ( luminance + EPSILON );
+	eyeSensitivity = sensitivity;
+}
+
+GXFloat EMToneMapperMaterial::GetEyeSensitivity () const
+{
+	return eyeSensitivity;
 }
 
 GXVoid EMToneMapperMaterial::SetAbsoluteWhiteIntensity ( GXFloat intensity )
 {
+	absoluteWhiteIntensity = intensity;
 	inverseAbsoluteWhiteSquareIntensity = 1.0f / ( intensity * intensity + EPSILON );
+}
+
+GXFloat EMToneMapperMaterial::GetAbsoluteWhiteIntensity () const
+{
+	return absoluteWhiteIntensity;
 }

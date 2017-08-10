@@ -12,7 +12,8 @@
 //#define DIFFUSE_TEXTURE		L"Textures/System/Checker.tga"
 #define DIFFUSE_TEXTURE		L"Textures/System/Default_Diffuse.tga"
 #define NORMAL_TEXTURE		L"Textures/Editor Mobile/Default Normals.tex"
-#define EMISSION_TEXTURE	L"Textures/Editor Mobile/Default Emission.tex"
+//#define EMISSION_TEXTURE	L"Textures/Editor Mobile/Default Emission.tex"
+#define EMISSION_TEXTURE	L"Textures/System/Default_Diffuse.tga"
 #define PARAMETER_TEXTURE	L"Textures/Editor Mobile/Default Diffuse.tex"
 
 

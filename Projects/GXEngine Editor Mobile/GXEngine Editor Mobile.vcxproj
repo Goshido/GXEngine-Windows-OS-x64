@@ -264,6 +264,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMScaleGismo.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMSSAOApplyMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMSSAOSharpMaterial.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMToneMapperLuminanceTripletReducerMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMToneMapperMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMTool.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUI.cpp" />
@@ -280,6 +281,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUISeparator.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUISSAOSettings.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUIStaticText.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUIToneMapperSettings.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUnitActor.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMVelocityNeighborMaxMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMVelocityTileMaxMaterial.cpp" />
@@ -424,6 +426,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMPrefilteredEnvironmentMapGeneratorMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMSSAOApplyMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMSSAOSharpMaterial.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMToneMapperLuminanceTripletReducerMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMToneMapperMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIColorPicker.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIFPSCounter.h" />
@@ -450,6 +453,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUISeparator.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUISSAOSettings.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIStaticText.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIToneMapperSettings.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUnitActor.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMVelocityNeighborMaxMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMVelocityTileMaxMaterial.h" />
@@ -491,6 +495,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Text Include="..\..\Shaders\Editor Mobile\HueCircle_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\ImportantAreaFilter_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\LightProbe_fs.txt" />
+    <Text Include="..\..\Shaders\Editor Mobile\LuminanceTripletReducer_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\MaskAlphaTest_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\MaskVertexAndUV_vs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\MaskVertexOnly_vs.txt" />

@@ -4,6 +4,10 @@
 #define COLOR_SLOT			0
 
 
+//const vec3 luminanceConverter = vec3 ( 0.27, 0.67, 0.06 );
+const vec3 luminanceConverter = vec3 ( 0.33333, 0.33333, 0.33333 );
+
+
 in vec2 v_uv;
 
 uniform sampler2D imageSampler;
@@ -14,8 +18,10 @@ layout ( location = COLOR_SLOT ) out vec3 colorSlot;
 
 void main ()
 {
-	vec3 imageSample = textureLod ( imageSampler, v_uv, 0.0 ).rgb;
-	float retinaFactor = textureLod ( retinaFilterSampler, v_uv, 0.0 ).x;
+	float luminance = dot ( textureLod ( imageSampler, v_uv, 0.0 ).rgb, luminanceConverter );
 
-	colorSlot = imageSample * retinaFactor;
+	if ( isnan ( luminance ) )
+		luminance = 0.0;
+
+	colorSlot = vec3 ( luminance * textureLod ( retinaFilterSampler, v_uv, 0.0 ).x );
 }

@@ -14,6 +14,7 @@
 #include "EMSSAOSharpMaterial.h"
 #include "EMSSAOApplyMaterial.h"
 #include "EMToneMapperMaterial.h"
+#include "EMToneMapperLuminanceTripletReducerMaterial.h"
 #include "EMImportantAreaFilterMaterial.h"
 #include <GXEngine/GXUnlitTexture2DMaterial.h>
 #include <GXEngine/GXCameraOrthographic.h>
@@ -38,63 +39,69 @@ enum class eEMRenderTarget
 class EMRenderer
 {
 	private:
-		GXTexture2D							albedoTexture;
-		GXTexture2D							normalTexture;
-		GXTexture2D							emissionTexture;
-		GXTexture2D							parameterTexture;
-		GXTexture2D							velocityBlurTexture;
-		GXTexture2D							velocityTileMaxTexture;
-		GXTexture2D							velocityNeighborMaxTexture;
-		GXTexture2D							ssaoOmegaTexture;
-		GXTexture2D							ssaoYottaTexture;
-		GXTexture2D							objectTextures[ 2 ];
-		GXTexture2D							importantAreaTexture;
-		GXTexture2D							depthStencilTexture;
-		GXTexture2D							omegaTexture;
-		GXTexture2D							yottaTexture;
+		GXTexture2D										albedoTexture;
+		GXTexture2D										normalTexture;
+		GXTexture2D										emissionTexture;
+		GXTexture2D										parameterTexture;
+		GXTexture2D										velocityBlurTexture;
+		GXTexture2D										velocityTileMaxTexture;
+		GXTexture2D										velocityNeighborMaxTexture;
+		GXTexture2D										ssaoOmegaTexture;
+		GXTexture2D										ssaoYottaTexture;
+		GXTexture2D										objectTextures[ 2 ];
+		GXTexture2D										importantAreaTexture;
+		GXTexture2D										depthStencilTexture;
+		GXTexture2D										omegaTexture;
+		GXTexture2D										yottaTexture;
 
-		GLuint								fbo;
+		GLuint											fbo;
 
-		GXUByte								objectMask[ 8 ];
+		GXUByte											objectMask[ 8 ];
 
-		EMMesh								screenQuadMesh;
+		EMMesh											screenQuadMesh;
 
-		EMCookTorranceDirectedLightMaterial	directedLightMaterial;
-		EMLightProbeMaterial				lightProbeMaterial;
-		EMVelocityTileMaxMaterial			velocityTileMaxMaterial;
-		EMVelocityNeighborMaxMaterial		velocityNeighborMaxMaterial;
-		EMMotionBlurMaterial				motionBlurMaterial;
-		EMGaussHorizontalBlurMaterial		gaussHorizontalBlurMaterial;
-		EMGaussVerticalBlurMaterial			gaussVerticalBlurMaterial;
-		EMSSAOSharpMaterial					ssaoSharpMaterial;
-		EMSSAOApplyMaterial					ssaoApplyMaterial;
-		EMToneMapperMaterial				toneMapperMaterial;
-		EMImportantAreaFilterMaterial		importantAreaFilterMaterial;
-		GXUnlitTexture2DMaterial			unlitMaterial;
+		EMCookTorranceDirectedLightMaterial				directedLightMaterial;
+		EMLightProbeMaterial							lightProbeMaterial;
+		EMVelocityTileMaxMaterial						velocityTileMaxMaterial;
+		EMVelocityNeighborMaxMaterial					velocityNeighborMaxMaterial;
+		EMMotionBlurMaterial							motionBlurMaterial;
+		EMGaussHorizontalBlurMaterial					gaussHorizontalBlurMaterial;
+		EMGaussVerticalBlurMaterial						gaussVerticalBlurMaterial;
+		EMSSAOSharpMaterial								ssaoSharpMaterial;
+		EMSSAOApplyMaterial								ssaoApplyMaterial;
+		EMToneMapperMaterial							toneMapperMaterial;
+		EMToneMapperLuminanceTripletReducerMaterial		toneMapperLuminanceTripletReducerMaterial;
+		EMImportantAreaFilterMaterial					importantAreaFilterMaterial;
+		GXUnlitTexture2DMaterial						unlitMaterial;
 
-		GXCameraOrthographic				outCamera;
+		GXCameraOrthographic							outCamera;
 
-		GXInt								mouseX;
-		GXInt								mouseY;
-		PFNEMRENDERERONOBJECTPROC			OnObject;
+		GXInt											mouseX;
+		GXInt											mouseY;
+		PFNEMRENDERERONOBJECTPROC						OnObject;
 
-		GXBool								isMotionBlurSettingsChanged;
-		GXUByte								newMaxMotionBlurSamples;
-		GXFloat								newMotionBlurDepthLimit;
-		GXFloat								motionBlurExposure;
-		GXFloat								newMotionBlurExposure;
+		GXBool											isMotionBlurSettingsChanged;
+		GXUByte											newMaxMotionBlurSamples;
+		GXFloat											newMotionBlurDepthLimit;
+		GXFloat											motionBlurExposure;
+		GXFloat											newMotionBlurExposure;
 
-		GXBool								isSSAOSettingsChanged;
-		GXFloat								newSSAOCheckRadius;
-		GXUByte								newSSAOSamples;
-		GXUShort							newSSAONoiseTextureResolution;
-		GXFloat								newSSAOMaxDistance;
+		GXBool											isSSAOSettingsChanged;
+		GXFloat											newSSAOCheckRadius;
+		GXUByte											newSSAOSamples;
+		GXUShort										newSSAONoiseTextureResolution;
+		GXFloat											newSSAOMaxDistance;
 
-		GXFloat								eyeAdaptationSpeed;
-		GXVec3								effectiveAverageColor;
+		GXBool											isToneMapperSettingsChanged;
+		GXFloat											newToneMapperGamma;
+		GXFloat											newToneMapperEyeSensitivity;
+		GXFloat											newToneMapperAbsoluteWhiteIntensity;
+
+		GXFloat											toneMapperEyeAdoptationSpeed;
+		GXVec3											toneMapperEffectiveLuminanceTriplet;
 
 	private:
-		static EMRenderer*					instance;
+		static EMRenderer*								instance;
 
 	public:
 		~EMRenderer ();
@@ -137,9 +144,19 @@ class EMRenderer
 		GXVoid SetSSAOMaximumDistance ( GXFloat meters );
 		GXFloat GetSSAOMaximumDistance () const;
 
+		GXVoid SetToneMapperGamma ( GXFloat gamma );
+		GXFloat GetToneMapperGamma () const;
+
 		// Clamped to [ 0.0f, +infinite )
-		GXVoid SetEyeAdaptationSpeed ( GXFloat speed );
-		GXFloat GetEyeAdaptationSpeed () const;
+		GXVoid SetToneMapperEyeAdaptationSpeed ( GXFloat speed );
+		GXFloat GetToneMapperEyeAdaptationSpeed () const;
+
+		// Artistic purpose parameter. There is no physical explanation.
+		GXVoid SetToneMapperEyeSensitivity ( GXFloat sensitivity );
+		GXFloat GetToneMapperEyeSensitivity () const;
+
+		GXVoid SetToneMapperAbsoluteWhiteIntensity ( GXFloat intensity );
+		GXFloat GetToneMapperAbsoluteWhiteIntensity () const;
 
 		GXTexture2D& GetDepthTexture ();
 
@@ -152,6 +169,7 @@ class EMRenderer
 
 		GXVoid UpdateMotionBlurSettings ();
 		GXVoid UpdateSSAOSettings ();
+		GXVoid UpdateToneMapperSettings ();
 
 		GXVoid LightUp ();
 		GXVoid LightUpByDirected ( EMDirectedLight* light );

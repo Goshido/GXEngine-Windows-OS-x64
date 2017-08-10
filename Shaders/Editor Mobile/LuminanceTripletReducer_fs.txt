@@ -1,0 +1,52 @@
+#version 330 core
+
+
+#define COLOR_SLOT			0
+#define INVERSE_SAMPLES		0.25
+
+
+in vec2 v_uv;
+
+uniform sampler2D luminanceTripletSampler;
+uniform float levelOfDetail;
+
+layout ( location = COLOR_SLOT ) out vec3 colorSlot;
+
+
+void main ()
+{
+	vec3 luminanceTriplet = textureLod ( luminanceTripletSampler, v_uv, levelOfDetail ).xyz;
+	float luminanceSum = luminanceTriplet.x;
+	float minimumLuminance = luminanceTriplet.y;
+	float maximumLuminance = luminanceTriplet.z;
+
+	luminanceTriplet = textureLodOffset ( luminanceTripletSampler, v_uv, levelOfDetail, ivec2 ( 1, 0 ) ).xyz;
+	luminanceSum += luminanceTriplet.x;
+
+	if ( luminanceTriplet.y < minimumLuminance )
+		minimumLuminance = luminanceTriplet.y;
+
+	if ( luminanceTriplet.z > maximumLuminance )
+		maximumLuminance = luminanceTriplet.z;
+
+	luminanceTriplet = textureLodOffset ( luminanceTripletSampler, v_uv, levelOfDetail, ivec2 ( 0, 1 ) ).xyz;
+	luminanceSum += luminanceTriplet.x;
+
+	if ( luminanceTriplet.y < minimumLuminance )
+		minimumLuminance = luminanceTriplet.y;
+
+	if ( luminanceTriplet.z > maximumLuminance )
+		maximumLuminance = luminanceTriplet.z;
+
+	luminanceTriplet = textureLodOffset ( luminanceTripletSampler, v_uv, levelOfDetail, ivec2 ( 1, 1 ) ).xyz;
+	luminanceSum += luminanceTriplet.x;
+
+	if ( luminanceTriplet.y < minimumLuminance )
+		minimumLuminance = luminanceTriplet.y;
+
+	if ( luminanceTriplet.z > maximumLuminance )
+		maximumLuminance = luminanceTriplet.z;
+
+	colorSlot = vec3 ( luminanceSum * INVERSE_SAMPLES, minimumLuminance, maximumLuminance );
+}
+

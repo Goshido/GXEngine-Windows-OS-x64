@@ -79,6 +79,8 @@ Main menu->Effects->Motion blur~Motion blur~
 
 Main menu->Effects->SSAO~SSAO~
 
+Main menu->Effects->HDR tone mapper~HDR тонирование~
+
 OpenFile->OK~OK~
 
 OpenFile->Cancel~Отмена~
@@ -128,3 +130,17 @@ Color picker->Transparency~Прозрачность~
 Color picker->Cancel~Отмена~
 
 Color picker->Pick~Выбрать~
+
+Tone mapper settings->HDR tone mapper settings~Настройки HDR тонирования~
+
+Tone mapper settings->Gamma~Гамма~
+
+Tone mapper settings->Sensitivity~Чувствительность~
+
+Tone mapper settings->Adoptation speed~Скорость привыкания~
+
+Tone mapper settings->White intensity~Интенсивность белого~
+
+Tone mapper settings->Cancel~Отмена~
+
+Tone mapper settings->Apply~Применить~

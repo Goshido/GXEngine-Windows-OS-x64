@@ -3,6 +3,7 @@
 #include <GXEngine_Editor_Mobile/EMViewer.h>
 #include <GXEngine_Editor_Mobile/EMUIMotionBlurSettings.h>
 #include <GXEngine_Editor_Mobile/EMUISSAOSettings.h>
+#include <GXEngine_Editor_Mobile/EMUIToneMapperSettings.h>
 #include <GXEngine_Editor_Mobile/EMUIFPSCounter.h>
 #include <GXEngine_Editor_Mobile/EMUIColorPicker.h>
 #include <GXEngine_Editor_Mobile/EMEnvironment.h>
@@ -99,6 +100,7 @@ GXVoid EMGame::OnInit ()
 	effectsPopup = new EMUIPopup ( nullptr );
 	effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->Motion blur" ), this, &EMGame::OnShowMotionBlurSettings );
 	effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->SSAO" ), this, &EMGame::OnShowSSAOSettings );
+	effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->HDR tone mapper" ), this, &EMGame::OnShowToneMapperSettings );
 
 	menu = new EMUIMenu ( nullptr );
 	menu->SetLocation ( 0.0f, h - menu->GetHeight () );
@@ -162,11 +164,13 @@ GXVoid EMGame::OnInit ()
 
 	EMCookTorranceCommonPassMaterial& m = unitActor->GetMaterial ();
 	m.SetAlbedoColor ( 253, 180, 17, 255 );
+	//m.SetAlbedoColor ( 0, 0, 0, 255 );
 	//m.SetAlbedoTextureScale ( 0.25f, 0.25f );
 	m.SetRoughnessScale ( 0.25f );
 	m.SetIndexOfRefractionScale ( 0.094f );
 	m.SetSpecularIntencityScale ( 0.998f );
 	m.SetMetallicScale ( 1.0f );
+	m.SetEmissionColorScale ( 0.0f );
 
 	EMUIFPSCounter::GetInstance ();
 	EMUIColorPicker::GetInstance ();
@@ -329,6 +333,11 @@ GXVoid GXCALL EMGame::OnShowMotionBlurSettings ( GXVoid* /*handler*/ )
 GXVoid GXCALL EMGame::OnShowSSAOSettings ( GXVoid* /*handler*/ )
 {
 	EMUISSAOSettings::GetInstance ().Show ();
+}
+
+GXVoid GXCALL EMGame::OnShowToneMapperSettings ( GXVoid* /*handler*/ )
+{
+	EMUIToneMapperSettings::GetInstance ().Show ();
 }
 
 GXVoid GXCALL EMGame::OnMouseButton ( GXVoid* /*handler*/, GXInputMouseFlags mouseflags )

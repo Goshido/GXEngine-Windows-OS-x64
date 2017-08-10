@@ -3,81 +3,83 @@
 #include <GXEngine_Editor_Mobile/EMLightProbe.h>
 #include <GXEngine_Editor_Mobile/EMUIMotionBlurSettings.h>
 #include <GXEngine_Editor_Mobile/EMUISSAOSettings.h>
+#include <GXEngine_Editor_Mobile/EMUIToneMapperSettings.h>
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXCamera.h>
 #include <GXEngine/GXSamplerUtils.h>
 #include <GXCommon/GXLogger.h>
 
 
-#define EM_OBJECT_HI_INDEX						14
-#define EM_OBJECT_LOW_INDEX						15
+#define EM_OBJECT_HI_INDEX								14
+#define EM_OBJECT_LOW_INDEX								15
 
-#define OUT_TEXTURE_SLOT						0
+#define OUT_TEXTURE_SLOT								0
 
-#define DIFFUSE_SLOT							0
-#define NORMAL_SLOT								1
-#define SPECULAR_SLOT							2
-#define EMISSION_SLOT							3
-#define DEPTH_SLOT								4
+#define DIFFUSE_SLOT									0
+#define NORMAL_SLOT										1
+#define SPECULAR_SLOT									2
+#define EMISSION_SLOT									3
+#define DEPTH_SLOT										4
 
-#define Z_NEAR									0.0f
-#define Z_FAR									77.0f
-#define Z_RENDER								1.0f
+#define Z_NEAR											0.0f
+#define Z_FAR											77.0f
+#define Z_RENDER										1.0f
 
-#define CVV_WIDTH								2.0f
-#define CVV_HEIGHT								2.0f
+#define CVV_WIDTH										2.0f
+#define CVV_HEIGHT										2.0f
 
-#define DEFAULT_MAX_MOTION_BLUR_SAMPLES			15
-#define DEFAULT_MOTION_BLUR_DEPTH_LIMIT			0.1f
-#define DEFAULT_MOTION_BLUR_EXPLOSURE			0.03f
+#define DEFAULT_MAX_MOTION_BLUR_SAMPLES					15
+#define DEFAULT_MOTION_BLUR_DEPTH_LIMIT					0.1f
+#define DEFAULT_MOTION_BLUR_EXPLOSURE					0.03f
 
-#define DEFAULT_SSAO_MAX_CHECK_RADIUS			0.3f
-#define DEFAULT_SSAO_SAMPLES					32
-#define DEFAULT_SSAO_NOISE_TEXTURE_RESOLUTION	9
-#define DEFAULT_SSAO_MAX_DISTANCE				1000.0f
+#define DEFAULT_SSAO_MAX_CHECK_RADIUS					0.3f
+#define DEFAULT_SSAO_SAMPLES							32
+#define DEFAULT_SSAO_NOISE_TEXTURE_RESOLUTION			9
+#define DEFAULT_SSAO_MAX_DISTANCE						1000.0f
 
-#define DEFAULT_EYE_ADAPTATION_SPEED			1.25f
-#define DEFAULT_ABSOLUTE_WHITE_INTENSITY		1.0e+5f
+#define DEFAULT_TONE_MAPPER_GAMMA						2.2f
+#define DEFAULT_TONE_MAPPER_EYE_ADAPTATION_SPEED		1.25f
+#define DEFAULT_TONE_MAPPER_EYE_SENSITIVITY				7.2e-3f
+#define DEFAULT_TONE_MAPPER_ABSOLUTE_WHITE_INTENSITY	1.0e+4f
 
-#define CLEAR_DIFFUSE_R							0.0f
-#define CLEAR_DIFFUSE_G							0.0f
-#define CLEAR_DIFFUSE_B							0.0f
-#define CLEAR_DIFFUSE_A							1.0f
+#define CLEAR_DIFFUSE_R									0.0f
+#define CLEAR_DIFFUSE_G									0.0f
+#define CLEAR_DIFFUSE_B									0.0f
+#define CLEAR_DIFFUSE_A									1.0f
 
-#define CLEAR_NORMAL_R							0.5f
-#define CLEAR_NORMAL_G							0.5f
-#define CLEAR_NORMAL_B							0.5f
-#define CLEAR_NORMAL_A							0.0f
+#define CLEAR_NORMAL_R									0.5f
+#define CLEAR_NORMAL_G									0.5f
+#define CLEAR_NORMAL_B									0.5f
+#define CLEAR_NORMAL_A									0.0f
 
-#define CLEAR_EMISSION_R						0.0f
-#define CLEAR_EMISSION_G						0.0f
-#define CLEAR_EMISSION_B						0.0f
-#define CLEAR_EMISSION_A						0.0f
+#define CLEAR_EMISSION_R								0.0f
+#define CLEAR_EMISSION_G								0.0f
+#define CLEAR_EMISSION_B								0.0f
+#define CLEAR_EMISSION_A								0.0f
 
-#define CLEAR_PARAMETER_ROUGNESS				0.5f
-#define CLEAR_PARAMETER_IOR						0.5f
-#define CLEAR_PARAMETER_SPECULAR_INTENCITY		0.0f
-#define CLEAR_PARAMETER_METALLIC				0.0f
+#define CLEAR_PARAMETER_ROUGNESS						0.5f
+#define CLEAR_PARAMETER_IOR								0.5f
+#define CLEAR_PARAMETER_SPECULAR_INTENCITY				0.0f
+#define CLEAR_PARAMETER_METALLIC						0.0f
 
-#define CLEAR_VELOCITY_BLUR_R					0.5f
-#define CLEAR_VELOCITY_BLUR_G					0.5f
-#define CLEAR_VELOCITY_BLUR_B					0.5f
-#define CLEAR_VELOCITY_BLUR_A					0.5f
+#define CLEAR_VELOCITY_BLUR_R							0.5f
+#define CLEAR_VELOCITY_BLUR_G							0.5f
+#define CLEAR_VELOCITY_BLUR_B							0.5f
+#define CLEAR_VELOCITY_BLUR_A							0.5f
 
-#define CLEAR_OBJECT_0_R						0.0f
-#define CLEAR_OBJECT_0_G						0.0f
-#define CLEAR_OBJECT_0_B						0.0f
-#define CLEAR_OBJECT_0_A						0.0f
+#define CLEAR_OBJECT_0_R								0.0f
+#define CLEAR_OBJECT_0_G								0.0f
+#define CLEAR_OBJECT_0_B								0.0f
+#define CLEAR_OBJECT_0_A								0.0f
 
-#define CLEAR_OBJECT_1_R						0.0f
-#define CLEAR_OBJECT_1_G						0.0f
-#define CLEAR_OBJECT_1_B						0.0f
-#define CLEAR_OBJECT_1_A						0.0f
+#define CLEAR_OBJECT_1_R								0.0f
+#define CLEAR_OBJECT_1_G								0.0f
+#define CLEAR_OBJECT_1_B								0.0f
+#define CLEAR_OBJECT_1_A								0.0f
 
-#define OVERLAY_TRANSPARENCY					180
+#define OVERLAY_TRANSPARENCY							180
 
-#define INVALID_COLOR_COMPONENT					-1.0f
-#define DEFAULT_AVERAGE_COLOR_COMPONENT			0.0f
+#define INVALID_LUMINANCE								-1.0f
 
 
 EMRenderer* EMRenderer::instance = nullptr;
@@ -97,6 +99,7 @@ EMRenderer::~EMRenderer ()
 	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
 	glDeleteFramebuffers ( 1, &fbo );
 
+	delete &( EMUIToneMapperSettings::GetInstance () );
 	delete &( EMUISSAOSettings::GetInstance () );
 	delete &( EMUIMotionBlurSettings::GetInstance () );
 
@@ -132,6 +135,9 @@ GXVoid EMRenderer::StartCommonPass ()
 
 	if ( isSSAOSettingsChanged )
 		UpdateSSAOSettings ();
+
+	if ( isToneMapperSettingsChanged )
+		UpdateToneMapperSettings ();
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, albedoTexture.GetTextureObject (), 0 );
@@ -489,7 +495,9 @@ GXVoid EMRenderer::ApplyToneMapping ( GXFloat deltaTime )
 	glDisable ( GL_DEPTH_TEST );
 	glDisable ( GL_CULL_FACE );
 
-	glViewport ( 0, 0, (GLsizei)importantAreaTexture.GetWidth (), (GLsizei)importantAreaTexture.GetHeight () );
+	GLsizei width = (GLsizei)importantAreaTexture.GetWidth ();
+	GLsizei height = (GLsizei)importantAreaTexture.GetHeight ();
+	glViewport ( 0, 0, width, height );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
@@ -501,43 +509,57 @@ GXVoid EMRenderer::ApplyToneMapping ( GXFloat deltaTime )
 	screenQuadMesh.Render ();
 	importantAreaFilterMaterial.Unbind ();
 
-	importantAreaTexture.UpdateMipmaps ();
+	GXUByte reducingSteps = importantAreaTexture.GetLevelOfDetailNumber ();
+
+	for ( GXUByte i = 1; i < reducingSteps; i++ )
+	{
+		width /= 2;
+		if ( width == 0 )
+			width = 1;
+
+		height /= 2;
+		if ( height == 0 )
+			height = 1;
+
+		glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, importantAreaTexture.GetTextureObject (), (GLint)i );
+
+		glViewport ( 0, 0, width, height );
+
+		status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+		if ( status != GL_FRAMEBUFFER_COMPLETE )
+		{
+			GXLogW ( L"EMRenderer::ApplyToneMapping::Error - Что-то не так с FBO на проходе редуцирования %hhu (ошибка 0x%08x)\n", i, status );
+			continue;
+		}
+
+		toneMapperLuminanceTripletReducerMaterial.SetLevelOfDetailToReduce ( i - 1 );
+		toneMapperLuminanceTripletReducerMaterial.Bind ( nullTransform );
+		screenQuadMesh.Render ();
+		toneMapperLuminanceTripletReducerMaterial.Unbind ();
+	}
 
 	glBindFramebuffer ( GL_READ_FRAMEBUFFER, fbo );
 	glPixelStorei ( GL_PACK_ALIGNMENT, 2 );
 	glFramebufferTexture ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, importantAreaTexture.GetTextureObject (), (GLint)( importantAreaTexture.GetLevelOfDetailNumber () - 1 ) );
 	glReadBuffer ( GL_COLOR_ATTACHMENT0 );
 
-	GXVec3 averageColor;
-	glReadPixels ( 0, 0, 1, 1, GL_RGB, GL_FLOAT, averageColor.arr );
+	GXVec3 luminanceTriplet;
+	glReadPixels ( 0, 0, 1, 1, GL_RGB, GL_FLOAT, luminanceTriplet.arr );
 
 	glFramebufferTexture ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0 );
 	glReadBuffer ( GL_NONE );
 	glBindFramebuffer ( GL_READ_FRAMEBUFFER, 0 );
 
-	GXBool isBadValue = isnan ( averageColor.x + averageColor.y + averageColor.z );
-	if ( effectiveAverageColor.x == INVALID_COLOR_COMPONENT )
+	if ( toneMapperEffectiveLuminanceTriplet.x == INVALID_LUMINANCE )
 	{
-		if ( isBadValue )
-		{
-			GXLogW ( L"EMRenderer::ApplyToneMapping::Error - Обнаружен неверный средний цвет (красный: %f, зелёный: %f, синий: %f) (Первая ветвь).\n", averageColor.r, averageColor.g, averageColor.b );
-			effectiveAverageColor = GXCreateVec3 ( DEFAULT_AVERAGE_COLOR_COMPONENT, DEFAULT_AVERAGE_COLOR_COMPONENT, DEFAULT_AVERAGE_COLOR_COMPONENT );
-		}
-		else
-		{
-			effectiveAverageColor = averageColor;
-		}
-	}
-	else if ( !isBadValue )
-	{
-		GXVec3 delta;
-		GXSubVec3Vec3 ( delta, averageColor, effectiveAverageColor );
-		GXMulVec3Scalar ( delta, delta, eyeAdaptationSpeed * deltaTime );
-		GXSumVec3Vec3 ( effectiveAverageColor, effectiveAverageColor, delta );
+		toneMapperEffectiveLuminanceTriplet = luminanceTriplet;
 	}
 	else
 	{
-		GXLogW ( L"EMRenderer::ApplyToneMapping::Error - Обнаружен неверный средний цвет (красный: %f, зелёный: %f, синий: %f) (Вторая ветвь)\n", averageColor.r, averageColor.g, averageColor.b );
+		GXVec3 delta;
+		GXSubVec3Vec3 ( delta, luminanceTriplet, toneMapperEffectiveLuminanceTriplet );
+		GXMulVec3Scalar ( delta, delta, toneMapperEyeAdoptationSpeed * deltaTime );
+		GXSumVec3Vec3 ( toneMapperEffectiveLuminanceTriplet, toneMapperEffectiveLuminanceTriplet, delta );
 	}
 
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, yottaTexture.GetTextureObject (), 0 );
@@ -548,7 +570,7 @@ GXVoid EMRenderer::ApplyToneMapping ( GXFloat deltaTime )
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::ApplyToneMapping::Error - Что-то не так с FBO на проходе тонирования (ошибка 0x%08x)\n", status );
 
-	toneMapperMaterial.SetAverageColor ( effectiveAverageColor );
+	toneMapperMaterial.SetLuminanceTriplet ( toneMapperEffectiveLuminanceTriplet.x, toneMapperEffectiveLuminanceTriplet.y, toneMapperEffectiveLuminanceTriplet.z );
 	toneMapperMaterial.Bind ( nullTransform );
 	screenQuadMesh.Render ();
 	toneMapperMaterial.Unbind ();
@@ -662,9 +684,10 @@ GXVoid EMRenderer::GetObject ( GXUShort x, GXUShort y )
 
 GXVoid EMRenderer::SetMaximumMotionBlurSamples ( GXUByte samples )
 {
+	newMaxMotionBlurSamples = samples;
+
 	if ( motionBlurMaterial.GetMaxBlurSamples () == samples ) return;
 
-	newMaxMotionBlurSamples = samples;
 	isMotionBlurSettingsChanged = GX_TRUE;
 }
 
@@ -675,9 +698,10 @@ GXUByte EMRenderer::GetMaximumMotionBlurSamples () const
 
 GXVoid EMRenderer::SetMotionBlurDepthLimit ( GXFloat meters )
 {
+	newMotionBlurDepthLimit = meters;
+
 	if ( motionBlurMaterial.GetDepthLimit () == meters ) return;
 
-	newMotionBlurDepthLimit = meters;
 	isMotionBlurSettingsChanged = GX_TRUE;
 }
 
@@ -701,9 +725,10 @@ GXFloat EMRenderer::GetMotionBlurExposure () const
 
 GXVoid EMRenderer::SetSSAOCheckRadius ( GXFloat meters )
 {
+	newSSAOCheckRadius = meters;
+
 	if ( ssaoSharpMaterial.GetCheckRadius () == meters ) return;
 
-	newSSAOCheckRadius = meters;
 	isSSAOSettingsChanged = GX_TRUE;
 }
 
@@ -714,9 +739,10 @@ GXFloat EMRenderer::GetSSAOCheckRadius () const
 
 GXVoid EMRenderer::SetSSAOSampleNumber ( GXUByte samples )
 {
+	newSSAOSamples = samples;
+
 	if ( ssaoSharpMaterial.GetSampleNumber () == samples ) return;
 
-	newSSAOSamples = samples;
 	isSSAOSettingsChanged = GX_TRUE;
 }
 
@@ -727,9 +753,10 @@ GXUByte EMRenderer::GetSSAOSampleNumber () const
 
 GXVoid EMRenderer::SetSSAONoiseTextureResolution ( GXUShort resolution )
 {
+	newSSAONoiseTextureResolution = resolution;
+
 	if ( ssaoSharpMaterial.GetNoiseTextureResolution () == resolution ) return;
 
-	newSSAONoiseTextureResolution = resolution;
 	isSSAOSettingsChanged = GX_TRUE;
 }
 
@@ -740,15 +767,71 @@ GXUShort EMRenderer::GetSSAONoiseTextureResolution () const
 
 GXVoid EMRenderer::SetSSAOMaximumDistance ( GXFloat meters )
 {
+	newSSAOMaxDistance = meters;
+
 	if ( ssaoSharpMaterial.GetMaximumDistance () == meters ) return;
 
-	newSSAOMaxDistance = meters;
 	isSSAOSettingsChanged = GX_TRUE;
 }
 
 GXFloat EMRenderer::GetSSAOMaximumDistance () const
 {
 	return ssaoSharpMaterial.GetMaximumDistance ();
+}
+
+GXVoid EMRenderer::SetToneMapperGamma ( GXFloat gamma )
+{
+	newToneMapperGamma = gamma;
+
+	if ( toneMapperMaterial.GetGamma () == gamma ) return;
+
+	isToneMapperSettingsChanged = GX_TRUE;
+}
+
+GXFloat EMRenderer::GetToneMapperGamma () const
+{
+	return toneMapperMaterial.GetGamma ();
+}
+
+GXVoid EMRenderer::SetToneMapperEyeAdaptationSpeed ( GXFloat speed )
+{
+	if ( toneMapperEyeAdoptationSpeed == speed ) return;
+
+	toneMapperEyeAdoptationSpeed = speed;
+	isToneMapperSettingsChanged = GX_TRUE;
+}
+
+GXFloat EMRenderer::GetToneMapperEyeAdaptationSpeed () const
+{
+	return toneMapperEyeAdoptationSpeed;
+}
+
+GXVoid EMRenderer::SetToneMapperEyeSensitivity ( GXFloat sensitivity )
+{
+	newToneMapperEyeSensitivity = sensitivity;
+
+	if ( toneMapperMaterial.GetEyeSensitivity () == sensitivity ) return;
+
+	isToneMapperSettingsChanged = GX_TRUE;
+}
+
+GXFloat EMRenderer::GetToneMapperEyeSensitivity () const
+{
+	return toneMapperMaterial.GetEyeSensitivity ();
+}
+
+GXVoid EMRenderer::SetToneMapperAbsoluteWhiteIntensity ( GXFloat intensity )
+{
+	newToneMapperAbsoluteWhiteIntensity = intensity;
+
+	if ( toneMapperMaterial.GetAbsoluteWhiteIntensity () == intensity ) return;
+
+	isToneMapperSettingsChanged = GX_TRUE;
+}
+
+GXFloat EMRenderer::GetToneMapperAbsoluteWhiteIntensity () const
+{
+	return toneMapperMaterial.GetAbsoluteWhiteIntensity ();
 }
 
 EMRenderer& EMRenderer::GetInstance ()
@@ -762,19 +845,6 @@ EMRenderer& EMRenderer::GetInstance ()
 GXTexture2D& EMRenderer::GetDepthTexture ()
 {
 	return depthStencilTexture;
-}
-
-GXVoid EMRenderer::SetEyeAdaptationSpeed ( GXFloat speed )
-{
-	if ( speed < 0.0f )
-		speed = 0.0f;
-
-	eyeAdaptationSpeed = speed;
-}
-
-GXFloat EMRenderer::GetEyeAdaptationSpeed () const
-{
-	return eyeAdaptationSpeed;
 }
 
 EMRenderer::EMRenderer ():
@@ -847,11 +917,16 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" ), gaussHorizontalBlurMateria
 	ssaoApplyMaterial.SetSSAOTexture ( ssaoOmegaTexture );
 	ssaoApplyMaterial.SetImageTexture ( omegaTexture );
 
-	SetEyeAdaptationSpeed ( DEFAULT_EYE_ADAPTATION_SPEED );
-	toneMapperMaterial.SetAbsoluteWhiteIntensity ( DEFAULT_ABSOLUTE_WHITE_INTENSITY );
+	SetToneMapperGamma ( DEFAULT_TONE_MAPPER_GAMMA );
+	SetToneMapperEyeAdaptationSpeed ( DEFAULT_TONE_MAPPER_EYE_ADAPTATION_SPEED );
+	SetToneMapperEyeSensitivity ( DEFAULT_TONE_MAPPER_EYE_SENSITIVITY );
+	SetToneMapperAbsoluteWhiteIntensity ( DEFAULT_TONE_MAPPER_ABSOLUTE_WHITE_INTENSITY );
+
 	toneMapperMaterial.SetLinearSpaceTexture ( omegaTexture );
 
-	effectiveAverageColor = GXCreateVec3 ( INVALID_COLOR_COMPONENT, INVALID_COLOR_COMPONENT, INVALID_COLOR_COMPONENT );
+	toneMapperLuminanceTripletReducerMaterial.SetLuminanceTripletTexture ( importantAreaTexture );
+
+	toneMapperEffectiveLuminanceTriplet = GXCreateVec3 ( INVALID_LUMINANCE, INVALID_LUMINANCE, INVALID_LUMINANCE );
 
 	importantAreaFilterMaterial.SetImageTexture ( omegaTexture );
 
@@ -859,6 +934,7 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" ), gaussHorizontalBlurMateria
 
 	EMUIMotionBlurSettings::GetInstance ();
 	EMUISSAOSettings::GetInstance ();
+	EMUIToneMapperSettings::GetInstance ();
 }
 
 GXVoid EMRenderer::CreateFBO ()
@@ -959,6 +1035,20 @@ GXVoid EMRenderer::UpdateSSAOSettings ()
 		ssaoSharpMaterial.SetMaximumDistance ( newSSAOMaxDistance );
 
 	isSSAOSettingsChanged = GX_FALSE;
+}
+
+GXVoid EMRenderer::UpdateToneMapperSettings ()
+{
+	if ( newToneMapperGamma != toneMapperMaterial.GetGamma () )
+		toneMapperMaterial.SetGamma ( newToneMapperGamma );
+
+	if ( newToneMapperEyeSensitivity != toneMapperMaterial.GetEyeSensitivity () )
+		toneMapperMaterial.SetEyeSensitivity ( newToneMapperEyeSensitivity );
+
+	if ( newToneMapperAbsoluteWhiteIntensity != toneMapperMaterial.GetAbsoluteWhiteIntensity () )
+		toneMapperMaterial.SetAbsoluteWhiteIntensity ( newToneMapperAbsoluteWhiteIntensity );
+
+	isToneMapperSettingsChanged = GX_FALSE;
 }
 
 GXVoid EMRenderer::LightUp ()
