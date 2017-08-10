@@ -100,7 +100,6 @@ class EMRenderer
 		GXFloat											toneMapperEyeAdoptationSpeed;
 		GXVec3											toneMapperEffectiveLuminanceTriplet;
 
-	private:
 		static EMRenderer*								instance;
 
 	public:
