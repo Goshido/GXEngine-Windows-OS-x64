@@ -84,9 +84,9 @@ EMUIToneMapperSettings::~EMUIToneMapperSettings ()
 	delete whiteIntensity;
 	delete whiteIntensityLabel;
 
-	delete adoptationSpeed->GetValidator ();
-	delete adoptationSpeed;
-	delete adoptationSpeedLabel;
+	delete eyeAdaptationSpeed->GetValidator ();
+	delete eyeAdaptationSpeed;
+	delete eyeAdaptationSpeedLabel;
 
 	delete sensitivity->GetValidator ();
 	delete sensitivity;
@@ -138,14 +138,14 @@ EMUI ( nullptr )
 	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *( (GXUIEditBox*)sensitivity->GetWidget () ), MINIMUM_SENSITIVITY, MAXIMUM_SENSITIVITY );
 	sensitivity->SetValidator ( *floatValidator );
 
-	adoptationSpeedLabel = new EMUIStaticText ( mainPanel );
-	adoptationSpeed = new EMUIEditBox ( mainPanel );
-	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *( (GXUIEditBox*)adoptationSpeed->GetWidget () ), MINIMUM_ADOPTATION_SPEED, MAXIMUM_ADOPTATION_SPEED );
-	adoptationSpeed->SetValidator ( *floatValidator );
+	eyeAdaptationSpeedLabel = new EMUIStaticText ( mainPanel );
+	eyeAdaptationSpeed = new EMUIEditBox ( mainPanel );
+	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *( (GXUIEditBox*)eyeAdaptationSpeed->GetWidget () ), MINIMUM_ADOPTATION_SPEED, MAXIMUM_ADOPTATION_SPEED );
+	eyeAdaptationSpeed->SetValidator ( *floatValidator );
 
 	whiteIntensityLabel = new EMUIStaticText ( mainPanel );
 	whiteIntensity = new EMUIEditBox ( mainPanel );
-	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *( (GXUIEditBox*)adoptationSpeed->GetWidget () ), MINIMUM_WHITE_INTENSITY, MAXIMUM_WHITE_INTENSITY );
+	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *( (GXUIEditBox*)whiteIntensity->GetWidget () ), MINIMUM_WHITE_INTENSITY, MAXIMUM_WHITE_INTENSITY );
 	whiteIntensity->SetValidator ( *floatValidator );
 
 	bottomSeparator = new EMUISeparator ( mainPanel );
@@ -166,9 +166,9 @@ EMUI ( nullptr )
 	sensitivityLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
 	sensitivityLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-	adoptationSpeedLabel->SetText ( locale.GetString ( L"Tone mapper settings->Adoptation speed" ) );
-	adoptationSpeedLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
-	adoptationSpeedLabel->SetAlingment ( eGXUITextAlignment::Left );
+	eyeAdaptationSpeedLabel->SetText ( locale.GetString ( L"Tone mapper settings->Eye adaptation speed" ) );
+	eyeAdaptationSpeedLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
+	eyeAdaptationSpeedLabel->SetAlingment ( eGXUITextAlignment::Left );
 
 	whiteIntensityLabel->SetText ( locale.GetString ( L"Tone mapper settings->White intensity" ) );
 	whiteIntensityLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
@@ -176,7 +176,7 @@ EMUI ( nullptr )
 
 	gamma->SetAlignment ( eGXUITextAlignment::Center );
 	sensitivity->SetAlignment ( eGXUITextAlignment::Center );
-	adoptationSpeed->SetAlignment ( eGXUITextAlignment::Center );
+	eyeAdaptationSpeed->SetAlignment ( eGXUITextAlignment::Center );
 	whiteIntensity->SetAlignment ( eGXUITextAlignment::Center );
 
 	cancel->SetCaption ( locale.GetString ( L"Motion blur settings->Cancel" ) );
@@ -206,7 +206,7 @@ GXVoid EMUIToneMapperSettings::SyncSettings ()
 	sensitivity->SetText ( buffer );
 
 	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetToneMapperEyeAdaptationSpeed () );
-	adoptationSpeed->SetText ( buffer );
+	eyeAdaptationSpeed->SetText ( buffer );
 
 	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetToneMapperAbsoluteWhiteIntensity () );
 	whiteIntensity->SetText ( buffer );
@@ -247,15 +247,15 @@ GXVoid GXCALL EMUIToneMapperSettings::OnButton ( GXVoid* handler, GXUIButton& bu
 			renderer.SetToneMapperEyeSensitivity ( newSensitivity );
 	}
 
-	stringW = settings->adoptationSpeed->GetText ();
+	stringW = settings->eyeAdaptationSpeed->GetText ();
 
 	if ( stringW )
 	{
-		GXFloat newAdoptationSpeed;
-		GXInt result = swscanf_s ( stringW, L"%f", &newAdoptationSpeed );
+		GXFloat newEyeAdaptationSpeed;
+		GXInt result = swscanf_s ( stringW, L"%f", &newEyeAdaptationSpeed );
 
 		if ( result != 0 )
-			renderer.SetToneMapperEyeAdaptationSpeed ( newAdoptationSpeed );
+			renderer.SetToneMapperEyeAdaptationSpeed ( newEyeAdaptationSpeed );
 	}
 
 	stringW = settings->whiteIntensity->GetText ();
@@ -298,8 +298,8 @@ GXVoid GXCALL EMUIToneMapperSettings::OnResize ( GXVoid* handler, GXUIDragableAr
 
 	offset -= propertyYOffset;
 
-	settings->adoptationSpeedLabel->Resize ( margin, offset, labelWidth, labelHeight );
-	settings->adoptationSpeed->Resize ( editBoxXOffset, offset, editBoxWidth, editBoxHeight );
+	settings->eyeAdaptationSpeedLabel->Resize ( margin, offset, labelWidth, labelHeight );
+	settings->eyeAdaptationSpeed->Resize ( editBoxXOffset, offset, editBoxWidth, editBoxHeight );
 
 	offset -= propertyYOffset;
 

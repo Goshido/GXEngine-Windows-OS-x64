@@ -558,7 +558,7 @@ GXVoid EMRenderer::ApplyToneMapping ( GXFloat deltaTime )
 	{
 		GXVec3 delta;
 		GXSubVec3Vec3 ( delta, luminanceTriplet, toneMapperEffectiveLuminanceTriplet );
-		GXMulVec3Scalar ( delta, delta, toneMapperEyeAdoptationSpeed * deltaTime );
+		GXMulVec3Scalar ( delta, delta, toneMapperEyeAdaptationSpeed * deltaTime );
 		GXSumVec3Vec3 ( toneMapperEffectiveLuminanceTriplet, toneMapperEffectiveLuminanceTriplet, delta );
 	}
 
@@ -795,15 +795,12 @@ GXFloat EMRenderer::GetToneMapperGamma () const
 
 GXVoid EMRenderer::SetToneMapperEyeAdaptationSpeed ( GXFloat speed )
 {
-	if ( toneMapperEyeAdoptationSpeed == speed ) return;
-
-	toneMapperEyeAdoptationSpeed = speed;
-	isToneMapperSettingsChanged = GX_TRUE;
+	toneMapperEyeAdaptationSpeed = speed;
 }
 
 GXFloat EMRenderer::GetToneMapperEyeAdaptationSpeed () const
 {
-	return toneMapperEyeAdoptationSpeed;
+	return toneMapperEyeAdaptationSpeed;
 }
 
 GXVoid EMRenderer::SetToneMapperEyeSensitivity ( GXFloat sensitivity )

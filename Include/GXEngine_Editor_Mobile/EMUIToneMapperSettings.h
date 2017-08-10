@@ -19,8 +19,8 @@ class EMUIToneMapperSettings : public EMUI
 		EMUIEditBox*					gamma;
 		EMUIStaticText*					sensitivityLabel;
 		EMUIEditBox*					sensitivity;
-		EMUIStaticText*					adoptationSpeedLabel;
-		EMUIEditBox*					adoptationSpeed;
+		EMUIStaticText*					eyeAdaptationSpeedLabel;
+		EMUIEditBox*					eyeAdaptationSpeed;
 		EMUIStaticText*					whiteIntensityLabel;
 		EMUIEditBox*					whiteIntensity;
 		EMUISeparator*					bottomSeparator;

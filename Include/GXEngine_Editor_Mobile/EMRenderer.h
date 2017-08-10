@@ -97,7 +97,7 @@ class EMRenderer
 		GXFloat											newToneMapperEyeSensitivity;
 		GXFloat											newToneMapperAbsoluteWhiteIntensity;
 
-		GXFloat											toneMapperEyeAdoptationSpeed;
+		GXFloat											toneMapperEyeAdaptationSpeed;
 		GXVec3											toneMapperEffectiveLuminanceTriplet;
 
 		static EMRenderer*								instance;
