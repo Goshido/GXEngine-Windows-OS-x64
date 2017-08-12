@@ -9,37 +9,46 @@
 #include <GXCommon/GXMemory.h>
 
 
-//#define DIFFUSE_TEXTURE		L"Textures/System/Checker.tga"
-#define DIFFUSE_TEXTURE		L"Textures/System/Default_Diffuse.tga"
-#define NORMAL_TEXTURE		L"Textures/Editor Mobile/Default Normals.tex"
-//#define EMISSION_TEXTURE	L"Textures/Editor Mobile/Default Emission.tex"
-#define EMISSION_TEXTURE	L"Textures/System/Default_Diffuse.tga"
-#define PARAMETER_TEXTURE	L"Textures/Editor Mobile/Default Diffuse.tex"
+#define ALBEDO_TEXTURE				L"Textures/System/Checker.tga"
+#define NORMAL_TEXTURE				L"Textures/Editor Mobile/Default Normals.tex"
+#define EMISSION_TEXTURE			L"Textures/System/Checker.tga"
+#define PARAMETER_TEXTURE			L"Textures/Editor Mobile/Default Diffuse.tex"
+
+#define ALBEDO_TEXTURE_SCALE		0.25f
+#define EMISSION_TEXTURE_SCALE		0.25f
+#define EMISSION_SCALE				0.0777f
+#define SPECULAR_INTENSITY_SCALE	0.2f
+#define METALLIC_SCALE				1.0f
 
 
-EMUnitActor::EMUnitActor ( const GXWChar* name, const GXMat4 &transform ):
-EMActor ( name, EM_UNIT_ACTOR_CLASS, transform ),
-//mesh ( L"3D Models/System/Unit Cube.stm" )
-mesh ( L"3D Models/System/Unit Sphere.obj" )
+EMUnitActor::EMUnitActor ( const GXWChar* name, const GXTransform &transform ):
+EMActor ( name, eEMActorType::UnitCube, transform ),
+mesh ( L"3D Models/System/Unit Cube.stm" )
 {
 	OnTransformChanged ();
 
-	diffuseTexture = GXTexture2D::LoadTexture ( DIFFUSE_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_TRUE );
+	albedoTexture = GXTexture2D::LoadTexture ( ALBEDO_TEXTURE, GX_FALSE, GL_REPEAT, GX_TRUE );
 	normalTexture = GXTexture2D::LoadTexture ( NORMAL_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 	emissionTexture = GXTexture2D::LoadTexture ( EMISSION_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 	parameterTexture = GXTexture2D::LoadTexture ( PARAMETER_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 
 	EMRenderer& renderer = EMRenderer::GetInstance ();
 
-	commonPassMaterial.SetAlbedoTexture ( diffuseTexture );
+	commonPassMaterial.SetAlbedoTexture ( albedoTexture );
 	commonPassMaterial.SetNormalTexture ( normalTexture );
 	commonPassMaterial.SetEmissionTexture ( emissionTexture );
 	commonPassMaterial.SetParameterTexture ( parameterTexture );
+
+	commonPassMaterial.SetAlbedoTextureScale ( ALBEDO_TEXTURE_SCALE, ALBEDO_TEXTURE_SCALE );
+	commonPassMaterial.SetEmissionTextureScale ( EMISSION_TEXTURE_SCALE, EMISSION_TEXTURE_SCALE );
+	commonPassMaterial.SetEmissionColorScale ( EMISSION_SCALE );
+	commonPassMaterial.SetSpecularIntensityScale ( SPECULAR_INTENSITY_SCALE );
+	commonPassMaterial.SetMetallicScale ( METALLIC_SCALE );
 }
 
 EMUnitActor::~EMUnitActor ()
 {
-	GXTexture2D::RemoveTexture ( diffuseTexture );
+	GXTexture2D::RemoveTexture ( albedoTexture );
 	GXTexture2D::RemoveTexture ( normalTexture );
 	GXTexture2D::RemoveTexture ( emissionTexture );
 	GXTexture2D::RemoveTexture ( parameterTexture );
@@ -47,8 +56,10 @@ EMUnitActor::~EMUnitActor ()
 
 GXVoid EMUnitActor::OnDrawCommonPass ( GXFloat deltaTime )
 {
+	if ( !isVisible ) return;
+
 	EMRenderer& renderer = EMRenderer::GetInstance ();
-	renderer.SetObjectMask ( (GXUPointer)this );
+	renderer.SetObjectMask ( this );
 
 	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
 
@@ -67,7 +78,7 @@ GXVoid EMUnitActor::OnSave ( GXUByte** data )
 {
 	EMActorHeader* header = (EMActorHeader*)data;
 
-	header->type = type;
+	header->type = (GXUBigInt)type;
 	memcpy ( &header->origin, &transform, sizeof ( GXMat4 ) );
 	header->isVisible = isVisible;
 	header->nameOffset = sizeof ( EMActorHeader );
@@ -107,17 +118,6 @@ GXUInt EMUnitActor::OnRequeredSaveSize ()
 
 GXVoid EMUnitActor::OnTransformChanged ()
 {
-	GXVec3 tmp;
-	transform.GetW ( tmp );
-	mesh.SetLocation ( tmp );
-
-	GXMat4 cleanRotation;
-	GXSetMat4ClearRotation ( cleanRotation, transform );
-
-	mesh.SetRotation ( cleanRotation );
-}
-
-EMCookTorranceCommonPassMaterial& EMUnitActor::GetMaterial ()
-{
-	return commonPassMaterial;
+	mesh.SetLocation ( transform.GetLocation () );
+	mesh.SetRotation ( transform.GetRotation () );
 }

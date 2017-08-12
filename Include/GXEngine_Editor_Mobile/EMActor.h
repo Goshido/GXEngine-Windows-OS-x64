@@ -2,6 +2,7 @@
 #define EM_ACTOR
 
 
+#include <GXEngine/GXTransform.h>
 #include <GXCommon/GXMath.h>
 
 
@@ -9,9 +10,18 @@ class EMActor;
 extern EMActor* em_Actors;
 
 
+enum class eEMActorType : GXUBigInt
+{
+	Abstact = 0,
+	DirectedLight = 1,
+	UnitCube = 2,
+	Mesh = 3
+};
+
+
 struct EMActorHeader
 {
-	GXUInt		type;
+	GXUBigInt	type;
 	GXUInt		nameOffset;
 	GXMat4		origin;
 	GXBool		isVisible;
@@ -26,12 +36,12 @@ class EMActor
 
 	protected:
 		GXWChar*		name;
-		GXUInt			type;
-		GXMat4			transform;
+		eEMActorType	type;
+		GXTransform		transform;
 		GXBool			isVisible;
 
 	public:
-		explicit EMActor ( const GXWChar* name, GXUInt type, const GXMat4 &transform );
+		explicit EMActor ( const GXWChar* name, eEMActorType type, const GXTransform &transform );
 		virtual ~EMActor ();
 
 		virtual GXVoid OnDrawCommonPass ( GXFloat deltaTime );
@@ -45,10 +55,10 @@ class EMActor
 		virtual GXVoid OnTransformChanged ();
 
 		const GXWChar* GetName ();
-		GXUInt GetType ();
+		eEMActorType GetType ();
 
-		const GXMat4& GetTransform ();
-		GXVoid SetTransform ( const GXMat4 &transform );
+		const GXTransform& GetTransform ();
+		GXVoid SetTransform ( const GXTransform &transform );
 
 		GXVoid Show ();
 		GXVoid Hide ();

@@ -6,11 +6,11 @@
 EMActor* em_Actors = nullptr;
 
 
-EMActor::EMActor ( const GXWChar* name, GXUInt type, const GXMat4 &transform )
+EMActor::EMActor ( const GXWChar* name, eEMActorType type, const GXTransform &transform )
 {
 	GXWcsclone ( &this->name, name );
 	this->type = type;
-	memcpy ( &this->transform, &transform, sizeof ( GXMat4 ) );
+	memcpy ( &this->transform, &transform, sizeof ( GXTransform ) );
 
 	isVisible = GX_TRUE;
 
@@ -79,19 +79,19 @@ const GXWChar* EMActor::GetName ()
 	return name;
 }
 
-GXUInt EMActor::GetType ()
+eEMActorType EMActor::GetType ()
 {
 	return type;
 }
 
-const GXMat4& EMActor::GetTransform ()
+const GXTransform& EMActor::GetTransform ()
 {
 	return transform;
 }
 
-GXVoid EMActor::SetTransform ( const GXMat4 &transfrom )
+GXVoid EMActor::SetTransform ( const GXTransform &transfrom )
 {
-	memcpy ( &this->transform, &transfrom, sizeof ( GXMat4 ) );
+	memcpy ( &this->transform, &transfrom, sizeof ( GXTransform ) );
 	OnTransformChanged ();
 }
 

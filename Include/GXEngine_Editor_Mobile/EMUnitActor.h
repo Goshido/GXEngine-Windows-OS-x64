@@ -8,21 +8,18 @@
 #include <GXEngine/GXTexture2D.h>
 
 
-#define EM_UNIT_ACTOR_CLASS		0
-
-
 class EMUnitActor : public EMActor
 {
 	private:
 		EMMesh								mesh;
 		EMCookTorranceCommonPassMaterial	commonPassMaterial;
-		GXTexture2D							diffuseTexture;
+		GXTexture2D							albedoTexture;
 		GXTexture2D							normalTexture;
 		GXTexture2D							emissionTexture;
 		GXTexture2D							parameterTexture;
 
 	public:
-		explicit EMUnitActor ( const GXWChar* name, const GXMat4 &transform );
+		explicit EMUnitActor ( const GXWChar* name, const GXTransform &transform );
 		~EMUnitActor () override;
 
 		GXVoid OnDrawCommonPass ( GXFloat deltaTime ) override;
@@ -31,8 +28,6 @@ class EMUnitActor : public EMActor
 		GXVoid OnLoad ( const GXUByte* data ) override;
 		GXUInt OnRequeredSaveSize () override;
 		GXVoid OnTransformChanged () override;
-
-		EMCookTorranceCommonPassMaterial& GetMaterial ();
 };
 
 

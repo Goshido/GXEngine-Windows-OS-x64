@@ -144,3 +144,6 @@ Tone mapper settings->White intensity~Интенсивность белого~
 Tone mapper settings->Cancel~Отмена~
 
 Tone mapper settings->Apply~Применить~
+
+EMMeshActor::SetMesh::Error - Can't load mesh %s. Unknown format %s~EMMeshActor::SetMesh::Error - Не могу загрузить меш %s. Неизвестный формат %s
+~

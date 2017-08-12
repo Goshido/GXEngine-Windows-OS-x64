@@ -172,7 +172,12 @@ GXVoid GXTransform::SetScale ( const GXVec3 &scale )
 GXVoid GXTransform::GetLocation ( GXVec3 &loc ) const
 {
 	loc = currentFrameLocation;
-} 
+}
+
+const GXVec3& GXTransform::GetLocation () const
+{
+	return currentFrameLocation;
+}
 
 GXVoid GXTransform::GetRotation ( GXMat4 &rot ) const
 {
@@ -184,9 +189,19 @@ GXVoid GXTransform::GetRotation ( GXQuat &rot ) const
 	rot = GXCreateQuat ( currentFrameRotationMatrix );
 }
 
+const GXMat4& GXTransform::GetRotation () const
+{
+	return currentFrameRotationMatrix;
+}
+
 GXVoid GXTransform::GetScale ( GXVec3 &scale ) const
 {
 	scale = currentFrameScale;
+}
+
+const GXVec3& GXTransform::GetScale () const
+{
+	return currentFrameScale;
 }
 
 const GXMat4& GXTransform::GetCurrentFrameModelMatrix () const

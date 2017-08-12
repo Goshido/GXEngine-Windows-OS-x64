@@ -254,6 +254,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMLightProbe.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMLightProbeMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMMesh.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMMeshActor.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMMotionBlurMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMMoveTool.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMObjectMaskMaterial.cpp" />
@@ -423,6 +424,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMImportantAreaFilterMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMLightProbe.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMLightProbeMaterial.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMeshActor.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMPrefilteredEnvironmentMapGeneratorMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMSSAOApplyMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMSSAOSharpMaterial.h" />

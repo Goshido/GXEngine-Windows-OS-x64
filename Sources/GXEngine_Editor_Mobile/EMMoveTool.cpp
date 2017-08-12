@@ -75,8 +75,6 @@ GXVoid EMMoveTool::Bind ()
 	actor = nullptr;
 	activeAxis = MOVE_TOOL_ACTIVE_AXIS_UNKNOWN;
 	isLMBPressed = GX_FALSE;
-
-	EMRenderer::GetInstance ().SetOnObjectCallback ( &OnObject );
 }
 
 GXVoid EMMoveTool::SetActor ( EMActor* actor )
@@ -97,7 +95,7 @@ GXVoid EMMoveTool::SetActor ( EMActor* actor )
 
 GXVoid EMMoveTool::UnBind ()
 {
-	EMRenderer::GetInstance ().SetOnObjectCallback ( 0 );
+	actor = nullptr;
 }
 
 GXVoid EMMoveTool::OnViewerTransformChanged ()
@@ -160,23 +158,25 @@ GXVoid EMMoveTool::OnDrawHudMaskPass ()
 	
 	EMRenderer& renderer = EMRenderer::GetInstance ();
 
-	renderer.SetObjectMask ( (GXUPointer)( &xAxisMask ) );
+	renderer.SetObjectMask ( &xAxisMask );
 	UpdateMeshTransform ( xAxisMask );
 	objectMaskMaterial.Bind ( xAxisMask );
 	xAxisMask.Render ();
 	objectMaskMaterial.Unbind ();
 
-	renderer.SetObjectMask ( (GXUPointer)( &yAxisMask ) );
+	renderer.SetObjectMask ( &yAxisMask );
 	UpdateMeshTransform ( yAxisMask );
 	objectMaskMaterial.Bind ( yAxisMask );
 	yAxisMask.Render ();
 	objectMaskMaterial.Unbind ();
 
-	renderer.SetObjectMask ( (GXUPointer)( &zAxisMask ) );
+	renderer.SetObjectMask ( &zAxisMask );
 	UpdateMeshTransform ( zAxisMask );
 	objectMaskMaterial.Bind ( zAxisMask );
 	zAxisMask.Render ();
 	objectMaskMaterial.Unbind ();
+
+	renderer.SetObjectMask ( nullptr );
 }
 
 GXBool EMMoveTool::OnMouseMove ( GXFloat x, GXFloat y )
@@ -206,13 +206,57 @@ GXBool EMMoveTool::OnLeftMouseButtonUp ( GXFloat /*x*/, GXFloat /*y*/ )
 
 	GXSumVec3Vec3 ( startLocationWorld, startLocationWorld, deltaWorld );
 
-	GXMat4 newTransform = actor->GetTransform ();
-	newTransform.SetW ( startLocationWorld );
+	GXTransform newTransform = actor->GetTransform ();
+	newTransform.SetLocation ( startLocationWorld );
 	actor->SetTransform ( newTransform );
 
 	isLMBPressed = GX_FALSE;
 
 	return GX_FALSE;
+}
+
+
+GXBool EMMoveTool::OnObject ( GXVoid* object )
+{
+	if ( !actor ) return GX_FALSE;
+
+	if ( object == &xAxisMask )
+	{
+		activeAxis = MOVE_TOOL_ACTIVE_AXIS_X;
+	}
+	else if ( object == &yAxisMask )
+	{
+		activeAxis = MOVE_TOOL_ACTIVE_AXIS_Y;
+	}
+	else if ( object == &zAxisMask )
+	{
+		activeAxis = MOVE_TOOL_ACTIVE_AXIS_Z;
+	}
+	else if ( !object )
+	{
+		activeAxis = MOVE_TOOL_ACTIVE_AXIS_UNKNOWN;
+		UnBind ();
+		return GX_TRUE;
+	}
+	else
+	{
+		activeAxis = MOVE_TOOL_ACTIVE_AXIS_UNKNOWN;
+		UnBind ();
+		return GX_FALSE;
+	}
+
+	switch ( mode )
+	{
+		case MOVE_TOOL_WORLD_MODE:
+			SetWorldMode ();
+		break;
+
+		case MOVE_TOOL_LOCAL_MODE:
+			SetLocalMode ();
+		break;
+	}
+
+	return GX_TRUE;
 }
 
 GXVoid EMMoveTool::SetLocalMode ()
@@ -234,14 +278,14 @@ GXVoid EMMoveTool::SetMode ( GXUByte mode )
 	GXCamera* activeCamera = GXCamera::GetActiveCamera ();
 	if ( !activeCamera ) return;
 
-	const GXMat4& actorTransform = actor->GetTransform ();
-	actorTransform.GetW ( startLocationWorld );
+	const GXTransform& actorTransform = actor->GetTransform ();
+	actorTransform.GetLocation ( startLocationWorld );
 	memset ( &deltaWorld, 0, sizeof ( GXVec3 ) );
 
 	switch ( mode )
 	{
 		case MOVE_TOOL_LOCAL_MODE:
-			GXSetMat4ClearRotation ( gismoRotation, actorTransform );
+			actorTransform.GetRotation ( gismoRotation );
 		break;
 
 		case MOVE_TOOL_WORLD_MODE:
@@ -289,11 +333,11 @@ GXVoid EMMoveTool::OnMoveActor ()
 	gismoScaleCorrector = GetScaleCorrector ( axisLocationView, deltaView );
 
 	GXMulVec3Mat4AsNormal ( deltaWorld, deltaView, activeCamera->GetCurrentFrameModelMatrix () );
-	GXMat4 newTransform = actor->GetTransform ();
+	GXTransform newTransform = actor->GetTransform ();
 	GXVec3 w;
-	newTransform.GetW ( w );
+	newTransform.GetLocation ( w );
 	GXSumVec3Vec3 ( w, startLocationWorld, deltaWorld );
-	newTransform.SetW ( w );
+	newTransform.SetLocation ( w );
 
 	actor->SetTransform ( newTransform );
 }
@@ -326,7 +370,6 @@ GXVoid EMMoveTool::GetAxis ( GXVec3& axisView )
 		break;
 
 		default:
-			GXLogW ( L"EMMoveTool::GetAxis::Error - Неизвестная ось\n" );
 			return;
 		break;
 	}
@@ -365,35 +408,10 @@ GXFloat EMMoveTool::GetScaleCorrector ( const GXVec3 &axisLocationView, const GX
 
 GXVoid EMMoveTool::UpdateMeshTransform ( EMMesh &mesh )
 {
-	const GXMat4& actorTransform = actor->GetTransform ();
+	const GXTransform& actorTransform = actor->GetTransform ();
 	mesh.SetScale ( gismoScaleCorrector, gismoScaleCorrector, gismoScaleCorrector );
 	mesh.SetRotation ( gismoRotation );
 	GXVec3 tmp;
-	actorTransform.GetW ( tmp );
+	actorTransform.GetLocation ( tmp );
 	mesh.SetLocation ( tmp );
-}
-
-GXVoid GXCALL EMMoveTool::OnObject ( GXUPointer object )
-{
-	if ( object == (GXUPointer)( &em_mt_Me->xAxisMask ) )
-		em_mt_Me->activeAxis = MOVE_TOOL_ACTIVE_AXIS_X;
-	else if ( object == (GXUPointer)( &em_mt_Me->yAxisMask ) )
-		em_mt_Me->activeAxis = MOVE_TOOL_ACTIVE_AXIS_Y;
-	else if ( object == (GXUPointer)( &em_mt_Me->zAxisMask ) )
-		em_mt_Me->activeAxis = MOVE_TOOL_ACTIVE_AXIS_Z;
-	else
-		em_mt_Me->activeAxis = MOVE_TOOL_ACTIVE_AXIS_UNKNOWN;
-
-	if ( em_mt_Me->activeAxis == MOVE_TOOL_ACTIVE_AXIS_UNKNOWN ) return;
-
-	switch ( em_mt_Me->mode )
-	{
-		case MOVE_TOOL_WORLD_MODE:
-			em_mt_Me->SetWorldMode ();
-		break;
-
-		case MOVE_TOOL_LOCAL_MODE:
-			em_mt_Me->SetLocalMode ();
-		break;
-	}
 }

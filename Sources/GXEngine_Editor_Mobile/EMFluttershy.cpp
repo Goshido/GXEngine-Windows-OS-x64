@@ -3,7 +3,12 @@
 #include <GXEngine/GXRenderer.h>
 
 
-#define SOLVER_ID	0
+#define SOLVER_ID					0
+
+#define ROUGHNESS_SCALE				0.8f
+#define INDEX_OF_REFRACTION_SCALE	0.306f
+#define SPECULAR_INTENSITY_SCALE	0.1f
+#define METALLIC_SCALE				0.0f
 
 
 EMFluttershy::EMFluttershy () :
@@ -16,9 +21,9 @@ mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLV
 	animationSolverPlayer.EnableNormalization ();
 
 	albedoTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Fluttershy_Diffuse.tga", GX_TRUE, GL_REPEAT, GX_FALSE );
-	normalTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
-	emissionTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
-	parameterTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Cook Torrance parameters.tga", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
+	normalTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE, GL_REPEAT, GX_FALSE );
+	emissionTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE, GL_REPEAT, GX_FALSE );
+	parameterTexture = GXTexture2D::LoadTexture ( L"Textures/System/Default_Diffuse.tga", GX_FALSE, GL_REPEAT, GX_FALSE );
 
 	EMRenderer& renderer = EMRenderer::GetInstance ();
 
@@ -26,6 +31,11 @@ mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLV
 	material.SetNormalTexture ( normalTexture );
 	material.SetEmissionTexture ( emissionTexture );
 	material.SetParameterTexture ( parameterTexture );
+
+	material.SetRoughnessScale ( ROUGHNESS_SCALE );
+	material.SetIndexOfRefractionScale ( INDEX_OF_REFRACTION_SCALE );
+	material.SetSpecularIntensityScale ( SPECULAR_INTENSITY_SCALE );
+	material.SetMetallicScale ( METALLIC_SCALE );
 }
 
 EMFluttershy::~EMFluttershy ()
@@ -41,7 +51,7 @@ EMFluttershy::~EMFluttershy ()
 GXVoid EMFluttershy::Render ( GXFloat deltaTime )
 {
 	EMRenderer& renderer = EMRenderer::GetInstance ();
-	renderer.SetObjectMask ( (GXUPointer)nullptr );
+	renderer.SetObjectMask ( nullptr );
 	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
 
 	material.SetMaximumBlurSamples ( renderer.GetMaximumMotionBlurSamples () );

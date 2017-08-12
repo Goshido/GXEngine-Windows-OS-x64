@@ -52,6 +52,8 @@ class EMMoveTool : public EMTool
 		GXBool OnLeftMouseButtonDown ( GXFloat x, GXFloat y ) override;
 		GXBool OnLeftMouseButtonUp ( GXFloat x, GXFloat y ) override;
 
+		GXBool OnObject ( GXVoid* object ) override;
+
 		GXVoid SetLocalMode ();
 		GXVoid SetWorldMode ();
 
@@ -66,8 +68,6 @@ class EMMoveTool : public EMTool
 		GXFloat GetScaleCorrector ( const GXVec3 &axisLocationView, const GXVec3 &deltaView );
 
 		GXVoid UpdateMeshTransform ( EMMesh &mesh );
-
-		static GXVoid GXCALL OnObject ( GXUPointer object );
 };
 
 

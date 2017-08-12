@@ -6,16 +6,13 @@
 #include "EMLight.h"
 
 
-#define EM_DIRECTED_LIGHT_ACTOR_CLASS		1
-
-
 class EMDirectedLightActor : public EMActor
 {
 	private:
 		EMDirectedLight*	light;
 
 	public:
-		EMDirectedLightActor ( const GXWChar* name, const GXMat4 &transform );
+		EMDirectedLightActor ( const GXWChar* name, const GXTransform &transform );
 		~EMDirectedLightActor () override;
 		
 		GXVoid OnSave ( GXUByte** data ) override;

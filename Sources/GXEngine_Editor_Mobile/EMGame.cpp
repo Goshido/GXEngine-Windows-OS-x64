@@ -70,7 +70,7 @@ GXVoid EMGame::OnInit ()
 	GXFloat h = (GXFloat)coreRenderer.GetHeight ();
 
 	EMRenderer& editorRenderer = EMRenderer::GetInstance ();
-	editorRenderer.SetOnObjectCallback ( &EMGame::OnObject );
+	editorRenderer.SetOnObjectCallback ( this, &EMGame::OnObject );
 
 	filePopup = new EMUIPopup ( nullptr );
 	filePopup->AddItem ( locale.GetString ( L"Main menu->File->New" ), nullptr, nullptr );
@@ -112,16 +112,47 @@ GXVoid EMGame::OnInit ()
 
 	openFile = new EMUIOpenFile ();
 
-	GXMat4 transfrom;
-	GXSetMat4Identity ( transfrom );
-	unitActor = new EMUnitActor ( L"Unit actor 01", transfrom );
+	GXTransform transform;
+	unitActor = new EMUnitActor ( L"Unit actor 01", transform );
 
-	GXSetMat4RotationXY ( transfrom, GXDegToRad ( 30.0f ), GXDegToRad ( 30.0f ) );
-	directedLight = new EMDirectedLightActor ( L"Directed light 01", transfrom );
+	transform.SetLocation ( -3.0f, 0.0f, 0.0f );
+	colliderOne = new EMMeshActor ( L"Collider One", transform );
+	colliderOne->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
+	EMCookTorranceCommonPassMaterial& colliderOneMaterial = colliderOne->GetMaterial ();
+	colliderOneMaterial.SetAlbedoColor ( 253, 180, 17, 255 );
+	colliderOneMaterial.SetRoughnessScale ( 0.25f );
+	colliderOneMaterial.SetIndexOfRefractionScale ( 0.094f );
+	colliderOneMaterial.SetSpecularIntensityScale ( 0.998f );
+	colliderOneMaterial.SetMetallicScale ( 1.0f );
+	colliderOneMaterial.SetEmissionColorScale ( 0.0f );
+
+	transform.SetLocation ( 3.0f, 0.0f, 0.0f );
+	colliderTwo = new EMMeshActor ( L"Collider Two", transform );
+	colliderTwo->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
+	EMCookTorranceCommonPassMaterial& colliderTwoMaterial = colliderTwo->GetMaterial ();
+	colliderTwoMaterial.SetAlbedoColor ( 247, 244, 233, 255 );
+	colliderTwoMaterial.SetRoughnessScale ( 0.19f );
+	colliderTwoMaterial.SetIndexOfRefractionScale ( 0.1f );
+	colliderTwoMaterial.SetSpecularIntensityScale ( 0.998f );
+	colliderTwoMaterial.SetMetallicScale ( 1.0f );
+	colliderTwoMaterial.SetEmissionColorScale ( 0.0f );
+
+	transform.SetLocation ( 6.0f, 0.0f, -.0f );
+	colliderThree = new EMMeshActor ( L"Collider Three", transform );
+	colliderThree->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
+	EMCookTorranceCommonPassMaterial& colliderThreeMaterial = colliderThree->GetMaterial ();
+	colliderThreeMaterial.SetAlbedoColor ( 115, 185, 0, 255 );
+	colliderThreeMaterial.SetRoughnessScale ( 0.5f );
+	colliderThreeMaterial.SetIndexOfRefractionScale ( 0.292f );
+	colliderThreeMaterial.SetSpecularIntensityScale ( 0.75f );
+	colliderThreeMaterial.SetMetallicScale ( 1.0f );
+	colliderThreeMaterial.SetEmissionColorScale ( 0.0f );
+
+	transform.SetRotation ( GXDegToRad ( 30.0f ), GXDegToRad ( 30.0f ), 0.0f );
+	directedLight = new EMDirectedLightActor ( L"Directed light 01", transform );
 
 	moveTool = new EMMoveTool ();
 	moveTool->Bind ();
-	moveTool->SetActor ( unitActor );
 	moveTool->SetLocalMode ();
 
 	hudCamera = new GXCameraOrthographic ( w, h, EM_UI_HUD_CAMERA_NEAR_Z, EM_UI_HUD_CAMERA_FAR_Z );
@@ -162,16 +193,6 @@ GXVoid EMGame::OnInit ()
 	environment.SetEnvironmentMap ( *environmentMap );
 	environment.SetEnvironmentQuasiDistance ( ENVIRONMENT_QUASI_DISTANCE );
 
-	EMCookTorranceCommonPassMaterial& m = unitActor->GetMaterial ();
-	m.SetAlbedoColor ( 253, 180, 17, 255 );
-	//m.SetAlbedoColor ( 0, 0, 0, 255 );
-	//m.SetAlbedoTextureScale ( 0.25f, 0.25f );
-	m.SetRoughnessScale ( 0.25f );
-	m.SetIndexOfRefractionScale ( 0.094f );
-	m.SetSpecularIntencityScale ( 0.998f );
-	m.SetMetallicScale ( 1.0f );
-	m.SetEmissionColorScale ( 0.0f );
-
 	EMUIFPSCounter::GetInstance ();
 	EMUIColorPicker::GetInstance ();
 
@@ -199,6 +220,9 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	renderer.StartCommonPass ();
 
 	unitActor->OnDrawCommonPass ( deltaTime );
+	colliderOne->OnDrawCommonPass ( deltaTime );
+	colliderTwo->OnDrawCommonPass ( deltaTime );
+	colliderThree->OnDrawCommonPass ( deltaTime );
 	physicsBoxActor->Draw ( deltaTime );
 	physicsPlaneActor->Draw ( deltaTime );
 	fluttershy->Render ( deltaTime );
@@ -233,24 +257,6 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	viewerCamera.UpdateLastFrameMatrices ();
 
-	/*GXFloat max = renderer.averageColor.r > renderer.averageColor.g ? renderer.averageColor.r : renderer.averageColor.g;
-	if ( max < renderer.averageColor.b )
-		max = renderer.averageColor.b;
-
-	GXUByte red = (GXUByte)( ( 255.0f * renderer.averageColor.r ) / max );
-	GXUByte green = (GXUByte)( ( 255.0f * renderer.averageColor.g ) / max );
-	GXUByte blue = (GXUByte)( ( 255.0f * renderer.averageColor.b ) / max );*/
-	/*
-	GXUByte red = 255;
-	GXUByte green = 255;
-	GXUByte blue = 255;
-	GXFloat max = 0.0f;
-	*/
-	/*
-	unitActor->GetMaterial ().SetEmissionColor ( red, green, blue );
-	unitActor->GetMaterial ().SetEmissionColorScale ( max );
-	*/
-
 	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
 
 	if ( coreRenderer.IsVisible () ) return;
@@ -276,6 +282,9 @@ GXVoid EMGame::OnDestroy ()
 	GXSafeDelete ( physicsPlaneActor );
 
 	GXSafeDelete ( unitActor );
+	GXSafeDelete ( colliderOne );
+	GXSafeDelete ( colliderTwo );
+	GXSafeDelete ( colliderThree );
 	GXSafeDelete ( directedLight );
 
 	GXSafeDelete ( menu );
@@ -348,12 +357,18 @@ GXVoid GXCALL EMGame::OnMouseButton ( GXVoid* /*handler*/, GXInputMouseFlags mou
 	EMRenderer::GetInstance ().GetObject ( (GXUShort)mouse.x, (GXUShort)mouse.y );
 }
 
-GXVoid GXCALL EMGame::OnObject ( GXUPointer object )
+GXVoid GXCALL EMGame::OnObject ( GXVoid* handler, GXVoid* object )
 {
-	if ( !object ) return;
+	EMGame* game = (EMGame*)handler;
+	if ( game->moveTool->OnObject ( object ) ) return;
 
 	EMActor* actor = (EMActor*)object;
-	GXLogW ( L"EMOnObject::Info - Объект%s (адрес 0x%016X)\n", actor->GetName (), object );
+
+	if ( actor )
+		GXLogW ( L"EMOnObject::Info - Объект %s\n", actor->GetName () );
+
+	game->moveTool->SetActor ( actor );
+	EMViewer::GetInstance ()->SetTarget ( actor );
 }
 
 GXVoid GXCALL EMGame::OnViewerTransformChanged ( GXVoid* handler )

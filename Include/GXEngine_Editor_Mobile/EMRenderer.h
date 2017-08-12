@@ -20,7 +20,7 @@
 #include <GXEngine/GXCameraOrthographic.h>
 
 
-typedef GXVoid ( GXCALL* PFNEMRENDERERONOBJECTPROC ) ( GXUPointer object );
+typedef GXVoid ( GXCALL* PFNEMRENDERERONOBJECTPROC ) ( GXVoid* handler, GXVoid* object );
 
 enum class eEMRenderTarget
 {
@@ -79,6 +79,7 @@ class EMRenderer
 		GXInt											mouseX;
 		GXInt											mouseY;
 		PFNEMRENDERERONOBJECTPROC						OnObject;
+		GXVoid*											handler;
 
 		GXBool											isMotionBlurSettingsChanged;
 		GXUByte											newMaxMotionBlurSamples;
@@ -111,7 +112,7 @@ class EMRenderer
 		GXVoid StartHudColorPass ();
 		GXVoid StartHudMaskPass ();
 
-		GXVoid SetObjectMask ( GXUPointer object );
+		GXVoid SetObjectMask ( GXVoid* object );
 
 		GXVoid ApplySSAO ();
 		GXVoid ApplyMotionBlur ( GXFloat deltaTime );
@@ -119,7 +120,7 @@ class EMRenderer
 
 		GXVoid PresentFrame ( eEMRenderTarget target );
 
-		GXVoid SetOnObjectCallback ( PFNEMRENDERERONOBJECTPROC callback );
+		GXVoid SetOnObjectCallback ( GXVoid* handler, PFNEMRENDERERONOBJECTPROC callback );
 		GXVoid GetObject ( GXUShort x, GXUShort y );
 
 		GXVoid SetMaximumMotionBlurSamples ( GXUByte samples );
@@ -175,7 +176,7 @@ class EMRenderer
 		GXVoid LightUpBySpot ( EMSpotlight* light );
 		GXVoid LightUpByBulp ( EMBulp* light );
 
-		GXUPointer SampleObject ();
+		GXVoid* SampleObject ();
 };
 
 

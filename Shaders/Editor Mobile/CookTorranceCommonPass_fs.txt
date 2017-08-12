@@ -1,13 +1,15 @@
 #version 330 core
 
 
-#define ALBEDO_SLOT				0
-#define NORMAL_SLOT				1
-#define EMISSION_SLOT			2
-#define PARAMETER_SLOT			3
-#define VELOCITY_BLUR_SLOT		4
-#define OBJECT_HI_SLOT			5
-#define OBJECT_LOW_SLOT			6
+#define ALBEDO_SLOT						0
+#define NORMAL_SLOT						1
+#define EMISSION_SLOT					2
+#define PARAMETER_SLOT					3
+#define VELOCITY_BLUR_SLOT				4
+#define OBJECT_HI_SLOT					5
+#define OBJECT_LOW_SLOT					6
+
+#define MAXIMUM_INDEX_OF_REFRACTION		5.0
 
 
 smooth in vec2 v_uvAlbedo;
@@ -61,7 +63,7 @@ void main ()
 	outEmission = texture ( emissionSampler, v_uvEmission ).rgb * emissionScaledColor;
 
 	vec4 parameterSample = texture ( parameterSampler, v_uvParameter );
-	parameterSample.w = parameterSample.w;
+	parameterSample.y *= MAXIMUM_INDEX_OF_REFRACTION;
 	outParameter = parameterSample * parameterScale;
 
 	outVelocityBlur = v_velocityBlur;

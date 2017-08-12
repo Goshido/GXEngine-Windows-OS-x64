@@ -154,7 +154,7 @@ GXVoid EMViewer::OnRotate ( const GXVec2& mouseDelta )
 
 	GXVec3 targetLocation;
 	if ( target )
-		target->GetTransform ().GetW ( targetLocation );
+		target->GetTransform ().GetLocation ( targetLocation );
 	else
 		targetLocation = origin;
 

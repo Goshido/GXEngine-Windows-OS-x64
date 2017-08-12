@@ -474,6 +474,9 @@
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMUIToneMapperSettings.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMMeshActor.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -990,6 +993,9 @@
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMUIToneMapperSettings.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMeshActor.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
   </ItemGroup>

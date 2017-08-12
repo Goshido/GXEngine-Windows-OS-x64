@@ -9,6 +9,7 @@
 #include "EMUIEditBox.h"
 #include "EMDirectedLightActor.h"
 #include "EMUnitActor.h"
+#include "EMMeshActor.h"
 #include "EMMoveTool.h"
 #include "EMPhysicsDrivenActor.h"
 #include "EMFluttershy.h"
@@ -31,6 +32,9 @@ class EMGame : public GXGame
 		EMUIPopup*				effectsPopup;
 		EMDirectedLightActor*	directedLight;
 		EMUnitActor*			unitActor;
+		EMMeshActor*			colliderOne;
+		EMMeshActor*			colliderTwo;
+		EMMeshActor*			colliderThree;
 		EMMoveTool*				moveTool;
 		EMPhysicsDrivenActor*	physicsBoxActor;
 		EMPhysicsDrivenActor*	physicsPlaneActor;
@@ -57,7 +61,7 @@ class EMGame : public GXGame
 		static GXVoid GXCALL OnShowSSAOSettings ( GXVoid* handler );
 		static GXVoid GXCALL OnShowToneMapperSettings ( GXVoid* handler );
 		static GXVoid GXCALL OnMouseButton ( GXVoid* handler, GXInputMouseFlags mouseflags );
-		static GXVoid GXCALL OnObject ( GXUPointer object );
+		static GXVoid GXCALL OnObject ( GXVoid* handler, GXVoid* object );
 		static GXVoid GXCALL OnViewerTransformChanged ( GXVoid* handler );
 		static GXVoid GXCALL OnOpenFile ( const GXWChar* filePath );
 		static GXVoid GXCALL StartBoxFallingSimulation ( GXVoid* handler );

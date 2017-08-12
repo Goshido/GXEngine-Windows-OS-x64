@@ -35,11 +35,14 @@ class GXTransform
 		GXVoid SetScale ( const GXVec3 &scale );
 
 		GXVoid GetLocation ( GXVec3 &loc ) const;
+		const GXVec3& GetLocation () const;
 
 		GXVoid GetRotation ( GXMat4 &rot ) const;
 		GXVoid GetRotation ( GXQuat &rot ) const;
+		const GXMat4& GetRotation () const;
 
 		GXVoid GetScale ( GXVec3 &scale ) const;
+		const GXVec3& GetScale () const;
 
 		const GXMat4& GetCurrentFrameModelMatrix () const;
 		const GXMat4& GetLastFrameModelMatrix () const;

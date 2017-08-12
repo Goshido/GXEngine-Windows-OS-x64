@@ -126,7 +126,7 @@ GXVoid EMRenderer::StartCommonPass ()
 {
 	if ( ( mouseX != -1 || mouseY != -1 ) && OnObject )
 	{
-		OnObject ( SampleObject () );
+		OnObject ( handler, SampleObject () );
 		mouseX = mouseY = -1;
 	}
 
@@ -334,16 +334,17 @@ GXVoid EMRenderer::StartHudMaskPass ()
 	glClear ( GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 }
 
-GXVoid EMRenderer::SetObjectMask ( GXUPointer object )
+GXVoid EMRenderer::SetObjectMask ( GXVoid* object )
 {
-	objectMask[ 0 ] = (GXUByte)( ( object & 0xFF00000000000000 ) >> 56 );
-	objectMask[ 1 ] = (GXUByte)( ( object & 0x00FF000000000000 ) >> 48 );
-	objectMask[ 2 ] = (GXUByte)( ( object & 0x0000FF0000000000 ) >> 40 );
-	objectMask[ 3 ] = (GXUByte)( ( object & 0x000000FF00000000 ) >> 32 );
-	objectMask[ 4 ] = (GXUByte)( ( object & 0x00000000FF000000 ) >> 24 );
-	objectMask[ 5 ] = (GXUByte)( ( object & 0x0000000000FF0000 ) >> 16 );
-	objectMask[ 6 ] = (GXUByte)( ( object & 0x000000000000FF00 ) >> 8 );
-	objectMask[ 7 ] = (GXUByte)( object & 0x00000000000000FF );
+	GXUPointer obj = (GXUPointer)object;
+	objectMask[ 0 ] = (GXUByte)( ( obj & 0xFF00000000000000u ) >> 56 );
+	objectMask[ 1 ] = (GXUByte)( ( obj & 0x00FF000000000000u ) >> 48 );
+	objectMask[ 2 ] = (GXUByte)( ( obj & 0x0000FF0000000000u ) >> 40 );
+	objectMask[ 3 ] = (GXUByte)( ( obj & 0x000000FF00000000u ) >> 32 );
+	objectMask[ 4 ] = (GXUByte)( ( obj & 0x00000000FF000000u ) >> 24 );
+	objectMask[ 5 ] = (GXUByte)( ( obj & 0x0000000000FF0000u ) >> 16 );
+	objectMask[ 6 ] = (GXUByte)( ( obj & 0x000000000000FF00u ) >> 8 );
+	objectMask[ 7 ] = (GXUByte)( obj & 0x00000000000000FFu );
 
 	glVertexAttrib4Nub ( EM_OBJECT_HI_INDEX, objectMask[ 0 ], objectMask[ 1 ], objectMask[ 2 ], objectMask[ 3 ] );
 	glVertexAttrib4Nub ( EM_OBJECT_LOW_INDEX, objectMask[ 4 ], objectMask[ 5 ], objectMask[ 6 ], objectMask[ 7 ] );
@@ -671,9 +672,10 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 	GXCamera::SetActiveCamera ( oldCamera );
 }
 
-GXVoid EMRenderer::SetOnObjectCallback ( PFNEMRENDERERONOBJECTPROC callback )
+GXVoid EMRenderer::SetOnObjectCallback ( GXVoid* handler, PFNEMRENDERERONOBJECTPROC callback )
 {
 	OnObject = callback;
+	this->handler = handler;
 }
 
 GXVoid EMRenderer::GetObject ( GXUShort x, GXUShort y )
@@ -850,6 +852,7 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" ), gaussHorizontalBlurMateria
 	memset ( objectMask, 0, 8 * sizeof ( GXUByte ) );
 	mouseX = mouseY = -1;
 	OnObject = nullptr;
+	handler = nullptr;
 
 	newMaxMotionBlurSamples = DEFAULT_MAX_MOTION_BLUR_SAMPLES;
 	newMotionBlurDepthLimit = DEFAULT_MOTION_BLUR_DEPTH_LIMIT;
@@ -927,7 +930,7 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" ), gaussHorizontalBlurMateria
 
 	importantAreaFilterMaterial.SetImageTexture ( omegaTexture );
 
-	SetObjectMask ( (GXUPointer)nullptr );
+	SetObjectMask ( nullptr );
 
 	EMUIMotionBlurSettings::GetInstance ();
 	EMUISSAOSettings::GetInstance ();
@@ -1126,7 +1129,7 @@ GXVoid EMRenderer::LightUpByBulp ( EMBulp* light )
 	//TODO
 }
 
-GXUPointer EMRenderer::SampleObject ()
+GXVoid* EMRenderer::SampleObject ()
 {
 	GXRenderer& renderer = GXRenderer::GetInstance ();
 	if ( mouseX < 0 || mouseX >= renderer.GetWidth () ) return 0;
@@ -1157,5 +1160,5 @@ GXUPointer EMRenderer::SampleObject ()
 	object |= ( (GXUPointer)objectLow[ 2 ] ) << 8;
 	object |= (GXUPointer)objectLow[ 3 ];
 
-	return object;
+	return (GXVoid*)object;
 }

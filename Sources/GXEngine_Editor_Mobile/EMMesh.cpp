@@ -19,7 +19,6 @@ EMMesh::~EMMesh ()
 
 GXVoid EMMesh::Render ()
 {
-	EMRenderer::GetInstance ().SetObjectMask ( (GXUPointer)this );
 	meshGeometry.Render ();
 }
 

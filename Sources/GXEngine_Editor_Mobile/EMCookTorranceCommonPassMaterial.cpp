@@ -117,7 +117,7 @@ EMCookTorranceCommonPassMaterial::EMCookTorranceCommonPassMaterial ()
 	SetParameterTextureOffset ( DEFAULT_PARAMETER_TEXTURE_OFFSET_U, DEFAULT_PARAMETER_TEXTURE_OFFSET_V );
 	SetRoughnessScale ( DEFAULT_ROUGHNESS_SCALE );
 	SetIndexOfRefractionScale ( DEFAULT_INDEX_OF_REFRACTION_SCALE );
-	SetSpecularIntencityScale ( DEFAULT_SPECULAR_INTECITY_SCALE );
+	SetSpecularIntensityScale ( DEFAULT_SPECULAR_INTECITY_SCALE );
 	SetMetallicScale ( DEFAULT_METALLIC_SCALE );
 
 	SetDeltaTime ( DEFAULT_DELTA_TIME );
@@ -218,6 +218,17 @@ GXVoid EMCookTorranceCommonPassMaterial::SetAlbedoTexture ( GXTexture2D &texture
 	albedoTexture = &texture;
 }
 
+GXVoid EMCookTorranceCommonPassMaterial::GetAlbedoTexture ( GXTexture2D &texture )
+{
+	if ( albedoTexture )
+	{
+		texture = *albedoTexture;
+		return;
+	}
+
+	texture = GXTexture2D ();
+}
+
 GXVoid EMCookTorranceCommonPassMaterial::SetAlbedoTextureScale ( GXFloat scaleU, GXFloat scaleV )
 {
 	albedoTextureScaleOffset.x = scaleU;
@@ -260,6 +271,17 @@ GXVoid EMCookTorranceCommonPassMaterial::SetNormalTexture ( GXTexture2D &texture
 	normalTexture = &texture;
 }
 
+GXVoid EMCookTorranceCommonPassMaterial::GetNormalTexture ( GXTexture2D &texture )
+{
+	if ( normalTexture )
+	{
+		texture = *normalTexture;
+		return;
+	}
+
+	texture = GXTexture2D ();
+}
+
 GXVoid EMCookTorranceCommonPassMaterial::SetNormalTextureScale ( GXFloat scaleU, GXFloat scaleV )
 {
 	normalTextureScaleOffset.x = scaleU;
@@ -287,6 +309,17 @@ GXVoid EMCookTorranceCommonPassMaterial::GetNormalTextureOffset ( GXVec2 &offset
 GXVoid EMCookTorranceCommonPassMaterial::SetEmissionTexture ( GXTexture2D &texture )
 {
 	emissionTexture = &texture;
+}
+
+GXVoid EMCookTorranceCommonPassMaterial::GetEmissionTexture ( GXTexture2D &texture )
+{
+	if ( emissionTexture )
+	{
+		texture = *emissionTexture;
+		return;
+	}
+
+	texture = GXTexture2D ();
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetEmissionTextureScale ( GXFloat scaleU, GXFloat scaleV )
@@ -342,6 +375,17 @@ GXVoid EMCookTorranceCommonPassMaterial::SetParameterTexture ( GXTexture2D &text
 	parameterTexture = &texture;
 }
 
+GXVoid EMCookTorranceCommonPassMaterial::GetParameterTexture ( GXTexture2D &texture )
+{
+	if ( parameterTexture )
+	{
+		texture = *parameterTexture;
+		return;
+	}
+
+	texture = GXTexture2D ();
+}
+
 GXVoid EMCookTorranceCommonPassMaterial::SetParameterTextureScale ( GXFloat scaleU, GXFloat scaleV )
 {
 	parameterTextureScaleOffset.x = scaleU;
@@ -386,12 +430,12 @@ GXFloat EMCookTorranceCommonPassMaterial::GetIndexOfRefractionScale () const
 	return parameterScale.y;
 }
 
-GXVoid EMCookTorranceCommonPassMaterial::SetSpecularIntencityScale ( GXFloat scale )
+GXVoid EMCookTorranceCommonPassMaterial::SetSpecularIntensityScale ( GXFloat scale )
 {
 	parameterScale.z = scale;
 }
 
-GXFloat EMCookTorranceCommonPassMaterial::GetSpecularIntencityScale () const
+GXFloat EMCookTorranceCommonPassMaterial::GetSpecularIntensityScale () const
 {
 	return parameterScale.z;
 }

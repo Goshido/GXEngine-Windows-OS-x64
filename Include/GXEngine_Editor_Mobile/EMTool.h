@@ -36,6 +36,8 @@ class EMTool
 		virtual GXBool OnKeyDown ( GXInt keyCode );
 		virtual GXBool OnKeyUp ( GXInt keyCode );
 
+		virtual GXBool OnObject ( GXVoid* object ) = 0;
+
 		static EMTool* GXCALL GetActiveTool ();
 		static GXVoid GXCALL SetActiveTool ( EMTool* tool );
 };

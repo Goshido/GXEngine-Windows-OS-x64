@@ -1,4 +1,5 @@
 #include <GXEngine_Editor_Mobile/EMRotateGismo.h>
+#include <GXEngine_Editor_Mobile/EMRenderer.h>
 #include <GXEngine/GXSamplerUtils.h>
 
 
@@ -46,6 +47,8 @@ GXVoid EMRotateGismo::Show ()
 GXVoid EMRotateGismo::Render ()
 {
 	if ( !isVisible ) return;
+
+	EMRenderer::GetInstance ().SetObjectMask ( nullptr );
 
 	unlitMaterial.Bind ( mesh );
 

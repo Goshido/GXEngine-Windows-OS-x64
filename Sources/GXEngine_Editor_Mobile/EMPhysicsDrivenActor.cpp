@@ -99,6 +99,8 @@ GXVoid EMPhysicsDrivenActor::Draw ( GXFloat deltaTime )
 	GXQuat rot = rigidBody->GetRotation ();
 	GXQuatRehandCoordinateSystem ( rot );
 	mesh->SetRotation ( rot );
+	
+	renderer.SetObjectMask ( nullptr );
 
 	material.SetDeltaTime ( deltaTime );
 	material.SetExposure ( renderer.GetMotionBlurExposure () );
