@@ -288,6 +288,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMVelocityTileMaxMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMVertexColorMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMViewer.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMWireframeMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\Main.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXBoxShape.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXCollisionData.cpp" />
@@ -461,12 +462,13 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMVelocityTileMaxMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMVertexColorMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMViewer.h" />
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMWireframeMaterial.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXBoxShape.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXCollisionData.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXCollisionDetector.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXContact.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXContactResolver.h" />
-    <ClInclude Include="..\..\Include\GXPhysics\GXContactsGenerator.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXContactGenerator.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXForceGenerator.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXGravity.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXPhysicsEngine.h" />
@@ -524,6 +526,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Text Include="..\..\Shaders\System\EquirectangularToCubeMap_fs.txt" />
     <Text Include="..\..\Shaders\System\CubeMapSplitter_gs.txt" />
     <Text Include="..\..\Shaders\System\Texture2DGammaCorrector_fs.txt" />
+    <Text Include="..\..\Shaders\System\TriangleToLines_gs.txt" />
     <Text Include="..\..\Shaders\System\VertexPass_vs.txt" />
     <Text Include="..\..\Shaders\System\GaussDownsamplerX16_First_Pass_fs.txt" />
     <Text Include="..\..\Shaders\System\GaussDownsamplerX16_First_Pass_vs.txt" />

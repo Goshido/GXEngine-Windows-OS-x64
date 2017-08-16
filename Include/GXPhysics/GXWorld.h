@@ -41,6 +41,8 @@ class GXWorld
 
 		GXVoid RunPhysics ( GXFloat deltaTime );
 
+		const GXCollisionData& GetCollisionData () const;
+
 	private:
 		GXRigidBodyRegistration* FindRigidBodyRegistration ( GXRigidBody &body );
 		GXForceGeneratorsRegistration* FindForceGeneratorRegistration ( GXRigidBody &body, GXForceGenerator &generator );

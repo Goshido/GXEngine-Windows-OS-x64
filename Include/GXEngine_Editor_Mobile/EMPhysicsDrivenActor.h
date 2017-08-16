@@ -2,36 +2,43 @@
 #define EM_PHYSICS_DRIVEN_ACTOR
 
 
-#include "EMMesh.h"
+#include "EMActor.h"
 #include "EMCookTorranceCommonPassMaterial.h"
+#include "EMWireframeMaterial.h"
+#include <GXEngine/GXMeshGeometry.h>
 #include <GXPhysics/GXRigidBody.h>
-#include <GXPhysics/GXShape.h>
 
 
-enum class eEMPhysicsDrivenActorType
-{
-	Box,
-	Plane,
-	Sphere
-};
-
-class EMPhysicsDrivenActor
+class EMPhysicsDrivenActor : public EMActor
 {
 	private:
-		EMMesh*								mesh;
-		GXRigidBody*						rigidBody;
+		GXRigidBody							rigidBody;
+		GXMeshGeometry						mesh;
+		GXTexture2D							albedo;
+		GXTexture2D							normal;
+		GXTexture2D							emission;
+		GXTexture2D							parameter;
 		EMCookTorranceCommonPassMaterial	material;
-		GXTexture2D							diffuseTexture;
-		GXTexture2D							normalTexture;
-		GXTexture2D							emissionTexture;
-		GXTexture2D							parameterTexture;
+
+		EMWireframeMaterial*				wireframeMaterial;
+		GXMeshGeometry						unitSphereMesh;
+		GXMeshGeometry						unitCubeMesh;
 
 	public:
-		explicit EMPhysicsDrivenActor ( eGXShapeType type );
-		~EMPhysicsDrivenActor ();
+		explicit EMPhysicsDrivenActor ( const GXWChar* name, const GXTransform &transform );
+		~EMPhysicsDrivenActor () override;
+
+		GXVoid OnDrawCommonPass ( GXFloat deltaTime ) override;
+		GXVoid OnDrawHudColorPass () override;
+		GXVoid OnTransformChanged () override;
+
+		GXVoid SetMesh ( const GXWChar* meshFile );
 
 		GXRigidBody& GetRigidBody ();
-		GXVoid Draw ( GXFloat deltaTime );
+		EMCookTorranceCommonPassMaterial& GetMaterial ();
+
+		GXVoid EnablePhysicsDebug ();
+		GXVoid DisablePhysicsDebug ();
 };
 
 

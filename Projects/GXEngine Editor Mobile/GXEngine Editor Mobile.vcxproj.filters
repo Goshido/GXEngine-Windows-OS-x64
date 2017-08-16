@@ -477,6 +477,9 @@
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMMeshActor.cpp">
       <Filter>Source Files\GXEngine Editor Mobile</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMWireframeMaterial.cpp">
+      <Filter>Source Files\GXEngine Editor Mobile</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -821,9 +824,6 @@
     <ClInclude Include="..\..\Include\GXPhysics\GXContactResolver.h">
       <Filter>Header Files\GXPhysics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXContactsGenerator.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMPhysicsDrivenActor.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
@@ -996,6 +996,12 @@
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMMeshActor.h">
+      <Filter>Header Files\GXEngine Editor Mobile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPhysics\GXContactGenerator.h">
+      <Filter>Header Files\GXPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMWireframeMaterial.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1208,6 +1214,9 @@
     </Text>
     <Text Include="..\..\Shaders\Editor Mobile\LuminanceTripletReducer_fs.txt">
       <Filter>Shaders\GXEngine Editor Mobile</Filter>
+    </Text>
+    <Text Include="..\..\Shaders\System\TriangleToLines_gs.txt">
+      <Filter>Shaders\System</Filter>
     </Text>
   </ItemGroup>
 </Project>

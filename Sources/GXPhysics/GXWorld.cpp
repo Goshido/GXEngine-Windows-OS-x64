@@ -1,7 +1,7 @@
 //version 1.0
 
 #include <GXPhysics/GXWorld.h>
-#include <GXPhysics/GXContactsGenerator.h>
+#include <GXPhysics/GXContactGenerator.h>
 #include <GXCommon/GXLogger.h>
 
 struct GXRigidBodyRegistration
@@ -176,9 +176,11 @@ GXVoid GXWorld::ClearForceGeneratorRegistrations ()
 
 GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 {
+	collisions.Reset ();
+
 	// We do not do anything unless 2 rigid bodies were registered
 	if ( !bodies || !bodies->next ) return;
-
+	/*
 	for ( GXForceGeneratorsRegistration* p = forceGenerators; p; p = p->next )
 		p->generator->UpdateForce ( *p->body, deltaTime );
 
@@ -193,7 +195,7 @@ GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 		reg->generator->AddContact ( collisions );
 		if ( !collisions.HasMoreContacts () ) break;
 	}
-	
+	*/
 	for ( GXRigidBodyRegistration* p = bodies; p->next; p = p->next )
 	{
 		for ( GXRigidBodyRegistration* q = p->next; q; q = q->next )
@@ -202,79 +204,22 @@ GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 			GXShape& shapeB = q->body->GetShape ();
 
 			collisionDetector.CheckViaGJK ( shapeA, shapeB, collisions );
-
-			/*switch ( shapeA.GetType () )
-			{
-				case eGXShapeType::Box:
-				{
-					switch ( shapeB.GetType () )
-					{
-						case eGXShapeType::Plane:
-							collisionDetector.CheckBoxAndHalfSpace ( (const GXBoxShape&)shapeA, (const GXPlaneShape&)shapeB, collisions );
-						break;
-
-						case eGXShapeType::Sphere:
-							collisionDetector.CheckBoxAndSphere ( (const GXBoxShape&)shapeA, (const GXSphereShape&)shapeB, collisions );
-						break;
-
-						case eGXShapeType::Box:
-							collisionDetector.CheckBoxAndBox ( (const GXBoxShape&)shapeA, (const GXBoxShape&)shapeB, collisions );
-						break;
-					}
-				}
-				break;
-
-				case eGXShapeType::Plane:
-				{
-					switch ( shapeB.GetType () )
-					{
-						case eGXShapeType::Sphere:
-							collisionDetector.CheckSphereAndTruePlane ( (const GXSphereShape&)shapeB, (const GXPlaneShape&)shapeA, collisions );
-						break;
-
-						case eGXShapeType::Box:
-							collisionDetector.CheckBoxAndHalfSpace ( (const GXBoxShape&)shapeB, (const GXPlaneShape&)shapeA, collisions );
-						break;
-					}
-				}
-				break;
-
-				case eGXShapeType::Sphere:
-				{
-					switch ( shapeB.GetType () )
-					{
-						case eGXShapeType::Plane:
-							collisionDetector.CheckSphereAndTruePlane ( (const GXSphereShape&)shapeA, (const GXPlaneShape&)shapeB, collisions );
-						break;
-
-						case eGXShapeType::Sphere:
-							collisionDetector.CheckSphereAndSphere ( (const GXSphereShape&)shapeA, (const GXSphereShape&)shapeB, collisions );
-						break;
-
-						case eGXShapeType::Box:
-							collisionDetector.CheckBoxAndSphere ( (const GXBoxShape&)shapeB, (const GXSphereShape&)shapeA, collisions );
-						break;
-					}
-				}
-				break;
-			}*/
 		}
 	}
-	
+	/*
 	if ( isCalculateIterations )
 	{
 		GXUInt numIterations = collisions.GetTotalContacts () * 4;
 		contactResolver.SetPositionIterations ( numIterations );
 		contactResolver.SetVelocityIterations ( numIterations );
 	}
-	
-	if ( collisions.GetTotalContacts () > 0 )
-	{
-		GXLogW ( L"GXWorld::RunPhysics::Info - Contacts %i\n", collisions.GetTotalContacts () );
-	}
-	
-	contactResolver.ResolveContacts ( collisions.GetAllContacts (), collisions.GetTotalContacts (), deltaTime );
-	collisions.Reset ();
+	*/
+	//contactResolver.ResolveContacts ( collisions.GetAllContacts (), collisions.GetTotalContacts (), deltaTime );
+}
+
+const GXCollisionData& GXWorld::GetCollisionData () const
+{
+	return collisions;
 }
 
 GXRigidBodyRegistration* GXWorld::FindRigidBodyRegistration ( GXRigidBody &body )

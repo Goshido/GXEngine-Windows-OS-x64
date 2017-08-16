@@ -17,31 +17,44 @@
 #include <GXEngine/GXGame.h>
 #include <GXEngine/GXTextureCubeMap.h>
 #include <GXEngine/GXCameraOrthographic.h>
+#include <GXPhysics/GXSphereShape.h>
 
 
 class EMGame : public GXGame
 {
 	private:
 		GXCameraOrthographic*	hudCamera;
-		EMUIMenu*				menu;
+
 		EMUIOpenFile*			openFile;
+
+		EMUIMenu*				menu;
 		EMUIPopup*				filePopup;
 		EMUIPopup*				createPopup;
 		EMUIPopup*				toolsPopup;
 		EMUIPopup*				utilityPopup;
 		EMUIPopup*				effectsPopup;
+
+		GXHudSurface*			physicsInfo;
+		GXFont					physicsInfoFont;
+		GXTexture2D				physicsInfoBackgroundTexture;
+
 		EMDirectedLightActor*	directedLight;
+
 		EMUnitActor*			unitActor;
-		EMMeshActor*			colliderOne;
-		EMMeshActor*			colliderTwo;
-		EMMeshActor*			colliderThree;
+		EMPhysicsDrivenActor*	colliderOne;
+		EMPhysicsDrivenActor*	colliderTwo;
+		EMMeshActor*			sphere;
+		EMMeshActor*			plane;
+
 		EMMoveTool*				moveTool;
-		EMPhysicsDrivenActor*	physicsBoxActor;
-		EMPhysicsDrivenActor*	physicsPlaneActor;
+
 		EMFluttershy*			fluttershy;
+
 		GXTextureCubeMap*		environmentMap;
 		GXTextureCubeMap*		lightProbeSourceTexture;
+
 		EMLightProbe*			lightProbe;
+
 		GXUIInput*				uiInput;
 
 	public:
@@ -64,7 +77,6 @@ class EMGame : public GXGame
 		static GXVoid GXCALL OnObject ( GXVoid* handler, GXVoid* object );
 		static GXVoid GXCALL OnViewerTransformChanged ( GXVoid* handler );
 		static GXVoid GXCALL OnOpenFile ( const GXWChar* filePath );
-		static GXVoid GXCALL StartBoxFallingSimulation ( GXVoid* handler );
 };
 
 

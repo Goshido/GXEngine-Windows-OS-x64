@@ -31,6 +31,8 @@
 
 GXRigidBody::GXRigidBody ()
 {
+	shape = nullptr;
+
 	SetMass ( DEFAULT_MASS );
 
 	GXVec3 vec ( DEFAULT_LOCATION_X, DEFAULT_LOCATION_Y, DEFAULT_LOCATION_Z );
@@ -54,8 +56,6 @@ GXRigidBody::GXRigidBody ()
 
 	DisableKinematic ();
 	ClearAccumulators ();
-
-	shape = nullptr;
 }
 
 GXRigidBody::~GXRigidBody ()
@@ -99,11 +99,19 @@ const GXMat3& GXRigidBody::GetInverseInertiaTensorWorld () const
 GXVoid GXRigidBody::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 {
 	location = GXCreateVec3 ( x, y, z );
+	transform.SetW ( location );
+	
+	if ( shape )
+		shape->CalculateCacheData ();
 }
 
 GXVoid GXRigidBody::SetLocation ( const GXVec3 &location )
 {
 	this->location = location;
+	transform.SetW ( location );
+	
+	if ( shape )
+		shape->CalculateCacheData ();
 }
 
 const GXVec3& GXRigidBody::GetLocation () const
@@ -114,6 +122,10 @@ const GXVec3& GXRigidBody::GetLocation () const
 GXVoid GXRigidBody::SetRotaton ( const GXQuat &rotation )
 {
 	this->rotation = rotation;
+	transform.From ( rotation, location );
+
+	if ( shape )
+		shape->CalculateCacheData ();
 }
 
 const GXQuat& GXRigidBody::GetRotation () const

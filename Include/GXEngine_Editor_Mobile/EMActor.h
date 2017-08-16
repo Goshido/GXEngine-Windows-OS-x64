@@ -15,7 +15,8 @@ enum class eEMActorType : GXUBigInt
 	Abstact = 0,
 	DirectedLight = 1,
 	UnitCube = 2,
-	Mesh = 3
+	Mesh = 3,
+	PhysicsDrivenActor = 4
 };
 
 

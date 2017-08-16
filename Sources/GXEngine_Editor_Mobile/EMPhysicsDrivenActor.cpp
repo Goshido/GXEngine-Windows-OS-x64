@@ -1,116 +1,183 @@
 #include <GXEngine_Editor_Mobile/EMPhysicsDrivenActor.h>
 #include <GXEngine_Editor_Mobile/EMRenderer.h>
 #include <GXEngine/GXRenderer.h>
-#include <GXPhysics/GXBoxShape.h>
-#include <GXPhysics/GXPlaneShape.h>
-#include <GXPhysics/GXSphereShape.h>
-#include <GXPhysics/GXPolygonShape.h>
-#include <GXCommon/GXMemory.h>
+#include <GXEngine/GXLocale.h>
+#include <GXPhysics/GXPhysicsEngine.h>
 #include <GXCommon/GXLogger.h>
 
 
-EMPhysicsDrivenActor::EMPhysicsDrivenActor ( eGXShapeType type )
+#define DEFAULT_ALBEDO_TEXTURE					L"Textures/System/Default_Diffuse.tga"
+#define DEFAULT_NORMAL_TEXTURE					L"Textures/Editor Mobile/Default Normals.tex"
+#define DEFAULT_EMISSION_TEXTURE				L"Textures/System/Default_Diffuse.tga"
+#define DEFAULT_PARAMETER_TEXTURE				L"Textures/System/Default_Diffuse.tga"
+
+#define DEFAULT_EMISSION_SCALE					0.0f
+#define DEFAULT_ROUGHNESS_SCALE					0.25f
+#define DEFAULT_INDEX_OF_REFRACTION__SCALE		0.094f
+#define DEFAULT_SPECULAR_INTENSITY				0.2f
+#define DEFAULT_METALLIC_SCALE					1.0f
+
+#define SHAPE_COLOR_RED							115
+#define SHAPE_COLOR_GREEN						255
+#define SHAPE_COLOR_BLUE						0
+#define SHAPE_COLOR_ALPHA						50
+
+
+EMPhysicsDrivenActor::EMPhysicsDrivenActor ( const GXWChar* name, const GXTransform& transform ):
+EMActor ( name, eEMActorType::PhysicsDrivenActor, transform )
 {
-	diffuseTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/gui_folder_icon.png", GX_TRUE, GL_REPEAT, GX_FALSE );
-	normalTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE, GL_REPEAT, GX_FALSE );
-	emissionTexture = GXTexture2D::LoadTexture ( L"Textures/System/Default_Emission.tga", GX_FALSE, GL_REPEAT, GX_FALSE );
-	parameterTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Cook Torrance parameters.tga", GX_FALSE, GL_REPEAT, GX_FALSE );
+	rigidBody.SetLocation ( transform.GetLocation () );
+	rigidBody.SetRotaton ( GXCreateQuat ( transform.GetRotation () ) );
 
-	EMRenderer& renderer = EMRenderer::GetInstance ();
+	albedo = GXTexture2D::LoadTexture ( DEFAULT_ALBEDO_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
+	normal = GXTexture2D::LoadTexture ( DEFAULT_NORMAL_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
+	emission = GXTexture2D::LoadTexture ( DEFAULT_EMISSION_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
+	parameter = GXTexture2D::LoadTexture ( DEFAULT_PARAMETER_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
 
-	material.SetAlbedoTexture ( diffuseTexture );
-	material.SetNormalTexture ( normalTexture );
-	material.SetEmissionTexture ( emissionTexture );
-	material.SetParameterTexture ( parameterTexture );
+	material.SetAlbedoTexture ( albedo );
+	material.SetNormalTexture ( normal );
+	material.SetEmissionTexture ( emission );
+	material.SetParameterTexture ( parameter );
 
-	rigidBody = new GXRigidBody ();
+	material.SetEmissionColorScale ( DEFAULT_EMISSION_SCALE );
+	material.SetRoughnessScale ( DEFAULT_ROUGHNESS_SCALE );
+	material.SetIndexOfRefractionScale ( DEFAULT_INDEX_OF_REFRACTION__SCALE );
+	material.SetSpecularIntensityScale ( DEFAULT_SPECULAR_INTENSITY );
+	material.SetMetallicScale ( DEFAULT_METALLIC_SCALE );
 
-	switch ( type )
-	{
-		case eGXShapeType::Box:
-		{
-			mesh = new EMMesh ( L"3D Models/System/Unit Cube.stm" );
-			GXBoxShape* box = new GXBoxShape ( rigidBody, 1.0f, 1.0f, 1.0f );
-			rigidBody->SetShape ( *box );
-		}
-		break;
+	GXPhysicsEngine::GetInstance ().GetWorld ().RegisterRigidBody ( rigidBody );
 
-		case eGXShapeType::Plane:
-		{
-			mesh = nullptr;
-
-			GXPlane plane;
-			plane.a = 0.0f;
-			plane.b = 1.0f;
-			plane.c = 0.0f;
-			plane.d = -2.0f;
-
-			GXPlaneShape* p = new GXPlaneShape ( nullptr, plane );
-			rigidBody->SetShape ( *p );
-		}
-		break;
-
-		case eGXShapeType::Sphere:
-		{
-			mesh = new EMMesh ( L"3D Models/System/Unit Cube.stm" );
-			GXSphereShape* p = new GXSphereShape ( rigidBody, 0.5f );
-			rigidBody->SetShape ( *p );
-		}
-		break;
-
-		case eGXShapeType::Polygon:
-		{
-			mesh = new EMMesh ( L"3D Models/System/Unit Cube.stm" );
-			//GXPolygonShape* p = new GXPolygonShape ( nullptr, 30.0f, 30.0f );
-
-			GXBoxShape* box = new GXBoxShape ( rigidBody, 100.0f, 1.0f, 100.0f );
-			rigidBody->SetShape ( *box );
-			rigidBody->EnableKinematic ();
-		}
-	}
+	wireframeMaterial = nullptr;
 }
 
 EMPhysicsDrivenActor::~EMPhysicsDrivenActor ()
 {
-	GXTexture2D::RemoveTexture ( diffuseTexture );
-	GXTexture2D::RemoveTexture ( normalTexture );
-	GXTexture2D::RemoveTexture ( emissionTexture );
-	GXTexture2D::RemoveTexture ( parameterTexture );
-	GXSafeDelete ( mesh );
-	delete rigidBody;
+	GXTexture2D::RemoveTexture ( albedo );
+	GXTexture2D::RemoveTexture ( normal );
+	GXTexture2D::RemoveTexture ( emission );
+	GXTexture2D::RemoveTexture ( parameter );
+
+	GXMeshGeometry::RemoveMeshGeometry ( mesh );
+
+	GXPhysicsEngine::GetInstance ().GetWorld ().UnregisterRigidBody ( rigidBody );
+
+	if ( !wireframeMaterial ) return;
+
+	delete wireframeMaterial;
+	GXMeshGeometry::RemoveMeshGeometry ( unitSphereMesh );
+	GXMeshGeometry::RemoveMeshGeometry ( unitCubeMesh );
+}
+
+GXVoid EMPhysicsDrivenActor::OnDrawCommonPass ( GXFloat deltaTime )
+{
+	if ( !isVisible ) return;
+
+	EMRenderer& renderer = EMRenderer::GetInstance ();
+	renderer.SetObjectMask ( this );
+
+	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
+
+	material.SetMaximumBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
+	material.SetExposure ( renderer.GetMotionBlurExposure () );
+	material.SetDeltaTime ( deltaTime );
+	material.SetScreenResolution ( (GXUShort)coreRenderer.GetWidth (), (GXUShort)coreRenderer.GetHeight () );
+	material.Bind ( transform );
+	mesh.Render ();
+	material.Unbind ();
+
+	renderer.SetObjectMask ( nullptr );
+	transform.UpdateLastFrameModelMatrix ();
+}
+
+GXVoid EMPhysicsDrivenActor::OnDrawHudColorPass ()
+{
+	if ( !wireframeMaterial ) return;
+
+	GXTransform tr;
+	tr.SetLocation ( rigidBody.GetLocation () );
+	tr.SetRotation ( rigidBody.GetRotation () );
+
+	switch ( rigidBody.GetShape ().GetType () )
+	{
+		case eGXShapeType::Box:
+			wireframeMaterial->Bind ( tr );
+			unitCubeMesh.Render ();
+			wireframeMaterial->Unbind ();
+		break;
+
+		case eGXShapeType::Plane:
+			//NOT SUPPORTED YET
+		return;
+
+		case eGXShapeType::Polygon:
+			//NOT SUPPORTED YET
+		return;
+
+		case eGXShapeType::Sphere:
+			wireframeMaterial->Bind ( tr );
+			unitSphereMesh.Render ();
+			wireframeMaterial->Unbind ();
+		break;
+
+		default:
+			//NOTHING
+		break;
+	}
+}
+
+GXVoid EMPhysicsDrivenActor::OnTransformChanged ()
+{
+	rigidBody.SetLocation ( transform.GetLocation () );
+}
+
+GXVoid EMPhysicsDrivenActor::SetMesh ( const GXWChar* meshFile )
+{
+	GXMeshGeometry::RemoveMeshGeometry ( mesh );
+
+	GXWChar* extension = nullptr;
+	GXGetFileExtension ( &extension, meshFile );
+
+	if ( GXWcscmp ( extension, L"obj" ) == 0 || GXWcscmp ( extension, L"OBJ" ) == 0 )
+		mesh = GXMeshGeometry::LoadFromObj ( meshFile );
+	else if ( GXWcscmp ( extension, L"stm" ) == 0 || GXWcscmp ( extension, L"STM" ) == 0 )
+		mesh = GXMeshGeometry::LoadFromStm ( meshFile );
+	else if ( GXWcscmp ( extension, L"skm" ) == 0 || GXWcscmp ( extension, L"SKM" ) == 0 )
+		mesh = GXMeshGeometry::LoadFromStm ( meshFile );
+	else
+	{
+		const GXWChar* message = GXLocale::GetInstance ().GetString ( L"EMPhysicsDrivenActor::SetMesh::Error - Can't load mesh %s. Unknown format %s" );
+		GXLogW ( message, meshFile, extension );
+	}
+
+	free ( extension );
 }
 
 GXRigidBody& EMPhysicsDrivenActor::GetRigidBody ()
 {
-	return *rigidBody;
+	return rigidBody;
 }
 
-GXVoid EMPhysicsDrivenActor::Draw ( GXFloat deltaTime )
+EMCookTorranceCommonPassMaterial& EMPhysicsDrivenActor::GetMaterial ()
 {
-	if ( !mesh ) return;
+	return material;
+}
 
-	GXBoxShape& s = (GXBoxShape&)rigidBody->GetShape ();
-	EMRenderer& renderer = EMRenderer::GetInstance ();
-	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
+GXVoid EMPhysicsDrivenActor::EnablePhysicsDebug ()
+{
+	if ( wireframeMaterial ) return;
 
-	mesh->SetLocation ( rigidBody->GetLocation () );
-	mesh->SetScale ( s.GetWidth (), s.GetHeight (), s.GetDepth () );
+	wireframeMaterial = new EMWireframeMaterial ();
+	wireframeMaterial->SetColor ( SHAPE_COLOR_RED, SHAPE_COLOR_GREEN, SHAPE_COLOR_BLUE, SHAPE_COLOR_ALPHA );
 
-	GXQuat rot = rigidBody->GetRotation ();
-	GXQuatRehandCoordinateSystem ( rot );
-	mesh->SetRotation ( rot );
-	
-	renderer.SetObjectMask ( nullptr );
+	unitSphereMesh = GXMeshGeometry::LoadFromObj ( L"3D Models/System/Unit Sphere.obj" );
+	unitCubeMesh = GXMeshGeometry::LoadFromStm ( L"3D Models/System/Unit Cube.stm" );
+}
 
-	material.SetDeltaTime ( deltaTime );
-	material.SetExposure ( renderer.GetMotionBlurExposure () );
-	material.SetScreenResolution ( (GXUShort)coreRenderer.GetWidth (), (GXUShort)coreRenderer.GetHeight () );
-	material.SetMaximumBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
-	material.Bind ( *mesh );
+GXVoid EMPhysicsDrivenActor::DisablePhysicsDebug ()
+{
+	if ( !wireframeMaterial ) return;
 
-	mesh->Render ();
-
-	material.Unbind ();
-
-	mesh->UpdateLastFrameModelMatrix ();
+	GXSafeDelete ( wireframeMaterial );
+	GXMeshGeometry::RemoveMeshGeometry ( unitSphereMesh );
+	GXMeshGeometry::RemoveMeshGeometry ( unitCubeMesh );
 }

@@ -39,8 +39,6 @@ EMActor ( name, eEMActorType::Mesh, transform )
 
 EMMeshActor::~EMMeshActor ()
 {
-	GXTexture2D texture;
-
 	GXTexture2D::RemoveTexture ( albedo );
 	GXTexture2D::RemoveTexture ( normal );
 	GXTexture2D::RemoveTexture ( emission );

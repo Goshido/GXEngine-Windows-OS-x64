@@ -147,3 +147,5 @@ Tone mapper settings->Apply~Apply~
 
 EMMeshActor::SetMesh::Error - Can't load mesh %s. Unknown format %s~EMMeshActor::SetMesh::Error - Can't load mesh %s. Unknown format %s
 ~
+
+EMGame->Physics info->Contacts: %i~Contacts: %i~

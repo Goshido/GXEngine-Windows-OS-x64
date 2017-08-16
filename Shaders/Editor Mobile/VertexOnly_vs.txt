@@ -1,14 +1,15 @@
 #version 330 core
 
 
-#define GX_VERTEX_INDEX		0
+#define CURRENT_FRAME_VERTEX_STREAM	0
 
-layout ( location = GX_VERTEX_INDEX ) in vec3 vertex;
 
-uniform mat4 mod_view_proj_mat;
+layout ( location = CURRENT_FRAME_VERTEX_STREAM ) in vec3 vertex;
+
+uniform mat4 currentFrameModelViewProjectionMatrix;
 
 
 void main ()
 {
-	gl_Position = mod_view_proj_mat * vec4 ( vertex, 1.0 );
+	gl_Position = currentFrameModelViewProjectionMatrix * vec4 ( vertex, 1.0 );
 }

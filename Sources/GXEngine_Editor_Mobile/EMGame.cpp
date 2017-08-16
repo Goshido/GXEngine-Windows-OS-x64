@@ -23,23 +23,32 @@ EMGame::EMGame ()
 {
 	hudCamera = nullptr;
 
-	openFile = nullptr;
-	filePopup = nullptr;
-
 	menu = nullptr;
+
+	openFile = nullptr;
+
+	filePopup = nullptr;
 	createPopup = nullptr;
 	toolsPopup = nullptr;
 	utilityPopup = nullptr;
 	effectsPopup = nullptr;
 
 	directedLight = nullptr;
+
 	unitActor = nullptr;
+	colliderOne = nullptr;
+	colliderTwo = nullptr;
+	sphere = nullptr;
+	plane = nullptr;
+
 	moveTool = nullptr;
 
-	physicsBoxActor = nullptr;
-	physicsPlaneActor = nullptr;
-
 	fluttershy = nullptr;
+
+	environmentMap = nullptr;
+	lightProbeSourceTexture = nullptr;
+
+	lightProbe = nullptr;
 
 	uiInput = nullptr;
 }
@@ -72,6 +81,8 @@ GXVoid EMGame::OnInit ()
 	EMRenderer& editorRenderer = EMRenderer::GetInstance ();
 	editorRenderer.SetOnObjectCallback ( this, &EMGame::OnObject );
 
+	openFile = new EMUIOpenFile ();
+
 	filePopup = new EMUIPopup ( nullptr );
 	filePopup->AddItem ( locale.GetString ( L"Main menu->File->New" ), nullptr, nullptr );
 	filePopup->AddItem ( locale.GetString ( L"Main menu->File->Open" ), nullptr, nullptr );
@@ -81,7 +92,7 @@ GXVoid EMGame::OnInit ()
 
 	createPopup = new EMUIPopup ( nullptr );
 	createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Unit Actor" ), nullptr, nullptr );
-	createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Box falling" ), this, &EMGame::StartBoxFallingSimulation );
+	createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Box falling" ), this, nullptr );
 	createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Skeletal mesh" ), nullptr, nullptr );
 	createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Directed light" ), nullptr, nullptr );
 	createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Spot" ), nullptr, nullptr );
@@ -110,13 +121,21 @@ GXVoid EMGame::OnInit ()
 	menu->AddItem ( locale.GetString ( L"Main menu->Utility" ), utilityPopup );
 	menu->AddItem ( locale.GetString ( L"Main menu->Effects" ), effectsPopup );
 
-	openFile = new EMUIOpenFile ();
+	GXFloat physicsInfoWidth = 10.0f * gx_ui_Scale;
+	GXFloat physicsInfoHeight = 5.0f * gx_ui_Scale;
+	physicsInfo = new GXHudSurface ( (GXUShort)physicsInfoWidth, (GXUShort)physicsInfoHeight );
+	physicsInfoFont = GXFont::GetFont ( L"Fonts/trebuc.ttf", (GXUShort)( 0.7f * gx_ui_Scale ) );
+	physicsInfo->SetLocation ( 0.5f * ( physicsInfoWidth - w ), 0.5f * ( physicsInfoHeight - h ), 7.0f );
+
+	physicsInfoBackgroundTexture = GXTexture2D::LoadTexture ( L"Textures/System/Default_Diffuse.tga", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 
 	GXTransform transform;
 	unitActor = new EMUnitActor ( L"Unit actor 01", transform );
 
 	transform.SetLocation ( -3.0f, 0.0f, 0.0f );
-	colliderOne = new EMMeshActor ( L"Collider One", transform );
+	colliderOne = new EMPhysicsDrivenActor ( L"Collider One", transform );
+	GXSphereShape* colliderOneShape = new GXSphereShape ( &( colliderOne->GetRigidBody () ), 0.5f );
+	colliderOne->GetRigidBody ().SetShape ( *colliderOneShape );
 	colliderOne->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
 	EMCookTorranceCommonPassMaterial& colliderOneMaterial = colliderOne->GetMaterial ();
 	colliderOneMaterial.SetAlbedoColor ( 253, 180, 17, 255 );
@@ -125,10 +144,13 @@ GXVoid EMGame::OnInit ()
 	colliderOneMaterial.SetSpecularIntensityScale ( 0.998f );
 	colliderOneMaterial.SetMetallicScale ( 1.0f );
 	colliderOneMaterial.SetEmissionColorScale ( 0.0f );
+	colliderOne->EnablePhysicsDebug ();
 
 	transform.SetLocation ( 3.0f, 0.0f, 0.0f );
-	colliderTwo = new EMMeshActor ( L"Collider Two", transform );
-	colliderTwo->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
+	colliderTwo = new EMPhysicsDrivenActor ( L"Collider Two", transform );
+	GXBoxShape* colliderTwoShape = new GXBoxShape ( &( colliderTwo->GetRigidBody () ), 1.0f, 1.0f, 1.0f );
+	colliderTwo->GetRigidBody ().SetShape ( *colliderTwoShape );
+	colliderTwo->SetMesh ( L"3D Models/System/Unit Cube.stm" );
 	EMCookTorranceCommonPassMaterial& colliderTwoMaterial = colliderTwo->GetMaterial ();
 	colliderTwoMaterial.SetAlbedoColor ( 247, 244, 233, 255 );
 	colliderTwoMaterial.SetRoughnessScale ( 0.19f );
@@ -136,17 +158,18 @@ GXVoid EMGame::OnInit ()
 	colliderTwoMaterial.SetSpecularIntensityScale ( 0.998f );
 	colliderTwoMaterial.SetMetallicScale ( 1.0f );
 	colliderTwoMaterial.SetEmissionColorScale ( 0.0f );
+	colliderTwo->EnablePhysicsDebug ();
 
 	transform.SetLocation ( 6.0f, 0.0f, -.0f );
-	colliderThree = new EMMeshActor ( L"Collider Three", transform );
-	colliderThree->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
-	EMCookTorranceCommonPassMaterial& colliderThreeMaterial = colliderThree->GetMaterial ();
-	colliderThreeMaterial.SetAlbedoColor ( 115, 185, 0, 255 );
-	colliderThreeMaterial.SetRoughnessScale ( 0.5f );
-	colliderThreeMaterial.SetIndexOfRefractionScale ( 0.292f );
-	colliderThreeMaterial.SetSpecularIntensityScale ( 0.75f );
-	colliderThreeMaterial.SetMetallicScale ( 1.0f );
-	colliderThreeMaterial.SetEmissionColorScale ( 0.0f );
+	sphere = new EMMeshActor ( L"Collider Three", transform );
+	sphere->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
+	EMCookTorranceCommonPassMaterial& sphereMaterial = sphere->GetMaterial ();
+	sphereMaterial.SetAlbedoColor ( 115, 185, 0, 255 );
+	sphereMaterial.SetRoughnessScale ( 0.5f );
+	sphereMaterial.SetIndexOfRefractionScale ( 0.292f );
+	sphereMaterial.SetSpecularIntensityScale ( 0.75f );
+	sphereMaterial.SetMetallicScale ( 1.0f );
+	sphereMaterial.SetEmissionColorScale ( 0.0f );
 
 	transform.SetRotation ( GXDegToRad ( 30.0f ), GXDegToRad ( 30.0f ), 0.0f );
 	directedLight = new EMDirectedLightActor ( L"Directed light 01", transform );
@@ -164,18 +187,6 @@ GXVoid EMGame::OnInit ()
 	GXCamera::SetActiveCamera ( &viewer->GetCamera () );
 
 	EMTool::SetActiveTool ( moveTool );
-
-	physicsBoxActor = new EMPhysicsDrivenActor ( eGXShapeType::Sphere );
-	GXRigidBody& body1 = physicsBoxActor->GetRigidBody ();
-	body1.SetLocation ( 0.0f, 10.0f, 15.0f );
-
-	physicsPlaneActor = new EMPhysicsDrivenActor ( eGXShapeType::Polygon );
-	GXRigidBody& body2 = physicsPlaneActor->GetRigidBody ();
-	body2.SetLocation ( 0.0f, -10.0f, 15.0f );
-
-	GXWorld& world = GXPhysicsEngine::GetInstance ().GetWorld ();
-	world.RegisterRigidBody ( physicsBoxActor->GetRigidBody () );
-	world.RegisterRigidBody ( physicsPlaneActor->GetRigidBody () );
 
 	fluttershy = new EMFluttershy ();
 
@@ -222,9 +233,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	unitActor->OnDrawCommonPass ( deltaTime );
 	colliderOne->OnDrawCommonPass ( deltaTime );
 	colliderTwo->OnDrawCommonPass ( deltaTime );
-	colliderThree->OnDrawCommonPass ( deltaTime );
-	physicsBoxActor->Draw ( deltaTime );
-	physicsPlaneActor->Draw ( deltaTime );
+	sphere->OnDrawCommonPass ( deltaTime );
 	fluttershy->Render ( deltaTime );
 
 	renderer.StartEnvironmentPass ();
@@ -239,11 +248,38 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	renderer.StartHudColorPass ();
 
+	colliderOne->OnDrawHudColorPass ();
+	colliderTwo->OnDrawHudColorPass ();
 	moveTool->OnDrawHudColorPass ();
 
 	GXCamera::SetActiveCamera ( hudCamera );
 
 	EMDrawUI ();
+
+	physicsInfo->Reset ();
+
+	GXImageInfo ii;
+	GXColorToVec4 ( ii.color, 0, 0, 0, 180 );
+	ii.texture = &physicsInfoBackgroundTexture;
+	ii.insertX = 0.0f;
+	ii.insertY = 0.0f;
+	ii.insertWidth = (GXFloat)physicsInfo->GetWidth ();
+	ii.insertHeight = (GXFloat)physicsInfo->GetHeight ();
+	ii.overlayType = eGXImageOverlayType::SimpleReplace;
+
+	physicsInfo->AddImage ( ii );
+
+	GXPenInfo pi;
+	GXColorToVec4 ( pi.color, 115, 185, 0, 255 );
+	pi.font = &physicsInfoFont;
+	pi.insertX = 0.5f * gx_ui_Scale;
+	pi.insertY = 0.5f * gx_ui_Scale;
+	pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+
+	const GXCollisionData& collisionData = GXPhysicsEngine::GetInstance ().GetWorld ().GetCollisionData ();
+	physicsInfo->AddText ( pi, 64, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Contacts: %i" ), collisionData.GetTotalContacts () );
+
+	physicsInfo->Render ();
 
 	EMUIFPSCounter::GetInstance ().Render ();
 
@@ -267,6 +303,8 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 GXVoid EMGame::OnDestroy ()
 {
+	moveTool->UnBind ();
+
 	GXSplashScreen::GetInstance ().Show ();
 	GXRenderer::GetInstance ().Hide ();
 
@@ -275,44 +313,46 @@ GXVoid EMGame::OnDestroy ()
 	input.UnbindMouseButtonCallback ();
 	input.UnbindKeyCallback ( VK_ESCAPE, eGXInputButtonState::Up );
 
-	moveTool->UnBind ();
-	GXSafeDelete ( moveTool );
+	GXTouchSurface::GetInstance ().SetDefaultWidget ( nullptr );
+	GXSafeDelete ( uiInput );
 
-	GXSafeDelete ( physicsBoxActor );
-	GXSafeDelete ( physicsPlaneActor );
-
-	GXSafeDelete ( unitActor );
-	GXSafeDelete ( colliderOne );
-	GXSafeDelete ( colliderTwo );
-	GXSafeDelete ( colliderThree );
-	GXSafeDelete ( directedLight );
-
-	GXSafeDelete ( menu );
-	GXSafeDelete ( openFile );
-	GXSafeDelete ( filePopup );
-	GXSafeDelete ( createPopup );
-	GXSafeDelete ( toolsPopup );
-	GXSafeDelete ( utilityPopup );
-	GXSafeDelete ( effectsPopup );
-	GXSafeDelete ( hudCamera );
-
-	delete EMViewer::GetInstance ();
-
-	GXSafeDelete ( fluttershy );
 	GXSafeDelete ( lightProbe );
-
-	delete &( EMEnvironment::GetInstance () );
-	delete &( EMUIFPSCounter::GetInstance () );
-	delete &( EMUIColorPicker::GetInstance () );
-
-	GXTextureCubeMap::RemoveTexture ( *environmentMap );
-	GXSafeDelete ( environmentMap );
 
 	GXTextureCubeMap::RemoveTexture ( *lightProbeSourceTexture );
 	GXSafeDelete ( lightProbeSourceTexture );
 
-	GXTouchSurface::GetInstance ().SetDefaultWidget ( nullptr );
-	GXSafeDelete ( uiInput );
+	GXTextureCubeMap::RemoveTexture ( *environmentMap );
+	GXSafeDelete ( environmentMap );
+
+	GXSafeDelete ( fluttershy );
+	GXSafeDelete ( moveTool );
+
+	GXSafeDelete ( plane );
+	GXSafeDelete ( sphere );
+	GXSafeDelete ( colliderOne );
+	GXSafeDelete ( colliderTwo );
+	GXSafeDelete ( unitActor );
+
+	GXSafeDelete ( directedLight );
+
+	GXTexture2D::RemoveTexture ( physicsInfoBackgroundTexture );
+	GXFont::RemoveFont ( physicsInfoFont );
+	GXSafeDelete ( physicsInfo );
+
+	GXSafeDelete ( effectsPopup );
+	GXSafeDelete ( utilityPopup );
+	GXSafeDelete ( toolsPopup );
+	GXSafeDelete ( createPopup );
+	GXSafeDelete ( filePopup );
+	GXSafeDelete ( openFile );
+	GXSafeDelete ( menu );
+
+	GXSafeDelete ( hudCamera );
+
+	delete EMViewer::GetInstance ();
+	delete &( EMEnvironment::GetInstance () );
+	delete &( EMUIFPSCounter::GetInstance () );
+	delete &( EMUIColorPicker::GetInstance () );
 
 	delete &( EMRenderer::GetInstance () );
 	delete &( GXPhysicsEngine::GetInstance () );
@@ -381,21 +421,4 @@ GXVoid GXCALL EMGame::OnViewerTransformChanged ( GXVoid* handler )
 GXVoid GXCALL EMGame::OnOpenFile ( const GXWChar* filePath )
 {
 	GXLogW ( L"EMOnOpenFile::Info - Файл %s\n", filePath );
-}
-
-GXVoid GXCALL EMGame::StartBoxFallingSimulation ( GXVoid* handler )
-{
-	GXLogW ( L"EMStartBoxFallingSimulation::Info - Старт\n" );
-
-	EMGame* game = (EMGame*)handler;
-
-	GXRigidBody& body = game->physicsBoxActor->GetRigidBody ();
-	body.SetLocation ( 0.0f, 10.0f, 15.0f );
-	GXQuat rot;
-	GXSetQuatFromAxisAngle ( rot, GXCreateVec3 ( 0.0f, 0.0f, 1.0f ), 0.0f );
-	body.SetRotaton ( rot );
-	body.SetLinearVelocity ( GXCreateVec3 ( 0.0f, 0.0f, 0.0f ) );
-	body.SetAngularVelocity ( GXCreateVec3 ( 0.0f, 0.0f, 10.0f ) );
-	body.ClearAccumulators ();
-	body.SetAwake ();
 }
