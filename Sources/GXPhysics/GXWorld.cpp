@@ -35,9 +35,11 @@ struct GXForceGeneratorsRegistration
 
 //----------------------------------------------------------------
 
-GXWorld::GXWorld ( GXUInt maxContacts, GXUInt iterations )
-: contactResolver ( iterations ), collisions ( maxContacts )
+GXWorld::GXWorld ( GXUInt maxContacts, GXUInt iterations ):
+contactResolver ( iterations ), collisions ( maxContacts )
 {
+	GXCollisionDetector::GetInstance ();
+
 	bodies = nullptr;
 	contactGenerators = nullptr;
 	forceGenerators = nullptr;
@@ -46,6 +48,8 @@ GXWorld::GXWorld ( GXUInt maxContacts, GXUInt iterations )
 
 GXWorld::~GXWorld ()
 {
+	delete &( GXCollisionDetector::GetInstance () );
+
 	ClearRigidBodyRegistrations ();
 	ClearForceGeneratorRegistrations ();
 }
@@ -196,6 +200,8 @@ GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 		if ( !collisions.HasMoreContacts () ) break;
 	}
 	*/
+	GXCollisionDetector& collisionDetector = GXCollisionDetector::GetInstance ();
+
 	for ( GXRigidBodyRegistration* p = bodies; p->next; p = p->next )
 	{
 		for ( GXRigidBodyRegistration* q = p->next; q; q = q->next )
@@ -203,7 +209,7 @@ GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 			GXShape& shapeA = p->body->GetShape ();
 			GXShape& shapeB = q->body->GetShape ();
 
-			collisionDetector.CheckViaGJK ( shapeA, shapeB, collisions );
+			collisionDetector.Check ( shapeA, shapeB, collisions );
 		}
 	}
 	/*

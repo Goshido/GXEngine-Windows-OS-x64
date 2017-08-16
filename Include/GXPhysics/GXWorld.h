@@ -24,7 +24,6 @@ class GXWorld
 		GXForceGeneratorsRegistration*		forceGenerators;
 
 		GXContactResolver					contactResolver;
-		GXCollisionDetector					collisionDetector;
 		GXCollisionData						collisions;
 
 	public:

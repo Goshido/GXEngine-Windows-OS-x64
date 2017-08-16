@@ -20,7 +20,7 @@
 #define SHAPE_COLOR_RED							115
 #define SHAPE_COLOR_GREEN						255
 #define SHAPE_COLOR_BLUE						0
-#define SHAPE_COLOR_ALPHA						50
+#define SHAPE_COLOR_ALPHA						77
 
 
 EMPhysicsDrivenActor::EMPhysicsDrivenActor ( const GXWChar* name, const GXTransform& transform ):

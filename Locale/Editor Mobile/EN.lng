@@ -149,3 +149,5 @@ EMMeshActor::SetMesh::Error - Can't load mesh %s. Unknown format %s~EMMeshActor:
 ~
 
 EMGame->Physics info->Contacts: %i~Contacts: %i~
+
+EMGame->Physics info->Penetration depth: %f~Penetration depth: %f~

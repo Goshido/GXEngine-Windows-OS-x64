@@ -16,6 +16,8 @@
 #include "EMLightProbe.h"
 #include <GXEngine/GXGame.h>
 #include <GXEngine/GXTextureCubeMap.h>
+#include <GXEngine/GXUnlitColorMaterial.h>
+#include <GXEngine/GXMeshGeometry.h>
 #include <GXEngine/GXCameraOrthographic.h>
 #include <GXPhysics/GXSphereShape.h>
 
@@ -37,6 +39,8 @@ class EMGame : public GXGame
 		GXHudSurface*			physicsInfo;
 		GXFont					physicsInfoFont;
 		GXTexture2D				physicsInfoBackgroundTexture;
+		GXMeshGeometry			physicsContactNormalMesh;
+		GXUnlitColorMaterial*	physicsContactNormalMaterial;
 
 		EMDirectedLightActor*	directedLight;
 

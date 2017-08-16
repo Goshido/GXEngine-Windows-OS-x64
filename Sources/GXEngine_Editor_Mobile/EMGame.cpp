@@ -124,10 +124,14 @@ GXVoid EMGame::OnInit ()
 	GXFloat physicsInfoWidth = 10.0f * gx_ui_Scale;
 	GXFloat physicsInfoHeight = 5.0f * gx_ui_Scale;
 	physicsInfo = new GXHudSurface ( (GXUShort)physicsInfoWidth, (GXUShort)physicsInfoHeight );
-	physicsInfoFont = GXFont::GetFont ( L"Fonts/trebuc.ttf", (GXUShort)( 0.7f * gx_ui_Scale ) );
+	physicsInfoFont = GXFont::GetFont ( L"Fonts/trebuc.ttf", (GXUShort)( 0.4f * gx_ui_Scale ) );
 	physicsInfo->SetLocation ( 0.5f * ( physicsInfoWidth - w ), 0.5f * ( physicsInfoHeight - h ), 7.0f );
 
 	physicsInfoBackgroundTexture = GXTexture2D::LoadTexture ( L"Textures/System/Default_Diffuse.tga", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
+
+	physicsContactNormalMesh = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Move gismo Z axis.stm" );
+	physicsContactNormalMaterial = new GXUnlitColorMaterial ();
+	physicsContactNormalMaterial->SetColor ( 255, 0, 0, 255 );
 
 	GXTransform transform;
 	unitActor = new EMUnitActor ( L"Unit actor 01", transform );
@@ -252,6 +256,38 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	colliderTwo->OnDrawHudColorPass ();
 	moveTool->OnDrawHudColorPass ();
 
+	const GXCollisionData& collisionData = GXPhysicsEngine::GetInstance ().GetWorld ().GetCollisionData ();
+	if ( collisionData.GetTotalContacts () > 0 )
+	{
+		static const GXVec3 absoluteUp ( 0.0f, 1.0f, 0.0f );
+		GXVec3 z = collisionData.GetAllContacts ()->GetNormal ();
+		
+		GXVec3 x;
+		GXCrossVec3Vec3 ( x, absoluteUp, z );
+		GXNormalizeVec3 ( x );
+
+		GXVec3 y;
+		GXCrossVec3Vec3 ( y, z, x );
+
+		GXMat4 rot;
+		GXSetMat4Identity ( rot );
+		rot.SetX ( x );
+		rot.SetY ( y );
+		rot.SetZ ( z );
+
+		GXTransform transform;
+		transform.SetRotation ( rot );
+
+		static const GXVec3 offset ( 1.0f, 0.0f, 3.0f );
+		GXVec3 location;
+		GXMulVec3Mat4AsPoint ( location, offset, viewerCamera.GetCurrentFrameModelMatrix () );
+		transform.SetLocation ( location );
+
+		physicsContactNormalMaterial->Bind ( transform );
+		physicsContactNormalMesh.Render ();
+		physicsContactNormalMaterial->Unbind ();
+	}
+
 	GXCamera::SetActiveCamera ( hudCamera );
 
 	EMDrawUI ();
@@ -276,8 +312,13 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	pi.insertY = 0.5f * gx_ui_Scale;
 	pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
-	const GXCollisionData& collisionData = GXPhysicsEngine::GetInstance ().GetWorld ().GetCollisionData ();
 	physicsInfo->AddText ( pi, 64, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Contacts: %i" ), collisionData.GetTotalContacts () );
+
+	if ( collisionData.GetTotalContacts () > 0 )
+	{
+		pi.insertY += (GXFloat)physicsInfoFont.GetSize ();
+		physicsInfo->AddText ( pi, 64, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Penetration depth: %f" ), collisionData.GetAllContacts ()->GetPenetration () );
+	}
 
 	physicsInfo->Render ();
 
@@ -335,6 +376,8 @@ GXVoid EMGame::OnDestroy ()
 
 	GXSafeDelete ( directedLight );
 
+	GXSafeDelete ( physicsContactNormalMaterial );
+	GXMeshGeometry::RemoveMeshGeometry ( physicsContactNormalMesh );
 	GXTexture2D::RemoveTexture ( physicsInfoBackgroundTexture );
 	GXFont::RemoveFont ( physicsInfoFont );
 	GXSafeDelete ( physicsInfo );
