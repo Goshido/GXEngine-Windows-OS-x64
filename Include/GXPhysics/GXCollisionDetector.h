@@ -16,14 +16,14 @@ struct GXEdge;
 class GXCollisionDetector
 {
 	private:
-		GXDynamicArray					epaSupportPoints;
-		GXUInt							numEPASupportPoints;
+		GXDynamicArray					supportPoints;
+		GXUInt							totalSupportPoints;
 
-		GXDynamicArray					epaEdges;
-		GXUInt							numEPAEdges;
+		GXDynamicArray					edges;
+		GXUInt							totalEdges;
 
-		GXDynamicArray					epaFaces;
-		GXUInt							numEPAFaces;
+		GXDynamicArray					faces;
+		GXUInt							totalFaces;
 
 		static GXCollisionDetector*		instance;
 
@@ -33,10 +33,14 @@ class GXCollisionDetector
 
 		GXVoid Check ( const GXShape &shapeA, const GXShape &shapeB, GXCollisionData &collisionData );
 
+		GXUInt GetAllocatedSupportPoints () const;
+		GXUInt GetAllocatedEdges () const;
+		GXUInt GetAllocatedFaces () const;
+
 	private:
 		GXCollisionDetector ();
 		GXVoid CalculateSupportPoint ( GXSupportPoint &supportPoint, const GXShape &shapeA, const GXShape &shapeB, const GXVec3 &direction );
-		GXVoid ProceedEdge ( GXEdge &edge, GXUInt &lastEdgeIndex, GXEdge** edges, GXUInt &totalEdges );
+		GXVoid ProceedEdge ( GXEdge &edge, GXUInt &lastEdgeIndex, GXEdge** edgeArrayPointer, GXUInt &totalEdges );
 };
 
 

@@ -314,10 +314,40 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	physicsInfo->AddText ( pi, 64, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Contacts: %i" ), collisionData.GetTotalContacts () );
 
+	GXCollisionDetector& collisionDetector = GXCollisionDetector::GetInstance ();
+
+	GXFloat offset = (GXFloat)physicsInfoFont.GetSize ();
+	pi.insertY += offset;
+	physicsInfo->AddText ( pi, 128, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Allocated support points: %i" ), collisionDetector.GetAllocatedSupportPoints () );
+
+	pi.insertY += offset;
+	physicsInfo->AddText ( pi, 128, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Allocated edges: %i" ), collisionDetector.GetAllocatedEdges () );
+
+	pi.insertY += offset;
+	physicsInfo->AddText ( pi, 128, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Allocated faces: %i" ), collisionDetector.GetAllocatedFaces () );
+
 	if ( collisionData.GetTotalContacts () > 0 )
 	{
-		pi.insertY += (GXFloat)physicsInfoFont.GetSize ();
-		physicsInfo->AddText ( pi, 64, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Penetration depth: %f" ), collisionData.GetAllContacts ()->GetPenetration () );
+		GXContact* contact = collisionData.GetAllContacts ();
+
+
+		pi.insertY += offset;
+		physicsInfo->AddText ( pi, 128, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Penetration depth: %f" ), contact->GetPenetration () );
+
+		pi.insertY += offset;
+		physicsInfo->AddText ( pi, 128, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->GJK iterations: %i" ), contact->GetGTKIterations () );
+
+		pi.insertY += offset;
+		physicsInfo->AddText ( pi, 128, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->EPA iterations: %i" ), contact->GetEPAIterations () );
+
+		pi.insertY += offset;
+		physicsInfo->AddText ( pi, 128, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Used support points: %i" ), contact->GetSupportPoints () );
+
+		pi.insertY += offset;
+		physicsInfo->AddText ( pi, 128, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Used edges: %i" ), contact->GetEdges () );
+
+		pi.insertY += offset;
+		physicsInfo->AddText ( pi, 128, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Used faces: %i" ), contact->GetFaces () );
 	}
 
 	physicsInfo->Render ();

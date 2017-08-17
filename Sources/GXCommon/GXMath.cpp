@@ -1,4 +1,4 @@
-﻿//version 1.34
+﻿//version 1.35
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
@@ -1421,6 +1421,14 @@ GXFloat GXCALL GXGetAABBSphereRadius ( const GXAABB &bounds )
 
 //------------------------------------------------------------------
 
+GXPlane::GXPlane ()
+{
+	a = 0.0f;
+	b = 1.0f;
+	c = 0.0f;
+	d = 0.0f;
+}
+
 GXVoid GXPlane::From ( const GXVec3 &a, const GXVec3 &b, const GXVec3 &c )
 {
 	GXVec3 ab ( b.x - a.x, b.y - a.y, b.z - a.z );
@@ -1494,10 +1502,10 @@ GXVoid GXCALL GXNormalizePlane ( GXPlane &inOut )
 
 GXVoid GXCALL GXFlipPlane(GXPlane& inOut)
 {
-    inOut.a = -inOut.a;
-    inOut.b = -inOut.b;
-    inOut.c = -inOut.c;
-    inOut.d = -inOut.d;
+	inOut.a = -inOut.a;
+	inOut.b = -inOut.b;
+	inOut.c = -inOut.c;
+	inOut.d = -inOut.d;
 }
 
 //------------------------------------------------------------------

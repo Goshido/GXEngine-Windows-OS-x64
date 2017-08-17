@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #include <GXPhysics/GXContact.h>
 #include <GXCommon/GXLogger.h>
@@ -290,6 +290,56 @@ GXVoid GXContact::ApplyVelocityChange ( GXVec3 velocityChange[ 2 ], GXVec3 rotat
 		bodies[ 1 ]->AddLinearVelocity ( velocityChange[ 1 ] );
 		bodies[ 1 ]->AddAngularVelocity ( rotationChange[ 1 ] );
 	}
+}
+
+GXVoid GXContact::SetGJKIterations ( GXUInt iterations )
+{
+	gjkIterations = iterations;
+}
+
+GXUInt GXContact::GetGTKIterations () const
+{
+	return gjkIterations;
+}
+
+GXVoid GXContact::SetEPAIterations ( GXUInt iterations )
+{
+	epaIterations = iterations;
+}
+
+GXUInt GXContact::GetEPAIterations () const
+{
+	return epaIterations;
+}
+
+GXVoid GXContact::SetSupportPoints ( GXUInt supportPoints )
+{
+	this->supportPoints = supportPoints;
+}
+
+GXUInt GXContact::GetSupportPoints () const
+{
+	return supportPoints;
+}
+
+GXVoid GXContact::SetEdges ( GXUInt edges )
+{
+	this->edges = edges;
+}
+
+GXUInt GXContact::GetEdges () const
+{
+	return edges;
+}
+
+GXVoid GXContact::SetFaces ( GXUInt faces )
+{
+	this->faces = faces;
+}
+
+GXUInt GXContact::GetFaces () const
+{
+	return faces;
 }
 
 GXVoid GXContact::SwapBodies ()

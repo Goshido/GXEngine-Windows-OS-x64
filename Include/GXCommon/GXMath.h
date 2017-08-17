@@ -1,4 +1,4 @@
-//version 1.34
+//version 1.35
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -322,6 +322,8 @@ struct GXPlane
 	GXFloat b;
 	GXFloat c;
 	GXFloat d;
+
+	GXPlane ();
 
 	GXVoid From ( const GXVec3 &a, const GXVec3 &b, const GXVec3 &c );
 	GXVoid FromLineToPoint ( const GXVec3 &lineStart, const GXVec3 &lineEnd, const GXVec3 &point );

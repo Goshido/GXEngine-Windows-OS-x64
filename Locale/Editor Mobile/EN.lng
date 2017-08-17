@@ -151,3 +151,19 @@ EMMeshActor::SetMesh::Error - Can't load mesh %s. Unknown format %s~EMMeshActor:
 EMGame->Physics info->Contacts: %i~Contacts: %i~
 
 EMGame->Physics info->Penetration depth: %f~Penetration depth: %f~
+
+EMGame->Physics info->GJK iterations: %i~GJK iterations: %i~
+
+EMGame->Physics info->EPA iterations: %i~EPA iterations: %i~
+
+EMGame->Physics info->Used support points: %i~Used support points: %i~
+
+EMGame->Physics info->Used edges: %i~Used edges: %i~
+
+EMGame->Physics info->Used faces: %i~Used faces: %i~
+
+EMGame->Physics info->Allocated support points: %i~Allocated support points: %i~
+
+EMGame->Physics info->Allocated edges: %i~Allocated edges: %i~
+
+EMGame->Physics info->Allocated faces: %i~Allocated faces: %i~

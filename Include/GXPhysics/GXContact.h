@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #ifndef GX_CONTACT
 #define GX_CONTACT
@@ -25,22 +25,35 @@ class GXContact
 		GXFloat			desiredDeltaVelocity;
 		GXVec3			relativeContactPositions[ 2 ];
 
+		GXUInt			gjkIterations;
+		GXUInt			epaIterations;
+
+		GXUInt			supportPoints;
+		GXUInt			edges;
+		GXUInt			faces;
+
 	public:
 		GXVoid SetData ( const GXShape &bodyA, const GXShape* bodyB );
 
 		GXVoid SetNormal ( const GXVec3 &normal );
 		const GXVec3& GetNormal () const;
+
 		GXVoid SetContactPoint ( const GXVec3 &point );
+
 		GXVoid SetPenetration ( GXFloat penetration );
 		GXFloat GetPenetration () const;
 		
 		const GXMat3& GetContactToWorldTransform () const;
+
 		GXVoid SetContactVelocity ( const GXVec3 &velocity );
 		const GXVec3& GetContactVelocity () const;
+
 		GXVoid SetDesiredDeltaVelocity ( GXFloat deltaVelocity );
 		GXFloat GetDesiredDeltaVelocity () const;
+
 		GXVoid SetRelativeContactPosition ( GXUByte index, const GXVec3 &position );
 		const GXVec3& GetRelativeContactPosition ( GXUByte index ) const;
+
 		GXRigidBody* GetRigidBody ( GXUByte index );
 
 		GXVoid CalculateInternals ( GXFloat deltaTime );
@@ -48,6 +61,21 @@ class GXContact
 		GXVoid MatchAwakeState ();
 		GXVoid ApplyPositionChange ( GXVec3 linearChange[ 2 ], GXVec3 angularChange[ 2 ], GXFloat penetration );
 		GXVoid ApplyVelocityChange ( GXVec3 velocityChange[ 2 ], GXVec3 rotationChange[ 2 ] );
+
+		GXVoid SetGJKIterations ( GXUInt iterations );
+		GXUInt GetGTKIterations () const;
+
+		GXVoid SetEPAIterations ( GXUInt iterations );
+		GXUInt GetEPAIterations () const;
+
+		GXVoid SetSupportPoints ( GXUInt supportPoints );
+		GXUInt GetSupportPoints () const;
+
+		GXVoid SetEdges ( GXUInt edges );
+		GXUInt GetEdges () const;
+
+		GXVoid SetFaces ( GXUInt faces );
+		GXUInt GetFaces () const;
 
 	private:
 		GXVoid SwapBodies ();

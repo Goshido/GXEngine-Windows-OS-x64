@@ -94,8 +94,10 @@ struct GXFace
 	GXUInt		pointB;
 	GXUInt		pointC;
 
+	GXVec3		normal;
+
 	GXFace ();
-	explicit GXFace ( GXUInt pointA, GXUInt pointB, GXUInt pointC );
+	explicit GXFace ( GXUInt pointA, GXUInt pointB, GXUInt pointC, const GXVec3 &normal );
 
 	GXVoid ChangeOrder ();
 
@@ -106,15 +108,18 @@ GXFace::GXFace ()
 {
 	next = prev = INVALID_INDEX;
 	pointA = pointB = pointC = INVALID_INDEX;
+	normal = GXCreateVec3 ( 0.0f, 0.0f, 0.0f );
 }
 
-GXFace::GXFace ( GXUInt pointA, GXUInt pointB, GXUInt pointC )
+GXFace::GXFace ( GXUInt pointA, GXUInt pointB, GXUInt pointC, const GXVec3 &normal )
 {
 	next = prev = INVALID_INDEX;
 
 	this->pointA = pointA;
 	this->pointB = pointB;
 	this->pointC = pointC;
+
+	this->normal = normal;
 }
 
 GXVoid GXFace::ChangeOrder ()
@@ -122,6 +127,8 @@ GXVoid GXFace::ChangeOrder ()
 	GXUInt tmp = pointA;
 	pointA = pointB;
 	pointB = tmp;
+
+	GXReverseVec3 ( normal );
 }
 
 GXVoid GXFace::operator = ( const GXFace &other )
@@ -224,6 +231,7 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 
 	GXBool isLoop = GX_TRUE;
 	GXBool isIntersected = GX_FALSE;
+	GXUInt gjkIterations = 0;
 
 	CalculateSupportPoint ( supportPoint, shapeA, shapeB, initialDirection );
 	simplex.PushPoint ( supportPoint );
@@ -231,6 +239,8 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 
 	while ( isLoop )
 	{
+		gjkIterations++;
+
 		CalculateSupportPoint ( supportPoint, shapeA, shapeB, direction );
 
 		GXFloat t = GXDotVec3Fast ( supportPoint.difference, direction );
@@ -327,142 +337,147 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 
 	if ( !isIntersected ) return;
 
-	GXSupportPoint* supportPoints = (GXSupportPoint*)epaSupportPoints.GetData ();
-	GXEdge* edges = (GXEdge*)epaEdges.GetData ();
-	GXFace* faces = (GXFace*)epaFaces.GetData ();
+	GXSupportPoint* supportPointArray = (GXSupportPoint*)supportPoints.GetData ();
+	GXEdge* edgeArray = (GXEdge*)edges.GetData ();
+	GXFace* faceArray = (GXFace*)faces.GetData ();
 
-	memcpy ( supportPoints, simplex.supportPoints, 4 * sizeof ( GXSupportPoint ) );
-	numEPASupportPoints = 4;
+	memcpy ( supportPointArray, simplex.supportPoints, 4 * sizeof ( GXSupportPoint ) );
+	totalSupportPoints = 4;
 
-	numEPAFaces = 0;
+	totalFaces = 0;
 
-	GXFace face = simplex.faces[ 0 ];
+	GXFace& face = simplex.faces[ 0 ];
+	GXPlane plane;
+	plane.From ( supportPointArray[ face.pointA ].difference, supportPointArray[ face.pointB ].difference, supportPointArray[ face.pointC ].difference );
+	face.normal = GXCreateVec3 ( plane.a, plane.b, plane.c );
 	face.next = INVALID_INDEX;
 	face.prev = INVALID_INDEX;
 	GXUInt lastFaceIndex = 0;
-	faces[ lastFaceIndex ] = face;
-	numEPAFaces++;
+	faceArray[ lastFaceIndex ] = face;
+	totalFaces++;
 
 	for ( GXUInt i = 1; i < 4; i++ )
 	{
-		GXFace face = simplex.faces[ i ];
+		GXFace& face = simplex.faces[ i ];
+		plane.From ( supportPointArray[ face.pointA ].difference, supportPointArray[ face.pointB ].difference, supportPointArray[ face.pointC ].difference );
+		face.normal = GXCreateVec3 ( plane.a, plane.b, plane.c );
 		face.next = INVALID_INDEX;
 		face.prev = lastFaceIndex;
-		lastFaceIndex = numEPAFaces;
-		faces[ lastFaceIndex ] = face;
-		faces[ face.prev ].next = lastFaceIndex;
-		numEPAFaces++;
+		lastFaceIndex = totalFaces;
+		faceArray[ lastFaceIndex ] = face;
+		faceArray[ face.prev ].next = lastFaceIndex;
+		totalFaces++;
 	}
 
 	static const GXFace voidFace;
 
 	GXFloat contactPenetration = INITIAL_EPA_DISTANCE;
 	GXVec3 contactNormal;
+	GXUInt epaIterations = 0;
+	GXUInt maximumEdgesUsed = 0;
 
 	while ( GX_TRUE )
 	{
+		epaIterations++;
+
 		GXFloat smallestDistance = INITIAL_EPA_DISTANCE;
 		GXUInt smallestDistanceFaceIndex = 0;
 		GXVec3 smallestDistanceFaceNormal;
 
-		for ( GXUInt i = lastFaceIndex; i != INVALID_INDEX; i = faces[ i ].prev )
+		for ( GXUInt i = lastFaceIndex; i != INVALID_INDEX; i = faceArray[ i ].prev )
 		{
-			GXPlane plane;
-			plane.From ( supportPoints[ faces[ i ].pointA ].difference, supportPoints[ faces[ i ].pointB ].difference, supportPoints[ faces[ i ].pointC ].difference );
+			const GXFace& face = faceArray[ i ];
 
 			GXVec3 gamma;
-			GXSubVec3Vec3 ( gamma, origin, supportPoints[ faces[ i ].pointA ].difference );
+			GXSubVec3Vec3 ( gamma, origin, supportPointArray[ face.pointA ].difference );
 
-			GXVec3 planeNormal ( plane.a, plane.b, plane.c );
-			GXFloat newDistance = GXDotVec3Fast ( gamma, planeNormal );
+			GXFloat newDistance = GXDotVec3Fast ( gamma, face.normal );
 
 			if ( newDistance >= smallestDistance ) continue;
 
 			smallestDistance = newDistance;
 			smallestDistanceFaceIndex = i;
-			smallestDistanceFaceNormal = planeNormal;
+			smallestDistanceFaceNormal = face.normal;
 		}
-
-		contactPenetration = smallestDistance;
 
 		if ( fabsf ( smallestDistance - contactPenetration ) <= EPA_DISTANCE_EPSILON )
 		{
+			contactPenetration = smallestDistance;
 			contactNormal = smallestDistanceFaceNormal;
 			GXReverseVec3 ( contactNormal );
 
 			break;
 		}
 
-		if ( epaSupportPoints.GetLength () < numEPASupportPoints + 1 )
+		contactPenetration = smallestDistance;
+
+		if ( supportPoints.GetLength () < totalSupportPoints + 1 )
 		{
 			static const GXSupportPoint voidSupportPoint;
-			epaSupportPoints.SetValue ( epaSupportPoints.GetLength () + EPA_SUPPORT_POINTS_ALLOCATING_STEP - 1, &voidSupportPoint );
-			supportPoints = (GXSupportPoint*)epaSupportPoints.GetData ();
+			supportPoints.SetValue ( supportPoints.GetLength () + EPA_SUPPORT_POINTS_ALLOCATING_STEP - 1, &voidSupportPoint );
+			supportPointArray = (GXSupportPoint*)supportPoints.GetData ();
 		}
 
 		direction = smallestDistanceFaceNormal;
 		GXReverseVec3 ( direction );
-		GXSupportPoint d;
 
-		CalculateSupportPoint ( d, shapeA, shapeB, direction );
+		CalculateSupportPoint ( supportPoint, shapeA, shapeB, direction );
 
-		GXUInt newEPASupportPointIndex = numEPASupportPoints;
-		supportPoints[ newEPASupportPointIndex ] = d;
-		numEPASupportPoints++;
+		GXUInt newSupportPointIndex = totalSupportPoints;
+		supportPointArray[ newSupportPointIndex ] = supportPoint;
+		totalSupportPoints++;
 
 		GXUInt lastEdgeIndex = INVALID_INDEX;
-		numEPAEdges = 0;
+		totalEdges = 0;
 
-		for ( GXUInt i = lastFaceIndex; i != INVALID_INDEX; i = faces[ i ].prev )
+		for ( GXUInt i = lastFaceIndex; i != INVALID_INDEX; i = faceArray[ i ].prev )
 		{
-			GXFace& face = faces[ i ];
-
-			GXPlane plane;
-			plane.From ( supportPoints[ face.pointA ].difference, supportPoints[ face.pointB ].difference, supportPoints[ face.pointC ].difference );
-			GXVec3 normal ( plane.a, plane.b, plane.c );
+			GXFace& face = faceArray[ i ];
 
 			GXVec3 omega;
-			GXSubVec3Vec3 ( omega, supportPoints[ face.pointA ].difference, d.difference );
+			GXSubVec3Vec3 ( omega, supportPointArray[ face.pointA ].difference, supportPoint.difference );
 
-			if ( GXDotVec3Fast ( omega, normal ) <= 0.0f ) continue;
+			if ( GXDotVec3Fast ( omega, face.normal ) <= 0.0f ) continue;
 
-			ProceedEdge ( GXEdge ( face.pointA, face.pointB ), lastEdgeIndex, &edges, numEPAEdges );
-			ProceedEdge ( GXEdge ( face.pointB, face.pointC ), lastEdgeIndex, &edges, numEPAEdges );
-			ProceedEdge ( GXEdge ( face.pointC, face.pointA ), lastEdgeIndex, &edges, numEPAEdges );
+			ProceedEdge ( GXEdge ( face.pointA, face.pointB ), lastEdgeIndex, &edgeArray, totalEdges );
+			ProceedEdge ( GXEdge ( face.pointB, face.pointC ), lastEdgeIndex, &edgeArray, totalEdges );
+			ProceedEdge ( GXEdge ( face.pointC, face.pointA ), lastEdgeIndex, &edgeArray, totalEdges );
 
 			if ( i == lastFaceIndex )
 				lastFaceIndex = face.prev;
 
 			if ( face.prev != INVALID_INDEX )
-				faces[ face.prev ].next = face.next;
+				faceArray[ face.prev ].next = face.next;
 
 			if ( face.next != INVALID_INDEX )
-				faces[ face.next ].prev = face.prev;
+				faceArray[ face.next ].prev = face.prev;
 		}
 
-		for ( GXUInt i = lastEdgeIndex; i != INVALID_INDEX; i = edges[ i ].prev )
-		{
-			const GXEdge& edge = edges[ i ];
-			GXFace face ( newEPASupportPointIndex, edge.startPoint, edge.endPoint );
+		if ( totalEdges > maximumEdgesUsed )
+			maximumEdgesUsed = totalEdges;
 
-			GXPlane plane;
-			plane.From ( supportPoints[ face.pointA ].difference, supportPoints[ face.pointB ].difference, supportPoints[ face.pointC ].difference );
-			
+		for ( GXUInt i = lastEdgeIndex; i != INVALID_INDEX; i = edgeArray[ i ].prev )
+		{
+			const GXEdge& edge = edgeArray[ i ];
+
+			plane.From ( supportPointArray[ face.pointA ].difference, supportPointArray[ face.pointB ].difference, supportPointArray[ face.pointC ].difference );
+			GXFace face ( newSupportPointIndex, edge.startPoint, edge.endPoint, GXCreateVec3 ( plane.a, plane.b, plane.c ) );
+
 			if ( GXPlaneClassifyVertex ( plane, origin ) == eGXPlaneClassifyVertex::Behind )
 				face.ChangeOrder ();
 
-			if ( epaFaces.GetLength () < numEPAFaces + 1 )
+			if ( faces.GetLength () < totalFaces + 1 )
 			{
-				epaFaces.SetValue ( epaFaces.GetLength () + EPA_FACE_ALLOCATIONG_STEP - 1, &voidFace );
-				faces = (GXFace*)epaFaces.GetData ();
+				faces.SetValue ( faces.GetLength () + EPA_FACE_ALLOCATIONG_STEP - 1, &voidFace );
+				faceArray = (GXFace*)faces.GetData ();
 			}
 
 			face.next = INVALID_INDEX;
 			face.prev = lastFaceIndex;
-			lastFaceIndex = numEPAFaces;
-			faces[ lastFaceIndex ] = face;
-			faces[ face.prev ].next = lastFaceIndex;
-			numEPAFaces++;
+			lastFaceIndex = totalFaces;
+			faceArray[ lastFaceIndex ] = face;
+			faceArray[ face.prev ].next = lastFaceIndex;
+			totalFaces++;
 		}
 	}
 
@@ -473,25 +488,45 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 	contact->SetNormal ( contactNormal );
 	contact->SetPenetration ( contactPenetration );
 	contact->SetContactPoint ( voidPoint );
+	contact->SetGJKIterations ( gjkIterations );
+	contact->SetEPAIterations ( epaIterations );
+	contact->SetSupportPoints ( totalSupportPoints );
+	contact->SetEdges ( maximumEdgesUsed );
+	contact->SetFaces ( totalFaces );
 
 	collisionData.AddContacts ( 1 );
 }
 
+GXUInt GXCollisionDetector::GetAllocatedSupportPoints () const
+{
+	return supportPoints.GetLength ();
+}
+
+GXUInt GXCollisionDetector::GetAllocatedEdges () const
+{
+	return edges.GetLength ();
+}
+
+GXUInt GXCollisionDetector::GetAllocatedFaces () const
+{
+	return faces.GetLength ();
+}
+
 GXCollisionDetector::GXCollisionDetector ():
-epaSupportPoints ( sizeof ( GXSupportPoint ) ), epaEdges ( sizeof ( GXEdge ) ), epaFaces ( sizeof ( GXFace ) )
+supportPoints ( sizeof ( GXSupportPoint ) ), edges ( sizeof ( GXEdge ) ), faces ( sizeof ( GXFace ) )
 {
 	static const GXSupportPoint voidSupportPoint;
 	static const GXEdge voidEdge;
 	static const GXFace voidFace;
 
-	epaSupportPoints.SetValue ( EPA_INITIAL_SUPPORT_POINT_ARRAY_CAPACITY - 1, &voidSupportPoint );
-	numEPASupportPoints = 0;
+	supportPoints.SetValue ( EPA_INITIAL_SUPPORT_POINT_ARRAY_CAPACITY - 1, &voidSupportPoint );
+	totalSupportPoints = 0;
 
-	epaEdges.SetValue ( EPA_INITIAL_EDGE_ARRAY_CAPACITY - 1, &voidEdge );
-	numEPAEdges = 0;
+	edges.SetValue ( EPA_INITIAL_EDGE_ARRAY_CAPACITY - 1, &voidEdge );
+	totalEdges = 0;
 
-	epaFaces.SetValue ( EPA_INITIAL_FACE_ARRAY_CAPACITY - 1, &voidFace );
-	numEPAFaces = 0;
+	faces.SetValue ( EPA_INITIAL_FACE_ARRAY_CAPACITY - 1, &voidFace );
+	totalFaces = 0;
 }
 
 GXVoid GXCollisionDetector::CalculateSupportPoint ( GXSupportPoint &supportPoint, const GXShape &shapeA, const GXShape &shapeB, const GXVec3 &direction )
@@ -503,10 +538,10 @@ GXVoid GXCollisionDetector::CalculateSupportPoint ( GXSupportPoint &supportPoint
 	GXSubVec3Vec3 ( supportPoint.difference, supportPoint.extremeA, supportPoint.extremeB );
 }
 
-GXVoid GXCollisionDetector::ProceedEdge ( GXEdge &edge, GXUInt &lastEdgeIndex, GXEdge** edges, GXUInt &totalEdges )
+GXVoid GXCollisionDetector::ProceedEdge ( GXEdge &edge, GXUInt &lastEdgeIndex, GXEdge** edgeArrayPointer, GXUInt &totalEdges )
 {
 	GXBool allowInsert = GX_TRUE;
-	GXEdge* edgeArray = *edges;
+	GXEdge* edgeArray = *edgeArrayPointer;
 
 	for ( GXUInt i = lastEdgeIndex; i != INVALID_INDEX; i = edgeArray[ i ].prev )
 	{
@@ -527,16 +562,16 @@ GXVoid GXCollisionDetector::ProceedEdge ( GXEdge &edge, GXUInt &lastEdgeIndex, G
 
 	if ( !allowInsert ) return;
 
-	if ( epaEdges.GetLength () < numEPAEdges + 1 )
+	if ( edges.GetLength () < totalEdges + 1 )
 	{
 		static const GXEdge voidEdge;
-		epaEdges.SetValue ( epaEdges.GetLength () + EPA_EDGE_ALLOCATIONG_STEP - 1, &voidEdge );
-		*edges = (GXEdge*)epaEdges.GetData ();
+		edges.SetValue ( edges.GetLength () + EPA_EDGE_ALLOCATIONG_STEP - 1, &voidEdge );
+		*edgeArrayPointer = (GXEdge*)edges.GetData ();
 	}
 
 	edge.next = INVALID_INDEX;
 	edge.prev = lastEdgeIndex;
-	lastEdgeIndex = numEPAEdges;
+	lastEdgeIndex = totalEdges;
 	edgeArray[ lastEdgeIndex ] = edge;
 
 	if ( lastEdgeIndex > 0 )
