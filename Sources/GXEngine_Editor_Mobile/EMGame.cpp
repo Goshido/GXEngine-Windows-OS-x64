@@ -133,6 +133,15 @@ GXVoid EMGame::OnInit ()
 	physicsContactNormalMaterial = new GXUnlitColorMaterial ();
 	physicsContactNormalMaterial->SetColor ( 255, 0, 0, 255 );
 
+	physicsContactShapeMesh = new GXMeshGeometry ();
+	physicsContactShapeMesh->SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, sizeof ( GXVec3 ), 0 );
+
+	physicsContactShapeAMaterial = new GXUnlitColorMaterial ();
+	physicsContactShapeAMaterial->SetColor ( 255, 255, 0, 255 );
+
+	physicsContactShapeBMaterial = new GXUnlitColorMaterial ();
+	physicsContactShapeBMaterial->SetColor ( 0, 255, 255, 255 );
+
 	GXTransform transform;
 	unitActor = new EMUnitActor ( L"Unit actor 01", transform );
 
@@ -256,14 +265,46 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	colliderTwo->OnDrawHudColorPass ();
 	moveTool->OnDrawHudColorPass ();
 
+	GXCollisionDetector& collisionDetector = GXCollisionDetector::GetInstance ();
 	const GXCollisionData& collisionData = GXPhysicsEngine::GetInstance ().GetWorld ().GetCollisionData ();
+
 	if ( collisionData.GetTotalContacts () > 0 )
 	{
-		static const GXVec3 absoluteUp ( 0.0f, 1.0f, 0.0f );
+		GXOpenGLState state;
+		state.Save ();
+
+		glDisable ( GL_DEPTH_TEST );
+
+		GXUShort points = collisionDetector.GetTotalShapeAContactGeometryPoints ();
+		physicsContactShapeMesh->FillVertexBuffer ( collisionDetector.GetShapeAContactGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+		physicsContactShapeMesh->SetTotalVertices ( (GLsizei)points );
+
+		if ( points == 1 )
+			physicsContactShapeMesh->SetTopology ( GL_POINTS );
+		else
+			physicsContactShapeMesh->SetTopology ( GL_LINE_STRIP );
+
+		physicsContactShapeAMaterial->Bind ( GXTransform::GetNullTransform () );
+		physicsContactShapeMesh->Render ();
+		physicsContactShapeAMaterial->Unbind ();
+
+		points = collisionDetector.GetTotalShapeBContactGeometryPoints ();
+		physicsContactShapeMesh->FillVertexBuffer ( collisionDetector.GetShapeBContactGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+		physicsContactShapeMesh->SetTotalVertices ( (GLsizei)points );
+
+		if ( points == 1 )
+			physicsContactShapeMesh->SetTopology ( GL_POINTS );
+		else
+			physicsContactShapeMesh->SetTopology ( GL_LINE_STRIP );
+
+		physicsContactShapeBMaterial->Bind ( GXTransform::GetNullTransform () );
+		physicsContactShapeMesh->Render ();
+		physicsContactShapeBMaterial->Unbind ();
+
 		GXVec3 z = collisionData.GetAllContacts ()->GetNormal ();
-		
+
 		GXVec3 x;
-		GXCrossVec3Vec3 ( x, absoluteUp, z );
+		GXCrossVec3Vec3 ( x, GXVec3::GetAbsoluteY (), z );
 		GXNormalizeVec3 ( x );
 
 		GXVec3 y;
@@ -286,6 +327,8 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 		physicsContactNormalMaterial->Bind ( transform );
 		physicsContactNormalMesh.Render ();
 		physicsContactNormalMaterial->Unbind ();
+
+		state.Restore ();
 	}
 
 	GXCamera::SetActiveCamera ( hudCamera );
@@ -314,8 +357,6 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	physicsInfo->AddText ( pi, 64, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Contacts: %i" ), collisionData.GetTotalContacts () );
 
-	GXCollisionDetector& collisionDetector = GXCollisionDetector::GetInstance ();
-
 	GXFloat offset = (GXFloat)physicsInfoFont.GetSize ();
 	pi.insertY += offset;
 	physicsInfo->AddText ( pi, 128, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Allocated support points: %i" ), collisionDetector.GetAllocatedSupportPoints () );
@@ -329,7 +370,6 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	if ( collisionData.GetTotalContacts () > 0 )
 	{
 		GXContact* contact = collisionData.GetAllContacts ();
-
 
 		pi.insertY += offset;
 		physicsInfo->AddText ( pi, 128, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Penetration depth: %f" ), contact->GetPenetration () );
@@ -406,6 +446,9 @@ GXVoid EMGame::OnDestroy ()
 
 	GXSafeDelete ( directedLight );
 
+	GXSafeDelete ( physicsContactShapeBMaterial );
+	GXSafeDelete ( physicsContactShapeAMaterial );
+	GXSafeDelete ( physicsContactShapeMesh );
 	GXSafeDelete ( physicsContactNormalMaterial );
 	GXMeshGeometry::RemoveMeshGeometry ( physicsContactNormalMesh );
 	GXTexture2D::RemoveTexture ( physicsInfoBackgroundTexture );

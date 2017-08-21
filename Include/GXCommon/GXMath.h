@@ -1,4 +1,4 @@
-//version 1.35
+//version 1.36
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -79,6 +79,10 @@ struct GXVec3
 	GXVec3 ();
 	explicit GXVec3 ( GXFloat component_1, GXFloat component_2, GXFloat component_3 );
 
+	static const GXVec3& GetAbsoluteX ();
+	static const GXVec3& GetAbsoluteY ();
+	static const GXVec3& GetAbsoluteZ ();
+
 	GXVoid operator = ( const GXVec3 &vector );
 };
 
@@ -100,7 +104,8 @@ GXVoid GXCALL GXReverseVec3 ( GXVec3 &inOut );
 GXVoid GXCALL GXLerpVec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b, GXFloat factor );
 GXVoid GXCALL GXProjectVec3Vec3 ( GXVec3 &projection, const GXVec3 &vector, const GXVec3 &unitVector );
 GXVoid GXCALL GXMakeOrthonormalBasis ( GXVec3 &baseX, GXVec3 &adjustedY, GXVec3 &adjustedZ ); //baseX - correct direction, adjustedY - desirable, adjustedZ - calculated.
- 
+GXBool GXCALL GXIsEqualVec3Vec3 ( const GXVec3 &a, const GXVec3 &b );
+
 //-------------------------------------------------------------
 
 struct GXVec4

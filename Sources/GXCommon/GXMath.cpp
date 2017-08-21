@@ -1,4 +1,4 @@
-﻿//version 1.35
+﻿//version 1.36
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
@@ -80,6 +80,10 @@ GXFloat GXCALL GXLengthVec2 ( const GXVec2 &v )
 
 //------------------------------------------------------------------------------------------------
 
+static GXVec3 absoluteX ( 1.0f, 0.0f, 0.0 );
+static GXVec3 absoluteY ( 0.0f, 1.0f, 0.0 );
+static GXVec3 absoluteZ ( 0.0f, 0.0f, 1.0 );
+
 GXVec3::GXVec3 ()
 {
 	//NOTHING
@@ -92,6 +96,20 @@ GXVec3::GXVec3 ( GXFloat component_1, GXFloat component_2, GXFloat component_3 )
 	z = component_3;
 }
 
+const GXVec3& GXVec3::GetAbsoluteX ()
+{
+	return absoluteX;
+}
+
+const GXVec3& GXVec3::GetAbsoluteY ()
+{
+	return absoluteY;
+}
+
+const GXVec3& GXVec3::GetAbsoluteZ ()
+{
+	return absoluteZ;
+}
 
 GXVoid GXVec3::operator = ( const GXVec3 &vector )
 {
@@ -236,6 +254,15 @@ GXVoid GXCALL GXMakeOrthonormalBasis ( GXVec3 &baseX, GXVec3 &adjustedY, GXVec3 
 	GXNormalizeVec3 ( baseX );
 	GXNormalizeVec3 ( adjustedY );
 	GXNormalizeVec3 ( adjustedZ );
+}
+
+GXBool GXCALL GXIsEqualVec3Vec3 ( const GXVec3 &a, const GXVec3 &b )
+{
+	if ( a.x != b.x ) return GX_FALSE;
+	if ( a.y != b.y ) return GX_FALSE;
+	if ( a.z != b.z ) return GX_FALSE;
+
+	return GX_TRUE;
 }
 
 //----------------------------------------------------------------------------------------

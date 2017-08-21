@@ -30,7 +30,8 @@ class GXBoxShape : public GXShape
 		GXFloat GetHeight () const;
 		GXFloat GetDepth () const;
 
-		GXVoid GetVecticesWorld ( GXBoxShapeVertices &vertices ) const;
+	private:
+		GXVoid GetRotatedVecticesWorld ( GXBoxShapeVertices &vertices ) const;
 };
 
 

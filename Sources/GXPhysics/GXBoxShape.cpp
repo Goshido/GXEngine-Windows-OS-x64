@@ -34,7 +34,7 @@ GXVoid GXBoxShape::CalculateInertiaTensor ( GXFloat mass )
 GXVoid GXBoxShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const
 {
 	GXBoxShapeVertices v;
-	GetVecticesWorld ( v );
+	GetRotatedVecticesWorld ( v );
 
 	GXUByte index = 0;
 	GXFloat projection = -FLT_MAX;
@@ -49,7 +49,9 @@ GXVoid GXBoxShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) co
 		}
 	}
 
-	point = v.vertices[ index ];
+	GXVec3 originWorld;
+	transformWorld.GetW ( originWorld );
+	GXSumVec3Vec3 ( point, v.vertices[ index ], originWorld );
 }
 
 GXFloat GXBoxShape::GetWidth () const
@@ -67,7 +69,7 @@ GXFloat GXBoxShape::GetDepth () const
 	return depth;
 }
 
-GXVoid GXBoxShape::GetVecticesWorld ( GXBoxShapeVertices &vertices ) const
+GXVoid GXBoxShape::GetRotatedVecticesWorld ( GXBoxShapeVertices &vertices ) const
 {
 	GXFloat w = width * 0.5f;
 	GXFloat h = height * 0.5f;
@@ -84,6 +86,9 @@ GXVoid GXBoxShape::GetVecticesWorld ( GXBoxShapeVertices &vertices ) const
 	v[ 6 ] = GXCreateVec3 ( w, h, d );
 	v[ 7 ] = GXCreateVec3 ( -w, h, d );
 
+	GXMat4 rotatationWorld = transformWorld;
+	rotatationWorld.SetW ( GXCreateVec3 ( 0.0f, 0.0f, 0.0f ) );
+
 	for ( GXUByte i = 0; i < 8; i++ )
-		GXMulVec3Mat4AsPoint ( vertices.vertices[ i ], v[ i ], transformWorld );
+		GXMulVec3Mat4AsPoint ( vertices.vertices[ i ], v[ i ], rotatationWorld );
 }

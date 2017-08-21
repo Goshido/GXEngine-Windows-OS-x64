@@ -22,8 +22,11 @@
 #define EPA_INITIAL_EDGE_ARRAY_CAPACITY				384
 #define EPA_EDGE_ALLOCATIONG_STEP					384
 
-#define INITIAL_EPA_DISTANCE						FLT_MAX;
+#define INITIAL_EPA_DISTANCE						FLT_MAX
 #define EPA_DISTANCE_EPSILON						1.0e-5f
+
+#define DEFAULT_DEVIATION_AXES						8
+#define DEFAULT_DEVIATION_ANGLE						0.174533f	// 10 degrees
 
 
 struct GXSupportPoint
@@ -217,6 +220,9 @@ GXCollisionDetector& GXCALL GXCollisionDetector::GetInstance ()
 
 GXCollisionDetector::~GXCollisionDetector ()
 {
+	free ( deviationAxesLocal );
+	free ( shapeAContactGeometry );
+	free ( shapeBContactGeometry );
 	instance = nullptr;
 }
 
@@ -335,7 +341,13 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 		}
 	}
 
-	if ( !isIntersected ) return;
+	if ( !isIntersected )
+	{
+		totalShapeAContactGeometryPoints = 0;
+		totalShapeBContactGeometryPoints = 0;
+
+		return;
+	}
 
 	GXSupportPoint* supportPointArray = (GXSupportPoint*)supportPoints.GetData ();
 	GXEdge* edgeArray = (GXEdge*)edges.GetData ();
@@ -481,20 +493,133 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 		}
 	}
 
-	static const GXVec3 voidNormal ( 0.0f, 0.0f, 0.0f );
-	static const GXVec3 voidPoint ( 0.0f, 0.0f, 0.0f );
-
 	GXContact* contact = collisionData.GetContactsBegin ();
 	contact->SetNormal ( contactNormal );
 	contact->SetPenetration ( contactPenetration );
-	contact->SetContactPoint ( voidPoint );
 	contact->SetGJKIterations ( gjkIterations );
 	contact->SetEPAIterations ( epaIterations );
 	contact->SetSupportPoints ( totalSupportPoints );
 	contact->SetEdges ( maximumEdgesUsed );
 	contact->SetFaces ( totalFaces );
 
+	GXMat3 tbn;
+	GXVec3 zetta;
+	GXVec3 tangent;
+	GXVec3 bitangent;
+
+	if ( contactNormal.y > contactNormal.x && contactNormal.y > contactNormal.z )
+		GXCrossVec3Vec3 ( zetta, GXVec3::GetAbsoluteX (), contactNormal );
+	else
+		GXCrossVec3Vec3 ( zetta, GXVec3::GetAbsoluteY (), contactNormal );
+
+	GXCrossVec3Vec3 ( bitangent, contactNormal, zetta );
+	GXNormalizeVec3 ( bitangent );
+	GXCrossVec3Vec3 ( tangent, bitangent, contactNormal );
+
+	tbn.SetX ( tangent );
+	tbn.SetY ( bitangent );
+	tbn.SetZ ( contactNormal );
+
+	GXVec3 lastShapeAPoint ( FLT_MAX, FLT_MAX, FLT_MAX );
+	GXVec3 lastShapeBPoint ( FLT_MAX, FLT_MAX, FLT_MAX );
+
+	totalShapeAContactGeometryPoints = totalShapeBContactGeometryPoints = 0;
+
+	for ( GXUShort i = 0; i < totalDeviationAxes; i++ )
+	{
+		GXMulVec3Mat3 ( direction, deviationAxesLocal[ i ], tbn );
+
+		GXVec3 shapeAPoint;
+		shapeA.GetExtremePoint ( shapeAPoint, direction );
+
+		GXReverseVec3 ( direction );
+		GXVec3 shapeBPoint;
+		shapeB.GetExtremePoint ( shapeBPoint, direction );
+
+		if ( !GXIsEqualVec3Vec3 ( lastShapeAPoint, shapeAPoint ) )
+		{
+			shapeAContactGeometry[ totalShapeAContactGeometryPoints ] = shapeAPoint;
+			lastShapeAPoint = shapeAPoint;
+			totalShapeAContactGeometryPoints++;
+		}
+
+		if ( !GXIsEqualVec3Vec3 ( lastShapeBPoint, shapeBPoint ) )
+		{
+			shapeBContactGeometry[ totalShapeBContactGeometryPoints ] = shapeBPoint;
+			lastShapeBPoint = shapeBPoint;
+			totalShapeBContactGeometryPoints++;
+		}
+	}
+
+	if ( !GXIsEqualVec3Vec3 ( lastShapeAPoint, shapeAContactGeometry[ 0 ] ) )
+	{
+		shapeAContactGeometry[ totalShapeAContactGeometryPoints ] = shapeAContactGeometry[ 0 ];
+		totalShapeAContactGeometryPoints++;
+	}
+
+	if ( !GXIsEqualVec3Vec3 ( lastShapeBPoint, shapeBContactGeometry[ 0 ] ) )
+	{
+		shapeBContactGeometry[ totalShapeBContactGeometryPoints ] = shapeBContactGeometry[ 0 ];
+		totalShapeBContactGeometryPoints++;
+	}
+
 	collisionData.AddContacts ( 1 );
+}
+
+GXVoid GXCollisionDetector::SetDeviationAxes ( GXUShort axes )
+{
+	if ( axes == totalDeviationAxes ) return;
+
+	GXSafeFree ( deviationAxesLocal );
+	deviationAxesLocal = (GXVec3*)malloc ( axes * sizeof ( GXVec3 ) );
+	totalDeviationAxes = axes;
+
+	GXUPointer size = ( axes + 1 ) * sizeof ( GXVec3 );
+	GXSafeFree ( shapeAContactGeometry );
+	GXSafeFree ( shapeBContactGeometry );
+
+	shapeAContactGeometry = (GXVec3*)malloc ( size );
+	shapeBContactGeometry = (GXVec3*)malloc ( size );
+
+	UpdateDeviationAxes ();
+}
+
+GXUShort GXCollisionDetector::GetDeviationAxes () const
+{
+	return totalDeviationAxes;
+}
+
+GXVoid GXCollisionDetector::SetDeviationAngle ( GXFloat radians )
+{
+	if ( deviationAngle == radians ) return;
+
+	deviationAngle = radians;
+	UpdateDeviationAxes ();
+}
+
+GXFloat GXCollisionDetector::GetDeviationAngle () const
+{
+	return deviationAngle;
+}
+
+const GXVec3* GXCollisionDetector::GetShapeAContactGeometry () const
+{
+	return shapeAContactGeometry;
+}
+
+GXUShort GXCollisionDetector::GetTotalShapeAContactGeometryPoints () const
+{
+	return totalShapeAContactGeometryPoints;
+}
+
+const GXVec3* GXCollisionDetector::GetShapeBContactGeometry () const
+{
+	return shapeBContactGeometry;
+}
+
+GXUShort GXCollisionDetector::GetTotalShapeBContactGeometryPoints () const
+{
+	return totalShapeBContactGeometryPoints;
 }
 
 GXUInt GXCollisionDetector::GetAllocatedSupportPoints () const
@@ -527,6 +652,17 @@ supportPoints ( sizeof ( GXSupportPoint ) ), edges ( sizeof ( GXEdge ) ), faces 
 
 	faces.SetValue ( EPA_INITIAL_FACE_ARRAY_CAPACITY - 1, &voidFace );
 	totalFaces = 0;
+
+	deviationAxesLocal = nullptr;
+
+	shapeAContactGeometry = nullptr;
+	totalShapeAContactGeometryPoints = 0;
+
+	shapeBContactGeometry = nullptr;
+	totalShapeBContactGeometryPoints = 0;
+
+	deviationAngle = DEFAULT_DEVIATION_ANGLE;
+	SetDeviationAxes ( DEFAULT_DEVIATION_AXES );
 }
 
 GXVoid GXCollisionDetector::CalculateSupportPoint ( GXSupportPoint &supportPoint, const GXShape &shapeA, const GXShape &shapeB, const GXVec3 &direction )
@@ -578,4 +714,20 @@ GXVoid GXCollisionDetector::ProceedEdge ( GXEdge &edge, GXUInt &lastEdgeIndex, G
 		edgeArray[ edge.prev ].next = lastEdgeIndex;
 
 	totalEdges++;
+}
+
+GXVoid GXCollisionDetector::UpdateDeviationAxes ()
+{
+	GXFloat step = GX_MATH_DOUBLE_PI / (GXFloat)totalDeviationAxes;
+	GXFloat limit = GX_MATH_DOUBLE_PI - 0.5f * step;
+	GXUShort axisIndex = 0;
+	GXFloat deviation = sinf ( deviationAngle );
+	GXFloat normalizeScale = 1.0f / GXLengthVec3 ( GXCreateVec3 ( deviation, 0.0f, 1.0f ) );
+
+	for ( GXFloat angle = 0.0f; angle < limit; angle += step )
+	{
+		deviationAxesLocal[ axisIndex ] = GXCreateVec3 ( cosf ( angle ) * deviation, sinf ( angle ) * deviation, 1.0f );
+		GXMulVec3Scalar ( deviationAxesLocal[ axisIndex ], deviationAxesLocal[ axisIndex ], normalizeScale );
+		axisIndex++;
+	}
 }
