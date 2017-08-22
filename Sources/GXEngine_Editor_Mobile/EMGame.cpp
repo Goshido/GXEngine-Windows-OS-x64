@@ -38,7 +38,9 @@ EMGame::EMGame ()
 	unitActor = nullptr;
 	colliderOne = nullptr;
 	colliderTwo = nullptr;
-	sphere = nullptr;
+	plasticSphere = nullptr;
+	goldSphere = nullptr;
+	silverSphere = nullptr;
 	plane = nullptr;
 
 	moveTool = nullptr;
@@ -147,9 +149,9 @@ GXVoid EMGame::OnInit ()
 
 	transform.SetLocation ( -3.0f, 0.0f, 0.0f );
 	colliderOne = new EMPhysicsDrivenActor ( L"Collider One", transform );
-	GXSphereShape* colliderOneShape = new GXSphereShape ( &( colliderOne->GetRigidBody () ), 0.5f );
+	GXBoxShape* colliderOneShape = new GXBoxShape ( &( colliderOne->GetRigidBody () ), 1.0f, 1.0f, 1.0f );
 	colliderOne->GetRigidBody ().SetShape ( *colliderOneShape );
-	colliderOne->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
+	colliderOne->SetMesh ( L"3D Models/System/Unit Cube.stm" );
 	EMCookTorranceCommonPassMaterial& colliderOneMaterial = colliderOne->GetMaterial ();
 	colliderOneMaterial.SetAlbedoColor ( 253, 180, 17, 255 );
 	colliderOneMaterial.SetRoughnessScale ( 0.25f );
@@ -174,16 +176,53 @@ GXVoid EMGame::OnInit ()
 	colliderTwo->EnablePhysicsDebug ();
 
 	transform.SetLocation ( 6.0f, 0.0f, -.0f );
-	sphere = new EMMeshActor ( L"Collider Three", transform );
-	sphere->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
-	EMCookTorranceCommonPassMaterial& sphereMaterial = sphere->GetMaterial ();
-	sphereMaterial.SetAlbedoColor ( 115, 185, 0, 255 );
-	sphereMaterial.SetRoughnessScale ( 0.5f );
-	sphereMaterial.SetIndexOfRefractionScale ( 0.292f );
-	sphereMaterial.SetSpecularIntensityScale ( 0.75f );
-	sphereMaterial.SetMetallicScale ( 1.0f );
-	sphereMaterial.SetEmissionColorScale ( 0.0f );
+	plasticSphere = new EMMeshActor ( L"Plastic sphere", transform );
+	plasticSphere->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
+	EMCookTorranceCommonPassMaterial& plasticSphereMaterial = plasticSphere->GetMaterial ();
+	plasticSphereMaterial.SetAlbedoColor ( 115, 185, 0, 255 );
+	plasticSphereMaterial.SetRoughnessScale ( 0.5f );
+	plasticSphereMaterial.SetIndexOfRefractionScale ( 0.292f );
+	plasticSphereMaterial.SetSpecularIntensityScale ( 0.75f );
+	plasticSphereMaterial.SetMetallicScale ( 1.0f );
+	plasticSphereMaterial.SetEmissionColorScale ( 0.0f );
 
+	transform.SetLocation ( 9.0f, 0.0f, 0.0f );
+	goldSphere = new EMMeshActor ( L"Gold sphere", transform );
+	goldSphere->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
+	EMCookTorranceCommonPassMaterial& goldSphereMaterial = goldSphere->GetMaterial ();
+	goldSphereMaterial.SetAlbedoColor ( 253, 180, 17, 255 );
+	goldSphereMaterial.SetRoughnessScale ( 0.25f );
+	goldSphereMaterial.SetIndexOfRefractionScale ( 0.094f );
+	goldSphereMaterial.SetSpecularIntensityScale ( 0.998f );
+	goldSphereMaterial.SetMetallicScale ( 1.0f );
+	goldSphereMaterial.SetEmissionColorScale ( 0.0f );
+
+	transform.SetLocation ( 12.0f, 0.0f, 0.0f );
+	silverSphere = new EMMeshActor ( L"Silver sphere", transform );
+	silverSphere->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
+	EMCookTorranceCommonPassMaterial& silverSphereMaterial = silverSphere->GetMaterial ();
+	silverSphereMaterial.SetAlbedoColor ( 247, 244, 233, 255 );
+	silverSphereMaterial.SetRoughnessScale ( 0.19f );
+	silverSphereMaterial.SetIndexOfRefractionScale ( 0.1f );
+	silverSphereMaterial.SetSpecularIntensityScale ( 0.998f );
+	silverSphereMaterial.SetMetallicScale ( 1.0f );
+	silverSphereMaterial.SetEmissionColorScale ( 0.0f );
+
+	transform.SetLocation ( 0.0f, -3.0f, 0.0f );
+	transform.SetRotation ( 0.0f, GX_MATH_PI, 0.0f );
+	transform.SetScale ( 50.0f, 0.1f, 50.0f );
+	plane = new EMMeshActor ( L"plane", transform );
+	plane->SetMesh ( L"3D Models/System/Unit Cube.stm" );
+	EMCookTorranceCommonPassMaterial& planeMaterial = plane->GetMaterial ();
+	planeMaterial.SetRoughnessScale ( 0.07f );
+	planeMaterial.SetSpecularIntensityScale ( 0.15f );
+	planeMaterial.SetMetallicScale ( 0.0f );
+	planeMaterial.SetIndexOfRefractionScale ( 0.292f );
+	GXTexture2D* texture = planeMaterial.GetAlbedoTexture ();
+	GXTexture2D::RemoveTexture ( *texture );
+	*texture = GXTexture2D::LoadTexture ( L"Textures/System/GXEngine Logo 4k.png", GX_TRUE, GL_REPEAT, GX_TRUE );
+
+	transform.SetScale ( 1.0f, 1.0f, 1.0f );
 	transform.SetRotation ( GXDegToRad ( 30.0f ), GXDegToRad ( 30.0f ), 0.0f );
 	directedLight = new EMDirectedLightActor ( L"Directed light 01", transform );
 
@@ -246,7 +285,10 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	unitActor->OnDrawCommonPass ( deltaTime );
 	colliderOne->OnDrawCommonPass ( deltaTime );
 	colliderTwo->OnDrawCommonPass ( deltaTime );
-	sphere->OnDrawCommonPass ( deltaTime );
+	plasticSphere->OnDrawCommonPass ( deltaTime );
+	goldSphere->OnDrawCommonPass ( deltaTime );
+	silverSphere->OnDrawCommonPass ( deltaTime );
+	plane->OnDrawCommonPass ( deltaTime );
 	fluttershy->Render ( deltaTime );
 
 	renderer.StartEnvironmentPass ();
@@ -439,7 +481,9 @@ GXVoid EMGame::OnDestroy ()
 	GXSafeDelete ( moveTool );
 
 	GXSafeDelete ( plane );
-	GXSafeDelete ( sphere );
+	GXSafeDelete ( silverSphere );
+	GXSafeDelete ( goldSphere );
+	GXSafeDelete ( plasticSphere );
 	GXSafeDelete ( colliderOne );
 	GXSafeDelete ( colliderTwo );
 	GXSafeDelete ( unitActor );

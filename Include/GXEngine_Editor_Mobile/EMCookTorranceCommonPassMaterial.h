@@ -74,7 +74,7 @@ class EMCookTorranceCommonPassMaterial : public GXMaterial
 		GXVoid Unbind () override;
 
 		GXVoid SetAlbedoTexture ( GXTexture2D &texture );
-		GXVoid GetAlbedoTexture ( GXTexture2D &texture );
+		GXTexture2D* GetAlbedoTexture ();
 		GXVoid SetAlbedoTextureScale ( GXFloat scaleU, GXFloat scaleV );
 		GXVoid GetAlbedoTextureScale ( GXVec2 &scaleUV ) const;
 		GXVoid SetAlbedoTextureOffset ( GXFloat offsetU, GXFloat offsetV );
@@ -83,14 +83,14 @@ class EMCookTorranceCommonPassMaterial : public GXMaterial
 		GXVoid GetAlbedoColor ( GXUByte &red, GXUByte &green, GXUByte &blue, GXUByte &alpha ) const;
 
 		GXVoid SetNormalTexture ( GXTexture2D &texture );
-		GXVoid GetNormalTexture ( GXTexture2D &texture );
+		GXTexture2D* GetNormalTexture ();
 		GXVoid SetNormalTextureScale ( GXFloat scaleU, GXFloat scaleV );
 		GXVoid GetNormalTextureScale ( GXVec2 &scaleUV ) const;
 		GXVoid SetNormalTextureOffset ( GXFloat offsetU, GXFloat offsetV );
 		GXVoid GetNormalTextureOffset ( GXVec2 &offsetUV ) const;
 
 		GXVoid SetEmissionTexture ( GXTexture2D &texture );
-		GXVoid GetEmissionTexture ( GXTexture2D &texture );
+		GXTexture2D* GetEmissionTexture ();
 		GXVoid SetEmissionTextureScale ( GXFloat scaleU, GXFloat scaleV );
 		GXVoid GetEmissionTextureScale ( GXVec2 &scaleUV ) const;
 		GXVoid SetEmissionTextureOffset ( GXFloat offsetU, GXFloat offsetV );
@@ -101,7 +101,7 @@ class EMCookTorranceCommonPassMaterial : public GXMaterial
 		GXFloat GetEmissionColorScale () const;
 
 		GXVoid SetParameterTexture ( GXTexture2D &texture );
-		GXVoid GetParameterTexture ( GXTexture2D &texture );
+		GXTexture2D* GetParameterTexture ();
 		GXVoid SetParameterTextureScale ( GXFloat scaleU, GXFloat scaleV );
 		GXVoid GetParameterTextureScale ( GXVec2 &scaleUV ) const;
 		GXVoid SetParameterTextureOffset ( GXFloat offsetU, GXFloat offsetV );

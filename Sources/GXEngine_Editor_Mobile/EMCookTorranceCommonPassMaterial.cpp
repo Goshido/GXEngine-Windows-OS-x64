@@ -218,15 +218,9 @@ GXVoid EMCookTorranceCommonPassMaterial::SetAlbedoTexture ( GXTexture2D &texture
 	albedoTexture = &texture;
 }
 
-GXVoid EMCookTorranceCommonPassMaterial::GetAlbedoTexture ( GXTexture2D &texture )
+GXTexture2D* EMCookTorranceCommonPassMaterial::GetAlbedoTexture ()
 {
-	if ( albedoTexture )
-	{
-		texture = *albedoTexture;
-		return;
-	}
-
-	texture = GXTexture2D ();
+	return albedoTexture;
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetAlbedoTextureScale ( GXFloat scaleU, GXFloat scaleV )
@@ -271,15 +265,9 @@ GXVoid EMCookTorranceCommonPassMaterial::SetNormalTexture ( GXTexture2D &texture
 	normalTexture = &texture;
 }
 
-GXVoid EMCookTorranceCommonPassMaterial::GetNormalTexture ( GXTexture2D &texture )
+GXTexture2D* EMCookTorranceCommonPassMaterial::GetNormalTexture ()
 {
-	if ( normalTexture )
-	{
-		texture = *normalTexture;
-		return;
-	}
-
-	texture = GXTexture2D ();
+	return normalTexture;
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetNormalTextureScale ( GXFloat scaleU, GXFloat scaleV )
@@ -311,15 +299,9 @@ GXVoid EMCookTorranceCommonPassMaterial::SetEmissionTexture ( GXTexture2D &textu
 	emissionTexture = &texture;
 }
 
-GXVoid EMCookTorranceCommonPassMaterial::GetEmissionTexture ( GXTexture2D &texture )
+GXTexture2D* EMCookTorranceCommonPassMaterial::GetEmissionTexture ()
 {
-	if ( emissionTexture )
-	{
-		texture = *emissionTexture;
-		return;
-	}
-
-	texture = GXTexture2D ();
+	return emissionTexture;
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetEmissionTextureScale ( GXFloat scaleU, GXFloat scaleV )
@@ -375,15 +357,9 @@ GXVoid EMCookTorranceCommonPassMaterial::SetParameterTexture ( GXTexture2D &text
 	parameterTexture = &texture;
 }
 
-GXVoid EMCookTorranceCommonPassMaterial::GetParameterTexture ( GXTexture2D &texture )
+GXTexture2D* EMCookTorranceCommonPassMaterial::GetParameterTexture ()
 {
-	if ( parameterTexture )
-	{
-		texture = *parameterTexture;
-		return;
-	}
-
-	texture = GXTexture2D ();
+	return parameterTexture;
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetParameterTextureScale ( GXFloat scaleU, GXFloat scaleV )

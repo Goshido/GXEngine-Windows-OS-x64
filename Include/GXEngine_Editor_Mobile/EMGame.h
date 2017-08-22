@@ -50,7 +50,9 @@ class EMGame : public GXGame
 		EMUnitActor*			unitActor;
 		EMPhysicsDrivenActor*	colliderOne;
 		EMPhysicsDrivenActor*	colliderTwo;
-		EMMeshActor*			sphere;
+		EMMeshActor*			plasticSphere;
+		EMMeshActor*			goldSphere;
+		EMMeshActor*			silverSphere;
 		EMMeshActor*			plane;
 
 		EMMoveTool*				moveTool;

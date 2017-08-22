@@ -79,7 +79,7 @@ GXVoid GXSplashScreen::FillRGB ( GXUByte** destination, const GXUByte* source, G
 
 	GXUByte* dst = (GXUByte*)malloc ( lineSizeDst * height );
 	GXUPointer offsetDst = 0;
-	GXUPointer offsetSrc = width * height * RGB_BYTES_PER_PIXEL - lineSizeSrc;
+	GXUPointer offsetSrc = ( height - 1 ) * lineSizeSrc;
 
 	for ( GXUShort h = 0; h < height; h++ )
 	{
@@ -105,20 +105,24 @@ GXVoid GXSplashScreen::FillARGB ( GXUByte** destination, const GXUByte* source, 
 {
 	GXUPointer lineSize = (GXUPointer)( BGRA_BYTES_PER_PIXEL * width );
 	GXUByte* dst = (GXUByte*)malloc ( lineSize * height );
-	GXUPointer offset = 0;
+	GXUPointer offsetDst = 0;
+	GXUPointer offsetSrc = ( height - 1 ) * lineSize;
 
 	for ( GXUShort h = 0; h < height; h++ )
 	{
 		for ( GXUShort w = 0; w < width; w++ )
 		{
 			//BGRA model
-			dst[ offset ] = source[ offset + 2 ];
-			dst[ offset + 1 ] = source[ offset + 1 ];
-			dst[ offset + 2 ] = source[ offset ];
-			dst[ offset + 3 ] = source[ offset + 3 ];
+			dst[ offsetDst ] = source[ offsetSrc + 2 ];
+			dst[ offsetDst + 1 ] = source[ offsetSrc + 1 ];
+			dst[ offsetDst + 2 ] = source[ offsetSrc ];
+			dst[ offsetDst + 3 ] = source[ offsetSrc + 3 ];
 
-			offset += BGRA_BYTES_PER_PIXEL;
+			offsetDst += BGRA_BYTES_PER_PIXEL;
+			offsetSrc += BGRA_BYTES_PER_PIXEL;
 		}
+
+		offsetSrc -= 2 * lineSize;
 	}
 
 	*destination = dst;
