@@ -41,7 +41,7 @@ GXVoid GXBoxShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) co
 
 	for ( GXUByte i = 0; i < 8; i++ )
 	{
-		GXFloat p = GXDotVec3Fast ( direction, v.vertices[ i ] );
+		GXFloat p = GXDotVec3 ( direction, v.vertices[ i ] );
 		if ( p > projection )
 		{
 			projection = p;

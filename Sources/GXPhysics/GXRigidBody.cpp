@@ -327,7 +327,7 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 
 	if ( canSleep )
 	{
-		GXFloat currentMotion = GXDotVec3Fast ( linearVelocity, linearVelocity ) + GXDotVec3Fast ( angularVelocity, angularVelocity );
+		GXFloat currentMotion = GXDotVec3 ( linearVelocity, linearVelocity ) + GXDotVec3 ( angularVelocity, angularVelocity );
 		GXFloat bias = powf ( 0.5f, deltaTime );
 
 		motion = bias * motion + ( 1.0f - bias ) * currentMotion;

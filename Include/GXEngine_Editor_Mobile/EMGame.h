@@ -41,9 +41,13 @@ class EMGame : public GXGame
 		GXTexture2D				physicsInfoBackgroundTexture;
 		GXMeshGeometry			physicsContactNormalMesh;
 		GXUnlitColorMaterial*	physicsContactNormalMaterial;
-		GXMeshGeometry*			physicsContactShapeMesh;
-		GXUnlitColorMaterial*	physicsContactShapeAMaterial;
-		GXUnlitColorMaterial*	physicsContactShapeBMaterial;
+		GXMeshGeometry*			physicsGeometry;
+		GXUnlitColorMaterial*	physicsShapeAContactGeometryMaterial;
+		GXUnlitColorMaterial*	physicsShapeBContactGeometryMaterial;
+		GXUnlitColorMaterial*	physicsShapeAProjectedContactGeometryMaterial;
+		GXUnlitColorMaterial*	physicsShapeBProjectedContactGeometryMaterial;
+		GXUnlitColorMaterial*	physicsShapeAPlanarContactGeometryMaterial;
+		GXUnlitColorMaterial*	physicsShapeBPlanarContactGeometryMaterial;
 
 		EMDirectedLightActor*	directedLight;
 

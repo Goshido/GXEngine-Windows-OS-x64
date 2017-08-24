@@ -50,7 +50,7 @@ GXVoid GXPolygonShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction 
 
 		for ( GXUByte i = 0; i < 8; i++ )
 	{
-		GXFloat p = GXDotVec3Fast ( direction, vWorld[ i ] );
+		GXFloat p = GXDotVec3 ( direction, vWorld[ i ] );
 		if ( p > projection )
 		{
 			projection = p;

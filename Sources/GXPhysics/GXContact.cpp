@@ -142,14 +142,14 @@ GXVoid GXContact::CalculateDesiredDeltaVelocity ( GXFloat deltaTime )
 	{
 		GXVec3 alpha;
 		GXMulVec3Scalar ( alpha, bodies[ 0 ]->GetLastFrameAcceleration (), deltaTime );
-		velocityFromAcc += GXDotVec3Fast ( alpha, normal );
+		velocityFromAcc += GXDotVec3 ( alpha, normal );
 	}
 
 	if ( bodies[ 1 ] && bodies[ 1 ]->IsAwake () )
 	{
 		GXVec3 alpha;
 		GXMulVec3Scalar ( alpha, bodies[ 1 ]->GetLastFrameAcceleration (), deltaTime );
-		velocityFromAcc -= GXDotVec3Fast ( alpha, normal );
+		velocityFromAcc -= GXDotVec3 ( alpha, normal );
 	}
 
 	GXFloat thisRestitution = restitution;
@@ -197,7 +197,7 @@ GXVoid GXContact::ApplyPositionChange ( GXVec3 linearChange[ 2 ], GXVec3 angular
 			GXVec3 angularInertiaWorld;
 			GXCrossVec3Vec3 ( angularInertiaWorld, betta, relativeContactPositions[ i ] );
 
-			angularInertia[ i ] = GXDotVec3Fast ( angularInertiaWorld, normal );
+			angularInertia[ i ] = GXDotVec3 ( angularInertiaWorld, normal );
 			linearInirtia[ i ] = bodies[ i ]->GetInverseMass ();
 
 			totalInertia = linearInirtia[ i ] + angularInertia[ i ];
@@ -213,7 +213,7 @@ GXVoid GXContact::ApplyPositionChange ( GXVec3 linearChange[ 2 ], GXVec3 angular
 			linearMove[ i ] = sign * penetration * ( linearInirtia[ i ] / totalInertia );
 
 			GXVec3 projection;
-			GXSumVec3ScaledVec3 ( projection, relativeContactPositions[ i ], -GXDotVec3Fast ( relativeContactPositions[ i ], normal ), normal );
+			GXSumVec3ScaledVec3 ( projection, relativeContactPositions[ i ], -GXDotVec3 ( relativeContactPositions[ i ], normal ), normal );
 
 			GXFloat maxMagnitude = DEFAULT_ANGULAR_LIMIT * GXLengthVec3 ( projection );
 
@@ -425,7 +425,7 @@ GXVec3 GXContact::CalculateFrictionlessImpulse ()
 	GXVec3 deltaVelWorld;
 	GXCrossVec3Vec3 ( deltaVelWorld, betta, relativeContactPositions[ 0 ] );
 
-	GXFloat deltaVelocity = GXDotVec3Fast ( deltaVelWorld, normal ) + bodies[ 0 ]->GetInverseMass ();
+	GXFloat deltaVelocity = GXDotVec3 ( deltaVelWorld, normal ) + bodies[ 0 ]->GetInverseMass ();
 
 	if ( bodies[ 1 ] )
 	{
@@ -433,7 +433,7 @@ GXVec3 GXContact::CalculateFrictionlessImpulse ()
 		GXMulVec3Mat3 ( betta, alpha, bodies[ 1 ]->GetInverseInertiaTensorWorld () );
 		GXCrossVec3Vec3 ( deltaVelWorld, betta, relativeContactPositions[ 1 ] );
 
-		deltaVelocity = GXDotVec3Fast ( deltaVelWorld, normal ) + bodies[ 1 ]->GetInverseMass ();
+		deltaVelocity = GXDotVec3 ( deltaVelWorld, normal ) + bodies[ 1 ]->GetInverseMass ();
 	}
 
 	return GXVec3 ( desiredDeltaVelocity / deltaVelocity, 0.0f, 0.0f );

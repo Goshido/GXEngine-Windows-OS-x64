@@ -1120,7 +1120,7 @@ GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput& i
 
 		static const GXVec3 xAxis ( 1.0f, 0.0f, 0.0f );
 		GXNormalizeVec3 ( direction );
-		GXFloat cosAngle = GXDotVec3Fast ( direction, xAxis );
+		GXFloat cosAngle = GXDotVec3 ( direction, xAxis );
 		GXFloat angleRadians = acosf ( cosAngle );
 
 		if ( y < center.y )

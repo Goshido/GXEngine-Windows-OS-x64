@@ -17,16 +17,19 @@
 #define EPA_SUPPORT_POINTS_ALLOCATING_STEP			64
 
 #define EPA_INITIAL_FACE_ARRAY_CAPACITY				128
-#define EPA_FACE_ALLOCATIONG_STEP					128
+#define EPA_FACE_ALLOCATING_STEP					128
 
 #define EPA_INITIAL_EDGE_ARRAY_CAPACITY				384
-#define EPA_EDGE_ALLOCATIONG_STEP					384
+#define EPA_EDGE_ALLOCATING_STEP					384
 
 #define INITIAL_EPA_DISTANCE						FLT_MAX
 #define EPA_DISTANCE_EPSILON						1.0e-5f
 
 #define DEFAULT_DEVIATION_AXES						8
 #define DEFAULT_DEVIATION_ANGLE						0.174533f	// 10 degrees
+
+#define INITIAL_PLANAR_INTERSECTION_ARRAY_CAPACITY	128
+#define PLANAR_INTERSECTION_ALLOCATING_STEP			128
 
 
 struct GXSupportPoint
@@ -223,6 +226,10 @@ GXCollisionDetector::~GXCollisionDetector ()
 	free ( deviationAxesLocal );
 	free ( shapeAContactGeometry );
 	free ( shapeBContactGeometry );
+	free ( shapeAProjectedContactGeometry );
+	free ( shapeBProjectedContactGeometry );
+	free ( shapeAPlanarContactGeometry );
+	free ( shapeBPlanarContactGeometry );
 	instance = nullptr;
 }
 
@@ -230,6 +237,8 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 {
 	static const GXVec3 origin ( 0.0f, 0.0f, 0.0f );
 	static const GXVec3 initialDirection ( 0.0f, 0.0f, 1.0f );
+
+	//GJK algorithm
 
 	GXSimplex simplex;
 	GXSupportPoint supportPoint;
@@ -249,8 +258,8 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 
 		CalculateSupportPoint ( supportPoint, shapeA, shapeB, direction );
 
-		GXFloat t = GXDotVec3Fast ( supportPoint.difference, direction );
-		if ( GXDotVec3Fast ( supportPoint.difference, direction ) < 0.0f )
+		GXFloat t = GXDotVec3 ( supportPoint.difference, direction );
+		if ( GXDotVec3 ( supportPoint.difference, direction ) < 0.0f )
 		{
 			isLoop = GX_FALSE;
 			isIntersected = GX_FALSE;
@@ -349,6 +358,8 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 		return;
 	}
 
+	//EPA algorithm
+
 	GXSupportPoint* supportPointArray = (GXSupportPoint*)supportPoints.GetData ();
 	GXEdge* edgeArray = (GXEdge*)edges.GetData ();
 	GXFace* faceArray = (GXFace*)faces.GetData ();
@@ -403,7 +414,7 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 			GXVec3 gamma;
 			GXSubVec3Vec3 ( gamma, origin, supportPointArray[ face.pointA ].difference );
 
-			GXFloat newDistance = GXDotVec3Fast ( gamma, face.normal );
+			GXFloat newDistance = GXDotVec3 ( gamma, face.normal );
 
 			if ( newDistance >= smallestDistance ) continue;
 
@@ -449,7 +460,7 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 			GXVec3 omega;
 			GXSubVec3Vec3 ( omega, supportPointArray[ face.pointA ].difference, supportPoint.difference );
 
-			if ( GXDotVec3Fast ( omega, face.normal ) <= 0.0f ) continue;
+			if ( GXDotVec3 ( omega, face.normal ) <= 0.0f ) continue;
 
 			ProceedEdge ( GXEdge ( face.pointA, face.pointB ), lastEdgeIndex, &edgeArray, totalEdges );
 			ProceedEdge ( GXEdge ( face.pointB, face.pointC ), lastEdgeIndex, &edgeArray, totalEdges );
@@ -480,7 +491,7 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 
 			if ( faces.GetLength () < totalFaces + 1 )
 			{
-				faces.SetValue ( faces.GetLength () + EPA_FACE_ALLOCATIONG_STEP - 1, &voidFace );
+				faces.SetValue ( faces.GetLength () + EPA_FACE_ALLOCATING_STEP - 1, &voidFace );
 				faceArray = (GXFace*)faces.GetData ();
 			}
 
@@ -502,12 +513,14 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 	contact->SetEdges ( maximumEdgesUsed );
 	contact->SetFaces ( totalFaces );
 
+	//Contact geometry search
+
 	GXMat3 tbn;
 	GXVec3 zetta;
 	GXVec3 tangent;
 	GXVec3 bitangent;
 
-	if ( contactNormal.y > contactNormal.x && contactNormal.y > contactNormal.z )
+	if ( fabsf ( contactNormal.y ) > fabsf ( contactNormal.x ) && fabsf ( contactNormal.y ) > fabsf ( contactNormal.z ) )
 		GXCrossVec3Vec3 ( zetta, GXVec3::GetAbsoluteX (), contactNormal );
 	else
 		GXCrossVec3Vec3 ( zetta, GXVec3::GetAbsoluteY (), contactNormal );
@@ -536,14 +549,14 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 		GXVec3 shapeBPoint;
 		shapeB.GetExtremePoint ( shapeBPoint, direction );
 
-		if ( !GXIsEqualVec3Vec3 ( lastShapeAPoint, shapeAPoint ) )
+		if ( !GXIsEqualVec3 ( lastShapeAPoint, shapeAPoint ) )
 		{
 			shapeAContactGeometry[ totalShapeAContactGeometryPoints ] = shapeAPoint;
 			lastShapeAPoint = shapeAPoint;
 			totalShapeAContactGeometryPoints++;
 		}
 
-		if ( !GXIsEqualVec3Vec3 ( lastShapeBPoint, shapeBPoint ) )
+		if ( !GXIsEqualVec3 ( lastShapeBPoint, shapeBPoint ) )
 		{
 			shapeBContactGeometry[ totalShapeBContactGeometryPoints ] = shapeBPoint;
 			lastShapeBPoint = shapeBPoint;
@@ -551,16 +564,142 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 		}
 	}
 
-	if ( !GXIsEqualVec3Vec3 ( lastShapeAPoint, shapeAContactGeometry[ 0 ] ) )
+	if ( !GXIsEqualVec3 ( lastShapeAPoint, shapeAContactGeometry[ 0 ] ) )
 	{
 		shapeAContactGeometry[ totalShapeAContactGeometryPoints ] = shapeAContactGeometry[ 0 ];
 		totalShapeAContactGeometryPoints++;
 	}
 
-	if ( !GXIsEqualVec3Vec3 ( lastShapeBPoint, shapeBContactGeometry[ 0 ] ) )
+	//If contact shape is edge then remove surrogate edge
+	if ( totalShapeAContactGeometryPoints == 3 )
+		totalShapeAContactGeometryPoints = 2;
+
+	if ( !GXIsEqualVec3 ( lastShapeBPoint, shapeBContactGeometry[ 0 ] ) )
 	{
 		shapeBContactGeometry[ totalShapeBContactGeometryPoints ] = shapeBContactGeometry[ 0 ];
 		totalShapeBContactGeometryPoints++;
+	}
+
+	//If contact shape is edge then remove surrogate edge
+	if ( totalShapeBContactGeometryPoints == 3 )
+		totalShapeBContactGeometryPoints = 2;
+
+	if ( totalShapeAContactGeometryPoints == 1 )
+	{
+		contact->SetContactPoint ( shapeAContactGeometry[ 0 ] );
+		collisionData.AddContacts ( 1 );
+
+		return;
+	}
+
+	if ( totalShapeBContactGeometryPoints == 1 )
+	{
+		contact->SetContactPoint ( shapeBContactGeometry[ 0 ] );
+		collisionData.AddContacts ( 1 );
+
+		return;
+	}
+
+	//Projecting contact geometry to plane with normal "contactNormal" and "origin"
+
+	ProjectContactGeometry ( shapeAProjectedContactGeometry, shapeAContactGeometry, totalShapeAContactGeometryPoints, contactNormal );
+	totalShapeAProjectedContactGeometryPoints = totalShapeAContactGeometryPoints;
+
+	ProjectContactGeometry ( shapeBProjectedContactGeometry, shapeBContactGeometry, totalShapeBContactGeometryPoints, contactNormal );
+	totalShapeBProjectedContactGeometryPoints = totalShapeBContactGeometryPoints;
+
+	GXVec3 xAxis;
+	GXSubVec3Vec3 ( xAxis, shapeAProjectedContactGeometry[ 1 ], shapeAProjectedContactGeometry[ 0 ] );
+	GXNormalizeVec3 ( xAxis );
+
+	GXVec3 yAxis;
+	GXCrossVec3Vec3 ( yAxis, contactNormal, xAxis );
+
+	CalculatePlanarContactGeometryCoordinates ( shapeAPlanarContactGeometry, shapeAProjectedContactGeometry, totalShapeAProjectedContactGeometryPoints, xAxis, yAxis );
+	totalShapeAPlanarContactGeometryPoints = totalShapeAProjectedContactGeometryPoints;
+
+	CalculatePlanarContactGeometryCoordinates ( shapeBPlanarContactGeometry, shapeBProjectedContactGeometry, totalShapeBProjectedContactGeometryPoints, xAxis, yAxis );
+	totalShapeBPlanarContactGeometryPoints = totalShapeBProjectedContactGeometryPoints;
+
+	collisionData.AddContacts ( 1 );
+	return;
+	//Clipping planar shapes
+
+	if ( totalShapeAPlanarContactGeometryPoints == 2 && totalShapeBPlanarContactGeometryPoints == 2 )
+	{
+		GXUInt todo = 0;
+	}
+	else
+	{
+		GXVec3* clipGeometry;
+		GXUShort totalClipGeometryPoints;
+		GXVec3* subjectGeometry;
+		GXUInt totalSubjectGeometryPoints;
+
+		if ( totalShapeAPlanarContactGeometryPoints == 2 )
+		{
+			clipGeometry = shapeBPlanarContactGeometry;
+			totalClipGeometryPoints = totalShapeBPlanarContactGeometryPoints;
+			subjectGeometry = shapeAPlanarContactGeometry;
+			totalSubjectGeometryPoints = totalShapeAPlanarContactGeometryPoints;
+		}
+		else
+		{
+			clipGeometry = shapeAPlanarContactGeometry;
+			totalClipGeometryPoints = totalShapeAPlanarContactGeometryPoints;
+			subjectGeometry = shapeBPlanarContactGeometry;
+			totalSubjectGeometryPoints = totalShapeBPlanarContactGeometryPoints;
+		}
+
+		GXVec2 clipGeometryCenter ( 0.0f, 0.0f );
+		for ( GXUShort i = 0; i < totalShapeBPlanarContactGeometryPoints; i++ )
+		{
+			GXVec2 v = GXCreateVec2 ( clipGeometry[ i ].x, clipGeometry[ i ].y );
+			GXSumVec2Vec2 ( clipGeometryCenter, clipGeometryCenter, v );
+		}
+
+		GXMulVec2Scalar ( clipGeometryCenter, clipGeometryCenter, 1.0f / (GXFloat)totalClipGeometryPoints );
+
+		GXVec2 a ( clipGeometry[ 0 ].x, clipGeometry[ 0 ].y );
+		GXVec2 b ( clipGeometry[ 1 ].x, clipGeometry[ 1 ].y );
+
+		GXVec2 alpha;
+		GXSubVec2Vec2 ( alpha, clipGeometryCenter, a );
+
+		GXVec2 normal;
+		GXCalculateNormalVec2Fast ( normal, a, b );
+
+		if ( GXDotVec2 ( alpha, normal ) < 0.0f )
+		{
+			GXUShort i = 0;
+			GXUShort j = totalClipGeometryPoints - 1;
+
+			while ( i < j )
+			{
+				GXVec3 tmp = clipGeometry[ i ];
+				clipGeometry[ i ] = clipGeometry[ j ];
+				clipGeometry[ j ] = tmp;
+
+				i++;
+				j--;
+			}
+		}
+
+		GXVec2* outputGeometry = (GXVec2*)alphaPlanarIntersectionGeometry.GetData ();
+		GXUInt totalOutputPoints = totalSubjectGeometryPoints;
+
+		for ( GXUInt i = 0; i < totalPlanarIntersectionPoints; i++ )
+			outputGeometry[ i ] = GXCreateVec2 ( subjectGeometry[ i ].x, subjectGeometry[ i ].y );
+
+		GXUInt limit = (GXUInt)( totalClipGeometryPoints - 1 );
+		for ( GXUInt i = 0; i < limit; i++ )
+		{
+			GXVec2* inputGeometry = outputGeometry;
+			GXUInt totalInputPoints = totalOutputPoints;
+
+			outputGeometry = ( outputGeometry == (GXVec2*)alphaPlanarIntersectionGeometry.GetData () ) ? (GXVec2*)bettaPlanarIntersectionGeometry.GetData () : (GXVec2*)alphaPlanarIntersectionGeometry.GetData ();
+			totalOutputPoints = 0;
+		}
 	}
 
 	collisionData.AddContacts ( 1 );
@@ -577,9 +716,17 @@ GXVoid GXCollisionDetector::SetDeviationAxes ( GXUShort axes )
 	GXUPointer size = ( axes + 1 ) * sizeof ( GXVec3 );
 	GXSafeFree ( shapeAContactGeometry );
 	GXSafeFree ( shapeBContactGeometry );
+	GXSafeFree ( shapeAProjectedContactGeometry );
+	GXSafeFree ( shapeBProjectedContactGeometry );
+	GXSafeFree ( shapeAPlanarContactGeometry );
+	GXSafeFree ( shapeBPlanarContactGeometry );
 
 	shapeAContactGeometry = (GXVec3*)malloc ( size );
 	shapeBContactGeometry = (GXVec3*)malloc ( size );
+	shapeAProjectedContactGeometry = (GXVec3*)malloc ( size );
+	shapeBProjectedContactGeometry = (GXVec3*)malloc ( size );
+	shapeAPlanarContactGeometry = (GXVec3*)malloc ( size );
+	shapeBPlanarContactGeometry = (GXVec3*)malloc ( size );
 
 	UpdateDeviationAxes ();
 }
@@ -622,6 +769,46 @@ GXUShort GXCollisionDetector::GetTotalShapeBContactGeometryPoints () const
 	return totalShapeBContactGeometryPoints;
 }
 
+const GXVec3* GXCollisionDetector::GetShapeAProjectedContactGeometry () const
+{
+	return shapeAProjectedContactGeometry;
+}
+
+GXUShort GXCollisionDetector::GetTotalShapeAProjectedContactGeometryPoints () const
+{
+	return totalShapeAProjectedContactGeometryPoints;
+}
+
+const GXVec3* GXCollisionDetector::GetShapeBProjectedContactGeometry () const
+{
+	return shapeBProjectedContactGeometry;
+}
+
+GXUShort GXCollisionDetector::GetTotalShapeBProjectedContactGeometryPoints () const
+{
+	return totalShapeBProjectedContactGeometryPoints;
+}
+
+const GXVec3* GXCollisionDetector::GetShapeAPlanarContactGeometry () const
+{
+	return shapeAPlanarContactGeometry;
+}
+
+GXUShort GXCollisionDetector::GetTotalShapeAPlanarContactGeometryPoints () const
+{
+	return totalShapeAPlanarContactGeometryPoints;
+}
+
+const GXVec3* GXCollisionDetector::GetShapeBPlanarContactGeometry () const
+{
+	return shapeBPlanarContactGeometry;
+}
+
+GXUShort GXCollisionDetector::GetTotalShapeBPlanarContactGeometryPoints () const
+{
+	return totalShapeBPlanarContactGeometryPoints;
+}
+
 GXUInt GXCollisionDetector::GetAllocatedSupportPoints () const
 {
 	return supportPoints.GetLength ();
@@ -637,12 +824,13 @@ GXUInt GXCollisionDetector::GetAllocatedFaces () const
 	return faces.GetLength ();
 }
 
-GXCollisionDetector::GXCollisionDetector ():
-supportPoints ( sizeof ( GXSupportPoint ) ), edges ( sizeof ( GXEdge ) ), faces ( sizeof ( GXFace ) )
+GXCollisionDetector::GXCollisionDetector () :
+	supportPoints ( sizeof ( GXSupportPoint ) ), edges ( sizeof ( GXEdge ) ), faces ( sizeof ( GXFace ) ), alphaPlanarIntersectionGeometry ( sizeof ( GXVec2 ) ), bettaPlanarIntersectionGeometry ( sizeof ( GXVec2 ) )
 {
 	static const GXSupportPoint voidSupportPoint;
 	static const GXEdge voidEdge;
 	static const GXFace voidFace;
+	static const GXVec2 voidVertex ( 0.0f, 0.0f );
 
 	supportPoints.SetValue ( EPA_INITIAL_SUPPORT_POINT_ARRAY_CAPACITY - 1, &voidSupportPoint );
 	totalSupportPoints = 0;
@@ -653,6 +841,10 @@ supportPoints ( sizeof ( GXSupportPoint ) ), edges ( sizeof ( GXEdge ) ), faces 
 	faces.SetValue ( EPA_INITIAL_FACE_ARRAY_CAPACITY - 1, &voidFace );
 	totalFaces = 0;
 
+	alphaPlanarIntersectionGeometry.SetValue ( INITIAL_PLANAR_INTERSECTION_ARRAY_CAPACITY, &voidVertex );
+	bettaPlanarIntersectionGeometry.SetValue ( INITIAL_PLANAR_INTERSECTION_ARRAY_CAPACITY, &voidVertex );
+	totalPlanarIntersectionPoints = 0;
+
 	deviationAxesLocal = nullptr;
 
 	shapeAContactGeometry = nullptr;
@@ -660,6 +852,18 @@ supportPoints ( sizeof ( GXSupportPoint ) ), edges ( sizeof ( GXEdge ) ), faces 
 
 	shapeBContactGeometry = nullptr;
 	totalShapeBContactGeometryPoints = 0;
+
+	shapeAProjectedContactGeometry = nullptr;
+	totalShapeAProjectedContactGeometryPoints = 0;
+
+	shapeBProjectedContactGeometry = nullptr;
+	totalShapeBProjectedContactGeometryPoints = 0;
+
+	shapeAPlanarContactGeometry = nullptr;
+	totalShapeAPlanarContactGeometryPoints = 0;
+
+	shapeBPlanarContactGeometry = nullptr;
+	totalShapeBPlanarContactGeometryPoints = 0;
 
 	deviationAngle = DEFAULT_DEVIATION_ANGLE;
 	SetDeviationAxes ( DEFAULT_DEVIATION_AXES );
@@ -701,7 +905,7 @@ GXVoid GXCollisionDetector::ProceedEdge ( GXEdge &edge, GXUInt &lastEdgeIndex, G
 	if ( edges.GetLength () < totalEdges + 1 )
 	{
 		static const GXEdge voidEdge;
-		edges.SetValue ( edges.GetLength () + EPA_EDGE_ALLOCATIONG_STEP - 1, &voidEdge );
+		edges.SetValue ( edges.GetLength () + EPA_EDGE_ALLOCATING_STEP - 1, &voidEdge );
 		*edgeArrayPointer = (GXEdge*)edges.GetData ();
 	}
 
@@ -714,6 +918,35 @@ GXVoid GXCollisionDetector::ProceedEdge ( GXEdge &edge, GXUInt &lastEdgeIndex, G
 		edgeArray[ edge.prev ].next = lastEdgeIndex;
 
 	totalEdges++;
+}
+
+GXVoid GXCollisionDetector::ProjectContactGeometry ( GXVec3* contactGeometryProjection, const GXVec3* contactGeometryWorld, GXUShort totalContactGeometryPoints, const GXVec3 &contactNormal )
+{
+	static const GXVec3 origin ( 0.0f, 0.0f, 0.0f );
+
+	for ( GXUShort i = 0; i < totalContactGeometryPoints; i++ )
+	{
+		GXVec3 v;
+		GXSubVec3Vec3 ( v, origin, contactGeometryWorld[ i ] );
+
+		GXVec3 offset;
+		GXMulVec3Scalar ( offset, contactNormal, GXDotVec3 ( contactNormal, v ) );
+
+		GXSumVec3Vec3 ( contactGeometryProjection[ i ], contactGeometryWorld[ i ], offset );
+	}
+}
+
+GXVoid GXCollisionDetector::CalculatePlanarContactGeometryCoordinates ( GXVec3* planarContactGeometry, const GXVec3* projectedContactGeometry, GXUShort totalContactGeometryPoints, const GXVec3 &xAxis, const GXVec3 &yAxis )
+{
+	static const GXVec3 origin ( 0.0f, 0.0f, 0.0f );
+
+	for ( GXUShort i = 0; i < totalContactGeometryPoints; i++ )
+	{
+		GXVec3 v;
+		GXSubVec3Vec3 ( v, projectedContactGeometry[ i ], origin );
+
+		planarContactGeometry[ i ] = GXCreateVec3 ( GXDotVec3 ( xAxis, v ), GXDotVec3 ( yAxis, v ), 0.0f );
+	}
 }
 
 GXVoid GXCollisionDetector::UpdateDeviationAxes ()

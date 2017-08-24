@@ -35,6 +35,22 @@ class GXCollisionDetector
 		GXVec3*							shapeBContactGeometry;
 		GXUShort						totalShapeBContactGeometryPoints;
 
+		GXVec3*							shapeAProjectedContactGeometry;
+		GXUShort						totalShapeAProjectedContactGeometryPoints;
+
+		GXVec3*							shapeBProjectedContactGeometry;
+		GXUShort						totalShapeBProjectedContactGeometryPoints;
+
+		GXVec3*							shapeAPlanarContactGeometry;
+		GXUShort						totalShapeAPlanarContactGeometryPoints;
+
+		GXVec3*							shapeBPlanarContactGeometry;
+		GXUShort						totalShapeBPlanarContactGeometryPoints;
+
+		GXDynamicArray					alphaPlanarIntersectionGeometry;
+		GXDynamicArray					bettaPlanarIntersectionGeometry;
+		GXUInt							totalPlanarIntersectionPoints;
+
 		static GXCollisionDetector*		instance;
 
 	public:
@@ -55,6 +71,18 @@ class GXCollisionDetector
 		const GXVec3* GetShapeBContactGeometry () const;
 		GXUShort GetTotalShapeBContactGeometryPoints () const;
 
+		const GXVec3* GetShapeAProjectedContactGeometry () const;
+		GXUShort GetTotalShapeAProjectedContactGeometryPoints () const;
+
+		const GXVec3* GetShapeBProjectedContactGeometry () const;
+		GXUShort GetTotalShapeBProjectedContactGeometryPoints () const;
+
+		const GXVec3* GetShapeAPlanarContactGeometry () const;
+		GXUShort GetTotalShapeAPlanarContactGeometryPoints () const;
+
+		const GXVec3* GetShapeBPlanarContactGeometry () const;
+		GXUShort GetTotalShapeBPlanarContactGeometryPoints () const;
+
 		GXUInt GetAllocatedSupportPoints () const;
 		GXUInt GetAllocatedEdges () const;
 		GXUInt GetAllocatedFaces () const;
@@ -64,6 +92,8 @@ class GXCollisionDetector
 
 		GXVoid CalculateSupportPoint ( GXSupportPoint &supportPoint, const GXShape &shapeA, const GXShape &shapeB, const GXVec3 &direction );
 		GXVoid ProceedEdge ( GXEdge &edge, GXUInt &lastEdgeIndex, GXEdge** edgeArrayPointer, GXUInt &totalEdges );
+		GXVoid ProjectContactGeometry ( GXVec3* contactGeometryProjection, const GXVec3* contactGeometryWorld, GXUShort totalContactGeometryPoints, const GXVec3 &contactNormal );
+		GXVoid CalculatePlanarContactGeometryCoordinates ( GXVec3* planarContactGeometry, const GXVec3* projectedContactGeometry, GXUShort totalContactGeometryPoints, const GXVec3 &xAxis, const GXVec3 &yAxis );
 		GXVoid UpdateDeviationAxes ();
 };
 

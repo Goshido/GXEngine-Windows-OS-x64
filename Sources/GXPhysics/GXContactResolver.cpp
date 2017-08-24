@@ -100,7 +100,7 @@ GXVoid GXContactResolver::AdjustPositions ( GXContact* contacts, GXUInt numConta
 							GXSumVec3Vec3 ( deltaPosition, linearChange[ d ], alpha );
 
 							GXFloat penetration = contacts[ i ].GetPenetration ();
-							penetration += GXDotVec3Fast ( deltaPosition, contacts[ i ].GetNormal () ) * ( b ? 1.0f : -1.0f );
+							penetration += GXDotVec3 ( deltaPosition, contacts[ i ].GetNormal () ) * ( b ? 1.0f : -1.0f );
 							contacts[ i ].SetPenetration ( penetration );
 						}
 					}

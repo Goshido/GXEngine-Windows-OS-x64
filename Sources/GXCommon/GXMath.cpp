@@ -1,4 +1,4 @@
-﻿//version 1.36
+﻿//version 1.37
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
@@ -49,10 +49,28 @@ GXVoid GXCALL GXNormalizeVec2 ( GXVec2 &inOut )
 	inOut.y *= invA;
 }
 
+GXVoid GXCALL GXCalculateNormalVec2Fast ( GXVec2 &normal, const GXVec2 &a, const GXVec2 &b )
+{
+	normal.x = a.y - b.y;
+	normal.y = b.x - a.x;
+}
+
+GXVoid GXCALL GXCalculateNormalVec2 ( GXVec2 &normal, const GXVec2 &a, const GXVec2 &b )
+{
+	GXCalculateNormalVec2Fast ( normal, a, b );
+	GXNormalizeVec2 ( normal );
+}
+
 GXVoid GXCALL GXSumVec2Vec2 ( GXVec2 &out, const GXVec2 &a, const GXVec2 &b )
 {
 	out.x = a.x + b.x;
 	out.y = a.y + b.y;
+}
+
+GXVoid GXCALL GXSumVec2ScaledVec2 ( GXVec2 &out, const GXVec2 &a, GXFloat s, const GXVec2 &b )
+{
+	out.x = a.x + s * b.x;
+	out.y = a.y + s * b.y;
 }
 
 GXVoid GXCALL GXSubVec2Vec2 ( GXVec2 &out, const GXVec2 &a, const GXVec2 &b )
@@ -73,9 +91,63 @@ GXVoid GXCALL GXMulVec2Scalar ( GXVec2 &out, const GXVec2 &v, GXFloat a )
 	out.y = v.y * a;
 }
 
+GXFloat GXCALL GXDotVec2 ( const GXVec2 &a, const GXVec2 &b )
+{
+	return a.x * b.x + a.y * b.y;
+}
+
 GXFloat GXCALL GXLengthVec2 ( const GXVec2 &v )
 {
 	return sqrtf ( v.x * v.x + v.y * v.y );
+}
+
+GXBool GXCALL GXIsEqualVec2 ( const GXVec2 &a, const GXVec2 &b )
+{
+	if ( a.x != b.x ) return GX_FALSE;
+	if ( a.y != b.y ) return GX_FALSE;
+
+	return GX_TRUE;
+}
+
+//------------------------------------------------------------------------------------------------
+
+eGXLineRelationship GXCALL GXLineIntersection2D ( GXVec2 &intersectionPoint, const GXVec2 &a0, const GXVec2 &a1, const GXVec2 &b0, const GXVec2 &b1 )
+{
+	GXVec2 alpha;
+	GXSubVec2Vec2 ( alpha, a1, a0 );
+
+	GXVec2 betta;
+	GXSubVec2Vec2 ( betta, b1, b0 );
+
+	GXVec2 yotta ( -alpha.y, alpha.x );
+	GXFloat omega = GXDotVec2 ( betta, yotta );
+
+	if ( omega == 0.0f )
+	{
+		GXVec2 gamma = GXIsEqualVec2 ( a0, b0 ) ? b1 : b0;
+
+		GXVec2 zetta;
+		GXSubVec2Vec2 ( zetta, gamma, a0 );
+		GXNormalizeVec2 ( zetta );
+
+		GXNormalizeVec2 ( alpha );
+		GXFloat eta = GXDotVec2 ( alpha, zetta );
+
+		if ( eta == 1.0f || eta == -1.0f )
+		{
+			intersectionPoint = a0;
+			return eGXLineRelationship::Overlap;
+		}
+
+		intersectionPoint = GXCreateVec2 ( FLT_MAX, FLT_MAX );
+		return eGXLineRelationship::NoIntersection;
+	}
+
+	GXVec2 phi;
+	GXSubVec2Vec2 ( phi, b0, a0 );
+
+	GXSumVec2ScaledVec2 ( intersectionPoint, b0, -GXDotVec2 ( phi, yotta ) / omega, betta );
+	return eGXLineRelationship::Intersection;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -177,7 +249,7 @@ GXVoid GXCALL GXMulVec3Scalar ( GXVec3 &out, const GXVec3 &v, GXFloat factor )
 	out.z = v.z * factor;
 }
 
-GXFloat GXCALL GXDotVec3Fast ( const GXVec3 &a, const GXVec3 &b )
+GXFloat GXCALL GXDotVec3 ( const GXVec3 &a, const GXVec3 &b )
 {
 	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
@@ -232,7 +304,7 @@ GXVoid GXCALL GXProjectVec3Vec3 ( GXVec3 &projection, const GXVec3 &vector, cons
 	GXVec3 normalVector = vector;
 	GXNormalizeVec3 ( normalVector );
 
-	GXFloat factor = GXLengthVec3 ( vector ) * GXDotVec3Fast ( normalVector, unitVector );
+	GXFloat factor = GXLengthVec3 ( vector ) * GXDotVec3 ( normalVector, unitVector );
 
 	projection.x = unitVector.x * factor;
 	projection.y = unitVector.y * factor;
@@ -256,7 +328,7 @@ GXVoid GXCALL GXMakeOrthonormalBasis ( GXVec3 &baseX, GXVec3 &adjustedY, GXVec3 
 	GXNormalizeVec3 ( adjustedZ );
 }
 
-GXBool GXCALL GXIsEqualVec3Vec3 ( const GXVec3 &a, const GXVec3 &b )
+GXBool GXCALL GXIsEqualVec3 ( const GXVec3 &a, const GXVec3 &b )
 {
 	if ( a.x != b.x ) return GX_FALSE;
 	if ( a.y != b.y ) return GX_FALSE;
@@ -1468,7 +1540,7 @@ GXVoid GXPlane::From ( const GXVec3 &a, const GXVec3 &b, const GXVec3 &c )
 	this->a = normal.x;
 	this->b = normal.y;
 	this->c = normal.z;
-	this->d = -GXDotVec3Fast ( normal, a );
+	this->d = -GXDotVec3 ( normal, a );
 }
 
 GXVoid GXPlane::FromLineToPoint ( const GXVec3 &lineStart, const GXVec3 &lineEnd, const GXVec3 &point )
@@ -1928,11 +2000,11 @@ GXVoid GXCALL GXGetBarycentricCoords ( GXVec3 &out, const GXVec3 &point, const G
 	GXSubVec3Vec3 ( v1, c, a );
 	GXSubVec3Vec3 ( v2, point, a );
 
-	GXFloat d00 = GXDotVec3Fast ( v0, v0 );
-	GXFloat d01 = GXDotVec3Fast ( v0, v1 );
-	GXFloat d11 = GXDotVec3Fast ( v1, v1 );
-	GXFloat d20 = GXDotVec3Fast ( v2, v0 );
-	GXFloat d21 = GXDotVec3Fast ( v2, v1 );
+	GXFloat d00 = GXDotVec3 ( v0, v0 );
+	GXFloat d01 = GXDotVec3 ( v0, v1 );
+	GXFloat d11 = GXDotVec3 ( v1, v1 );
+	GXFloat d20 = GXDotVec3 ( v2, v0 );
+	GXFloat d21 = GXDotVec3 ( v2, v1 );
 
 	GXFloat denom = 1.0f / ( d00 * d11 - d01 * d01 );
 

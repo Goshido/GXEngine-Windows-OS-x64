@@ -33,6 +33,16 @@ EMGame::EMGame ()
 	utilityPopup = nullptr;
 	effectsPopup = nullptr;
 
+	physicsInfo = nullptr;
+	physicsContactNormalMaterial = nullptr;
+	physicsGeometry = nullptr;
+	physicsShapeAContactGeometryMaterial = nullptr;
+	physicsShapeBContactGeometryMaterial = nullptr;
+	physicsShapeAProjectedContactGeometryMaterial = nullptr;
+	physicsShapeBProjectedContactGeometryMaterial = nullptr;
+	physicsShapeAPlanarContactGeometryMaterial = nullptr;
+	physicsShapeBPlanarContactGeometryMaterial = nullptr;
+
 	directedLight = nullptr;
 
 	unitActor = nullptr;
@@ -135,14 +145,26 @@ GXVoid EMGame::OnInit ()
 	physicsContactNormalMaterial = new GXUnlitColorMaterial ();
 	physicsContactNormalMaterial->SetColor ( 255, 0, 0, 255 );
 
-	physicsContactShapeMesh = new GXMeshGeometry ();
-	physicsContactShapeMesh->SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, sizeof ( GXVec3 ), 0 );
+	physicsGeometry = new GXMeshGeometry ();
+	physicsGeometry->SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, sizeof ( GXVec3 ), 0 );
 
-	physicsContactShapeAMaterial = new GXUnlitColorMaterial ();
-	physicsContactShapeAMaterial->SetColor ( 255, 255, 0, 255 );
+	physicsShapeAContactGeometryMaterial = new GXUnlitColorMaterial ();
+	physicsShapeAContactGeometryMaterial->SetColor ( 255, 255, 0, 255 );
 
-	physicsContactShapeBMaterial = new GXUnlitColorMaterial ();
-	physicsContactShapeBMaterial->SetColor ( 0, 255, 255, 255 );
+	physicsShapeBContactGeometryMaterial = new GXUnlitColorMaterial ();
+	physicsShapeBContactGeometryMaterial->SetColor ( 0, 255, 255, 255 );
+
+	physicsShapeAProjectedContactGeometryMaterial = new GXUnlitColorMaterial ();
+	physicsShapeAProjectedContactGeometryMaterial->SetColor ( 255, 0, 255, 255 );
+
+	physicsShapeBProjectedContactGeometryMaterial = new GXUnlitColorMaterial ();
+	physicsShapeBProjectedContactGeometryMaterial->SetColor ( 255, 255, 255, 255 );
+
+	physicsShapeAPlanarContactGeometryMaterial = new GXUnlitColorMaterial ();
+	physicsShapeAPlanarContactGeometryMaterial->SetColor ( 128, 128, 255, 255 );
+
+	physicsShapeBPlanarContactGeometryMaterial = new GXUnlitColorMaterial ();
+	physicsShapeBPlanarContactGeometryMaterial->SetColor ( 255, 128, 128, 255 );
 
 	GXTransform transform;
 	unitActor = new EMUnitActor ( L"Unit actor 01", transform );
@@ -318,35 +340,91 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 		glDisable ( GL_DEPTH_TEST );
 
 		GXUShort points = collisionDetector.GetTotalShapeAContactGeometryPoints ();
-		physicsContactShapeMesh->FillVertexBuffer ( collisionDetector.GetShapeAContactGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
-		physicsContactShapeMesh->SetTotalVertices ( (GLsizei)points );
+		physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeAContactGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+		physicsGeometry->SetTotalVertices ( (GLsizei)points );
 
 		if ( points == 1 )
-			physicsContactShapeMesh->SetTopology ( GL_POINTS );
+			physicsGeometry->SetTopology ( GL_POINTS );
 		else
-			physicsContactShapeMesh->SetTopology ( GL_LINE_STRIP );
+			physicsGeometry->SetTopology ( GL_LINE_STRIP );
 
-		physicsContactShapeAMaterial->Bind ( GXTransform::GetNullTransform () );
-		physicsContactShapeMesh->Render ();
-		physicsContactShapeAMaterial->Unbind ();
+		physicsShapeAContactGeometryMaterial->Bind ( GXTransform::GetNullTransform () );
+		physicsGeometry->Render ();
+		physicsShapeAContactGeometryMaterial->Unbind ();
 
 		points = collisionDetector.GetTotalShapeBContactGeometryPoints ();
-		physicsContactShapeMesh->FillVertexBuffer ( collisionDetector.GetShapeBContactGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
-		physicsContactShapeMesh->SetTotalVertices ( (GLsizei)points );
+		physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeBContactGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+		physicsGeometry->SetTotalVertices ( (GLsizei)points );
 
 		if ( points == 1 )
-			physicsContactShapeMesh->SetTopology ( GL_POINTS );
+			physicsGeometry->SetTopology ( GL_POINTS );
 		else
-			physicsContactShapeMesh->SetTopology ( GL_LINE_STRIP );
+			physicsGeometry->SetTopology ( GL_LINE_STRIP );
 
-		physicsContactShapeBMaterial->Bind ( GXTransform::GetNullTransform () );
-		physicsContactShapeMesh->Render ();
-		physicsContactShapeBMaterial->Unbind ();
+		physicsShapeBContactGeometryMaterial->Bind ( GXTransform::GetNullTransform () );
+		physicsGeometry->Render ();
+		physicsShapeBContactGeometryMaterial->Unbind ();
+
+		points = collisionDetector.GetTotalShapeAProjectedContactGeometryPoints ();
+		physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeAProjectedContactGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+		physicsGeometry->SetTotalVertices ( (GLsizei)points );
+
+		if ( points == 1 )
+			physicsGeometry->SetTopology ( GL_POINTS );
+		else
+			physicsGeometry->SetTopology ( GL_LINE_STRIP );
+
+		physicsShapeAProjectedContactGeometryMaterial->Bind ( GXTransform::GetNullTransform () );
+		physicsGeometry->Render ();
+		physicsShapeAProjectedContactGeometryMaterial->Unbind ();
+
+		points = collisionDetector.GetTotalShapeBProjectedContactGeometryPoints ();
+		physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeBProjectedContactGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+		physicsGeometry->SetTotalVertices ( (GLsizei)points );
+
+		if ( points == 1 )
+			physicsGeometry->SetTopology ( GL_POINTS );
+		else
+			physicsGeometry->SetTopology ( GL_LINE_STRIP );
+
+		physicsShapeBProjectedContactGeometryMaterial->Bind ( GXTransform::GetNullTransform () );
+		physicsGeometry->Render ();
+		physicsShapeBProjectedContactGeometryMaterial->Unbind ();
+
+		points = collisionDetector.GetTotalShapeAPlanarContactGeometryPoints ();
+		physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeAPlanarContactGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+		physicsGeometry->SetTotalVertices ( (GLsizei)points );
+
+		if ( points == 1 )
+			physicsGeometry->SetTopology ( GL_POINTS );
+		else
+			physicsGeometry->SetTopology ( GL_LINE_STRIP );
+
+		physicsShapeAPlanarContactGeometryMaterial->Bind ( GXTransform::GetNullTransform () );
+		physicsGeometry->Render ();
+		physicsShapeAPlanarContactGeometryMaterial->Unbind ();
+
+		points = collisionDetector.GetTotalShapeBPlanarContactGeometryPoints ();
+		physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeBPlanarContactGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+		physicsGeometry->SetTotalVertices ( (GLsizei)points );
+
+		if ( points == 1 )
+			physicsGeometry->SetTopology ( GL_POINTS );
+		else
+			physicsGeometry->SetTopology ( GL_LINE_STRIP );
+
+		physicsShapeBPlanarContactGeometryMaterial->Bind ( GXTransform::GetNullTransform () );
+		physicsGeometry->Render ();
+		physicsShapeBPlanarContactGeometryMaterial->Unbind ();
 
 		GXVec3 z = collisionData.GetAllContacts ()->GetNormal ();
 
 		GXVec3 x;
-		GXCrossVec3Vec3 ( x, GXVec3::GetAbsoluteY (), z );
+		if ( fabsf ( z.y ) > fabsf ( z.x ) && fabsf ( z.y ) > fabsf ( z.z ) )
+			GXCrossVec3Vec3 ( x, GXVec3::GetAbsoluteX (), z );
+		else
+			GXCrossVec3Vec3 ( x, GXVec3::GetAbsoluteY (), z );
+
 		GXNormalizeVec3 ( x );
 
 		GXVec3 y;
@@ -490,9 +568,13 @@ GXVoid EMGame::OnDestroy ()
 
 	GXSafeDelete ( directedLight );
 
-	GXSafeDelete ( physicsContactShapeBMaterial );
-	GXSafeDelete ( physicsContactShapeAMaterial );
-	GXSafeDelete ( physicsContactShapeMesh );
+	GXSafeDelete ( physicsShapeBPlanarContactGeometryMaterial );
+	GXSafeDelete ( physicsShapeAPlanarContactGeometryMaterial );
+	GXSafeDelete ( physicsShapeBProjectedContactGeometryMaterial );
+	GXSafeDelete ( physicsShapeAProjectedContactGeometryMaterial );
+	GXSafeDelete ( physicsShapeBContactGeometryMaterial );
+	GXSafeDelete ( physicsShapeAContactGeometryMaterial );
+	GXSafeDelete ( physicsGeometry );
 	GXSafeDelete ( physicsContactNormalMaterial );
 	GXMeshGeometry::RemoveMeshGeometry ( physicsContactNormalMesh );
 	GXTexture2D::RemoveTexture ( physicsInfoBackgroundTexture );

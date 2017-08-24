@@ -1,4 +1,4 @@
-//version 1.36
+//version 1.37
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -37,11 +37,27 @@ union GXVec2
 
 GXVec2 GXCALL GXCreateVec2 ( GXFloat component_1, GXFloat component_2 );
 GXVoid GXCALL GXNormalizeVec2 ( GXVec2 &inOut );
+GXVoid GXCALL GXCalculateNormalVec2Fast ( GXVec2 &normal, const GXVec2 &a, const GXVec2 &b );	//No normalization
+GXVoid GXCALL GXCalculateNormalVec2 ( GXVec2 &normal, const GXVec2 &a, const GXVec2 &b );
 GXVoid GXCALL GXSumVec2Vec2 ( GXVec2 &out, const GXVec2 &a, const GXVec2 &b );
+GXVoid GXCALL GXSumVec2ScaledVec2 ( GXVec2 &out, const GXVec2 &a, GXFloat s, const GXVec2 &b );
 GXVoid GXCALL GXSubVec2Vec2 ( GXVec2 &out, const GXVec2 &a, const GXVec2 &b );
 GXVoid GXCALL GXMulVec2Vec2 ( GXVec2 &out, const GXVec2 &a, const GXVec2 &b );
 GXVoid GXCALL GXMulVec2Scalar ( GXVec2 &out, const GXVec2 &v, GXFloat a );
+GXFloat GXCALL GXDotVec2 ( const GXVec2 &a, const GXVec2 &b );
 GXFloat GXCALL GXLengthVec2 ( const GXVec2 &v );
+GXBool GXCALL GXIsEqualVec2 ( const GXVec2 &a, const GXVec2 &b );
+
+//-------------------------------------------------------------
+
+enum class eGXLineRelationship : GXUByte
+{
+	NoIntersection,
+	Overlap,
+	Intersection
+};
+
+eGXLineRelationship GXCALL GXLineIntersection2D ( GXVec2 &intersectionPoint, const GXVec2 &a0, const GXVec2 &a1, const GXVec2 &b0, const GXVec2 &b1 );
 
 //-------------------------------------------------------------
 
@@ -94,7 +110,7 @@ GXVoid GXCALL GXSubVec3Vec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b );
 GXVoid GXCALL GXSubVec3ScaledVec3 ( GXVec3 &out, const GXVec3 &a, GXFloat s, const GXVec3 &b );
 GXVoid GXCALL GXMulVec3Vec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b );
 GXVoid GXCALL GXMulVec3Scalar ( GXVec3 &out, const GXVec3 &v, GXFloat factor );
-GXFloat GXCALL GXDotVec3Fast ( const GXVec3 &a, const GXVec3 &b );							//must be unit vectors
+GXFloat GXCALL GXDotVec3 ( const GXVec3 &a, const GXVec3 &b );
 GXVoid GXCALL GXCrossVec3Vec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b );
 GXFloat GXCALL GXLengthVec3 ( const GXVec3 &v );
 GXFloat GXCALL GXSquareLengthVec3 ( const GXVec3 &v );
@@ -104,7 +120,7 @@ GXVoid GXCALL GXReverseVec3 ( GXVec3 &inOut );
 GXVoid GXCALL GXLerpVec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b, GXFloat factor );
 GXVoid GXCALL GXProjectVec3Vec3 ( GXVec3 &projection, const GXVec3 &vector, const GXVec3 &unitVector );
 GXVoid GXCALL GXMakeOrthonormalBasis ( GXVec3 &baseX, GXVec3 &adjustedY, GXVec3 &adjustedZ ); //baseX - correct direction, adjustedY - desirable, adjustedZ - calculated.
-GXBool GXCALL GXIsEqualVec3Vec3 ( const GXVec3 &a, const GXVec3 &b );
+GXBool GXCALL GXIsEqualVec3 ( const GXVec3 &a, const GXVec3 &b );
 
 //-------------------------------------------------------------
 
