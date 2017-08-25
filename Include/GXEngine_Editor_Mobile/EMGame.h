@@ -44,10 +44,7 @@ class EMGame : public GXGame
 		GXMeshGeometry*			physicsGeometry;
 		GXUnlitColorMaterial*	physicsShapeAContactGeometryMaterial;
 		GXUnlitColorMaterial*	physicsShapeBContactGeometryMaterial;
-		GXUnlitColorMaterial*	physicsShapeAProjectedContactGeometryMaterial;
-		GXUnlitColorMaterial*	physicsShapeBProjectedContactGeometryMaterial;
-		GXUnlitColorMaterial*	physicsShapeAPlanarContactGeometryMaterial;
-		GXUnlitColorMaterial*	physicsShapeBPlanarContactGeometryMaterial;
+		GXUnlitColorMaterial*	physicsPlanarIntersectionGeometryMaterial;
 
 		EMDirectedLightActor*	directedLight;
 

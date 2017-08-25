@@ -53,8 +53,8 @@ GXBool GXCALL GXIsEqualVec2 ( const GXVec2 &a, const GXVec2 &b );
 enum class eGXLineRelationship : GXUByte
 {
 	NoIntersection,
-	Overlap,
-	Intersection
+	Intersection,
+	Overlap
 };
 
 eGXLineRelationship GXCALL GXLineIntersection2D ( GXVec2 &intersectionPoint, const GXVec2 &a0, const GXVec2 &a1, const GXVec2 &b0, const GXVec2 &b1 );

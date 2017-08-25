@@ -1,4 +1,4 @@
-//version 1.1
+//version 1.2
 
 #ifndef GX_COLLISION_DETECTOR
 #define GX_COLLISION_DETECTOR
@@ -30,25 +30,23 @@ class GXCollisionDetector
 		GXFloat							deviationAngle;
 
 		GXVec3*							shapeAContactGeometry;
-		GXUShort						totalShapeAContactGeometryPoints;
+		GXUInt							totalShapeAContactGeometryPoints;
 
 		GXVec3*							shapeBContactGeometry;
-		GXUShort						totalShapeBContactGeometryPoints;
+		GXUInt							totalShapeBContactGeometryPoints;
 
 		GXVec3*							shapeAProjectedContactGeometry;
-		GXUShort						totalShapeAProjectedContactGeometryPoints;
-
 		GXVec3*							shapeBProjectedContactGeometry;
-		GXUShort						totalShapeBProjectedContactGeometryPoints;
 
-		GXVec3*							shapeAPlanarContactGeometry;
-		GXUShort						totalShapeAPlanarContactGeometryPoints;
+		GXVec2*							shapeAPlanarContactGeometry;
+		GXVec3*							shapeAPlanarContactGeometryDebug;
 
-		GXVec3*							shapeBPlanarContactGeometry;
-		GXUShort						totalShapeBPlanarContactGeometryPoints;
+		GXVec2*							shapeBPlanarContactGeometry;
+		GXVec3*							shapeBPlanarContactGeometryDebug;
 
 		GXDynamicArray					alphaPlanarIntersectionGeometry;
 		GXDynamicArray					bettaPlanarIntersectionGeometry;
+		GXDynamicArray					planarIntersectionGeometry;
 		GXUInt							totalPlanarIntersectionPoints;
 
 		static GXCollisionDetector*		instance;
@@ -59,6 +57,9 @@ class GXCollisionDetector
 
 		GXVoid Check ( const GXShape &shapeA, const GXShape &shapeB, GXCollisionData &collisionData );
 
+		GXVoid EnableDebugData ();
+		GXVoid DisableDebugData ();
+
 		GXVoid SetDeviationAxes ( GXUShort axes );
 		GXUShort GetDeviationAxes () const;
 
@@ -66,22 +67,19 @@ class GXCollisionDetector
 		GXFloat GetDeviationAngle () const;
 
 		const GXVec3* GetShapeAContactGeometry () const;
-		GXUShort GetTotalShapeAContactGeometryPoints () const;
+		GXUInt GetTotalShapeAContactGeometryPoints () const;
 
 		const GXVec3* GetShapeBContactGeometry () const;
-		GXUShort GetTotalShapeBContactGeometryPoints () const;
-
-		const GXVec3* GetShapeAProjectedContactGeometry () const;
-		GXUShort GetTotalShapeAProjectedContactGeometryPoints () const;
-
-		const GXVec3* GetShapeBProjectedContactGeometry () const;
-		GXUShort GetTotalShapeBProjectedContactGeometryPoints () const;
+		GXUInt GetTotalShapeBContactGeometryPoints () const;
 
 		const GXVec3* GetShapeAPlanarContactGeometry () const;
-		GXUShort GetTotalShapeAPlanarContactGeometryPoints () const;
+		GXUInt GetTotalShapeAPlanarContactGeometryPoints () const;
 
 		const GXVec3* GetShapeBPlanarContactGeometry () const;
-		GXUShort GetTotalShapeBPlanarContactGeometryPoints () const;
+		GXUInt GetTotalShapeBPlanarContactGeometryPoints () const;
+
+		const GXVec3* GetPlanarIntersectionGeometry () const;
+		GXUInt GetTotalPlanarIntersectionPoints () const;
 
 		GXUInt GetAllocatedSupportPoints () const;
 		GXUInt GetAllocatedEdges () const;
@@ -93,8 +91,10 @@ class GXCollisionDetector
 		GXVoid CalculateSupportPoint ( GXSupportPoint &supportPoint, const GXShape &shapeA, const GXShape &shapeB, const GXVec3 &direction );
 		GXVoid ProceedEdge ( GXEdge &edge, GXUInt &lastEdgeIndex, GXEdge** edgeArrayPointer, GXUInt &totalEdges );
 		GXVoid ProjectContactGeometry ( GXVec3* contactGeometryProjection, const GXVec3* contactGeometryWorld, GXUShort totalContactGeometryPoints, const GXVec3 &contactNormal );
-		GXVoid CalculatePlanarContactGeometryCoordinates ( GXVec3* planarContactGeometry, const GXVec3* projectedContactGeometry, GXUShort totalContactGeometryPoints, const GXVec3 &xAxis, const GXVec3 &yAxis );
+		GXVoid CalculatePlanarContactGeometryCoordinates ( GXVec2* planarContactGeometry, const GXVec3* projectedContactGeometry, GXUShort totalContactGeometryPoints, const GXVec3 &xAxis, const GXVec3 &yAxis );
+		GXVoid GetClippedPlanarContactGeometry ( GXVec2** clippedGeometryArrayPointer, GXUInt &totalPoints, const GXVec2* clipGeometry, GXUInt totalClipGeometryPoints, const GXVec2* subjectGeometry, GXUInt totalSubjectGeometryPoints );
 		GXVoid UpdateDeviationAxes ();
+		GXVoid UpdateDebugData ( const GXVec2* planarIntersectionGeometry );
 };
 
 
