@@ -47,7 +47,8 @@ class GXCollisionDetector
 		GXDynamicArray					alphaPlanarIntersectionGeometry;
 		GXDynamicArray					bettaPlanarIntersectionGeometry;
 		GXDynamicArray					planarIntersectionGeometry;
-		GXUInt							totalPlanarIntersectionPoints;
+		GXDynamicArray					intersectionGeometry;
+		GXUInt							totalIntersectionPoints;
 
 		static GXCollisionDetector*		instance;
 
@@ -93,6 +94,8 @@ class GXCollisionDetector
 		GXVoid ProjectContactGeometry ( GXVec3* contactGeometryProjection, const GXVec3* contactGeometryWorld, GXUShort totalContactGeometryPoints, const GXVec3 &contactNormal );
 		GXVoid CalculatePlanarContactGeometryCoordinates ( GXVec2* planarContactGeometry, const GXVec3* projectedContactGeometry, GXUShort totalContactGeometryPoints, const GXVec3 &xAxis, const GXVec3 &yAxis );
 		GXVoid GetClippedPlanarContactGeometry ( GXVec2** clippedGeometryArrayPointer, GXUInt &totalPoints, const GXVec2* clipGeometry, GXUInt totalClipGeometryPoints, const GXVec2* subjectGeometry, GXUInt totalSubjectGeometryPoints );
+		GXVoid GetIntersectionGeometryCoordinates ( GXVec3* intersectionGeometry, const GXVec2* planarIntersectionGeometry, GXUInt totalIntersectionPoints, const GXVec3 &xAxis, const GXVec3 &yAxis );
+		GXVoid GetCentroid ( GXVec3 &centroid, const GXVec3* points, GXUInt totalPoints );
 		GXVoid UpdateDeviationAxes ();
 		GXVoid UpdateDebugData ( const GXVec2* planarIntersectionGeometry );
 };

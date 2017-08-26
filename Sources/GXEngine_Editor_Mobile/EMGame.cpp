@@ -35,6 +35,7 @@ EMGame::EMGame ()
 
 	physicsInfo = nullptr;
 	physicsContactNormalMaterial = nullptr;
+	physicsContactPointMaterial = nullptr;
 	physicsGeometry = nullptr;
 	physicsShapeAContactGeometryMaterial = nullptr;
 	physicsShapeBContactGeometryMaterial = nullptr;
@@ -143,6 +144,10 @@ GXVoid EMGame::OnInit ()
 	physicsContactNormalMaterial = new GXUnlitColorMaterial ();
 	physicsContactNormalMaterial->SetColor ( 255, 0, 0, 255 );
 
+	physicsContactPointMesh = GXMeshGeometry::LoadFromObj ( L"3D Models/System/Unit Sphere.obj" );
+	physicsContactPointMaterial = new GXUnlitColorMaterial ();
+	physicsContactPointMaterial->SetColor ( 255, 0, 0, 255 );
+
 	physicsGeometry = new GXMeshGeometry ();
 	physicsGeometry->SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, sizeof ( GXVec3 ), 0 );
 
@@ -159,6 +164,7 @@ GXVoid EMGame::OnInit ()
 	unitActor = new EMUnitActor ( L"Unit actor 01", transform );
 
 	transform.SetLocation ( -3.0f, 0.0f, 0.0f );
+	transform.SetRotation ( 0.5f, 0.5f, 0.0f );
 	colliderOne = new EMPhysicsDrivenActor ( L"Collider One", transform );
 	GXBoxShape* colliderOneShape = new GXBoxShape ( &( colliderOne->GetRigidBody () ), 1.0f, 1.0f, 1.0f );
 	colliderOne->GetRigidBody ().SetShape ( *colliderOneShape );
@@ -173,6 +179,7 @@ GXVoid EMGame::OnInit ()
 	colliderOne->EnablePhysicsDebug ();
 
 	transform.SetLocation ( 3.0f, 0.0f, 0.0f );
+	transform.SetRotation ( 0.0f, 0.0f, 0.0f );
 	colliderTwo = new EMPhysicsDrivenActor ( L"Collider Two", transform );
 	GXBoxShape* colliderTwoShape = new GXBoxShape ( &( colliderTwo->GetRigidBody () ), 1.0f, 1.0f, 1.0f );
 	colliderTwo->GetRigidBody ().SetShape ( *colliderTwoShape );
@@ -320,6 +327,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	GXCollisionDetector& collisionDetector = GXCollisionDetector::GetInstance ();
 	const GXCollisionData& collisionData = GXPhysicsEngine::GetInstance ().GetWorld ().GetCollisionData ();
+	GXContact* contact = collisionData.GetAllContacts ();
 
 	if ( collisionData.GetTotalContacts () > 0 )
 	{
@@ -354,44 +362,47 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 		physicsGeometry->Render ();
 		physicsShapeBContactGeometryMaterial->Unbind ();
 
-		points = collisionDetector.GetTotalShapeAPlanarContactGeometryPoints ();
-		physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeAPlanarContactGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
-		physicsGeometry->SetTotalVertices ( (GLsizei)points );
+		if ( collisionDetector.GetTotalPlanarIntersectionPoints () > 0 )
+		{
+			points = collisionDetector.GetTotalShapeAPlanarContactGeometryPoints ();
+			physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeAPlanarContactGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+			physicsGeometry->SetTotalVertices ( (GLsizei)points );
 
-		if ( points == 1 )
-			physicsGeometry->SetTopology ( GL_POINTS );
-		else
-			physicsGeometry->SetTopology ( GL_LINE_LOOP );
+			if ( points == 1 )
+				physicsGeometry->SetTopology ( GL_POINTS );
+			else
+				physicsGeometry->SetTopology ( GL_LINE_LOOP );
 
-		physicsShapeAContactGeometryMaterial->Bind ( GXTransform::GetNullTransform () );
-		physicsGeometry->Render ();
-		physicsShapeAContactGeometryMaterial->Unbind ();
+			physicsShapeAContactGeometryMaterial->Bind ( GXTransform::GetNullTransform () );
+			physicsGeometry->Render ();
+			physicsShapeAContactGeometryMaterial->Unbind ();
 
-		points = collisionDetector.GetTotalShapeBPlanarContactGeometryPoints ();
-		physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeBPlanarContactGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
-		physicsGeometry->SetTotalVertices ( (GLsizei)points );
+			points = collisionDetector.GetTotalShapeBPlanarContactGeometryPoints ();
+			physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeBPlanarContactGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+			physicsGeometry->SetTotalVertices ( (GLsizei)points );
 
-		if ( points == 1 )
-			physicsGeometry->SetTopology ( GL_POINTS );
-		else
-			physicsGeometry->SetTopology ( GL_LINE_LOOP );
+			if ( points == 1 )
+				physicsGeometry->SetTopology ( GL_POINTS );
+			else
+				physicsGeometry->SetTopology ( GL_LINE_LOOP );
 
-		physicsShapeBContactGeometryMaterial->Bind ( GXTransform::GetNullTransform () );
-		physicsGeometry->Render ();
-		physicsShapeBContactGeometryMaterial->Unbind ();
+			physicsShapeBContactGeometryMaterial->Bind ( GXTransform::GetNullTransform () );
+			physicsGeometry->Render ();
+			physicsShapeBContactGeometryMaterial->Unbind ();
 
-		points = collisionDetector.GetTotalPlanarIntersectionPoints ();
-		physicsGeometry->FillVertexBuffer ( collisionDetector.GetPlanarIntersectionGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
-		physicsGeometry->SetTotalVertices ( (GLsizei)points );
+			points = collisionDetector.GetTotalPlanarIntersectionPoints ();
+			physicsGeometry->FillVertexBuffer ( collisionDetector.GetPlanarIntersectionGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+			physicsGeometry->SetTotalVertices ( (GLsizei)points );
 
-		if ( points == 1 )
-			physicsGeometry->SetTopology ( GL_POINTS );
-		else
-			physicsGeometry->SetTopology ( GL_LINE_LOOP );
+			if ( points == 1 )
+				physicsGeometry->SetTopology ( GL_POINTS );
+			else
+				physicsGeometry->SetTopology ( GL_LINE_LOOP );
 
-		physicsPlanarIntersectionGeometryMaterial->Bind ( GXTransform::GetNullTransform () );
-		physicsGeometry->Render ();
-		physicsPlanarIntersectionGeometryMaterial->Unbind ();
+			physicsPlanarIntersectionGeometryMaterial->Bind ( GXTransform::GetNullTransform () );
+			physicsGeometry->Render ();
+			physicsPlanarIntersectionGeometryMaterial->Unbind ();
+		}
 
 		GXVec3 z = collisionData.GetAllContacts ()->GetNormal ();
 
@@ -423,6 +434,17 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 		physicsContactNormalMaterial->Bind ( transform );
 		physicsContactNormalMesh.Render ();
 		physicsContactNormalMaterial->Unbind ();
+
+		transform.SetScale ( 0.1f, 0.1f, 0.1f );
+
+		for ( GXUInt i = 0; i < collisionData.GetTotalContacts (); i++ )
+		{
+			transform.SetLocation ( contact[ i ].GetContactPoint () );
+
+			physicsContactPointMaterial->Bind ( transform );
+			physicsContactPointMesh.Render ();
+			physicsContactPointMaterial->Unbind ();
+		}
 
 		state.Restore ();
 	}
@@ -465,8 +487,6 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	if ( collisionData.GetTotalContacts () > 0 )
 	{
-		GXContact* contact = collisionData.GetAllContacts ();
-
 		pi.insertY += offset;
 		physicsInfo->AddText ( pi, 128, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Penetration depth: %f" ), contact->GetPenetration () );
 
@@ -548,7 +568,9 @@ GXVoid EMGame::OnDestroy ()
 	GXSafeDelete ( physicsShapeBContactGeometryMaterial );
 	GXSafeDelete ( physicsShapeAContactGeometryMaterial );
 	GXSafeDelete ( physicsGeometry );
+	GXSafeDelete ( physicsContactPointMaterial );
 	GXSafeDelete ( physicsContactNormalMaterial );
+	GXMeshGeometry::RemoveMeshGeometry ( physicsContactPointMesh );
 	GXMeshGeometry::RemoveMeshGeometry ( physicsContactNormalMesh );
 	GXTexture2D::RemoveTexture ( physicsInfoBackgroundTexture );
 	GXFont::RemoveFont ( physicsInfoFont );

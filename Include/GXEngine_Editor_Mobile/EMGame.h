@@ -40,7 +40,9 @@ class EMGame : public GXGame
 		GXFont					physicsInfoFont;
 		GXTexture2D				physicsInfoBackgroundTexture;
 		GXMeshGeometry			physicsContactNormalMesh;
+		GXMeshGeometry			physicsContactPointMesh;
 		GXUnlitColorMaterial*	physicsContactNormalMaterial;
+		GXUnlitColorMaterial*	physicsContactPointMaterial;
 		GXMeshGeometry*			physicsGeometry;
 		GXUnlitColorMaterial*	physicsShapeAContactGeometryMaterial;
 		GXUnlitColorMaterial*	physicsShapeBContactGeometryMaterial;

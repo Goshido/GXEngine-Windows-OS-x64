@@ -41,6 +41,11 @@ GXVoid GXContact::SetContactPoint ( const GXVec3 &point )
 	this->point = point;
 }
 
+const GXVec3& GXContact::GetContactPoint () const
+{
+	return point;
+}
+
 GXVoid GXContact::SetPenetration ( GXFloat penetration )
 {
 	this->penetration = penetration;

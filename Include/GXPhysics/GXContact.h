@@ -39,6 +39,7 @@ class GXContact
 		const GXVec3& GetNormal () const;
 
 		GXVoid SetContactPoint ( const GXVec3 &point );
+		const GXVec3& GetContactPoint () const;
 
 		GXVoid SetPenetration ( GXFloat penetration );
 		GXFloat GetPenetration () const;
