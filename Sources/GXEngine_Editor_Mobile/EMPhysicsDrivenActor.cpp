@@ -48,6 +48,8 @@ EMActor ( name, eEMActorType::PhysicsDrivenActor, transform )
 	GXPhysicsEngine::GetInstance ().GetWorld ().RegisterRigidBody ( rigidBody );
 
 	wireframeMaterial = nullptr;
+
+	rigidBody.SetOnTransformChangedCallback ( this, &EMPhysicsDrivenActor::OnRigidBodyTransformChanged );
 }
 
 EMPhysicsDrivenActor::~EMPhysicsDrivenActor ()
@@ -97,12 +99,19 @@ GXVoid EMPhysicsDrivenActor::OnDrawHudColorPass ()
 	tr.SetLocation ( rigidBody.GetLocation () );
 	tr.SetRotation ( rigidBody.GetRotation () );
 
-	switch ( rigidBody.GetShape ().GetType () )
+	GXShape& shape = rigidBody.GetShape ();
+
+	switch ( shape.GetType () )
 	{
 		case eGXShapeType::Box:
+		{
+			GXBoxShape& boxShape = (GXBoxShape&)shape;
+			tr.SetScale ( boxShape.GetWidth (), boxShape.GetHeight (), boxShape.GetDepth () );
+
 			wireframeMaterial->Bind ( tr );
 			unitCubeMesh.Render ();
 			wireframeMaterial->Unbind ();
+		}
 		break;
 
 		case eGXShapeType::Plane:
@@ -114,9 +123,15 @@ GXVoid EMPhysicsDrivenActor::OnDrawHudColorPass ()
 		return;
 
 		case eGXShapeType::Sphere:
+		{
+			GXSphereShape& sphereShape = (GXSphereShape&)shape;
+			GXFloat s = 2.0f * sphereShape.GetRadius ();
+			tr.SetScale ( s, s, s );
+
 			wireframeMaterial->Bind ( tr );
 			unitSphereMesh.Render ();
 			wireframeMaterial->Unbind ();
+		}
 		break;
 
 		default:
@@ -127,7 +142,7 @@ GXVoid EMPhysicsDrivenActor::OnDrawHudColorPass ()
 
 GXVoid EMPhysicsDrivenActor::OnTransformChanged ()
 {
-	rigidBody.SetLocation ( transform.GetLocation () );
+	//rigidBody.SetLocation ( transform.GetLocation () );
 }
 
 GXVoid EMPhysicsDrivenActor::SetMesh ( const GXWChar* meshFile )
@@ -180,4 +195,13 @@ GXVoid EMPhysicsDrivenActor::DisablePhysicsDebug ()
 	GXSafeDelete ( wireframeMaterial );
 	GXMeshGeometry::RemoveMeshGeometry ( unitSphereMesh );
 	GXMeshGeometry::RemoveMeshGeometry ( unitCubeMesh );
+}
+
+GXVoid GXCALL EMPhysicsDrivenActor::OnRigidBodyTransformChanged ( GXVoid* handler, const GXRigidBody& rigidBody )
+{
+	EMPhysicsDrivenActor* physicsDrivenActor = (EMPhysicsDrivenActor*)handler;
+	physicsDrivenActor->transform.SetLocation ( rigidBody.GetLocation () );
+	physicsDrivenActor->transform.SetRotation ( rigidBody.GetRotation () );
+
+	physicsDrivenActor->OnTransformChanged ();
 }

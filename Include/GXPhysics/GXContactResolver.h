@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #ifndef GX_CONTACT_RESOLVER
 #define GX_CONTACT_RESOLVER
@@ -9,31 +9,19 @@
 
 class GXContactResolver
 {
-	private:
-		GXFloat		positionEpsilon;
-		GXUInt		positionIterations;
-		GXUInt		positionIterationsUsed;
-
-		GXFloat		velocityEpsilon;
-		GXUInt		velocityIterations;
-		GXUInt		velocityIterationsUsed;
-
 	public:
 		GXContactResolver ( GXUInt iterations );
 
 		GXVoid ResolveContacts ( GXContact* contactArray, GXUInt numContacts, GXFloat deltaTime );
 
-		GXVoid SetPositionEpsilon ( GXFloat epsilon );
-		GXVoid SetVelocityEpsilon ( GXFloat epsilon );
-
-		GXVoid SetVelocityIterations ( GXUInt iterations );
-		GXVoid SetPositionIterations ( GXUInt iterations );
-
 	private:
-		GXVoid PrepareContacts ( GXContact* contactArray, GXUInt numContacts, GXFloat deltaTime );
-		GXVoid AdjustPositions ( GXContact* contacts, GXUInt numContacts, GXFloat deltaTime );
-		GXVoid AdjustVelocities ( GXContact* contacts, GXUInt numContacts, GXFloat deltaTime );
-		GXBool IsValid () const;
+		GXVoid CalculateContactMatrix ( GXMat3 &out, const GXVec3 &contactNormal );
+		GXFloat CalculateAngularComponentContactSpace ( const GXVec3 &centerOfMassToContactPoint, const GXRigidBody& rigidBody, const GXVec3 &contactNormal );
+
+		GXVoid ResolveSingleBodyContacts ( GXRigidBody &rigidBody, GXContact* contacts );
+		GXVoid ResolveDoubleBodyContacts ( GXContact* contacts );
+
+		GXVoid GetRigidBodyKinematics ( GXVec3 &linearVelocity, GXVec3 &angularVelocity, GXRigidBody &rigidBody, const GXVec3 &impulse, const GXVec3 &centerOfMassToContactPoint );
 };
 
 

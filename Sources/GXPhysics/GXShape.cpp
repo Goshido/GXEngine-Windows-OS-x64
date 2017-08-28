@@ -5,7 +5,7 @@
 
 
 #define DEFAULT_FRICTION		0.5f
-#define DEFAULT_RESTITUTION		0.85f
+#define DEFAULT_RESTITUTION		0.4f
 
 
 GXShape::GXShape ( eGXShapeType type, GXRigidBody* body )

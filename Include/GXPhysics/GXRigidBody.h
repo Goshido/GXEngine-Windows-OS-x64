@@ -6,43 +6,50 @@
 
 #include <GXCommon/GXMath.h>
 
+class GXRigidBody;
+typedef GXVoid ( GXCALL* PFNRIGIDBODYONTRANSFORMCHANGED ) ( GXVoid* handler, const GXRigidBody &rigidBody );
 
 class GXShape;
 class GXRigidBody
 {
 	private:
-		GXFloat		mass;
-		GXFloat		invMass;
+		GXFloat							mass;
+		GXFloat							invMass;
 
-		GXVec3		location;
-		GXQuat		rotation;
+		GXVec3							location;
+		GXQuat							rotation;
 
-		GXVec3		linearVelocity;
-		GXVec3		angularVelocity;
-		GXMat3		invInertiaTensorLocal;
+		GXVec3							linearVelocity;
+		GXVec3							angularVelocity;
+		GXMat3							invInertiaTensorLocal;
 
-		GXVec3		totalForce;
-		GXVec3		totalTorque;
+		GXVec3							totalForce;
+		GXVec3							totalTorque;
 
-		GXFloat		linearDamping;
-		GXFloat		angularDamping;
+		GXFloat							linearDamping;
+		GXFloat							angularDamping;
 
-		GXFloat		motion;
-		GXBool		isAwake;
-		GXBool		canSleep;
-		GXBool		isKinematic;
+		GXFloat							motion;
+		GXBool							isAwake;
+		GXBool							canSleep;
+		GXBool							isKinematic;
 
-		GXVec3		acceleration;
-		GXVec3		lastFrameAcceleration;
+		GXVec3							acceleration;
+		GXVec3							lastFrameAcceleration;
 
-		GXMat4		transform;
-		GXMat3		invInertiaTensorWorld;
+		GXMat4							transform;
+		GXMat3							invInertiaTensorWorld;
 
-		GXShape*	shape;
+		GXShape*						shape;
+
+		GXVoid*							handler;
+		PFNRIGIDBODYONTRANSFORMCHANGED	OnTransformChanged;
 
 	public:
 		GXRigidBody ();
 		~GXRigidBody ();
+
+		GXVoid SetOnTransformChangedCallback ( GXVoid* handler, PFNRIGIDBODYONTRANSFORMCHANGED callback );
 
 		GXVoid CalculateCachedData ();
 		GXVoid ClearAccumulators ();
@@ -68,7 +75,6 @@ class GXRigidBody
 		GXVoid SetMass ( GXFloat mass );
 		GXFloat GetMass () const;
 		GXFloat GetInverseMass () const;
-		GXBool HasFiniteMass () const;
 
 		GXVoid SetLinearDamping ( GXFloat damping );
 		GXFloat GetLinearDamping () const;

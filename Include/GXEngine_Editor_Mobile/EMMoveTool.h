@@ -58,7 +58,7 @@ class EMMoveTool : public EMTool
 		GXVoid SetWorldMode ();
 
 	private:
-		GXVoid SetMode ( GXUByte mode );
+		GXVoid UpdateModeMode ();
 
 		GXVoid OnMoveActor ();
 

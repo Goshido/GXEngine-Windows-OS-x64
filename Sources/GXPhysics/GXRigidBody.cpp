@@ -33,6 +33,9 @@ GXRigidBody::GXRigidBody ()
 {
 	shape = nullptr;
 
+	handler = nullptr;
+	OnTransformChanged = nullptr;
+
 	SetMass ( DEFAULT_MASS );
 
 	GXVec3 vec ( DEFAULT_LOCATION_X, DEFAULT_LOCATION_Y, DEFAULT_LOCATION_Z );
@@ -63,10 +66,19 @@ GXRigidBody::~GXRigidBody ()
 	GXSafeDelete ( shape );
 }
 
+GXVoid GXRigidBody::SetOnTransformChangedCallback ( GXVoid* handler, PFNRIGIDBODYONTRANSFORMCHANGED callback )
+{
+	this->handler = handler;
+	OnTransformChanged = callback;
+}
+
 GXVoid GXRigidBody::CalculateCachedData ()
 {
 	GXNormalizeQuat ( rotation );
 	transform.From ( rotation, location );
+
+	if ( OnTransformChanged )
+		OnTransformChanged ( handler, *this );
 
 	GXMat3 localToWorld;
 	GXSetMat3FromMat4 ( localToWorld, transform );
@@ -100,7 +112,10 @@ GXVoid GXRigidBody::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 {
 	location = GXCreateVec3 ( x, y, z );
 	transform.SetW ( location );
-	
+
+	if ( OnTransformChanged )
+		OnTransformChanged ( handler, *this );
+
 	if ( shape )
 		shape->CalculateCacheData ();
 }
@@ -109,7 +124,10 @@ GXVoid GXRigidBody::SetLocation ( const GXVec3 &location )
 {
 	this->location = location;
 	transform.SetW ( location );
-	
+
+	if ( OnTransformChanged )
+		OnTransformChanged ( handler, *this );
+
 	if ( shape )
 		shape->CalculateCacheData ();
 }
@@ -123,6 +141,9 @@ GXVoid GXRigidBody::SetRotaton ( const GXQuat &rotation )
 {
 	this->rotation = rotation;
 	transform.From ( rotation, location );
+
+	if ( OnTransformChanged )
+		OnTransformChanged ( handler, *this );
 
 	if ( shape )
 		shape->CalculateCacheData ();
@@ -177,11 +198,6 @@ GXFloat GXRigidBody::GetMass () const
 GXFloat GXRigidBody::GetInverseMass () const
 {
 	return invMass;
-}
-
-GXBool GXRigidBody::HasFiniteMass () const
-{
-	return !isKinematic;
 }
 
 GXVoid GXRigidBody::SetLinearDamping ( GXFloat damping )
@@ -324,6 +340,8 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 	
 	ClearAccumulators ();
 	CalculateCachedData ();
+
+	return;
 
 	if ( canSleep )
 	{

@@ -39,6 +39,9 @@ class EMPhysicsDrivenActor : public EMActor
 
 		GXVoid EnablePhysicsDebug ();
 		GXVoid DisablePhysicsDebug ();
+
+	private:
+		static GXVoid GXCALL OnRigidBodyTransformChanged ( GXVoid* handler, const GXRigidBody &rigidBody );
 };
 
 

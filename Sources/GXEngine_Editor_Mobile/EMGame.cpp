@@ -19,7 +19,8 @@
 #define ENVIRONMENT_QUASI_DISTANCE		7.77f
 
 
-EMGame::EMGame ()
+EMGame::EMGame ():
+gravity ( GXCreateVec3 ( 0.0f, -9.81f, 0.0f ) )
 {
 	hudCamera = nullptr;
 
@@ -45,10 +46,10 @@ EMGame::EMGame ()
 	unitActor = nullptr;
 	colliderOne = nullptr;
 	colliderTwo = nullptr;
+	kinematicPlane = nullptr;
 	plasticSphere = nullptr;
 	goldSphere = nullptr;
 	silverSphere = nullptr;
-	plane = nullptr;
 
 	moveTool = nullptr;
 
@@ -164,10 +165,11 @@ GXVoid EMGame::OnInit ()
 	unitActor = new EMUnitActor ( L"Unit actor 01", transform );
 
 	transform.SetLocation ( -3.0f, 0.0f, 0.0f );
-	transform.SetRotation ( 0.5f, 0.5f, 0.0f );
+	transform.SetRotation ( 0.5f, 0.0f, 0.5f );
 	colliderOne = new EMPhysicsDrivenActor ( L"Collider One", transform );
 	GXBoxShape* colliderOneShape = new GXBoxShape ( &( colliderOne->GetRigidBody () ), 1.0f, 1.0f, 1.0f );
 	colliderOne->GetRigidBody ().SetShape ( *colliderOneShape );
+	//colliderOne->GetRigidBody ().EnableKinematic ();
 	colliderOne->SetMesh ( L"3D Models/System/Unit Cube.stm" );
 	EMCookTorranceCommonPassMaterial& colliderOneMaterial = colliderOne->GetMaterial ();
 	colliderOneMaterial.SetAlbedoColor ( 253, 180, 17, 255 );
@@ -178,12 +180,16 @@ GXVoid EMGame::OnInit ()
 	colliderOneMaterial.SetEmissionColorScale ( 0.0f );
 	colliderOne->EnablePhysicsDebug ();
 
+	GXWorld& world = GXPhysicsEngine::GetInstance ().GetWorld ();
+	world.RegisterForceGenerator ( colliderOne->GetRigidBody (), gravity );
+
 	transform.SetLocation ( 3.0f, 0.0f, 0.0f );
 	transform.SetRotation ( 0.0f, 0.0f, 0.0f );
 	colliderTwo = new EMPhysicsDrivenActor ( L"Collider Two", transform );
-	GXBoxShape* colliderTwoShape = new GXBoxShape ( &( colliderTwo->GetRigidBody () ), 1.0f, 1.0f, 1.0f );
+	GXSphereShape* colliderTwoShape = new GXSphereShape ( &( colliderTwo->GetRigidBody () ), 0.5f );
 	colliderTwo->GetRigidBody ().SetShape ( *colliderTwoShape );
-	colliderTwo->SetMesh ( L"3D Models/System/Unit Cube.stm" );
+	//colliderTwo->GetRigidBody ().EnableKinematic ();
+	colliderTwo->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
 	EMCookTorranceCommonPassMaterial& colliderTwoMaterial = colliderTwo->GetMaterial ();
 	colliderTwoMaterial.SetAlbedoColor ( 247, 244, 233, 255 );
 	colliderTwoMaterial.SetRoughnessScale ( 0.19f );
@@ -193,7 +199,30 @@ GXVoid EMGame::OnInit ()
 	colliderTwoMaterial.SetEmissionColorScale ( 0.0f );
 	colliderTwo->EnablePhysicsDebug ();
 
-	transform.SetLocation ( 6.0f, 0.0f, -.0f );
+	world.RegisterForceGenerator ( colliderTwo->GetRigidBody (), gravity );
+
+	transform.SetLocation ( 0.0f, -3.0f, 0.0f );
+	transform.SetRotation ( 0.0f, GX_MATH_PI, 0.0f );
+	transform.SetScale ( 50.0f, 1.0, 50.0f );
+	kinematicPlane = new EMPhysicsDrivenActor ( L"Kinematic Plane", transform );
+	GXBoxShape* kinematicPlaneShape = new GXBoxShape ( &( kinematicPlane->GetRigidBody () ), 50.0f, 1.0f, 50.0f );
+	kinematicPlane->GetRigidBody ().SetShape ( *kinematicPlaneShape );
+	kinematicPlane->GetRigidBody ().EnableKinematic ();
+	kinematicPlane->SetMesh ( L"3D Models/System/Unit Cube.stm" );
+	EMCookTorranceCommonPassMaterial& kinematicPlaneMaterial = kinematicPlane->GetMaterial ();
+	kinematicPlaneMaterial.SetRoughnessScale ( 0.07f );
+	kinematicPlaneMaterial.SetSpecularIntensityScale ( 0.15f );
+	kinematicPlaneMaterial.SetMetallicScale ( 0.0f );
+	kinematicPlaneMaterial.SetIndexOfRefractionScale ( 0.292f );
+	GXTexture2D* texture = kinematicPlaneMaterial.GetAlbedoTexture ();
+	GXTexture2D::RemoveTexture ( *texture );
+	*texture = GXTexture2D::LoadTexture ( L"Textures/System/GXEngine Logo 4k.png", GX_TRUE, GL_REPEAT, GX_TRUE );
+	kinematicPlane->EnablePhysicsDebug ();
+
+	world.RegisterForceGenerator ( kinematicPlane->GetRigidBody (), gravity );
+
+	transform.SetLocation ( 6.0f, 0.0f, 0.0f );
+	transform.SetScale ( 1.0f, 1.0, 1.0f );
 	plasticSphere = new EMMeshActor ( L"Plastic sphere", transform );
 	plasticSphere->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
 	EMCookTorranceCommonPassMaterial& plasticSphereMaterial = plasticSphere->GetMaterial ();
@@ -226,27 +255,13 @@ GXVoid EMGame::OnInit ()
 	silverSphereMaterial.SetMetallicScale ( 1.0f );
 	silverSphereMaterial.SetEmissionColorScale ( 0.0f );
 
-	transform.SetLocation ( 0.0f, -3.0f, 0.0f );
-	transform.SetRotation ( 0.0f, GX_MATH_PI, 0.0f );
-	transform.SetScale ( 50.0f, 0.1f, 50.0f );
-	plane = new EMMeshActor ( L"plane", transform );
-	plane->SetMesh ( L"3D Models/System/Unit Cube.stm" );
-	EMCookTorranceCommonPassMaterial& planeMaterial = plane->GetMaterial ();
-	planeMaterial.SetRoughnessScale ( 0.07f );
-	planeMaterial.SetSpecularIntensityScale ( 0.15f );
-	planeMaterial.SetMetallicScale ( 0.0f );
-	planeMaterial.SetIndexOfRefractionScale ( 0.292f );
-	GXTexture2D* texture = planeMaterial.GetAlbedoTexture ();
-	GXTexture2D::RemoveTexture ( *texture );
-	*texture = GXTexture2D::LoadTexture ( L"Textures/System/GXEngine Logo 4k.png", GX_TRUE, GL_REPEAT, GX_TRUE );
-
 	transform.SetScale ( 1.0f, 1.0f, 1.0f );
 	transform.SetRotation ( GXDegToRad ( 30.0f ), GXDegToRad ( 30.0f ), 0.0f );
 	directedLight = new EMDirectedLightActor ( L"Directed light 01", transform );
 
 	moveTool = new EMMoveTool ();
 	moveTool->Bind ();
-	moveTool->SetLocalMode ();
+	moveTool->SetWorldMode ();
 
 	hudCamera = new GXCameraOrthographic ( w, h, EM_UI_HUD_CAMERA_NEAR_Z, EM_UI_HUD_CAMERA_FAR_Z );
 
@@ -290,7 +305,8 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 {
 	GXTouchSurface::GetInstance ().ExecuteMessages ();
 
-	GXPhysicsEngine::GetInstance ().RunSimulateLoop ( deltaTime );
+	if ( deltaTime < 2.0f )
+		GXPhysicsEngine::GetInstance ().RunSimulateLoop ( deltaTime * 0.1f );
 
 	fluttershy->UpdatePose ( deltaTime );
 
@@ -303,10 +319,10 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	unitActor->OnDrawCommonPass ( deltaTime );
 	colliderOne->OnDrawCommonPass ( deltaTime );
 	colliderTwo->OnDrawCommonPass ( deltaTime );
+	kinematicPlane->OnDrawCommonPass ( deltaTime );
 	plasticSphere->OnDrawCommonPass ( deltaTime );
 	goldSphere->OnDrawCommonPass ( deltaTime );
 	silverSphere->OnDrawCommonPass ( deltaTime );
-	plane->OnDrawCommonPass ( deltaTime );
 	fluttershy->Render ( deltaTime );
 
 	renderer.StartEnvironmentPass ();
@@ -323,6 +339,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	colliderOne->OnDrawHudColorPass ();
 	colliderTwo->OnDrawHudColorPass ();
+	kinematicPlane->OnDrawHudColorPass ();
 	moveTool->OnDrawHudColorPass ();
 
 	GXCollisionDetector& collisionDetector = GXCollisionDetector::GetInstance ();
@@ -554,10 +571,17 @@ GXVoid EMGame::OnDestroy ()
 	GXSafeDelete ( fluttershy );
 	GXSafeDelete ( moveTool );
 
-	GXSafeDelete ( plane );
 	GXSafeDelete ( silverSphere );
 	GXSafeDelete ( goldSphere );
 	GXSafeDelete ( plasticSphere );
+
+	GXWorld& world = GXPhysicsEngine::GetInstance ().GetWorld ();
+
+	world.UnregisterForceGenerator ( kinematicPlane->GetRigidBody (), gravity );
+	world.UnregisterForceGenerator ( colliderOne->GetRigidBody (), gravity );
+	world.UnregisterForceGenerator ( colliderTwo->GetRigidBody (), gravity );
+
+	GXSafeDelete ( kinematicPlane );
 	GXSafeDelete ( colliderOne );
 	GXSafeDelete ( colliderTwo );
 	GXSafeDelete ( unitActor );

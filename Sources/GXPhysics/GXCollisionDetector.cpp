@@ -22,7 +22,6 @@
 #define EPA_INITIAL_EDGE_ARRAY_CAPACITY				384
 #define EPA_EDGE_ALLOCATING_STEP					384
 
-#define INITIAL_EPA_DISTANCE						FLT_MAX
 #define EPA_DISTANCE_EPSILON						1.0e-5f
 
 #define DEFAULT_DEVIATION_AXES						8
@@ -400,7 +399,7 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 
 	static const GXFace voidFace;
 
-	GXFloat contactPenetration = INITIAL_EPA_DISTANCE;
+	GXFloat contactPenetration = FLT_MAX;
 	GXVec3 contactNormal;
 	GXUInt epaIterations = 0;
 	GXUInt maximumEdgesUsed = 0;
@@ -409,7 +408,7 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 	{
 		epaIterations++;
 
-		GXFloat smallestDistance = INITIAL_EPA_DISTANCE;
+		GXFloat smallestDistance = FLT_MAX;
 		GXUInt smallestDistanceFaceIndex = 0;
 		GXVec3 smallestDistanceFaceNormal;
 
@@ -512,6 +511,54 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 
 	//Contact geometry search
 
+	if ( shapeA.GetType () == eGXShapeType::Sphere )
+	{
+		GXContact* contact = collisionData.GetContactsBegin ();
+		contact->SetLinkedContacts ( 1 );
+		contact->SetShapes ( shapeA, shapeB );
+		contact->SetNormal ( contactNormal );
+		contact->SetPenetration ( contactPenetration );
+		contact->SetGJKIterations ( gjkIterations );
+		contact->SetEPAIterations ( epaIterations );
+		contact->SetSupportPoints ( totalSupportPoints );
+		contact->SetEdges ( maximumEdgesUsed );
+		contact->SetFaces ( totalFaces );
+
+		GXVec3 contactPoint;
+		shapeA.GetExtremePoint ( contactPoint, contactNormal );
+		contact->SetContactPoint ( contactPoint );
+
+		collisionData.AddContacts ( 1 );
+
+		totalIntersectionPoints = 0;
+
+		return;
+	}
+	else if ( shapeB.GetType () == eGXShapeType::Sphere )
+	{
+		GXContact* contact = collisionData.GetContactsBegin ();
+		contact->SetLinkedContacts ( 1 );
+		contact->SetShapes ( shapeA, shapeB );
+		contact->SetNormal ( contactNormal );
+		contact->SetPenetration ( contactPenetration );
+		contact->SetGJKIterations ( gjkIterations );
+		contact->SetEPAIterations ( epaIterations );
+		contact->SetSupportPoints ( totalSupportPoints );
+		contact->SetEdges ( maximumEdgesUsed );
+		contact->SetFaces ( totalFaces );
+
+		GXReverseVec3 ( contactNormal );
+		GXVec3 contactPoint;
+		shapeB.GetExtremePoint ( contactPoint, contactNormal );
+
+		contact->SetContactPoint ( contactPoint );
+		collisionData.AddContacts ( 1 );
+
+		totalIntersectionPoints = 0;
+
+		return;
+	}
+
 	GXMat3 tbn;
 	GXVec3 zetta;
 	GXVec3 tangent;
@@ -564,6 +611,8 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 	if ( totalShapeAContactGeometryPoints == 1 )
 	{
 		GXContact* contact = collisionData.GetContactsBegin ();
+		contact->SetLinkedContacts ( 1 );
+		contact->SetShapes ( shapeA, shapeB );
 		contact->SetNormal ( contactNormal );
 		contact->SetPenetration ( contactPenetration );
 		contact->SetGJKIterations ( gjkIterations );
@@ -583,6 +632,8 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 	if ( totalShapeBContactGeometryPoints == 1 )
 	{
 		GXContact* contact = collisionData.GetContactsBegin ();
+		contact->SetLinkedContacts ( 1 );
+		contact->SetShapes ( shapeA, shapeB );
 		contact->SetNormal ( contactNormal );
 		contact->SetPenetration ( contactPenetration );
 		contact->SetGJKIterations ( gjkIterations );
@@ -664,6 +715,8 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 			break;
 		}
 
+		contact->SetLinkedContacts ( 1 );
+		contact->SetShapes ( shapeA, shapeB );
 		contact->SetNormal ( contactNormal );
 		contact->SetPenetration ( contactPenetration );
 		contact->SetGJKIterations ( gjkIterations );
@@ -743,6 +796,7 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 
 		if ( GXDotVec3 ( checkDirection, contactNormal ) < 0.0f ) continue;
 
+		contact[ contactIndex ].SetShapes ( shapeA, shapeB );
 		contact[ contactIndex ].SetNormal ( contactNormal );
 		contact[ contactIndex ].SetContactPoint ( intersectionShapeAProjection );
 		contact[ contactIndex ].SetPenetration ( contactPenetration );
@@ -754,6 +808,8 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 
 		contactIndex++;
 	}
+
+	contact->SetLinkedContacts ( contactIndex );
 
 	collisionData.AddContacts ( contactIndex );
 }

@@ -1,183 +1,171 @@
-//version 1.0
+//version 1.1
 
 #include <GXPhysics/GXContactResolver.h>
 #include <GXCommon/GXLogger.h>
 
 
-#define DEFAULT_POSITION_EPSILON	0.01f
-#define DEFAULT_VELOCITY_EPSILON	0.01f
-
-
 GXContactResolver::GXContactResolver ( GXUInt iterations )
 {
-	SetVelocityIterations ( iterations );
-	SetPositionIterations ( iterations );
-
-	SetPositionEpsilon ( DEFAULT_POSITION_EPSILON );
-	SetVelocityEpsilon ( DEFAULT_VELOCITY_EPSILON );
+	//NOTHING
 }
 
 GXVoid GXContactResolver::ResolveContacts ( GXContact* contactArray, GXUInt numContacts, GXFloat deltaTime )
 {
-	if ( numContacts == 0 ) return;
-	if ( !IsValid () ) return;
-	
-	PrepareContacts ( contactArray, numContacts, deltaTime );
-	AdjustPositions ( contactArray, numContacts, deltaTime );
-	AdjustVelocities ( contactArray, numContacts, deltaTime );
-}
-
-GXVoid GXContactResolver::SetPositionEpsilon ( GXFloat epsilon )
-{
-	positionEpsilon = epsilon;
-}
-
-GXVoid GXContactResolver::SetVelocityEpsilon ( GXFloat epsilon )
-{
-	velocityEpsilon = epsilon;
-}
-
-GXVoid GXContactResolver::SetVelocityIterations ( GXUInt iterations )
-{
-	velocityIterations = iterations;
-}
-
-GXVoid GXContactResolver::SetPositionIterations ( GXUInt iterations )
-{
-	positionIterations = iterations;
-}
-
-GXVoid GXContactResolver::PrepareContacts ( GXContact* contactArray, GXUInt numContacts, GXFloat deltaTime )
-{
-	for ( GXUInt i = 0; i < numContacts; i++ )
-		contactArray[ i ].CalculateInternals ( deltaTime );
-}
-
-GXVoid GXContactResolver::AdjustPositions ( GXContact* contacts, GXUInt numContacts, GXFloat deltaTime )
-{
-	GXUInt i;
-	GXUInt index;
-	GXVec3 linearChange[ 2 ];
-	GXVec3 angularChange[ 2 ];
-
-	GXFloat max;
-	GXVec3 deltaPosition;
-
-	positionIterationsUsed = 0;
-	while ( positionIterationsUsed < positionIterations )
+	GXUInt i = 0;
+	while ( i < numContacts )
 	{
-		max = positionEpsilon;
-		index = numContacts;
+		GXContact& contact = contactArray[ i ];
 
-		for ( i = 0; i < numContacts; i++ )
+		GXUInt linkedContacts = contact.GetLinkedContacts ();
+		GXRigidBody& firstRigidBody = contact.GetFirstRigidBody ();
+		GXRigidBody& secondRigidBody = contact.GetSecondRigidBody ();
+
+		if ( firstRigidBody.IsKinematic () )
+			ResolveSingleBodyContacts ( secondRigidBody, contactArray + i );
+		else if ( secondRigidBody.IsKinematic () )
+			ResolveSingleBodyContacts ( firstRigidBody, contactArray + i );
+		else
+			ResolveDoubleBodyContacts ( contactArray + 1 );
+
+		i += linkedContacts;
+
+		if ( contact.GetPenetration () > 100.0f )
 		{
-			GXFloat penetration = contacts[ i ].GetPenetration ();
-			if ( contacts[ i ].GetPenetration () > max )
-			{
-				max = penetration;
-				index = i;
-			}
+			GXUInt wtf = 0;
 		}
 
-		if ( index == numContacts ) break;
-
-		contacts[ index ].MatchAwakeState ();
-
-		contacts[ index ].ApplyPositionChange ( linearChange, angularChange, max );
-
-		for ( i = 0; i < numContacts; i++ )
+		if ( firstRigidBody.IsKinematic () )
 		{
-			for ( GXUByte b = 0; b < 2; b++ )
-			{
-				if ( contacts[ i ].GetRigidBody ( b ) )
-				{
-					for ( GXUByte d = 0; d < 2; d++ )
-					{
-						if ( contacts[ i ].GetRigidBody ( b ) == contacts[ index ].GetRigidBody ( d ) )
-						{
-							GXVec3 alpha;
-							GXCrossVec3Vec3 ( alpha, angularChange[ d ], contacts[ i ].GetRelativeContactPosition ( b ) );
-							GXSumVec3Vec3 ( deltaPosition, linearChange[ d ], alpha );
-
-							GXFloat penetration = contacts[ i ].GetPenetration ();
-							penetration += GXDotVec3 ( deltaPosition, contacts[ i ].GetNormal () ) * ( b ? 1.0f : -1.0f );
-							contacts[ i ].SetPenetration ( penetration );
-						}
-					}
-				}
-			}
+			GXVec3 newLocation;
+			GXSumVec3ScaledVec3 ( newLocation, secondRigidBody.GetLocation (), contact.GetPenetration (), contact.GetNormal () );
+			secondRigidBody.SetLocation ( newLocation );
 		}
+		else
+		{
+			GXVec3 reverseContactNormal = contact.GetNormal ();
+			GXReverseVec3 ( reverseContactNormal );
 
-		positionIterationsUsed++;
+			GXVec3 newLocation;
+			GXSumVec3ScaledVec3 ( newLocation, firstRigidBody.GetLocation (), contact.GetPenetration (), reverseContactNormal );
+			firstRigidBody.SetLocation ( newLocation );
+		}
+	}
+}
+
+GXVoid GXContactResolver::CalculateContactMatrix ( GXMat3 &out, const GXVec3 &contactNormal )
+{
+	GXVec3 tangent;
+	GXVec3 bitangent;
+
+	GXVec3 alpha;
+
+	if ( fabsf ( contactNormal.y ) > fabsf ( contactNormal.x ) && fabsf ( contactNormal.y ) > fabsf ( contactNormal.z ) )
+		alpha = GXVec3::GetAbsoluteX ();
+	else
+		alpha = GXVec3::GetAbsoluteY ();
+
+	GXCrossVec3Vec3 ( tangent, alpha, contactNormal );
+	GXNormalizeVec3 ( tangent );
+	GXCrossVec3Vec3 ( bitangent, contactNormal, tangent );
+
+	out.SetX ( tangent );
+	out.SetY ( bitangent );
+	out.SetZ ( contactNormal );
+}
+
+GXFloat GXContactResolver::CalculateAngularComponentContactSpace ( const GXVec3 &centerOfMassToContactPoint, const GXRigidBody& rigidBody, const GXVec3 &contactNormal )
+{
+	GXVec3 angularMomentum;
+	GXCrossVec3Vec3 ( angularMomentum, centerOfMassToContactPoint, contactNormal );
+
+	GXVec3 angularVelocity;
+	GXMulVec3Mat3 ( angularVelocity, angularMomentum, rigidBody.GetInverseInertiaTensorWorld () );
+
+	GXVec3 velocity;
+	GXCrossVec3Vec3 ( velocity, angularVelocity, centerOfMassToContactPoint );
+
+	return GXDotVec3 ( velocity, contactNormal );
+}
+
+GXVoid GXContactResolver::ResolveSingleBodyContacts ( GXRigidBody &rigidBody, GXContact* contacts )
+{
+	GXVec3 contactNormal = contacts[ 0 ].GetNormal ();
+	if ( &rigidBody == &contacts[ 0 ].GetFirstRigidBody () )
+		GXReverseVec3 ( contactNormal );
+
+	GXMat3 contactMatrix;
+	CalculateContactMatrix ( contactMatrix, contactNormal );
+
+	GXMat3 inverseContactMatrix;
+	GXSetMat3Transponse ( inverseContactMatrix, contactMatrix );
+
+	GXUInt linkedContacts = contacts[ 0 ].GetLinkedContacts ();
+
+	GXVec3 totalLinearVelocity ( 0.0f, 0.0f, 0.0f );
+	GXVec3 totalAngularVelocity ( 0.0f, 0.0f, 0.0f );
+
+	for ( GXUInt i = 0; i < linkedContacts; i++ )
+	{
+		GXContact& contact = contacts[ i ];
+
+		GXFloat linearComponent = rigidBody.GetInverseMass ();
+
+		GXVec3 rigidBodyCenterOfMassToContactPoint;
+		GXSubVec3Vec3 ( rigidBodyCenterOfMassToContactPoint, contact.GetContactPoint (), rigidBody.GetLocation () );
+
+		GXFloat deltaVelocity = linearComponent + CalculateAngularComponentContactSpace ( rigidBodyCenterOfMassToContactPoint, rigidBody, contactNormal );
+
+		GXVec3 contactVelocity;
+		GXCrossVec3Vec3 ( contactVelocity, rigidBody.GetAngularVelocity (), rigidBodyCenterOfMassToContactPoint );
+		GXSumVec3Vec3 ( contactVelocity, contactVelocity, rigidBody.GetLinearVelocity () );
+
+		GXVec3 contactVelocityContactSpace;
+		GXMulVec3Mat3 ( contactVelocityContactSpace, contactVelocity, inverseContactMatrix );
+
+		if ( &rigidBody == &contact.GetFirstRigidBody () )
+			GXReverseVec3 ( contactVelocityContactSpace );
+
+		GXFloat desiredVelocity = -contactVelocityContactSpace.z * ( 1.0f + contact.GetRestitution () );
+
+		GXVec3 impulse;
+		GXMulVec3Scalar ( impulse, contactNormal, desiredVelocity / deltaVelocity );
+
+		if ( &rigidBody == &contact.GetFirstRigidBody () )
+			GXReverseVec3 ( impulse );
+
+		GXVec3 linearVelocity;
+		GXVec3 angularVelocity;
+		GetRigidBodyKinematics ( linearVelocity, angularVelocity, rigidBody, impulse, rigidBodyCenterOfMassToContactPoint );
+
+		GXSumVec3Vec3 ( totalLinearVelocity, totalLinearVelocity, linearVelocity );
+		GXSumVec3Vec3 ( totalAngularVelocity, totalAngularVelocity, angularVelocity );
 	}
 
-	//GXLogW ( L"GXContactResolver::AdjustPositions::Info - Iterations %i/%i\n", positionIterationsUsed, positionIterations );
+	GXFloat inverseLinkedContacts = 1.0f / (GXFloat)linkedContacts;
+
+	GXMulVec3Scalar ( totalLinearVelocity, totalLinearVelocity, inverseLinkedContacts );
+	GXMulVec3Scalar ( totalAngularVelocity, totalAngularVelocity, inverseLinkedContacts );
+
+	rigidBody.SetLinearVelocity ( totalLinearVelocity );
+	rigidBody.SetAngularVelocity ( totalAngularVelocity );
 }
 
-GXVoid GXContactResolver::AdjustVelocities ( GXContact* contacts, GXUInt numContacts, GXFloat deltaTime )
+GXVoid GXContactResolver::ResolveDoubleBodyContacts ( GXContact* contacts )
 {
-	GXVec3 velocityChange[ 2 ];
-	GXVec3 rotationChange[ 2 ];
-	GXVec3 deltaVel;
-
-	velocityIterationsUsed = 0;
-	while ( velocityIterationsUsed < velocityIterations )
-	{
-		GXFloat max = velocityEpsilon;
-
-		GXUInt index = numContacts;
-		for ( GXUInt i = 0; i < numContacts; i++ )
-		{
-			if ( contacts[ i ].GetDesiredDeltaVelocity () > max )
-			{
-				max = contacts[ i ].GetDesiredDeltaVelocity ();
-				index = i;
-			}
-		}
-
-		if ( index == numContacts ) break;
-
-		contacts[ index ].MatchAwakeState ();
-		contacts[ index ].ApplyVelocityChange ( velocityChange, rotationChange );
-
-		for ( GXUInt i = 0; i < numContacts; i++ )
-		{
-			for ( GXUInt b = 0; b < 2; b++ )
-			{
-				if ( contacts[ i ].GetRigidBody ( b ) )
-				{
-					for ( GXUInt d = 0; d < 2; d++ )
-					{
-						if ( contacts[ i ].GetRigidBody ( b ) == contacts[ index ].GetRigidBody ( d ) )
-						{
-							GXVec3 alpha;
-							GXCrossVec3Vec3 ( alpha, rotationChange[ d ], contacts[ i ].GetRelativeContactPosition ( b ) );
-							GXSumVec3Vec3 ( deltaVel, velocityChange[ d ], alpha );
-
-							GXMat3 betta;
-							GXSetMat3Transponse ( betta, contacts[ i ].GetContactToWorldTransform () );
-
-							GXVec3 gamma;
-							GXMulVec3Mat3 ( gamma, deltaVel, betta );
-
-							GXVec3 contactVelocity;
-							GXSumVec3ScaledVec3 ( contactVelocity, contacts[ i ].GetContactVelocity (), ( b ? -1.0f : 1.0f ), gamma );
-
-							contacts[ i ].SetContactVelocity ( contactVelocity );
-							contacts[ i ].CalculateDesiredDeltaVelocity ( deltaTime );
-						}
-					}
-				}
-			}
-		}
-
-		velocityIterationsUsed++;
-	}
-
-	//GXLogW ( L"GXContactResolver::AdjustVelocities::Info - Iterations %i/%i\n", velocityIterationsUsed, velocityIterations );
+	GXUInt todo = 0;
+	//TODO
 }
 
-GXBool GXContactResolver::IsValid () const
+GXVoid GXContactResolver::GetRigidBodyKinematics ( GXVec3 &linearVelocity, GXVec3 &angularVelocity, GXRigidBody &rigidBody, const GXVec3 &impulse, const GXVec3 &centerOfMassToContactPoint )
 {
-	return velocityIterations > 0 && positionIterations > 0 && positionEpsilon >= 0.0f && velocityEpsilon >= 0.0f;
+	GXVec3 newVelocity;
+	GXSumVec3ScaledVec3 ( linearVelocity, rigidBody.GetLinearVelocity (), rigidBody.GetInverseMass (), impulse );
+
+	GXVec3 angularMomentum;
+	GXCrossVec3Vec3 ( angularMomentum, impulse, centerOfMassToContactPoint );
+
+	GXVec3 deltaAngularVelocity;
+	GXMulVec3Mat3 ( deltaAngularVelocity, angularMomentum, rigidBody.GetInverseInertiaTensorWorld () );
+
+	GXSumVec3Vec3 ( angularVelocity, rigidBody.GetAngularVelocity (), deltaAngularVelocity );
 }

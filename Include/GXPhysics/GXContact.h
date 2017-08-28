@@ -1,4 +1,4 @@
-//version 1.1
+//version 1.2
 
 #ifndef GX_CONTACT
 #define GX_CONTACT
@@ -12,18 +12,13 @@
 class GXContact
 {
 	private:
-		GXRigidBody*	bodies[ 2 ]; //second can be nullptr
+		GXRigidBody*	bodies[ 2 ];
 
 		GXFloat			friction;
 		GXFloat			restitution;
 		GXVec3			point;
 		GXVec3			normal;
 		GXFloat			penetration;
-
-		GXMat3			contactToWorld;
-		GXVec3			contactVelocity;
-		GXFloat			desiredDeltaVelocity;
-		GXVec3			relativeContactPositions[ 2 ];
 
 		GXUInt			gjkIterations;
 		GXUInt			epaIterations;
@@ -32,8 +27,16 @@ class GXContact
 		GXUInt			edges;
 		GXUInt			faces;
 
+		GXUInt			linkedContacts;
+
 	public:
-		GXVoid SetData ( const GXShape &bodyA, const GXShape* bodyB );
+		GXVoid SetLinkedContacts ( GXUInt contacts );
+		GXUInt GetLinkedContacts () const;
+
+		GXVoid SetShapes ( const GXShape &a, const GXShape &b );
+
+		GXRigidBody& GetFirstRigidBody ();
+		GXRigidBody& GetSecondRigidBody ();
 
 		GXVoid SetNormal ( const GXVec3 &normal );
 		const GXVec3& GetNormal () const;
@@ -43,25 +46,8 @@ class GXContact
 
 		GXVoid SetPenetration ( GXFloat penetration );
 		GXFloat GetPenetration () const;
-		
-		const GXMat3& GetContactToWorldTransform () const;
 
-		GXVoid SetContactVelocity ( const GXVec3 &velocity );
-		const GXVec3& GetContactVelocity () const;
-
-		GXVoid SetDesiredDeltaVelocity ( GXFloat deltaVelocity );
-		GXFloat GetDesiredDeltaVelocity () const;
-
-		GXVoid SetRelativeContactPosition ( GXUByte index, const GXVec3 &position );
-		const GXVec3& GetRelativeContactPosition ( GXUByte index ) const;
-
-		GXRigidBody* GetRigidBody ( GXUByte index );
-
-		GXVoid CalculateInternals ( GXFloat deltaTime );
-		GXVoid CalculateDesiredDeltaVelocity ( GXFloat deltaTime );
-		GXVoid MatchAwakeState ();
-		GXVoid ApplyPositionChange ( GXVec3 linearChange[ 2 ], GXVec3 angularChange[ 2 ], GXFloat penetration );
-		GXVoid ApplyVelocityChange ( GXVec3 velocityChange[ 2 ], GXVec3 rotationChange[ 2 ] );
+		GXFloat GetRestitution () const;
 
 		GXVoid SetGJKIterations ( GXUInt iterations );
 		GXUInt GetGTKIterations () const;
@@ -77,13 +63,6 @@ class GXContact
 
 		GXVoid SetFaces ( GXUInt faces );
 		GXUInt GetFaces () const;
-
-	private:
-		GXVoid SwapBodies ();
-		GXVoid CalculateContactBasis ();
-		GXVoid CalculateLocalVelocity ( GXVec3 &out, GXUInt bodyIndex, GXFloat deltaTime );
-		GXVec3 CalculateFrictionlessImpulse ();
-		GXVec3 CalculateFrictionImpulse ();
 };
 
 

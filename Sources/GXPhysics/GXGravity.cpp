@@ -2,6 +2,7 @@
 
 #include <GXPhysics/GXGravity.h>
 
+
 GXGravity::GXGravity ( const GXVec3 &gravity )
 {
 	this->gravity = gravity;
@@ -9,7 +10,7 @@ GXGravity::GXGravity ( const GXVec3 &gravity )
 
 GXVoid GXGravity::UpdateForce ( GXRigidBody &body, GXFloat deltaTime )
 {
-	if ( !body.HasFiniteMass () ) return;
+	if ( body.IsKinematic () ) return;
 
 	GXVec3 force;
 	GXMulVec3Scalar ( force, gravity, body.GetMass () );

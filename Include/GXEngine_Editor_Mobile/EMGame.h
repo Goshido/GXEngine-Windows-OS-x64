@@ -19,7 +19,7 @@
 #include <GXEngine/GXUnlitColorMaterial.h>
 #include <GXEngine/GXMeshGeometry.h>
 #include <GXEngine/GXCameraOrthographic.h>
-#include <GXPhysics/GXSphereShape.h>
+#include <GXPhysics/GXGravity.h>
 
 
 class EMGame : public GXGame
@@ -48,15 +48,17 @@ class EMGame : public GXGame
 		GXUnlitColorMaterial*	physicsShapeBContactGeometryMaterial;
 		GXUnlitColorMaterial*	physicsPlanarIntersectionGeometryMaterial;
 
+		GXGravity				gravity;
+
 		EMDirectedLightActor*	directedLight;
 
 		EMUnitActor*			unitActor;
 		EMPhysicsDrivenActor*	colliderOne;
 		EMPhysicsDrivenActor*	colliderTwo;
+		EMPhysicsDrivenActor*	kinematicPlane;
 		EMMeshActor*			plasticSphere;
 		EMMeshActor*			goldSphere;
 		EMMeshActor*			silverSphere;
-		EMMeshActor*			plane;
 
 		EMMoveTool*				moveTool;
 

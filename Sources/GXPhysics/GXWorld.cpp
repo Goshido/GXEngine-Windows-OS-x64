@@ -184,13 +184,12 @@ GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 
 	// We do not do anything unless 2 rigid bodies were registered
 	if ( !bodies || !bodies->next ) return;
-	/*
+
 	for ( GXForceGeneratorsRegistration* p = forceGenerators; p; p = p->next )
 		p->generator->UpdateForce ( *p->body, deltaTime );
 
 	for ( GXRigidBodyRegistration* p = bodies; p; p = p->next )
 		p->body->Integrate ( deltaTime );
-	
 
 	GXContact* nextContact = collisions.GetContactsBegin ();
 
@@ -199,28 +198,23 @@ GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 		reg->generator->AddContact ( collisions );
 		if ( !collisions.HasMoreContacts () ) break;
 	}
-	*/
+
 	GXCollisionDetector& collisionDetector = GXCollisionDetector::GetInstance ();
 
 	for ( GXRigidBodyRegistration* p = bodies; p->next; p = p->next )
 	{
 		for ( GXRigidBodyRegistration* q = p->next; q; q = q->next )
 		{
+			if ( p->body->IsKinematic () && q->body->IsKinematic () ) continue;
+
 			GXShape& shapeA = p->body->GetShape ();
 			GXShape& shapeB = q->body->GetShape ();
 
 			collisionDetector.Check ( shapeA, shapeB, collisions );
 		}
 	}
-	/*
-	if ( isCalculateIterations )
-	{
-		GXUInt numIterations = collisions.GetTotalContacts () * 4;
-		contactResolver.SetPositionIterations ( numIterations );
-		contactResolver.SetVelocityIterations ( numIterations );
-	}
-	*/
-	//contactResolver.ResolveContacts ( collisions.GetAllContacts (), collisions.GetTotalContacts (), deltaTime );
+
+	contactResolver.ResolveContacts ( collisions.GetAllContacts (), collisions.GetTotalContacts (), deltaTime );
 }
 
 const GXCollisionData& GXWorld::GetCollisionData () const

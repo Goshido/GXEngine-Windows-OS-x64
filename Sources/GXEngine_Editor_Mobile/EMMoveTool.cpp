@@ -80,17 +80,7 @@ GXVoid EMMoveTool::Bind ()
 GXVoid EMMoveTool::SetActor ( EMActor* actor )
 {
 	this->actor = actor;
-
-	switch ( mode )
-	{
-		case MOVE_TOOL_LOCAL_MODE:
-			SetLocalMode ();
-		break;
-
-		case MOVE_TOOL_WORLD_MODE:
-			SetWorldMode ();
-		break;
-	}
+	UpdateModeMode ();
 }
 
 GXVoid EMMoveTool::UnBind ()
@@ -261,20 +251,16 @@ GXBool EMMoveTool::OnObject ( GXVoid* object )
 
 GXVoid EMMoveTool::SetLocalMode ()
 {
-	if ( !actor ) return;
-	SetMode ( MOVE_TOOL_LOCAL_MODE );
+	mode = MOVE_TOOL_LOCAL_MODE;
 }
 
 GXVoid EMMoveTool::SetWorldMode ()
 {
-	if ( !actor ) return;
-	SetMode ( MOVE_TOOL_WORLD_MODE );
+	mode = MOVE_TOOL_WORLD_MODE;
 }
 
-GXVoid EMMoveTool::SetMode ( GXUByte mode )
+GXVoid EMMoveTool::UpdateModeMode ()
 {
-	this->mode = mode;
-
 	GXCamera* activeCamera = GXCamera::GetActiveCamera ();
 	if ( !activeCamera ) return;
 
