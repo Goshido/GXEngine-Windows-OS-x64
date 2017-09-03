@@ -4,7 +4,14 @@
 #define GX_PHYSX
 
 
+#pragma warning ( push )
+#pragma warning ( disable : 4514 )
+#pragma warning ( disable : 4710 )
+
 #include <PhysX/PxPhysicsAPI.h>
+
+#pragma warning ( pop )
+
 #include <GXCommon/GXMath.h>
 
 

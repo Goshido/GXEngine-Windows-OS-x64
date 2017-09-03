@@ -33,7 +33,7 @@ EMSSAOApplyMaterial::~EMSSAOApplyMaterial ()
 	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 }
 
-GXVoid EMSSAOApplyMaterial::Bind ( const GXTransform &transform )
+GXVoid EMSSAOApplyMaterial::Bind ( const GXTransform& /*transform*/ )
 {
 	if ( !ssaoTexture || !imageTexture ) return;
 

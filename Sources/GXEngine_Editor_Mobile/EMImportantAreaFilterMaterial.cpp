@@ -103,7 +103,7 @@ GXVoid EMImportantAreaFilterMaterial::GenerateRetinaFilterTexture ( GXUShort eff
 	GXDouble totalGaussSum = 0.0;
 	GXDouble v = MINIMUM_V;
 
-	GXUInt samples = effectiveLength * effectiveLength;
+	GXUInt samples = (GXUInt)( effectiveLength * effectiveLength );
 	GXUInt sampleOffset = 0;
 	GXDouble* probabilityDensitySamples = (GXDouble*)malloc ( samples * sizeof ( GXDouble ) );
 

@@ -21,6 +21,8 @@ class GXUIEditBoxIntegerValidator : public GXTextValidator
 		~GXUIEditBoxIntegerValidator () override;
 
 		GXBool Validate ( const GXWChar* text ) override;
+
+		GXVoid operator = ( const GXUIEditBoxIntegerValidator &other ) = delete;
 };
 
 

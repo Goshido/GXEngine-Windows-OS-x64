@@ -56,7 +56,7 @@ GXBool GXCALL GXSoundInit ()
 
 	PFNGXOGGVORBISINIT GXOGGVorbisInit;
 
-	GXOGGVorbisInit = (PFNGXOGGVORBISINIT)GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXOGGVorbisInit" );
+	GXOGGVorbisInit = reinterpret_cast <PFNGXOGGVORBISINIT> ( reinterpret_cast <GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXOGGVorbisInit" ) ) );
 	if ( !GXOGGVorbisInit )
 	{
 		GXLogW ( L"GXSoundInit::Error - Не удалось найти функцию GXOGGVorbisInit\n" );
@@ -73,7 +73,7 @@ GXBool GXCALL GXSoundInit ()
 	GXOGGVorbisInit ( oggVorbisOut );
 
 	PFNGXOPENALINIT GXOpenALInit;
-	GXOpenALInit = (PFNGXOPENALINIT)GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXOpenALInit" );
+	GXOpenALInit = reinterpret_cast <PFNGXOPENALINIT> ( reinterpret_cast <GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXOpenALInit" ) ) );
 	if ( !GXOpenALInit )
 	{
 		GXLogW ( L"GXSoundInit::Error - Не удалось найти функцию GXOpenALInit\n" );

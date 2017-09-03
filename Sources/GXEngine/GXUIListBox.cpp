@@ -54,7 +54,6 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 			const GXVec2* pos = (const GXVec2*)data;
 
 			GXBool isNeedRenderUpdate = ResetHighlight ( *pos );
-			GXUIListBoxItem* item = FindItem ( *pos );
 
 			if ( isNeedRenderUpdate && renderer )
 				renderer->OnUpdate ();
@@ -163,8 +162,6 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 				GXUIListBoxItem* item = new GXUIListBoxItem ();
 				item->data = p->data;
 				item->isSelected = item->isHighlighted = GX_FALSE;
-
-				EMUIFileListBoxItem* itm = (EMUIFileListBoxItem*)p->data;
 
 				item->next = nullptr;
 				item->prev = itemTail;
@@ -287,7 +284,6 @@ GXVoid GXUIListBox::AddItems ( GXVoid** itemData, GXUInt items )
 {
 	if ( items == 0 || !itemData ) return;
 
-	GXUInt s = items * sizeof ( GXUIListBoxRawItem );
 	GXUIListBoxRawItem* list = (GXUIListBoxRawItem*)gx_ui_MessageBuffer->Allocate ( items * sizeof ( GXUIListBoxRawItem ) );
 	GXUIListBoxRawItem* p = list;
 

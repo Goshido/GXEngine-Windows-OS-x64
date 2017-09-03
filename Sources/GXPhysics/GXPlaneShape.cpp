@@ -31,7 +31,7 @@ GXVoid GXPlaneShape::CalculateInertiaTensor ( GXFloat /*mass*/ )
 	inertialTensor.m31 = inertialTensor.m32 = 0.0f;
 }
 
-GXVoid GXPlaneShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const
+GXVoid GXPlaneShape::GetExtremePoint ( GXVec3& /*point*/, const GXVec3& /*direction*/ ) const
 {
 	// NOTHING
 }

@@ -98,9 +98,9 @@ GXRenderer::~GXRenderer ()
 	instance = nullptr;
 }
 
-GXVoid GXRenderer::Start ( GXGame &game )
+GXVoid GXRenderer::Start ( GXGame &gameObject )
 {
-	this->game = &game;
+	game = &gameObject;
 	thread->Start ();
 }
 
@@ -118,8 +118,8 @@ GXVoid GXRenderer::SetFullscreen ( GXBool enabled )
 
 	isFullScreen = enabled;
 
-	DWORD exStyle = 0;
-	DWORD style = 0;
+	LONG exStyle = 0;
+	LONG style = 0;
 
 	if ( isFullScreen )
 	{
@@ -128,8 +128,8 @@ GXVoid GXRenderer::SetFullscreen ( GXBool enabled )
 		dm.dmSize = sizeof ( dm );
 		dm.dmFields = DM_PELSHEIGHT | DM_PELSWIDTH;
 
-		dm.dmPelsWidth = width;
-		dm.dmPelsHeight = height;
+		dm.dmPelsWidth = (DWORD)width;
+		dm.dmPelsHeight = (DWORD)height;
 
 		if ( ChangeDisplaySettingsW ( &dm, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL )
 			MessageBoxW ( 0, L"Не удалось поменять оконный режим", L"Проблемка", MB_ICONEXCLAMATION );
@@ -174,14 +174,14 @@ GXVoid GXRenderer::SetVSync ( GXBool enabled )
 	wglSwapIntervalEXT ( vsync );
 }
 
-GXVoid GXRenderer::SetResolution ( GXInt width, GXInt height )
+GXVoid GXRenderer::SetResolution ( GXInt frameWidth, GXInt frameHeight )
 {
-	if ( this->width == width && this->height == height ) return;
+	if ( width == frameWidth && height == frameHeight ) return;
 
-	this->width = width;
-	this->height = height;
+	width = frameWidth;
+	height = frameHeight;
 
-	ReSizeScene ( this->width, this->height );
+	ReSizeScene ( width, height );
 
 	if ( isFullScreen )
 	{
@@ -190,8 +190,8 @@ GXVoid GXRenderer::SetResolution ( GXInt width, GXInt height )
 		dm.dmSize = sizeof ( dm );
 		dm.dmFields = DM_PELSHEIGHT | DM_PELSWIDTH;
 
-		dm.dmPelsWidth = width;
-		dm.dmPelsHeight = height;
+		dm.dmPelsWidth = (DWORD)width;
+		dm.dmPelsHeight = (DWORD)height;
 
 		if ( ChangeDisplaySettingsW ( &dm, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL )
 			MessageBoxW ( 0, L"Не удалось поменять оконный режим", L"Проблемка", MB_ICONEXCLAMATION );
@@ -252,8 +252,8 @@ GXInt GXResolutionCompare ( const GXVoid* a, const GXVoid* b )
 	const GXUShort* itemA = (GXUShort*)a;
 	const GXUShort* itemB = (GXUShort*)b;
 
-	GXUInt keyA = 10000 * itemA[ 0 ] + itemA[ 1 ];
-	GXUInt keyB = 10000 * itemB[ 0 ] + itemB[ 1 ];
+	GXUInt keyA = 10000u * itemA[ 0 ] + itemA[ 1 ];
+	GXUInt keyB = 10000u * itemB[ 0 ] + itemB[ 1 ];
 
 	if ( keyA < keyB ) return -1;
 	if ( keyA > keyB ) return 1;
@@ -326,13 +326,13 @@ GXBool GXCALL GXRenderer::UpdateRendererSettings ()
 	return GX_TRUE;
 }
 
-GXVoid GXCALL GXRenderer::ReSizeScene ( GXInt width, GXInt height  )
+GXVoid GXCALL GXRenderer::ReSizeScene ( GXInt frameWidth, GXInt frameHeight )
 {
-	if ( height == 0 )
-		height = 1;
+	if ( frameHeight == 0 )
+		frameHeight = 1;
 
-	GXRenderer::width = width;
-	GXRenderer::height = height;
+	width = frameWidth;
+	height = frameHeight;
 
 	game->OnResize ( width, height );
 }
@@ -370,7 +370,7 @@ GXRenderer::GXRenderer ()
 	SetWindowName ( DEFAULT_WINDOW_NAME );
 }
 
-GXUPointer GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* args, GXThread &thread )
+GXUPointer GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* /*args*/, GXThread &threadObject )
 {
 	if ( !MakeWindow () ) return 0;
 
@@ -401,7 +401,7 @@ GXUPointer GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* args, GXThread &thread 
 			}
 		}
 		
-		thread.Switch();
+		threadObject.Switch();
 	}
 
 	Destroy ();
@@ -572,7 +572,6 @@ GXVoid GXCALL GXRenderer::Destroy ()
 
 GXBool GXCALL GXRenderer::MakeWindow ()
 {
-	GLuint PixelFomat;
 	WNDCLASSW wc;
 	DWORD dwExStyle;
 	DWORD dwStyle;
@@ -599,8 +598,8 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 	if ( isFullScreen )
 	{
 		dm.dmBitsPerPel = DEFAULT_COLOR_BITS;
-		dm.dmPelsHeight = height;
-		dm.dmPelsWidth = width;
+		dm.dmPelsHeight = (DWORD)height;
+		dm.dmPelsWidth = (DWORD)width;
 		if ( ChangeDisplaySettingsW ( &dm, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL )
 		{
 			if ( MessageBoxW ( 0, L"Не удалось установить полноэкранный режим. Использовать обычный режим?", L"Проблемка", MB_YESNO | MB_ICONEXCLAMATION ) == IDYES )
@@ -609,6 +608,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 				return GX_FALSE;
 		}
 	}
+
 	if ( isFullScreen )
 	{
 		dwExStyle = WS_EX_APPWINDOW;
@@ -620,6 +620,8 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 		{
 			GXDebugBox ( L"Не удалось вернуть графические настройки по умолчанию" );
 			GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось вернуть графические настройки по умолчанию\n" );
+
+			return GX_FALSE;
 		}
 		else
 		{
@@ -659,7 +661,10 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL |	PFD_DOUBLEBUFFER; 
 	pfd.iPixelType = PFD_TYPE_RGBA;
 	pfd.iLayerType = PFD_MAIN_PLANE;
-	if ( !( hDC = GetDC ( hwnd ) ) )
+
+	hDC = GetDC ( hwnd );
+
+	if ( !hDC )
 	{
 		GXDebugBox ( L"Не удалось получить hDC" );
 		GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось получить hDC\n" );
@@ -668,7 +673,9 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 		return GX_FALSE;
 	}
 
-	if ( !( PixelFomat = ChoosePixelFormat ( hDC, &pfd ) ) )
+	GXInt pixelFomat = ChoosePixelFormat ( hDC, &pfd );
+
+	if ( pixelFomat == 0 )
 	{
 		GXDebugBox ( L"Не удалось найти подходящий формат пикселей" );
 		GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось найти подходящий формат пикселей\n" );
@@ -677,7 +684,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 		return GX_FALSE;
 	}
 
-	if ( !SetPixelFormat ( hDC, PixelFomat, &pfd ) )
+	if ( !SetPixelFormat ( hDC, pixelFomat, &pfd ) )
 	{
 		GXDebugBox ( L"Не удалось установить формат пикселей" );
 		GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось установить формат пикселей\n" );
@@ -686,7 +693,9 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 		return GX_FALSE;
 	}
 
-	if ( !( hglRC = wglCreateContext ( hDC ) ) )
+	hglRC = wglCreateContext ( hDC );
+
+	if ( hglRC == 0 )
 	{
 		GXDebugBox ( L"Не удалось создать контекст рендеринга" );
 		GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось создать контекст рендеринга\n" );

@@ -102,9 +102,6 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXCamera.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine\GXCameraman.cpp">
-      <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXCameraOrthographic.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
@@ -569,9 +566,6 @@
     <ClInclude Include="..\..\Include\GXEngineDLL\GXOpenAL.h">
       <Filter>Header Files\GXEngineDLL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngineDLL\GXPhysX.h">
-      <Filter>Header Files\GXEngineDLL</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXEngineDLL\GXXInput.h">
       <Filter>Header Files\GXEngineDLL</Filter>
     </ClInclude>
@@ -702,9 +696,6 @@
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXCamera.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXCameraman.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXCameraOrthographic.h">

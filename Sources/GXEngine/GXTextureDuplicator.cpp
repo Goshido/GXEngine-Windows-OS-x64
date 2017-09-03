@@ -11,7 +11,7 @@ GXTextureDuplicator::~GXTextureDuplicator ()
 		glDeleteFramebuffers ( 1, &fbo );
 }
 
-GXVoid GXTextureDuplicator::Duplicate ( GLuint out, GXUInt source )
+GXVoid GXTextureDuplicator::Duplicate ( GLuint out, GXUInt /*source*/ )
 {
 	if ( fbo == 0 )
 		glGenFramebuffers ( 1, &fbo );

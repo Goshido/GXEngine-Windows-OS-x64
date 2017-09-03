@@ -215,7 +215,7 @@ GXVoid EMUISSAOSettings::SyncSettings ()
 	maxDistance->SetText ( buffer );
 }
 
-GXVoid GXCALL EMUISSAOSettings::OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state )
+GXVoid GXCALL EMUISSAOSettings::OnButton ( GXVoid* handler, GXUIButton& button, GXFloat /*x*/, GXFloat /*y*/, eGXMouseButtonState state )
 {
 	if ( state != eGXMouseButtonState::Up ) return;
 

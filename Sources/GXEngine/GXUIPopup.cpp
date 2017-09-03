@@ -131,8 +131,8 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 
 		case GX_MSG_POPUP_SHOW:
 		{
-			GXWidget** owner = (GXWidget**)data;
-			this->owner = *owner;
+			GXWidget** currentOwner = (GXWidget**)data;
+			owner = *currentOwner;
 			GXWidget::Show ();
 		}
 		break;
@@ -173,7 +173,7 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 			if ( selectedItemIndex == GX_UI_POPUP_INVALID_INDEX && !itemStorage[ mouseOverItem ].isActive ) break;
 			if ( selectedItemIndex == mouseOverItem && itemStorage[ mouseOverItem ].isActive ) break;
 
-			selectedItemIndex = itemStorage[ mouseOverItem ].isActive ? mouseOverItem : GX_UI_POPUP_INVALID_INDEX;
+			selectedItemIndex = itemStorage[ mouseOverItem ].isActive ? mouseOverItem : (GXUByte)GX_UI_POPUP_INVALID_INDEX;
 			if ( renderer )
 				renderer->OnUpdate ();
 		}
@@ -243,7 +243,7 @@ GXVoid GXUIPopup::AddItem ( GXVoid* handler, PFNGXONUIPOPUPACTIONPROC action )
 
 GXUByte GXUIPopup::GetTotalItems () const
 {
-	return items.GetLength ();
+	return (GXUByte)items.GetLength ();
 }
 
 GXVoid GXUIPopup::EnableItem ( GXUByte itemIndex )
@@ -284,7 +284,7 @@ GXFloat GXUIPopup::GetItemWidth () const
 	return GXGetAABBWidth ( boundsLocal );
 }
 
-GXVoid GXUIPopup::Show ( GXWidget* owner )
+GXVoid GXUIPopup::Show ( GXWidget* currentOwner )
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_POPUP_SHOW, &owner, sizeof ( GXWidget* ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_POPUP_SHOW, &currentOwner, sizeof ( GXWidget* ) );
 }

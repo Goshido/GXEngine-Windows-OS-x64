@@ -45,8 +45,8 @@ GXVoid EMBRDFIntegratorMaterial::Unbind ()
 	glUseProgram ( 0 );
 }
 
-GXVoid EMBRDFIntegratorMaterial::SetSamplesPerPixel ( GXUShort samples )
+GXVoid EMBRDFIntegratorMaterial::SetSamplesPerPixel ( GXUShort samplesPerPixel )
 {
-	this->samples = (GXInt)samples;
-	inverseSamples = 1.0f / (GXFloat)samples;
+	samples = (GXInt)samplesPerPixel;
+	inverseSamples = 1.0f / (GXFloat)samplesPerPixel;
 }

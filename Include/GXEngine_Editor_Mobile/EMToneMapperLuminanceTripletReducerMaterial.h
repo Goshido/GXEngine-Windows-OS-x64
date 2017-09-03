@@ -22,7 +22,7 @@ class EMToneMapperLuminanceTripletReducerMaterial : public GXMaterial
 		GXVoid Unbind () override;
 
 		GXVoid SetLuminanceTripletTexture ( GXTexture2D &texture );
-		GXVoid SetLevelOfDetailToReduce ( GXUByte levelOfDetail );
+		GXVoid SetLevelOfDetailToReduce ( GXUByte newLevelOfDetail );
 };
 
 

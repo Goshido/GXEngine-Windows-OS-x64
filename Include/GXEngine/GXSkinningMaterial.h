@@ -11,7 +11,7 @@
 class GXSkinningMaterial : public GXMaterial
 {
 	private:
-		const GXSkeleton*	skeleton;
+		const GXSkeleton*	skeletonObject;
 		GLint				bonesLocation;
 
 	public:

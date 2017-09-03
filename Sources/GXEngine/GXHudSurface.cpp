@@ -191,7 +191,7 @@ canvasCamera ( (GXFloat)width, (GXFloat)height, Z_NEAR, Z_FAR )
 	this->width = width;
 	this->height = height;
 
-	GXUInt size = ( width * height ) * BYTES_PER_PIXEL;
+	GXUInt size = (GXUInt)( ( width * height ) * BYTES_PER_PIXEL );
 	GXUByte* data = (GXUByte*)malloc ( size );
 	memset ( data, 0, size );
 

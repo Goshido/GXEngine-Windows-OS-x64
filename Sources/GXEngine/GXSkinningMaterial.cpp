@@ -10,7 +10,7 @@
 
 GXSkinningMaterial::GXSkinningMaterial ()
 {
-	skeleton = nullptr;
+	skeletonObject = nullptr;
 	
 	static const GLchar* transformFeedbackOutputNames[ 5 ] = { "v_vertex", "v_uv", "v_normal", "v_tangent", "v_bitangent" };
 
@@ -36,20 +36,20 @@ GXSkinningMaterial::~GXSkinningMaterial ()
 
 GXVoid GXSkinningMaterial::Bind ( const GXTransform& /*transform*/ )
 {
-	if ( !skeleton ) return;
+	if ( !skeletonObject ) return;
 
 	glUseProgram ( shaderProgram.GetProgram () );
-	GLsizei floats = (GLsizei)( skeleton->GetTotalBones () * GX_FLOATS_PER_BONE );
-	glUniform1fv ( bonesLocation, floats, (const GLfloat*)skeleton->GetPose () );
+	GLsizei floats = (GLsizei)( skeletonObject->GetTotalBones () * GX_FLOATS_PER_BONE );
+	glUniform1fv ( bonesLocation, floats, (const GLfloat*)skeletonObject->GetPose () );
 }
 
 GXVoid GXSkinningMaterial::Unbind ()
 {
-	if ( !skeleton ) return;
+	if ( !skeletonObject ) return;
 	glUseProgram ( 0 );
 }
 
 GXVoid GXSkinningMaterial::SetSkeleton ( const GXSkeleton &skeleton )
 {
-	this->skeleton = &skeleton;
+	skeletonObject = &skeleton;
 }

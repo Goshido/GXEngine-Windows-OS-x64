@@ -26,12 +26,12 @@ class GXUnlitTexture2DMaterial : public GXMaterial
 		GXVoid Bind ( const GXTransform &transform ) override;
 		GXVoid Unbind () override;
 
-		GXVoid SetTexture ( GXTexture2D &texture );
+		GXVoid SetTexture ( GXTexture2D &textureObject );
 		GXVoid SetTextureScale ( GXFloat x, GXFloat y );
 		GXVoid SetTextureOffset ( GXFloat x, GXFloat y );
 
 		GXVoid SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
-		GXVoid SetColor ( const GXVec4 &color );
+		GXVoid SetColor ( const GXVec4 &newColor );
 };
 
 

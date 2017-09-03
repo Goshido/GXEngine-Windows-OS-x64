@@ -91,9 +91,9 @@ GXVoid EMToneMapperMaterial::SetLuminanceTriplet ( GXFloat averageLuminance, GXF
 	prescaleFactor = yotta / ( averageLuminance + EPSILON );
 }
 
-GXVoid EMToneMapperMaterial::SetGamma ( GXFloat gamma )
+GXVoid EMToneMapperMaterial::SetGamma ( GXFloat newGamma )
 {
-	this->gamma = gamma;
+	gamma = newGamma;
 	inverseGamma = 1.0f / gamma;
 }
 

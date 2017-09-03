@@ -3,8 +3,11 @@
 #ifndef GX_TYPES_WINDOWS
 #define GX_TYPES_WINDOWS
 
+
 #define WIN32_LEAN_AND_MEAN			//to correct include WinSock2.h
+
 #include <Windows.h>
+#include <cstdint>
 
 
 #define	GXCALL			WINAPI
@@ -15,19 +18,19 @@
 #define GX_FALSE		false
 
 
-typedef signed __int16			GXShort;
-typedef unsigned __int16		GXUShort;
-typedef signed __int32			GXInt;
-typedef unsigned __int32		GXUInt;
-typedef __int64					GXBigInt;
-typedef unsigned __int64		GXUBigInt;
+typedef int16_t					GXShort;
+typedef uint16_t				GXUShort;
+typedef int32_t					GXInt;
+typedef uint32_t				GXUInt;
+typedef int64_t					GXBigInt;
+typedef uint64_t				GXUBigInt;
 typedef long					GXLong;
 typedef unsigned long			GXULong;
 typedef long long				GXLongLong;
 typedef unsigned long long		GXULongLong;
 typedef unsigned long int		GXDword;
-typedef signed __int8			GXByte;
-typedef unsigned __int8			GXUByte;
+typedef int8_t					GXByte;
+typedef uint8_t					GXUByte;
 typedef char					GXChar;
 typedef unsigned char			GXUChar;
 typedef char					GXUTF8;

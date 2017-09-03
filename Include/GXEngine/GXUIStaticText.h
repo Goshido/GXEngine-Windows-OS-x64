@@ -28,9 +28,9 @@ class GXUIStaticText : public GXWidget
 
 		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
 
-		GXVoid SetText ( const GXWChar* text );
+		GXVoid SetText ( const GXWChar* newText );
 		GXVoid SetTextColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
-		GXVoid SetAlignment ( eGXUITextAlignment alignment );
+		GXVoid SetAlignment ( eGXUITextAlignment newAlignment );
 
 		const GXWChar* GetText () const;
 		const GXVec4& GetTextColor () const;

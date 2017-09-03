@@ -32,7 +32,7 @@ class GXSoundEmitter
 		ALuint				streamBuffers[ 2 ];
 
 	public:
-		GXSoundEmitter ( GXSoundTrack* track, GXBool looped, GXBool streamed, GXBool isRelative );
+		explicit GXSoundEmitter ( GXSoundTrack* track, GXBool looped, GXBool streamed, GXBool isRelative );
 		~GXSoundEmitter ();
 
 		GXVoid SetVelocity ( const GXVec3 &velocity );
@@ -45,12 +45,12 @@ class GXSoundEmitter
 		GXVoid SetRotation ( const GXVec3 &rotation );
 		GXVoid SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_rad );
 
-		GXVoid SetOwnVolume ( GXFloat ownVolume );
-		GXVoid SetChannelVolume ( GXFloat channelVolume );
+		GXVoid SetOwnVolume ( GXFloat ownVolumeLevel );
+		GXVoid SetChannelVolume ( GXFloat channelVolumeLevel );
 
 		GXVoid SetRange ( GXFloat min, GXFloat max );
 
-		GXVoid ChangeSoundTrack ( GXSoundTrack* track, GXBool looped, GXBool streamed, GXBool isRelative );
+		GXVoid ChangeSoundTrack ( GXSoundTrack* trackObject, GXBool isTrackLooped, GXBool isTrackStreamed, GXBool isRelative );
 
 		GXSoundTrack* GetSoundTrack ();
 

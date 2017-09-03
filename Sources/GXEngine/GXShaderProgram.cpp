@@ -357,7 +357,6 @@ GXVoid GXCALL GXPrecompiledShaderProgramFinder::SaveDictionary ( const GXAVLTree
 	static const GXUPointer newLineSize = GXUTF8size ( newLineU ) - 1;
 
 	GXLocale& locale = GXLocale::GetInstance ();
-	const GXWChar* delimeterW = locale.GetString ( L"GXShaderProgram->GXPrecompiledShaderProgramFinder::SaveDictionary->-------------------------------------" );
 
 	const GXPrecompiledShaderProgramNode& item = (const GXPrecompiledShaderProgramNode&)node;
 	GXSaveState* state = (GXSaveState*)args;
@@ -620,11 +619,13 @@ GXShaderProgram::GXShaderProgram ( const GXShaderProgramInfo &info )
 
 				if ( status != GL_TRUE )
 				{
-					GXInt size = 0;
-					glGetShaderiv ( program, GL_INFO_LOG_LENGTH, &size );
+					GXInt logSize = 0;
+					glGetShaderiv ( program, GL_INFO_LOG_LENGTH, &logSize );
 
-					GLchar* log = (GLchar*)malloc ( size );
-					glGetProgramInfoLog ( program, size, &size, log );
+					GLchar* log = (GLchar*)malloc ( (GXUPointer)logSize );
+
+					GLsizei length;
+					glGetProgramInfoLog ( program, (GLsizei)logSize, &length, log );
 
 					GXLogW ( L"GXShaderProgramStatus::Warning - Не могу использовать прекомпилированную шейдерную программу:\n%s\n%s\n%s\n[%s]\n\n", vs, gs, fs, binaryPath );
 					GXLogA ( "%s\n\n", log );
@@ -668,7 +669,7 @@ GXShaderProgram::GXShaderProgram ( const GXShaderProgramInfo &info )
 	glUseProgram ( program );
 
 	for ( GXInt i = 0; i < info.numSamplers; i++ )
-		glUniform1i ( GetUniform ( info.samplerNames[ i ] ), info.samplerLocations[ i ] );
+		glUniform1i ( GetUniform ( info.samplerNames[ i ] ), (GLint)info.samplerLocations[ i ] );
 
 	glUseProgram ( 0 );
 }
@@ -737,7 +738,7 @@ GLuint GXShaderProgram::GetShader ( GLenum type, const GXWChar* fileName )
 		GXInt size = 0;
 		glGetShaderiv ( shader, GL_INFO_LOG_LENGTH, &size );
 
-		GLchar* log = (GLchar*)malloc ( size );
+		GLchar* log = (GLchar*)malloc ( (GXUPointer)size );
 		glGetShaderInfoLog ( shader, size, &size, log );
 
 		GXLogW ( L"GXShaderProgram::GetShader::Error - Шейдер %s\n", fileName );
@@ -818,7 +819,7 @@ GLuint GXShaderProgram::CompileShaderProgram ( const GXShaderProgramInfo &info )
 		GXInt size = 0;
 		glGetShaderiv ( shaderProgram, GL_INFO_LOG_LENGTH, &size );
 
-		GLchar* log = (GLchar*)malloc ( size );
+		GLchar* log = (GLchar*)malloc ( (GXUPointer)size );
 		glGetProgramInfoLog ( shaderProgram, size, &size, log );
 
 		GXLogW ( L"GXShaderProgram::CompileShaderProgram::Error - Не могу слинковать шейдерную программу %s + %s + %s\n", vs, gs, fs );

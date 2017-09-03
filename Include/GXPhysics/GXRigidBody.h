@@ -6,6 +6,7 @@
 
 #include <GXCommon/GXMath.h>
 
+
 class GXRigidBody;
 typedef GXVoid ( GXCALL* PFNRIGIDBODYONTRANSFORMCHANGED ) ( GXVoid* handler, const GXRigidBody &rigidBody );
 
@@ -49,7 +50,7 @@ class GXRigidBody
 		GXRigidBody ();
 		~GXRigidBody ();
 
-		GXVoid SetOnTransformChangedCallback ( GXVoid* handler, PFNRIGIDBODYONTRANSFORMCHANGED callback );
+		GXVoid SetOnTransformChangedCallback ( GXVoid* handlerObject, PFNRIGIDBODYONTRANSFORMCHANGED callback );
 
 		GXVoid CalculateCachedData ();
 		GXVoid ClearAccumulators ();
@@ -58,10 +59,10 @@ class GXRigidBody
 		const GXMat3& GetInverseInertiaTensorWorld () const;
 
 		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
-		GXVoid SetLocation ( const GXVec3 &location );
+		GXVoid SetLocation ( const GXVec3 &newLocation );
 		const GXVec3& GetLocation () const;
 
-		GXVoid SetRotaton ( const GXQuat &rotation );
+		GXVoid SetRotaton ( const GXQuat &newRotation );
 		const GXQuat& GetRotation () const;
 
 		GXVoid SetLinearVelocity ( const GXVec3 &velocity );
@@ -72,7 +73,7 @@ class GXRigidBody
 		const GXVec3& GetAngularVelocity () const;
 		GXVoid AddAngularVelocity ( const GXVec3 &velocity );
 		
-		GXVoid SetMass ( GXFloat mass );
+		GXVoid SetMass ( GXFloat newMass );
 		GXFloat GetMass () const;
 		GXFloat GetInverseMass () const;
 
@@ -82,7 +83,7 @@ class GXRigidBody
 		GXVoid SetAngularDamping ( GXFloat damping );
 		GXFloat GetAngularDamping () const;
 
-		GXVoid SetShape ( GXShape &shape );
+		GXVoid SetShape ( GXShape &newShape );
 		GXShape& GetShape ();
 
 		const GXVec3& GetLastFrameAcceleration () const;

@@ -115,12 +115,12 @@ class EMRenderer
 		GXVoid SetObjectMask ( GXVoid* object );
 
 		GXVoid ApplySSAO ();
-		GXVoid ApplyMotionBlur ( GXFloat deltaTime );
+		GXVoid ApplyMotionBlur ();
 		GXVoid ApplyToneMapping ( GXFloat deltaTime );
 
 		GXVoid PresentFrame ( eEMRenderTarget target );
 
-		GXVoid SetOnObjectCallback ( GXVoid* handler, PFNEMRENDERERONOBJECTPROC callback );
+		GXVoid SetOnObjectCallback ( GXVoid* handlerObject, PFNEMRENDERERONOBJECTPROC callback );
 		GXVoid GetObject ( GXUShort x, GXUShort y );
 
 		GXVoid SetMaximumMotionBlurSamples ( GXUByte samples );

@@ -76,7 +76,7 @@ class GXUIDragableArea : public GXWidget
 		GXVoid SetBorderThickness ( GXFloat thickness );
 		GXFloat GetBorderThickness () const;
 
-		GXVoid SetOnResizeCallback ( GXVoid* handler, PFNGXUIDRAGABLEAREAONRESIZEPROC callback );
+		GXVoid SetOnResizeCallback ( GXVoid* handlerObject, PFNGXUIDRAGABLEAREAONRESIZEPROC callback );
 
 	private:
 		eGXDraggableAreaResizeMode GetResizeMode ( const GXVec2 &mousePosition ) const;

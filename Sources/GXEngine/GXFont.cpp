@@ -290,7 +290,7 @@ GXUInt GXCDECLCALL GXFont::GetTextLength ( GXUInt bufferNumSymbols, const GXWCha
 	if ( bufferNumSymbols )
 		free ( text );
 
-	return penX;
+	return (GXUInt)penX;
 }
 
 GXFont& GXCALL GXFont::GetFont ( const GXWChar* fileName, GXUShort size )
@@ -352,7 +352,8 @@ GXBool GXCALL GXFont::InitFreeTypeLibrary ()
 	}
 
 	PFNGXFREETYPEINIT GXFreeTypeInit;
-	GXFreeTypeInit = (PFNGXFREETYPEINIT)GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXFreeTypeInit" );
+	GXFreeTypeInit = reinterpret_cast <PFNGXFREETYPEINIT> ( reinterpret_cast <GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXFreeTypeInit" ) ) );
+
 	if ( !GXFreeTypeInit )
 	{
 		GXLogW ( L"GXFont::InitFreeType::Error - Не удалось найти функцию GXFreeTypeInit\n" );
@@ -414,7 +415,7 @@ GXFont::GXFont ( const GXWChar* fileName, GXUShort size )
 	parameters->top = 0;
 
 	GXUShort temp = (GXUShort)( size * 0.5f );
-	parameters->spaceAdvance = temp == 0 ? 1 : temp;
+	parameters->spaceAdvance = temp == 0 ? (GXUShort)1 : temp;
 	GXUPointer totalSize = 0;
 
 	if ( !GXLoadFile ( fileName, &parameters->mappedFile, totalSize, GX_TRUE ) )
@@ -450,7 +451,7 @@ GXVoid GXFont::RenderGlyph ( GXUInt symbol ) const
 
 	FT_Bitmap bitmap = face->glyph->bitmap;
 
-	switch ( CheckAtlas ( bitmap.width, bitmap.rows ) )
+	switch ( CheckAtlas ( (GXUInt)bitmap.width, (GXUInt)bitmap.rows ) )
 	{
 		case ATLAS_NEW_LINE:
 			parameters->left = 0;
@@ -472,7 +473,7 @@ GXVoid GXFont::RenderGlyph ( GXUInt symbol ) const
 
 	parameters->glyphs[ symbol ].atlasID = parameters->atlasID;
 
-	GXUByte* buffer = (GXUByte*)malloc ( bitmap.width * bitmap.rows );
+	GXUByte* buffer = (GXUByte*)malloc ( (size_t)( bitmap.width * bitmap.rows ) );
 
 	for ( GXUInt h = 0; h < (GXUInt)bitmap.rows; h++ )
 	{
@@ -484,10 +485,10 @@ GXVoid GXFont::RenderGlyph ( GXUInt symbol ) const
 
 	free ( buffer );
 
-	parameters->left += bitmap.width + ATLAS_SPACING;
+	parameters->left += (GXUShort)( bitmap.width + ATLAS_SPACING );
 
 	if ( parameters->top < ( parameters->bottom + bitmap.rows + ATLAS_SPACING ) )
-		parameters->top = parameters->bottom + bitmap.rows + ATLAS_SPACING;
+		parameters->top = (GXUShort)( parameters->bottom + (GXUShort)bitmap.rows + ATLAS_SPACING );
 }
 
 GXVoid GXFont::CreateAtlas () const
@@ -508,15 +509,8 @@ GXVoid GXFont::CreateAtlas () const
 		parameters->atlases = temp;
 	}
 
-	GXUInt size = ATLAS_RESOLUTION * ATLAS_RESOLUTION;
-	GXUByte* data = (GXUByte*)malloc ( size );
-
-	memset ( data, 0, size );
-
 	parameters->atlases[ parameters->atlasID ].InitResources ( ATLAS_RESOLUTION, ATLAS_RESOLUTION, GL_R8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	parameters->atlases[ parameters->atlasID ].FillWholePixelData ( data );
-
-	free ( data );
+	parameters->atlases[ parameters->atlasID ].FillWholePixelData ( nullptr );
 }
 
 GXUByte GXFont::CheckAtlas ( GXUInt width, GXUInt height ) const

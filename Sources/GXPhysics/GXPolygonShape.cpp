@@ -2,6 +2,7 @@
 
 #include <GXPhysics/GXPolygonShape.h>
 
+
 GXPolygonShape::GXPolygonShape ( GXRigidBody* body, GXFloat widht, GXFloat depth )
 : GXShape ( eGXShapeType::Polygon, body )
 {
@@ -24,7 +25,7 @@ GXFloat GXPolygonShape::GetHeight () const
 	return depth;
 }
 
-GXVoid GXPolygonShape::CalculateInertiaTensor ( GXFloat mass )
+GXVoid GXPolygonShape::CalculateInertiaTensor ( GXFloat /*mass*/ )
 {
 	GXSetMat3Identity ( inertialTensor );
 }

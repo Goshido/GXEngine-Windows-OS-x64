@@ -39,9 +39,9 @@ class EMViewer
 	public:
 		~EMViewer ();
 
-		GXVoid SetInputWidget ( GXUIInput &inputWidget );
+		GXVoid SetInputWidget ( GXUIInput &newInputWidget );
 		GXVoid SetTarget ( EMActor* actor );
-		GXVoid SetOnViewerTransformChangedCallback ( GXVoid* handler, PFNEMONVIEWERTRANSFORMCHANGEDPROC callback );
+		GXVoid SetOnViewerTransformChangedCallback ( GXVoid* handlerObject, PFNEMONVIEWERTRANSFORMCHANGEDPROC callback );
 		GXCamera& GetCamera ();
 		GXVoid UpdateMouse ( const GXVec2 &position );
 
@@ -55,10 +55,10 @@ class EMViewer
 		GXVoid OnZoom ( GXFloat mouseWheelSteps );
 
 		GXVoid UpdateCamera ();
-		GXFloat FixPitch ( GXFloat pitch );
-		GXFloat FixYaw ( GXFloat yaw );
+		GXFloat FixPitch ( GXFloat currentPitch );
+		GXFloat FixYaw ( GXFloat currentYaw );
 
-		GXUByte ResolveMode ( GXBool isAltPressed, GXBool isMMBPressed, GXBool isWheel );
+		GXUByte ResolveMode ( GXBool isAltDown, GXBool isMMBDown, GXBool isWheel );
 
 		static GXVoid GXCALL OnLMBDownCallback ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
 		static GXVoid GXCALL OnLMBUpCallback ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );

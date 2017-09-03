@@ -2,8 +2,8 @@
 #define EM_UI_EDIT_BOX
 
 
-#include <GXEngine/GXUIEditBox.h>
 #include "EMUI.h"
+#include <GXEngine/GXUIEditBox.h>
 
 
 class EMUIEditBox : public EMUI

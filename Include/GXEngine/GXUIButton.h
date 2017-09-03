@@ -28,7 +28,7 @@ class GXUIButton : public GXWidget
 
 		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
 
-		GXVoid SetOnLeftMouseButtonCallback ( GXVoid* handler, PFNGXONMOUSEBUTTONPROC callback );
+		GXVoid SetOnLeftMouseButtonCallback ( GXVoid* handlerObject, PFNGXONMOUSEBUTTONPROC callback );
 
 		GXVoid Enable ();
 		GXVoid Disable ();

@@ -1,5 +1,6 @@
 //vesrion 1.5
 
+
 #include <GXCommon/GXAVLTree.h>
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXLogger.h>
@@ -112,31 +113,31 @@ GXVoid GXAVLTree::Add ( GXAVLTreeNode &node )
 	}
 }
 
-GXVoid GXAVLTree::DoPrefix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const
+GXVoid GXAVLTree::DoPrefix ( const GXAVLTreeNode* currentRoot, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const
 {
-	if ( !root ) return;
+	if ( !currentRoot ) return;
 
-	iterator ( *root, args );
-	DoPrefix ( root->left, iterator, args );
-	DoPrefix ( root->right, iterator, args );
+	iterator ( *currentRoot, args );
+	DoPrefix ( currentRoot->left, iterator, args );
+	DoPrefix ( currentRoot->right, iterator, args );
 }
 
-GXVoid GXAVLTree::DoInfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const
+GXVoid GXAVLTree::DoInfix ( const GXAVLTreeNode* currentRoot, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const
 {
-	if ( !root ) return;
+	if ( !currentRoot ) return;
 
-	DoInfix ( root->left, iterator, args );
-	iterator ( *root, args );
-	DoInfix ( root->right, iterator, args );
+	DoInfix ( currentRoot->left, iterator, args );
+	iterator ( *currentRoot, args );
+	DoInfix ( currentRoot->right, iterator, args );
 }
 
-GXVoid GXAVLTree::DoPostfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const
+GXVoid GXAVLTree::DoPostfix ( const GXAVLTreeNode* currentRoot, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const
 {
-	if ( !root ) return;
+	if ( !currentRoot ) return;
 
-	DoPostfix ( root->left, iterator, args );
-	DoPostfix ( root->right, iterator, args );
-	iterator ( *root, args );
+	DoPostfix ( currentRoot->left, iterator, args );
+	DoPostfix ( currentRoot->right, iterator, args );
+	iterator ( *currentRoot, args );
 }
 
 GXVoid GXAVLTree::FindInternal ( GXAVLTreeNode** oldNode, GXAVLTreeNode** parent, eGXAVLTreeSide &side, const GXAVLTreeNode &node )
@@ -179,7 +180,7 @@ GXUInt GXAVLTree::GetHeight ( GXAVLTreeNode* node ) const
 
 GXInt GXAVLTree::GetBalance ( GXAVLTreeNode* node )
 {
-	return GetHeight ( node->right ) - GetHeight ( node->left );
+	return (GXInt)GetHeight ( node->right ) - (GXInt)GetHeight ( node->left );
 }
 
 GXAVLTreeNode* GXAVLTree::LeftRotate ( GXAVLTreeNode* father )
@@ -208,16 +209,16 @@ GXAVLTreeNode* GXAVLTree::RightRotate ( GXAVLTreeNode* father )
 	return me;
 }
 
-GXAVLTreeNode* GXAVLTree::Insert ( GXAVLTreeNode* node, GXAVLTreeNode* root )
+GXAVLTreeNode* GXAVLTree::Insert ( GXAVLTreeNode* node, GXAVLTreeNode* currentRoot )
 {
-	if ( !root ) return node;
+	if ( !currentRoot ) return node;
 
-	if ( Compare ( *node, *root ) < 0 )
-		root->left = Insert ( node, root->left );
+	if ( Compare ( *node, *currentRoot ) < 0 )
+		currentRoot->left = Insert ( node, currentRoot->left );
 	else
-		root->right = Insert ( node, root->right );
+		currentRoot->right = Insert ( node, currentRoot->right );
 
-	return Balance ( root );
+	return Balance ( currentRoot );
 }
 
 GXVoid GXAVLTree::FixHeight ( GXAVLTreeNode* node )
@@ -232,7 +233,7 @@ GXAVLTreeNode* GXAVLTree::Balance ( GXAVLTreeNode* me )
 {
 	FixHeight ( me );
 
-	GXChar difference = GetBalance ( me );
+	GXInt difference = GetBalance ( me );
 
 	if ( difference == 2 )
 	{

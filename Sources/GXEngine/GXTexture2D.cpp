@@ -206,7 +206,7 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 	free ( baseFileName );
 
 	GXUByte* data = nullptr;
-	GLuint internalFormat = INVALID_INTERNAL_FORMAT;
+	GLint internalFormat = INVALID_INTERNAL_FORMAT;
 	GLenum readPixelFormat = GL_INVALID_ENUM;
 	GLenum readPixelType = GL_INVALID_ENUM;
 	GLint packAlignment = 1;
@@ -484,7 +484,8 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 		GXLogW ( L"GXTexture2D::LoadTexture::Error - ѕоддерживаютс€ текстуры с количеством каналов 1, 3 и 4 (текущее количество %hhu)\n", cacheHeader.numChannels );
 		free ( cacheFileName );
 
-		GXTexture2D* texture = new GXTexture2D ();
+		new GXTexture2DEntry ( *texture, fileName );
+		return *texture;
 	}
 
 	if ( !isApplyGammaCorrection )
@@ -635,7 +636,7 @@ GXVoid GXTexture2D::FillWholePixelData ( const GXVoid* data )
 	GXCheckOpenGLError ();
 }
 
-GXVoid GXTexture2D::FillRegionPixelData ( GXUShort left, GXUShort bottom, GXUShort width, GXUShort height, const GXVoid* data )
+GXVoid GXTexture2D::FillRegionPixelData ( GXUShort left, GXUShort bottom, GXUShort regionWidth, GXUShort regionHeight, const GXVoid* data )
 {
 	if ( textureObject == 0 ) return;
 
@@ -643,7 +644,7 @@ GXVoid GXTexture2D::FillRegionPixelData ( GXUShort left, GXUShort bottom, GXUSho
 	glBindTexture ( GL_TEXTURE_2D, textureObject );
 
 	glPixelStorei ( GL_UNPACK_ALIGNMENT, unpackAlignment );
-	glTexSubImage2D ( GL_TEXTURE_2D, 0, (GLint)left, (GLint)bottom, (GLint)width, (GLint)height, format, type, data );
+	glTexSubImage2D ( GL_TEXTURE_2D, 0, (GLint)left, (GLint)bottom, (GLint)regionWidth, (GLint)regionHeight, format, type, data );
 	glGetError ();
 
 	if ( isGenerateMipmap )
@@ -678,18 +679,18 @@ GXVoid GXTexture2D::UpdateMipmaps ()
 	glBindTexture ( GL_TEXTURE_2D, 0 );
 }
 
-GXVoid GXTexture2D::Bind ( GXUByte textureUnit )
+GXVoid GXTexture2D::Bind ( GXUByte unit )
 {
-	this->textureUnit = textureUnit;
+	textureUnit = unit;
 
 	glBindSampler ( textureUnit, sampler );
-	glActiveTexture ( GL_TEXTURE0 + textureUnit );
+	glActiveTexture ( (GLenum)( GL_TEXTURE0 + unit ) );
 	glBindTexture ( GL_TEXTURE_2D, textureObject );
 }
 
 GXVoid GXTexture2D::Unbind ()
 {
-	glActiveTexture ( GL_TEXTURE0 + textureUnit );
+	glActiveTexture ( (GLenum)( GL_TEXTURE0 + textureUnit ) );
 	glBindTexture ( GL_TEXTURE_2D, 0 );
 	glBindSampler ( textureUnit, 0 );
 }
@@ -699,13 +700,13 @@ GLuint GXTexture2D::GetTextureObject () const
 	return textureObject;
 }
 
-GXVoid GXTexture2D::InitResources ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap, GLint wrapMode )
+GXVoid GXTexture2D::InitResources ( GXUShort textureWidth, GXUShort textureHeight, GLint textureInternalFormat, GXBool isGenerateMipmapPolicy, GLint wrapModePolicy )
 {
-	this->width = width;
-	this->height = height;
-	this->internalFormat = internalFormat;
-	this->isGenerateMipmap = isGenerateMipmap;
-	this->wrapMode = wrapMode;
+	width = textureWidth;
+	height = textureHeight;
+	internalFormat = textureInternalFormat;
+	isGenerateMipmap = isGenerateMipmapPolicy;
+	wrapMode = wrapModePolicy;
 
 	textureUnit = INVALID_TEXTURE_UNIT;
 

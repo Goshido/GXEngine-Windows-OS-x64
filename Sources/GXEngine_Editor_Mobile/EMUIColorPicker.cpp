@@ -228,9 +228,6 @@ GXVoid EMColorRenderer::SetColorHSVA ( const GXVec4 &color )
 
 GXVoid EMColorRenderer::OnRefresh ()
 {
-	GXUIButton* button = (GXUIButton*)widget;
-	const GXAABB& bounds = button->GetBoundsWorld ();
-
 	GXFloat w = (GXFloat)surface->GetWidth ();
 	GXFloat h = (GXFloat)surface->GetHeight ();
 
@@ -382,8 +379,8 @@ GXWidgetRenderer ( widget ), screenQuad ( L"3D Models/System/ScreenQuad.stm" )
 
 	UpdateHueCircleTexture ();
 
-	GXVec4 colorHSVA ( DEFAULT_CURRENT_COLOR_H, DEFAULT_CURRENT_COLOR_S, DEFAULT_CURRENT_COLOR_V, DEFAULT_CURRENT_COLOR_A );
-	SetColorHSVA ( colorHSVA );
+	GXVec4 newColorHSVA ( DEFAULT_CURRENT_COLOR_H, DEFAULT_CURRENT_COLOR_S, DEFAULT_CURRENT_COLOR_V, DEFAULT_CURRENT_COLOR_A );
+	SetColorHSVA ( newColorHSVA );
 
 	GXCheckOpenGLError ();
 }
@@ -405,9 +402,6 @@ GXVoid EMColorSelectorRenderer::SetColorHSVA ( const GXVec4 &color )
 
 GXVoid EMColorSelectorRenderer::OnRefresh ()
 {
-	GXUIButton* button = (GXUIButton*)widget;
-	const GXAABB& bounds = button->GetBoundsWorld ();
-
 	GXFloat w = (GXFloat)surface->GetWidth ();
 	GXFloat h = (GXFloat)surface->GetHeight ();
 
@@ -747,19 +741,19 @@ GXWidget* EMUIColorPicker::GetWidget () const
 	return mainPanel->GetWidget ();
 }
 
-GXVoid EMUIColorPicker::PickHSVAColor ( GXVoid* handler, PFNEMONHSVACOLORPROC callback, const GXVec4 oldColorHSVA )
+GXVoid EMUIColorPicker::PickHSVAColor ( GXVoid* handlerObject, PFNEMONHSVACOLORPROC callback, const GXVec4 &oldColorHSVAValue )
 {
 	EMColorRenderer* renderer = (EMColorRenderer*)oldColor->GetRenderer ();
-	renderer->SetColorHSVA ( oldColorHSVA );
+	renderer->SetColorHSVA ( oldColorHSVAValue );
 	oldColor->Refresh ();
 
-	this->handler = handler;
+	handler = handlerObject;
 	OnHSVAColor = callback;
 	OnRGBAColor = nullptr;
 	mainPanel->Show ();
 }
 
-GXVoid EMUIColorPicker::PickRGBAColor ( GXVoid* handler, PFNEMONRGBACOLORPROC callback, GXUByte oldRed, GXUByte oldGreen, GXUByte oldBlue, GXUByte oldAlpha )
+GXVoid EMUIColorPicker::PickRGBAColor ( GXVoid* handlerObject, PFNEMONRGBACOLORPROC callback, GXUByte oldRed, GXUByte oldGreen, GXUByte oldBlue, GXUByte oldAlpha )
 {
 	GXVec4 oldHSVA;
 	GXVec4 oldRGBA;
@@ -769,7 +763,7 @@ GXVoid EMUIColorPicker::PickRGBAColor ( GXVoid* handler, PFNEMONRGBACOLORPROC ca
 	renderer->SetColorHSVA ( oldHSVA );
 	oldColor->Refresh ();
 
-	this->handler = handler;
+	handler = handlerObject;
 	OnRGBAColor = callback;
 	OnHSVAColor = nullptr;
 	mainPanel->Show ();
@@ -948,22 +942,22 @@ GXVoid EMUIColorPicker::UpdateCurrentColor ( GXFloat hue, GXFloat saturation, GX
 	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", value );
 	v->SetText ( buffer );
 
-	GXUByte r;
-	GXUByte g;
-	GXUByte b;
-	GXUByte a;
-	GXConvertHSVAToRGBA ( r, g, b, a, currentColorHSVA );
+	GXUByte newRed;
+	GXUByte newGreen;
+	GXUByte newBlue;
+	GXUByte newAlpha;
+	GXConvertHSVAToRGBA ( newRed, newGreen, newBlue, newAlpha, currentColorHSVA );
 
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", r );
-	this->r->SetText ( buffer );
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", newRed );
+	r->SetText ( buffer );
 
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", g );
-	this->g->SetText ( buffer );
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", newGreen );
+	g->SetText ( buffer );
 
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", b );
-	this->b->SetText ( buffer );
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", newBlue );
+	b->SetText ( buffer );
 
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", a );
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", newAlpha );
 	transparency->SetText ( buffer );
 
 	EMColorRenderer* currentColorRenderer = (EMColorRenderer*)currentColor->GetRenderer ();
@@ -1057,7 +1051,7 @@ GXVoid EMUIColorPicker::UpdateCurrentColorWithCorrection ( GXUByte red, GXUByte 
 	hsvColorWidget->Refresh ();
 }
 
-GXVoid GXCALL EMUIColorPicker::OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state )
+GXVoid GXCALL EMUIColorPicker::OnButton ( GXVoid* handler, GXUIButton& button, GXFloat /*x*/, GXFloat /*y*/, eGXMouseButtonState state )
 {
 	if ( state == eGXMouseButtonState::Down ) return;
 

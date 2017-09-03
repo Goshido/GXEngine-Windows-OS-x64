@@ -72,7 +72,7 @@ EMCookTorranceDirectedLightMaterial::~EMCookTorranceDirectedLightMaterial ()
 	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 }
 
-GXVoid EMCookTorranceDirectedLightMaterial::Bind ( const GXTransform &transform )
+GXVoid EMCookTorranceDirectedLightMaterial::Bind ( const GXTransform& /*transform*/ )
 {
 	if ( !albedoTexture || !normalTexture || !emissionTexture || !parameterTexture || !depthTexture ) return;
 

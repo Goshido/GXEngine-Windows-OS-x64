@@ -1,11 +1,10 @@
 //version 1.2
 
 #include <GXEngine/GXCore.h>
-#include <GXCommon/GXFileSystem.h>
 #include <GXEngine_Editor_Mobile/EMGame.h>
 
 
-int wmain ( int argc, LPWSTR commandline )
+int wmain ( int /*argc*/, LPWSTR /*commandline*/ )
 {
 	GXCore& core = GXCore::GetInstance ();
 	EMGame* game = new EMGame ();
@@ -18,7 +17,7 @@ int wmain ( int argc, LPWSTR commandline )
 
 //----------------------------------------------------------------------------------
 
-int WINAPI wWinMain ( HINSTANCE hinst, HINSTANCE hprev, LPWSTR cmdLine, int mode )
+int WINAPI wWinMain ( HINSTANCE /*hinst*/, HINSTANCE /*hprev*/, LPWSTR /*cmdLine*/, int /*mode*/ )
 {
 	GXCore& core = GXCore::GetInstance ();
 	EMGame* game = new EMGame ();

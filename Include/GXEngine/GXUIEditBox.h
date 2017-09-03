@@ -54,10 +54,10 @@ class GXUIEditBox : public GXWidget
 		GXVoid SetTextRightOffset ( GXFloat offset );
 		GXFloat GetTextRightOffset () const;
 
-		GXVoid SetText ( const GXWChar* text );
+		GXVoid SetText ( const GXWChar* newText );
 		const GXWChar* GetText () const;
 
-		GXVoid SetAlignment ( eGXUITextAlignment alignment );
+		GXVoid SetAlignment ( eGXUITextAlignment newAlignment );
 		eGXUITextAlignment GetAlignment () const;
 
 		GXVoid SetFont ( const GXWChar* fontFile, GXUShort fontSize );
@@ -65,10 +65,10 @@ class GXUIEditBox : public GXWidget
 
 		GXBool IsActive ();
 
-		GXVoid SetValidator ( GXTextValidator &validator );
+		GXVoid SetValidator ( GXTextValidator &validatorObject );
 		GXTextValidator* GetValidator () const;
 
-		GXVoid SetOnFinishEditingCallback ( GXVoid* handler, PFNGXUIEDITBOXONFINISHEDITINGPROC callback );
+		GXVoid SetOnFinishEditingCallback ( GXVoid* handlerObject, PFNGXUIEDITBOXONFINISHEDITINGPROC callback );
 
 	private:
 		GXInt GetSelectionPosition ( const GXVec2 &mousePosition ) const;
@@ -80,7 +80,7 @@ class GXUIEditBox : public GXWidget
 		GXVoid UpdateCursor ( GXInt newCursor );
 
 		GXVoid CopyText ();
-		GXVoid PasteText ( const GXWChar* text );
+		GXVoid PasteText ( const GXWChar* textToPaste );
 		GXBool DeleteText ();
 
 		static GXVoid GXCALL OnEnd ( GXVoid* handler );

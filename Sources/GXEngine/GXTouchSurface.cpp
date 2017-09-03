@@ -307,9 +307,9 @@ GXVoid GXTouchSurface::MoveWidgetToForeground ( GXWidget* widget )
 	widgetHead = widget;
 }
 
-GXVoid GXTouchSurface::LockCursor ( GXWidget* lockedWidget )
+GXVoid GXTouchSurface::LockCursor ( GXWidget* widget )
 {
-	this->lockedWidget = lockedWidget;
+	lockedWidget = widget;
 }
 
 GXWidget* GXTouchSurface::GetLockedCursorWidget ()

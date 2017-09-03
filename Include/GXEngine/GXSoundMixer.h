@@ -22,6 +22,7 @@ class GXSoundMixer
 		static GXSoundMixer*		instance;
 
 	public:
+		static GXSoundMixer& GXCALL GetInstance ();
 		~GXSoundMixer ();
 
 		GXVoid SetListenerVelocity ( const GXVec3 &velocity );
@@ -39,15 +40,12 @@ class GXSoundMixer
 		GXVoid Start ();
 		GXBool Shutdown ();
 
-		GXVoid SetMasterVolume ( GXFloat masterVolume );
-
-		static GXSoundMixer& GXCALL GetInstance ();
+		GXVoid SetMasterVolume ( GXFloat masterVolumeLevel );
 
 	private:
 		GXSoundMixer ();
 
 		static GXUPointer GXTHREADCALL Update ( GXVoid* args, GXThread &thread );
-
 };
 
 

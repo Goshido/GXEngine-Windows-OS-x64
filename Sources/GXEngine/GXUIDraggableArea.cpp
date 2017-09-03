@@ -69,9 +69,8 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 
 		case GX_MSG_MOUSE_LEAVE:
 		{
-				const GXVec2* pos = (const GXVec2*)data;
-				SetCursor ( standartArrow );
-				currentCursor = &standartArrow;
+			SetCursor ( standartArrow );
+			currentCursor = &standartArrow;
 		}
 		break;
 
@@ -560,9 +559,9 @@ GXFloat GXUIDragableArea::GetBorderThickness () const
 	return borderThickness;
 }
 
-GXVoid GXUIDragableArea::SetOnResizeCallback ( GXVoid* handler, PFNGXUIDRAGABLEAREAONRESIZEPROC callback )
+GXVoid GXUIDragableArea::SetOnResizeCallback ( GXVoid* handlerObject, PFNGXUIDRAGABLEAREAONRESIZEPROC callback )
 {
-	this->handler = handler;
+	handler = handlerObject;
 	OnResize = callback;
 }
 

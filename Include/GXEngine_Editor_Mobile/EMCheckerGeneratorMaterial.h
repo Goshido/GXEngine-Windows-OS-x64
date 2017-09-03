@@ -29,7 +29,7 @@ class EMCheckerGeneratorMaterial : public GXMaterial
 
 		GXVoid SetColorOne ( GXUChar red, GXUChar green, GXUChar blue, GXUChar alpha );
 		GXVoid SetColorTwo ( GXUChar red, GXUChar green, GXUChar blue, GXUChar alpha );
-		GXVoid SetElementSize ( GXUShort width, GXShort height );
+		GXVoid SetElementSize ( GXUShort width, GXUShort height );
 };
 
 

@@ -4,6 +4,7 @@
 #include <GXPhysics/GXContactGenerator.h>
 #include <GXCommon/GXLogger.h>
 
+
 struct GXRigidBodyRegistration
 {
 	GXRigidBodyRegistration*		next;
@@ -190,8 +191,6 @@ GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 
 	for ( GXRigidBodyRegistration* p = bodies; p; p = p->next )
 		p->body->Integrate ( deltaTime );
-
-	GXContact* nextContact = collisions.GetContactsBegin ();
 
 	for ( GXContactGeneratorsRegistration* reg = contactGenerators; reg; reg = reg->next )
 	{

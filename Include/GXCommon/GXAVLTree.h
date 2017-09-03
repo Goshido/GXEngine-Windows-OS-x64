@@ -52,9 +52,9 @@ class GXAVLTree
 		const GXAVLTreeNode* Find ( const GXAVLTreeNode &node ) const;
 		GXVoid Add ( GXAVLTreeNode &node );
 		
-		GXVoid DoPrefix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const;
-		GXVoid DoInfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const;
-		GXVoid DoPostfix ( const GXAVLTreeNode* root, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const;
+		GXVoid DoPrefix ( const GXAVLTreeNode* currentRoot, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const;
+		GXVoid DoInfix ( const GXAVLTreeNode* currentRoot, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const;
+		GXVoid DoPostfix ( const GXAVLTreeNode* currentRoot, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const;
 
 	private:
 		GXVoid FindInternal ( GXAVLTreeNode** oldNode, GXAVLTreeNode** parent, eGXAVLTreeSide &side, const GXAVLTreeNode &node );
@@ -65,7 +65,7 @@ class GXAVLTree
 		GXAVLTreeNode* LeftRotate ( GXAVLTreeNode* father );
 		GXAVLTreeNode* RightRotate ( GXAVLTreeNode* father );
 
-		GXAVLTreeNode* Insert ( GXAVLTreeNode* node, GXAVLTreeNode* root );
+		GXAVLTreeNode* Insert ( GXAVLTreeNode* node, GXAVLTreeNode* currentRoot );
 		GXVoid FixHeight ( GXAVLTreeNode* node );
 		GXAVLTreeNode* Balance ( GXAVLTreeNode* me );
 		

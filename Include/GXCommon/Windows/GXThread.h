@@ -4,7 +4,7 @@
 #define GX_THREAD_WINDOWS
 
 
-#include "../GXThread.h"
+#include <GXCommon/GXThread.h>
 
 
 class GXThread : public GXAbstractThread

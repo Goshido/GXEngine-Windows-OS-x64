@@ -6,6 +6,7 @@
 
 #include "GXAnimSolver.h"
 
+
 #define GX_ANIM_SOLVER_MOVEMENT_STATES	3
 #define GX_ANIM_SOLVER_MOVEMENT_WALK	0
 #define GX_ANIM_SOLVER_MOVEMENT_RUN		1
@@ -16,7 +17,7 @@ class GXAnimSolverMovement : public GXAnimSolver
 {
 	private:
 		GXUChar					state;
-		GXAnimSolver*			animStream[ GX_ANIM_SOLVER_MOVEMENT_STATES ];
+		GXAnimSolver*			animationStreams[ GX_ANIM_SOLVER_MOVEMENT_STATES ];
 
 	public:
 		GXAnimSolverMovement ( GXUShort solver );
@@ -25,8 +26,8 @@ class GXAnimSolverMovement : public GXAnimSolver
 		GXBool GetBone ( const GXUTF8* boneName, GXQuat &rotation, GXVec3 &location ) override;
 		GXVoid Update ( GXFloat delta ) override;
 
-		GXVoid SetAnimStream ( GXUChar state, GXAnimSolver* animStream );
-		GXVoid SetState ( GXUChar state );
+		GXVoid SetAnimStream ( GXUChar animationState, GXAnimSolver* animStream );
+		GXVoid SetState ( GXUChar animationState );
 };
 
 

@@ -78,9 +78,9 @@ GXVoid GXUnlitTexture2DMaterial::Unbind ()
 	glUseProgram ( 0 );
 }
 
-GXVoid GXUnlitTexture2DMaterial::SetTexture ( GXTexture2D &texture )
+GXVoid GXUnlitTexture2DMaterial::SetTexture ( GXTexture2D &textureObject )
 {
-	this->texture = &texture;
+	texture = &textureObject;
 }
 
 GXVoid GXUnlitTexture2DMaterial::SetTextureScale ( GXFloat x, GXFloat y )
@@ -100,7 +100,7 @@ GXVoid GXUnlitTexture2DMaterial::SetColor ( GXUByte red, GXUByte green, GXUByte 
 	GXColorToVec4 ( color, red, green, blue, alpha );
 }
 
-GXVoid GXUnlitTexture2DMaterial::SetColor ( const GXVec4 &color )
+GXVoid GXUnlitTexture2DMaterial::SetColor ( const GXVec4 &newColor )
 {
-	this->color = color;
+	color = newColor;
 }

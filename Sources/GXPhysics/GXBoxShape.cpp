@@ -2,6 +2,7 @@
 
 #include <GXPhysics/GXBoxShape.h>
 
+
 GXBoxShape::GXBoxShape ( GXRigidBody* body, GXFloat width, GXFloat height, GXFloat depth )
 : GXShape ( eGXShapeType::Box, body )
 {

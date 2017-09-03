@@ -47,8 +47,6 @@ GXVoid EMUIStaticTextRenderer::OnRefresh ()
 {
 	GXUIStaticText* staticText = (GXUIStaticText*)widget;
 
-	const GXAABB& bounds = staticText->GetBoundsWorld ();
-
 	surface->Reset ();
 	GXFloat h = (GXFloat)surface->GetHeight ();
 	const GXWChar* text = staticText->GetText ();

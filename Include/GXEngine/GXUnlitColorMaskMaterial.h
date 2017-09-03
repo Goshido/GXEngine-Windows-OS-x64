@@ -3,6 +3,7 @@
 #ifndef GX_UNLIT_COLOR_MASK_MATERIAL
 #define GX_UNLIT_COLOR_MASK_MATERIAL
 
+
 #include "GXMaterial.h"
 #include "GXTexture2D.h"
 
@@ -30,7 +31,7 @@ class GXUnlitColorMaskMaterial : public GXMaterial
 		GXVoid SetMaskOffset ( GXFloat x, GXFloat y );
 
 		GXVoid SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
-		GXVoid SetColor ( const GXVec4 &color );
+		GXVoid SetColor ( const GXVec4 &newColor );
 };
 
 

@@ -1,6 +1,5 @@
 //version 1.1
 
-
 #include <GXCommon/GXNativeStaticMeshSaver.h>
 #include <GXCommon/GXNativeStaticMeshStructs.h>
 #include <GXCommon/GXFileSystem.h>

@@ -8,7 +8,7 @@ GXGravity::GXGravity ( const GXVec3 &gravity )
 	this->gravity = gravity;
 }
 
-GXVoid GXGravity::UpdateForce ( GXRigidBody &body, GXFloat deltaTime )
+GXVoid GXGravity::UpdateForce ( GXRigidBody &body, GXFloat /*deltaTime*/ )
 {
 	if ( body.IsKinematic () ) return;
 

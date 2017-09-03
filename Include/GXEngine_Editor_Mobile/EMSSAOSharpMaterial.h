@@ -50,7 +50,7 @@ class EMSSAOSharpMaterial : public GXMaterial
 		GXVoid SetCheckRadius ( GXFloat meters );
 		GXFloat GetCheckRadius () const;
 
-		GXVoid SetSampleNumber ( GXUByte samples );
+		GXVoid SetSampleNumber ( GXUByte samplesPerPixel );
 		GXUByte GetSampleNumber () const;
 
 		GXVoid SetNoiseTextureResolution ( GXUShort resolution );

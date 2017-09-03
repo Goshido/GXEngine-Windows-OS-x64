@@ -16,20 +16,20 @@ GXAnimSolverMovement::~GXAnimSolverMovement ()
 
 GXBool GXAnimSolverMovement::GetBone ( const GXUTF8* boneName, GXQuat &rotation, GXVec3 &location )
 {
-	return animStream[ state ]->GetBone ( boneName, rotation, location );
+	return animationStreams[ state ]->GetBone ( boneName, rotation, location );
 }
 
 GXVoid GXAnimSolverMovement::Update ( GXFloat delta )
 {
-	animStream[ state ]->Update ( delta );
+	animationStreams[ state ]->Update ( delta );
 }
 
-GXVoid GXAnimSolverMovement::SetAnimStream ( GXUChar state, GXAnimSolver* animStream )
+GXVoid GXAnimSolverMovement::SetAnimStream ( GXUChar animationState, GXAnimSolver* animStream )
 {
-	this->animStream[ state ] = animStream;
+	animationStreams[ animationState ] = animStream;
 }
 
-GXVoid GXAnimSolverMovement::SetState ( GXUChar state )
+GXVoid GXAnimSolverMovement::SetState ( GXUChar animationState )
 {
-	this->state = state;
+	state = animationState;
 }

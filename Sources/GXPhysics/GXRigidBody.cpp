@@ -41,10 +41,10 @@ GXRigidBody::GXRigidBody ()
 	GXVec3 vec ( DEFAULT_LOCATION_X, DEFAULT_LOCATION_Y, DEFAULT_LOCATION_Z );
 	SetLocation ( vec );
 
-	GXQuat rotation;
+	GXQuat rot;
 	vec = GXCreateVec3 ( DEFAULT_ROTATION_AXIS_X, DEFAULT_ROTATION_AXIS_Y, DEFAULT_ROTATION_AXIS_Z );
-	GXSetQuatFromAxisAngle ( rotation, vec, DEFAULT_ROTATION_ANGLE );
-	SetRotaton ( rotation );
+	GXSetQuatFromAxisAngle ( rot, vec, DEFAULT_ROTATION_ANGLE );
+	SetRotaton ( rot );
 
 	vec = GXCreateVec3 ( DEFAULT_LINEAR_VELOCITY_X, DEFAULT_LINEAR_VELOCITY_Y, DEFAULT_LINEAR_VELOCITY_Z );
 	SetLinearVelocity ( vec );
@@ -66,9 +66,9 @@ GXRigidBody::~GXRigidBody ()
 	GXSafeDelete ( shape );
 }
 
-GXVoid GXRigidBody::SetOnTransformChangedCallback ( GXVoid* handler, PFNRIGIDBODYONTRANSFORMCHANGED callback )
+GXVoid GXRigidBody::SetOnTransformChangedCallback ( GXVoid* handlerObject, PFNRIGIDBODYONTRANSFORMCHANGED callback )
 {
-	this->handler = handler;
+	handler = handlerObject;
 	OnTransformChanged = callback;
 }
 
@@ -120,9 +120,9 @@ GXVoid GXRigidBody::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 		shape->CalculateCacheData ();
 }
 
-GXVoid GXRigidBody::SetLocation ( const GXVec3 &location )
+GXVoid GXRigidBody::SetLocation ( const GXVec3 &newLocation )
 {
-	this->location = location;
+	location = newLocation;
 	transform.SetW ( location );
 
 	if ( OnTransformChanged )
@@ -137,9 +137,9 @@ const GXVec3& GXRigidBody::GetLocation () const
 	return location;
 }
 
-GXVoid GXRigidBody::SetRotaton ( const GXQuat &rotation )
+GXVoid GXRigidBody::SetRotaton ( const GXQuat &newRotation )
 {
-	this->rotation = rotation;
+	rotation = newRotation;
 	transform.From ( rotation, location );
 
 	if ( OnTransformChanged )
@@ -184,9 +184,9 @@ GXVoid GXRigidBody::AddAngularVelocity ( const GXVec3 &velocity )
 	GXSumVec3Vec3 ( angularVelocity, angularVelocity, velocity );
 }
 
-GXVoid GXRigidBody::SetMass ( GXFloat mass )
+GXVoid GXRigidBody::SetMass ( GXFloat newMass )
 {
-	this->mass = mass;
+	mass = newMass;
 	invMass = 1.0f / mass;
 }
 
@@ -220,11 +220,11 @@ GXFloat GXRigidBody::GetAngularDamping () const
 	return angularDamping;
 }
 
-GXVoid GXRigidBody::SetShape ( GXShape &shape )
+GXVoid GXRigidBody::SetShape ( GXShape &newShape )
 {
-	this->shape = &shape;
-	shape.CalculateInertiaTensor ( mass );
-	SetInertiaTensor ( shape.GetInertialTensor () );
+	shape = &newShape;
+	shape->CalculateInertiaTensor ( mass );
+	SetInertiaTensor ( shape->GetInertialTensor () );
 }
 
 GXShape& GXRigidBody::GetShape ()
@@ -342,7 +342,7 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 	CalculateCachedData ();
 
 	return;
-
+	/*
 	if ( canSleep )
 	{
 		GXFloat currentMotion = GXDotVec3 ( linearVelocity, linearVelocity ) + GXDotVec3 ( angularVelocity, angularVelocity );
@@ -356,4 +356,5 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 		else if ( motion > 10 * sleepEpsilon )
 			motion = 10 * sleepEpsilon;
 	}
+	*/
 }

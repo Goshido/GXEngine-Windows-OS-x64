@@ -20,9 +20,9 @@ GXVoid EMTool::Bind ()
 	actor = nullptr;
 }
 
-GXVoid EMTool::SetActor ( EMActor* actor )
+GXVoid EMTool::SetActor ( EMActor* newActor )
 {
-	this->actor = actor;
+	actor = newActor;
 }
 
 GXVoid EMTool::UnBind ()

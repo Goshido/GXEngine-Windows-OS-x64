@@ -2,6 +2,7 @@
 
 #include <GXPhysics/GXSphereShape.h>
 
+
 GXSphereShape::GXSphereShape ( GXRigidBody* body, GXFloat radius )
 : GXShape ( eGXShapeType::Sphere, body )
 {

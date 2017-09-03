@@ -4,9 +4,9 @@
 #define GX_CONTACT
 
 
-#include <GXCommon/GXMath.h>
 #include "GXRigidBody.h"
 #include "GXShape.h"
+#include <GXCommon/GXMath.h>
 
 
 class GXContact
@@ -38,13 +38,13 @@ class GXContact
 		GXRigidBody& GetFirstRigidBody ();
 		GXRigidBody& GetSecondRigidBody ();
 
-		GXVoid SetNormal ( const GXVec3 &normal );
+		GXVoid SetNormal ( const GXVec3 &contactNormal );
 		const GXVec3& GetNormal () const;
 
-		GXVoid SetContactPoint ( const GXVec3 &point );
+		GXVoid SetContactPoint ( const GXVec3 &contactPoint );
 		const GXVec3& GetContactPoint () const;
 
-		GXVoid SetPenetration ( GXFloat penetration );
+		GXVoid SetPenetration ( GXFloat contactPenetration );
 		GXFloat GetPenetration () const;
 
 		GXFloat GetRestitution () const;
@@ -55,13 +55,13 @@ class GXContact
 		GXVoid SetEPAIterations ( GXUInt iterations );
 		GXUInt GetEPAIterations () const;
 
-		GXVoid SetSupportPoints ( GXUInt supportPoints );
+		GXVoid SetSupportPoints ( GXUInt totalSupportPoints );
 		GXUInt GetSupportPoints () const;
 
-		GXVoid SetEdges ( GXUInt edges );
+		GXVoid SetEdges ( GXUInt totalEdges );
 		GXUInt GetEdges () const;
 
-		GXVoid SetFaces ( GXUInt faces );
+		GXVoid SetFaces ( GXUInt totalFaces );
 		GXUInt GetFaces () const;
 };
 

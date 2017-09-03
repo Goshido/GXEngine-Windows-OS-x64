@@ -25,8 +25,6 @@ mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLV
 	emissionTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE, GL_REPEAT, GX_FALSE );
 	parameterTexture = GXTexture2D::LoadTexture ( L"Textures/System/Default_Diffuse.tga", GX_FALSE, GL_REPEAT, GX_FALSE );
 
-	EMRenderer& renderer = EMRenderer::GetInstance ();
-
 	material.SetAlbedoTexture ( albedoTexture );
 	material.SetNormalTexture ( normalTexture );
 	material.SetEmissionTexture ( emissionTexture );

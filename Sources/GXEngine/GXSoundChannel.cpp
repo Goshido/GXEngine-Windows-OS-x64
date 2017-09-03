@@ -29,12 +29,12 @@ GXSoundChannel::~GXSoundChannel ()
 	}
 }
 
-GXVoid GXSoundChannel::SetVolume ( GXFloat volume )
+GXVoid GXSoundChannel::SetVolume ( GXFloat volumeLevel )
 {
-	this->volume = volume;
+	volume = volumeLevel;
 
 	for ( GXSoundEmitter* e = emitters; e; e = e->next )
-		e->SetChannelVolume ( this->volume );
+		e->SetChannelVolume ( volume );
 }
 
 GXVoid GXSoundChannel::AddEmitter ( GXSoundEmitter* emitter )

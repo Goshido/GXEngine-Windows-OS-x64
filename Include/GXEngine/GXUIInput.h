@@ -60,7 +60,7 @@ class GXUIInput : public GXWidget
 		GXVoid SetOnKeyDownCallback ( PFNGXUIINPUTNONKEYPROC callback );
 		GXVoid SetOnKeyUpCallback ( PFNGXUIINPUTNONKEYPROC callback );
 
-		GXVoid SetHandler ( GXVoid* handler );
+		GXVoid SetHandler ( GXVoid* handlerObject );
 };
 
 

@@ -346,7 +346,7 @@ struct GXPlane
 
 	GXPlane ();
 
-	GXVoid From ( const GXVec3 &a, const GXVec3 &b, const GXVec3 &c );
+	GXVoid From ( const GXVec3 &pointA, const GXVec3 &pointB, const GXVec3 &pointC );
 	GXVoid FromLineToPoint ( const GXVec3 &lineStart, const GXVec3 &lineEnd, const GXVec3 &point );
 
 	GXVoid operator = ( const GXPlane &plane );
@@ -387,13 +387,14 @@ GXVoid GXCALL GXConvertHSVAToRGBA ( GXUByte &red, GXUByte &green, GXUByte &blue,
 GXVoid GXCALL GXConvertHSVAToRGBA ( GXVec4 &rgbaColor, const GXVec4 &hsvaColor );
 GXVoid GXCALL GXConvertRGBAToHSVA ( GXVec4 &hsvaColor, const GXVec4 &rgbaColor );
 GXVoid GXCALL GXConvert3DSMaxToGXEngine ( GXVec3 &gx_out, GXFloat max_x, GXFloat max_y, GXFloat max_z );
+GXVoid GXCALL GXRandomize ();
 GXFloat GXCALL GXRandomNormalize ();
 GXFloat GXCALL GXRandomBetween ( GXFloat from, GXFloat to );
 GXVoid GXCALL GXRandomBetween ( GXVec3 &out, const GXVec3 &from, const GXVec3 &to );
 GXVoid GXCALL GXGetTangentBitangent ( GXVec3 &outTangent, GXVec3 &outBitangent, GXUByte vertexID, const GXUByte* vertices, GXUInt vertexStride, const GXUByte* uvs, GXUInt uvStride );
 
 GXFloat GXCALL GXClampf ( GXFloat value, GXFloat minValue, GXFloat maxValue );
-GXUInt GXCALL GXClampi ( GXInt value, GXInt minValue, GXInt maxValue );
+GXInt GXCALL GXClampi ( GXInt value, GXInt minValue, GXInt maxValue );
 
 GXFloat GXCALL GXMinf ( GXFloat a, GXFloat b );
 GXFloat GXCALL GXMaxf ( GXFloat a, GXFloat b );

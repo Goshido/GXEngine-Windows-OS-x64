@@ -48,7 +48,7 @@ class GXTouchSurface
 		GXVoid DrawWidgets ();
 		GXVoid MoveWidgetToForeground ( GXWidget* widget );
 
-		GXVoid LockCursor ( GXWidget* lockedWidget );			//For draggable and resizable widgets
+		GXVoid LockCursor ( GXWidget* widget );			//For draggable and resizable widgets
 		GXWidget* GetLockedCursorWidget ();
 		GXVoid ReleaseCursor ();
 

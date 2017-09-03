@@ -34,7 +34,7 @@ class EMToneMapperMaterial : public GXMaterial
 		GXVoid SetLinearSpaceTexture ( GXTexture2D &texture );
 		GXVoid SetLuminanceTriplet ( GXFloat averageLuminance, GXFloat minimumLuminance, GXFloat maximumLuminance );
 
-		GXVoid SetGamma ( GXFloat gamma );
+		GXVoid SetGamma ( GXFloat newGamma );
 		GXFloat GetGamma () const;
 
 		// Artistic purpose parameter. There is no physical explanation.

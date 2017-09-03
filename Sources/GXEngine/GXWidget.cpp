@@ -243,9 +243,9 @@ GXBool GXWidget::IsDraggable () const
 	return isDraggable;
 }
 
-GXVoid GXWidget::SetRenderer ( GXWidgetRenderer* renderer )
+GXVoid GXWidget::SetRenderer ( GXWidgetRenderer* rendererObject )
 {
-	this->renderer = renderer;
+	renderer = rendererObject;
 }
 
 GXWidgetRenderer* GXWidget::GetRenderer () const
@@ -291,9 +291,9 @@ GXVoid GXWidget::OnDraw ()
 	}
 }
 
-GXVoid GXWidget::UpdateBoundsWorld ( const GXAABB &boundsLocal )
+GXVoid GXWidget::UpdateBoundsWorld ( const GXAABB &newBoundsLocal )
 {
-	memcpy ( &this->boundsLocal, &boundsLocal, sizeof ( GXAABB ) );
+	memcpy ( &boundsLocal, &newBoundsLocal, sizeof ( GXAABB ) );
 
 	if ( parent )
 	{
@@ -355,9 +355,9 @@ GXWidgetIterator::~GXWidgetIterator ()
 	// NOTHING
 }
 
-GXWidget* GXWidgetIterator::Init ( GXWidget* widget )
+GXWidget* GXWidgetIterator::Init ( GXWidget* startWidget )
 {
-	this->widget = widget;
+	widget = startWidget;
 	return widget;
 }
 
@@ -449,12 +449,12 @@ GXVoid GXWidgetRenderer::OnDraw ()
 	//NOTHING
 }
 
-GXVoid GXWidgetRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
+GXVoid GXWidgetRenderer::OnResized ( GXFloat /*x*/, GXFloat /*y*/, GXUShort /*width*/, GXUShort /*height*/ )
 {
 	//NOTHING
 }
 
-GXVoid GXWidgetRenderer::OnMoved ( GXFloat x, GXFloat y )
+GXVoid GXWidgetRenderer::OnMoved ( GXFloat /*x*/, GXFloat /*y*/ )
 {
 	//NOTHING
 }

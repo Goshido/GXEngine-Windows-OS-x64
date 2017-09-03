@@ -57,8 +57,6 @@ EMUIDraggableAreaRenderer::~EMUIDraggableAreaRenderer ()
 
 GXVoid EMUIDraggableAreaRenderer::OnRefresh ()
 {
-	GXUIDragableArea* area = (GXUIDragableArea*)widget;
-
 	surface->Reset ();
 	GXFloat w = (GXFloat)surface->GetWidth ();
 	GXFloat h = (GXFloat)surface->GetHeight ();

@@ -42,7 +42,7 @@ class GXUIPopup : public GXWidget
 
 		GXFloat GetItemWidth () const;
 
-		GXVoid Show ( GXWidget* owner );
+		GXVoid Show ( GXWidget* currentOwner );
 };
 
 

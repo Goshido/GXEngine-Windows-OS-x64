@@ -17,7 +17,7 @@ enum class eGXSplashScreenState : GXUByte
 class GXSplashScreen
 {
 	private:
-		GXThread				thread;
+		GXThread*				thread;
 		HWND					hwnd;
 		HBITMAP					bitmap;
 		GXUShort				bitmapWidth;

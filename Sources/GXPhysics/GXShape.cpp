@@ -2,6 +2,7 @@
 
 #include <GXPhysics/GXShape.h>
 #include <GXPhysics/GXRigidBody.h>
+#include <GXCommon/GXLogger.h>
 
 
 #define DEFAULT_FRICTION		0.5f
@@ -22,7 +23,8 @@ GXShape::GXShape ( eGXShapeType type, GXRigidBody* body )
 
 GXShape::~GXShape ()
 {
-	int r = 0;
+	GXUInt r = 0;
+	GXLogW ( L"%u\n", r );
 	//NOTHING
 }
 
@@ -53,9 +55,9 @@ const GXMat3& GXShape::GetInertialTensor () const
 	return inertialTensor;
 }
 
-GXVoid GXShape::SetFriction ( GXFloat friction )
+GXVoid GXShape::SetFriction ( GXFloat newFriction )
 {
-	this->friction = friction;
+	friction = newFriction;
 }
 
 GXFloat GXShape::GetFriction () const
@@ -63,9 +65,9 @@ GXFloat GXShape::GetFriction () const
 	return friction;
 }
 
-GXVoid GXShape::SetRestitution ( GXFloat restitution )
+GXVoid GXShape::SetRestitution ( GXFloat newRestitution )
 {
-	this->restitution = restitution;
+	restitution = newRestitution;
 }
 
 GXFloat GXShape::GetRestitution () const

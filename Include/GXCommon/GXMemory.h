@@ -34,7 +34,7 @@ class GXCircleBuffer
 		GXCircleBuffer ( GXUInt size );
 		~GXCircleBuffer ();
 
-		GXVoid* Allocate ( GXUInt size );
+		GXVoid* Allocate ( GXUInt bytes );
 };
 
 class GXDynamicArray
@@ -53,7 +53,7 @@ class GXDynamicArray
 		GXVoid* GetData () const;
 		GXUInt GetLength () const;
 
-		GXVoid Resize ( GXUInt numElements );
+		GXVoid Resize ( GXUInt totalElements );
 };
 
 

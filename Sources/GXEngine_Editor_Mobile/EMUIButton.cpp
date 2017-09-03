@@ -83,7 +83,7 @@ class EMUIButtonRenderer : public GXWidgetRenderer
 		GXVoid OnRefresh () override;
 		GXVoid OnDraw () override;
 
-		GXVoid SetCaption ( const GXWChar* caption );
+		GXVoid SetCaption ( const GXWChar* newCaption );
 
 	protected:
 		GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
@@ -114,7 +114,6 @@ EMUIButtonRenderer::~EMUIButtonRenderer ()
 GXVoid EMUIButtonRenderer::OnRefresh ()
 {
 	GXUIButton* button = (GXUIButton*)widget;
-	const GXAABB& bounds = button->GetBoundsWorld ();
 
 	surface->Reset ();
 	GXFloat w = (GXFloat)surface->GetWidth ();
@@ -195,12 +194,12 @@ GXVoid EMUIButtonRenderer::OnDraw ()
 	glEnable ( GL_DEPTH_TEST );
 }
 
-GXVoid EMUIButtonRenderer::SetCaption ( const GXWChar* caption )
+GXVoid EMUIButtonRenderer::SetCaption ( const GXWChar* newCaption )
 {
-	GXSafeFree ( this->caption );
+	GXSafeFree ( caption );
 
-	if ( caption )
-		GXWcsclone ( &this->caption, caption );
+	if ( newCaption )
+		GXWcsclone ( &caption, newCaption );
 	else
 		caption = nullptr;
 }

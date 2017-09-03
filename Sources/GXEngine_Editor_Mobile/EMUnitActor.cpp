@@ -32,8 +32,6 @@ mesh ( L"3D Models/System/Unit Cube.stm" )
 	emissionTexture = GXTexture2D::LoadTexture ( EMISSION_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 	parameterTexture = GXTexture2D::LoadTexture ( PARAMETER_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 
-	EMRenderer& renderer = EMRenderer::GetInstance ();
-
 	commonPassMaterial.SetAlbedoTexture ( albedoTexture );
 	commonPassMaterial.SetNormalTexture ( normalTexture );
 	commonPassMaterial.SetEmissionTexture ( emissionTexture );

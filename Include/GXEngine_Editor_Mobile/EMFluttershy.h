@@ -1,3 +1,7 @@
+#ifndef EM_FLUTTERSHY
+#define EM_FLUTTERSHY
+
+
 #include "EMMesh.h"
 #include "EMCookTorranceCommonPassMaterial.h"
 #include <GXEngine/GXAnimSolverPlayer.h>
@@ -28,3 +32,6 @@ class EMFluttershy : public GXTransform
 	protected:
 		GXVoid TransformUpdated () override;
 };
+
+
+#endif //EM_FLUTTERSHY

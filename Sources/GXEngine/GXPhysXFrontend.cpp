@@ -24,14 +24,14 @@ GXPhysXAdapter* GXCALL GXGetPhysXInstance ()
 		return nullptr;
 	}
 
-	GXCreatePhysXInstance = (PFNGXPHYSXCREATE)GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXPhysXCreate" );
+	GXCreatePhysXInstance = reinterpret_cast <PFNGXPHYSXCREATE> ( reinterpret_cast <GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXPhysXCreate" ) ) );
 	if ( !GXCreatePhysXInstance )
 	{
 		GXLogW ( L"GXPhysXInit::Error - Не удалось найти функцию GXPhysXCreate\n" );
 		return nullptr;
 	}
 
-	GXDestroyPhysXInstance = (PFNGXPHYSXDESTROY)GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXPhysXDestroy" );
+	GXDestroyPhysXInstance = reinterpret_cast <PFNGXPHYSXDESTROY> ( reinterpret_cast <GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXPhysXDestroy" ) ) );
 	if ( !GXDestroyPhysXInstance )
 	{
 		GXLogW ( L"GXPhysXInit::Error - Не удалось найти функцию GXPhysXDestroy\n" );

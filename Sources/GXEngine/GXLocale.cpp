@@ -6,6 +6,7 @@
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXLogger.h>
 
+
 #define GX_DEFAULT_SEPARATOR '~'
 
 
@@ -161,7 +162,6 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 
 	eGXParserState state = eGXParserState::Key;
 	GXUInt offset = 0;
-	GXUInt start = 0;
 	GXUTF8* key = data;
 	GXUTF8* string = 0;
 
@@ -214,17 +214,17 @@ GXVoid GXLocale::SetLanguage ( eGXLanguage language )
 		return;
 	}
 
-	this->language = language;
+	currentLanguage = language;
 }
 
 eGXLanguage GXLocale::GetLanguage () const
 {
-	return language;
+	return currentLanguage;
 }
 
 const GXWChar* GXLocale::GetString ( const GXWChar* resName ) const
 {
-	GXStringTree* tree = *( (GXStringTree**)storage.GetValue ( (GXUInt)language ) );
+	GXStringTree* tree = *( (GXStringTree**)storage.GetValue ( (GXUInt)currentLanguage ) );
 	if ( tree ) return tree->GetString ( resName );
 	return nullptr;
 }
@@ -240,5 +240,5 @@ GXLocale& GXCALL GXLocale::GetInstance ()
 GXLocale::GXLocale ():
 storage ( sizeof ( GXStringTree* ) )
 {
-	language = eGXLanguage::Russian;
+	currentLanguage = eGXLanguage::Russian;
 }

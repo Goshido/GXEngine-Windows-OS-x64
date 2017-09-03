@@ -100,7 +100,7 @@ GXVoid GXUnlitColorMaskMaterial::SetColor ( GXUByte red, GXUByte green, GXUByte 
 	GXColorToVec4 ( color, red, green, blue, alpha );
 }
 
-GXVoid GXUnlitColorMaskMaterial::SetColor ( const GXVec4 &color )
+GXVoid GXUnlitColorMaskMaterial::SetColor ( const GXVec4 &newColor )
 {
-	this->color = color;
+	color = newColor;
 }

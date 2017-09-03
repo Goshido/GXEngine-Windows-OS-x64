@@ -31,7 +31,7 @@ class GXTextureCubeMap
 
 	public:
 		GXTextureCubeMap ();
-		explicit GXTextureCubeMap ( GXUShort faceLength, GLint internalFormat, GXBool isGenerateMipmap );
+		explicit GXTextureCubeMap ( GXUShort length, GLint internalFormat, GXBool isGenerateMipmap );
 		~GXTextureCubeMap ();
 
 		GXUShort GetFaceLength () const;
@@ -45,12 +45,12 @@ class GXTextureCubeMap
 		GXVoid FillWholePixelData ( const GXVoid* data, GLenum target );
 		GXVoid UpdateMipmaps ();
 
-		GXVoid Bind ( GXUByte textureUnit );
+		GXVoid Bind ( GXUByte unit );
 		GXVoid Unbind ();
 
 		GLuint GetTextureObject () const;
 
-		GXVoid InitResources ( GXUShort faceLength, GLint internalFormat, GXBool isGenerateMipmap );
+		GXVoid InitResources ( GXUShort textureFaceLength, GLint textureInternalFormat, GXBool isGenerateMipmapPolicy );
 		GXVoid FreeResources ();
 
 		GXBool operator == ( const GXTextureCubeMapEntry &other ) const;

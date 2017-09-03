@@ -4,7 +4,7 @@
 #define GX_MUTEX_WINDOWS
 
 
-#include "../GXMutex.h"
+#include <GXCommon/GXMutex.h>
 
 
 class GXMutex : public GXAbstractMutex

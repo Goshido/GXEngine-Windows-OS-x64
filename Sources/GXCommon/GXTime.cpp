@@ -7,8 +7,7 @@
 
 GXDouble GXCALL GXGetProcessorTicks ()
 {
-	__int64 tics = __rdtsc ();
-	return (GXDouble)tics;
+	return (GXDouble)__rdtsc ();
 }
 
 GXDouble GXCALL GXGetProcessorTicksPerSecond ()
@@ -27,13 +26,13 @@ GXDouble GXCALL GXGetProcessorTicksPerSecond ()
 			procSpeed = 0;
 			buflen = sizeof ( procSpeed );
 
-			ret = RegQueryValueExW ( hKey, L"~MHz", 0, 0, (LPBYTE)&procSpeed, &buflen );
+			ret = (DWORD)RegQueryValueExW ( hKey, L"~MHz", 0, 0, (LPBYTE)&procSpeed, &buflen );
 
 			if ( ret != ERROR_SUCCESS )
-				ret = RegQueryValueExW ( hKey, L"~Mhz", 0, 0, (LPBYTE)&procSpeed, &buflen );
+				ret = (DWORD)RegQueryValueExW ( hKey, L"~Mhz", 0, 0, (LPBYTE)&procSpeed, &buflen );
 
 			if ( ret != ERROR_SUCCESS )
-				ret = RegQueryValueExW ( hKey, L"~mhz", 0, 0, (LPBYTE)&procSpeed, &buflen );
+				ret = (DWORD)RegQueryValueExW ( hKey, L"~mhz", 0, 0, (LPBYTE)&procSpeed, &buflen );
 
 			RegCloseKey ( hKey );
 

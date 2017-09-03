@@ -230,14 +230,14 @@ GXVoid GXUTF8Parser::Debug ()
 {
 	for ( GXUInt i = 0; string[ i ]; i++ )
 	{
-		GXUByte bit0 = string[ i ] & 0x01;
-		GXUByte bit1 = ( string[ i ] & 0x02 ) >> 1;
-		GXUByte bit2 = ( string[ i ] & 0x04 ) >> 2;
-		GXUByte bit3 = ( string[ i ] & 0x08 ) >> 3;
-		GXUByte bit4 = ( string[ i ] & 0x10 ) >> 4;
-		GXUByte bit5 = ( string[ i ] & 0x20 ) >> 5;
-		GXUByte bit6 = ( string[ i ] & 0x40 ) >> 6;
-		GXUByte bit7 = ( string[ i ] & 0x80 ) >> 7;
+		GXUByte bit0 = (GXUByte)( string[ i ] & 0x01 );
+		GXUByte bit1 = (GXUByte)( ( string[ i ] & 0x02 ) >> 1 );
+		GXUByte bit2 = (GXUByte)( ( string[ i ] & 0x04 ) >> 2 );
+		GXUByte bit3 = (GXUByte)( ( string[ i ] & 0x08 ) >> 3 );
+		GXUByte bit4 = (GXUByte)( ( string[ i ] & 0x10 ) >> 4 );
+		GXUByte bit5 = (GXUByte)( ( string[ i ] & 0x20 ) >> 5 );
+		GXUByte bit6 = (GXUByte)( ( string[ i ] & 0x40 ) >> 6 );
+		GXUByte bit7 = (GXUByte)( ( string[ i ] & 0x80 ) >> 7 );
 
 		GXLogA ( "GXUTF8Parser::Debug::Info - %i%i%i%i %i%i%i%i\n", bit7, bit6, bit5, bit4, bit3, bit2, bit1, bit0 );
 	}
@@ -384,14 +384,14 @@ GXUByte GXWriteUTF8Symbol ( GXUTF8* start, GXWChar symbol )
 
 	if ( symbol < 0x0800 )
 	{
-		start[ 0 ] = (GXUTF8)0xC0 | (GXUTF8)( ( symbol & 0x07C0 ) >> 6 );
-		start[ 1 ] = (GXUTF8)0x80 | (GXUTF8)( symbol & 0x003F );
+		start[ 0 ] = (GXUTF8)( 0x00C0 | ( ( symbol & 0x07C0 ) >> 6 ) );
+		start[ 1 ] = (GXUTF8)( 0x0080 | ( symbol & 0x003F ) );
 		return 2;
 	}
 
-	start[ 0 ] = (GXUTF8)0xE0 | (GXUTF8)( ( symbol & 0x0000F000 ) >> 12 );
-	start[ 1 ] = (GXUTF8)0x80 | (GXUTF8)( ( symbol & 0x00000FC0 ) >> 6 );
-	start[ 2 ] = (GXUTF8)0x80 | (GXUTF8)( symbol & 0x0000003F );
+	start[ 0 ] = (GXUTF8)( 0x00E0 | ( ( symbol & 0x0000F000 ) >> 12 ) );
+	start[ 1 ] = (GXUTF8)( 0x0080 | ( ( symbol & 0x00000FC0 ) >> 6 ) );
+	start[ 2 ] = (GXUTF8)( 0x0080 | ( symbol & 0x0000003F ) );
 	return 3;
 }
 
@@ -405,46 +405,46 @@ GXUByte GXWriteUTF8Symbol ( GXUTF8* start, GXUInt symbol )
 
 	if ( symbol < 0x00000800 )
 	{
-		start[ 0 ] = (GXUTF8)0xC0 | (GXUTF8)( ( symbol & 0x000007C0 ) >> 6 );
-		start[ 1 ] = (GXUTF8)0x80 | (GXUTF8)( symbol & 0x0000003F );
+		start[ 0 ] = (GXUTF8)( 0x000000C0 | ( ( symbol & 0x000007C0 ) >> 6 ) );
+		start[ 1 ] = (GXUTF8)( 0x00000080 | ( symbol & 0x0000003F ) );
 		return 2;
 	}
 
 	if ( symbol < 0x00010000 )
 	{
-		start[ 0 ] = (GXUTF8)0xE0 | (GXUTF8)( ( symbol & 0x0000F000 ) >> 12 );
-		start[ 1 ] = (GXUTF8)0x80 | (GXUTF8)( ( symbol & 0x00000FC0 ) >> 6 );
-		start[ 2 ] = (GXUTF8)0x80 | (GXUTF8)( symbol & 0x0000003F );
+		start[ 0 ] = (GXUTF8)( 0x000000E0 | ( ( symbol & 0x0000F000 ) >> 12 ) );
+		start[ 1 ] = (GXUTF8)( 0x00000080 | ( ( symbol & 0x00000FC0 ) >> 6 ) );
+		start[ 2 ] = (GXUTF8)( 0x00000080 | ( symbol & 0x0000003F ) );
 		return 3;
 	}
 
 	if ( symbol < 0x00200000 )
 	{
-		start[ 0 ] = (GXUTF8)0xF0 | (GXUTF8)( ( symbol & 0x001C0000 ) >> 18 );
-		start[ 1 ] = (GXUTF8)0x80 | (GXUTF8)( ( symbol & 0x0003F000 ) >> 12 );
-		start[ 2 ] = (GXUTF8)0x80 | (GXUTF8)( ( symbol & 0x00000FC0 ) >> 6 );
-		start[ 3 ] = (GXUTF8)0x80 | (GXUTF8)( symbol & 0x0000003F );
+		start[ 0 ] = (GXUTF8)( 0x000000F0 | ( ( symbol & 0x001C0000 ) >> 18 ) );
+		start[ 1 ] = (GXUTF8)( 0x00000080 | ( ( symbol & 0x0003F000 ) >> 12 ) );
+		start[ 2 ] = (GXUTF8)( 0x00000080 | ( ( symbol & 0x00000FC0 ) >> 6 ) );
+		start[ 3 ] = (GXUTF8)( 0x00000080 | ( symbol & 0x0000003F ) );
 		return 4;
 	}
 
 	if ( symbol < 0x04000000 )
 	{
-		start[ 0 ] = (GXUTF8)0xF8 | (GXUTF8)( ( symbol & 0x001C0000 ) >> 24 );
-		start[ 1 ] = (GXUTF8)0x80 | (GXUTF8)( ( symbol & 0x00FC0000 ) >> 18 );
-		start[ 2 ] = (GXUTF8)0x80 | (GXUTF8)( ( symbol & 0x0003F000 ) >> 12 );
-		start[ 3 ] = (GXUTF8)0x80 | (GXUTF8)( ( symbol & 0x00000FC0 ) >> 6 );
-		start[ 4 ] = (GXUTF8)0x80 | (GXUTF8)( symbol & 0x0000003F );
+		start[ 0 ] = (GXUTF8)( 0x000000F8 | ( ( symbol & 0x001C0000 ) >> 24 ) );
+		start[ 1 ] = (GXUTF8)( 0x00000080 | ( ( symbol & 0x00FC0000 ) >> 18 ) );
+		start[ 2 ] = (GXUTF8)( 0x00000080 | ( ( symbol & 0x0003F000 ) >> 12 ) );
+		start[ 3 ] = (GXUTF8)( 0x00000080 | ( ( symbol & 0x00000FC0 ) >> 6 ) );
+		start[ 4 ] = (GXUTF8)( 0x00000080 | ( symbol & 0x0000003F ) );
 		return 5;
 	}
 
 	if ( symbol < 0x80000000 )
 	{
-		start[ 0 ] = (GXUTF8)0xFC | (GXUTF8)( ( symbol & 0x40000000 ) >> 30 );
-		start[ 1 ] = (GXUTF8)0x80 | (GXUTF8)( ( symbol & 0x3F000000 ) >> 24 );
-		start[ 2 ] = (GXUTF8)0x80 | (GXUTF8)( ( symbol & 0x00FC0000 ) >> 18 );
-		start[ 3 ] = (GXUTF8)0x80 | (GXUTF8)( ( symbol & 0x0003F000 ) >> 12 );
-		start[ 4 ] = (GXUTF8)0x80 | (GXUTF8)( ( symbol & 0x00000FC0 ) >> 6 );
-		start[ 5 ] = (GXUTF8)0x80 | (GXUTF8)( symbol & 0x0000003F );
+		start[ 0 ] = (GXUTF8)( 0x000000FC | ( ( symbol & 0x40000000 ) >> 30 ) );
+		start[ 1 ] = (GXUTF8)( 0x00000080 | ( ( symbol & 0x3F000000 ) >> 24 ) );
+		start[ 2 ] = (GXUTF8)( 0x00000080 | ( ( symbol & 0x00FC0000 ) >> 18 ) );
+		start[ 3 ] = (GXUTF8)( 0x00000080 | ( ( symbol & 0x0003F000 ) >> 12 ) );
+		start[ 4 ] = (GXUTF8)( 0x00000080 | ( ( symbol & 0x00000FC0 ) >> 6 ) );
+		start[ 5 ] = (GXUTF8)( 0x00000080 | ( symbol & 0x0000003F ) );
 		return 6;
 	}
 
@@ -484,19 +484,19 @@ GXVoid GXCALL GXToWcs ( GXWChar** dest, const GXUTF8* str )
 	( *dest )[ len ] = 0;
 
 	for ( GXUInt i = 0; i < len; i++ )
-		( *dest )[ i ] = parser.GetSymbol ( i );
+		( *dest )[ i ] = (GXWChar)parser.GetSymbol ( i );
 }
 
 GXVoid GXCALL GXToEngineWcs ( GXWChar** dest, const GXMBChar* str )
 {
-	GXUInt size = MultiByteToWideChar ( CP_ACP, MB_PRECOMPOSED, str, -1, *dest, 0 );
+	GXInt size = MultiByteToWideChar ( CP_ACP, MB_PRECOMPOSED, str, -1, *dest, 0 );
 	*dest = (GXWChar*)malloc ( size * sizeof ( GXWChar ) );
 	MultiByteToWideChar ( CP_ACP, MB_PRECOMPOSED, str, -1, *dest, size );
 }
 
 GXVoid GXCALL GXToSystemMbs ( GXMBChar** dest, const GXWChar* str )
 {
-	GXUInt size = WideCharToMultiByte ( CP_ACP, WC_COMPOSITECHECK, str, -1, *dest, 0, 0, 0 );
-	*dest = (GXMBChar*)malloc ( size );
+	GXInt size = WideCharToMultiByte ( CP_ACP, WC_COMPOSITECHECK, str, -1, *dest, 0, 0, 0 );
+	*dest = (GXMBChar*)malloc ( (size_t)size );
 	WideCharToMultiByte ( CP_ACP, WC_COMPOSITECHECK, str, -1, *dest, size, 0, 0 );
 }

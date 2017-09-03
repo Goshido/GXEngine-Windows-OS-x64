@@ -58,7 +58,7 @@ GXEquirectangularToCubeMapMaterial::GXEquirectangularToCubeMapMaterial ()
 	camera.SetRotation ( 0.0f, GX_MATH_PI, 0.0f );
 	viewProjectionMatrices[ 5 ] = camera.GetCurrentFrameViewProjectionMatrix ();
 
-	texture = nullptr;
+	equirectangularTexture = nullptr;
 	EnableGammaCorrection ();
 }
 
@@ -69,25 +69,25 @@ GXEquirectangularToCubeMapMaterial::~GXEquirectangularToCubeMapMaterial ()
 
 GXVoid GXEquirectangularToCubeMapMaterial::Bind ( const GXTransform& /*transform*/ )
 {
-	if ( !texture ) return;
+	if ( !equirectangularTexture ) return;
 
 	glUseProgram ( shaderProgram.GetProgram () );
 	glUniformMatrix4fv ( viewProjectionMatricesLocation, 6, GL_FALSE, (const GLfloat*)viewProjectionMatrices );
 	glUniform1f ( gammaLocation, gamma );
-	texture->Bind ( TEXTURE_SLOT );
+	equirectangularTexture->Bind ( TEXTURE_SLOT );
 }
 
 GXVoid GXEquirectangularToCubeMapMaterial::Unbind ()
 {
-	if ( !texture ) return;
+	if ( !equirectangularTexture ) return;
 
 	glUseProgram ( 0 );
-	texture->Unbind ();
+	equirectangularTexture->Unbind ();
 }
 
 GXVoid GXEquirectangularToCubeMapMaterial::SetEquirectangularTexture ( GXTexture2D &texture )
 {
-	this->texture = &texture;
+	equirectangularTexture = &texture;
 }
 
 GXVoid GXEquirectangularToCubeMapMaterial::EnableGammaCorrection ()

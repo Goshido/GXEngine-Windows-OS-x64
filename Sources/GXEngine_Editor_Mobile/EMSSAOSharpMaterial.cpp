@@ -2,7 +2,6 @@
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXCamera.h>
 #include <GXCommon/GXLogger.h>
-#include <time.h>
 
 
 #define VERTEX_SHADER						L"Shaders/System/ScreenQuad_vs.txt"
@@ -114,7 +113,7 @@ GXVoid EMSSAOSharpMaterial::SetCheckRadius ( GXFloat meters )
 {
 	if ( meters <= 0.0f ) return;
 
-	srand ( (GXUInt)time ( 0 ) );
+	GXRandomize ();
 
 	for ( GXInt i = 0; i < samples; i++ )
 	{
@@ -143,19 +142,19 @@ GXFloat EMSSAOSharpMaterial::GetCheckRadius () const
 	return checkRadius;
 }
 
-GXVoid EMSSAOSharpMaterial::SetSampleNumber ( GXUByte samples )
+GXVoid EMSSAOSharpMaterial::SetSampleNumber ( GXUByte samplesPerPixel )
 {
-	if ( samples > EM_MAX_SSAO_SAMPLES )
+	if ( samplesPerPixel > EM_MAX_SSAO_SAMPLES )
 	{
 		GXLogW ( L"EMSSAOSharpMaterial::SetSampleNumber::Warning - Ќе могу обработать столько выборок (указано %hu). Ѕудет использовано количество выборок равное %i.\n", samples, EM_MAX_SSAO_SAMPLES );
-		this->samples = EM_MAX_SSAO_SAMPLES;
+		samples = EM_MAX_SSAO_SAMPLES;
 	}
 	else
 	{
-		this->samples = (GXInt)samples;
+		samples = (GXInt)samplesPerPixel;
 	}
 
-	inverseSamples = 1.0f / (GXFloat)this->samples;
+	inverseSamples = 1.0f / (GXFloat)samples;
 
 	SetCheckRadius ( checkRadius );
 }
@@ -175,10 +174,10 @@ GXVoid EMSSAOSharpMaterial::SetNoiseTextureResolution ( GXUShort resolution )
 
 	noiseTexture.FreeResources ();
 	
-	GXUInt totalPixels = resolution * resolution;
+	GXUInt totalPixels = (GXUInt)( resolution * resolution );
 	GXUByte* noiseData = (GXUByte*)malloc ( totalPixels * NOISE_TEXTURE_BYTES_PER_PIXEL );
 
-	srand ( (GXUInt)time ( 0 ) );
+	GXRandomize ();
 
 	GXUInt offset = 0;
 	for ( GXUInt i = 0; i < totalPixels; i++ )

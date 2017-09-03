@@ -63,8 +63,8 @@ class EMUIColorPicker : public EMUI
 
 		GXWidget* GetWidget () const override;
 
-		GXVoid PickHSVAColor ( GXVoid* handler, PFNEMONHSVACOLORPROC callback, const GXVec4 oldColorHSVA );
-		GXVoid PickRGBAColor ( GXVoid* handler, PFNEMONRGBACOLORPROC callback, GXUByte oldRed, GXUByte oldGreen, GXUByte oldBlue, GXUByte oldAlpha );
+		GXVoid PickHSVAColor ( GXVoid* handlerObject, PFNEMONHSVACOLORPROC callback, const GXVec4 &oldColorHSVAValue );
+		GXVoid PickRGBAColor ( GXVoid* handlerObject, PFNEMONRGBACOLORPROC callback, GXUByte oldRed, GXUByte oldGreen, GXUByte oldBlue, GXUByte oldAlpha );
 
 	private:
 		EMUIColorPicker ();

@@ -90,11 +90,11 @@ class GXCollisionDetector
 		GXCollisionDetector ();
 
 		GXVoid CalculateSupportPoint ( GXSupportPoint &supportPoint, const GXShape &shapeA, const GXShape &shapeB, const GXVec3 &direction );
-		GXVoid ProceedEdge ( GXEdge &edge, GXUInt &lastEdgeIndex, GXEdge** edgeArrayPointer, GXUInt &totalEdges );
+		GXVoid ProceedEdge ( GXEdge &edge, GXUInt &lastEdgeIndex, GXEdge** edgeArrayPointer, GXUInt &totalEdgeNumber );
 		GXVoid ProjectContactGeometry ( GXVec3* contactGeometryProjection, const GXVec3* contactGeometryWorld, GXUShort totalContactGeometryPoints, const GXVec3 &contactNormal );
 		GXVoid CalculatePlanarContactGeometryCoordinates ( GXVec2* planarContactGeometry, const GXVec3* projectedContactGeometry, GXUShort totalContactGeometryPoints, const GXVec3 &xAxis, const GXVec3 &yAxis );
 		GXVoid GetClippedPlanarContactGeometry ( GXVec2** clippedGeometryArrayPointer, GXUInt &totalPoints, const GXVec2* clipGeometry, GXUInt totalClipGeometryPoints, const GXVec2* subjectGeometry, GXUInt totalSubjectGeometryPoints );
-		GXVoid GetIntersectionGeometryCoordinates ( GXVec3* intersectionGeometry, const GXVec2* planarIntersectionGeometry, GXUInt totalIntersectionPoints, const GXVec3 &xAxis, const GXVec3 &yAxis );
+		GXVoid GetIntersectionGeometryCoordinates ( GXVec3* out, const GXVec2* planarIntersectionGeometryArray, GXUInt totalIntersectionPointNumber, const GXVec3 &xAxis, const GXVec3 &yAxis );
 		GXVoid GetCentroid ( GXVec3 &centroid, const GXVec3* points, GXUInt totalPoints );
 		GXVoid UpdateDeviationAxes ();
 		GXVoid UpdateDebugData ( const GXVec2* planarIntersectionGeometry );

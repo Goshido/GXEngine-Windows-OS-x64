@@ -21,6 +21,8 @@ class GXUIEditBoxFloatValidator : public GXTextValidator
 		~GXUIEditBoxFloatValidator () override;
 
 		GXBool Validate ( const GXWChar* text ) override;
+
+		GXVoid operator = ( const GXUIEditBoxFloatValidator &other ) = delete;
 };
 
 

@@ -220,7 +220,7 @@ GXVoid GXUIInput::SetOnKeyUpCallback ( PFNGXUIINPUTNONKEYPROC callback )
 	OnKeyUp = callback;
 }
 
-GXVoid GXUIInput::SetHandler ( GXVoid* handler )
+GXVoid GXUIInput::SetHandler ( GXVoid* handlerObject )
 {
-	this->handler = handler;
+	handler = handlerObject;
 }

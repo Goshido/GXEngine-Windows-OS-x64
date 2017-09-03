@@ -13,9 +13,9 @@ class GXAnimSolverPlayer : public GXAnimSolver
 	private:
 		GXBoneFinder*					finder;
 
-		GXFloat							multiplier;
+		GXFloat							speed;
 		GXFloat							animPos;
-		const GXAnimationInfo*			animData;
+		const GXAnimationInfo*			animationInfo;
 		GXFloat							delta2PartFactor;
 		GXFloat							frameInterval;
 		GXFloat							frameInterpolationFactor;

@@ -43,10 +43,10 @@ class GXShape
 
 		virtual GXVoid GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const = 0;
 
-		GXVoid SetFriction ( GXFloat friction );
+		GXVoid SetFriction ( GXFloat newFriction );
 		GXFloat GetFriction () const;
 
-		GXVoid SetRestitution ( GXFloat restitution );
+		GXVoid SetRestitution ( GXFloat newRestitution );
 		GXFloat GetRestitution () const;
 };
 

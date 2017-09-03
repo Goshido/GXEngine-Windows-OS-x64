@@ -16,7 +16,7 @@ enum class eGXLanguage : GXShort
 class GXLocale
 {
 	private:
-		eGXLanguage			language;
+		eGXLanguage			currentLanguage;
 		GXDynamicArray		storage;
 
 		static GXLocale*	instance;

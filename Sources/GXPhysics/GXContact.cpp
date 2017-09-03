@@ -33,9 +33,9 @@ GXRigidBody& GXContact::GetSecondRigidBody ()
 	return *bodies[ 1 ];
 }
 
-GXVoid GXContact::SetNormal ( const GXVec3 &normal )
+GXVoid GXContact::SetNormal ( const GXVec3 &contactNormal )
 {
-	this->normal = normal;
+	normal = contactNormal;
 }
 
 const GXVec3& GXContact::GetNormal () const
@@ -43,9 +43,9 @@ const GXVec3& GXContact::GetNormal () const
 	return normal;
 }
 
-GXVoid GXContact::SetContactPoint ( const GXVec3 &point )
+GXVoid GXContact::SetContactPoint ( const GXVec3 &contactPoint )
 {
-	this->point = point;
+	point = contactPoint;
 }
 
 const GXVec3& GXContact::GetContactPoint () const
@@ -53,9 +53,9 @@ const GXVec3& GXContact::GetContactPoint () const
 	return point;
 }
 
-GXVoid GXContact::SetPenetration ( GXFloat penetration )
+GXVoid GXContact::SetPenetration ( GXFloat contactPenetration )
 {
-	this->penetration = penetration;
+	penetration = contactPenetration;
 }
 
 GXFloat GXContact::GetPenetration () const
@@ -88,9 +88,9 @@ GXUInt GXContact::GetEPAIterations () const
 	return epaIterations;
 }
 
-GXVoid GXContact::SetSupportPoints ( GXUInt supportPoints )
+GXVoid GXContact::SetSupportPoints ( GXUInt totalSupportPoints )
 {
-	this->supportPoints = supportPoints;
+	supportPoints = totalSupportPoints;
 }
 
 GXUInt GXContact::GetSupportPoints () const
@@ -98,9 +98,9 @@ GXUInt GXContact::GetSupportPoints () const
 	return supportPoints;
 }
 
-GXVoid GXContact::SetEdges ( GXUInt edges )
+GXVoid GXContact::SetEdges ( GXUInt totalEdges )
 {
-	this->edges = edges;
+	edges = totalEdges;
 }
 
 GXUInt GXContact::GetEdges () const
@@ -108,9 +108,9 @@ GXUInt GXContact::GetEdges () const
 	return edges;
 }
 
-GXVoid GXContact::SetFaces ( GXUInt faces )
+GXVoid GXContact::SetFaces ( GXUInt totalFaces )
 {
-	this->faces = faces;
+	faces = totalFaces;
 }
 
 GXUInt GXContact::GetFaces () const

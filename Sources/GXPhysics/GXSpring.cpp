@@ -2,6 +2,7 @@
 
 #include <GXPhysics/GXSpring.h>
 
+
 GXSpring::GXSpring ( const GXVec3 &connectionPointLocal, GXRigidBody &otherBody, const GXVec3 &otherConnectionPointLocal, GXFloat hardness, GXFloat restLength )
 {
 	this->connectionPointLocal = connectionPointLocal;
@@ -11,7 +12,7 @@ GXSpring::GXSpring ( const GXVec3 &connectionPointLocal, GXRigidBody &otherBody,
 	this->restLength = restLength;
 }
 
-GXVoid GXSpring::UpdateForce ( GXRigidBody &body, GXFloat deltaTime )
+GXVoid GXSpring::UpdateForce ( GXRigidBody &body, GXFloat /*deltaTime*/ )
 {
 	GXVec3 a;
 	body.TranslatePointToWorld ( a, connectionPointLocal );

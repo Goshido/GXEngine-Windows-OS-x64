@@ -74,7 +74,7 @@ GXVoid EMCheckerGeneratorMaterial::SetColorTwo ( GXUChar red, GXUChar green, GXU
 	GXColorToVec4 ( colorTwo, red, green, blue, alpha );
 }
 
-GXVoid EMCheckerGeneratorMaterial::SetElementSize ( GXUShort width, GXShort height )
+GXVoid EMCheckerGeneratorMaterial::SetElementSize ( GXUShort width, GXUShort height )
 {
 	elementSize.x = (GXFloat)width;
 	elementSize.y = (GXFloat)height;

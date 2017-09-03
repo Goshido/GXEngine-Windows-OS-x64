@@ -41,7 +41,7 @@ class EMLightEmitter
 
 		eEMLightEmitterType GetType ();
 		GXVoid SetBaseColor ( GXUByte red, GXUByte green, GXUByte blue );
-		GXVoid SetIntensity ( GXFloat intensity );
+		GXVoid SetIntensity ( GXFloat newIntensity );
 
 		GXVoid GetBaseColor ( GXUByte &red, GXUByte &green, GXUByte &blue );
 		const GXVec3& GetColor ();
@@ -60,7 +60,7 @@ class EMBulp : public EMLightEmitter
 		EMBulp ();
 		~EMBulp () override;
 
-		GXVoid SetInfluenceDistance ( GXFloat distance );
+		GXVoid SetInfluenceDistance ( GXFloat newDistance );
 		GXFloat GetInfluenceDistance ();
 
 		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
@@ -89,14 +89,14 @@ class EMSpotlight : public EMLightEmitter
 		EMSpotlight ();
 		~EMSpotlight () override;
 
-		GXVoid SetInfluenceDistance ( GXFloat distance );
+		GXVoid SetInfluenceDistance ( GXFloat newDistance );
 		GXVoid SetConeAngle ( GXFloat angle_rad );
 
 		GXFloat GetInfluenceDistance ();
 		GXFloat GetConeAngle ();
 
 		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
-		GXVoid GetLocation ( GXVec3& location );
+		GXVoid GetLocation ( GXVec3& out );
 
 		GXVoid SetRotation ( const GXMat4 &rot );
 		GXVoid SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_rad );

@@ -37,7 +37,7 @@ GXTexture2DGammaCorrectorMaterial::~GXTexture2DGammaCorrectorMaterial ()
 	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 }
 
-GXVoid GXTexture2DGammaCorrectorMaterial::Bind ( const GXTransform &transform )
+GXVoid GXTexture2DGammaCorrectorMaterial::Bind ( const GXTransform& /*transform*/ )
 {
 	if ( !sRGBTexture ) return;
 

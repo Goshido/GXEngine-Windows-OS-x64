@@ -5,6 +5,7 @@
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXFileSystem.h>
 
+
 #define STB_IMAGE_IMPLEMENTATION
 
 #define STBI_NO_SIMD // TODO: check if SIMD works on all ARM processors.
@@ -17,7 +18,17 @@
 #define STBI_ONLY_TGA
 #define STBI_ONLY_HDR
 
+#pragma warning ( push )
+#pragma warning ( disable : 4100 )
+#pragma warning ( disable : 4365 )
+#pragma warning ( disable : 4505 )
+#pragma warning ( disable : 4514 )
+#pragma warning ( disable : 4555 )
+#pragma warning ( disable : 4710 )
+
 #include <STB/stb_image.h>
+
+#pragma warning ( pop )
 
 
 GXBool GXCALL GXLoadLDRImage ( const GXWChar* fileName, GXUInt &width, GXUInt &height, GXUByte &numChannels, GXUByte** data )
@@ -55,7 +66,7 @@ GXBool GXCALL GXLoadLDRImage ( const GXWChar* fileName, GXUInt &width, GXUInt &h
 
 	free ( tmp );
 
-	numChannels = comp;
+	numChannels = (GXUByte)comp;
 	return GX_TRUE;
 }
 
@@ -95,6 +106,6 @@ GXBool GXCALL GXLoadHDRImage ( const GXWChar* fileName, GXUInt &width, GXUInt &h
 
 	free ( tmp );
 
-	numChannels = comp;
+	numChannels = (GXUByte)comp;
 	return GX_TRUE;
 }

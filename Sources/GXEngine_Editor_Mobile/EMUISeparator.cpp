@@ -49,8 +49,6 @@ EMUISeparatorRenderer::~EMUISeparatorRenderer ()
 
 GXVoid EMUISeparatorRenderer::OnRefresh ()
 {
-	const GXAABB& bounds = widget->GetBoundsWorld ();
-
 	surface->Reset ();
 	GXFloat y = floorf ( 0.5f * surface->GetHeight () );
 

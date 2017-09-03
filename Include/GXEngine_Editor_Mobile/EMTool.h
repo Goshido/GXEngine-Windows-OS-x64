@@ -20,7 +20,7 @@ class EMTool
 		virtual ~EMTool ();
 
 		virtual GXVoid Bind ();
-		virtual GXVoid SetActor ( EMActor* actor );
+		virtual GXVoid SetActor ( EMActor* newActor );
 		virtual GXVoid UnBind ();
 
 		virtual GXVoid OnViewerTransformChanged ();

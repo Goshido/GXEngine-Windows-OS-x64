@@ -99,9 +99,9 @@ GXBool GXSoundMixer::Shutdown ()
 	return GX_TRUE;
 }
 
-GXVoid GXSoundMixer::SetMasterVolume ( GXFloat masterVolume )
+GXVoid GXSoundMixer::SetMasterVolume ( GXFloat masterVolumeLevel )
 {
-	this->masterVolume = masterVolume;
+	masterVolume = masterVolumeLevel;
 	GXAlListenerf ( AL_GAIN, masterVolume );	
 }
 

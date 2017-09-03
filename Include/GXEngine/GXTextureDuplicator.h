@@ -3,6 +3,7 @@
 #ifndef GX_TEXTURE_DUPLICATOR
 #define GX_TEXTURE_DUPLICATOR
 
+
 #include "GXOpenGL.h"
 
 

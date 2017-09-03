@@ -212,7 +212,7 @@ GXVoid EMUIToneMapperSettings::SyncSettings ()
 	whiteIntensity->SetText ( buffer );
 }
 
-GXVoid GXCALL EMUIToneMapperSettings::OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state )
+GXVoid GXCALL EMUIToneMapperSettings::OnButton ( GXVoid* handler, GXUIButton& button, GXFloat /*x*/, GXFloat /*y*/, eGXMouseButtonState state )
 {
 	if ( state != eGXMouseButtonState::Up ) return;
 
@@ -270,7 +270,7 @@ GXVoid GXCALL EMUIToneMapperSettings::OnButton ( GXVoid* handler, GXUIButton& bu
 	}
 }
 
-GXVoid GXCALL EMUIToneMapperSettings::OnResize ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height )
+GXVoid GXCALL EMUIToneMapperSettings::OnResize ( GXVoid* handler, GXUIDragableArea& /*area*/, GXFloat width, GXFloat height )
 {
 	EMUIToneMapperSettings* settings = (EMUIToneMapperSettings*)handler;
 

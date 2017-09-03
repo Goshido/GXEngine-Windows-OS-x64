@@ -33,7 +33,7 @@ class EMPrefilteredEnvironmentMapGeneratorMaterial : public GXMaterial
 		GXVoid SetEnvironmentMap ( GXTextureCubeMap &cubeMap );
 
 		// Remapping to [0.0f, 1.0f] and take square.
-		GXVoid SetRoughness ( GXFloat roughness );
+		GXVoid SetRoughness ( GXFloat newRoughness );
 
 		GXVoid SetTotalSamples ( GXUShort samples );
 };

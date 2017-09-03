@@ -46,7 +46,7 @@ GXSoundEmitter::GXSoundEmitter ( GXSoundTrack* track, GXBool looped, GXBool stre
 		GXAlSourcei ( source, AL_LOOPING, this->looped ? AL_TRUE : AL_FALSE );
 
 		ALuint bfr = this->track->GetBuffer ();
-		GXAlSourcei ( source, AL_BUFFER, bfr );
+		GXAlSourcei ( source, AL_BUFFER, (ALint)bfr );
 	}
 
 	ownVolume = 1.0f;
@@ -136,15 +136,15 @@ GXVoid GXSoundEmitter::SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat
 	SetRotation ( orientation );
 }
 
-GXVoid GXSoundEmitter::SetOwnVolume ( GXFloat ownVolume )
+GXVoid GXSoundEmitter::SetOwnVolume ( GXFloat ownVolumeLevel )
 {
-	this->ownVolume = ownVolume;
+	ownVolume = ownVolumeLevel;
 	GXAlSourcef ( source, AL_GAIN, ownVolume * channelVolume );
 }
 
-GXVoid GXSoundEmitter::SetChannelVolume ( GXFloat channelVolume )
+GXVoid GXSoundEmitter::SetChannelVolume ( GXFloat channelVolumeLevel )
 {
-	this->channelVolume = channelVolume;
+	channelVolume = channelVolumeLevel;
 	GXAlSourcef ( source, AL_GAIN, ownVolume * channelVolume );
 }
 
@@ -154,9 +154,10 @@ GXVoid GXSoundEmitter::SetRange ( GXFloat min, GXFloat max )
 	GXAlSourcef ( source, AL_MAX_DISTANCE, max );
 }
 
-GXVoid GXSoundEmitter::ChangeSoundTrack ( GXSoundTrack* track, GXBool looped, GXBool streamed, GXBool isRelative )
+GXVoid GXSoundEmitter::ChangeSoundTrack ( GXSoundTrack* trackObject, GXBool isTrackLooped, GXBool isTrackStreamed, GXBool isRelative )
 {
-	if ( !track ) GXDebugBox ( L"GXSoundEmitter::Error - track равен 0!" );
+	if ( !trackObject )
+		GXDebugBox ( L"GXSoundEmitter::Error - track равен 0!" );
 
 	gx_sound_mixer_Mutex->Lock ();
 
@@ -175,28 +176,28 @@ GXVoid GXSoundEmitter::ChangeSoundTrack ( GXSoundTrack* track, GXBool looped, GX
 	else 
 		GXAlSourcei ( source, AL_BUFFER, 0 );
 
-	this->track->Release ();
-	this->track = track;
-	this->track->AddRef ();
+	track->Release ();
+	track = trackObject;
+	track->AddRef ();
 
-	this->looped = looped;
+	looped = isTrackLooped;
 
-	if ( streamed )
+	if ( isTrackStreamed )
 	{
-		streamer = this->track->GetStreamer ();
+		streamer = track->GetStreamer ();
 		GXAlGenBuffers ( 2, streamBuffers );
 
-		streamer->FillBuffer ( streamBuffers[ 0 ], this->looped );
-		streamer->FillBuffer ( streamBuffers[ 1 ], this->looped );
+		streamer->FillBuffer ( streamBuffers[ 0 ], looped );
+		streamer->FillBuffer ( streamBuffers[ 1 ], looped );
 		GXAlSourceQueueBuffers ( source, 2, streamBuffers );
 	}
 	else
 	{
 		streamer = 0;
-		GXAlSourcei ( source, AL_LOOPING, this->looped ? AL_TRUE : AL_FALSE );
+		GXAlSourcei ( source, AL_LOOPING, looped ? AL_TRUE : AL_FALSE );
 
-		ALuint bfr = this->track->GetBuffer ();
-		GXAlSourcei ( source, AL_BUFFER, bfr );
+		ALuint bfr = track->GetBuffer ();
+		GXAlSourcei ( source, AL_BUFFER, (ALint)bfr );
 	}
 
 	GXAlSourcei ( source, AL_SOURCE_RELATIVE, isRelative ? AL_TRUE : AL_FALSE );

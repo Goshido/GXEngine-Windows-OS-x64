@@ -77,9 +77,9 @@ GXVoid EMMoveTool::Bind ()
 	isLMBPressed = GX_FALSE;
 }
 
-GXVoid EMMoveTool::SetActor ( EMActor* actor )
+GXVoid EMMoveTool::SetActor ( EMActor* currentActor )
 {
-	this->actor = actor;
+	actor = currentActor;
 	UpdateModeMode ();
 }
 
@@ -262,7 +262,10 @@ GXVoid EMMoveTool::SetWorldMode ()
 GXVoid EMMoveTool::UpdateModeMode ()
 {
 	GXCamera* activeCamera = GXCamera::GetActiveCamera ();
+	
 	if ( !activeCamera ) return;
+
+	if ( !actor ) return;
 
 	const GXTransform& actorTransform = actor->GetTransform ();
 	actorTransform.GetLocation ( startLocationWorld );

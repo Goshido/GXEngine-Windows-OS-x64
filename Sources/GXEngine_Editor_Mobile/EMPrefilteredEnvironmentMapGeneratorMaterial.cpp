@@ -77,7 +77,7 @@ GXVoid EMPrefilteredEnvironmentMapGeneratorMaterial::Bind ( const GXTransform& /
 
 	glUniformMatrix4fv ( viewProjectionMatricesLocation, 6, GL_FALSE, (const GLfloat*)viewProjectionMatrices );
 	glUniform1f ( roughnessLocation, roughness );
-	glUniform1i ( totalSamplesLocation, totalSamples );
+	glUniform1i ( totalSamplesLocation, (GLint)totalSamples );
 	glUniform1f ( inverseTotalSamplesLocation, inverseTotalSamples );
 
 	environmentMap->Bind ( TEXTURE_SLOT );
@@ -97,13 +97,13 @@ GXVoid EMPrefilteredEnvironmentMapGeneratorMaterial::SetEnvironmentMap ( GXTextu
 	environmentMap = &cubeMap;
 }
 
-GXVoid EMPrefilteredEnvironmentMapGeneratorMaterial::SetRoughness ( GXFloat roughness )
+GXVoid EMPrefilteredEnvironmentMapGeneratorMaterial::SetRoughness ( GXFloat newRoughness )
 {
-	this->roughness = roughness * roughness;
+	roughness = newRoughness * newRoughness;
 }
 
 GXVoid EMPrefilteredEnvironmentMapGeneratorMaterial::SetTotalSamples ( GXUShort samples )
 {
-	totalSamples = (GXInt)samples;
+	totalSamples = (GXUInt)samples;
 	inverseTotalSamples = 1.0f / (GXFloat)samples;
 }

@@ -206,7 +206,7 @@ const GXWChar* EMUIOpenFile::GetRelativePath () const
 	return currentDirectory + rootDirectoryPathOffset + 1;
 }
 
-GXVoid GXCALL EMUIOpenFile::OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state )
+GXVoid GXCALL EMUIOpenFile::OnButton ( GXVoid* handler, GXUIButton& button, GXFloat /*x*/, GXFloat /*y*/, eGXMouseButtonState state )
 {
 	if ( state != eGXMouseButtonState::Up ) return;
 
@@ -215,6 +215,7 @@ GXVoid GXCALL EMUIOpenFile::OnButton ( GXVoid* handler, GXUIButton& button, GXFl
 	if ( &button == main->okButton->GetWidget () )
 	{
 		EMUIFileListBoxItem* i = (EMUIFileListBoxItem*)main->fileListBox->GetSelectedItem ();
+
 		if ( i && i->type == eEMUIFileListBoxItemType::File )
 			main->OnBrowseFile ( main->filePathStaticText->GetText () );
 
@@ -222,7 +223,6 @@ GXVoid GXCALL EMUIOpenFile::OnButton ( GXVoid* handler, GXUIButton& button, GXFl
 	}
 	else if ( &button == main->cancelButton->GetWidget () )
 	{
-		EMUIOpenFile* main = (EMUIOpenFile*)handler;
 		main->mainPanel->Hide ();
 	}
 }

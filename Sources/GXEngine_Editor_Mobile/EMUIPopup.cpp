@@ -72,7 +72,7 @@ GXWidgetRenderer ( widget ), itemNames ( sizeof ( GXWChar* ) )
 {
 	font = GXFont::GetFont ( FONT, (GXUShort)( FONT_SIZE * gx_ui_Scale ) );
 	texture = GXTexture2D::LoadTexture ( DEFAULT_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
-	surface = new GXHudSurface ( (GXShort)widget->GetItemWidth (), (GXUShort)widget->GetItemHeight () );
+	surface = new GXHudSurface ( (GXUShort)widget->GetItemWidth (), (GXUShort)widget->GetItemHeight () );
 }
 
 EMUIPopupRenderer::~EMUIPopupRenderer ()
@@ -167,7 +167,6 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
 		else
 			GXColorToVec4 ( pi.color, DISABLE_ITEM_COLOR_R, DISABLE_ITEM_COLOR_G, DISABLE_ITEM_COLOR_B, DISABLE_ITEM_COLOR_A );
 
-		const GXWChar* t = names[ i ];
 		surface->AddText ( pi, 0, names[ i ] );
 		pi.insertY -= itemHeight;
 	}

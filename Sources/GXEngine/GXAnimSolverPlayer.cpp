@@ -115,24 +115,24 @@ GXAnimSolverPlayer::~GXAnimSolverPlayer ()
 
 GXBool GXAnimSolverPlayer::GetBone ( const GXUTF8* boneName, GXQuat &rotation, GXVec3 &location )
 {
-	if ( !finder || !animData ) return GX_FALSE;
+	if ( !finder || !animationInfo ) return GX_FALSE;
 
 	GXUShort boneIndex = finder->FindBoneIndex ( boneName );
 
 	if ( boneIndex == 0xFFFF ) return GX_FALSE;
 
-	GXUInt doneFrame = (GXUInt)( animPos * animData->numFrames );
-	if ( doneFrame >= animData->numFrames )
-		doneFrame = animData->numFrames - 1;
+	GXUInt doneFrame = (GXUInt)( animPos * animationInfo->numFrames );
+	if ( doneFrame >= animationInfo->numFrames )
+		doneFrame = animationInfo->numFrames - 1;
 
 	GXUInt nextFrame = doneFrame + 1;
-	if ( nextFrame >= animData->numFrames )
+	if ( nextFrame >= animationInfo->numFrames )
 		nextFrame = 0;
 
-	const GXQuatLocJoint* doneJoint = animData->keys + doneFrame * animData->numBones + boneIndex;
-	const GXQuatLocJoint* nextJoint = animData->keys + nextFrame * animData->numBones + boneIndex;
+	const GXQuatLocJoint* doneJoint = animationInfo->keys + doneFrame * animationInfo->numBones + boneIndex;
+	const GXQuatLocJoint* nextJoint = animationInfo->keys + nextFrame * animationInfo->numBones + boneIndex;
 
-	GXFloat alpha = frameInterpolationFactor * animData->fps;
+	GXFloat alpha = frameInterpolationFactor * animationInfo->fps;
 
 	GXLerpVec3 ( location, doneJoint->location, nextJoint->location, alpha );
 	GXQuatSLerp ( rotation, doneJoint->rotation, nextJoint->rotation, alpha );
@@ -145,7 +145,7 @@ GXBool GXAnimSolverPlayer::GetBone ( const GXUTF8* boneName, GXQuat &rotation, G
 
 GXVoid GXAnimSolverPlayer::Update ( GXFloat delta )
 {
-	GXFloat alpha = delta * multiplier;
+	GXFloat alpha = delta * speed;
 
 	animPos += alpha * delta2PartFactor;
 	frameInterpolationFactor += alpha;
@@ -178,7 +178,7 @@ GXVoid GXAnimSolverPlayer::SetAnimationSequence ( const GXAnimationInfo* animDat
 	GXSafeDelete ( finder );
 	finder = new GXBoneFinder ( *animData );
 
-	this->animData = animData; 
+	animationInfo = animData;
 
 	frameInterval = 1.0f / animData->fps;
 	frameInterpolationFactor = 0.0f;
@@ -188,7 +188,7 @@ GXVoid GXAnimSolverPlayer::SetAnimationSequence ( const GXAnimationInfo* animDat
 
 GXVoid GXAnimSolverPlayer::SetAnimationMultiplier ( GXFloat multiplier )
 {
-	this->multiplier = multiplier;
+	speed = multiplier;
 }
 
 GXVoid GXAnimSolverPlayer::EnableNormalization ()

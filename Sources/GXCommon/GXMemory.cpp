@@ -15,18 +15,18 @@ GXCircleBuffer::~GXCircleBuffer ()
 	free ( buffer );
 }
 
-GXVoid* GXCircleBuffer::Allocate ( GXUInt size )
+GXVoid* GXCircleBuffer::Allocate ( GXUInt bytes )
 {
-	if ( size == 0 ) return 0;
+	if ( bytes == 0 ) return 0;
 
-	if ( ( offset + size ) >= this->size )
+	if ( ( offset + bytes ) >= size )
 	{
-		offset = size;
+		offset = bytes;
 		return buffer;
 	}
 
 	GXUByte* b = buffer + offset;
-	offset += size;
+	offset += bytes;
 
 	return b;
 }
@@ -70,20 +70,20 @@ GXUInt GXDynamicArray::GetLength () const
 	return numElements;
 }
 
-GXVoid GXDynamicArray::Resize ( GXUInt numElements )
+GXVoid GXDynamicArray::Resize ( GXUInt totalElements )
 {
 	GXUByte* old = data;
-	data = (GXUByte*)malloc ( numElements * elementSize );
+	data = (GXUByte*)malloc ( totalElements * elementSize );
 
 	if ( !old )
 	{
-		this->numElements = numElements;
+		numElements = totalElements;
 		return;
 	}
 
-	GXUInt copy = ( numElements < this->numElements ) ? numElements : this->numElements;
+	GXUInt copy = ( totalElements < numElements ) ? totalElements : numElements;
 	memcpy ( data, old, copy * elementSize );
-	this->numElements = numElements;
+	numElements = totalElements;
 
 	GXSafeFree ( old );
 }

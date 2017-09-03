@@ -59,7 +59,7 @@ GXVoid EMToneMapperLuminanceTripletReducerMaterial::SetLuminanceTripletTexture (
 	luminanceTripletTexture = &texture;
 }
 
-GXVoid EMToneMapperLuminanceTripletReducerMaterial::SetLevelOfDetailToReduce ( GXUByte levelOfDetail )
+GXVoid EMToneMapperLuminanceTripletReducerMaterial::SetLevelOfDetailToReduce ( GXUByte newLevelOfDetail )
 {
-	this->levelOfDetail = (GXFloat)levelOfDetail;
+	this->levelOfDetail = (GXFloat)newLevelOfDetail;
 }

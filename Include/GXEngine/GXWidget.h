@@ -47,12 +47,12 @@ class GXWidget
 		GXBool IsVisible () const;
 		GXBool IsDraggable () const;
 
-		GXVoid SetRenderer ( GXWidgetRenderer* renderer );
+		GXVoid SetRenderer ( GXWidgetRenderer* rendererObject );
 		GXWidgetRenderer* GetRenderer () const;
 		GXWidget* FindWidget ( GXFloat x, GXFloat y );	//return child widget or itself. Never 0
 
 	protected:
-		GXVoid UpdateBoundsWorld ( const GXAABB &boundsLocal );
+		GXVoid UpdateBoundsWorld ( const GXAABB &newBoundsLocal );
 		GXVoid OnDraw ();
 
 	private:
@@ -70,7 +70,7 @@ class GXWidgetIterator
 		GXWidgetIterator ();
 		~GXWidgetIterator ();
 
-		GXWidget* Init ( GXWidget* widget );
+		GXWidget* Init ( GXWidget* startWidget );
 
 		GXWidget* GetNext ();
 		GXWidget* GetPrevious ();

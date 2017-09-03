@@ -40,7 +40,7 @@ class EMMoveTool : public EMTool
 		~EMMoveTool () override;
 
 		GXVoid Bind () override;
-		GXVoid SetActor ( EMActor* actor ) override;
+		GXVoid SetActor ( EMActor* currentActor ) override;
 		GXVoid UnBind () override;
 
 		GXVoid OnViewerTransformChanged () override;

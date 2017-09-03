@@ -21,7 +21,7 @@ class EMBRDFIntegratorMaterial : public GXMaterial
 		GXVoid Bind ( const GXTransform &transform ) override;
 		GXVoid Unbind () override;
 
-		GXVoid SetSamplesPerPixel ( GXUShort samples );
+		GXVoid SetSamplesPerPixel ( GXUShort samplesPerPixel );
 };
 
 

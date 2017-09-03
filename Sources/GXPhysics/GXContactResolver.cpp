@@ -4,12 +4,12 @@
 #include <GXCommon/GXLogger.h>
 
 
-GXContactResolver::GXContactResolver ( GXUInt iterations )
+GXContactResolver::GXContactResolver ( GXUInt /*iterations*/ )
 {
 	//NOTHING
 }
 
-GXVoid GXContactResolver::ResolveContacts ( GXContact* contactArray, GXUInt numContacts, GXFloat deltaTime )
+GXVoid GXContactResolver::ResolveContacts ( GXContact* contactArray, GXUInt numContacts, GXFloat /*deltaTime*/ )
 {
 	GXUInt i = 0;
 	while ( i < numContacts )
@@ -32,6 +32,7 @@ GXVoid GXContactResolver::ResolveContacts ( GXContact* contactArray, GXUInt numC
 		if ( contact.GetPenetration () > 100.0f )
 		{
 			GXUInt wtf = 0;
+			GXLogW ( L"%u\n", wtf );
 		}
 
 		if ( firstRigidBody.IsKinematic () )
@@ -150,9 +151,10 @@ GXVoid GXContactResolver::ResolveSingleBodyContacts ( GXRigidBody &rigidBody, GX
 	rigidBody.SetAngularVelocity ( totalAngularVelocity );
 }
 
-GXVoid GXContactResolver::ResolveDoubleBodyContacts ( GXContact* contacts )
+GXVoid GXContactResolver::ResolveDoubleBodyContacts ( GXContact* /*contacts*/ )
 {
 	GXUInt todo = 0;
+	GXLogW ( L"%u\n", todo );
 	//TODO
 }
 

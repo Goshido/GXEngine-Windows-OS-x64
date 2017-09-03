@@ -202,7 +202,7 @@ GXVoid EMGame::OnInit ()
 	world.RegisterForceGenerator ( colliderTwo->GetRigidBody (), gravity );
 
 	transform.SetLocation ( 0.0f, -3.0f, 0.0f );
-	transform.SetRotation ( 0.0f, GX_MATH_PI, 0.0f );
+	transform.SetRotation ( 0.0f, 0.0, 0.0f );
 	transform.SetScale ( 50.0f, 1.0, 50.0f );
 	kinematicPlane = new EMPhysicsDrivenActor ( L"Kinematic Plane", transform );
 	GXBoxShape* kinematicPlaneShape = new GXBoxShape ( &( kinematicPlane->GetRigidBody () ), 50.0f, 1.0f, 50.0f );
@@ -305,7 +305,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 {
 	GXTouchSurface::GetInstance ().ExecuteMessages ();
 
-	if ( deltaTime < 2.0f )
+	if ( deltaTime < 0.2f )
 		GXPhysicsEngine::GetInstance ().RunSimulateLoop ( deltaTime * 0.1f );
 
 	fluttershy->UpdatePose ( deltaTime );
@@ -332,7 +332,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	renderer.StartLightPass ();
 
 	renderer.ApplySSAO ();
-	renderer.ApplyMotionBlur ( deltaTime );
+	renderer.ApplyMotionBlur ();
 	renderer.ApplyToneMapping ( deltaTime );
 
 	renderer.StartHudColorPass ();
@@ -353,8 +353,8 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 		glDisable ( GL_DEPTH_TEST );
 
-		GXUShort points = collisionDetector.GetTotalShapeAContactGeometryPoints ();
-		physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeAContactGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+		GXUShort points = (GXUShort)collisionDetector.GetTotalShapeAContactGeometryPoints ();
+		physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeAContactGeometry (), (GLsizeiptr)( points * sizeof ( GXVec3 ) ), GL_DYNAMIC_DRAW );
 		physicsGeometry->SetTotalVertices ( (GLsizei)points );
 
 		if ( points == 1 )
@@ -366,8 +366,8 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 		physicsGeometry->Render ();
 		physicsShapeAContactGeometryMaterial->Unbind ();
 
-		points = collisionDetector.GetTotalShapeBContactGeometryPoints ();
-		physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeBContactGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+		points = (GXUShort)collisionDetector.GetTotalShapeBContactGeometryPoints ();
+		physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeBContactGeometry (), (GLsizeiptr)( points * sizeof ( GXVec3 ) ), GL_DYNAMIC_DRAW );
 		physicsGeometry->SetTotalVertices ( (GLsizei)points );
 
 		if ( points == 1 )
@@ -381,8 +381,8 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 		if ( collisionDetector.GetTotalPlanarIntersectionPoints () > 0 )
 		{
-			points = collisionDetector.GetTotalShapeAPlanarContactGeometryPoints ();
-			physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeAPlanarContactGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+			points = (GXUShort)collisionDetector.GetTotalShapeAPlanarContactGeometryPoints ();
+			physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeAPlanarContactGeometry (), (GLsizeiptr)( points * sizeof ( GXVec3 ) ), GL_DYNAMIC_DRAW );
 			physicsGeometry->SetTotalVertices ( (GLsizei)points );
 
 			if ( points == 1 )
@@ -394,8 +394,8 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 			physicsGeometry->Render ();
 			physicsShapeAContactGeometryMaterial->Unbind ();
 
-			points = collisionDetector.GetTotalShapeBPlanarContactGeometryPoints ();
-			physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeBPlanarContactGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+			points = (GXUShort)collisionDetector.GetTotalShapeBPlanarContactGeometryPoints ();
+			physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeBPlanarContactGeometry (), (GLsizeiptr)( points * sizeof ( GXVec3 ) ), GL_DYNAMIC_DRAW );
 			physicsGeometry->SetTotalVertices ( (GLsizei)points );
 
 			if ( points == 1 )
@@ -407,8 +407,8 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 			physicsGeometry->Render ();
 			physicsShapeBContactGeometryMaterial->Unbind ();
 
-			points = collisionDetector.GetTotalPlanarIntersectionPoints ();
-			physicsGeometry->FillVertexBuffer ( collisionDetector.GetPlanarIntersectionGeometry (), points * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+			points = (GXUShort)collisionDetector.GetTotalPlanarIntersectionPoints ();
+			physicsGeometry->FillVertexBuffer ( collisionDetector.GetPlanarIntersectionGeometry (), (GLsizeiptr)( points * sizeof ( GXVec3 ) ), GL_DYNAMIC_DRAW );
 			physicsGeometry->SetTotalVertices ( (GLsizei)points );
 
 			if ( points == 1 )

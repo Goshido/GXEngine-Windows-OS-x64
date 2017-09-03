@@ -34,7 +34,7 @@ class GXNetConnectionTCP
 		SOCKET GetSocket ();
 		GXThread* GetThread ();
 
-		GXVoid Init ( SOCKET socket, GXThread* thread );
+		GXVoid Init ( SOCKET socketObject, GXThread* threadObject );
 		GXVoid Destroy ();
 };
 

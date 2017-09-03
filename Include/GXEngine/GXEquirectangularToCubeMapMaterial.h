@@ -11,7 +11,7 @@
 class GXEquirectangularToCubeMapMaterial : public GXMaterial
 {
 	private:
-		GXTexture2D*	texture;
+		GXTexture2D*	equirectangularTexture;
 
 		GXMat4			viewProjectionMatrices[ 6 ];
 		GLint			viewProjectionMatricesLocation;

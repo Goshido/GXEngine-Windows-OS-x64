@@ -102,13 +102,17 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WINSOCK_DEPRECATED_NO_WARNINGS;WINAPI_PARTITION_SYSTEM=0;_WIN32_WINNT_WINTHRESHOLD=0;NTDDI_WIN7SP1=0;TARGET_OS_MAC=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\Include;$(SolutionDir)..\..\Include\FreeType;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <AdditionalOptions>/wd4201 /wd4710 /wd4820 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -184,7 +188,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimSolverMovement.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimSolverPlayer.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXCamera.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngine\GXCameraman.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXCameraOrthographic.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXCameraPerspective.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXCore.cpp" />
@@ -339,14 +342,12 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngineDLL\GXFreeType.h" />
     <ClInclude Include="..\..\Include\GXEngineDLL\GXOGGVorbis.h" />
     <ClInclude Include="..\..\Include\GXEngineDLL\GXOpenAL.h" />
-    <ClInclude Include="..\..\Include\GXEngineDLL\GXPhysX.h" />
     <ClInclude Include="..\..\Include\GXEngineDLL\GXXInput.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXAnimSolver.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXAnimSolverMovement.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXAnimSolverPlayer.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXArrayTextureOuter.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXCamera.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXCameraman.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXCameraOrthographic.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXCameraPerspective.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXCore.h" />

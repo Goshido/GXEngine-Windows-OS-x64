@@ -64,7 +64,7 @@ EMDiffuseIrradianceGeneratorMaterial::~EMDiffuseIrradianceGeneratorMaterial ()
 	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 }
 
-GXVoid EMDiffuseIrradianceGeneratorMaterial::Bind ( const GXTransform &transform )
+GXVoid EMDiffuseIrradianceGeneratorMaterial::Bind ( const GXTransform& /*transform*/ )
 {
 	if ( !environmentMap ) return;
 

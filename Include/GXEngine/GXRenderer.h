@@ -60,12 +60,12 @@ class GXRenderer
 	public:
 		~GXRenderer ();
 
-		GXVoid Start ( GXGame &game );
+		GXVoid Start ( GXGame &gameObject );
 		GXBool Shutdown ();
 
 		GXVoid SetFullscreen ( GXBool enabled );
 		GXVoid SetVSync ( GXBool enabled );
-		GXVoid SetResolution ( GXInt width, GXInt height );
+		GXVoid SetResolution ( GXInt frameWidth, GXInt frameHeight );
 		GXVoid SetWindowName ( const GXWChar* name );
 		GXVoid Show () const;
 		GXVoid Hide () const;
@@ -77,14 +77,14 @@ class GXRenderer
 		GXInt GetWidth () const;
 		GXInt GetHeight () const;
 		static GXBool GXCALL UpdateRendererSettings ();
-		static GXVoid GXCALL ReSizeScene ( GXInt width, GXInt height );
+		static GXVoid GXCALL ReSizeScene ( GXInt frameWidth, GXInt frameHeight );
 
 		static GXRenderer& GXCALL GetInstance ();
 
 	private:
 		GXRenderer ();
 
-		static GXUPointer GXTHREADCALL RenderLoop ( GXVoid* args, GXThread &thread );
+		static GXUPointer GXTHREADCALL RenderLoop ( GXVoid* args, GXThread &threadObject );
 		static GXVoid GXCALL InitOpenGL ();
 		static GXVoid GXCALL DrawScene ();
 		static GXVoid GXCALL Destroy ();

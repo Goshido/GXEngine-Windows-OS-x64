@@ -30,7 +30,7 @@ PFNGXTYPEPROC			GXInput::OnType = nullptr;
 GXWChar					GXInput::symbol;
 
 XINPUT_STATE			GXInput::gamepadState[ 2 ];
-GXUChar					GXInput::currentGamepadState;
+GXUByte					GXInput::currentGamepadState;
 
 GXVoid*					GXInput::gamepadKeysHandlers[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2 ];
 PFNGXKEYPROC			GXInput::GamepadKeysMapping[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2 ];
@@ -86,7 +86,7 @@ GXVoid GXInput::Shutdown ()
 
 GXVoid GXInput::BindKeyCallback ( GXVoid* handler, PFNGXKEYPROC callback, GXInt vk_key, eGXInputButtonState eState )
 {
-	GXUShort i = ( eState == eGXInputButtonState::Down ) ? vk_key << 1 : ( vk_key << 1 ) + 1;
+	GXUShort i = ( eState == eGXInputButtonState::Down ) ? (GXUShort)( vk_key * 2 ) : (GXUShort)( ( vk_key * 2 ) + 1 );
 
 	keysMask[ i ] = GX_FALSE;
 	KeysMapping[ i ] = callback;
@@ -95,7 +95,7 @@ GXVoid GXInput::BindKeyCallback ( GXVoid* handler, PFNGXKEYPROC callback, GXInt 
 
 GXVoid GXInput::UnbindKeyCallback ( GXInt vk_key, eGXInputButtonState eState  )
 {
-	GXUShort i = ( eState == eGXInputButtonState::Down ) ? vk_key << 1 : ( vk_key << 1 ) + 1;
+	GXUShort i = ( eState == eGXInputButtonState::Down ) ? (GXUShort)( vk_key * 2 ) : (GXUShort)( ( vk_key * 2 ) + 1 );
 
 	keysMask[ i ] = GX_FALSE;
 	KeysMapping[ i ] = nullptr;
@@ -154,7 +154,7 @@ GXVoid GXInput::UnbindMouseWheelCallback ()
 
 GXVoid GXInput::BindGamepadKeyCallback ( GXVoid* handler, PFNGXKEYPROC callback, GXInt gamepad_key, eGXInputButtonState eState )
 {
-	GXUChar i = ( eState == eGXInputButtonState::Down ) ? gamepad_key << 1 : ( gamepad_key << 1 ) + 1;
+	GXUByte i = ( eState == eGXInputButtonState::Down ) ? (GXUByte)( gamepad_key * 2 ) : (GXUByte)( ( gamepad_key * 2 ) + 1 );
 
 	gamepadKeysHandlers[ i ] = handler;
 	GamepadKeysMapping[ i ] = callback;
@@ -163,7 +163,7 @@ GXVoid GXInput::BindGamepadKeyCallback ( GXVoid* handler, PFNGXKEYPROC callback,
 
 GXVoid GXInput::UnbindGamepadKeyCallback ( GXInt gamepad_key, eGXInputButtonState eState )
 {
-	GXUChar i = ( eState == eGXInputButtonState::Down ) ? gamepad_key << 1 : ( gamepad_key << 1 ) + 1;
+	GXUByte i = ( eState == eGXInputButtonState::Down ) ? (GXUByte)( gamepad_key * 2 ) : (GXUByte)( ( gamepad_key * 2 ) + 1 );
 
 	gamepadKeysHandlers[ i ] = nullptr;
 	GamepadKeysMapping[ i ] = nullptr;
@@ -484,7 +484,7 @@ GXInput::GXInput ()
 	thread = new GXThread ( &InputLoop, nullptr );
 }
 
-GXUPointer GXTHREADCALL GXInput::InputLoop ( GXVoid* args, GXThread& /*thread*/ )
+GXUPointer GXTHREADCALL GXInput::InputLoop ( GXVoid* /*args*/, GXThread& /*thread*/ )
 {
 	while ( loopFlag )
 	{
@@ -508,8 +508,11 @@ GXUPointer GXTHREADCALL GXInput::InputLoop ( GXVoid* args, GXThread& /*thread*/ 
 			}
 			break;
 
+			case eGXInputDevice::Mouse:
+				// NOTHING
+			break;
+
 			case eGXInputDevice::xboxController:
-			default:
 			{
 				for ( GXInt i = 0;  i < GX_INPUT_TOTAL_GAMEPAD_KEYS * 2; i++ )
 				{
@@ -525,6 +528,7 @@ GXUPointer GXTHREADCALL GXInput::InputLoop ( GXVoid* args, GXThread& /*thread*/ 
 
 		Sleep ( GX_INPUT_THREAD_SLEEP );
 	}
+
 	return 0;
 }
 
@@ -540,7 +544,7 @@ GXBool GXInput::IsGamepadConnected ( GXDword gamepadID )
 
 GXVoid GXInput::TestGamepadButton ( GXDword buttonFlag, GXUChar buttonID )
 {
-	GXUChar oldGamepadState = ( currentGamepadState == 0 ) ? 1 : 0;
+	GXUByte oldGamepadState = ( currentGamepadState == 0 ) ? (GXUByte)1 : (GXUByte)0;
 
 	if ( ( gamepadState[ currentGamepadState ].Gamepad.wButtons & buttonFlag ) && !( gamepadState[ oldGamepadState ].Gamepad.wButtons & buttonFlag ) )
 	{
@@ -548,7 +552,9 @@ GXVoid GXInput::TestGamepadButton ( GXDword buttonFlag, GXUChar buttonID )
 		gamepadKeysMask[ buttonID << 1 ] = GX_TRUE;
 	}
 	else if ( !( gamepadState[ currentGamepadState ].Gamepad.wButtons & buttonFlag ) && ( gamepadState[ oldGamepadState ].Gamepad.wButtons & buttonFlag ) )
+	{
 		gamepadKeysMask[ ( buttonID << 1 ) + 1 ] = GX_TRUE;
+	}
 }
 
 GXVoid GXInput::UpdateGamepad ()
@@ -570,7 +576,7 @@ GXVoid GXInput::UpdateGamepad ()
 			DoRightTrigger ( onRightTriggerHandler, gamepadState[ currentGamepadState ].Gamepad.bRightTrigger * GX_INPUT_INV_TRIGGER_VALUE );
 	}
 
-	GXUChar oldGamepadState = ( currentGamepadState == 0 ) ? 1 : 0;
+	GXUByte oldGamepadState = ( currentGamepadState == 0 ) ? (GXUByte)1 : (GXUByte)0;
 	if ( gamepadState[ currentGamepadState ].dwPacketNumber == gamepadState[ oldGamepadState ].dwPacketNumber ) return;
 
 	TestGamepadButton ( XINPUT_GAMEPAD_A, GX_INPUT_XBOX_A );
@@ -601,7 +607,7 @@ GXBool GXCALL GXInput::InitXInputLibrary ()
 		return GX_FALSE;
 	}
 
-	PFNGXXINPUTINITPROC GXXInputInit = (PFNGXXINPUTINITPROC)GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXXInputInit" );
+	PFNGXXINPUTINITPROC GXXInputInit = reinterpret_cast <PFNGXXINPUTINITPROC> ( reinterpret_cast <GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXXInputInit" ) ) );
 	if ( !GXXInputInit )
 	{
 		GXLogW ( L"GXInput::InitXInputLibrary::Error - Не удалось найти функцию GXXInputInit\n" );

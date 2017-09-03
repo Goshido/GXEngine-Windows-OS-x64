@@ -135,12 +135,12 @@ GXThread* GXNetConnectionTCP::GetThread ()
 	return thread;
 }
 
-GXVoid GXNetConnectionTCP::Init ( SOCKET socket, GXThread* thread )
+GXVoid GXNetConnectionTCP::Init ( SOCKET socketObject, GXThread* threadObject )
 {
-	if ( this->thread ) delete thread;
-	this->thread = thread;
+	GXSafeDelete ( thread );
+	thread = threadObject;
 
-	this->socket = socket;
+	socket = socketObject;
 }
 
 GXVoid GXNetConnectionTCP::Destroy ()
@@ -190,8 +190,10 @@ GXBool GXNetServer::CreateTCP ( GXUShort port )
 		GXLogW ( L"GXNetServer::CreateTCP::Error - Ошибка WSAStartup\n" );
 		return GX_FALSE;
 	}
-			
-	if ( ( listenerTCP = socket ( AF_INET, SOCK_STREAM, 0 ) ) < 0 )
+	
+	listenerTCP = socket ( AF_INET, SOCK_STREAM, 0 );
+
+	if ( listenerTCP == INVALID_SOCKET )
 	{
 		GXLogW ( L"GXNetServer::CreateTCP::Error - Ошибка создания сокета\n" );
 
@@ -249,8 +251,10 @@ GXBool GXNetServer::CreateUDP ( GXUShort port )
 		GXLogW ( L"GXNetServer::CreateUDP::Error - Ошибка WSAStartup\n" );
 		return GX_FALSE;
 	}
-			
-	if ( ( listenerUDP = socket ( AF_INET, SOCK_DGRAM, 0 ) ) < 0 )
+	
+	listenerUDP = socket ( AF_INET, SOCK_DGRAM, 0 );
+
+	if ( listenerUDP == INVALID_SOCKET )
 	{
 		GXLogW ( L"GXNetServer::CreateUDP::Error - Ошибка создания сокета\n" );
 
@@ -449,7 +453,7 @@ GXNetServer::GXNetServer ()
 	threadTCP = threadUDP = nullptr;
 }
 
-GXUPointer GXTHREADCALL GXNetServer::ListenTCP ( GXVoid* arg, GXThread& /*thread*/ )
+GXUPointer GXTHREADCALL GXNetServer::ListenTCP ( GXVoid* /*arg*/, GXThread& /*thread*/ )
 {
 	SOCKET client_socket;
 	sockaddr_in client_addr;
@@ -470,7 +474,7 @@ GXUPointer GXTHREADCALL GXNetServer::ListenTCP ( GXVoid* arg, GXThread& /*thread
 			if ( id == -1 ) continue;
 
 			GXClientInfo* info = new GXClientInfo ();
-			info->id = id;
+			info->id = (GXUInt)id;
 			info->socket = client_socket;
 
 			GXThread* newClientThread = new GXThread ( &GXNetServer::ServeClientTCP, info );
@@ -504,10 +508,14 @@ GXUPointer GXTHREADCALL GXNetServer::ServeClientTCP ( GXVoid* arg, GXThread& /*t
 		OnNewConnectionTCP ( info->id );
 
 	GXInt size;
-	while ( ( size = recv ( info->socket, (char*)bufferTCP, GX_SOCKET_BUFFER_SIZE, 0 ) ) && size != SOCKET_ERROR && size != 0 )
+	size = recv ( info->socket, (char*)bufferTCP, GX_SOCKET_BUFFER_SIZE, 0 );
+
+	while ( size != SOCKET_ERROR && size != 0 )
 	{
 		if ( OnMessageTCP ) 
-			OnMessageTCP ( info->id, bufferTCP, size );
+			OnMessageTCP ( info->id, bufferTCP, (GXUInt)size );
+
+		size = recv ( info->socket, (char*)bufferTCP, GX_SOCKET_BUFFER_SIZE, 0 );
 	}
 
 	shutdown ( info->socket, SD_BOTH );
@@ -524,16 +532,20 @@ GXUPointer GXTHREADCALL GXNetServer::ServeClientTCP ( GXVoid* arg, GXThread& /*t
 	return 0;
 }
 
-GXUPointer GXTHREADCALL GXNetServer::ServeClientUDP ( GXVoid* arg, GXThread& /*thread*/ )
+GXUPointer GXTHREADCALL GXNetServer::ServeClientUDP ( GXVoid* /*arg*/, GXThread& /*thread*/ )
 {
 	sockaddr_in client_addr;
 	GXInt client_addr_size = sizeof ( client_addr );
-	GXInt size = 0;
 
-	while ( ( size = recvfrom ( listenerUDP, (char*)bufferUDP, GX_SOCKET_BUFFER_SIZE, 0, (sockaddr*)&client_addr, &client_addr_size ) ) != SOCKET_ERROR && size != 0 )
+	GXInt size = 0;
+	size = recvfrom ( listenerUDP, (char*)bufferUDP, GX_SOCKET_BUFFER_SIZE, 0, (sockaddr*)&client_addr, &client_addr_size );
+
+	while ( size != SOCKET_ERROR && size != 0 )
 	{
 		if ( OnMessageUDP )
-			OnMessageUDP ( client_addr, bufferUDP, size );
+			OnMessageUDP ( client_addr, bufferUDP, (GXUInt)size );
+
+		size = recvfrom ( listenerUDP, (char*)bufferUDP, GX_SOCKET_BUFFER_SIZE, 0, (sockaddr*)&client_addr, &client_addr_size );
 	}
 
 	closesocket ( listenerUDP );
@@ -627,7 +639,10 @@ GXBool GXNetClient::ConnectTCP ( const GXChar* url, GXUShort port )
 	if ( inet_addr ( url ) != INADDR_NONE )
 		dest_addr.sin_addr.s_addr = inet_addr ( url );
 	else
-		if ( hst = gethostbyname ( url ) )
+	{
+		hst = gethostbyname ( url );
+
+		if ( hst )
 			( (GXUInt*)&dest_addr.sin_addr )[ 0 ] = ( (GXUInt**)hst->h_addr_list )[ 0 ][ 0 ];
 		else
 		{
@@ -638,6 +653,7 @@ GXBool GXNetClient::ConnectTCP ( const GXChar* url, GXUShort port )
 			GXNetWSADestroy ( eGXNetModule::Client );
 			return GX_FALSE;
 		}
+	}
 
 	if ( connect ( socketTCP, (sockaddr*)&dest_addr, sizeof ( dest_addr ) ) == SOCKET_ERROR )
 	{
@@ -682,7 +698,10 @@ GXBool GXNetClient::DeployUDP ( const GXChar* url, GXUShort port )
 	if ( inet_addr ( url ) != INADDR_NONE )
 		serverAddressUDP.sin_addr.s_addr = inet_addr ( url );
 	else
-		if ( hst = gethostbyname ( url ) )
+	{
+		hst = gethostbyname ( url );
+
+		if ( hst )
 			( (GXUInt*)&serverAddressUDP.sin_addr )[ 0 ] = ( (GXUInt**)hst->h_addr_list )[ 0 ][ 0 ];
 		else
 		{
@@ -696,6 +715,7 @@ GXBool GXNetClient::DeployUDP ( const GXChar* url, GXUShort port )
 
 			return GX_FALSE;
 		}
+	}
 
 	sockaddr_in self_addr;
 	self_addr.sin_family = AF_INET;
@@ -822,35 +842,43 @@ GXNetClient::GXNetClient ()
 	OnMessageTCP = OnMessageUDP = nullptr;
 }
 
-GXUPointer GXTHREADCALL GXNetClient::ReceiveTCP ( GXVoid* arg, GXThread& /*thread*/ )
+GXUPointer GXTHREADCALL GXNetClient::ReceiveTCP ( GXVoid* /*arg*/, GXThread& /*thread*/ )
 {
 	GXLogW ( L"GXNetClient::ReceiveTCP::Info - Соединение успешно создано\n" );
 
 	BOOL disable = FALSE;
 	setsockopt ( socketTCP, IPPROTO_TCP, TCP_NODELAY, (const char*)&disable, sizeof ( BOOL ) );
 
-	GXInt size;
-	while ( ( size = recv ( socketTCP, (char*)bufferTCP, GX_SOCKET_BUFFER_SIZE, 0 ) ) && size != SOCKET_ERROR && size != 0 )
+	GXInt size = 0;
+	size = recv ( socketTCP, (char*)bufferTCP, GX_SOCKET_BUFFER_SIZE, 0 );
+
+	while ( size != SOCKET_ERROR && size != 0 )
 	{
 		if ( OnMessageTCP )
-			OnMessageTCP ( bufferTCP, size );
+			OnMessageTCP ( bufferTCP, (GXUInt)size );
+
+		size = recv ( socketTCP, (char*)bufferTCP, GX_SOCKET_BUFFER_SIZE, 0 );
 	}
 
 	return 0;
 }
 
-GXUPointer GXTHREADCALL GXNetClient::ReceiveUDP ( GXVoid* arg, GXThread& /*thread*/ )
+GXUPointer GXTHREADCALL GXNetClient::ReceiveUDP ( GXVoid* /*arg*/, GXThread& /*thread*/ )
 {
 	GXLogW ( L"GXNetClient::ReceiveUDP::Info - UDP сокет успешно поднят\n" );
 
 	sockaddr_in client_addr;
 	GXInt client_addr_size = sizeof ( client_addr );
+	
 	GXInt size = 0;
+	size = recvfrom ( socketUDP, (char*)bufferUDP, GX_SOCKET_BUFFER_SIZE, 0, (sockaddr*)&client_addr, &client_addr_size );
 
-	while ( ( size = recvfrom ( socketUDP, (char*)bufferUDP, GX_SOCKET_BUFFER_SIZE, 0, (sockaddr*)&client_addr, &client_addr_size ) ) != SOCKET_ERROR && size != 0 )
+	while ( size != SOCKET_ERROR && size != 0 )
 	{		
 		if ( OnMessageUDP )
-			OnMessageUDP ( bufferUDP, size );
+			OnMessageUDP ( bufferUDP, (GXUInt)size );
+
+		size = recvfrom ( socketUDP, (char*)bufferUDP, GX_SOCKET_BUFFER_SIZE, 0, (sockaddr*)&client_addr, &client_addr_size );
 	}
 
 	return 0;

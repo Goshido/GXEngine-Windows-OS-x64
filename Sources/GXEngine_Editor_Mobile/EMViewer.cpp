@@ -53,19 +53,20 @@ EMViewer::~EMViewer ()
 	instance = nullptr;
 }
 
-GXVoid EMViewer::SetInputWidget ( GXUIInput &inputWidget )
+GXVoid EMViewer::SetInputWidget ( GXUIInput &newInputWidget )
 {
-	inputWidget.SetOnLeftMouseButtonDownCallback ( &EMViewer::OnLMBDownCallback );
-	inputWidget.SetOnLeftMouseButtonUpCallback ( &EMViewer::OnLMBUpCallback );
-	inputWidget.SetOnMiddleMouseButtonDownCallback ( &EMViewer::OnMMBDownCallback );
-	inputWidget.SetOnMiddleMouseButtonUpCallback ( &EMViewer::OnMMBUpCallback );
-	inputWidget.SetOnMouseMoveCallback ( &EMViewer::OnMouseMoveCallback );
-	inputWidget.SetOnMouseScrollCallback ( &EMViewer::OnMouseScrollCallback );
-	inputWidget.SetOnKeyDownCallback ( &EMViewer::OnKeyDownCallback );
-	inputWidget.SetOnKeyUpCallback ( &EMViewer::OnKeyUpCallback );
+	inputWidget = &newInputWidget;
 
-	inputWidget.SetHandler ( this );
-	this->inputWidget = &inputWidget;
+	inputWidget->SetOnLeftMouseButtonDownCallback ( &EMViewer::OnLMBDownCallback );
+	inputWidget->SetOnLeftMouseButtonUpCallback ( &EMViewer::OnLMBUpCallback );
+	inputWidget->SetOnMiddleMouseButtonDownCallback ( &EMViewer::OnMMBDownCallback );
+	inputWidget->SetOnMiddleMouseButtonUpCallback ( &EMViewer::OnMMBUpCallback );
+	inputWidget->SetOnMouseMoveCallback ( &EMViewer::OnMouseMoveCallback );
+	inputWidget->SetOnMouseScrollCallback ( &EMViewer::OnMouseScrollCallback );
+	inputWidget->SetOnKeyDownCallback ( &EMViewer::OnKeyDownCallback );
+	inputWidget->SetOnKeyUpCallback ( &EMViewer::OnKeyUpCallback );
+
+	inputWidget->SetHandler ( this );
 }
 
 GXVoid EMViewer::SetTarget ( EMActor* actor )
@@ -73,9 +74,9 @@ GXVoid EMViewer::SetTarget ( EMActor* actor )
 	this->target = actor;
 }
 
-GXVoid EMViewer::SetOnViewerTransformChangedCallback ( GXVoid* handler, PFNEMONVIEWERTRANSFORMCHANGEDPROC callback )
+GXVoid EMViewer::SetOnViewerTransformChangedCallback ( GXVoid* handlerObject, PFNEMONVIEWERTRANSFORMCHANGEDPROC callback )
 {
-	this->handler = handler;
+	handler = handlerObject;
 	OnViewerTransformChanged = callback;
 }
 
@@ -201,23 +202,23 @@ GXVoid EMViewer::UpdateCamera ()
 	camera.SetCurrentFrameModelMatrix ( matrix );
 }
 
-GXFloat EMViewer::FixPitch ( GXFloat pitch )
+GXFloat EMViewer::FixPitch ( GXFloat currentPitch )
 {
-	return GXClampf ( pitch, -GX_MATH_HALF_PI, GX_MATH_HALF_PI );
+	return GXClampf ( currentPitch, -GX_MATH_HALF_PI, GX_MATH_HALF_PI );
 }
 
-GXFloat EMViewer::FixYaw ( GXFloat yaw )
+GXFloat EMViewer::FixYaw ( GXFloat currentYaw )
 {
-	while ( yaw < -GX_MATH_PI ) yaw += GX_MATH_DOUBLE_PI;
-	while ( yaw > GX_MATH_PI ) yaw -= GX_MATH_DOUBLE_PI;
-	return yaw;
+	while ( currentYaw < -GX_MATH_PI ) currentYaw += GX_MATH_DOUBLE_PI;
+	while ( currentYaw > GX_MATH_PI ) currentYaw -= GX_MATH_DOUBLE_PI;
+	return currentYaw;
 }
 
-GXUByte EMViewer::ResolveMode ( GXBool isAltPressed, GXBool isMMBPressed, GXBool isWheel )
+GXUByte EMViewer::ResolveMode ( GXBool isAltDown, GXBool isMMBDown, GXBool isWheel )
 {
 	if ( isWheel ) return EM_VIEWER_ZOOM_MODE;
-	if ( isAltPressed && isMMBPressed ) return EM_VIEWER_ROTATE_MODE;
-	if ( isMMBPressed ) return EM_VIEWER_PAN_MODE;
+	if ( isAltDown && isMMBDown ) return EM_VIEWER_ROTATE_MODE;
+	if ( isMMBDown ) return EM_VIEWER_PAN_MODE;
 	return EM_VIEWER_NOTHING_MODE;
 }
 
@@ -235,13 +236,13 @@ GXVoid GXCALL EMViewer::OnLMBUpCallback ( GXVoid* /*handler*/, GXUIInput& /*inpu
 	tool->OnLeftMouseButtonUp ( x, y );
 }
 
-GXVoid GXCALL EMViewer::OnMMBDownCallback ( GXVoid* handler, GXUIInput& /*input*/, GXFloat x, GXFloat y )
+GXVoid GXCALL EMViewer::OnMMBDownCallback ( GXVoid* handler, GXUIInput& /*input*/, GXFloat /*x*/, GXFloat /*y*/ )
 {
 	EMViewer* viewer = (EMViewer*)handler;
 	viewer->isMMBPressed = GX_TRUE;
 }
 
-GXVoid GXCALL EMViewer::OnMMBUpCallback ( GXVoid* handler, GXUIInput& /*input*/, GXFloat x, GXFloat y )
+GXVoid GXCALL EMViewer::OnMMBUpCallback ( GXVoid* handler, GXUIInput& /*input*/, GXFloat /*x*/, GXFloat /*y*/ )
 {
 	EMViewer* viewer = (EMViewer*)handler;
 	viewer->isMMBPressed = GX_FALSE;

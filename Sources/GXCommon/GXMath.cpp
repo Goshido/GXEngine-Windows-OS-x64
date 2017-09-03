@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <cwchar>
 #include <cstring>
+#include <time.h>
 
 
 #define COLOR_TO_FLOAT_FACTOR			0.00392157f
@@ -1528,10 +1529,13 @@ GXPlane::GXPlane ()
 	d = 0.0f;
 }
 
-GXVoid GXPlane::From ( const GXVec3 &a, const GXVec3 &b, const GXVec3 &c )
+GXVoid GXPlane::From ( const GXVec3 &pointA, const GXVec3 &pointB, const GXVec3 &pointC )
 {
-	GXVec3 ab ( b.x - a.x, b.y - a.y, b.z - a.z );
-	GXVec3 ac ( c.x - a.x, c.y - a.y, c.z - a.z );
+	GXVec3 ab;
+	GXSubVec3Vec3 ( ab, pointB, pointA );
+
+	GXVec3 ac;
+	GXSubVec3Vec3 ( ac, pointC, pointA );
 
 	GXVec3 normal;
 	GXCrossVec3Vec3 ( normal, ab, ac );
@@ -1540,7 +1544,7 @@ GXVoid GXPlane::From ( const GXVec3 &a, const GXVec3 &b, const GXVec3 &c )
 	this->a = normal.x;
 	this->b = normal.y;
 	this->c = normal.z;
-	this->d = -GXDotVec3 ( normal, a );
+	this->d = -GXDotVec3 ( normal, pointA );
 }
 
 GXVoid GXPlane::FromLineToPoint ( const GXVec3 &lineStart, const GXVec3 &lineEnd, const GXVec3 &point )
@@ -1875,6 +1879,11 @@ GXVoid GXCALL GXConvert3DSMaxToGXEngine ( GXVec3 &gx_out, GXFloat max_x, GXFloat
 	gx_out.z = -max_y;
 }
 
+GXVoid GXCALL GXRandomize ()
+{
+	srand ( (GXUInt)time ( 0 ) );
+}
+
 GXFloat GXCALL GXRandomNormalize ()
 {
 	#define INV_RAND_MAX		3.05185e-5f;
@@ -1975,7 +1984,7 @@ GXFloat GXCALL GXClampf ( GXFloat value, GXFloat minValue, GXFloat maxValue )
 	return ( value < minValue ) ? minValue : ( value > maxValue ) ? maxValue : value;
 }
 
-GXUInt GXCALL GXClampi ( GXInt value, GXInt minValue, GXInt maxValue )
+GXInt GXCALL GXClampi ( GXInt value, GXInt minValue, GXInt maxValue )
 {
 	return ( value < minValue ) ? minValue : ( value > maxValue ) ? maxValue : value;
 }

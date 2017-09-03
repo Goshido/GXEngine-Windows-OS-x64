@@ -107,9 +107,9 @@ GXVoid GXUIButton::OnMessage ( GXUInt message, const GXVoid* data )
 	}
 }
 
-GXVoid GXUIButton::SetOnLeftMouseButtonCallback ( GXVoid* handler, PFNGXONMOUSEBUTTONPROC callback )
+GXVoid GXUIButton::SetOnLeftMouseButtonCallback ( GXVoid* handlerObject, PFNGXONMOUSEBUTTONPROC callback )
 {
-	this->handler = handler;
+	handler = handlerObject;
 	OnLeftMouseButton = callback;
 }
 

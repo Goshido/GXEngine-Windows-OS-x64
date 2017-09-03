@@ -43,15 +43,15 @@ class GXTexture2D
 		static GXUInt GXCALL GetTotalLoadedTextures ( const GXWChar** lastTexture );
 
 		GXVoid FillWholePixelData ( const GXVoid* data );
-		GXVoid FillRegionPixelData ( GXUShort left, GXUShort bottom, GXUShort width, GXUShort height, const GXVoid* data );
+		GXVoid FillRegionPixelData ( GXUShort left, GXUShort bottom, GXUShort regionWidth, GXUShort regionHeight, const GXVoid* data );
 		GXVoid UpdateMipmaps ();
 
-		GXVoid Bind ( GXUByte textureUnit );
+		GXVoid Bind ( GXUByte unit );
 		GXVoid Unbind ();
 
 		GLuint GetTextureObject () const;
 
-		GXVoid InitResources ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap, GLint wrapMode );
+		GXVoid InitResources ( GXUShort textureWidth, GXUShort textureHeight, GLint textureInternalFormat, GXBool isGenerateMipmapPolicy, GLint wrapModePolicy );
 		GXVoid FreeResources ();
 
 		GXBool operator == ( const GXTexture2DEntry &other ) const;

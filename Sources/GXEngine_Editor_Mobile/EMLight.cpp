@@ -52,9 +52,9 @@ GXVoid EMLightEmitter::SetBaseColor ( GXUByte red, GXUByte green, GXUByte blue )
 	#undef COLOR_FACTOR
 }
 
-GXVoid EMLightEmitter::SetIntensity ( GXFloat intensity )
+GXVoid EMLightEmitter::SetIntensity ( GXFloat newIntensity )
 {
-	this->intensity = intensity;
+	intensity = newIntensity;
 
 	#define COLOR_FACTOR	0.00392f
 
@@ -102,9 +102,9 @@ EMBulp::~EMBulp ()
 	GXMeshGeometry::RemoveMeshGeometry ( lightVolume );
 }
 
-GXVoid EMBulp::SetInfluenceDistance ( GXFloat distance )
+GXVoid EMBulp::SetInfluenceDistance ( GXFloat newDistance )
 {
-	mod_mat.m11 = mod_mat.m22 = mod_mat.m33 = distance;
+	mod_mat.m11 = mod_mat.m22 = mod_mat.m33 = newDistance;
 }
 
 GXFloat EMBulp::GetInfluenceDistance ()
@@ -155,9 +155,9 @@ EMSpotlight::~EMSpotlight ()
 	GXMeshGeometry::RemoveMeshGeometry ( lightVolume );
 }
 
-GXVoid EMSpotlight::SetInfluenceDistance ( GXFloat distance )
+GXVoid EMSpotlight::SetInfluenceDistance ( GXFloat newDistance )
 {
-	this->distance = distance;
+	distance = newDistance;
 
 	GXMat4 scale_mat;
 	GXSetMat4Scale ( scale_mat, distance * compressionXY, distance * compressionXY, distance );
@@ -192,9 +192,9 @@ GXVoid EMSpotlight::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 	mod_mat.SetW ( location );
 }
 
-GXVoid EMSpotlight::GetLocation ( GXVec3& location )
+GXVoid EMSpotlight::GetLocation ( GXVec3& out )
 {
-	mod_mat.GetW ( location );
+	mod_mat.GetW ( out );
 }
 
 GXVoid EMSpotlight::SetRotation ( const GXMat4 &rot )

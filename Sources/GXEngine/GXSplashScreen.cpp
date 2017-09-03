@@ -16,7 +16,7 @@
 #define ALPHA_FOR_RGB							255
 
 
-enum class eGXStatus : GXUPointer
+enum class eGXStatus : GXUByte
 {
 	Success = 0,
 	CanNotLoadImage = 1,
@@ -43,7 +43,9 @@ GXSplashScreen::~GXSplashScreen ()
 	if ( hwnd == (HWND)INVALID_HANDLE_VALUE ) return;
 
 	PostMessageW ( hwnd, WM_QUIT, 0, 0 );
-	thread.Join ();
+	thread->Join ();
+
+	delete thread;
 
 	instance = nullptr;
 }
@@ -58,9 +60,10 @@ GXVoid GXSplashScreen::Hide ()
 	intend = eGXSplashScreenState::Hidden;
 }
 
-GXSplashScreen::GXSplashScreen () :
-thread ( &GXSplashScreen::MessageLoop, this )
+GXSplashScreen::GXSplashScreen ()
 {
+	thread = new GXThread ( &GXSplashScreen::MessageLoop, this );
+
 	hwnd = (HWND)INVALID_HANDLE_VALUE;
 	bitmap = (HBITMAP)INVALID_HANDLE_VALUE;
 	bitmapWidth = 0;
@@ -69,7 +72,7 @@ thread ( &GXSplashScreen::MessageLoop, this )
 	state = eGXSplashScreenState::Hidden;
 	intend = eGXSplashScreenState::Hidden;
 
-	thread.Start ();
+	thread->Start ();
 }
 
 GXVoid GXSplashScreen::FillRGB ( GXUByte** destination, const GXUByte* source, GXUShort width, GXUShort height ) const
@@ -303,6 +306,10 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
 				GXLogW ( L"GXSplashScreen::~GXSplashScreen::Error - —н€тие регистрации класса окна провалено (ветвь 2).\n" );
 				status = eGXStatus::CanNotFreeWindowResources;
 			}
+		break;
+
+		case eGXStatus::CanNotFreeWindowResources:
+			// NOTHING
 		break;
 
 		default:

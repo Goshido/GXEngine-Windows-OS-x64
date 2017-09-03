@@ -48,17 +48,17 @@ GXVoid EMActor::OnDrawHudMaskPass ()
 	//NOTHING
 }
 
-GXVoid EMActor::OnUpdate ( GXFloat deltaTime )
+GXVoid EMActor::OnUpdate ( GXFloat /*deltaTime*/ )
 {
 	//NOTHING
 }
 
-GXVoid EMActor::OnSave ( GXUByte** data )
+GXVoid EMActor::OnSave ( GXUByte** /*data*/ )
 {
 	//NOTHING
 }
 
-GXVoid EMActor::OnLoad ( const GXUByte* data )
+GXVoid EMActor::OnLoad ( const GXUByte* /*data*/ )
 {
 	//NOTHING
 }

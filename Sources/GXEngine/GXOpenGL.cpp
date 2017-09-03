@@ -4,11 +4,11 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define OPENGL_GET_PROC(p,n)					\
-{												\
-	n = (p)wglGetProcAddress ( #n );			\
-	if ( !n )									\
-		GXLogA ( "#n not found\n" );			\
+#define OPENGL_GET_PROC(p,n)																		\
+{																									\
+	n = reinterpret_cast <p> ( reinterpret_cast <GXVoid*> ( wglGetProcAddress ( #n ) ) );			\
+	if ( !n )																						\
+		GXLogA ( "#n not found\n" );																\
 }
 
 
@@ -202,7 +202,7 @@ GXVoid GXOpenGLState::Save ()
 	glGetIntegerv ( GL_MAX_DRAW_BUFFERS, &maxDrawBuffers );
 
 	for ( GLint i = 0; i < maxDrawBuffers; i++ )
-		glGetIntegerv ( GL_DRAW_BUFFER0 + i, (GLint*)( drawBuffers + i ) );
+		glGetIntegerv ( (GLenum)( GL_DRAW_BUFFER0 + i ), (GLint*)( drawBuffers + i ) );
 
 	GXCheckOpenGLError ();
 }

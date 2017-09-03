@@ -22,7 +22,7 @@ class GXSoundChannel
 		GXSoundChannel ();
 		~GXSoundChannel ();
 
-		GXVoid SetVolume ( GXFloat volume );
+		GXVoid SetVolume ( GXFloat volumeLevel );
 		GXVoid AddEmitter ( GXSoundEmitter* emitter );
 
 		GXVoid Update ();

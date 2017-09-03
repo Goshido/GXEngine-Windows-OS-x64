@@ -417,7 +417,7 @@ GXVoid EMRenderer::ApplySSAO ()
 	ssaoApplyMaterial.Unbind ();
 }
 
-GXVoid EMRenderer::ApplyMotionBlur ( GXFloat deltaTime )
+GXVoid EMRenderer::ApplyMotionBlur ()
 {
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, velocityTileMaxTexture.GetTextureObject (), 0 );
@@ -533,7 +533,7 @@ GXVoid EMRenderer::ApplyToneMapping ( GXFloat deltaTime )
 			continue;
 		}
 
-		toneMapperLuminanceTripletReducerMaterial.SetLevelOfDetailToReduce ( i - 1 );
+		toneMapperLuminanceTripletReducerMaterial.SetLevelOfDetailToReduce ( (GXUByte)( i - 1 ) );
 		toneMapperLuminanceTripletReducerMaterial.Bind ( nullTransform );
 		screenQuadMesh.Render ();
 		toneMapperLuminanceTripletReducerMaterial.Unbind ();
@@ -653,7 +653,7 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 			texture = &ssaoOmegaTexture;
 		break;
 
-		default:
+		case eEMRenderTarget::Combine:
 			//NOTHING
 		break;
 	}
@@ -672,10 +672,10 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 	GXCamera::SetActiveCamera ( oldCamera );
 }
 
-GXVoid EMRenderer::SetOnObjectCallback ( GXVoid* handler, PFNEMRENDERERONOBJECTPROC callback )
+GXVoid EMRenderer::SetOnObjectCallback ( GXVoid* handlerObject, PFNEMRENDERERONOBJECTPROC callback )
 {
 	OnObject = callback;
-	this->handler = handler;
+	handler = handlerObject;
 }
 
 GXVoid EMRenderer::GetObject ( GXUShort x, GXUShort y )
@@ -960,8 +960,8 @@ GXVoid EMRenderer::CreateFBO ()
 	yottaTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE, GL_CLAMP_TO_EDGE );
 
 	GXUShort maxSamples = (GXUShort)motionBlurMaterial.GetMaxBlurSamples ();
-	GXUShort w = width / maxSamples;
-	GXUShort h = height / maxSamples;
+	GXUShort w = (GXUShort)( width / maxSamples );
+	GXUShort h = (GXUShort)( height / maxSamples );
 	velocityTileMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	velocityNeighborMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
 
@@ -998,8 +998,8 @@ GXVoid EMRenderer::UpdateMotionBlurSettings ()
 		GXRenderer& renderer = GXRenderer::GetInstance ();
 		GXUShort width = (GXUShort)renderer.GetWidth ();
 		GXUShort height = (GXUShort)renderer.GetHeight ();
-		GXUShort w = width / (GXUShort)newMaxMotionBlurSamples;
-		GXUShort h = height / (GXUShort)newMaxMotionBlurSamples;
+		GXUShort w = (GXUShort)( width / newMaxMotionBlurSamples );
+		GXUShort h = (GXUShort)( height / newMaxMotionBlurSamples );
 
 		velocityTileMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
 		velocityNeighborMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
@@ -1119,12 +1119,12 @@ GXVoid EMRenderer::LightUpByDirected ( EMDirectedLight* light )
 	directedLightMaterial.Unbind ();
 }
 
-GXVoid EMRenderer::LightUpBySpot ( EMSpotlight* light )
+GXVoid EMRenderer::LightUpBySpot ( EMSpotlight* /*light*/ )
 {
 	//TODO
 }
 
-GXVoid EMRenderer::LightUpByBulp ( EMBulp* light )
+GXVoid EMRenderer::LightUpByBulp ( EMBulp* /*light*/ )
 {
 	//TODO
 }
