@@ -1,4 +1,4 @@
-﻿//version 1.37
+﻿//version 1.38
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
@@ -24,90 +24,115 @@ GXVec2::GXVec2 ()
 	memset ( this, 0, sizeof ( GXVec2 ) );
 }
 
-GXVec2::GXVec2 ( GXFloat component_1, GXFloat component_2 )
+GXVec2::GXVec2 ( GXFloat x, GXFloat y )
 {
-	x = component_1;
-	y = component_2;
+	data[ 0 ] = x;
+	data[ 1 ] = y;
 }
 
-GXVoid GXVec2::operator = ( const GXVec2 &vector )
+GXVec2::GXVec2 ( const GXVec2 &other )
 {
-	memcpy ( this, &vector, sizeof ( GXVec2 ) );
+	memcpy ( this, &other, sizeof ( GXVec2 ) );
 }
 
-GXVec2 GXCALL GXCreateVec2 ( GXFloat component_1, GXFloat component_2 )
+GXVoid GXVec2::SetX ( GXFloat x )
 {
-	GXVec2 ans;
-	ans.x = component_1;
-	ans.y = component_2;
-	return ans;
+	data[ 0 ] = x;
 }
 
-GXVoid GXCALL GXNormalizeVec2 ( GXVec2 &inOut )
+GXFloat GXVec2::GetX () const
 {
-	GXFloat invA = 1.0f / sqrtf ( inOut.x * inOut.x + inOut.y * inOut.y );
-	inOut.x *= invA;
-	inOut.y *= invA;
+	return data[ 0 ];
 }
 
-GXVoid GXCALL GXCalculateNormalVec2Fast ( GXVec2 &normal, const GXVec2 &a, const GXVec2 &b )
+GXVoid GXVec2::SetY ( GXFloat y )
 {
-	normal.x = a.y - b.y;
-	normal.y = b.x - a.x;
+	data[ 1 ] = y;
 }
 
-GXVoid GXCALL GXCalculateNormalVec2 ( GXVec2 &normal, const GXVec2 &a, const GXVec2 &b )
+GXFloat GXVec2::GetY () const
 {
-	GXCalculateNormalVec2Fast ( normal, a, b );
-	GXNormalizeVec2 ( normal );
+	return data[ 1 ];
 }
 
-GXVoid GXCALL GXSumVec2Vec2 ( GXVec2 &out, const GXVec2 &a, const GXVec2 &b )
+GXVoid GXVec2::Normalize ()
 {
-	out.x = a.x + b.x;
-	out.y = a.y + b.y;
+	Multiply ( *this, 1.0f / Length () );
 }
 
-GXVoid GXCALL GXSumVec2ScaledVec2 ( GXVec2 &out, const GXVec2 &a, GXFloat s, const GXVec2 &b )
+GXVoid GXVec2::CalculateNormalFast ( const GXVec2 &a, const GXVec2 &b )
 {
-	out.x = a.x + s * b.x;
-	out.y = a.y + s * b.y;
+	data[ 0 ] = a.data[ 1 ] - b.data[ 1 ];
+	data[ 1 ] = b.data[ 0 ] - a.data[ 0 ];
 }
 
-GXVoid GXCALL GXSubVec2Vec2 ( GXVec2 &out, const GXVec2 &a, const GXVec2 &b )
+GXVoid GXVec2::CalculateNormal ( const GXVec2 &a, const GXVec2 &b )
 {
-	out.x = a.x - b.x;
-	out.y = a.y - b.y;
+	CalculateNormalFast ( a, b );
+	Normalize ();
 }
 
-GXVoid GXCALL GXMulVec2Vec2 ( GXVec2 &out, const GXVec2 &a, const GXVec2 &b )
+GXVoid GXVec2::Sum ( const GXVec2 &a, const GXVec2 &b )
 {
-	out.x = a.x * b.x;
-	out.y = a.y * b.y;
+	data[ 0 ] = a.data[ 0 ] + b.data[ 0 ];
+	data[ 1 ] = a.data[ 1 ] + b.data[ 1 ];
 }
 
-GXVoid GXCALL GXMulVec2Scalar ( GXVec2 &out, const GXVec2 &v, GXFloat a )
+GXVoid GXVec2::Sum ( const GXVec2 &a, GXFloat scale, const GXVec2 &b )
 {
-	out.x = v.x * a;
-	out.y = v.y * a;
+	data[ 0 ] = a.data[ 0 ] + scale * b.data[ 0 ];
+	data[ 1 ] = a.data[ 1 ] + scale * b.data[ 1 ];
 }
 
-GXFloat GXCALL GXDotVec2 ( const GXVec2 &a, const GXVec2 &b )
+GXVoid GXVec2::Substract ( const GXVec2 &a, const GXVec2 &b )
 {
-	return a.x * b.x + a.y * b.y;
+	data[ 0 ] = a.data[ 0 ] - b.data[ 0 ];
+	data[ 1 ] = a.data[ 1 ] - b.data[ 1 ];
 }
 
-GXFloat GXCALL GXLengthVec2 ( const GXVec2 &v )
+GXVoid GXVec2::Multiply ( const GXVec2 &a, const GXVec2 &b )
 {
-	return sqrtf ( v.x * v.x + v.y * v.y );
+	data[ 0 ] = a.data[ 0 ] * b.data[ 0 ];
+	data[ 1 ] = a.data[ 1 ] * b.data[ 1 ];
 }
 
-GXBool GXCALL GXIsEqualVec2 ( const GXVec2 &a, const GXVec2 &b )
+GXVoid GXVec2::Multiply ( const GXVec2 &v, GXFloat scale )
 {
-	if ( a.x != b.x ) return GX_FALSE;
-	if ( a.y != b.y ) return GX_FALSE;
+	data[ 0 ] = v.data[ 0 ] * scale;
+	data[ 1 ] = v.data[ 1 ] * scale;
+}
+
+GXFloat GXVec2::DotProduct ( const GXVec2 &other ) const
+{
+	return data[ 0 ] * other.data[ 0 ] + data[ 1 ] * other.data[ 1 ];
+}
+
+GXFloat GXVec2::Length () const
+{
+	return sqrtf ( SquaredLength () );
+}
+
+GXFloat GXVec2::SquaredLength () const
+{
+	DotProduct ( *this );
+}
+
+GXBool GXVec2::IsEqual ( const GXVec2 &other ) const
+{
+	if ( data[ 0 ] != other.data[ 0 ] ) return GX_FALSE;
+	if ( data[ 1 ] != other.data[ 1 ] ) return GX_FALSE;
 
 	return GX_TRUE;
+}
+
+GXVec2 GXCALL GXVec2::Create ( GXFloat x, GXFloat y )
+{
+	return GXVec2 ( x, y );
+}
+
+GXVec2& GXVec2::operator = ( const GXVec2 &vector )
+{
+	memcpy ( this, &vector, sizeof ( GXVec2 ) );
 }
 
 //------------------------------------------------------------------------------------------------
@@ -115,24 +140,25 @@ GXBool GXCALL GXIsEqualVec2 ( const GXVec2 &a, const GXVec2 &b )
 eGXLineRelationship GXCALL GXLineIntersection2D ( GXVec2 &intersectionPoint, const GXVec2 &a0, const GXVec2 &a1, const GXVec2 &b0, const GXVec2 &b1 )
 {
 	GXVec2 alpha;
-	GXSubVec2Vec2 ( alpha, a1, a0 );
+	alpha.Substract ( a1, a0 );
 
 	GXVec2 betta;
-	GXSubVec2Vec2 ( betta, b1, b0 );
+	betta.Substract ( b1, b0 );
 
-	GXVec2 yotta ( -alpha.y, alpha.x );
-	GXFloat omega = GXDotVec2 ( betta, yotta );
+	GXVec2 yotta ( -alpha.GetY (), alpha.GetX () );
+	GXFloat omega = yotta.DotProduct ( betta );
 
 	if ( omega == 0.0f )
 	{
-		GXVec2 gamma = GXIsEqualVec2 ( a0, b0 ) ? b1 : b0;
+		GXVec2 gamma = a0.IsEqual ( b0 ) ? b1 : b0;
 
 		GXVec2 zetta;
-		GXSubVec2Vec2 ( zetta, gamma, a0 );
-		GXNormalizeVec2 ( zetta );
+		zetta.Substract ( gamma, a0 );
+		zetta.Normalize ();
 
-		GXNormalizeVec2 ( alpha );
-		GXFloat eta = GXDotVec2 ( alpha, zetta );
+		alpha.Normalize ();
+
+		GXFloat eta = alpha.DotProduct ( zetta );
 
 		if ( eta == 1.0f || eta == -1.0f )
 		{
@@ -140,14 +166,14 @@ eGXLineRelationship GXCALL GXLineIntersection2D ( GXVec2 &intersectionPoint, con
 			return eGXLineRelationship::Overlap;
 		}
 
-		intersectionPoint = GXCreateVec2 ( FLT_MAX, FLT_MAX );
+		intersectionPoint = GXVec2::Create ( FLT_MAX, FLT_MAX );
 		return eGXLineRelationship::NoIntersection;
 	}
 
 	GXVec2 phi;
-	GXSubVec2Vec2 ( phi, b0, a0 );
+	phi.Substract ( b0, a0 );
 
-	GXSumVec2ScaledVec2 ( intersectionPoint, b0, -GXDotVec2 ( phi, yotta ) / omega, betta );
+	intersectionPoint.Sum ( b0, -phi.DotProduct ( yotta ) / omega, betta );
 	return eGXLineRelationship::Intersection;
 }
 
@@ -159,14 +185,148 @@ static GXVec3 absoluteZ ( 0.0f, 0.0f, 1.0 );
 
 GXVec3::GXVec3 ()
 {
-	//NOTHING
+	memset ( data, 0, 3 * sizeof ( GXFloat ) );
 }
 
-GXVec3::GXVec3 ( GXFloat component_1, GXFloat component_2, GXFloat component_3 )
+GXVec3::GXVec3 ( GXFloat x, GXFloat y, GXFloat z )
 {
-	x = component_1;
-	y = component_2;
-	z = component_3;
+	SetX ( x );
+	SetY ( y );
+	SetZ ( z );
+}
+
+GXVec3::GXVec3 ( const GXVec3 &other )
+{
+	memcpy ( this, &other, sizeof ( GXVec3 ) );
+}
+
+GXVoid GXVec3::SetX ( GXFloat x )
+{
+	data[ 0 ] = x;
+}
+
+GXFloat GXVec3::GetX () const
+{
+	return data[ 0 ];
+}
+
+GXVoid GXVec3::SetY ( GXFloat y )
+{
+	data[ 1 ] = y;
+}
+
+GXFloat GXVec3::GetY () const
+{
+	return data[ 1 ];
+}
+
+GXVoid GXVec3::SetZ ( GXFloat z )
+{
+	data[ 2 ] = z;
+}
+
+GXFloat GXVec3::GetZ () const
+{
+	return data[ 2 ];
+}
+
+GXVoid GXVec3::Normalize ()
+{
+	Multiply ( *this, 1.0f / Length () );
+}
+
+GXVoid GXVec3::Sum ( const GXVec3 &a, const GXVec3 &b )
+{
+	data[ 0 ] = a.data[ 0 ] + b.data[ 0 ];
+	data[ 1 ] = a.data[ 1 ] + b.data[ 1 ];
+	data[ 2 ] = a.data[ 2 ] + b.data[ 2 ];
+}
+
+GXVoid GXVec3::Sum ( const GXVec3 &a, GXFloat scale, const GXVec3 &b )
+{
+	data[ 0 ] = a.data[ 0 ] + scale * b.data[ 0 ];
+	data[ 1 ] = a.data[ 1 ] + scale * b.data[ 1 ];
+	data[ 2 ] = a.data[ 2 ] + scale * b.data[ 2 ];
+}
+
+GXVoid GXVec3::Substract ( const GXVec3 &a, const GXVec3 &b )
+{
+	data[ 0 ] = a.data[ 0 ] - b.data[ 0 ];
+	data[ 1 ] = a.data[ 1 ] - b.data[ 1 ];
+	data[ 2 ] = a.data[ 2 ] - b.data[ 2 ];
+}
+
+GXVoid GXVec3::Multiply ( const GXVec3 &a, GXFloat scale )
+{
+	data[ 0 ] *= a.data[ 0 ] * scale;
+	data[ 1 ] *= a.data[ 1 ] * scale;
+	data[ 2 ] *= a.data[ 2 ] * scale;
+}
+
+GXVoid GXVec3::Multiply ( const GXVec3 &a, const GXVec3 &b )
+{
+	data[ 0 ] = a.data[ 0 ] * b.data[ 0 ];
+	data[ 1 ] = a.data[ 1 ] * b.data[ 1 ];
+	data[ 2 ] = a.data[ 2 ] * b.data[ 2 ];
+}
+
+GXFloat GXVec3::DotProduct ( const GXVec3 &other ) const
+{
+	return data[ 0 ] * other.data[ 0 ] + data[ 1 ] * other.data[ 1 ] + data[ 2 ] * other.data[ 2 ];
+}
+
+GXVoid GXVec3::CrossProduct ( const GXVec3 &a, const GXVec3 &b )
+{
+	data[ 0 ] = a.data[ 1 ] * b.data[ 2 ] - a.data[ 2 ] * b.data[ 1 ];
+	data[ 1 ] = a.data[ 2 ] * b.data[ 0 ] - a.data[ 0 ] * b.data[ 2 ];
+	data[ 2 ] = a.data[ 0 ] * b.data[ 1 ] - a.data[ 1 ] * b.data[ 0 ];
+}
+
+GXFloat GXVec3::Length () const
+{
+	return sqrtf ( DotProduct ( *this ) );
+}
+
+GXFloat GXVec3::SquaredLength () const
+{
+	return DotProduct ( *this );
+}
+
+GXFloat GXVec3::Distance ( const GXVec3 &other ) const
+{
+	GXVec3 difference;
+	difference.Substract ( *this, other );
+	return difference.Length ();
+}
+
+GXFloat GXVec3::SquaredDistance ( const GXVec3 &other ) const
+{
+	GXVec3 difference;
+	difference.Substract ( *this, other );
+	return difference.SquaredLength ();
+}
+
+GXVoid GXVec3::Reverse ()
+{
+	data[ 0 ] = -data[ 0 ];
+	data[ 1 ] = -data[ 1 ];
+	data[ 2 ] = -data[ 2 ];
+}
+
+GXVoid GXVec3::LinearInterpolation ( const GXVec3 &start, const GXVec3 &finish, GXFloat interpolationFactor )
+{
+	GXVec3 difference;
+	difference.Substract ( finish, start );
+	Sum ( start, interpolationFactor, difference );
+}
+
+GXBool GXVec3::IsEqual ( const GXVec3 &other )
+{
+	if ( data[ 0 ] != other.data[ 0 ] ) return GX_FALSE;
+	if ( data[ 1 ] != other.data[ 1 ] ) return GX_FALSE;
+	if ( data[ 2 ] != other.data[ 2 ] ) return GX_FALSE;
+
+	return GX_TRUE;
 }
 
 const GXVec3& GXVec3::GetAbsoluteX ()
@@ -184,158 +344,65 @@ const GXVec3& GXVec3::GetAbsoluteZ ()
 	return absoluteZ;
 }
 
-GXVoid GXVec3::operator = ( const GXVec3 &vector )
+GXVec3 GXCALL GXVec3::Create ( GXFloat x, GXFloat y, GXFloat z )
+{
+	return GXVec3 ( x, y, z );
+}
+
+GXVoid GXCALL GXVec3::Projection ( GXVec3 &projection, const GXVec3 &vector, const GXVec3 &unitVector )
+{
+	GXVec3 normalVector = vector;
+	normalVector.Normalize ();
+	GXFloat factor = vector.Length () * unitVector.DotProduct ( normalVector );
+	projection.Multiply ( unitVector, factor );
+}
+
+GXVoid GXCALL GXVec3::MakeOrthonormalBasis ( GXVec3 &baseX, GXVec3 &adjustedY, GXVec3 &adjustedZ )
+{
+	adjustedZ.CrossProduct ( baseX, adjustedY );
+
+	if ( adjustedZ.SquaredLength () == 0.0f )
+	{
+		GXLogW ( L"GXMakeOrthonormalBasis::Error - Can't make this!\n" );
+		return;
+	}
+
+	adjustedY.CrossProduct ( adjustedZ, baseX );
+
+	baseX.Normalize ();
+	adjustedY.Normalize ();
+	adjustedZ.Normalize ();
+}
+
+GXVec3& GXVec3::operator = ( const GXVec3 &vector )
 {
 	memcpy ( this, &vector, sizeof ( GXVec3 ) );
 }
 
 //----------------------------------------------------------------------------
 
-GXVoid GXCALL GXNormalizeVec3 ( GXVec3 &inOut )
+GXEuler::GXEuler ()
 {
-	GXFloat inv_a = 1.0f / sqrtf ( inOut.x * inOut.x + inOut.y * inOut.y + inOut.z * inOut.z );
-	inOut.x *= inv_a;
-	inOut.y *= inv_a;
-	inOut.z *= inv_a;
+	pitchRadians = 0.0f;
+	yawRadians = 0.0f;
+	rollRadians = 0.0f;
 }
 
-GXVec3 GXCALL GXCreateVec3 ( GXFloat component_1, GXFloat component_2, GXFloat component_3 )
+GXEuler::GXEuler ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians )
 {
-	GXVec3 ans;
-	ans.x = component_1;
-	ans.y = component_2;
-	ans.z = component_3;
-	return ans;
+	this->pitchRadians = pitchRadians;
+	this->yawRadians = yawRadians;
+	this->rollRadians = rollRadians;
 }
 
-GXVoid GXCALL GXSumVec3Vec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b )
+GXEuler::GXEuler ( const GXEuler &other )
 {
-	out.x = a.x + b.x;
-	out.y = a.y + b.y;
-	out.z = a.z + b.z;
+	memcpy ( this, &other, sizeof ( GXEuler ) );
 }
 
-GXVoid GXCALL GXSumVec3ScaledVec3 ( GXVec3 &out, const GXVec3 &a, GXFloat s, const GXVec3 &b )
+GXEuler& GXEuler::operator = ( const GXEuler &other )
 {
-	out.x = a.x + s * b.x;
-	out.y = a.y + s * b.y;
-	out.z = a.z + s * b.z;
-}
-
-GXVoid GXCALL GXSubVec3Vec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b )
-{
-	out.x = a.x - b.x;
-	out.y = a.y - b.y;
-	out.z = a.z - b.z;
-}
-
-GXVoid GXCALL GXSubVec3ScaledVec3 ( GXVec3 &out, const GXVec3 &a, GXFloat s, const GXVec3 &b )
-{
-	out.x = a.x - s * b.x;
-	out.y = a.y - s * b.y;
-	out.z = a.z - s * b.z;
-}
-
-GXVoid GXCALL GXMulVec3Vec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b )
-{
-	out.x = a.x * b.x;
-	out.y = a.y * b.y;
-	out.z = a.z * b.z;
-}
-
-GXVoid GXCALL GXMulVec3Scalar ( GXVec3 &out, const GXVec3 &v, GXFloat factor )
-{
-	out.x = v.x * factor;
-	out.y = v.y * factor;
-	out.z = v.z * factor;
-}
-
-GXFloat GXCALL GXDotVec3 ( const GXVec3 &a, const GXVec3 &b )
-{
-	return a.x * b.x + a.y * b.y + a.z * b.z;
-}
-
-GXVoid GXCALL GXCrossVec3Vec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b )
-{
-	out.x = a.y * b.z - a.z * b.y;
-	out.y = a.z * b.x - a.x * b.z;
-	out.z = a.x * b.y - a.y * b.x;
-}
-
-GXFloat GXCALL GXLengthVec3 ( const GXVec3 &v )
-{
-	return sqrtf ( v.x * v.x + v.y * v.y + v.z * v.z );
-}
-
-GXFloat GXCALL GXSquareLengthVec3 ( const GXVec3 &v )
-{
-	return v.x * v.x + v.y * v.y + v.z * v.z;
-}
-
-GXFloat GXCALL GXDistanceVec3Vec3 ( const GXVec3 &a, const GXVec3 &b )
-{
-	GXVec3 diff;
-	GXSubVec3Vec3 ( diff, a, b );
-	return GXLengthVec3 ( diff );
-}
-
-GXFloat GXCALL GXSquareDistanceVec3Vec3 ( const GXVec3 &a, const GXVec3 &b )
-{
-	GXVec3 diff;
-	GXSubVec3Vec3 ( diff, a, b );
-	return GXSquareLengthVec3 ( diff );
-}
-
-GXVoid GXCALL GXReverseVec3 ( GXVec3 &inOut )
-{
-	inOut.x = -inOut.x;
-	inOut.y = -inOut.y;
-	inOut.z = -inOut.z;
-}
-
-GXVoid GXCALL GXLerpVec3 ( GXVec3 &out, const GXVec3 &a, const GXVec3 &b, GXFloat factor )
-{
-	GXVec3 difference;
-	GXSubVec3Vec3 ( difference, b, a );
-	GXSumVec3ScaledVec3 ( out, a, factor, difference );
-}
-
-GXVoid GXCALL GXProjectVec3Vec3 ( GXVec3 &projection, const GXVec3 &vector, const GXVec3 &unitVector )
-{
-	GXVec3 normalVector = vector;
-	GXNormalizeVec3 ( normalVector );
-
-	GXFloat factor = GXLengthVec3 ( vector ) * GXDotVec3 ( normalVector, unitVector );
-
-	projection.x = unitVector.x * factor;
-	projection.y = unitVector.y * factor;
-	projection.z = unitVector.z * factor;
-}
-
-GXVoid GXCALL GXMakeOrthonormalBasis ( GXVec3 &baseX, GXVec3 &adjustedY, GXVec3 &adjustedZ )
-{
-	GXCrossVec3Vec3 ( adjustedZ, baseX, adjustedY );
-
-	if ( GXSquareLengthVec3 ( adjustedZ ) == 0.0f )
-	{
-		GXLogW ( L"GXMakeOrthonormalBasis::Error - Can't make this!\n" );
-		return;
-	}
-
-	GXCrossVec3Vec3 ( adjustedY, adjustedZ, baseX );
-
-	GXNormalizeVec3 ( baseX );
-	GXNormalizeVec3 ( adjustedY );
-	GXNormalizeVec3 ( adjustedZ );
-}
-
-GXBool GXCALL GXIsEqualVec3 ( const GXVec3 &a, const GXVec3 &b )
-{
-	if ( a.x != b.x ) return GX_FALSE;
-	if ( a.y != b.y ) return GX_FALSE;
-	if ( a.z != b.z ) return GX_FALSE;
-
-	return GX_TRUE;
+	memcpy ( this, &other, sizeof ( GXEuler ) );
 }
 
 //----------------------------------------------------------------------------------------
@@ -345,62 +412,615 @@ GXVec4::GXVec4 ()
 	//NOTHING
 }
 
-GXVec4::GXVec4 ( GXVec3& vector, GXFloat component_4 )
+GXVec4::GXVec4 ( GXVec3& vector, GXFloat w )
 {
-	memcpy ( arr, vector.arr, 3 * sizeof ( GXFloat ) );
-	w = component_4;
+	memcpy ( data, vector.data, 3 * sizeof ( GXFloat ) );
+	data[ 3 ] = w;
 }
 
-GXVec4::GXVec4 ( GXFloat component_1, GXFloat component_2, GXFloat component_3, GXFloat component_4 )
+GXVec4::GXVec4 ( GXFloat x, GXFloat y, GXFloat z, GXFloat w )
 {
-	x = component_1;
-	y = component_2;
-	z = component_3;
-	w = component_4;
+	data[ 0 ] = x;
+	data[ 1 ] = y;
+	data[ 2 ] = z;
+	data[ 3 ] = w;
 }
 
-GXVoid GXVec4::operator = ( const GXVec4 &vector )
+GXVoid GXVec4::SetX ( GXFloat x )
+{
+	data[ 0 ] = x;
+}
+
+GXFloat GXVec4::GetX () const
+{
+	return data[ 0 ];
+}
+
+GXVoid GXVec4::SetY ( GXFloat y )
+{
+	data[ 1 ] = y;
+}
+
+GXFloat GXVec4::GetY () const
+{
+	return data[ 1 ];
+}
+
+GXVoid GXVec4::SetZ ( GXFloat z )
+{
+	data[ 2 ] = z;
+}
+
+GXFloat GXVec4::GetZ () const
+{
+	return data[ 2 ];
+}
+
+GXVoid GXVec4::SetW ( GXFloat w )
+{
+	data[ 3 ] = w;
+}
+
+GXFloat GXVec4::GetW () const
+{
+	return data[ 3 ];
+}
+
+GXVec4& GXVec4::operator = ( const GXVec4 &vector )
 {
 	memcpy ( this, &vector, sizeof ( GXVec4 ) );
 }
 
-GXVec4 GXCALL GXCreateVec4 ( GXFloat component_1, GXFloat component_2, GXFloat component_3, GXFloat component_4 )
+GXVec4 GXCALL GXVec4::Create ( GXFloat x, GXFloat y, GXFloat z, GXFloat w )
 {
-	return GXVec4 ( component_1, component_2, component_3, component_4 );
+	return GXVec4 ( x, y, z, w );
+}
+
+//------------------------------------------------------------------
+
+GXColorRGB::GXColorRGB ()
+{
+	memset ( data, 0, 4 * sizeof ( GXFloat ) );
+}
+
+GXColorRGB::GXColorRGB ( GXFloat red, GXFloat green, GXFloat blue, GXFloat alpha )
+{
+	data[ 0 ] = red;
+	data[ 1 ] = green;
+	data[ 2 ] = blue;
+	data[ 3 ] = alpha;
+}
+
+GXColorRGB::GXColorRGB ( GXUByte red, GXUByte green, GXUByte blue, GXFloat alpha )
+{
+	data[ 0 ] = red * COLOR_TO_FLOAT_FACTOR;
+	data[ 1 ] = green * COLOR_TO_FLOAT_FACTOR;
+	data[ 2 ] = blue * COLOR_TO_FLOAT_FACTOR;
+	data[ 3 ] = alpha * COLOR_TO_FLOAT_FACTOR;
+}
+
+GXColorRGB::GXColorRGB ( const GXColorRGB &other )
+{
+	memcpy ( this, &other, sizeof ( GXColorRGB ) );
+}
+
+GXVoid GXColorRGB::SetRed ( GXFloat red )
+{
+	data[ 0 ] = red;
+}
+
+GXFloat GXColorRGB::GetRed () const
+{
+	return data[ 0 ];
+}
+
+GXVoid GXColorRGB::SetGreen ( GXFloat green )
+{
+	data[ 1 ] = green;
+}
+
+GXFloat GXColorRGB::GetGreen () const
+{
+	return data[ 1 ];
+}
+
+GXVoid GXColorRGB::SetBlue ( GXFloat blue )
+{
+	data[ 2 ] = blue;
+}
+
+GXFloat GXColorRGB::GetBlue () const
+{
+	return data[ 2 ];
+}
+
+GXVoid GXColorRGB::SetAlpha ( GXFloat alpha )
+{
+	data[ 3 ] = alpha;
+}
+
+GXFloat GXColorRGB::GetAlpha () const
+{
+	return data[ 3 ];
+}
+
+GXVoid GXColorRGB::From ( const GXColorHSV &color )
+{
+	GXFloat correctedHue = color.GetHue ();
+
+	while ( correctedHue >= 360.0f )
+		correctedHue -= 360.0f;
+
+	while ( correctedHue < 0.0f )
+		correctedHue += 360.0f;
+
+	GXFloat value = color.GetValue ();
+
+	GXUByte selector = (GXUByte)( (GXInt)( correctedHue * HSVA_FACTOR ) % 6 );
+	GXFloat minValue = ( ( 100.0f - color.GetSaturation () ) * value ) * 0.01f;
+	GXFloat delta = ( value - minValue ) * ( ( (GXInt)correctedHue % 60 ) * HSVA_FACTOR );
+	GXFloat increment = minValue + delta;
+	GXFloat decrement = value - delta;
+
+	data[ 3 ] = color.GetAlpha () * HSVA_TO_RGBA_FLOAT;
+
+	switch ( selector )
+	{
+		case 0:
+			data[ 0 ] = value * HSVA_TO_RGBA_FLOAT;
+			data[ 1 ] = increment * HSVA_TO_RGBA_FLOAT;
+			data[ 2 ] = minValue * HSVA_TO_RGBA_FLOAT;
+		break;
+
+		case 1:
+			data[ 0 ] = decrement * HSVA_TO_RGBA_FLOAT;
+			data[ 1 ] = value * HSVA_TO_RGBA_FLOAT;
+			data[ 2 ] = minValue * HSVA_TO_RGBA_FLOAT;
+		break;
+
+		case 2:
+			data[ 0 ] = minValue * HSVA_TO_RGBA_FLOAT;
+			data[ 1 ] = value * HSVA_TO_RGBA_FLOAT;
+			data[ 2 ] = increment * HSVA_TO_RGBA_FLOAT;
+		break;
+
+		case 3:
+			data[ 0 ] = minValue * HSVA_TO_RGBA_FLOAT;
+			data[ 1 ] = decrement * HSVA_TO_RGBA_FLOAT;
+			data[ 2 ] = value * HSVA_TO_RGBA_FLOAT;
+		break;
+
+		case 4:
+			data[ 0 ] = increment * HSVA_TO_RGBA_FLOAT;
+			data[ 1 ] = minValue * HSVA_TO_RGBA_FLOAT;
+			data[ 2 ] = value * HSVA_TO_RGBA_FLOAT;
+		break;
+
+		case 5:
+			data[ 0 ] = value * HSVA_TO_RGBA_FLOAT;
+			data[ 1 ] = minValue * HSVA_TO_RGBA_FLOAT;
+			data[ 2 ] = decrement * HSVA_TO_RGBA_FLOAT;
+		break;
+
+		default:
+			GXLogW ( L"GXConvertHSVAToRGBA::Error (branch two) - Что-то пошло не так!\n" );
+		break;
+	}
+}
+
+GXColorRGB& GXColorRGB::operator = ( const GXColorRGB &other )
+{
+	memcpy ( this, &other, sizeof ( GXColorRGB ) );
+}
+
+//------------------------------------------------------------------
+
+GXColorHSV::GXColorHSV ()
+{
+	memset ( data, 0, 4 * sizeof ( GXFloat ) );
+}
+
+GXColorHSV::GXColorHSV ( GXFloat hue, GXFloat saturation, GXFloat value, GXFloat alpha )
+{
+	data[ 0 ] = hue;
+	data[ 1 ] = saturation;
+	data[ 2 ] = value;
+	data[ 3 ] = alpha;
+}
+
+GXColorHSV::GXColorHSV ( const GXColorHSV &other )
+{
+	memcpy ( this, &other, sizeof ( GXColorHSV ) );
+}
+
+GXVoid GXColorHSV::SetHue ( GXFloat hue )
+{
+	data[ 0 ] = hue;
+}
+
+GXFloat GXColorHSV::GetHue () const
+{
+	return data[ 0 ];
+}
+
+GXVoid GXColorHSV::SetSaturation ( GXFloat saturation )
+{
+	data[ 1 ] = saturation;
+}
+
+GXFloat GXColorHSV::GetSaturation () const
+{
+	return data[ 1 ];
+}
+
+GXVoid GXColorHSV::SetValue ( GXFloat value )
+{
+	data[ 2 ] = value;
+}
+
+GXFloat GXColorHSV::GetValue () const
+{
+	return data[ 2 ];
+}
+
+GXVoid GXColorHSV::SetAlpha ( GXFloat alpha )
+{
+	data[ 3 ] = alpha;
+}
+
+GXFloat GXColorHSV::GetAlpha () const
+{
+	return data[ 3 ];
+}
+
+GXVoid GXColorHSV::From ( const GXColorRGB &color )
+{
+	GXFloat maxValue = GXMaxf ( GXMaxf ( color.GetRed (), color.GetGreen () ), color.GetBlue () );
+	GXFloat minValue = GXMinf ( GXMinf ( color.GetRed (), color.GetGreen () ), color.GetBlue () );
+
+	if ( maxValue == minValue )
+		data[ 0 ] = 0.0f;
+	else if ( maxValue == color.GetRed () && color.GetGreen () >= color.GetBlue () )
+		data[ 0 ] = 60.0f * ( ( color.GetGreen () - color.GetBlue () ) / ( maxValue - minValue ) );
+	else if ( maxValue == color.GetRed () && color.GetGreen () < color.GetBlue () )
+		data[ 0 ] = 60.0f * ( ( color.GetGreen () - color.GetBlue () ) / ( maxValue - minValue ) ) + 360.0f;
+	else if ( maxValue == color.GetGreen () )
+		data[ 0 ] = 60.0f * ( ( color.GetBlue () - color.GetRed () ) / ( maxValue - minValue ) ) + 120.0f;
+	else if ( maxValue == color.GetBlue () )
+		data[ 0 ] = 60.0f * ( ( color.GetRed () - color.GetGreen () ) / ( maxValue - minValue ) ) + 240.0f;
+	else
+	{
+		GXUInt wtf = 0;
+		GXLogA ( "GXColorHSV::From - Unhanled hue! %u\n", wtf );
+	}
+
+	if ( maxValue == 0.0f )
+		data[ 1 ] = 0.0f;
+	else
+		data[ 1 ] = 100.0f * ( 1.0f - minValue / maxValue );
+
+	data[ 2 ] = 100.0f * maxValue;
+
+	data[ 3 ] = 100.0f * color.GetAlpha ();
+}
+
+GXVoid GXColorHSV::operator = ( const GXColorHSV &other )
+{
+	memcpy ( this, &other, sizeof ( GXColorHSV ) );
+}
+
+//------------------------------------------------------------------
+
+GXQuat::GXQuat ()
+{
+	memset ( data, 0, 4 * sizeof ( GXFloat ) );
+}
+
+GXQuat::GXQuat ( GXFloat x, GXFloat y, GXFloat z, GXFloat w )
+{
+	data[ 0 ] = x;
+	data[ 1 ] = y;
+	data[ 2 ] = z;
+	data[ 3 ] = w;
+}
+
+GXQuat::GXQuat ( const GXQuat &other )
+{
+	memcpy ( this, &other, sizeof ( GXQuat ) );
+}
+
+GXVoid GXQuat::SetX ( GXFloat x )
+{
+	data[ 0 ] = x;
+}
+
+GXFloat GXQuat::GetX () const
+{
+	return data[ 0 ];
+}
+
+GXVoid GXQuat::SetY ( GXFloat y )
+{
+	data[ 1 ] = y;
+}
+
+GXFloat GXQuat::GetY () const
+{
+	return data[ 1 ];
+}
+
+GXVoid GXQuat::SetZ ( GXFloat z )
+{
+	data[ 2 ] = z;
+}
+
+GXFloat GXQuat::GetZ () const
+{
+	return data[ 2 ];
+}
+
+GXVoid GXQuat::SetW ( GXFloat w )
+{
+	data[ 3 ] = w;
+}
+
+GXFloat GXQuat::GetW () const
+{
+	return data[ 3 ];
+}
+
+GXVoid GXQuat::Identity ()
+{
+	data[ 0 ] = data[ 1 ] = data[ 2 ] = 0.0f;
+	data[ 3 ] = 1.0f;
+}
+
+GXVoid GXQuat::FromAxisAngle ( GXFloat x, GXFloat y, GXFloat z, GXFloat angle )
+{
+	GXFloat sn = sinf ( angle * 0.5f );
+	GXFloat cs = cosf ( angle * 0.5f );
+
+	data[ 0 ] = x * sn;
+	data[ 1 ] = y * sn;
+	data[ 2 ] = z * sn;
+	data[ 3 ] = cs;
+}
+
+GXVoid GXQuat::FromAxisAngle ( const GXVec3 &axis, GXFloat angle )
+{
+	FromAxisAngle ( axis.GetX (), axis.GetY (), axis.GetZ (), angle );
+}
+
+GXVoid GXQuat::Rehand ()
+{
+	data[ 3 ] = -data[ 3 ];
+}
+
+GXVoid GXQuat::GetAxisAngle ( GXVec3 &axis, GXFloat &angle )
+{
+	GXQuat q ( *this );
+
+	if ( q.data[ 3 ] > 1.0f )
+		q.Normalize ();
+
+	angle = 2.0f * acosf ( q.data[ 3 ] );
+
+	axis.SetX ( q.data[ 0 ] );
+	axis.SetY ( q.data[ 1 ] );
+	axis.SetZ ( q.data[ 2 ] );
+
+	GXFloat s = sqrtf ( 1.0f - q.data[ 3 ] * q.data[ 3 ] );
+
+	if ( s < 0.001 ) return;
+
+	axis.Multiply ( axis, 1.0f / s );
+}
+
+GXVoid GXQuat::Multiply ( const GXQuat &a, const GXQuat &b )
+{
+	GXFloat alpha = ( a.data[ 3 ] + a.data[ 0 ] ) * ( b.data[ 3 ] + b.data[ 0 ] );
+	GXFloat betta = ( a.data[ 2 ] - a.data[ 1 ] ) * ( b.data[ 1 ] - b.data[ 2 ] );
+	GXFloat gamma = ( a.data[ 0 ] - a.data[ 3 ] ) * ( b.data[ 1 ] + b.data[ 2 ] );
+	GXFloat eta = ( a.data[ 1 ] + a.data[ 2 ] ) * ( b.data[ 0 ] - b.data[ 3 ] );
+	GXFloat omega = ( a.data[ 0 ] + a.data[ 2 ] ) * ( b.data[ 0 ] + b.data[ 1 ] );
+	GXFloat yotta = ( a.data[ 0 ] - a.data[ 2 ] ) * ( b.data[ 0 ] - b.data[ 1 ] );
+	GXFloat phi = ( a.data[ 3 ] + a.data[ 1 ] ) * ( b.data[ 3 ] - b.data[ 2 ] );
+	GXFloat zetta = ( a.data[ 3 ] - a.data[ 1 ] ) * ( b.data[ 3 ] + b.data[ 2 ] );
+
+	data[ 0 ] = alpha - ( omega + yotta + phi + zetta ) * 0.5f;
+	data[ 1 ] = -gamma + ( omega - yotta + phi - zetta ) * 0.5f;
+	data[ 2 ] = -eta + ( omega - yotta - phi + zetta ) * 0.5f;
+	data[ 3 ] = betta + ( -omega - yotta + phi + zetta ) * 0.5f;
+}
+
+GXVoid GXQuat::Sum ( const GXQuat &a, const GXQuat &b )
+{
+	data[ 0 ] = a.data[ 0 ] + b.data[ 0 ];
+	data[ 1 ] = a.data[ 1 ] + b.data[ 1 ];
+	data[ 2 ] = a.data[ 2 ] + b.data[ 2 ];
+	data[ 3 ] = a.data[ 3 ] + b.data[ 3 ];
+}
+
+GXVoid GXQuat::Sum ( const GXQuat &q, GXFloat s, const GXVec3 &v )
+{
+	GXQuat qs ( v.GetX () * s, v.GetY () * s, v.GetZ () * s, 0.0f );
+
+	GXQuat q1;
+	q1.Multiply ( qs, q );
+
+	data[ 0 ] = q.data[ 0 ] + q1.data[ 0 ] * 0.5f;
+	data[ 1 ] = q.data[ 1 ] + q1.data[ 1 ] * 0.5f;
+	data[ 2 ] = q.data[ 2 ] + q1.data[ 2 ] * 0.5f;
+	data[ 3 ] = q.data[ 3 ] + q1.data[ 3 ] * 0.5f;
+}
+
+GXVoid GXQuat::Substract ( const GXQuat &a, const GXQuat &b )
+{
+	GXQuat inverseB;
+	inverseB.Inverse ( b );
+
+	Multiply ( inverseB, a );
+}
+
+GXVoid GXQuat::SphericalLinearInterpolation ( const GXQuat &start, const GXQuat &finish, GXFloat interpolationFactor )
+{
+	GXQuat temp;
+	GXFloat omega;
+	GXFloat cosom;
+	GXFloat sinom;
+	GXFloat scale0;
+	GXFloat scale1;
+
+	if ( interpolationFactor <= 0.0f )
+	{
+		*this = start;
+		return;
+	}
+
+	if ( interpolationFactor >= 1.0f )
+	{
+		*this = finish;
+		return;
+	}
+
+	cosom = start.data[ 0 ] * finish.data[ 0 ] + start.data[ 1 ] * finish.data[ 1 ] + start.data[ 2 ] * finish.data[ 2 ] + start.data[ 3 ] * finish.data[ 3 ];
+
+	if ( cosom < 0.0f )
+	{
+		temp.data[ 0 ] = -finish.data[ 0 ];
+		temp.data[ 1 ] = -finish.data[ 1 ];
+		temp.data[ 2 ] = -finish.data[ 2 ];
+		temp.data[ 3 ] = -finish.data[ 3 ];
+		cosom = -cosom;
+	}
+	else
+	{
+		temp = finish;
+	}
+
+	if ( ( 1.0f - cosom ) > 1e-6f )
+	{
+		omega = acosf ( cosom );
+		sinom = 1.0f / sinf ( omega );
+		scale0 = sinf ( ( 1.0f - interpolationFactor ) * omega ) * sinom;
+		scale1 = sinf ( interpolationFactor * omega ) * sinom;
+	}
+	else
+	{
+		scale0 = 1.0f - interpolationFactor;
+		scale1 = interpolationFactor;
+	}
+
+	data[ 0 ] = start.data[ 0 ] * scale0 + temp.data[ 0 ] * scale1;
+	data[ 1 ] = start.data[ 1 ] * scale0 + temp.data[ 1 ] * scale1;
+	data[ 2 ] = start.data[ 2 ] * scale0 + temp.data[ 2 ] * scale1;
+	data[ 3 ] = start.data[ 3 ] * scale0 + temp.data[ 3 ] * scale1;
+}
+
+GXVoid GXQuat::Inverse ( const GXQuat &q )
+{
+	GXFloat squaredLength = q.data[ 0 ] * q.data[ 0 ] + q.data[ 1 ] * q.data[ 1 ] + q.data[ 2 ] * q.data[ 2 ] + q.data[ 3 ] * q.data[ 3 ];
+
+	if ( squaredLength > 0.0f )
+	{
+		GXFloat inverseSquaredLength = 1.0f / squaredLength;
+
+		data[ 0 ] = -q.data[ 0 ] * inverseSquaredLength;
+		data[ 1 ] = -q.data[ 1 ] * inverseSquaredLength;
+		data[ 2 ] = -q.data[ 2 ] * inverseSquaredLength;
+		data[ 3 ] = q.data[ 3 ] * inverseSquaredLength;
+
+		return;
+	}
+	else
+	{
+		GXLogW ( L"GXQuat::Inverse - Error\n" );
+		Identity ();
+	}
+}
+
+GXVoid GXQuat::Normalize ()
+{
+	GXFloat squaredLength = data[ 0 ] * data[ 0 ] + data[ 1 ] * data[ 1 ] + data[ 2 ] * data[ 2 ] + data[ 3 ] * data[ 3 ];
+
+	if ( squaredLength == 0.0f )
+	{
+		GXLogW ( L"GXQuat::Normalize - Error\n" );
+		return;
+	}
+
+	GXFloat inverseLength = 1.0f / sqrtf ( squaredLength );
+
+	data[ 0 ] *= inverseLength;
+	data[ 1 ] *= inverseLength;
+	data[ 2 ] *= inverseLength;
+	data[ 3 ] *= inverseLength;
+}
+
+GXVoid GXQuat::Transform ( GXVec3 &out, const GXVec3 &v )
+{
+	GXFloat xxzz = data[ 0 ] * data[ 0 ] - data[ 2 ] * data[ 2 ];
+	GXFloat wwyy = data[ 3 ] * data[ 3 ] - data[ 1 ] * data[ 1 ];
+
+	GXFloat xw2 = data[ 0 ] * data[ 3 ] * 2.0f;
+	GXFloat xy2 = data[ 0 ] * data[ 1 ] * 2.0f;
+	GXFloat xz2 = data[ 0 ] * data[ 2 ] * 2.0f;
+	GXFloat yw2 = data[ 1 ] * data[ 3 ] * 2.0f;
+	GXFloat yz2 = data[ 1 ] * data[ 2 ] * 2.0f;
+	GXFloat zw2 = data[ 2 ] * data[ 3 ] * 2.0f;
+
+	out.SetX ( ( xxzz + wwyy ) * v.GetX () + ( xy2 + zw2 ) * v.GetY () + ( xz2 - yw2 ) * v.GetZ () );
+	out.SetY ( ( xy2 - zw2 ) * v.GetX () + ( data[ 1 ] * data[ 1 ] + data[ 3 ] * data[ 3 ] - data[ 0 ] * data[ 0 ] - data[ 2 ] * data[ 2 ] ) * v.GetY () + ( yz2 + xw2 ) * v.GetZ () );
+	out.SetZ ( ( xz2 + yw2 ) * v.GetX () + ( yz2 - xw2 ) * v.GetY () + ( wwyy - xxzz ) * v.GetZ () );
+}
+
+GXQuat& GXQuat::operator = ( const GXVec4 &other )
+{
+	memcpy ( this, &other, sizeof ( GXQuat ) );
+}
+
+GXQuat GXCALL GXQuat::Create ( GXFloat x, GXFloat y, GXFloat z, GXFloat w )
+{
+	return GXQuat ( x, y, z, w );
 }
 
 //------------------------------------------------------------------
 
 GXMat4::GXMat4 ()
 {
-	memset ( arr, 0, 16 * sizeof ( GXFloat ) );
+	memset ( data, 0, 16 * sizeof ( GXFloat ) );
 }
+
+GXMat4::GXMat4 ( const GXMat4 &other )
+{
+	memcpy ( this, &other, sizeof ( GXMat4 ) );
+} 
 
 GXVoid GXMat4::SetRotation ( const GXQuat& quaternion )
 {
-	GXFloat xx = quaternion.x * quaternion.x;
-	GXFloat xy = quaternion.x * quaternion.y;
-	GXFloat xz = quaternion.x * quaternion.z;
-	GXFloat xw = quaternion.x * quaternion.w;
+	GXFloat xx = quaternion.GetX () * quaternion.GetX ();
+	GXFloat xy = quaternion.GetX () * quaternion.GetY ();
+	GXFloat xz = quaternion.GetX () * quaternion.GetZ ();
+	GXFloat xw = quaternion.GetX () * quaternion.GetW ();
 
-	GXFloat yy = quaternion.y * quaternion.y;
-	GXFloat yz = quaternion.y * quaternion.z;
-	GXFloat yw = quaternion.y * quaternion.w;
+	GXFloat yy = quaternion.GetY () * quaternion.GetY ();
+	GXFloat yz = quaternion.GetY () * quaternion.GetZ ();
+	GXFloat yw = quaternion.GetY () * quaternion.GetW ();
 
-	GXFloat zz = quaternion.z * quaternion.z;
-	GXFloat zw = quaternion.z * quaternion.w;
+	GXFloat zz = quaternion.GetZ () * quaternion.GetZ ();
+	GXFloat zw = quaternion.GetZ () * quaternion.GetW ();
 
-	m11 = 1.0f - 2.0f * ( yy + zz );
-	m12 = 2.0f * ( xy - zw );
-	m13 = 2.0f * ( xz + yw );
+	m[ 0 ][ 0 ] = 1.0f - 2.0f * ( yy + zz );
+	m[ 0 ][ 1 ] = 2.0f * ( xy - zw );
+	m[ 0 ][ 2 ] = 2.0f * ( xz + yw );
 
-	m21 = 2.0f * ( xy + zw );
-	m22 = 1.0f - 2.0f * ( xx + zz );
-	m23 = 2.0f * ( yz - xw );
+	m[ 1 ][ 0 ] = 2.0f * ( xy + zw );
+	m[ 1 ][ 1 ] = 1.0f - 2.0f * ( xx + zz );
+	m[ 1 ][ 2 ] = 2.0f * ( yz - xw );
 
-	m31 = 2.0f * ( xz - yw );
-	m32 = 2.0f * ( yz + xw );
-	m33 = 1.0f - 2.0f * ( xx + yy );
+	m[ 2 ][ 0 ] = 2.0f * ( xz - yw );
+	m[ 2 ][ 1 ] = 2.0f * ( yz + xw );
+	m[ 2 ][ 2 ] = 1.0f - 2.0f * ( xx + yy );
 }
 
 GXVoid GXMat4::SetOrigin ( const GXVec3 &origin )
@@ -412,8 +1032,9 @@ GXVoid GXMat4::From ( const GXQuat &quaternion, const GXVec3 &origin )
 {
 	SetRotation ( quaternion );
 	SetOrigin ( origin );
-	m14 = m24 = m34 = 0.0f;
-	m44 = 1.0f;
+
+	m[ 0 ][ 3 ] = m[ 1 ][ 3 ] = m[ 2 ][ 3 ] = 0.0f;
+	m[ 3 ][ 3 ] = 1.0f;
 }
 
 GXVoid GXMat4::From ( const GXMat3 &rotation, const GXVec3 &origin )
@@ -430,128 +1051,123 @@ GXVoid GXMat4::From ( const GXMat3 &rotation, const GXVec3 &origin )
 
 	SetW ( origin );
 
-	m14 = m24 = m34 = 0.0f;
-	m44 = 1.0f;
-}
-
-GXVoid GXMat4::GetX ( GXVec3& x ) const
-{
-	memcpy ( &x, arr, sizeof ( GXVec3 ) );
+	m[ 0 ][ 3 ] = m[ 1 ][ 3 ] = m[ 2 ][ 3 ] = 0.0f;
+	m[ 3 ][ 3 ] = 1.0f;
 }
 
 GXVoid GXMat4::SetX ( const GXVec3& x )
 {
-	memcpy ( arr, &x, sizeof ( GXVec3 ) );
+	memcpy ( data, &x, sizeof ( GXVec3 ) );
 }
 
-GXVoid GXMat4::GetY ( GXVec3& y ) const
+GXVoid GXMat4::GetX ( GXVec3& x ) const
 {
-	memcpy ( &y, arr + 4, sizeof ( GXVec3 ) );
+	memcpy ( &x, data, sizeof ( GXVec3 ) );
 }
 
 GXVoid GXMat4::SetY ( const GXVec3& y )
 {
-	memcpy ( arr + 4, &y, sizeof ( GXVec3 ) );
+	memcpy ( data + 4, &y, sizeof ( GXVec3 ) );
 }
 
-GXVoid GXMat4::GetZ ( GXVec3& z ) const
+GXVoid GXMat4::GetY ( GXVec3& y ) const
 {
-	memcpy ( &z, arr + 8, sizeof ( GXVec3 ) );
+	memcpy ( &y, data + 4, sizeof ( GXVec3 ) );
 }
 
 GXVoid GXMat4::SetZ ( const GXVec3& z )
 {
-	memcpy ( arr + 8, &z, sizeof ( GXVec3 ) );
+	memcpy ( data + 8, &z, sizeof ( GXVec3 ) );
 }
 
-GXVoid GXMat4::GetW ( GXVec3& w ) const
+GXVoid GXMat4::GetZ ( GXVec3& z ) const
 {
-	memcpy ( &w, arr + 12, sizeof ( GXVec3 ) );
+	memcpy ( &z, data + 8, sizeof ( GXVec3 ) );
 }
 
 GXVoid GXMat4::SetW ( const GXVec3& w )
 {
-	memcpy ( arr + 12, &w, sizeof ( GXVec3 ) );
+	memcpy ( data + 12, &w, sizeof ( GXVec3 ) );
 }
 
-void GXMat4::operator = ( const GXMat4& matrix )
+GXVoid GXMat4::GetW ( GXVec3& w ) const
 {
-	memcpy ( this, &matrix, sizeof ( GXMat4 ) );
+	memcpy ( &w, data + 12, sizeof ( GXVec3 ) );
 }
 
-GXVoid GXCALL GXSetMat4Identity ( GXMat4 &out )
+GXVoid GXMat4::Identity ()
 {
-	out.m12 = out.m13 = out.m14 = 0.0f;
-	out.m21 = out.m23 = out.m24 = 0.0f;
-	out.m31 = out.m32 = out.m34 = 0.0f;
-	out.m41 = out.m42 = out.m43 = 0.0f;
+	m[ 0 ][ 1 ] = m[ 0 ][ 2 ] = m[ 0 ][ 3 ] = 0.0f;
+	m[ 1 ][ 0 ] = m[ 1 ][ 2 ] = m[ 1 ][ 3 ] = 0.0f;
+	m[ 2 ][ 0 ] = m[ 2 ][ 1 ] = m[ 2 ][ 3 ] = 0.0f;
+	m[ 3 ][ 0 ] = m[ 3 ][ 1 ] = m[ 3 ][ 2 ] = 0.0f;
 
-	out.m11 = out.m22 = out.m33 = out.m44 = 1.0f;
+	m[ 0 ][ 0 ] = m[ 1 ][ 1 ] = m[ 2 ][ 2 ] = m[ 3 ][ 3 ] = 1.0f;
 }
 
-GXVoid GXCALL GXSetMat4Perspective ( GXMat4 &out, GXFloat fovy_rad, GXFloat aspect, GXFloat znear, GXFloat zfar )
+GXVoid GXMat4::Perspective ( GXFloat fieldOfViewYRadiands, GXFloat aspectRatio, GXFloat zNear, GXFloat zFar )
 {
-	GXFloat halfFovy = fovy_rad * 0.5f;
+	GXFloat halfFovy = fieldOfViewYRadiands * 0.5f;
 	GXFloat ctan = cosf ( halfFovy ) / sinf ( halfFovy );
-	GXFloat invRange = 1.0f / ( zfar - znear );
+	GXFloat invRange = 1.0f / ( zFar - zNear );
 
-	out.m11 = ctan / aspect;
-	out.m22 = ctan;
-	out.m33 = ( zfar + znear ) * invRange;
-	out.m34 = 1.0f;
-	out.m43 = -2.0f * zfar * znear * invRange;
+	m[ 0 ][ 0 ] = ctan / aspectRatio;
+	m[ 1 ][ 1 ] = ctan;
+	m[ 2 ][ 2 ] = ( zFar + zNear ) * invRange;
+	m[ 2 ][ 3 ] = 1.0f;
+	m[ 3 ][ 2 ] = -2.0f * zFar * zNear * invRange;
 
-	out.m12 = out.m13 = out.m14 = 0.0f;
-	out.m21 = out.m23 = out.m24 = 0.0f;
-	out.m31 = out.m32 = 0.0f;
-	out.m41 = out.m42 = out.m44 = 0.0f;
+	m[ 0 ][ 1 ] = m[ 0 ][ 2 ] = m[ 0 ][ 3 ] = 0.0f;
+	m[ 1 ][ 0 ] = m[ 1 ][ 2 ] = m[ 1 ][ 3 ] = 0.0f;
+	m[ 2 ][ 0 ] = m[ 2 ][ 1 ] = 0.0f;
+	m[ 3 ][ 0 ] = m[ 3 ][ 1 ] = m[ 3 ][ 3 ] = 0.0f;
 }
 
-GXVoid GXCALL GXSetMat4Ortho ( GXMat4 &out, GXFloat width, GXFloat height, GXFloat znear, GXFloat zfar )
+GXVoid GXMat4::Ortho ( GXFloat width, GXFloat height, GXFloat zNear, GXFloat zFar )
 {
-	GXFloat invRange = 1.0f / ( zfar - znear );
+	GXFloat invRange = 1.0f / ( zFar - zNear );
 
-	out.m11 = 2.0f / width;
-	out.m22 = 2.0f / height;
-	out.m33 = 2.0f * invRange;
-	out.m43 = -invRange * ( zfar + znear );
+	m[ 0 ][ 0 ] = 2.0f / width;
+	m[ 1 ][ 1 ] = 2.0f / height;
+	m[ 2 ][ 2 ] = 2.0f * invRange;
+	m[ 3 ][ 2 ] = -invRange * ( zFar + zNear );
 
-	out.m12 = out.m13 = out.m14 = 0.0f;
-	out.m21 = out.m23 = out.m24 = 0.0f;
-	out.m31 = out.m32 = out.m34 = 0.0f;
-	out.m41 = out.m42 = 0.0f;
-	out.m44 = 1.0f;
+	m[ 0 ][ 1 ] = m[ 0 ][ 2 ] = m[ 0 ][ 3 ] = 0.0f;
+	m[ 1 ][ 0 ] = m[ 1 ][ 2 ] = m[ 1 ][ 3 ] = 0.0f;
+	m[ 2 ][ 0 ] = m[ 2 ][ 1 ] = m[ 2 ][ 3 ] = 0.0f;
+	m[ 3 ][ 0 ] = m[ 3 ][ 1 ] = 0.0f;
+	m[ 3 ][ 3 ] = 1.0f;
 }
 
-GXVoid GXCALL GXSetMat4Translation ( GXMat4 &out, GXFloat x, GXFloat y, GXFloat z )
+GXVoid GXMat4::Translation ( GXFloat x, GXFloat y, GXFloat z )
 {
-	out.m12 = out.m13 = out.m14 = 0.0f;
-	out.m21 = out.m23 = out.m24 = 0.0f;
-	out.m31 = out.m32 = out.m34 = 0.0f;
+	m[ 0 ][ 1 ] = m[ 0 ][ 2 ] = m[ 0 ][ 3 ] = 0.0f;
+	m[ 1 ][ 0 ] = m[ 1 ][ 2 ] = m[ 1 ][ 3 ] = 0.0f;
+	m[ 2 ][ 0 ] = m[ 2 ][ 1 ] = m[ 2 ][ 3 ] = 0.0f;
 
-	out.m11 = out.m22 = out.m33 = out.m44 = 1.0f;
+	m[ 0 ][ 0 ] = m[ 1 ][ 1 ] = m[ 2 ][ 2 ] = m[ 3 ][ 3 ] = 1.0f;
 
-	out.m41 = x;
-	out.m42 = y;
-	out.m43 = z;
+	m[ 3 ][ 0 ] = x;
+	m[ 3 ][ 1 ] = y;
+	m[ 3 ][ 2 ] = z;
 }
 
-GXVoid GXCALL GXSetMat4TranslateTo ( GXMat4 &out, GXFloat x, GXFloat y, GXFloat z )
+GXVoid GXMat4::TranslateTo ( GXFloat x, GXFloat y, GXFloat z )
 {
 	GXVec3 origin ( x, y, z );
-	out.SetW ( origin );
+	SetW ( origin );
 }
 
-GXVoid GXCALL GXSetMat4TranslateTo ( GXMat4 &out, const GXVec3 &location )
+GXVoid GXMat4::TranslateTo ( const GXVec3 &location )
 {
-	out.SetW ( location );
+	SetW ( location );
 }
 
-GXVoid GXCALL GXSetMat4RotationX ( GXMat4 &out, GXFloat angle )
+GXVoid GXMat4::RotationX ( GXFloat angle )
 {
-	out.m12 = out.m13 = 0.0f;
-	out.m21 = 0.0f;
-	out.m31 = 0.0f;
+	m[ 0 ][ 1 ] = m[ 0 ][ 2 ] = 0.0f;
+	m[ 1 ][ 0 ] = 0.0f;
+	m[ 2 ][ 0 ] = 0.0f;
 
 	GXFloat c;
 	GXFloat s;
@@ -559,20 +1175,20 @@ GXVoid GXCALL GXSetMat4RotationX ( GXMat4 &out, GXFloat angle )
 	c = cosf ( angle );
 	s = sinf ( angle );
 
-	out.m22 = c;	out.m23 = s;
-	out.m32 = -s;	out.m33 = c;
+	m[ 1 ][ 1 ] = c;	m[ 1 ][ 2 ] = s;
+	m[ 2 ][ 1 ] = -s;	m[ 2 ][ 2 ] = c;
 
-	out.m11 = 1.0f;
+	m[ 0 ][ 0 ] = 1.0f;
 
-	out.m44 = 1.0f;
-	out.m41 = out.m42 = out.m43 = out.m14 = out.m24 = out.m34 = 0;
+	m[ 3 ][ 3 ] = 1.0f;
+	m[ 3 ][ 0 ] = m[ 3 ][ 1 ] = m[ 3 ][ 2 ] = m[ 0 ][ 3 ] = m[ 1 ][ 3 ] = m[ 2 ][ 3 ] = 0.0f;
 }
 
-GXVoid GXCALL GXSetMat4RotationY ( GXMat4 &out, GXFloat angle )
+GXVoid GXMat4::RotationY ( GXFloat angle )
 {
-	out.m12 = 0.0f;
-	out.m21 = out.m23 = 0.0f;
-	out.m32 = 0.0f;
+	m[ 0 ][ 1 ] = 0.0f;
+	m[ 1 ][ 0 ] = m[ 1 ][ 2 ] = 0.0f;
+	m[ 2 ][ 1 ] = 0.0f;
 
 	GXFloat c;
 	GXFloat s;
@@ -580,20 +1196,20 @@ GXVoid GXCALL GXSetMat4RotationY ( GXMat4 &out, GXFloat angle )
 	c = cosf ( angle );
 	s = sinf ( angle );
 
-	out.m11 = c;	out.m13 = -s;
-	out.m31 = s;	out.m33 = c;
+	m[ 0 ][ 0 ] = c;	m[ 0 ][ 2 ] = -s;
+	m[ 2 ][ 0 ] = s;	m[ 2 ][ 2 ] = c;
 
-	out.m22 = 1.0f;
+	m[ 1 ][ 1 ] = 1.0f;
 
-	out.m44 = 1.0f;
-	out.m41 = out.m42 = out.m43 = out.m14 = out.m24 = out.m34 = 0.0f;
+	m[ 3 ][ 3 ] = 1.0f;
+	m[ 3 ][ 0 ] = m[ 3 ][ 1 ] = m[ 3 ][ 2 ] = m[ 0 ][ 3 ] = m[ 1 ][ 3 ] = m[ 2 ][ 3 ] = 0.0f;
 }
 
-GXVoid GXCALL GXSetMat4RotationZ ( GXMat4 &out, GXFloat angle )
+GXVoid GXMat4::RotationZ ( GXFloat angle )
 {
-	out.m13 = 0.0f;
-	out.m23 = 0.0f;
-	out.m31 = out.m32 = 0.0f;
+	m[ 0 ][ 2 ] = 0.0f;
+	m[ 1 ][ 2 ] = 0.0f;
+	m[ 2 ][ 0 ] = m[ 2 ][ 1 ] = 0.0f;
 
 	GXFloat c;
 	GXFloat s;
@@ -601,68 +1217,44 @@ GXVoid GXCALL GXSetMat4RotationZ ( GXMat4 &out, GXFloat angle )
 	c = cosf ( angle );
 	s = sinf ( angle );
 
-	out.m11 = c;	out.m12 = s;
-	out.m21 = -s;	out.m22 = c;
+	m[ 0 ][ 0 ] = c;	m[ 0 ][ 1 ] = s;
+	m[ 1 ][ 0 ] = -s;	m[ 1 ][ 1 ] = c;
 
-	out.m33 = 1.0f;
+	m[ 2 ][ 2 ] = 1.0f;
 
-	out.m44 = 1.0f;
-	out.m41 = out.m42 = out.m43 = out.m14 = out.m24 = out.m34 = 0.0f;
+	m[ 3 ][ 3 ] = 1.0f;
+	m[ 3 ][ 0 ] = m[ 3 ][ 1 ] = m[ 3 ][ 2 ] = m[ 0 ][ 3 ] = m[ 1 ][ 3 ] = m[ 2 ][ 3 ] = 0.0f;
 }
 
-GXVoid GXCALL GXSetMat4RotationXY ( GXMat4 &out, GXFloat pitch_rad, GXFloat yaw_rad )
+GXVoid GXMat4::RotationXY ( GXFloat pitchRadians, GXFloat yawRadians )
 {
-	GXMat4 X;
-	GXMat4 Y;
+	GXMat4 x;
+	x.RotationX ( pitchRadians );
 
-	GXSetMat4RotationX ( X, pitch_rad );
-	GXSetMat4RotationY ( Y, yaw_rad );
+	GXMat4 y;
+	y.RotationY ( yawRadians );
 
-	GXMulMat4Mat4 ( out, X, Y );
+	Multiply ( x, y );
 }
 
-GXVoid GXCALL GXSetMat4RotationXYZ ( GXMat4 &out, GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_rad )
+GXVoid GXMat4::RotationXYZ ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians )
 {
-	GXMat4 X;
-	GXMat4 Y;
-	GXMat4 Z;
+	GXMat4 x;
+	x.RotationX ( pitchRadians );
 
-	GXSetMat4RotationX ( X, pitch_rad );
-	GXSetMat4RotationY ( Y, yaw_rad );
-	GXSetMat4RotationZ ( Z, roll_rad );
+	GXMat4 y;
+	y.RotationY ( yawRadians );
+
+	GXMat4 z;
+	y.RotationZ ( rollRadians );
 
 	GXMat4 temp;
-	GXMulMat4Mat4 ( temp, X, Y );
-	GXMulMat4Mat4 ( out, temp, Z );
+	temp.Multiply ( x, y );
+
+	Multiply ( temp, z );
 }
 
-GXVoid GXCALL GXSetMat4RotationRelative ( GXMat4 &out, GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_rad, GXFloat angle )
-{
-	GXFloat c;
-	GXFloat s;
-
-	c = cosf ( angle );
-	s = sinf ( angle );
-
-	GXFloat ic = 1.0f - c;
-
-	out.m11 = ic * pitch_rad * pitch_rad + c;
-	out.m12 = ic * pitch_rad * yaw_rad - s * roll_rad;
-	out.m13 = ic * pitch_rad * roll_rad + s * yaw_rad;
-
-	out.m21 = ic * yaw_rad * pitch_rad + s * roll_rad;
-	out.m22 = ic * yaw_rad * yaw_rad + c;
-	out.m23 = ic * yaw_rad * roll_rad - s * pitch_rad;
-
-	out.m31 = ic * roll_rad * pitch_rad - s * yaw_rad;
-	out.m32 = ic * roll_rad * yaw_rad + s * pitch_rad;
-	out.m33 = ic * roll_rad * roll_rad + c;
-
-	out.m44 = 1.0f;
-	out.m41 = out.m42 = out.m43 = out.m14 = out.m24 = out.m34 = 0.0f;
-}
-
-GXVoid GXCALL GXSetMat4ClearRotation ( GXMat4 &out, const GXMat4 &mod_mat )
+GXVoid GXMat4::ClearRotation ( const GXMat4 &matrix )
 {
 	GXVec3 outX;
 	GXVec3 outY;
@@ -672,672 +1264,413 @@ GXVoid GXCALL GXSetMat4ClearRotation ( GXMat4 &out, const GXMat4 &mod_mat )
 	GXVec3 modelY;
 	GXVec3 modelZ;
 
-	mod_mat.GetX ( modelX );
-	mod_mat.GetY ( modelY );
-	mod_mat.GetZ ( modelZ );
-
-	GXVec3 scaleFactor;
-	scaleFactor.x = 1.0f / GXLengthVec3 ( modelX );
-	scaleFactor.y = 1.0f / GXLengthVec3 ( modelY );
-	scaleFactor.z = 1.0f / GXLengthVec3 ( modelZ );
+	matrix.GetX ( modelX );
+	matrix.GetY ( modelY );
+	matrix.GetZ ( modelZ );
 
 	GXVec3 tmp;
-	GXMulVec3Scalar ( tmp, modelX, scaleFactor.x );
-	out.SetX ( tmp );
+	tmp.Multiply ( modelX, 1.0f / modelX.Length () );
+	SetX ( tmp );
 
-	GXMulVec3Scalar ( tmp, modelY, scaleFactor.y );
-	out.SetY ( tmp );
+	tmp.Multiply ( modelY, 1.0f / modelY.Length () );
+	SetY ( tmp );
 
-	GXMulVec3Scalar ( tmp, modelZ, scaleFactor.z );
-	out.SetZ ( tmp );
+	tmp.Multiply ( modelZ, 1.0f / modelZ.Length () );
+	SetZ ( tmp );
 
-	out.m14 = out.m24 = out.m34 = 0.0f;
-	out.m41 = out.m42 = out.m43 = 0.0f;
+	m[ 0 ][ 3 ] = m[ 1 ][ 3 ] = m[ 2 ][ 3 ] = 0.0f;
+	m[ 3 ][ 0 ] = m[ 3 ][ 1 ] = m[ 3 ][ 2 ] = 0.0f;
 
-	out.m44 = 1.0f;
+	m[ 3 ][ 3 ] = 1.0f;
 }
 
-GXVoid GXCALL GXSetMat4Scale ( GXMat4 &out, GXFloat x, GXFloat y, GXFloat z )
+GXVoid GXMat4::Scale ( GXFloat x, GXFloat y, GXFloat z )
 {
-	out.m12 = out.m13 = 0.0f;
-	out.m21 = out.m23 = 0.0f;
-	out.m31 = out.m32 = 0.0f;
+	m[ 0 ][ 1 ] = m[ 0 ][ 2 ] = 0.0f;
+	m[ 1 ][ 0 ] = m[ 1 ][ 2 ] = 0.0f;
+	m[ 2 ][ 0 ] = m[ 2 ][ 1 ] = 0.0f;
 
-	out.m11 = x;
-	out.m22 = y;
-	out.m33 = z;
+	m[ 0 ][ 0 ] = x;
+	m[ 1 ][ 1 ] = y;
+	m[ 2 ][ 2 ] = z;
 
-	out.m44 = 1.0f;
-	out.m41 = out.m42 = out.m43 = out.m14 = out.m24 = out.m34 = 0.0f;
+	m[ 3 ][ 3 ] = 1.0f;
+	m[ 3 ][ 0 ] = m[ 3 ][ 1 ] = m[ 3 ][ 2 ] = m[ 0 ][ 3 ] = m[ 1 ][ 3 ] = m[ 2 ][ 3 ] = 0.0f;
 }
 
-
-GXVoid GXCALL GXSetMat4Inverse ( GXMat4 &out, const GXMat4 &src )
+GXVoid GXMat4::Inverse ( const GXMat4& src )
 {
-	GXFloat det, invDet;
-
 	// 2x2 sub-determinants required to calculate 4x4 determinant
-	GXFloat det2_01_01 = src.m[0][0] * src.m[1][1] - src.m[1][0] * src.m[0][1];
-	GXFloat det2_01_02 = src.m[0][0] * src.m[2][1] - src.m[2][0] * src.m[0][1];
-	GXFloat det2_01_03 = src.m[0][0] * src.m[3][1] - src.m[3][0] * src.m[0][1];
-	GXFloat det2_01_12 = src.m[1][0] * src.m[2][1] - src.m[2][0] * src.m[1][1];
-	GXFloat det2_01_13 = src.m[1][0] * src.m[3][1] - src.m[3][0] * src.m[1][1];
-	GXFloat det2_01_23 = src.m[2][0] * src.m[3][1] - src.m[3][0] * src.m[2][1];
+	GXFloat det2_01_01 = src.m[ 0 ][ 0 ] * src.m[ 1 ][ 1 ] - src.m[ 1 ][ 0 ] * src.m[ 0 ][ 1 ];
+	GXFloat det2_01_02 = src.m[ 0 ][ 0 ] * src.m[ 2 ][ 1 ] - src.m[ 2 ][ 0 ] * src.m[ 0 ][ 1 ];
+	GXFloat det2_01_03 = src.m[ 0 ][ 0 ] * src.m[ 3 ][ 1 ] - src.m[ 3 ][ 0 ] * src.m[ 0 ][ 1 ];
+	GXFloat det2_01_12 = src.m[ 1 ][ 0 ] * src.m[ 2 ][ 1 ] - src.m[ 2 ][ 0 ] * src.m[ 1 ][ 1 ];
+	GXFloat det2_01_13 = src.m[ 1 ][ 0 ] * src.m[ 3 ][ 1 ] - src.m[ 3 ][ 0 ] * src.m[ 1 ][ 1 ];
+	GXFloat det2_01_23 = src.m[ 2 ][ 0 ] * src.m[ 3 ][ 1 ] - src.m[ 3 ][ 0 ] * src.m[ 2 ][ 1 ];
 
 	// 3x3 sub-determinants required to calculate 4x4 determinant
-	GXFloat det3_201_012 = src.m[0][2] * det2_01_12 - src.m[1][2] * det2_01_02 + src.m[2][2] * det2_01_01;
-	GXFloat det3_201_013 = src.m[0][2] * det2_01_13 - src.m[1][2] * det2_01_03 + src.m[3][2] * det2_01_01;
-	GXFloat det3_201_023 = src.m[0][2] * det2_01_23 - src.m[2][2] * det2_01_03 + src.m[3][2] * det2_01_02;
-	GXFloat det3_201_123 = src.m[1][2] * det2_01_23 - src.m[2][2] * det2_01_13 + src.m[3][2] * det2_01_12;
+	GXFloat det3_201_012 = src.m[ 0 ][ 2 ] * det2_01_12 - src.m[ 1 ][ 2 ] * det2_01_02 + src.m[ 2 ][ 2 ] * det2_01_01;
+	GXFloat det3_201_013 = src.m[ 0 ][ 2 ] * det2_01_13 - src.m[ 1 ][ 2 ] * det2_01_03 + src.m[ 3 ][ 2 ] * det2_01_01;
+	GXFloat det3_201_023 = src.m[ 0 ][ 2 ] * det2_01_23 - src.m[ 2 ][ 2 ] * det2_01_03 + src.m[ 3 ][ 2 ] * det2_01_02;
+	GXFloat det3_201_123 = src.m[ 1 ][ 2 ] * det2_01_23 - src.m[ 2 ][ 2 ] * det2_01_13 + src.m[ 3 ][ 2 ] * det2_01_12;
 
-	det = ( - det3_201_123 * src.m[0][3] + det3_201_023 * src.m[1][3] - det3_201_013 * src.m[2][3] + det3_201_012 * src.m[3][3] );
-
-	invDet = 1.0f / det;
+	GXFloat inverseDeterminant = 1.0f / ( -det3_201_123 * src.m[ 0 ][ 3 ] + det3_201_023 * src.m[ 1 ][ 3 ] - det3_201_013 * src.m[ 2 ][ 3 ] + det3_201_012 * src.m[ 3 ][ 3 ] );
 
 	// remaining 2x2 sub-determinants
-	GXFloat det2_03_01 = src.m[0][0] * src.m[1][3] - src.m[1][0] * src.m[0][3];
-	GXFloat det2_03_02 = src.m[0][0] * src.m[2][3] - src.m[2][0] * src.m[0][3];
-	GXFloat det2_03_03 = src.m[0][0] * src.m[3][3] - src.m[3][0] * src.m[0][3];
-	GXFloat det2_03_12 = src.m[1][0] * src.m[2][3] - src.m[2][0] * src.m[1][3];
-	GXFloat det2_03_13 = src.m[1][0] * src.m[3][3] - src.m[3][0] * src.m[1][3];
-	GXFloat det2_03_23 = src.m[2][0] * src.m[3][3] - src.m[3][0] * src.m[2][3];
+	GXFloat det2_03_01 = src.m[ 0 ][ 0 ] * src.m[ 1 ][ 3 ] - src.m[ 1 ][ 0 ] * src.m[ 0 ][ 3 ];
+	GXFloat det2_03_02 = src.m[ 0 ][ 0 ] * src.m[ 2 ][ 3 ] - src.m[ 2 ][ 0 ] * src.m[ 0 ][ 3 ];
+	GXFloat det2_03_03 = src.m[ 0 ][ 0 ] * src.m[ 3 ][ 3 ] - src.m[ 3 ][ 0 ] * src.m[ 0 ][ 3 ];
+	GXFloat det2_03_12 = src.m[ 1 ][ 0 ] * src.m[ 2 ][ 3 ] - src.m[ 2 ][ 0 ] * src.m[ 1 ][ 3 ];
+	GXFloat det2_03_13 = src.m[ 1 ][ 0 ] * src.m[ 3 ][ 3 ] - src.m[ 3 ][ 0 ] * src.m[ 1 ][ 3 ];
+	GXFloat det2_03_23 = src.m[ 2 ][ 0 ] * src.m[ 3 ][ 3 ] - src.m[ 3 ][ 0 ] * src.m[ 2 ][ 3 ];
 
-	GXFloat det2_13_01 = src.m[0][1] * src.m[1][3] - src.m[1][1] * src.m[0][3];
-	GXFloat det2_13_02 = src.m[0][1] * src.m[2][3] - src.m[2][1] * src.m[0][3];
-	GXFloat det2_13_03 = src.m[0][1] * src.m[3][3] - src.m[3][1] * src.m[0][3];
-	GXFloat det2_13_12 = src.m[1][1] * src.m[2][3] - src.m[2][1] * src.m[1][3];
-	GXFloat det2_13_13 = src.m[1][1] * src.m[3][3] - src.m[3][1] * src.m[1][3];
-	GXFloat det2_13_23 = src.m[2][1] * src.m[3][3] - src.m[3][1] * src.m[2][3];
+	GXFloat det2_13_01 = src.m[ 0 ][ 1 ] * src.m[ 1 ][ 3 ] - src.m[ 1 ][ 1 ] * src.m[ 0 ][ 3 ];
+	GXFloat det2_13_02 = src.m[ 0 ][ 1 ] * src.m[ 2 ][ 3 ] - src.m[ 2 ][ 1 ] * src.m[ 0 ][ 3 ];
+	GXFloat det2_13_03 = src.m[ 0 ][ 1 ] * src.m[ 3 ][ 3 ] - src.m[ 3 ][ 1 ] * src.m[ 0 ][ 3 ];
+	GXFloat det2_13_12 = src.m[ 1 ][ 1 ] * src.m[ 2 ][ 3 ] - src.m[ 2 ][ 1 ] * src.m[ 1 ][ 3 ];
+	GXFloat det2_13_13 = src.m[ 1 ][ 1 ] * src.m[ 3 ][ 3 ] - src.m[ 3 ][ 1 ] * src.m[ 1 ][ 3 ];
+	GXFloat det2_13_23 = src.m[ 2 ][ 1 ] * src.m[ 3 ][ 3 ] - src.m[ 3 ][ 1 ] * src.m[ 2 ][ 3 ];
 
 	// remaining 3x3 sub-determinants
-	GXFloat det3_203_012 = src.m[0][2] * det2_03_12 - src.m[1][2] * det2_03_02 + src.m[2][2] * det2_03_01;
-	GXFloat det3_203_013 = src.m[0][2] * det2_03_13 - src.m[1][2] * det2_03_03 + src.m[3][2] * det2_03_01;
-	GXFloat det3_203_023 = src.m[0][2] * det2_03_23 - src.m[2][2] * det2_03_03 + src.m[3][2] * det2_03_02;
-	GXFloat det3_203_123 = src.m[1][2] * det2_03_23 - src.m[2][2] * det2_03_13 + src.m[3][2] * det2_03_12;
+	GXFloat det3_203_012 = src.m[ 0 ][ 2 ] * det2_03_12 - src.m[ 1 ][ 2 ] * det2_03_02 + src.m[ 2 ][ 2 ] * det2_03_01;
+	GXFloat det3_203_013 = src.m[ 0 ][ 2 ] * det2_03_13 - src.m[ 1 ][ 2 ] * det2_03_03 + src.m[ 3 ][ 2 ] * det2_03_01;
+	GXFloat det3_203_023 = src.m[ 0 ][ 2 ] * det2_03_23 - src.m[ 2 ][ 2 ] * det2_03_03 + src.m[ 3 ][ 2 ] * det2_03_02;
+	GXFloat det3_203_123 = src.m[ 1 ][ 2 ] * det2_03_23 - src.m[ 2 ][ 2 ] * det2_03_13 + src.m[ 3 ][ 2 ] * det2_03_12;
 
-	GXFloat det3_213_012 = src.m[0][2] * det2_13_12 - src.m[1][2] * det2_13_02 + src.m[2][2] * det2_13_01;
-	GXFloat det3_213_013 = src.m[0][2] * det2_13_13 - src.m[1][2] * det2_13_03 + src.m[3][2] * det2_13_01;
-	GXFloat det3_213_023 = src.m[0][2] * det2_13_23 - src.m[2][2] * det2_13_03 + src.m[3][2] * det2_13_02;
-	GXFloat det3_213_123 = src.m[1][2] * det2_13_23 - src.m[2][2] * det2_13_13 + src.m[3][2] * det2_13_12;
+	GXFloat det3_213_012 = src.m[ 0 ][ 2 ] * det2_13_12 - src.m[ 1 ][ 2 ] * det2_13_02 + src.m[ 2 ][ 2 ] * det2_13_01;
+	GXFloat det3_213_013 = src.m[ 0 ][ 2 ] * det2_13_13 - src.m[ 1 ][ 2 ] * det2_13_03 + src.m[ 3 ][ 2 ] * det2_13_01;
+	GXFloat det3_213_023 = src.m[ 0 ][ 2 ] * det2_13_23 - src.m[ 2 ][ 2 ] * det2_13_03 + src.m[ 3 ][ 2 ] * det2_13_02;
+	GXFloat det3_213_123 = src.m[ 1 ][ 2 ] * det2_13_23 - src.m[ 2 ][ 2 ] * det2_13_13 + src.m[ 3 ][ 2 ] * det2_13_12;
 
-	GXFloat det3_301_012 = src.m[0][3] * det2_01_12 - src.m[1][3] * det2_01_02 + src.m[2][3] * det2_01_01;
-	GXFloat det3_301_013 = src.m[0][3] * det2_01_13 - src.m[1][3] * det2_01_03 + src.m[3][3] * det2_01_01;
-	GXFloat det3_301_023 = src.m[0][3] * det2_01_23 - src.m[2][3] * det2_01_03 + src.m[3][3] * det2_01_02;
-	GXFloat det3_301_123 = src.m[1][3] * det2_01_23 - src.m[2][3] * det2_01_13 + src.m[3][3] * det2_01_12;
+	GXFloat det3_301_012 = src.m[ 0 ][ 3 ] * det2_01_12 - src.m[ 1 ][ 3 ] * det2_01_02 + src.m[ 2 ][ 3 ] * det2_01_01;
+	GXFloat det3_301_013 = src.m[ 0 ][ 3 ] * det2_01_13 - src.m[ 1 ][ 3 ] * det2_01_03 + src.m[ 3 ][ 3 ] * det2_01_01;
+	GXFloat det3_301_023 = src.m[ 0 ][ 3 ] * det2_01_23 - src.m[ 2 ][ 3 ] * det2_01_03 + src.m[ 3 ][ 3 ] * det2_01_02;
+	GXFloat det3_301_123 = src.m[ 1 ][ 3 ] * det2_01_23 - src.m[ 2 ][ 3 ] * det2_01_13 + src.m[ 3 ][ 3 ] * det2_01_12;
 
-	out.m[0][0] = - det3_213_123 * invDet;
-	out.m[0][1] = + det3_213_023 * invDet;
-	out.m[0][2] = - det3_213_013 * invDet;
-	out.m[0][3] = + det3_213_012 * invDet;
+	m[ 0 ][ 0 ] = -det3_213_123 * inverseDeterminant;
+	m[ 0 ][ 1 ] = +det3_213_023 * inverseDeterminant;
+	m[ 0 ][ 2 ] = -det3_213_013 * inverseDeterminant;
+	m[ 0 ][ 3 ] = +det3_213_012 * inverseDeterminant;
 
-	out.m[1][0] = + det3_203_123 * invDet;
-	out.m[1][1] = - det3_203_023 * invDet;
-	out.m[1][2] = + det3_203_013 * invDet;
-	out.m[1][3] = - det3_203_012 * invDet;
+	m[ 1 ][ 0 ] = +det3_203_123 * inverseDeterminant;
+	m[ 1 ][ 1 ] = -det3_203_023 * inverseDeterminant;
+	m[ 1 ][ 2 ] = +det3_203_013 * inverseDeterminant;
+	m[ 1 ][ 3 ] = -det3_203_012 * inverseDeterminant;
 
-	out.m[2][0] = + det3_301_123 * invDet;
-	out.m[2][1] = - det3_301_023 * invDet;
-	out.m[2][2] = + det3_301_013 * invDet;
-	out.m[2][3] = - det3_301_012 * invDet;
+	m[ 2 ][ 0 ] = +det3_301_123 * inverseDeterminant;
+	m[ 2 ][ 1 ] = -det3_301_023 * inverseDeterminant;
+	m[ 2 ][ 2 ] = +det3_301_013 * inverseDeterminant;
+	m[ 2 ][ 3 ] = -det3_301_012 * inverseDeterminant;
 
-	out.m[3][0] = - det3_201_123 * invDet;
-	out.m[3][1] = + det3_201_023 * invDet;
-	out.m[3][2] = - det3_201_013 * invDet;
-	out.m[3][3] = + det3_201_012 * invDet;
+	m[ 3 ][ 0 ] = -det3_201_123 * inverseDeterminant;
+	m[ 3 ][ 1 ] = +det3_201_023 * inverseDeterminant;
+	m[ 3 ][ 2 ] = -det3_201_013 * inverseDeterminant;
+	m[ 3 ][ 3 ] = +det3_201_012 * inverseDeterminant;
 }
 
-GXVoid GXCALL GXMulMat4Mat4 ( GXMat4 &out, const GXMat4 &a, const GXMat4 &b )
+GXVoid GXMat4::Multiply ( const GXMat4& a, const GXMat4& b )
 {
-	out.m11 = a.m11 * b.m11 + a.m12 * b.m21 + a.m13 * b.m31 + a.m14 * b.m41;
-	out.m12 = a.m11 * b.m12 + a.m12 * b.m22 + a.m13 * b.m32 + a.m14 * b.m42;
-	out.m13 = a.m11 * b.m13 + a.m12 * b.m23 + a.m13 * b.m33 + a.m14 * b.m43;
-	out.m14 = a.m11 * b.m14 + a.m12 * b.m24 + a.m13 * b.m34 + a.m14 * b.m44;
+	m[ 0 ][ 0 ] = a.m[ 0 ][ 0 ] * b.m[ 0 ][ 0 ] + a.m[ 0 ][ 1 ] * b.m[ 1 ][ 0 ] + a.m[ 0 ][ 2 ] * b.m[ 2 ][ 0 ] + a.m[ 0 ][ 3 ] * b.m[ 3 ][ 0 ];
+	m[ 0 ][ 1 ] = a.m[ 0 ][ 0 ] * b.m[ 0 ][ 1 ] + a.m[ 0 ][ 1 ] * b.m[ 1 ][ 1 ] + a.m[ 0 ][ 2 ] * b.m[ 2 ][ 1 ] + a.m[ 0 ][ 3 ] * b.m[ 3 ][ 1 ];
+	m[ 0 ][ 2 ] = a.m[ 0 ][ 0 ] * b.m[ 0 ][ 2 ] + a.m[ 0 ][ 1 ] * b.m[ 1 ][ 2 ] + a.m[ 0 ][ 2 ] * b.m[ 2 ][ 2 ] + a.m[ 0 ][ 3 ] * b.m[ 3 ][ 2 ];
+	m[ 0 ][ 3 ] = a.m[ 0 ][ 0 ] * b.m[ 0 ][ 3 ] + a.m[ 0 ][ 1 ] * b.m[ 1 ][ 3 ] + a.m[ 0 ][ 2 ] * b.m[ 2 ][ 3 ] + a.m[ 0 ][ 3 ] * b.m[ 3 ][ 3 ];
 
-	out.m21 = a.m21 * b.m11 + a.m22 * b.m21 + a.m23 * b.m31 + a.m24 * b.m41;
-	out.m22 = a.m21 * b.m12 + a.m22 * b.m22 + a.m23 * b.m32 + a.m24 * b.m42;
-	out.m23 = a.m21 * b.m13 + a.m22 * b.m23 + a.m23 * b.m33 + a.m24 * b.m43;
-	out.m24 = a.m21 * b.m14 + a.m22 * b.m24 + a.m23 * b.m34 + a.m24 * b.m44;
+	m[ 1 ][ 0 ] = a.m[ 1 ][ 0 ] * b.m[ 0 ][ 0 ] + a.m[ 1 ][ 1 ] * b.m[ 1 ][ 0 ] + a.m[ 1 ][ 2 ] * b.m[ 2 ][ 0 ] + a.m[ 1 ][ 3 ] * b.m[ 3 ][ 0 ];
+	m[ 1 ][ 1 ] = a.m[ 1 ][ 0 ] * b.m[ 0 ][ 1 ] + a.m[ 1 ][ 1 ] * b.m[ 1 ][ 1 ] + a.m[ 1 ][ 2 ] * b.m[ 2 ][ 1 ] + a.m[ 1 ][ 3 ] * b.m[ 3 ][ 1 ];
+	m[ 1 ][ 2 ] = a.m[ 1 ][ 0 ] * b.m[ 0 ][ 2 ] + a.m[ 1 ][ 1 ] * b.m[ 1 ][ 2 ] + a.m[ 1 ][ 2 ] * b.m[ 2 ][ 2 ] + a.m[ 1 ][ 3 ] * b.m[ 3 ][ 2 ];
+	m[ 1 ][ 3 ] = a.m[ 1 ][ 0 ] * b.m[ 0 ][ 3 ] + a.m[ 1 ][ 1 ] * b.m[ 1 ][ 3 ] + a.m[ 1 ][ 2 ] * b.m[ 2 ][ 3 ] + a.m[ 1 ][ 3 ] * b.m[ 3 ][ 3 ];
 
-	out.m31 = a.m31 * b.m11 + a.m32 * b.m21 + a.m33 * b.m31 + a.m34 * b.m41;
-	out.m32 = a.m31 * b.m12 + a.m32 * b.m22 + a.m33 * b.m32 + a.m34 * b.m42;
-	out.m33 = a.m31 * b.m13 + a.m32 * b.m23 + a.m33 * b.m33 + a.m34 * b.m43;
-	out.m34 = a.m31 * b.m14 + a.m32 * b.m24 + a.m33 * b.m34 + a.m34 * b.m44;
+	m[ 2 ][ 0 ] = a.m[ 2 ][ 0 ] * b.m[ 0 ][ 0 ] + a.m[ 2 ][ 1 ] * b.m[ 1 ][ 0 ] + a.m[ 2 ][ 2 ] * b.m[ 2 ][ 0 ] + a.m[ 2 ][ 3 ] * b.m[ 3 ][ 0 ];
+	m[ 2 ][ 1 ] = a.m[ 2 ][ 0 ] * b.m[ 0 ][ 1 ] + a.m[ 2 ][ 1 ] * b.m[ 1 ][ 1 ] + a.m[ 2 ][ 2 ] * b.m[ 2 ][ 1 ] + a.m[ 2 ][ 3 ] * b.m[ 3 ][ 1 ];
+	m[ 2 ][ 2 ] = a.m[ 2 ][ 0 ] * b.m[ 0 ][ 2 ] + a.m[ 2 ][ 1 ] * b.m[ 1 ][ 2 ] + a.m[ 2 ][ 2 ] * b.m[ 2 ][ 2 ] + a.m[ 2 ][ 3 ] * b.m[ 3 ][ 2 ];
+	m[ 2 ][ 3 ] = a.m[ 2 ][ 0 ] * b.m[ 0 ][ 3 ] + a.m[ 2 ][ 1 ] * b.m[ 1 ][ 3 ] + a.m[ 2 ][ 2 ] * b.m[ 2 ][ 3 ] + a.m[ 2 ][ 3 ] * b.m[ 3 ][ 3 ];
 
-	out.m41 = a.m41 * b.m11 + a.m42 * b.m21 + a.m43 * b.m31 + a.m44 * b.m41;
-	out.m42 = a.m41 * b.m12 + a.m42 * b.m22 + a.m43 * b.m32 + a.m44 * b.m42;
-	out.m43 = a.m41 * b.m13 + a.m42 * b.m23 + a.m43 * b.m33 + a.m44 * b.m43;
-	out.m44 = a.m41 * b.m14 + a.m42 * b.m24 + a.m43 * b.m34 + a.m44 * b.m44;
+	m[ 3 ][ 0 ] = a.m[ 3 ][ 0 ] * b.m[ 0 ][ 0 ] + a.m[ 3 ][ 1 ] * b.m[ 1 ][ 0 ] + a.m[ 3 ][ 2 ] * b.m[ 2 ][ 0 ] + a.m[ 3 ][ 3 ] * b.m[ 3 ][ 0 ];
+	m[ 3 ][ 1 ] = a.m[ 3 ][ 0 ] * b.m[ 0 ][ 1 ] + a.m[ 3 ][ 1 ] * b.m[ 1 ][ 1 ] + a.m[ 3 ][ 2 ] * b.m[ 2 ][ 1 ] + a.m[ 3 ][ 3 ] * b.m[ 3 ][ 1 ];
+	m[ 3 ][ 2 ] = a.m[ 3 ][ 0 ] * b.m[ 0 ][ 2 ] + a.m[ 3 ][ 1 ] * b.m[ 1 ][ 2 ] + a.m[ 3 ][ 2 ] * b.m[ 2 ][ 2 ] + a.m[ 3 ][ 3 ] * b.m[ 3 ][ 2 ];
+	m[ 3 ][ 3 ] = a.m[ 3 ][ 0 ] * b.m[ 0 ][ 3 ] + a.m[ 3 ][ 1 ] * b.m[ 1 ][ 3 ] + a.m[ 3 ][ 2 ] * b.m[ 2 ][ 3 ] + a.m[ 3 ][ 3 ] * b.m[ 3 ][ 3 ];
 }
 
-GXVoid GXCALL GXMulVec4Mat4 ( GXVec4 &out, const GXVec4 &V, const GXMat4 &M )
+GXVoid GXMat4::Multiply ( GXVec4 &out, const GXVec4 &v ) const
 {
-	out.x = V.x * M.m11 + V.y * M.m21 + V.z * M.m31 + V.w * M.m41;
-	out.y = V.x * M.m12 + V.y * M.m22 + V.z * M.m32 + V.w * M.m42;
-	out.z = V.x * M.m13 + V.y * M.m23 + V.z * M.m33 + V.w * M.m43;
-	out.w = V.x * M.m14 + V.y * M.m24 + V.z * M.m34 + V.w * M.m44;
+	out.SetX ( v.data[ 0 ] * m[ 0 ][ 0 ] + v.data[ 1 ] * m[ 1 ][ 0 ] + v.data[ 2 ] * m[ 2 ][ 0 ] + v.data[ 3 ] * m[ 3 ][ 0 ] );
+	out.SetY ( v.data[ 0 ] * m[ 0 ][ 1 ] + v.data[ 1 ] * m[ 1 ][ 1 ] + v.data[ 2 ] * m[ 2 ][ 1 ] + v.data[ 3 ] * m[ 3 ][ 1 ] );
+	out.SetZ ( v.data[ 0 ] * m[ 0 ][ 2 ] + v.data[ 1 ] * m[ 1 ][ 2 ] + v.data[ 2 ] * m[ 2 ][ 2 ] + v.data[ 3 ] * m[ 3 ][ 2 ] );
+	out.SetW ( v.data[ 0 ] * m[ 0 ][ 3 ] + v.data[ 1 ] * m[ 1 ][ 3 ] + v.data[ 2 ] * m[ 2 ][ 3 ] + v.data[ 3 ] * m[ 3 ][ 3 ] );
 }
 
-GXVoid GXCALL GXMulVec3Mat4AsNormal ( GXVec3 &out, const GXVec3 &V, const GXMat4 &M )
+GXVoid GXMat4::MultiplyAsNormal ( GXVec3 &out, GXVec3 &v ) const
 {
-	out.x = M.m11 * V.x + M.m21 * V.y + M.m31 * V.z;
-	out.y = M.m12 * V.x + M.m22 * V.y + M.m32 * V.z;
-	out.z = M.m13 * V.x + M.m23 * V.y + M.m33 * V.z;
+	out.SetX ( v.data[ 0 ] * m[ 0 ][ 0 ] + v.data[ 1 ] * m[ 1 ][ 0 ] + v.data[ 2 ] * m[ 2 ][ 0 ] );
+	out.SetY ( v.data[ 0 ] * m[ 0 ][ 1 ] + v.data[ 1 ] * m[ 1 ][ 1 ] + v.data[ 2 ] * m[ 2 ][ 1 ] );
+	out.SetZ ( v.data[ 0 ] * m[ 0 ][ 2 ] + v.data[ 1 ] * m[ 1 ][ 2 ] + v.data[ 2 ] * m[ 2 ][ 2 ] );
 }
 
-GXVoid GXCALL GXMulVec3Mat4AsPoint ( GXVec3 &out, const GXVec3 &V, const GXMat4 &M )
+GXVoid GXMat4::MultiplyAsPoint ( GXVec3 &out, GXVec3 &v ) const
 {
-	out.x = M.m11 * V.x + M.m21 * V.y + M.m31 * V.z + M.m41;
-	out.y = M.m12 * V.x + M.m22 * V.y + M.m32 * V.z + M.m42;
-	out.z = M.m13 * V.x + M.m23 * V.y + M.m33 * V.z + M.m43;
+	out.SetX ( v.data[ 0 ] * m[ 0 ][ 0 ] + v.data[ 1 ] * m[ 1 ][ 0 ] + v.data[ 2 ] * m[ 2 ][ 0 ] + m[ 3 ][ 0 ] );
+	out.SetY ( v.data[ 0 ] * m[ 0 ][ 1 ] + v.data[ 1 ] * m[ 1 ][ 1 ] + v.data[ 2 ] * m[ 2 ][ 1 ] + m[ 3 ][ 1 ] );
+	out.SetZ ( v.data[ 0 ] * m[ 0 ][ 2 ] + v.data[ 1 ] * m[ 1 ][ 2 ] + v.data[ 2 ] * m[ 2 ][ 2 ] + m[ 3 ][ 2 ] );
 }
 
-GXVoid GXCALL GXGetPerspectiveParams ( const GXMat4 &m, GXFloat &fovy_rad, GXFloat &aspect, GXFloat &zNear, GXFloat &zFar )
+GXVoid GXMat4::GetPerspectiveParams ( GXFloat &fieldOfViewYRadiands, GXFloat &aspectRatio, GXFloat &zNear, GXFloat &zFar )
 {
-	fovy_rad = 2.0f * atanf ( 1.0f / m.m22 );
-	aspect = m.m22 / m.m11;
+	fieldOfViewYRadiands = 2.0f * atanf ( 1.0f / m[ 1 ][ 1 ] );
+	aspectRatio = m[ 1 ][ 1 ] / m[ 0 ][ 0 ];
 
-	zNear = -m.m43 / ( m.m33 + 1.0f );
-	zFar = ( zNear * m.m43 ) / ( m.m43 + 2.0f * zNear );
+	zNear = -m[ 3 ][ 2 ] / ( m[ 2 ][ 2 ] + 1.0f );
+	zFar = ( zNear * m[ 3 ][ 2 ] ) / ( m[ 3 ][ 2 ] + 2.0f * zNear );
 }
 
-GXVoid GXCALL GXGetOrthoParams ( const GXMat4 &m, GXFloat &width, GXFloat &height, GXFloat &zNear, GXFloat &zFar )
+GXVoid GXMat4::GetOrthoParams ( GXFloat &width, GXFloat &height, GXFloat &zNear, GXFloat &zFar )
 {
-	width = 2.0f / m.m11;
-	height = 2.0f / m.m22;
+	width = 2.0f / m[ 0 ][ 0 ];
+	height = 2.0f / m[ 1 ][ 1 ];
 
-	GXFloat factor = 1.0f / m.m33;
+	GXFloat factor = 1.0f / m[ 2 ][ 2 ];
 
-	zNear = -( 1.0f + m.m43 ) * factor;
-	zFar = ( 2.0f + zNear * m.m33 ) * factor;
+	zNear = -( 1.0f + m[ 3 ][ 2 ] ) * factor;
+	zFar = ( 2.0f + zNear * m[ 2 ][ 2 ] ) * factor;
 }
 
-GXVoid GXCALL GXGetRayPerspective ( GXVec3 &rayView, const GXMat4 &proj_mat, const GXVec2 &mouseCVV )
+GXVoid GXMat4::GetRayPerspective ( GXVec3 &rayView, const GXVec2 &mouseCVV )
 {
-	rayView.x = mouseCVV.x / proj_mat.m11;
-	rayView.y = mouseCVV.y / proj_mat.m22;
-	rayView.z = 1.0f;
+	rayView.SetX ( mouseCVV.GetX () / m[ 0 ][ 0 ] );
+	rayView.SetY ( mouseCVV.GetY () / m[ 1 ][ 1 ] );
+	rayView.SetZ ( 1.0f );
+}
+
+GXMat4& GXMat4::operator = ( const GXMat4& matrix )
+{
+	memcpy ( this, &matrix, sizeof ( GXMat4 ) );
 }
 
 //-------------------------------------------------------------------
 
 GXMat3::GXMat3 ()
 {
-	GXSetMat3Zero ( *this );
+	Zeros ();
+}
+
+GXMat3::GXMat3 ( const GXMat3 &other )
+{
+	memcpy ( this, &other, sizeof ( GXMat3 ) );
 }
 
 GXVoid GXMat3::From ( const GXQuat &quaternion )
 {
-	GXFloat xx = quaternion.x * quaternion.x;
-	GXFloat xy = quaternion.x * quaternion.y;
-	GXFloat xz = quaternion.x * quaternion.z;
-	GXFloat xw = quaternion.x * quaternion.w;
+	GXFloat xx = quaternion.GetX () * quaternion.GetX ();
+	GXFloat xy = quaternion.GetX () * quaternion.GetY ();
+	GXFloat xz = quaternion.GetX () * quaternion.GetZ ();
+	GXFloat xw = quaternion.GetX () * quaternion.GetW ();
 
-	GXFloat yy = quaternion.y * quaternion.y;
-	GXFloat yz = quaternion.y * quaternion.z;
-	GXFloat yw = quaternion.y * quaternion.w;
+	GXFloat yy = quaternion.GetY () * quaternion.GetY ();
+	GXFloat yz = quaternion.GetY () * quaternion.GetZ ();
+	GXFloat yw = quaternion.GetY () * quaternion.GetW ();
 
-	GXFloat zz = quaternion.z * quaternion.z;
-	GXFloat zw = quaternion.z * quaternion.w;
+	GXFloat zz = quaternion.GetZ () * quaternion.GetZ ();
+	GXFloat zw = quaternion.GetZ () * quaternion.GetW ();
 
-	m11 = 1.0f - 2.0f * ( yy + zz );
-	m12 = 2.0f * ( xy - zw );
-	m13 = 2.0f * ( xz + yw );
+	m[ 0 ][ 0 ] = 1.0f - 2.0f * ( yy + zz );
+	m[ 0 ][ 1 ] = 2.0f * ( xy - zw );
+	m[ 0 ][ 2 ] = 2.0f * ( xz + yw );
 
-	m21 = 2.0f * ( xy + zw );
-	m22 = 1.0f - 2.0f * ( xx + zz );
-	m23 = 2.0f * ( yz - xw );
+	m[ 1 ][ 0 ] = 2.0f * ( xy + zw );
+	m[ 1 ][ 1 ] = 1.0f - 2.0f * ( xx + zz );
+	m[ 1 ][ 2 ] = 2.0f * ( yz - xw );
 
-	m31 = 2.0f * ( xz - yw );
-	m32 = 2.0f * ( yz + xw );
-	m33 = 1.0f - 2.0f * ( xx + yy );
+	m[ 2 ][ 0 ] = 2.0f * ( xz - yw );
+	m[ 2 ][ 1 ] = 2.0f * ( yz + xw );
+	m[ 2 ][ 2 ] = 1.0f - 2.0f * ( xx + yy );
+}
+
+GXVoid GXMat3::From ( const GXMat4 &matrix )
+{
+	GXUPointer lineSize = 3 * sizeof ( GXFloat );
+
+	memcpy ( data, matrix.data, lineSize );
+	memcpy ( data + 3, matrix.data + 4, lineSize );
+	memcpy ( data + 6, matrix.data + 8, lineSize );
 }
 
 GXVoid GXMat3::GetX ( GXVec3& x ) const
 {
-	memcpy ( &x, arr, sizeof ( GXVec3 ) );
+	memcpy ( &x, data, sizeof ( GXVec3 ) );
 }
 
 GXVoid GXMat3::SetX ( const GXVec3& x )
 {
-	memcpy ( arr, &x, sizeof ( GXVec3 ) );
+	memcpy ( data, &x, sizeof ( GXVec3 ) );
 }
 
 GXVoid GXMat3::GetY ( GXVec3& y ) const
 {
-	memcpy ( &y, arr + 3, sizeof ( GXVec3 ) );
+	memcpy ( &y, data + 3, sizeof ( GXVec3 ) );
 }
 
 GXVoid GXMat3::SetY ( const GXVec3& y )
 {
-	memcpy ( arr + 3, &y, sizeof ( GXVec3 ) );
+	memcpy ( data + 3, &y, sizeof ( GXVec3 ) );
 }
 
 GXVoid GXMat3::GetZ ( GXVec3& z ) const
 {
-	memcpy ( &z, arr + 6, sizeof ( GXVec3 ) );
+	memcpy ( &z, data + 6, sizeof ( GXVec3 ) );
 }
 
 GXVoid GXMat3::SetZ ( const GXVec3& z )
 {
-	memcpy ( arr + 6, &z, sizeof ( GXVec3 ) );
+	memcpy ( data + 6, &z, sizeof ( GXVec3 ) );
 }
 
-GXVoid GXMat3::operator = ( const GXMat3 &matrix )
+GXVoid GXMat3::Identity ()
+{
+	m[ 0 ][ 0 ] = m[ 1 ][ 1 ] = m[ 2 ][ 2 ] = 1.0f;
+	m[ 0 ][ 1 ] = m[ 0 ][ 2 ] = 0.0f;
+	m[ 1 ][ 0 ] = m[ 1 ][ 2 ] = 0.0f;
+	m[ 2 ][ 0 ] = m[ 2 ][ 1 ] = 0.0f;
+}
+
+GXVoid GXMat3::Zeros ()
+{
+	memset ( data, 0, 9 * sizeof ( GXFloat ) );
+}
+
+GXVoid GXMat3::Inverse ( const GXMat4& src )
+{
+	GXFloat determinant = src.m[ 0 ][ 0 ] * ( src.m[ 1 ][ 1 ] * src.m[ 2 ][ 2 ] - src.m[ 2 ][ 1 ] * src.m[ 1 ][ 2 ] );
+	determinant -= src.m[ 0 ][ 1 ] * ( src.m[ 1 ][ 0 ] * src.m[ 2 ][ 2 ] - src.m[ 2 ][ 0 ] * src.m[ 1 ][ 2 ] );
+	determinant += src.m[ 0 ][ 2 ] * ( src.m[ 1 ][ 0 ] * src.m[ 2 ][ 1 ] - src.m[ 2 ][ 0 ] * src.m[ 1 ][ 1 ] );
+
+	GXFloat invDeterminant = 1.0f / determinant;
+
+	m[ 0 ][ 0 ] = invDeterminant * ( src.m[ 1 ][ 1 ] * src.m[ 2 ][ 2 ] - src.m[ 2 ][ 1 ] * src.m[ 1 ][ 2 ] );
+	m[ 0 ][ 1 ] = invDeterminant * ( src.m[ 0 ][ 2 ] * src.m[ 2 ][ 1 ] - src.m[ 2 ][ 2 ] * src.m[ 0 ][ 1 ] );
+	m[ 0 ][ 2 ] = invDeterminant * ( src.m[ 0 ][ 1 ] * src.m[ 1 ][ 2 ] - src.m[ 1 ][ 1 ] * src.m[ 0 ][ 2 ] );
+
+	m[ 1 ][ 0 ] = invDeterminant * ( src.m[ 1 ][ 2 ] * src.m[ 2 ][ 0 ] - src.m[ 2 ][ 2 ] * src.m[ 1 ][ 0 ] );
+	m[ 1 ][ 1 ] = invDeterminant * ( src.m[ 0 ][ 0 ] * src.m[ 2 ][ 2 ] - src.m[ 2 ][ 0 ] * src.m[ 0 ][ 2 ] );
+	m[ 1 ][ 2 ] = invDeterminant * ( src.m[ 0 ][ 2 ] * src.m[ 1 ][ 0 ] - src.m[ 1 ][ 2 ] * src.m[ 0 ][ 0 ] );
+
+	m[ 2 ][ 0 ] = invDeterminant * ( src.m[ 1 ][ 0 ] * src.m[ 2 ][ 1 ] - src.m[ 2 ][ 0 ] * src.m[ 1 ][ 1 ] );
+	m[ 2 ][ 1 ] = invDeterminant * ( src.m[ 0 ][ 1 ] * src.m[ 2 ][ 0 ] - src.m[ 2 ][ 1 ] * src.m[ 0 ][ 0 ] );
+	m[ 2 ][ 2 ] = invDeterminant * ( src.m[ 0 ][ 0 ] * src.m[ 1 ][ 1 ] - src.m[ 1 ][ 0 ] * src.m[ 0 ][ 1 ] );
+}
+
+GXVoid GXMat3::Transponse ( const GXMat4& src )
+{
+	m[ 0 ][ 0 ] = src.m[ 0 ][ 0 ];
+	m[ 0 ][ 1 ] = src.m[ 1 ][ 0 ];
+	m[ 0 ][ 2 ] = src.m[ 2 ][ 0 ];
+
+	m[ 1 ][ 0 ] = src.m[ 0 ][ 1 ];
+	m[ 1 ][ 1 ] = src.m[ 1 ][ 1 ];
+	m[ 1 ][ 2 ] = src.m[ 2 ][ 1 ];
+
+	m[ 2 ][ 0 ] = src.m[ 0 ][ 2 ];
+	m[ 2 ][ 1 ] = src.m[ 1 ][ 2 ];
+	m[ 2 ][ 2 ] = src.m[ 2 ][ 2 ];
+}
+
+GXVoid GXMat3::SkewSymmetric ( const GXVec3 &base )
+{
+	m[ 0 ][ 0 ] = m[ 1 ][ 1 ] = m[ 2 ][ 2 ] = 0.0f;
+
+	m[ 0 ][ 1 ] = base.GetZ ();
+	m[ 0 ][ 2 ] = -base.GetY ();
+
+	m[ 1 ][ 0 ] = -base.GetZ ();
+	m[ 1 ][ 2 ] = base.GetX ();
+
+	m[ 2 ][ 0 ] = base.GetY ();
+	m[ 2 ][ 1 ] = -base.GetX ();
+}
+
+GXVoid GXMat3::Sum ( const GXMat3 &a, const GXMat3 &b )
+{
+	m[ 0 ][ 0 ] = a.m[ 0 ][ 0 ] + b.m[ 0 ][ 0 ];
+	m[ 0 ][ 1 ] = a.m[ 0 ][ 1 ] + b.m[ 0 ][ 1 ];
+	m[ 0 ][ 2 ] = a.m[ 0 ][ 2 ] + b.m[ 0 ][ 2 ];
+
+	m[ 1 ][ 0 ] = a.m[ 1 ][ 0 ] + b.m[ 1 ][ 0 ];
+	m[ 1 ][ 1 ] = a.m[ 1 ][ 1 ] + b.m[ 1 ][ 1 ];
+	m[ 1 ][ 2 ] = a.m[ 1 ][ 2 ] + b.m[ 1 ][ 2 ];
+
+	m[ 2 ][ 0 ] = a.m[ 2 ][ 0 ] + b.m[ 2 ][ 0 ];
+	m[ 2 ][ 1 ] = a.m[ 2 ][ 1 ] + b.m[ 2 ][ 1 ];
+	m[ 2 ][ 2 ] = a.m[ 2 ][ 2 ] + b.m[ 2 ][ 2 ];
+}
+
+GXVoid GXMat3::Substract ( const GXMat3 &a, const GXMat3 &b )
+{
+	m[ 0 ][ 0 ] = a.m[ 0 ][ 0 ] - b.m[ 0 ][ 0 ];
+	m[ 0 ][ 1 ] = a.m[ 0 ][ 1 ] - b.m[ 0 ][ 1 ];
+	m[ 0 ][ 2 ] = a.m[ 0 ][ 2 ] - b.m[ 0 ][ 2 ];
+
+	m[ 1 ][ 0 ] = a.m[ 1 ][ 0 ] - b.m[ 1 ][ 0 ];
+	m[ 1 ][ 1 ] = a.m[ 1 ][ 1 ] - b.m[ 1 ][ 1 ];
+	m[ 1 ][ 2 ] = a.m[ 1 ][ 2 ] - b.m[ 1 ][ 2 ];
+
+	m[ 2 ][ 0 ] = a.m[ 2 ][ 0 ] - b.m[ 2 ][ 0 ];
+	m[ 2 ][ 1 ] = a.m[ 2 ][ 1 ] - b.m[ 2 ][ 1 ];
+	m[ 2 ][ 2 ] = a.m[ 2 ][ 2 ] - b.m[ 2 ][ 2 ];
+}
+
+GXVoid GXMat3::Multiply ( const GXMat3 &a, const GXMat3 &b )
+{
+	m[ 0 ][ 0 ] = a.m[ 0 ][ 0 ] * b.m[ 0 ][ 0 ] + a.m[ 0 ][ 1 ] * b.m[ 1 ][ 0 ] + a.m[ 0 ][ 2 ] * b.m[ 2 ][ 0 ];
+	m[ 0 ][ 1 ] = a.m[ 0 ][ 0 ] * b.m[ 0 ][ 1 ] + a.m[ 0 ][ 1 ] * b.m[ 1 ][ 1 ] + a.m[ 0 ][ 2 ] * b.m[ 2 ][ 1 ];
+	m[ 0 ][ 2 ] = a.m[ 0 ][ 0 ] * b.m[ 0 ][ 2 ] + a.m[ 0 ][ 1 ] * b.m[ 1 ][ 2 ] + a.m[ 0 ][ 2 ] * b.m[ 2 ][ 2 ];
+
+	m[ 1 ][ 0 ] = a.m[ 1 ][ 0 ] * b.m[ 0 ][ 0 ] + a.m[ 1 ][ 1 ] * b.m[ 1 ][ 0 ] + a.m[ 1 ][ 2 ] * b.m[ 2 ][ 0 ];
+	m[ 1 ][ 1 ] = a.m[ 1 ][ 0 ] * b.m[ 0 ][ 1 ] + a.m[ 1 ][ 1 ] * b.m[ 1 ][ 1 ] + a.m[ 1 ][ 2 ] * b.m[ 2 ][ 1 ];
+	m[ 1 ][ 2 ] = a.m[ 1 ][ 0 ] * b.m[ 0 ][ 2 ] + a.m[ 1 ][ 1 ] * b.m[ 1 ][ 2 ] + a.m[ 1 ][ 2 ] * b.m[ 2 ][ 2 ];
+
+	m[ 2 ][ 0 ] = a.m[ 2 ][ 0 ] * b.m[ 0 ][ 0 ] + a.m[ 2 ][ 1 ] * b.m[ 1 ][ 0 ] + a.m[ 2 ][ 2 ] * b.m[ 2 ][ 0 ];
+	m[ 2 ][ 1 ] = a.m[ 2 ][ 0 ] * b.m[ 0 ][ 1 ] + a.m[ 2 ][ 1 ] * b.m[ 1 ][ 1 ] + a.m[ 2 ][ 2 ] * b.m[ 2 ][ 1 ];
+	m[ 2 ][ 2 ] = a.m[ 2 ][ 0 ] * b.m[ 0 ][ 2 ] + a.m[ 2 ][ 1 ] * b.m[ 1 ][ 2 ] + a.m[ 2 ][ 2 ] * b.m[ 2 ][ 2 ];
+}
+
+GXVoid GXMat3::Multiply ( GXVec3 &out, const GXVec3 &v )
+{
+	out.SetX ( v.data[ 0 ] * m[ 0 ][ 0 ] + v.data[ 1 ] * m[ 1 ][ 0 ] + v.data[ 2 ] * m[ 2 ][ 0 ] );
+	out.SetY ( v.data[ 0 ] * m[ 0 ][ 1 ] + v.data[ 1 ] * m[ 1 ][ 1 ] + v.data[ 2 ] * m[ 2 ][ 1 ] );
+	out.SetZ ( v.data[ 0 ] * m[ 0 ][ 2 ] + v.data[ 1 ] * m[ 1 ][ 2 ] + v.data[ 2 ] * m[ 2 ][ 2 ] );
+}
+
+GXVoid GXMat3::Multiply ( const GXMat3 &a, GXFloat factor )
+{
+	m[ 0 ][ 0 ] = a.m[ 0 ][ 0 ] * factor;
+	m[ 0 ][ 1 ] = a.m[ 0 ][ 1 ] * factor;
+	m[ 0 ][ 2 ] = a.m[ 0 ][ 2 ] * factor;
+
+	m[ 1 ][ 0 ] = a.m[ 1 ][ 0 ] * factor;
+	m[ 1 ][ 1 ] = a.m[ 1 ][ 1 ] * factor;
+	m[ 1 ][ 2 ] = a.m[ 1 ][ 2 ] * factor;
+
+	m[ 2 ][ 0 ] = a.m[ 2 ][ 0 ] * factor;
+	m[ 2 ][ 1 ] = a.m[ 2 ][ 1 ] * factor;
+	m[ 2 ][ 2 ] = a.m[ 2 ][ 2 ] * factor;
+}
+
+GXMat3& GXMat3::operator = ( const GXMat3 &matrix )
 {
 	memcpy ( this, &matrix, sizeof ( GXMat3 ) );
-}
-
-GXVoid GXCALL GXSetMat3Transponse ( GXMat3 &out, const GXMat3 &a )
-{
-	out.m11 = a.m11;
-	out.m12 = a.m21;
-	out.m13 = a.m31;
-
-	out.m21 = a.m12;
-	out.m22 = a.m22;
-	out.m23 = a.m32;
-
-	out.m31 = a.m13;
-	out.m32 = a.m23;
-	out.m33 = a.m33;
-}
-
-GXVoid GXCALL GXSetMat3FromMat4 ( GXMat3 &out, const GXMat4 &m )
-{
-	out.m11 = m.m11;
-	out.m12 = m.m12;
-	out.m13 = m.m13;
-
-	out.m21 = m.m21;
-	out.m22 = m.m22;
-	out.m23 = m.m23;
-
-	out.m31 = m.m31;
-	out.m32 = m.m32;
-	out.m33 = m.m33;
-}
-
-GXVoid GXCALL GXSetMat3Identity ( GXMat3 &out )
-{
-	out.m11 = out.m22 = out.m33 = 1.0f;
-	out.m12 = out.m13 = 0.0f;
-	out.m21 = out.m23 = 0.0f;
-	out.m31 = out.m32 = 0.0f;
-}
-
-GXVoid GXCALL GXSetMat3Inverse ( GXMat3 &out, const GXMat3 &m )
-{
-	float determinant = m.m11 * ( m.m22 * m.m33 - m.m32 * m.m23 );
-	determinant -= m.m12 * ( m.m21 * m.m33 - m.m31 * m.m23 );
-	determinant += m.m13 * ( m.m21 * m.m32 - m.m31 * m.m22 );
-
-	float invDeterminant = 1.0f / determinant;
-
-	out.m11 = invDeterminant * ( m.m22 * m.m33 - m.m32 * m.m23 );
-	out.m12 = invDeterminant * ( m.m13 * m.m32 - m.m33 * m.m12 );
-	out.m13 = invDeterminant * ( m.m12 * m.m23 - m.m22 * m.m13 );
-
-	out.m21 = invDeterminant * ( m.m23 * m.m31 - m.m33 * m.m21 );
-	out.m22 = invDeterminant * ( m.m11 * m.m33 - m.m31 * m.m13 );
-	out.m23 = invDeterminant * ( m.m13 * m.m21 - m.m23 * m.m11 );
-
-	out.m31 = invDeterminant * ( m.m21 * m.m32 - m.m31 * m.m22 );
-	out.m32 = invDeterminant * ( m.m12 * m.m31 - m.m32 * m.m11 );
-	out.m33 = invDeterminant * ( m.m11 * m.m22 - m.m21 * m.m12 );
-}
-
-GXVoid GXCALL GXSetMat3Zero ( GXMat3 &out )
-{
-	memset ( &out, 0, sizeof ( GXMat3 ) );
-}
-
-GXVoid GXCALL GXSetMat3SkewSymmetric ( GXMat3 &out, const GXVec3 &base )
-{
-	out.m11 = out.m22 = out.m33 = 0.0f;
-
-	out.m12 = base.z;
-	out.m13 = -base.y;
-
-	out.m21 = -base.z;
-	out.m23 = base.x;
-
-	out.m31 = base.y;
-	out.m32 = -base.x;
-}
-
-GXVoid GXCALL GXMulMat3Mat3 ( GXMat3 &out, const GXMat3 &a, const GXMat3 &b )
-{
-	out.m11 = a.m11 * b.m11 + a.m12 * b.m21 + a.m13 * b.m31;
-	out.m12 = a.m11 * b.m12 + a.m12 * b.m22 + a.m13 * b.m32;
-	out.m13 = a.m11 * b.m13 + a.m12 * b.m23 + a.m13 * b.m33;
-
-	out.m21 = a.m21 * b.m11 + a.m22 * b.m21 + a.m23 * b.m31;
-	out.m22 = a.m21 * b.m12 + a.m22 * b.m22 + a.m23 * b.m32;
-	out.m23 = a.m21 * b.m13 + a.m22 * b.m23 + a.m23 * b.m33;
-
-	out.m31 = a.m31 * b.m11 + a.m32 * b.m21 + a.m33 * b.m31;
-	out.m32 = a.m31 * b.m12 + a.m32 * b.m22 + a.m33 * b.m32;
-	out.m33 = a.m31 * b.m13 + a.m32 * b.m23 + a.m33 * b.m33;
-}
-
-GXVoid GXCALL GXMulVec3Mat3 ( GXVec3 &out, const GXVec3 &v, const GXMat3 &m )
-{
-	out.x = v.x * m.m11 + v.y * m.m21 + v.z * m.m31;
-	out.y = v.x * m.m12 + v.y * m.m22 + v.z * m.m32;
-	out.z = v.x * m.m13 + v.y * m.m23 + v.z * m.m33;
-}
-
-GXVoid GXCALL GXMulMat3Scalar ( GXMat3 &out, const GXMat3 &m, float a )
-{
-	out.m11 = m.m11 * a;
-	out.m12 = m.m12 * a;
-	out.m13 = m.m13 * a;
-
-	out.m21 = m.m21 * a;
-	out.m22 = m.m22 * a;
-	out.m23 = m.m23 * a;
-
-	out.m31 = m.m31 * a;
-	out.m32 = m.m32 * a;
-	out.m33 = m.m33 * a;
-}
-
-GXVoid GXCALL GXSumMat3Mat3 ( GXMat3 &out, const GXMat3 &a, const GXMat3 &b )
-{
-	out.m11 = a.m11 + b.m11;
-	out.m12 = a.m12 + b.m12;
-	out.m13 = a.m13 + b.m13;
-
-	out.m21 = a.m21 + b.m21;
-	out.m22 = a.m22 + b.m22;
-	out.m23 = a.m23 + b.m23;
-
-	out.m31 = a.m31 + b.m31;
-	out.m32 = a.m32 + b.m32;
-	out.m33 = a.m33 + b.m33;
-}
-
-GXVoid GXCALL GXSubMat3Mat3 ( GXMat3 &out, const GXMat3 &a, const GXMat3 &b )
-{
-	out.m11 = a.m11 - b.m11;
-	out.m12 = a.m12 - b.m12;
-	out.m13 = a.m13 - b.m13;
-
-	out.m21 = a.m21 - b.m21;
-	out.m22 = a.m22 - b.m22;
-	out.m23 = a.m23 - b.m23;
-
-	out.m31 = a.m31 - b.m31;
-	out.m32 = a.m32 - b.m32;
-	out.m33 = a.m33 - b.m33;
-}
-
-//----------------------------------------------------------------------------
-
-GXQuat GXCALL GXCreateQuat ( const GXMat4 &mat )
-{
-	GXFloat		trace;
-	GXFloat		s;
-	GXFloat		t;
-	GXInt		i;
-	GXInt		j;
-	GXInt		k;
-
-	GXQuat v;
-
-	static GXInt next[ 3 ] = { 1, 2, 0 };
-
-	trace = mat.m[ 0 ][ 0 ] + mat.m[ 1 ][ 1 ] + mat.m[ 2 ][ 2 ];
-
-	if ( trace > 0.0f ) 
-	{
-		t = trace + 1.0f;
-		s = 1.0f / sqrtf ( t ) * 0.5f;
-
-		v.arr[ 3 ] = s * t;
-		v.arr[ 0 ] = ( mat.m[ 2 ][ 1 ] - mat.m[ 1 ][ 2 ] ) * s;
-		v.arr[ 1 ] = ( mat.m[ 0 ][ 2 ] - mat.m[ 2 ][ 0 ] ) * s;
-		v.arr[ 2 ] = ( mat.m[ 1 ][ 0 ] - mat.m[ 0 ][ 1 ] ) * s;
-	}
-	else
-	{
-
-		i = 0;
-		if ( mat.m[ 1 ][ 1 ] > mat.m[ 0 ][ 0 ] ) 
-			i = 1;
-
-		if ( mat.m[ 2 ][ 2 ] > mat.m[ i ][ i ] ) 
-			i = 2;
-
-		j = next[ i ];
-		k = next[ j ];
-
-		t = ( mat.m[ i ][ i ] - ( mat.m[ j ][ j ] + mat.m[ k ][ k ] ) ) + 1.0f;
-		s = 1.0f / sqrtf ( t ) * 0.5f;
-
-		v.arr[ i ] = s * t;
-		v.arr[ 3 ] = ( mat.m[ k ][ j ] - mat.m[ j ][ k ] ) * s;
-		v.arr[ j ] = ( mat.m[ j ][ i ] + mat.m[ i ][ j ] ) * s;
-		v.arr[ k ] = ( mat.m[ k ][ i ] + mat.m[ i ][ k ] ) * s;
-	}
-
-	return v;
-}
-
-GXVoid GXCALL GXSetQuatIdentity ( GXQuat &out )
-{
-	out.x = out.y = out.z = 0.0f;
-	out.w = 1.0f;
-}
-
-GXVoid GXCALL GXSetQuatFromAxisAngle ( GXQuat &out, GXFloat x, GXFloat y, GXFloat z, GXFloat angle )
-{
-	GXFloat sn = sinf ( angle * 0.5f );
-	GXFloat cs = cosf ( angle * 0.5f );
-
-	out.x = x * sn;
-	out.y = y * sn;
-	out.z = z * sn;
-	out.w = cs;
-}
-
-GXVoid GXCALL GXSetQuatFromAxisAngle ( GXQuat &out, const GXVec3 &axis, GXFloat angle )
-{
-	GXSetQuatFromAxisAngle ( out, axis.x, axis.y, axis.z, angle );
-}
-
-GXVoid GXCALL GXQuatRehandCoordinateSystem ( GXQuat &inOut )
-{
-	inOut.w = -inOut.w;
-}
-
-GXVoid GXCALL GXQuatToEulerAngles ( GXVec3 &out_rad, const GXQuat &q )
-{
-	//TODO
-	GXFloat factor = q.z * q.z;
-
-	out_rad.x = atan2f ( 2.0f * ( q.x * q.y + q.z * q.w ), 1.0f - 2.0f * ( q.y * q.y + factor ) );
-	out_rad.y = asinf ( 2.0f * ( q.x * q.z - q.w * q.y ) );
-	out_rad.z = atan2f ( 2.0f * ( q.x * q.w + q.y * q.z ), 1.0f - 2.0f * ( factor + q.w * q.w ) );
-}
-
-GXVoid GXCALL GXQuatToAxisAngle ( GXVec3 &axis, GXFloat &angle, const GXQuat quaternion )
-{
-	GXQuat q = quaternion;
-	if ( q.w > 1.0f )
-		GXNormalizeQuat ( q );
-
-	angle = 2.0f * acosf(q.w);
-	GXFloat s = sqrtf( 1.0f - q.w * q.w );
-
-	if ( s < 0.001 ) 
-	{
-		axis.x = q.x;
-		axis.y = q.y;
-		axis.z = q.z;
-	} 
-	else 
-	{
-		GXFloat factor = 1.0f / s;
-		axis.x = q.x * factor;
-		axis.y = q.y * factor;
-		axis.z = q.z * factor;
-	}
-}
-
-GXVoid GXCALL GXMulQuatQuat ( GXQuat &out, const GXQuat &a, const GXQuat &b )
-{
-	GXFloat A, B, C, D, E, F, G, H;
-
-	A = ( a.w + a.x ) * ( b.w + b.x );
-	B = ( a.z - a.y ) * ( b.y - b.z );
-	C = ( a.x - a.w ) * ( b.y + b.z );
-	D = ( a.y + a.z ) * ( b.x - b.w );
-	E = ( a.x + a.z ) * ( b.x + b.y );
-	F = ( a.x - a.z ) * ( b.x - b.y );
-	G = ( a.w + a.y ) * ( b.w - b.z );
-	H = ( a.w - a.y ) * ( b.w + b.z );
-
-	out.w =  B + ( -E - F + G + H ) * 0.5f;
-	out.x =  A - (  E + F + G + H ) * 0.5f; 
-	out.y = -C + (  E - F + G - H ) * 0.5f;
-	out.z = -D + (  E - F - G + H ) * 0.5f;
-}
-
-GXVoid GXCALL GXSumQuatQuat ( GXQuat& out, const GXQuat &a, const GXQuat &b )
-{
-	out.x = a.x + b.x;
-	out.y = a.y + b.y;
-	out.z = a.z + b.z;
-	out.w = a.w + b.w;
-}
-
-GXVoid GXCALL GXSumQuatScaledVec3 ( GXQuat &out, const GXQuat &q, GXFloat s, const GXVec3 &v )
-{
-	GXQuat qs ( v.x * s, v.y * s, v.z * s, 0.0f );
-	GXQuat q1;
-	GXMulQuatQuat ( q1, qs, q );
-
-	out.x = q.x + q1.x * 0.5f;
-	out.y = q.y + q1.y * 0.5f;
-	out.z = q.z + q1.z * 0.5f;
-	out.w = q.w + q1.w * 0.5f;
-}
-
-GXVoid GXCALL GXSubQuatQuat ( GXQuat &out, const GXQuat &a, const GXQuat &b )
-{
-	GXQuat bi;
-	GXInverseQuat ( bi, b );
-	GXMulQuatQuat ( out, bi, a );
-}
-
-GXVoid GXCALL GXQuatSLerp ( GXQuat &out, const GXQuat &a, const GXQuat &b, GXFloat k )
-{
-	GXQuat temp;
-	GXFloat omega;
-	GXFloat cosom;
-	GXFloat sinom;
-	GXFloat scale0;
-	GXFloat scale1;
-
-	if ( k <= 0.0f )
-	{
-		out = a;
-		return;
-	}
-
-	if ( k >= 1.0f )
-	{
-		out = b;
-		return;
-	}
-
-	cosom = a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
-	if ( cosom < 0.0f )
-	{
-		temp.x = -b.x;
-		temp.y = -b.y;
-		temp.z = -b.z;
-		temp.w = -b.w;
-		cosom = -cosom;
-	}
-	else
-	{
-		temp = b;
-	}
-
-	if ( ( 1.0f - cosom ) > 1e-6f )
-	{
-		omega = acosf( cosom );
-		sinom = 1.0f / sinf ( omega );
-		scale0 = sinf ( ( 1.0f - k ) * omega ) * sinom;
-		scale1 = sinf ( k * omega ) * sinom;
-	}
-	else
-	{
-		scale0 = 1.0f - k;
-		scale1 = k;
-	}
-
-	out.x = a.x * scale0 + temp.x * scale1;
-	out.y = a.y * scale0 + temp.y * scale1;
-	out.z = a.z * scale0 + temp.z * scale1;
-	out.w = a.w * scale0 + temp.w * scale1;
-}
-
-GXVoid GXCALL GXQuatTransform ( GXVec3 &out, const GXQuat &q, const GXVec3 &v )
-{
-	GXFloat xxzz = q.x * q.x - q.z * q.z;
-	GXFloat wwyy = q.w * q.w - q.y * q.y;
-
-	GXFloat xw2 = q.x * q.w * 2.0f;
-	GXFloat xy2 = q.x * q.y * 2.0f;
-	GXFloat xz2 = q.x * q.z * 2.0f;
-	GXFloat yw2 = q.y * q.w * 2.0f;
-	GXFloat yz2 = q.y * q.z * 2.0f;
-	GXFloat zw2 = q.z * q.w * 2.0f;
-
-	out.x = ( xxzz + wwyy ) *v.x	+ ( xy2 + zw2 ) * v.y										+ ( xz2 - yw2 ) * v.z;
-	out.y = ( xy2 - zw2 ) * v.x		+ ( q.y * q.y + q.w * q.w - q.x * q.x - q.z * q.z ) * v.y	+ ( yz2 + xw2 ) * v.z;
-	out.z = ( xz2 + yw2 ) * v.x		+ ( yz2 - xw2 ) * v.y										+ ( wwyy - xxzz ) * v.z;
-}
-
-GXVoid GXCALL GXInverseQuat ( GXQuat &out, const GXQuat &q )
-{
-	GXFloat lenSq = q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w;
-	if ( lenSq > 0.0f )
-	{
-		GXFloat invLenSq = 1.0f / lenSq;
-		out.x = -q.x * invLenSq;
-		out.y = -q.y * invLenSq;
-		out.z = -q.z * invLenSq;
-		out.w = q.w * invLenSq;
-		return;
-	}
-	else
-	{
-		wprintf ( L"Ошибка - GXInverseQuat\n" );
-		out.x = out.y = out.z = 0.0f;
-		out.w = 1.0f;
-	}
-}
-
-GXVoid GXCALL GXNormalizeQuat ( GXQuat &inOut )
-{
-	GXFloat len = sqrtf ( inOut.x * inOut.x + inOut.y * inOut.y + inOut.z * inOut.z + inOut.w * inOut.w );
-	if ( len )
-	{
-		GXFloat ilength = 1.0f / len;
-		inOut.x *= ilength;
-		inOut.y *= ilength;
-		inOut.z *= ilength;
-		inOut.w *= ilength;
-	}
 }
 
 //------------------------------------------------------------------
 
 GXAABB::GXAABB ()
+{
+	Empty ();
+}
+
+GXAABB::GXAABB ( const GXAABB &other )
+{
+	memcpy ( this, &other, sizeof ( GXAABB ) );
+}
+
+GXVoid GXAABB::Empty ()
 {
 	vertices = 0;
 
@@ -1345,178 +1678,162 @@ GXAABB::GXAABB ()
 	max = GXVec3 ( -FLT_MAX, -FLT_MAX, -FLT_MAX );
 }
 
-GXVoid GXAABB::operator = ( const GXAABB &aabb )
+GXVoid GXAABB::Transform ( const GXAABB &bounds, const GXMat4 &transform )
 {
-	memcpy ( this, &aabb, sizeof ( GXAABB ) );
-}
+	GXVec3 verticesLocal[ 8 ];
+	verticesLocal[ 0 ] = GXVec3::Create ( bounds.min.data[ 0 ], bounds.min.data[ 1 ], bounds.min.data[ 2 ] );
+	verticesLocal[ 1 ] = GXVec3::Create ( bounds.max.data[ 0 ], bounds.min.data[ 1 ], bounds.min.data[ 2 ] );
+	verticesLocal[ 2 ] = GXVec3::Create ( bounds.max.data[ 0 ], bounds.min.data[ 1 ], bounds.max.data[ 2 ] );
+	verticesLocal[ 3 ] = GXVec3::Create ( bounds.min.data[ 0 ], bounds.min.data[ 1 ], bounds.max.data[ 2 ] );
 
-GXFloat GXCALL GXGetAABBWidth ( const GXAABB &bounds )
-{
-	if ( bounds.vertices < 2 ) 
-		return -1.0f;
+	verticesLocal[ 4 ] = GXVec3::Create ( bounds.min.data[ 0 ], bounds.max.data[ 1 ], bounds.min.data[ 2 ] );
+	verticesLocal[ 5 ] = GXVec3::Create ( bounds.max.data[ 0 ], bounds.max.data[ 1 ], bounds.min.data[ 2 ] );
+	verticesLocal[ 6 ] = GXVec3::Create ( bounds.max.data[ 0 ], bounds.max.data[ 1 ], bounds.max.data[ 2 ] );
+	verticesLocal[ 7 ] = GXVec3::Create ( bounds.min.data[ 0 ], bounds.max.data[ 1 ], bounds.max.data[ 2 ] );
 
-	return bounds.max.x - bounds.min.x;
-}
-
-GXFloat GXCALL GXGetAABBHeight ( const GXAABB &bounds )
-{
-	if ( bounds.vertices < 2 ) 
-		return -1.0f;
-
-	return bounds.max.y - bounds.min.y;
-}
-
-GXFloat GXCALL GXGetAABBDepth ( const GXAABB &bounds )
-{
-	if ( bounds.vertices < 2 ) 
-		return -1.0f;
-
-	return bounds.max.z - bounds.min.z;
-}
-
-GXVoid GXCALL GXSetAABBEmpty ( GXAABB &inOut )
-{
-	inOut.vertices = 0;
-
-	inOut.min = GXVec3 ( FLT_MAX, FLT_MAX, FLT_MAX );
-	inOut.max = GXVec3 ( FLT_MIN, FLT_MIN, FLT_MIN );
-}
-
-GXVoid GXCALL GXSetAABBTransformed ( GXAABB &out, const GXAABB &bounds, const GXMat4 &transform )
-{
-	GXVec3 verticesLocal[8];
-	verticesLocal[0] = GXCreateVec3 ( bounds.min.x, bounds.min.y, bounds.min.z );
-	verticesLocal[1] = GXCreateVec3 ( bounds.max.x, bounds.min.y, bounds.min.z );
-	verticesLocal[2] = GXCreateVec3 ( bounds.max.x, bounds.min.y, bounds.max.z );
-	verticesLocal[3] = GXCreateVec3 ( bounds.min.x, bounds.min.y, bounds.max.z );
-
-	verticesLocal[4] = GXCreateVec3 ( bounds.min.x, bounds.max.y, bounds.min.z );
-	verticesLocal[5] = GXCreateVec3 ( bounds.max.x, bounds.max.y, bounds.min.z );
-	verticesLocal[6] = GXCreateVec3 ( bounds.max.x, bounds.max.y, bounds.max.z );
-	verticesLocal[7] = GXCreateVec3 ( bounds.min.x, bounds.max.y, bounds.max.z );
-
-	GXSetAABBEmpty ( out );
+	Empty ();
 
 	for ( GXUByte i = 0; i < 8; i++ )
 	{
 		GXVec3 vertex;
-		GXMulVec3Mat4AsPoint ( vertex, verticesLocal[ i ], transform );
-		GXAddVertexToAABB ( out, vertex );
+		transform.MultiplyAsPoint ( vertex, verticesLocal[ i ] );
+		AddVertex ( vertex );
 	}
 }
 
-GXVoid GXCALL GXAddVertexToAABB ( GXAABB &inOut, const GXVec3 &vertex )
+GXVoid GXAABB::AddVertex ( const GXVec3 &vertex )
 {
-	GXAddVertexToAABB ( inOut, vertex.x, vertex.y, vertex.z );
+	AddVertex ( vertex.data[ 0 ], vertex.data[ 1 ], vertex.data[ 2 ] );
 }
 
-GXVoid GXCALL GXAddVertexToAABB ( GXAABB &inOut, GXFloat x, GXFloat y, GXFloat z )
+GXVoid GXAABB::AddVertex ( GXFloat x, GXFloat y, GXFloat z )
 {
-	if ( inOut.vertices > 1 )
+	if ( vertices > 1 )
 	{
-		if ( inOut.min.x > x )
-			inOut.min.x = x;
-		else if ( inOut.max.x < x )
-			inOut.max.x = x;
+		if ( min.data[ 0 ] > x )
+			min.data[ 0 ] = x;
+		else if ( max.data[ 0 ] < x )
+			max.data[ 0 ] = x;
 
-		if ( inOut.min.y > y )
-			inOut.min.y = y;
-		else if ( inOut.max.y < y )
-			inOut.max.y = y;
+		if ( min.data[ 1 ] > y )
+			min.data[ 1 ] = y;
+		else if ( max.data[ 1 ] < y )
+			max.data[ 1 ] = y;
 
-		if ( inOut.min.z > z )
-			inOut.min.z = z;
-		else if ( inOut.max.z < z )
-			inOut.max.z = z;
+		if ( min.data[ 2 ] > z )
+			min.data[ 2 ] = z;
+		else if ( max.data[ 2 ] < z )
+			max.data[ 2 ] = z;
 
 		return;
 	}
-	else if ( inOut.vertices == 0 )
+	else if ( vertices == 0 )
 	{
-		inOut.vertices++;
+		vertices++;
 
-		inOut.min = GXCreateVec3 ( x, y, z );
+		min = GXVec3::Create ( x, y, z );
 		return;
 	}
 
-	inOut.vertices++;
+	vertices++;
 
-	if ( inOut.min.x > x )
+	if ( min.data[ 0 ] > x )
 	{
-		inOut.max.x = inOut.min.x;
-		inOut.min.x = x;
+		max.data[ 0 ] = min.data[ 0 ];
+		min.data[ 0 ] = x;
 	}
 	else
-		inOut.max.x = x;
+		max.data[ 0 ] = x;
 
-	if ( inOut.min.y > y )
+	if ( min.data[ 1 ] > y )
 	{
-		inOut.max.y = inOut.min.y;
-		inOut.min.y = y;
+		max.data[ 1 ] = min.data[ 1 ];
+		min.data[ 1 ] = y;
 	}
 	else
-		inOut.max.y = y;
+		max.data[ 1 ] = y;
 
-	if ( inOut.min.z > z )
+	if ( min.data[ 2 ]  > z )
 	{
-		inOut.max.z = inOut.min.z;
-		inOut.min.z = z;
+		max.data[ 2 ] = min.data[ 2 ];
+		min.data[ 2 ] = z;
 	}
 	else
-		inOut.max.z = z;
+		max.data[ 2 ] = z;
 }
 
-GXBool GXCALL GXIsOverlapedAABBAABB ( const GXAABB& a, const GXAABB& b )
+GXBool GXAABB::IsOverlaped ( const GXAABB &other ) const
 {
-	if ( a.min.x > b.max.x ) return GX_FALSE;
-	if ( a.min.y > b.max.y ) return GX_FALSE;
-	if ( a.min.z > b.max.z ) return GX_FALSE;
+	if ( min.data[ 0 ] > other.max.data[ 0 ] ) return GX_FALSE;
+	if ( min.data[ 1 ] > other.max.data[ 1 ] ) return GX_FALSE;
+	if ( min.data[ 2 ] > other.max.data[ 2 ] ) return GX_FALSE;
 
-	if ( b.min.x > a.max.x ) return GX_FALSE;
-	if ( b.min.y > a.max.y ) return GX_FALSE;
-	if ( b.min.z > a.max.z ) return GX_FALSE;
+	if ( other.min.data[ 0 ] > max.data[ 0 ] ) return GX_FALSE;
+	if ( other.min.data[ 1 ] > max.data[ 1 ] ) return GX_FALSE;
+	if ( other.min.data[ 2 ] > max.data[ 2 ] ) return GX_FALSE;
 
 	return GX_TRUE;
 }
 
-GXBool GXCALL GXIsOverlapedAABBVec3 ( const GXAABB &a, const GXVec3 &b )
+GXBool GXAABB::IsOverlaped ( const GXVec3 &point ) const
 {
-	if ( a.min.x > b.x ) return GX_FALSE;
-	if ( a.min.y > b.y ) return GX_FALSE;
-	if ( a.min.z > b.z ) return GX_FALSE;
+	return IsOverlaped ( point.data[ 0 ], point.data[ 1 ], point.data[ 2 ] );
+}
 
-	if ( a.max.x < b.x ) return GX_FALSE;
-	if ( a.max.y < b.y ) return GX_FALSE;
-	if ( a.max.z < b.z ) return GX_FALSE;
+GXBool GXAABB::IsOverlaped ( GXFloat x, GXFloat y, GXFloat z ) const
+{
+	if ( min.data[ 0 ] > x ) return GX_FALSE;
+	if ( min.data[ 1 ] > y ) return GX_FALSE;
+	if ( min.data[ 2 ] > z ) return GX_FALSE;
+
+	if ( max.data[ 0 ] < x ) return GX_FALSE;
+	if ( max.data[ 1 ] < y ) return GX_FALSE;
+	if ( max.data[ 2 ] < z ) return GX_FALSE;
 
 	return GX_TRUE;
 }
 
-GXBool GXCALL GXIsOverlapedAABBVec3 ( const GXAABB &a, GXFloat x, GXFloat y, GXFloat z )
+GXVoid GXAABB::GetCenter ( GXVec3 &center ) const
 {
-	if ( a.min.x > x ) return GX_FALSE;
-	if ( a.min.y > y ) return GX_FALSE;
-	if ( a.min.z > z ) return GX_FALSE;
-
-	if ( a.max.x < x ) return GX_FALSE;
-	if ( a.max.y < y ) return GX_FALSE;
-	if ( a.max.z < z ) return GX_FALSE;
-
-	return GX_TRUE;
+	center.SetX ( ( min.data[ 0 ] + max.data[ 0 ] ) * 0.5f );
+	center.SetY ( ( min.data[ 1 ] + max.data[ 1 ] ) * 0.5f );
+	center.SetZ ( ( min.data[ 2 ] + max.data[ 2 ] ) * 0.5f );
 }
 
-GXVoid GXCALL GXGetAABBCenter ( GXVec3 &center, const GXAABB &bounds )
+GXFloat GXAABB::GetWidth () const
 {
-	center.x = ( bounds.min.x + bounds.max.x ) * 0.5f;
-	center.y = ( bounds.min.y + bounds.max.y ) * 0.5f;
-	center.z = ( bounds.min.z + bounds.max.z ) * 0.5f;
+	if ( vertices < 2 )
+		return -1.0f;
+
+	return max.data[ 0 ] - min.data[ 0 ];
 }
 
-GXFloat GXCALL GXGetAABBSphereRadius ( const GXAABB &bounds )
+GXFloat GXAABB::GetHeight () const
+{
+	if ( vertices < 2 )
+		return -1.0f;
+
+	return max.data[ 1 ] - min.data[ 1 ];
+}
+
+GXFloat GXAABB::GetDepth () const
+{
+	if ( vertices < 2 )
+		return -1.0f;
+
+	return max.data[ 2 ] - min.data[ 2 ];
+}
+
+GXFloat GXAABB::GetSphereRadius () const
 {
 	GXVec3 center;
-	GXGetAABBCenter ( center, bounds );
-	return GXDistanceVec3Vec3 ( center, bounds.min );
+	GetCenter ( center );
+	return center.Distance ( min );
+}
+
+GXAABB& GXAABB::operator = ( const GXAABB &other )
+{
+	memcpy ( this, &other, sizeof ( GXAABB ) );
 }
 
 //------------------------------------------------------------------
@@ -1529,86 +1846,87 @@ GXPlane::GXPlane ()
 	d = 0.0f;
 }
 
+GXPlane::GXPlane ( const GXPlane &other )
+{
+	memcpy ( this, &other, sizeof ( GXPlane ) );
+}
+
 GXVoid GXPlane::From ( const GXVec3 &pointA, const GXVec3 &pointB, const GXVec3 &pointC )
 {
 	GXVec3 ab;
-	GXSubVec3Vec3 ( ab, pointB, pointA );
+	ab.Substract ( pointB, pointA );
 
 	GXVec3 ac;
-	GXSubVec3Vec3 ( ac, pointC, pointA );
+	ac.Substract ( pointC, pointA );
 
 	GXVec3 normal;
-	GXCrossVec3Vec3 ( normal, ab, ac );
-	GXNormalizeVec3 ( normal );
+	normal.CrossProduct ( ab, ac );
+	normal.Normalize ();
 
-	this->a = normal.x;
-	this->b = normal.y;
-	this->c = normal.z;
-	this->d = -GXDotVec3 ( normal, pointA );
+	this->a = normal.data[ 0 ];
+	this->b = normal.data[ 1 ];
+	this->c = normal.data[ 2 ];
+	this->d = -normal.DotProduct ( pointA );
 }
 
 GXVoid GXPlane::FromLineToPoint ( const GXVec3 &lineStart, const GXVec3 &lineEnd, const GXVec3 &point )
 {
 	GXVec3 startToPoint;
-	GXSubVec3Vec3 ( startToPoint, point, lineStart );
+	startToPoint.Substract ( point, lineStart );
 
 	GXVec3 startToEnd;
-	GXSubVec3Vec3 ( startToEnd, lineEnd, lineStart );
+	startToEnd.Substract ( lineEnd, lineStart );
 
 	GXVec3 tempCross;
-	GXCrossVec3Vec3 ( tempCross, startToEnd, startToPoint );
+	tempCross.CrossProduct ( startToEnd, startToPoint );
 
 	GXVec3 normal;
-	GXCrossVec3Vec3 ( normal, tempCross, startToEnd );
+	normal.CrossProduct ( tempCross, startToEnd );
 
-	a = normal.x;
-	b = normal.y;
-	c = normal.z;
-	d = -a * lineStart.x - b * lineStart.y - c * lineStart.z;
+	a = normal.data[ 0 ];
+	b = normal.data[ 1 ];
+	c = normal.data[ 3 ];
+	d = -a * lineStart.data[ 0 ] - b * lineStart.data[ 1 ] - c * lineStart.data[ 2 ];
 
-	if ( GXPlaneClassifyVertex ( *this, point ) != eGXPlaneClassifyVertex::InFront )
-		GXFlipPlane( *this );
+	if ( ClassifyVertex ( point ) == eGXPlaneClassifyVertex::Behind )
+		Flip ();
 }
 
-GXVoid GXPlane::operator = ( const GXPlane &plane )
+GXVoid GXPlane::Normalize ()
 {
-	memcpy ( this, &plane, sizeof ( GXPlane ) );
+	GXFloat inverseLength = 1.0f / sqrtf ( a * a + b * b + c * c );
+
+	a *= inverseLength;
+	b *= inverseLength;
+	c *= inverseLength;
+	d *= inverseLength;
 }
 
-eGXPlaneClassifyVertex GXCALL GXPlaneClassifyVertex ( const GXPlane &plane, const GXVec3 &vertex )
+GXVoid GXPlane::Flip ()
 {
-	GXFloat test = plane.a * vertex.x + plane.b * vertex.y + plane.c * vertex.z + plane.d;
+	a = -a;
+	b = -b;
+	c = -c;
+	d = -d;
+}
+
+eGXPlaneClassifyVertex GXPlane::ClassifyVertex ( const GXVec3 &vertex ) const
+{
+	return ClassifyVertex ( vertex.data[ 0 ], vertex.data[ 1 ], vertex.data[ 2 ] );
+}
+
+eGXPlaneClassifyVertex GXPlane::ClassifyVertex ( GXFloat x, GXFloat y, GXFloat z ) const
+{
+	GXFloat test = a * x + b * y + c * z + d;
 
 	if ( test < 0.0f ) return eGXPlaneClassifyVertex::Behind;
 	if ( test > 0.0f ) return eGXPlaneClassifyVertex::InFront;
 	return eGXPlaneClassifyVertex::On;
 }
 
-eGXPlaneClassifyVertex GXCALL GXPlaneClassifyVertex ( const GXPlane &plane, GXFloat x, GXFloat y, GXFloat z )
+GXPlane& GXPlane::operator = ( const GXPlane &other )
 {
-	GXFloat test = plane.a * x + plane.b * y + plane.c * z + plane.d;
-
-	if ( test < 0.0f ) return eGXPlaneClassifyVertex::Behind;
-	if ( test > 0.0f ) return eGXPlaneClassifyVertex::InFront;
-	return eGXPlaneClassifyVertex::On;
-}
-
-GXVoid GXCALL GXNormalizePlane ( GXPlane &inOut )
-{
-	GXFloat length = sqrtf ( inOut.a * inOut.a + inOut.b * inOut.b + inOut.c * inOut.c );
-
-	inOut.a /= length;
-	inOut.b /= length;
-	inOut.c /= length;
-	inOut.d /= length;
-}
-
-GXVoid GXCALL GXFlipPlane(GXPlane& inOut)
-{
-	inOut.a = -inOut.a;
-	inOut.b = -inOut.b;
-	inOut.c = -inOut.c;
-	inOut.d = -inOut.d;
+	memcpy ( this, &other, sizeof ( GXPlane ) );
 }
 
 //------------------------------------------------------------------
@@ -1623,61 +1941,61 @@ GXProjectionClipPlanes::GXProjectionClipPlanes ( const GXMat4 &src )
 	From ( src );
 }
 
-GXVoid GXProjectionClipPlanes::From ( const GXMat4 &m )
+GXVoid GXProjectionClipPlanes::From ( const GXMat4 &src )
 {
 	//Left clipping plane
-	planes[ 0 ].a = m.m14 + m.m11;
-	planes[ 0 ].b = m.m24 + m.m21;
-	planes[ 0 ].c = m.m34 + m.m31;
-	planes[ 0 ].d = m.m44 + m.m41;
+	planes[ 0 ].a = src.m[ 0 ][ 3 ] + src.m[ 0 ][ 0 ];
+	planes[ 0 ].b = src.m[ 1 ][ 3 ] + src.m[ 1 ][ 0 ];
+	planes[ 0 ].c = src.m[ 2 ][ 3 ] + src.m[ 2 ][ 0 ];
+	planes[ 0 ].d = src.m[ 3 ][ 3 ] + src.m[ 3 ][ 0 ];
 	
 	//Right clipping plane
-	planes[ 1 ].a = m.m14 - m.m11;
-	planes[ 1 ].b = m.m24 - m.m21;
-	planes[ 1 ].c = m.m34 - m.m31;
-	planes[ 1 ].d = m.m44 - m.m41;
+	planes[ 1 ].a = src.m[ 0 ][ 3 ] - src.m[ 0 ][ 0 ];
+	planes[ 1 ].b = src.m[ 1 ][ 3 ] - src.m[ 1 ][ 0 ];
+	planes[ 1 ].c = src.m[ 2 ][ 3 ] - src.m[ 2 ][ 0 ];
+	planes[ 1 ].d = src.m[ 3 ][ 3 ] - src.m[ 3 ][ 0 ];
 	
 	//Top clipping plane
-	planes[ 2 ].a = m.m14 - m.m12;
-	planes[ 2 ].b = m.m24 - m.m22;
-	planes[ 2 ].c = m.m34 - m.m32;
-	planes[ 2 ].d = m.m44 - m.m42;
+	planes[ 2 ].a = src.m[ 0 ][ 3 ] - src.m[ 0 ][ 1 ];
+	planes[ 2 ].b = src.m[ 1 ][ 3 ] - src.m[ 1 ][ 1 ];
+	planes[ 2 ].c = src.m[ 2 ][ 3 ] - src.m[ 2 ][ 1 ];
+	planes[ 2 ].d = src.m[ 3 ][ 3 ] - src.m[ 3 ][ 1 ];
 	
 	//Bottom clipping plane
-	planes[ 3 ].a = m.m14 + m.m12;
-	planes[ 3 ].b = m.m24 + m.m22;
-	planes[ 3 ].c = m.m34 + m.m32;
-	planes[ 3 ].d = m.m44 + m.m42;
+	planes[ 3 ].a = src.m[ 0 ][ 3 ] + src.m[ 0 ][ 1 ];
+	planes[ 3 ].b = src.m[ 1 ][ 3 ] + src.m[ 1 ][ 1 ];
+	planes[ 3 ].c = src.m[ 2 ][ 3 ] + src.m[ 2 ][ 1 ];
+	planes[ 3 ].d = src.m[ 3 ][ 3 ] + src.m[ 3 ][ 1 ];
 	
 	//Near clipping plane
-	planes[ 4 ].a = m.m14 + m.m13;
-	planes[ 4 ].b = m.m24 + m.m23;
-	planes[ 4 ].c = m.m34 + m.m33;
-	planes[ 4 ].d = m.m44 + m.m43;
+	planes[ 4 ].a = src.m[ 0 ][ 3 ] + src.m[ 0 ][ 2 ];
+	planes[ 4 ].b = src.m[ 1 ][ 3 ] + src.m[ 1 ][ 2 ];
+	planes[ 4 ].c = src.m[ 2 ][ 3 ] + src.m[ 2 ][ 2 ];
+	planes[ 4 ].d = src.m[ 3 ][ 3 ] + src.m[ 3 ][ 2 ];
 	
 	//Far clipping plane
-	planes[ 5 ].a = m.m14 - m.m13;
-	planes[ 5 ].b = m.m24 - m.m23;
-	planes[ 5 ].c = m.m34 - m.m33;
-	planes[ 5 ].d = m.m44 - m.m43;
+	planes[ 5 ].a = src.m[ 0 ][ 3 ] - src.m[ 0 ][ 2 ];
+	planes[ 5 ].b = src.m[ 1 ][ 3 ] - src.m[ 1 ][ 2 ];
+	planes[ 5 ].c = src.m[ 2 ][ 3 ] - src.m[ 2 ][ 2 ];
+	planes[ 5 ].d = src.m[ 3 ][ 3 ] - src.m[ 3 ][ 2 ];
 }
 
 GXBool GXProjectionClipPlanes::IsVisible ( const GXAABB &bounds )
 {
-	GXInt flags = (GXInt)PlaneTest ( bounds.min.x, bounds.min.y, bounds.min.z );
-	flags &= (GXInt)PlaneTest ( bounds.min.x, bounds.max.y, bounds.min.z );
-	flags &= (GXInt)PlaneTest ( bounds.max.x, bounds.max.y, bounds.min.z );
-	flags &= (GXInt)PlaneTest ( bounds.max.x, bounds.min.y, bounds.min.z );
+	GXInt flags = (GXInt)PlaneTest ( bounds.min.data[ 0 ], bounds.min.data[ 1 ], bounds.min.data[ 2 ] );
+	flags &= (GXInt)PlaneTest ( bounds.min.data[ 0 ], bounds.max.data[ 1 ], bounds.min.data[ 2 ] );
+	flags &= (GXInt)PlaneTest ( bounds.max.data[ 0 ], bounds.max.data[ 1 ], bounds.min.data[ 2 ] );
+	flags &= (GXInt)PlaneTest ( bounds.max.data[ 0 ], bounds.min.data[ 1 ], bounds.min.data[ 2 ] );
 
-	flags &= (GXInt)PlaneTest ( bounds.min.x, bounds.min.y, bounds.max.z );
-	flags &= (GXInt)PlaneTest ( bounds.min.x, bounds.max.y, bounds.max.z );
-	flags &= (GXInt)PlaneTest ( bounds.max.x, bounds.max.y, bounds.max.z );
-	flags &= (GXInt)PlaneTest ( bounds.max.x, bounds.min.y, bounds.max.z );
+	flags &= (GXInt)PlaneTest ( bounds.min.data[ 0 ], bounds.min.data[ 1 ], bounds.max.data[ 2 ] );
+	flags &= (GXInt)PlaneTest ( bounds.min.data[ 0 ], bounds.max.data[ 1 ], bounds.max.data[ 2 ] );
+	flags &= (GXInt)PlaneTest ( bounds.max.data[ 0 ], bounds.max.data[ 1 ], bounds.max.data[ 2 ] );
+	flags &= (GXInt)PlaneTest ( bounds.max.data[ 0 ], bounds.min.data[ 1 ], bounds.max.data[ 2 ] );
 
 	return ( flags > 0 ) ? GX_FALSE : GX_TRUE;
 }
 
-GXVoid GXProjectionClipPlanes::operator = ( const GXProjectionClipPlanes &clipPlanes )
+GXProjectionClipPlanes& GXProjectionClipPlanes::operator = ( const GXProjectionClipPlanes &clipPlanes )
 {
 	memcpy ( this, &clipPlanes, sizeof ( GXProjectionClipPlanes ) );
 }
@@ -1688,7 +2006,7 @@ GXUByte GXProjectionClipPlanes::PlaneTest ( GXFloat x, GXFloat y, GXFloat z )
 
 	for ( GXUByte i = 0; i < 6; i++ )
 	{
-		if ( GXPlaneClassifyVertex ( planes[ i ], x, y, z ) == eGXPlaneClassifyVertex::Behind )
+		if ( planes[ i ].ClassifyVertex ( x, y, z ) == eGXPlaneClassifyVertex::Behind )
 			flags |= (GXUByte)( 1 << i );
 	}
 
@@ -1707,24 +2025,9 @@ GXFloat GXCALL GXRadToDeg ( GXFloat radians )
 	return radians * RADIANS_TO_DEGREES_FACTOR;
 }
 
-GXVoid GXCALL GXColorToVec3 ( GXVec3 &out, GXUChar r, GXUChar g, GXUChar b )
+GXVoid GXCALL GXConvertHSVAToRGBA ( GXUByte &red, GXUByte &green, GXUByte &blue, GXUByte &alpha, const GXColorHSV &color )
 {
-	out.r = r * COLOR_TO_FLOAT_FACTOR;
-	out.g = g * COLOR_TO_FLOAT_FACTOR;
-	out.b = b * COLOR_TO_FLOAT_FACTOR;
-}
-
-GXVoid GXCALL GXColorToVec4 ( GXVec4 &out, GXUChar r, GXUChar g, GXUChar b, GXUChar a )
-{
-	out.r = r * COLOR_TO_FLOAT_FACTOR;
-	out.g = g * COLOR_TO_FLOAT_FACTOR;
-	out.b = b * COLOR_TO_FLOAT_FACTOR;
-	out.a = a * COLOR_TO_FLOAT_FACTOR;
-}
-
-GXVoid GXCALL GXConvertHSVAToRGBA ( GXUByte &red, GXUByte &green, GXUByte &blue, GXUByte &alpha, const GXVec4 &hsvaColor )
-{
-	GXFloat correctedHue = hsvaColor.h;
+	GXFloat correctedHue = color.GetHue ();
 
 	while ( correctedHue >= 360.0f )
 		correctedHue -= 360.0f;
@@ -1732,48 +2035,50 @@ GXVoid GXCALL GXConvertHSVAToRGBA ( GXUByte &red, GXUByte &green, GXUByte &blue,
 	while ( correctedHue < 0.0f )
 		correctedHue += 360.0f;
 
-	GXUByte selector = (GXUByte)( (GXInt)( correctedHue * HSVA_FACTOR ) % 6 );
-	GXFloat minValue = ( ( 100.0f - hsvaColor.s ) * hsvaColor.v ) * 0.01f;
-	GXFloat delta = ( hsvaColor.v - minValue ) * ( ( (GXInt)correctedHue % 60 ) * HSVA_FACTOR );
-	GXFloat increment = minValue + delta;
-	GXFloat decrement = hsvaColor.v - delta;
+	GXFloat value = color.GetValue ();
 
-	alpha = (GXUByte)( hsvaColor.a * HSVA_ALPHA_TO_RGBA_ALPHA_BYTE );
+	GXUByte selector = (GXUByte)( (GXInt)( correctedHue * HSVA_FACTOR ) % 6 );
+	GXFloat minValue = ( ( 100.0f - color.GetSaturation () ) * value ) * 0.01f;
+	GXFloat delta = ( value - minValue ) * ( ( (GXInt)correctedHue % 60 ) * HSVA_FACTOR );
+	GXFloat increment = minValue + delta;
+	GXFloat decrement = value - delta;
+
+	alpha = (GXUByte)( color.GetAlpha () * HSVA_ALPHA_TO_RGBA_ALPHA_BYTE );
 
 	switch ( selector )
 	{
 		case 0:
-			red = (GXUByte)( hsvaColor.v * HSVA_TO_RGBA_FACTOR );
+			red = (GXUByte)( value * HSVA_TO_RGBA_FACTOR );
 			green = (GXUByte)( increment * HSVA_TO_RGBA_FACTOR );
 			blue = (GXUByte)( minValue * HSVA_TO_RGBA_FACTOR );
 		break;
 
 		case 1:
 			red = (GXUByte)( decrement * HSVA_TO_RGBA_FACTOR );
-			green = (GXUByte)( hsvaColor.v * HSVA_TO_RGBA_FACTOR );
+			green = (GXUByte)( value * HSVA_TO_RGBA_FACTOR );
 			blue = (GXUByte)( minValue * HSVA_TO_RGBA_FACTOR );
 		break;
 
 		case 2:
 			red = (GXUByte)( minValue * HSVA_TO_RGBA_FACTOR );
-			green = (GXUByte)( hsvaColor.v * HSVA_TO_RGBA_FACTOR );
+			green = (GXUByte)( value * HSVA_TO_RGBA_FACTOR );
 			blue = (GXUByte)( increment * HSVA_TO_RGBA_FACTOR );
 		break;
 
 		case 3:
 			red = (GXUByte)( minValue * HSVA_TO_RGBA_FACTOR );
 			green = (GXUByte)( decrement * HSVA_TO_RGBA_FACTOR );
-			blue = (GXUByte)( hsvaColor.v * HSVA_TO_RGBA_FACTOR );
+			blue = (GXUByte)( value * HSVA_TO_RGBA_FACTOR );
 		break;
 
 		case 4:
 			red = (GXUByte)( increment * HSVA_TO_RGBA_FACTOR );
 			green = (GXUByte)( minValue * HSVA_TO_RGBA_FACTOR );
-			blue = (GXUByte)( hsvaColor.v * HSVA_TO_RGBA_FACTOR );
+			blue = (GXUByte)( value * HSVA_TO_RGBA_FACTOR );
 		break;
 
 		case 5:
-			red = (GXUByte)( hsvaColor.v * HSVA_TO_RGBA_FACTOR );
+			red = (GXUByte)( value * HSVA_TO_RGBA_FACTOR );
 			green = (GXUByte)( minValue * HSVA_TO_RGBA_FACTOR );
 			blue = (GXUByte)( decrement * HSVA_TO_RGBA_FACTOR );
 		break;
@@ -1784,99 +2089,9 @@ GXVoid GXCALL GXConvertHSVAToRGBA ( GXUByte &red, GXUByte &green, GXUByte &blue,
 	}
 }
 
-GXVoid GXCALL GXConvertHSVAToRGBA ( GXVec4 &rgbaColor, const GXVec4 &hsvaColor )
-{
-	GXFloat correctedHue = hsvaColor.h;
-
-	while ( correctedHue >= 360.0f )
-		correctedHue -= 360.0f;
-
-	while ( correctedHue < 0.0f )
-		correctedHue += 360.0f;
-
-	GXUByte selector = (GXUByte)( (GXInt)( correctedHue * HSVA_FACTOR ) % 6 );
-	GXFloat minValue = ( ( 100.0f - hsvaColor.s ) * hsvaColor.v ) * 0.01f;
-	GXFloat delta = ( hsvaColor.v - minValue ) * ( ( (GXInt)correctedHue % 60 ) * HSVA_FACTOR );
-	GXFloat increment = minValue + delta;
-	GXFloat decrement = hsvaColor.v - delta;
-
-	rgbaColor.a = hsvaColor.a * HSVA_TO_RGBA_FLOAT;
-
-	switch ( selector )
-	{
-		case 0:
-			rgbaColor.r = hsvaColor.v * HSVA_TO_RGBA_FLOAT;
-			rgbaColor.g = increment * HSVA_TO_RGBA_FLOAT;
-			rgbaColor.b = minValue * HSVA_TO_RGBA_FLOAT;
-		break;
-
-		case 1:
-			rgbaColor.r = decrement * HSVA_TO_RGBA_FLOAT;
-			rgbaColor.g = hsvaColor.v * HSVA_TO_RGBA_FLOAT;
-			rgbaColor.b = minValue * HSVA_TO_RGBA_FLOAT;
-		break;
-
-		case 2:
-			rgbaColor.r = minValue * HSVA_TO_RGBA_FLOAT;
-			rgbaColor.g = hsvaColor.v * HSVA_TO_RGBA_FLOAT;
-			rgbaColor.b = increment * HSVA_TO_RGBA_FLOAT;
-		break;
-
-		case 3:
-			rgbaColor.r = minValue * HSVA_TO_RGBA_FLOAT;
-			rgbaColor.g = decrement * HSVA_TO_RGBA_FLOAT;
-			rgbaColor.b = hsvaColor.v * HSVA_TO_RGBA_FLOAT;
-		break;
-
-		case 4:
-			rgbaColor.r = increment * HSVA_TO_RGBA_FLOAT;
-			rgbaColor.g = minValue * HSVA_TO_RGBA_FLOAT;
-			rgbaColor.b = hsvaColor.v * HSVA_TO_RGBA_FLOAT;
-		break;
-
-		case 5:
-			rgbaColor.r = hsvaColor.v * HSVA_TO_RGBA_FLOAT;
-			rgbaColor.g = minValue * HSVA_TO_RGBA_FLOAT;
-			rgbaColor.b = decrement * HSVA_TO_RGBA_FLOAT;
-		break;
-
-		default:
-			GXLogW ( L"GXConvertHSVAToRGBA::Error (branch two) - Что-то пошло не так!\n" );
-		break;
-	}
-}
-
-GXVoid GXCALL GXConvertRGBAToHSVA ( GXVec4 &hsvaColor, const GXVec4 &rgbaColor )
-{
-	GXFloat maxValue = GXMaxf ( GXMaxf ( rgbaColor.r, rgbaColor.g ), rgbaColor.b );
-	GXFloat minValue = GXMinf ( GXMinf ( rgbaColor.r, rgbaColor.g ), rgbaColor.b );
-
-	if ( maxValue == minValue )
-		hsvaColor.h = 0.0f;
-	else if ( maxValue == rgbaColor.r && rgbaColor.g >= rgbaColor.b )
-		hsvaColor.h = 60.0f * ( ( rgbaColor.g - rgbaColor.b ) / ( maxValue - minValue ) );
-	else if ( maxValue == rgbaColor.r && rgbaColor.g < rgbaColor.b )
-		hsvaColor.h = 60.0f * ( ( rgbaColor.g - rgbaColor.b ) / ( maxValue - minValue ) ) + 360.0f;
-	else if ( maxValue == rgbaColor.g )
-		hsvaColor.h = 60.0f * ( ( rgbaColor.b - rgbaColor.r ) / ( maxValue - minValue ) ) + 120.0f;
-	else if ( maxValue == rgbaColor.b )
-		hsvaColor.h = 60.0f * ( ( rgbaColor.r - rgbaColor.g ) / ( maxValue - minValue ) ) + 240.0f;
-
-	if ( maxValue == 0.0f )
-		hsvaColor.s = 0.0f;
-	else
-		hsvaColor.s = 100.0f * ( 1.0f - minValue / maxValue );
-
-	hsvaColor.v = 100.0f * maxValue;
-
-	hsvaColor.a = 100.0f * rgbaColor.a;
-}
-
 GXVoid GXCALL GXConvert3DSMaxToGXEngine ( GXVec3 &gx_out, GXFloat max_x, GXFloat max_y, GXFloat max_z )
 {
-	gx_out.x = -max_x;
-	gx_out.y = max_z;
-	gx_out.z = -max_y;
+	gx_out = GXVec3::Create ( -max_x, max_z, -max_y );
 }
 
 GXVoid GXCALL GXRandomize ()
@@ -1901,9 +2116,9 @@ GXFloat GXCALL GXRandomBetween ( GXFloat from, GXFloat to )
 
 GXVoid GXCALL GXRandomBetween ( GXVec3 &out, const GXVec3 &from, const GXVec3 &to )
 {
-	out.x = GXRandomBetween ( from.x, to.x );
-	out.y = GXRandomBetween ( from.y, to.y );
-	out.z = GXRandomBetween ( from.z, to.z );
+	out.data[ 0 ] = GXRandomBetween ( from.data[ 0 ], to.data[ 0 ] );
+	out.data[ 1 ] = GXRandomBetween ( from.data[ 1 ], to.data[ 1 ] );
+	out.data[ 2 ] = GXRandomBetween ( from.data[ 2 ], to.data[ 2 ] );
 }
 
 GXVoid GXCALL GXGetTangentBitangent ( GXVec3 &outTangent, GXVec3 &outBitangent, GXUByte vertexID, const GXUByte* vertices, GXUInt vertexStride, const GXUByte* uvs, GXUInt uvStride )
@@ -1958,25 +2173,25 @@ GXVoid GXCALL GXGetTangentBitangent ( GXVec3 &outTangent, GXVec3 &outBitangent, 
 
 	GXVec3 a;
 	GXVec3 b;
-	GXSubVec3Vec3 ( a, *v1, *v0 );
-	GXSubVec3Vec3 ( b, *v2, *v0 );
+	a.Substract ( *v1, *v0 );
+	b.Substract ( *v2, *v0 );
 
 	GXVec2 dUVa;
 	GXVec2 dUVb;
-	GXSubVec2Vec2 ( dUVa, *uv1, *uv0 );
-	GXSubVec2Vec2 ( dUVb, *uv2, *uv0 );
+	dUVa.Substract ( *uv1, *uv0 );
+	dUVb.Substract ( *uv2, *uv0 );
 
-	GXFloat factor = 1.0f / ( dUVa.u * dUVb.v - dUVb.u * dUVa.v );
+	GXFloat factor = 1.0f / ( dUVa.data[ 0 ] * dUVb.data[ 1 ] - dUVb.data[ 0 ] * dUVa.data[ 1 ] );
 
-	outTangent.x = factor * ( dUVb.v * a.x - dUVa.v * b.x );
-	outTangent.y = factor * ( dUVb.v * a.y - dUVa.v * b.y );
-	outTangent.z = factor * ( dUVb.v * a.z - dUVa.v * b.z );
-	GXNormalizeVec3 ( outTangent );
+	outTangent.data[ 0 ] = factor * ( dUVb.data[ 1 ] * a.data[ 0 ] - dUVa.data[ 1 ] * b.data[ 0 ] );
+	outTangent.data[ 1 ] = factor * ( dUVb.data[ 1 ] * a.data[ 1 ] - dUVa.data[ 1 ] * b.data[ 1 ] );
+	outTangent.data[ 2 ] = factor * ( dUVb.data[ 1 ] * a.data[ 2 ] - dUVa.data[ 1 ] * b.data[ 2 ] );
+	outTangent.Normalize ();
 
-	outBitangent.x = factor * ( -dUVb.u * a.x + dUVa.u * b.x );
-	outBitangent.y = factor * ( -dUVb.u * a.y + dUVa.u * b.y );
-	outBitangent.z = factor * ( -dUVb.u * a.z + dUVa.u * b.z );
-	GXNormalizeVec3 ( outBitangent );
+	outBitangent.data[ 0 ] = factor * ( -dUVb.data[ 0 ] * a.data[ 0 ] + dUVa.data[ 0 ] * b.data[ 0 ] );
+	outBitangent.data[ 1 ] = factor * ( -dUVb.data[ 0 ] * a.data[ 1 ] + dUVa.data[ 0 ] * b.data[ 1 ] );
+	outBitangent.data[ 2 ] = factor * ( -dUVb.data[ 0 ] * a.data[ 2 ] + dUVa.data[ 0 ] * b.data[ 2 ] );
+	outBitangent.Normalize ();
 }
 
 GXFloat GXCALL GXClampf ( GXFloat value, GXFloat minValue, GXFloat maxValue )
@@ -2005,19 +2220,19 @@ GXVoid GXCALL GXGetBarycentricCoords ( GXVec3 &out, const GXVec3 &point, const G
 	GXVec3 v1;
 	GXVec3 v2;
 
-	GXSubVec3Vec3 ( v0, b, a );
-	GXSubVec3Vec3 ( v1, c, a );
-	GXSubVec3Vec3 ( v2, point, a );
+	v0.Substract ( b, a );
+	v1.Substract ( c, a );
+	v2.Substract ( point, a );
 
-	GXFloat d00 = GXDotVec3 ( v0, v0 );
-	GXFloat d01 = GXDotVec3 ( v0, v1 );
-	GXFloat d11 = GXDotVec3 ( v1, v1 );
-	GXFloat d20 = GXDotVec3 ( v2, v0 );
-	GXFloat d21 = GXDotVec3 ( v2, v1 );
+	GXFloat d00 = v0.DotProduct ( v0 );
+	GXFloat d01 = v0.DotProduct ( v1 );
+	GXFloat d11 = v1.DotProduct ( v1 );
+	GXFloat d20 = v2.DotProduct ( v0 );
+	GXFloat d21 = v2.DotProduct ( v1 );
 
 	GXFloat denom = 1.0f / ( d00 * d11 - d01 * d01 );
 
-	out.y = ( d11 * d20 - d01 * d21 ) * denom;
-	out.z = ( d00 * d21 - d01 * d20 ) * denom;
-	out.x = 1.0f - out.y - out.z;
+	out.data[ 1 ] = ( d11 * d20 - d01 * d21 ) * denom;
+	out.data[ 2 ] = ( d00 * d21 - d01 * d20 ) * denom;
+	out.data[ 0 ] = 1.0f - out.data[ 1 ] - out.data[ 2 ];
 }

@@ -112,7 +112,7 @@
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
       <CompileAs>CompileAsCpp</CompileAs>
-      <AdditionalOptions>/wd4201 /wd4710 /wd4820 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/wd4710 /wd4820 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
