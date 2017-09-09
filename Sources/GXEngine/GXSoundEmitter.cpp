@@ -1,4 +1,4 @@
-//version 1.4
+//version 1.5
 
 #include <GXEngine/GXSoundEmitter.h>
 #include <GXCommon/GXMutex.h>
@@ -87,7 +87,7 @@ GXSoundEmitter::~GXSoundEmitter ()
 
 GXVoid GXSoundEmitter::SetVelocity ( const GXVec3 &velocity )
 {
-	GXAlSourcefv ( source, AL_VELOCITY, velocity.arr );
+	GXAlSourcefv ( source, AL_VELOCITY, velocity.data );
 }
 
 GXVoid GXSoundEmitter::SetVelocity ( GXFloat x, GXFloat y, GXFloat z )
@@ -97,7 +97,7 @@ GXVoid GXSoundEmitter::SetVelocity ( GXFloat x, GXFloat y, GXFloat z )
 
 GXVoid GXSoundEmitter::SetLocation ( const GXVec3 &location )
 {
-	GXAlSourcefv ( source, AL_POSITION, location.arr );
+	GXAlSourcefv ( source, AL_POSITION, location.data );
 }
 
 GXVoid GXSoundEmitter::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
@@ -111,7 +111,7 @@ GXVoid GXSoundEmitter::SetRotation ( const GXMat4 &rotation )
 	
 	GXVec3 tmp;
 	rotation.GetZ ( tmp );
-	GXReverseVec3 ( tmp );
+	tmp.Reverse ();
 	memcpy ( orientation, &tmp, sizeof ( GXVec3 ) );
 
 	rotation.GetY ( tmp );
@@ -120,18 +120,18 @@ GXVoid GXSoundEmitter::SetRotation ( const GXMat4 &rotation )
 	GXAlSourcefv ( source, AL_ORIENTATION, orientation );
 }
 
-GXVoid GXSoundEmitter::SetRotation ( const GXVec3 &rotation )
+GXVoid GXSoundEmitter::SetRotation ( const GXEuler &rotation )
 {
 	GXMat4 orientation;
-	GXSetMat4RotationXYZ ( orientation, rotation.pitch_rad, rotation.yaw_rad, rotation.roll_rad );
+	orientation.RotationXYZ ( rotation.pitchRadians, rotation.yawRadians, rotation.rollRadians );
 
 	SetRotation ( orientation );
 }
 
-GXVoid GXSoundEmitter::SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_rad )
+GXVoid GXSoundEmitter::SetRotation ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians )
 {
 	GXMat4 orientation;
-	GXSetMat4RotationXYZ ( orientation, pitch_rad, yaw_rad, roll_rad );
+	orientation.RotationXYZ ( pitchRadians, yawRadians, rollRadians );
 
 	SetRotation ( orientation );
 }

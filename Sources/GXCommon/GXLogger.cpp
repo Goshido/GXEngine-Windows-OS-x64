@@ -3,8 +3,10 @@
 #include <GXCommon/GXLogger.h>
 #include <GXCommon/GXMutex.h>
 #include <GXCommon/GXMemory.h>
+#include <GXCommon/GXDisable3rdPartyWarnings.h>
 #include <cstdio>
 #include <stdarg.h>
+#include <GXCommon/GXRestoreWarnings.h>
 
 
 enum GXConsoleLocale

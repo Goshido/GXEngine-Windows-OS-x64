@@ -1,12 +1,14 @@
-//version 1.0
+//version 1.1
 
 #ifndef GX_OPEN_AL
 #define GX_OPEN_AL
 
 
+#include <GXCommon/GXDisable3rdPartyWarnings.h>
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
 #include <mmreg.h>
+#include <GXCommon/GXRestoreWarnings.h>
 
 
 typedef void ( AL_APIENTRY* PFNALLISTENERFV ) ( ALenum param, const ALfloat* values );

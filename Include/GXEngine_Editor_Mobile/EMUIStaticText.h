@@ -21,7 +21,7 @@ class EMUIStaticText : public EMUI
 		const GXWChar* GetText () const;
 
 		GXVoid SetTextColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
-		const GXVec4& GetTextColor () const;
+		const GXColorRGB& GetTextColor () const;
 
 		GXVoid SetAlingment ( eGXUITextAlignment alignment );
 		eGXUITextAlignment GetAlignment () const;

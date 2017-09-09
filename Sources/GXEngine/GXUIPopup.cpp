@@ -46,18 +46,18 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 
 			if ( totalItems == 0 )
 			{
-				GXAddVertexToAABB ( item.boundsWorld, boundsLocal.min.x, boundsLocal.max.y - itemHeight, boundsLocal.min.z );
-				GXAddVertexToAABB ( item.boundsWorld, boundsLocal.max.x, boundsLocal.max.y, boundsLocal.max.z );
+				item.boundsWorld.AddVertex ( boundsLocal.min.GetX (), boundsLocal.max.GetY () - itemHeight, boundsLocal.min.GetZ () );
+				item.boundsWorld.AddVertex ( boundsLocal.max.GetX (), boundsLocal.max.GetY (), boundsLocal.max.GetZ () );
 
 				UpdateBoundsWorld ( item.boundsWorld );
 			}
 			else
 			{
-				GXAddVertexToAABB ( item.boundsWorld, boundsLocal.min.x, boundsLocal.min.y - itemHeight, boundsLocal.min.z );
-				GXAddVertexToAABB ( item.boundsWorld, boundsLocal.max.x, boundsLocal.min.y, boundsLocal.max.z );
+				item.boundsWorld.AddVertex ( boundsLocal.min.GetX (), boundsLocal.min.GetY () - itemHeight, boundsLocal.min.GetZ () );
+				item.boundsWorld.AddVertex ( boundsLocal.max.GetX (), boundsLocal.min.GetY (), boundsLocal.max.GetZ () );
 
 				GXAABB newBoundsLocal = boundsLocal;
-				newBoundsLocal.min.y -= itemHeight;
+				newBoundsLocal.min.data[ 1 ] -= itemHeight;
 				UpdateBoundsWorld ( newBoundsLocal );
 			}
 
@@ -81,14 +81,14 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 				GXUIPopupItem* itemStorage = (GXUIPopupItem*)items.GetData ();
 
 				GXAABB newBoundsLocal = boundsLocal;
-				newBoundsLocal.min.y = newBoundsLocal.max.y;
+				newBoundsLocal.min.SetY ( newBoundsLocal.max.GetY () );
 
 				for ( GXUInt i = 0; i < totalItems; i++ )
 				{
-					GXSetAABBEmpty ( itemStorage[ i ].boundsWorld );
-					GXAddVertexToAABB ( itemStorage[ i ].boundsWorld, newBoundsLocal.max.x, newBoundsLocal.min.y, newBoundsLocal.max.z );
-					newBoundsLocal.min.y -= itemHeight;
-					GXAddVertexToAABB ( itemStorage[ i ].boundsWorld, newBoundsLocal.min.x, newBoundsLocal.min.y, newBoundsLocal.min.z );
+					itemStorage[ i ].boundsWorld.Empty ();
+					itemStorage[ i ].boundsWorld.AddVertex ( newBoundsLocal.max.GetX (), newBoundsLocal.min.GetY (), newBoundsLocal.max.GetZ () );
+					newBoundsLocal.min.data[ 1 ] -= itemHeight;
+					itemStorage[ i ].boundsWorld.AddVertex ( newBoundsLocal.min.GetX (), newBoundsLocal.min.GetY (), newBoundsLocal.min.GetZ () );
 				}
 
 				UpdateBoundsWorld ( newBoundsLocal );
@@ -167,8 +167,9 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 			GXUByte totalItems = (GXUByte)items.GetLength ();
 			
 			GXUByte mouseOverItem = 0;
+
 			for ( ; mouseOverItem < totalItems; mouseOverItem++ )
-				if ( GXIsOverlapedAABBVec3 ( itemStorage[ mouseOverItem ].boundsWorld, pos->x, pos->y, 0.0f ) ) break;
+				if ( itemStorage[ mouseOverItem ].boundsWorld.IsOverlaped ( pos->GetX (), pos->GetY (), 0.0f ) ) break;
 
 			if ( selectedItemIndex == GX_UI_POPUP_INVALID_INDEX && !itemStorage[ mouseOverItem ].isActive ) break;
 			if ( selectedItemIndex == mouseOverItem && itemStorage[ mouseOverItem ].isActive ) break;
@@ -201,23 +202,23 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 		case GX_MSG_RESIZE:
 		{
 			const GXAABB* newBoundsLocal = (const GXAABB*)data;
-			GXFloat newWidth = GXGetAABBWidth ( *newBoundsLocal );
-			GXVec2 newPosition = GXCreateVec2 ( newBoundsLocal->min.x, newBoundsLocal->min.y );
+			GXFloat newWidth = newBoundsLocal->GetWidth ();
+			GXVec2 newPosition ( newBoundsLocal->min.GetX (), newBoundsLocal->min.GetY () );
 
 			GXUInt totalItems = items.GetLength ();
-			GXFloat top = newPosition.y + totalItems * itemHeight;
+			GXFloat top = newPosition.GetY () + totalItems * itemHeight;
 			GXUIPopupItem* itemStorage = (GXUIPopupItem*)items.GetData ();
 			for ( GXUInt i = 0; i < totalItems; i++ )
 			{
-				GXSetAABBEmpty ( itemStorage[ i ].boundsWorld );
-				GXAddVertexToAABB ( itemStorage[ i ].boundsWorld, newPosition.x, top - itemHeight, -1.0f );
-				GXAddVertexToAABB ( itemStorage[ i ].boundsWorld, newPosition.x + newWidth, top, 1.0f );
+				itemStorage[ i ].boundsWorld.Empty ();
+				itemStorage[ i ].boundsWorld.AddVertex ( newPosition.GetX (), top - itemHeight, -1.0f );
+				itemStorage[ i ].boundsWorld.AddVertex ( newPosition.GetX () + newWidth, top, 1.0f );
 				top -= itemHeight;
 			}
 			
 			GXAABB bounds;
-			GXAddVertexToAABB ( bounds, newPosition.x, newPosition.y, -1.0f );
-			GXAddVertexToAABB ( bounds, newPosition.x + newWidth, newPosition.y + totalItems * itemHeight, 1.0f );
+			bounds.AddVertex ( newPosition.GetX (), newPosition.GetY (), -1.0f );
+			bounds.AddVertex ( newPosition.GetX () + newWidth, newPosition.GetY () + totalItems * itemHeight, 1.0f );
 			GXWidget::OnMessage ( message, &bounds );
 		}
 		break;
@@ -281,7 +282,7 @@ GXFloat GXUIPopup::GetItemHeight () const
 
 GXFloat GXUIPopup::GetItemWidth () const
 {
-	return GXGetAABBWidth ( boundsLocal );
+	return boundsLocal.GetWidth ();
 }
 
 GXVoid GXUIPopup::Show ( GXWidget* currentOwner )

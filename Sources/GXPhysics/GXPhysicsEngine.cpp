@@ -31,7 +31,7 @@ GXPhysicsEngine& GXPhysicsEngine::GetInstance ()
 
 GXVoid GXPhysicsEngine::SetGravity ( GXFloat x, GXFloat y, GXFloat z )
 {
-	gravity = GXCreateVec3 ( x, y, z );
+	gravity.Init ( x, y, z );
 }
 
 const GXVec3& GXPhysicsEngine::GetGravity () const

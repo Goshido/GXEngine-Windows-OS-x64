@@ -1,18 +1,13 @@
-//version 1.10
+//version 1.11
 
 #ifndef GX_PHYSX
 #define GX_PHYSX
 
 
-#pragma warning ( push )
-#pragma warning ( disable : 4514 )
-#pragma warning ( disable : 4710 )
-
-#include <PhysX/PxPhysicsAPI.h>
-
-#pragma warning ( pop )
-
 #include <GXCommon/GXMath.h>
+#include <GXCommon/GXDisable3rdPartyWarnings.h>
+#include <PhysX/PxPhysicsAPI.h>
+#include <GXCommon/GXRestoreWarnings.h>
 
 
 #define GX_PHYSICS_GRAVITY_FACTOR		-9.81f

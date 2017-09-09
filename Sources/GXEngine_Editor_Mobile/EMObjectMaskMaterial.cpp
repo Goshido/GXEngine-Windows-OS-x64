@@ -32,10 +32,10 @@ EMObjectMaskMaterial::~EMObjectMaskMaterial ()
 GXVoid EMObjectMaskMaterial::Bind ( const GXTransform &transform )
 {
 	GXMat4 mod_view_proj_mat;
-	GXMulMat4Mat4 ( mod_view_proj_mat, transform.GetCurrentFrameModelMatrix (), GXCamera::GetActiveCamera ()->GetCurrentFrameViewProjectionMatrix () );
+	mod_view_proj_mat.Multiply ( transform.GetCurrentFrameModelMatrix (), GXCamera::GetActiveCamera ()->GetCurrentFrameViewProjectionMatrix () );
 
 	glUseProgram ( shaderProgram.GetProgram () );
-	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );
+	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.data );
 }
 
 GXVoid EMObjectMaskMaterial::Unbind ()

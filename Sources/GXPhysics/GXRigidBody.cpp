@@ -42,14 +42,14 @@ GXRigidBody::GXRigidBody ()
 	SetLocation ( vec );
 
 	GXQuat rot;
-	vec = GXCreateVec3 ( DEFAULT_ROTATION_AXIS_X, DEFAULT_ROTATION_AXIS_Y, DEFAULT_ROTATION_AXIS_Z );
-	GXSetQuatFromAxisAngle ( rot, vec, DEFAULT_ROTATION_ANGLE );
+	vec.Init ( DEFAULT_ROTATION_AXIS_X, DEFAULT_ROTATION_AXIS_Y, DEFAULT_ROTATION_AXIS_Z );
+	rot.FromAxisAngle ( vec, DEFAULT_ROTATION_ANGLE );
 	SetRotaton ( rot );
 
-	vec = GXCreateVec3 ( DEFAULT_LINEAR_VELOCITY_X, DEFAULT_LINEAR_VELOCITY_Y, DEFAULT_LINEAR_VELOCITY_Z );
+	vec.Init ( DEFAULT_LINEAR_VELOCITY_X, DEFAULT_LINEAR_VELOCITY_Y, DEFAULT_LINEAR_VELOCITY_Z );
 	SetLinearVelocity ( vec );
 
-	vec = GXCreateVec3 ( DEFAULT_ANGULAR_VELOCITY_X, DEFAULT_ANGULAR_VELOCITY_Y, DEFAULT_ANGULAR_VELOCITY_Z );
+	vec.Init ( DEFAULT_ANGULAR_VELOCITY_X, DEFAULT_ANGULAR_VELOCITY_Y, DEFAULT_ANGULAR_VELOCITY_Z );
 	SetAngularVelocity ( vec );
 
 	SetLinearDamping ( DEFALUT_LINEAR_DAMPING );
@@ -74,32 +74,32 @@ GXVoid GXRigidBody::SetOnTransformChangedCallback ( GXVoid* handlerObject, PFNRI
 
 GXVoid GXRigidBody::CalculateCachedData ()
 {
-	GXNormalizeQuat ( rotation );
+	rotation.Normalize ();
 	transform.From ( rotation, location );
 
 	if ( OnTransformChanged )
 		OnTransformChanged ( handler, *this );
 
 	GXMat3 localToWorld;
-	GXSetMat3FromMat4 ( localToWorld, transform );
+	localToWorld.From ( transform );
 	GXMat3 worldToLocal;
-	GXSetMat3Transponse ( worldToLocal, localToWorld );
+	worldToLocal.Transponse ( localToWorld );
 	GXMat3 transform1;
-	GXMulMat3Mat3 ( transform1, worldToLocal, invInertiaTensorLocal );
-	GXMulMat3Mat3 ( invInertiaTensorWorld, transform1, localToWorld );
+	transform1.Multiply ( worldToLocal, invInertiaTensorLocal );
+	invInertiaTensorWorld.Multiply ( transform1, localToWorld );
 
 	shape->CalculateCacheData ();
 }
 
 GXVoid GXRigidBody::ClearAccumulators ()
 {
-	totalForce = GXCreateVec3 ( 0.0f, 0.0f, 0.0f );
-	totalTorque = GXCreateVec3 ( 0.0f, 0.0f, 0.0f );
+	totalForce.Init ( 0.0f, 0.0f, 0.0f );
+	totalTorque.Init ( 0.0f, 0.0f, 0.0f );
 }
 
 GXVoid GXRigidBody::SetInertiaTensor ( const GXMat3 &inertiaTensor )
 {
-	GXSetMat3Inverse ( invInertiaTensorLocal, inertiaTensor );
+	invInertiaTensorLocal.Inverse ( inertiaTensor );
 	CalculateCachedData ();
 }
 
@@ -110,7 +110,7 @@ const GXMat3& GXRigidBody::GetInverseInertiaTensorWorld () const
 
 GXVoid GXRigidBody::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 {
-	location = GXCreateVec3 ( x, y, z );
+	location.Init ( x, y, z );
 	transform.SetW ( location );
 
 	if ( OnTransformChanged )
@@ -166,7 +166,7 @@ const GXVec3& GXRigidBody::GetLinearVelocity () const
 
 GXVoid GXRigidBody::AddLinearVelocity ( const GXVec3 &velocity )
 {
-	GXSumVec3Vec3 ( linearVelocity, linearVelocity, velocity );
+	linearVelocity.Sum ( linearVelocity, velocity );
 }
 
 GXVoid GXRigidBody::SetAngularVelocity ( const GXVec3 velocity )
@@ -181,7 +181,7 @@ const GXVec3& GXRigidBody::GetAngularVelocity () const
 
 GXVoid GXRigidBody::AddAngularVelocity ( const GXVec3 &velocity )
 {
-	GXSumVec3Vec3 ( angularVelocity, angularVelocity, velocity );
+	angularVelocity.Sum ( angularVelocity, velocity );
 }
 
 GXVoid GXRigidBody::SetMass ( GXFloat newMass )
@@ -239,7 +239,7 @@ const GXVec3& GXRigidBody::GetLastFrameAcceleration () const
 
 GXVoid GXRigidBody::TranslatePointToWorld ( GXVec3 &out, const GXVec3 &pointLocal )
 {
-	GXMulVec3Mat4AsPoint ( out, pointLocal, transform );
+	transform.MultiplyAsPoint ( out, pointLocal );
 }
 
 const GXMat4& GXRigidBody::GetTransform ()
@@ -256,8 +256,8 @@ GXVoid GXRigidBody::SetAwake ()
 GXVoid GXRigidBody::SetSleep ()
 {
 	isAwake = GX_FALSE;
-	linearVelocity = GXCreateVec3 ( 0.0f, 0.0f, 0.0f );
-	angularVelocity = GXCreateVec3 ( 0.0f, 0.0f, 0.0f );
+	linearVelocity.Init ( 0.0f, 0.0f, 0.0f );
+	angularVelocity.Init ( 0.0f, 0.0f, 0.0f );
 }
 
 GXBool GXRigidBody::IsAwake () const
@@ -282,7 +282,7 @@ GXBool GXRigidBody::IsKinematic () const
 
 GXVoid GXRigidBody::AddForce ( const GXVec3 &forceWorld )
 {
-	GXSumVec3Vec3 ( totalForce, totalForce, forceWorld );
+	totalForce.Sum ( totalForce, forceWorld );
 }
 
 GXVoid GXRigidBody::SetCanSleep ( GXBool isCanSleep )
@@ -302,14 +302,14 @@ GXVoid GXRigidBody::AddForceAtPointLocal ( const GXVec3 &forceWorld, const GXVec
 
 GXVoid GXRigidBody::AddForceAtPointWorld ( const GXVec3 &forceWorld, const GXVec3 &pointWorld )
 {
-	GXSumVec3Vec3 ( totalForce, totalForce, forceWorld );
+	totalForce.Sum ( totalForce, forceWorld );
 
 	GXVec3 p;
-	GXSubVec3Vec3 ( p, pointWorld, location );
+	p.Substract ( pointWorld, location );
 
 	GXVec3 torque;
-	GXCrossVec3Vec3 ( torque, p, forceWorld );
-	GXSumVec3Vec3 ( totalTorque, totalTorque, torque );
+	torque.CrossProduct ( p, forceWorld );
+	totalTorque.Sum ( totalTorque, torque );
 
 	isAwake = GX_TRUE;
 }
@@ -324,19 +324,19 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 
 	if ( !isAwake ) return;
 
-	GXSumVec3ScaledVec3 ( lastFrameAcceleration, acceleration, invMass, totalForce );
+	lastFrameAcceleration.Sum ( acceleration, invMass, totalForce );
 
 	GXVec3 angularAcceleration;
-	GXMulVec3Mat3 ( angularAcceleration, totalTorque, invInertiaTensorWorld );
+	invInertiaTensorWorld.Multiply ( angularAcceleration, totalTorque );
 
-	GXSumVec3ScaledVec3 ( linearVelocity, linearVelocity, deltaTime, lastFrameAcceleration );
-	GXSumVec3ScaledVec3 ( angularVelocity, angularVelocity, deltaTime, angularAcceleration );
+	linearVelocity.Sum ( linearVelocity, deltaTime, lastFrameAcceleration );
+	angularVelocity.Sum ( angularVelocity, deltaTime, angularAcceleration );
 
-	GXMulVec3Scalar ( linearVelocity, linearVelocity, powf ( linearDamping, deltaTime ) );
-	GXMulVec3Scalar ( angularVelocity, angularVelocity, powf ( angularDamping, deltaTime ) );
+	linearVelocity.Multiply ( linearVelocity, powf ( linearDamping, deltaTime ) );
+	angularVelocity.Multiply ( angularVelocity, powf ( angularDamping, deltaTime ) );
 
-	GXSumVec3ScaledVec3 ( location, location, deltaTime, linearVelocity );
-	GXSumQuatScaledVec3 ( rotation, rotation, deltaTime, angularVelocity );
+	location.Sum ( location, deltaTime, linearVelocity );
+	rotation.Sum ( rotation, deltaTime, angularVelocity );
 	
 	ClearAccumulators ();
 	CalculateCachedData ();

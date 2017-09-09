@@ -23,7 +23,7 @@ class EMCookTorranceCommonPassMaterial : public GXMaterial
 		GXVec4				albedoTextureScaleOffset;
 		GLint				albedoTextureScaleOffsetLocation;
 
-		GXVec4				albedoColor;
+		GXColorRGB			albedoColor;
 		GLint				albedoColorLocation;
 
 		GXVec4				normalTextureScaleOffset;
@@ -32,9 +32,9 @@ class EMCookTorranceCommonPassMaterial : public GXMaterial
 		GXVec4				emissionTextureScaleOffset;
 		GLint				emissionTextureScaleOffsetLocation;
 
-		GXVec3				emissionColor;
+		GXColorRGB			emissionColor;
 		GXFloat				emissionColorScale;
-		GXVec3				emissionScaledColor;
+		GXColorRGB			emissionScaledColor;
 		GLint				emissionScaledColorLocation;
 
 		GXVec4				parameterTextureScaleOffset;

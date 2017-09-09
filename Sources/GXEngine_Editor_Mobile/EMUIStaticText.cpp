@@ -33,7 +33,7 @@ EMUIStaticTextRenderer::EMUIStaticTextRenderer ( GXUIStaticText* staticTextWidge
 GXWidgetRenderer ( staticTextWidget )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
-	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
+	surface = new GXHudSurface ( (GXUShort)boundsLocal.GetWidth (), (GXUShort)boundsLocal.GetHeight () );
 	font = GXFont::GetFont ( FONT, (GXUShort)( FONT_SIZE * gx_ui_Scale ) );
 }
 
@@ -101,7 +101,7 @@ GXVoid EMUIStaticTextRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width,
 	surface->GetLocation ( location );
 	delete surface;
 	surface = new GXHudSurface ( width, height );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 }
 
 GXVoid EMUIStaticTextRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -111,7 +111,7 @@ GXVoid EMUIStaticTextRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 }
 
 //------------------------------------------------------------------------------
@@ -149,7 +149,7 @@ GXVoid EMUIStaticText::SetTextColor ( GXUByte red, GXUByte green, GXUByte blue, 
 	widget->SetTextColor ( red, green, blue, alpha );
 }
 
-const GXVec4& EMUIStaticText::GetTextColor () const
+const GXColorRGB& EMUIStaticText::GetTextColor () const
 {
 	return widget->GetTextColor ();
 }

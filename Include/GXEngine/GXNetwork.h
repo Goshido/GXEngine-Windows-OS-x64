@@ -4,9 +4,11 @@
 #define GX_NETWORK
 
 
-#include <WinSock2.h>
 #include <GXCommon/GXLogger.h>
 #include <GXCommon/GXThread.h>
+#include <GXCommon/GXDisable3rdPartyWarnings.h>
+#include <WinSock2.h>
+#include <GXCommon/GXRestoreWarnings.h>
 
 
 #define GX_MAX_NETWORK_CLIENTS	64

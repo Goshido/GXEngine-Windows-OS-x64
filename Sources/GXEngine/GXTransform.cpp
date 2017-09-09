@@ -9,11 +9,11 @@ GXTransform	GXTransform::nullTransform;
 
 GXTransform::GXTransform ()
 {
-	currentFrameLocation = GXCreateVec3 ( 0.0f, 0.0f, 0.0f );
-	currentFrameScale = GXCreateVec3 ( 1.0f, 1.0f, 1.0f );
-	GXSetMat4Identity ( currentFrameRotationMatrix );
-	GXSetMat4Identity ( currentFrameModelMatrix );
-	GXSetMat4Identity ( lastFrameModelMatrix );
+	currentFrameLocation.Init ( 0.0f, 0.0f, 0.0f );
+	currentFrameScale.Init ( 1.0f, 1.0f, 1.0f );
+	currentFrameRotationMatrix.Identity ();
+	currentFrameModelMatrix.Identity ();
+	lastFrameModelMatrix.Identity ();
 }
 
 GXTransform::~GXTransform ()
@@ -23,7 +23,7 @@ GXTransform::~GXTransform ()
 
 GXVoid GXTransform::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 {
-	currentFrameLocation = GXCreateVec3 ( x, y, z );
+	currentFrameLocation.Init ( x, y, z );
 	currentFrameModelMatrix.SetW ( currentFrameLocation );
 
 	TransformUpdated ();
@@ -37,26 +37,9 @@ GXVoid GXTransform::SetLocation ( const GXVec3 &loc )
 	TransformUpdated ();
 }
 
-GXVoid GXTransform::SetRotation ( const GXVec3 &rot_rad  )
+GXVoid GXTransform::SetRotation ( const GXEuler &rotation  )
 {
-	GXSetMat4RotationXYZ ( currentFrameRotationMatrix, rot_rad.pitch_rad, rot_rad.yaw_rad, rot_rad.roll_rad );
-	
-	GXVec3 tmpA;
-	GXVec3 tmpB;
-
-	currentFrameRotationMatrix.GetX ( tmpA );
-	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.x );
-	currentFrameModelMatrix.SetX ( tmpB );
-
-	currentFrameRotationMatrix.GetY ( tmpA );
-	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.y );
-	currentFrameModelMatrix.SetY ( tmpB );
-
-	currentFrameRotationMatrix.GetZ ( tmpA );
-	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.z );
-	currentFrameModelMatrix.SetZ ( tmpB );
-
-	TransformUpdated ();
+	SetRotation ( rotation.pitchRadians, rotation.yawRadians, rotation.rollRadians );
 }
 
 GXVoid GXTransform::SetRotation ( const GXMat4 &rot )
@@ -67,37 +50,37 @@ GXVoid GXTransform::SetRotation ( const GXMat4 &rot )
 	GXVec3 tmpB;
 
 	currentFrameRotationMatrix.GetX ( tmpA );
-	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.x );
+	tmpB.Multiply ( tmpA, currentFrameScale.data[ 0 ] );
 	currentFrameModelMatrix.SetX ( tmpB );
 
 	currentFrameRotationMatrix.GetY ( tmpA );
-	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.y );
+	tmpB.Multiply ( tmpA, currentFrameScale.data[ 1 ] );
 	currentFrameModelMatrix.SetY ( tmpB );
 
 	currentFrameRotationMatrix.GetZ ( tmpA );
-	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.z );
+	tmpB.Multiply ( tmpA, currentFrameScale.data[ 2 ] );
 	currentFrameModelMatrix.SetZ ( tmpB );
 
 	TransformUpdated ();
 }
 
-GXVoid GXTransform::SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_rad )
+GXVoid GXTransform::SetRotation ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians )
 {
-	GXSetMat4RotationXYZ ( currentFrameRotationMatrix, pitch_rad, yaw_rad, roll_rad );
+	currentFrameRotationMatrix.RotationXYZ ( pitchRadians, yawRadians, rollRadians );
 
 	GXVec3 tmpA;
 	GXVec3 tmpB;
 
 	currentFrameRotationMatrix.GetX ( tmpA );
-	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.x );
+	tmpB.Multiply ( tmpA, currentFrameScale.data[ 0 ] );
 	currentFrameModelMatrix.SetX ( tmpB );
 
 	currentFrameRotationMatrix.GetY ( tmpA );
-	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.y );
+	tmpB.Multiply ( tmpA, currentFrameScale.data[ 1 ] );
 	currentFrameModelMatrix.SetY ( tmpB );
 
 	currentFrameRotationMatrix.GetZ ( tmpA );
-	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.z );
+	tmpB.Multiply ( tmpA, currentFrameScale.data[ 2 ] );
 	currentFrameModelMatrix.SetZ ( tmpB );
 
 	TransformUpdated ();
@@ -111,15 +94,15 @@ GXVoid GXTransform::SetRotation ( const GXQuat &quaternion )
 	GXVec3 tmpB;
 
 	currentFrameRotationMatrix.GetX ( tmpA );
-	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.x );
+	tmpB.Multiply ( tmpA, currentFrameScale.data[ 0 ] );
 	currentFrameModelMatrix.SetX ( tmpB );
 
 	currentFrameRotationMatrix.GetY ( tmpA );
-	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.y );
+	tmpB.Multiply ( tmpA, currentFrameScale.data[ 1 ] );
 	currentFrameModelMatrix.SetY ( tmpB );
 
 	currentFrameRotationMatrix.GetZ ( tmpA );
-	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.z );
+	tmpB.Multiply ( tmpA, currentFrameScale.data[ 2 ] );
 	currentFrameModelMatrix.SetZ ( tmpB );
 
 	TransformUpdated ();
@@ -127,21 +110,21 @@ GXVoid GXTransform::SetRotation ( const GXQuat &quaternion )
 
 GXVoid GXTransform::SetScale ( GXFloat x, GXFloat y, GXFloat z )
 {
-	currentFrameScale = GXCreateVec3 ( x, y, z );
+	currentFrameScale.Init ( x, y, z );
 
 	GXVec3 tmpA;
 	GXVec3 tmpB;
 
 	currentFrameRotationMatrix.GetX ( tmpA );
-	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.x );
+	tmpB.Multiply ( tmpA, currentFrameScale.data[ 0 ] );
 	currentFrameModelMatrix.SetX ( tmpB );
 
 	currentFrameRotationMatrix.GetY ( tmpA );
-	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.y );
+	tmpB.Multiply ( tmpA, currentFrameScale.data[ 1 ] );
 	currentFrameModelMatrix.SetY ( tmpB );
 
 	currentFrameRotationMatrix.GetZ ( tmpA );
-	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.z );
+	tmpB.Multiply ( tmpA, currentFrameScale.data[ 2 ] );
 	currentFrameModelMatrix.SetZ ( tmpB );
 
 	TransformUpdated ();
@@ -155,15 +138,15 @@ GXVoid GXTransform::SetScale ( const GXVec3 &scale )
 	GXVec3 tmpB;
 
 	currentFrameRotationMatrix.GetX ( tmpA );
-	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.x );
+	tmpB.Multiply ( tmpA, currentFrameScale.data[ 0 ] );
 	currentFrameModelMatrix.SetX ( tmpB );
 
 	currentFrameRotationMatrix.GetY ( tmpA );
-	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.y );
+	tmpB.Multiply ( tmpA, currentFrameScale.data[ 1 ] );
 	currentFrameModelMatrix.SetY ( tmpB );
 
 	currentFrameRotationMatrix.GetZ ( tmpA );
-	GXMulVec3Scalar ( tmpB, tmpA, currentFrameScale.z );
+	tmpB.Multiply ( tmpA, currentFrameScale.data[ 2 ] );
 	currentFrameModelMatrix.SetZ ( tmpB );
 
 	TransformUpdated ();
@@ -186,7 +169,7 @@ GXVoid GXTransform::GetRotation ( GXMat4 &rot ) const
 
 GXVoid GXTransform::GetRotation ( GXQuat &rot ) const
 {
-	rot = GXCreateQuat ( currentFrameRotationMatrix );
+	rot.From ( currentFrameRotationMatrix );
 }
 
 const GXMat4& GXTransform::GetRotation () const

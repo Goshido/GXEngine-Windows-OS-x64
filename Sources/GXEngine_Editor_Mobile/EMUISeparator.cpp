@@ -39,7 +39,7 @@ EMUISeparatorRenderer::EMUISeparatorRenderer ( GXWidget* widget ):
 GXWidgetRenderer ( widget )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
-	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
+	surface = new GXHudSurface ( (GXUShort)boundsLocal.GetWidth (), (GXUShort)boundsLocal.GetHeight () );
 }
 
 EMUISeparatorRenderer::~EMUISeparatorRenderer ()
@@ -53,11 +53,11 @@ GXVoid EMUISeparatorRenderer::OnRefresh ()
 	GXFloat y = floorf ( 0.5f * surface->GetHeight () );
 
 	GXLineInfo li;
-	GXColorToVec4 ( li.color, COLOR_R, COLOR_G, COLOR_B, COLOR_A );
+	li.color.From ( COLOR_R, COLOR_G, COLOR_B, COLOR_A );
 	li.overlayType = eGXImageOverlayType::SimpleReplace;
 	li.thickness = 1.0f;
-	li.startPoint = GXCreateVec2 ( 0.0f, y );
-	li.endPoint = GXCreateVec2 ( (GXFloat)surface->GetWidth (), y );
+	li.startPoint.Init ( 0.0f, y );
+	li.endPoint.Init ( (GXFloat)surface->GetWidth (), y );
 
 	surface->AddLine ( li );
 }
@@ -78,7 +78,7 @@ GXVoid EMUISeparatorRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, 
 	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 }
 
 GXVoid EMUISeparatorRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -88,7 +88,7 @@ GXVoid EMUISeparatorRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 }
 
 //-------------------------------------------------------------

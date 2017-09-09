@@ -84,11 +84,11 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 			if ( IsAbleToScroll () )
 			{
 				GXFloat step = 1.0f / (GXFloat)totalItems;
-				GXFloat offset = GXClampf ( viewportOffset - scroll->z * step, 0.0f, 1.0f - viewportSize );
+				GXFloat offset = GXClampf ( viewportOffset - scroll->GetZ () * step, 0.0f, 1.0f - viewportSize );
 
 				viewportOffset = offset;
 
-				GXVec2 pos = GXCreateVec2 ( scroll->x, scroll->y );
+				GXVec2 pos ( scroll->GetX (), scroll->GetZ () );
 				OnMessage ( GX_MSG_MOUSE_MOVE, &pos );
 			}
 		}
@@ -148,7 +148,8 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 			itemTail = item;
 
 			totalItems++;
-			viewportSize = GXGetAABBHeight ( boundsLocal ) / GetTotalHeight ();
+			viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
+
 			if ( renderer )
 				renderer->OnUpdate ();
 		}
@@ -175,7 +176,8 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 				totalItems++;
 			}
 
-			viewportSize = GXGetAABBHeight ( boundsLocal ) / GetTotalHeight ();
+			viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
+
 			if ( renderer )
 				renderer->OnUpdate ();
 		}
@@ -195,7 +197,8 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 			totalItems = 0;
 
 			viewportOffset = 0.0f;
-			viewportSize = GXGetAABBHeight ( boundsLocal ) / GetTotalHeight ();
+			viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
+
 			if ( renderer )
 				renderer->OnUpdate ();
 		}
@@ -224,7 +227,8 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 
 			delete p;
 
-			viewportSize = GXGetAABBHeight ( boundsLocal ) / GetTotalHeight ();
+			viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
+
 			if ( renderer )
 				renderer->OnUpdate ();
 		}
@@ -235,7 +239,8 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 			const GXFloat* offset = (const GXFloat*)data;
 			viewportOffset = *offset;
 
-			viewportSize = GXGetAABBHeight ( boundsLocal ) / GetTotalHeight ();
+			viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
+
 			if ( renderer )
 				renderer->OnUpdate ();
 		}
@@ -246,7 +251,8 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 			const GXFloat* height = (const GXFloat*)data;
 			itemHeight = *height;
 
-			viewportSize = GXGetAABBHeight ( boundsLocal ) / GetTotalHeight ();
+			viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
+
 			if ( renderer )
 				renderer->OnUpdate ();
 		}
@@ -256,7 +262,8 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 		{
 			const GXAABB* newBoundsLocal = (const GXAABB*)data;
 			UpdateBoundsWorld ( *newBoundsLocal );
-			viewportSize = GXGetAABBHeight ( boundsLocal ) / GetTotalHeight ();
+			viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
+
 			if ( renderer )
 				renderer->OnUpdate ();
 		}
@@ -351,14 +358,14 @@ GXBool GXUIListBox::IsItemVisible ( GXUInt itemIndex ) const
 	GXFloat viewportBottom = viewportTop + viewportSize * totalHeight;
 
 	GXAABB item;
-	GXAddVertexToAABB ( item, itemTop, 0.0f, 0.0f );
-	GXAddVertexToAABB ( item, itemBottom, 1.0f, 1.0f );
+	item.AddVertex ( itemTop, 0.0f, 0.0f );
+	item.AddVertex ( itemBottom, 1.0f, 1.0f );
 
 	GXAABB viewport;
-	GXAddVertexToAABB ( viewport, viewportTop, 0.0f, 0.0f );
-	GXAddVertexToAABB ( viewport, viewportBottom, 1.0f, 1.0f );
+	viewport.AddVertex ( viewportTop, 0.0f, 0.0f );
+	viewport.AddVertex ( viewportBottom, 1.0f, 1.0f );
 
-	return GXIsOverlapedAABBAABB ( item, viewport );
+	return item.IsOverlaped ( viewport );
 }
 
 GXFloat GXUIListBox::GetItemLocalOffsetY ( GXUInt itemIndex ) const
@@ -402,7 +409,8 @@ GXVoid GXUIListBox::SetViewportOffsetImmediately ( GXFloat offset )
 {
 	viewportOffset = offset;
 
-	viewportSize = GXGetAABBHeight ( boundsLocal ) / GetTotalHeight ();
+	viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
+
 	if ( renderer )
 		renderer->OnUpdate ();
 }
@@ -425,10 +433,10 @@ GXUIListBoxItem* GXUIListBox::FindItem ( const GXVec2 &mousePosition )
 	for ( GXUInt i = 0; i < totalItems; i++ )
 	{
 		GXAABB itemBounds;
-		GXAddVertexToAABB ( itemBounds, boundsWorld.min.x, boundsWorld.max.y + offset - itemHeight, boundsWorld.min.z );
-		GXAddVertexToAABB ( itemBounds, boundsWorld.max.x, boundsWorld.max.y + offset, boundsWorld.max.z );
+		itemBounds.AddVertex ( boundsWorld.min.GetX (), boundsWorld.max.GetY () + offset - itemHeight, boundsWorld.min.GetZ () );
+		itemBounds.AddVertex ( boundsWorld.max.GetX (), boundsWorld.max.GetY () + offset, boundsWorld.max.GetZ () );
 
-		if ( GXIsOverlapedAABBVec3 ( itemBounds, mousePosition.x, mousePosition.y, 0.0f ) )
+		if ( itemBounds.IsOverlaped ( mousePosition.GetX (), mousePosition.GetY (), 0.0f ) )
 			 return p;
 
 		offset -= itemHeight;
@@ -474,13 +482,13 @@ GXBool GXUIListBox::ResetHighlight ( const GXVec2 &mousePosition )
 
 GXBool GXUIListBox::IsAbleToScroll () const
 {
-	return totalItems * itemHeight > GXGetAABBHeight ( boundsLocal );
+	return totalItems * itemHeight > boundsLocal.GetHeight ();
 }
 
 GXFloat GXUIListBox::GetTotalHeight () const
 {
 	GXFloat totalHeight = totalItems * itemHeight;
-	GXFloat viewportHeight = GXGetAABBHeight ( boundsLocal );
+	GXFloat viewportHeight = boundsLocal.GetHeight ();
 
 	return totalHeight < viewportHeight ? viewportHeight : totalHeight;
 }

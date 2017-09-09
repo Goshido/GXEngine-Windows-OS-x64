@@ -278,7 +278,6 @@ GXMeshGeometry& GXCALL GXMeshGeometry::LoadFromObj ( const GXWChar* fileName )
 	GXInt numVerticies = GXLoadOBJ ( fileName, &points );
 
 	GXAABB bounds;
-	GXSetAABBEmpty ( bounds );
 
 	GXNativeStaticMeshDesc descriptor;
 	descriptor.numVertices = (GXUInt)numVerticies;
@@ -302,7 +301,7 @@ GXMeshGeometry& GXCALL GXMeshGeometry::LoadFromObj ( const GXWChar* fileName )
 
 	for ( GXUInt i = 0; i < descriptor.numVertices; i++ )
 	{
-		GXAddVertexToAABB ( bounds, points[ i ].vertex );
+		bounds.AddVertex ( points[ i ].vertex );
 
 		descriptor.vertices[ i ] = points[ i ].vertex;
 		descriptor.uvs[ i ] = points[ i ].uv;

@@ -91,7 +91,7 @@ GXOBJVertex* GXCALL GXParseVertexes ()
 			i++;
 		}
 		gx_objloader_T[ i ] = '\0';
-		vTek->position.x = (GXFloat)atof ( gx_objloader_T );
+		vTek->position.SetX ( (GXFloat)atof ( gx_objloader_T ) );
 
 		SKIP_GAPS ();
 		i = 0;
@@ -102,7 +102,7 @@ GXOBJVertex* GXCALL GXParseVertexes ()
 			i++;
 		}
 		gx_objloader_T[ i ] = '\0';
-		vTek->position.y = (GXFloat)atof ( gx_objloader_T );
+		vTek->position.SetY ( (GXFloat)atof ( gx_objloader_T ) );
 
 		SKIP_GAPS ();
 		i = 0;
@@ -113,7 +113,7 @@ GXOBJVertex* GXCALL GXParseVertexes ()
 			i++;
 		}
 		gx_objloader_T[ i ] = '\0';
-		vTek->position.z = (GXFloat)atof ( gx_objloader_T );
+		vTek->position.SetZ ( (GXFloat)atof ( gx_objloader_T ) );
 
 		SKIP_COMMENT ();
 		SKIP_GAPS ();
@@ -164,7 +164,7 @@ GXOBJNormals* GXCALL GXParseNormals ()
 			i++;
 		}
 		gx_objloader_T[i] = '\0';
-		nTek->normal.x = (GXFloat)atof ( gx_objloader_T );
+		nTek->normal.SetX ( (GXFloat)atof ( gx_objloader_T ) );
 
 		SKIP_GAPS ();
 		i = 0;
@@ -175,7 +175,7 @@ GXOBJNormals* GXCALL GXParseNormals ()
 			i++;
 		}
 		gx_objloader_T[ i ] = '\0';
-		nTek->normal.y = (GXFloat)atof ( gx_objloader_T );
+		nTek->normal.SetY ( (GXFloat)atof ( gx_objloader_T ) );
 
 		SKIP_GAPS ();
 		i = 0;
@@ -186,7 +186,7 @@ GXOBJNormals* GXCALL GXParseNormals ()
 			i++;
 		}
 		gx_objloader_T[ i ] = '\0';
-		nTek->normal.z = (GXFloat)atof ( gx_objloader_T );
+		nTek->normal.SetZ ( (GXFloat)atof ( gx_objloader_T ) );
 
 		SKIP_COMMENT ();
 		SKIP_GAPS ();
@@ -235,7 +235,7 @@ GXOBJUV_s* GXCALL GXParseUVs ()
 			i++;
 		}
 		gx_objloader_T[ i ] = '\0';
-		uvTek->uv.u = (GXFloat)atof ( gx_objloader_T );
+		uvTek->uv.SetX ( (GXFloat)atof ( gx_objloader_T ) );
 
 		SKIP_GAPS ();
 		i = 0;
@@ -246,7 +246,7 @@ GXOBJUV_s* GXCALL GXParseUVs ()
 			i++;
 		}
 		gx_objloader_T[ i ] = '\0';
-		uvTek->uv.v = (GXFloat)atof ( gx_objloader_T );
+		uvTek->uv.SetY ( (GXFloat)atof ( gx_objloader_T ) );
 
 		SKIP_COMMENT ();
 		SKIP_GAPS ();

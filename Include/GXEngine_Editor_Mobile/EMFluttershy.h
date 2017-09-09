@@ -4,7 +4,7 @@
 
 #include "EMMesh.h"
 #include "EMCookTorranceCommonPassMaterial.h"
-#include <GXEngine/GXAnimSolverPlayer.h>
+#include <GXEngine/GXAnimationSolverPlayer.h>
 
 
 class EMFluttershy : public GXTransform
@@ -12,7 +12,7 @@ class EMFluttershy : public GXTransform
 	private:
 		EMMesh								mesh;
 		GXSkeleton							skeleton;
-		GXAnimSolverPlayer					animationSolverPlayer;
+		GXAnimationSolverPlayer				animationSolverPlayer;
 		GXAnimationInfo						animationInfo;
 
 		GXTexture2D							albedoTexture;

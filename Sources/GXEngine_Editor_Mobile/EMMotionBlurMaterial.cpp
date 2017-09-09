@@ -65,8 +65,8 @@ GXVoid EMMotionBlurMaterial::Bind ( const GXTransform& /*transform*/ )
 
 	glUniform1f ( inverseDepthLimitLocation, inverseDepthLimit );
 	glUniform1f ( maxBlurSamplesLocation, maxBlurSamples );
-	glUniform2fv ( inverseScreenResolutionLocation, 1, inverseScreenResolution.arr );
-	glUniformMatrix4fv ( inverseProjectionMatrixLocation, 1, GL_FALSE, inverseProjectionMatrix.arr );
+	glUniform2fv ( inverseScreenResolutionLocation, 1, inverseScreenResolution.data );
+	glUniformMatrix4fv ( inverseProjectionMatrixLocation, 1, GL_FALSE, inverseProjectionMatrix.data );
 
 	velocityNeighborMaxTexture->Bind ( VELOCITY_NEIGHBOR_MAX_SLOT );
 	velocityTexture->Bind ( VELOCITY_SLOT );
@@ -141,6 +141,5 @@ GXUByte EMMotionBlurMaterial::GetMaxBlurSamples () const
 
 GXVoid EMMotionBlurMaterial::SetScreenResolution ( GXUShort width, GXUShort height )
 {
-	inverseScreenResolution.x = 1.0f / (GXFloat)width;
-	inverseScreenResolution.y = 1.0f / (GXFloat)height;
+	inverseScreenResolution.Init ( 1.0f / (GXFloat)width, 1.0f / (GXFloat)height );
 }

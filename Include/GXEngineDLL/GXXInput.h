@@ -4,7 +4,9 @@
 #define GX_XINPUT
 
 
+#include <GXCommon/GXDisable3rdPartyWarnings.h>
 #include <XInput/XInput.h>
+#include <GXCommon/GXRestoreWarnings.h>
 
 
 typedef DWORD ( WINAPI* PFNXINPUTGETSTATEPROC ) ( DWORD dwUserIndex, XINPUT_STATE* pState );

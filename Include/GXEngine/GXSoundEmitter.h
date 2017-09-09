@@ -1,4 +1,4 @@
-//version 1.4
+//version 1.5
 
 #ifndef GX_SOUND_EMITTER
 #define GX_SOUND_EMITTER
@@ -42,8 +42,8 @@ class GXSoundEmitter
 		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
 
 		GXVoid SetRotation ( const GXMat4 &rotation );
-		GXVoid SetRotation ( const GXVec3 &rotation );
-		GXVoid SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_rad );
+		GXVoid SetRotation ( const GXEuler &rotation );
+		GXVoid SetRotation ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians );
 
 		GXVoid SetOwnVolume ( GXFloat ownVolumeLevel );
 		GXVoid SetChannelVolume ( GXFloat channelVolumeLevel );

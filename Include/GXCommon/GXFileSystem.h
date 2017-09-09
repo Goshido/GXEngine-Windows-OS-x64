@@ -5,7 +5,9 @@
 
 
 #include "GXTypes.h"
+#include "GXDisable3rdPartyWarnings.h"
 #include <iostream>
+#include "GXRestoreWarnings.h"
 
 
 struct GXDirectoryInfo

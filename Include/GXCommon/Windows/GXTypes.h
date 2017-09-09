@@ -6,8 +6,11 @@
 
 #define WIN32_LEAN_AND_MEAN			//to correct include WinSock2.h
 
+
+#include <GXCommon/GXDisable3rdPartyWarnings.h>
 #include <Windows.h>
 #include <cstdint>
+#include <GXCommon/GXRestoreWarnings.h>
 
 
 #define	GXCALL			WINAPI

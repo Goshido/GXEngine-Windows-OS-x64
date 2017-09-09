@@ -13,11 +13,11 @@ GXCameraOrthographic::GXCameraOrthographic ()
 {
 	width = DEFAULT_WIDTH;
 	height = DEFAULT_HEIGHT;
-	znear = DEFAULT_Z_NEAR;
-	zfar = DEFAULT_Z_FAR;
+	zNear = DEFAULT_Z_NEAR;
+	zFar = DEFAULT_Z_FAR;
 
-	GXSetMat4Ortho ( currentFrameProjectionMatrix, width, height, znear, zfar );
-	GXSetMat4Inverse ( currentFrameInverseProjectionMatrix, currentFrameProjectionMatrix );
+	currentFrameProjectionMatrix.Ortho ( width, height, zNear, zFar );
+	currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );
 
 	currentFrameViewProjectionMatrix = currentFrameProjectionMatrix;
 	currentFrameInverseViewProjectionMatrix = currentFrameInverseProjectionMatrix;
@@ -26,15 +26,15 @@ GXCameraOrthographic::GXCameraOrthographic ()
 	UpdateLastFrameMatrices ();
 }
 
-GXCameraOrthographic::GXCameraOrthographic ( GXFloat width, GXFloat height, GXFloat znear, GXFloat zfar )
+GXCameraOrthographic::GXCameraOrthographic ( GXFloat width, GXFloat height, GXFloat zNear, GXFloat zFar )
 {
 	this->width = width;
 	this->height = height;
-	this->znear = znear;
-	this->zfar = zfar;
+	this->zNear = zNear;
+	this->zFar = zFar;
 
-	GXSetMat4Ortho ( currentFrameProjectionMatrix, width, height, znear, zfar );
-	GXSetMat4Inverse ( currentFrameInverseProjectionMatrix, currentFrameProjectionMatrix );
+	currentFrameProjectionMatrix.Ortho ( width, height, zNear, zFar );
+	currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );
 	
 	currentFrameViewProjectionMatrix = currentFrameProjectionMatrix;
 	currentFrameInverseViewProjectionMatrix = currentFrameInverseProjectionMatrix;
@@ -48,40 +48,44 @@ GXCameraOrthographic::~GXCameraOrthographic ()
 	//NOTHING
 }
 
-GXVoid GXCameraOrthographic::SetZnear ( GXFloat zNear )
+GXVoid GXCameraOrthographic::SetZNear ( GXFloat newZNear )
 {
-	znear = zNear;
+	zNear = newZNear;
 
-	GXSetMat4Ortho ( currentFrameProjectionMatrix, width, height, znear, zfar );
-	GXSetMat4Inverse ( currentFrameInverseProjectionMatrix, currentFrameProjectionMatrix );
-	GXMulMat4Mat4 ( currentFrameViewProjectionMatrix, currentFrameViewMatrix, currentFrameProjectionMatrix );
-	GXSetMat4Inverse ( currentFrameInverseViewProjectionMatrix, currentFrameViewProjectionMatrix );
+	currentFrameProjectionMatrix.Ortho ( width, height, zNear, zFar );
+	currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );
+
+	currentFrameViewProjectionMatrix.Multiply ( currentFrameViewMatrix, currentFrameProjectionMatrix );
+	currentFrameInverseViewProjectionMatrix.Inverse ( currentFrameViewProjectionMatrix );
 
 	UpdateClipPlanes ();
 }
 
-GXVoid GXCameraOrthographic::SetZfar ( GXFloat zFar )
+GXVoid GXCameraOrthographic::SetZFar ( GXFloat newZFar )
 {
-	zfar = zFar;
-	GXSetMat4Ortho ( currentFrameProjectionMatrix, width, height, znear, zfar );
-	GXSetMat4Inverse ( currentFrameInverseProjectionMatrix, currentFrameProjectionMatrix );
-	GXMulMat4Mat4 ( currentFrameViewProjectionMatrix, currentFrameViewMatrix, currentFrameProjectionMatrix );
-	GXSetMat4Inverse ( currentFrameInverseViewProjectionMatrix, currentFrameViewProjectionMatrix );
+	zFar = newZFar;
+
+	currentFrameProjectionMatrix.Ortho ( width, height, zNear, zFar );
+	currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );
+
+	currentFrameViewProjectionMatrix.Multiply ( currentFrameViewMatrix, currentFrameProjectionMatrix );
+	currentFrameInverseViewProjectionMatrix.Inverse ( currentFrameViewProjectionMatrix );
 
 	UpdateClipPlanes ();
 }
 
-GXVoid GXCameraOrthographic::SetProjection ( GXFloat projectionWidth, GXFloat progectionHeight, GXFloat zNear, GXFloat zFar )
+GXVoid GXCameraOrthographic::SetProjection ( GXFloat newWidth, GXFloat newHeight, GXFloat newZNear, GXFloat newZFar )
 {
-	width = projectionWidth;
-	height = progectionHeight;
-	znear = zNear;
-	zfar = zFar;
+	width = newWidth;
+	height = newHeight;
+	zNear = newZNear;
+	zFar = newZFar;
 
-	GXSetMat4Ortho ( currentFrameProjectionMatrix, width, height, znear, zfar );
-	GXSetMat4Inverse ( currentFrameInverseProjectionMatrix, currentFrameProjectionMatrix );
-	GXMulMat4Mat4 ( currentFrameViewProjectionMatrix, currentFrameViewMatrix, currentFrameProjectionMatrix );
-	GXSetMat4Inverse ( currentFrameInverseViewProjectionMatrix, currentFrameViewProjectionMatrix );
+	currentFrameProjectionMatrix.Ortho ( width, height, zNear, zFar );
+	currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );
+
+	currentFrameViewProjectionMatrix.Multiply ( currentFrameViewMatrix, currentFrameProjectionMatrix );
+	currentFrameInverseViewProjectionMatrix.Inverse ( currentFrameViewProjectionMatrix );
 
 	UpdateClipPlanes ();
 }

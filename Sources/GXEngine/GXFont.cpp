@@ -185,8 +185,8 @@ GXBool GXFont::GetGlyph ( GXUInt symbol, GXGlyphInfo &info ) const
 		memcpy ( &info.min, &parameters->glyphs[ symbol ].min, sizeof ( GXVec2 ) );
 		memcpy ( &info.max, &parameters->glyphs[ symbol ].max, sizeof ( GXVec2 ) );
 		info.offsetY = parameters->glyphs[ symbol ].offsetY;
-		info.width = ( parameters->glyphs[ symbol ].max.x - parameters->glyphs[ symbol ].min.x ) * ATLAS_RESOLUTION;
-		info.height = ( parameters->glyphs[ symbol ].max.y - parameters->glyphs[ symbol ].min.y ) * ATLAS_RESOLUTION;
+		info.width = ( parameters->glyphs[ symbol ].max.GetX () - parameters->glyphs[ symbol ].min.GetX () ) * ATLAS_RESOLUTION;
+		info.height = ( parameters->glyphs[ symbol ].max.GetY () - parameters->glyphs[ symbol ].min.GetY () ) * ATLAS_RESOLUTION;
 		info.advance = parameters->glyphs[ symbol ].advance;
 
 		return GX_TRUE;
@@ -198,8 +198,8 @@ GXBool GXFont::GetGlyph ( GXUInt symbol, GXGlyphInfo &info ) const
 	memcpy ( &info.min, &parameters->glyphs[ symbol ].min, sizeof ( GXVec2 ) );
 	memcpy ( &info.max, &parameters->glyphs[ symbol ].max, sizeof ( GXVec2 ) );
 	info.offsetY = parameters->glyphs[ symbol ].offsetY;
-	info.width = ( parameters->glyphs[ symbol ].max.x - parameters->glyphs[ symbol ].min.x ) * ATLAS_RESOLUTION;
-	info.height = ( parameters->glyphs[ symbol ].max.y - parameters->glyphs[ symbol ].min.y ) * ATLAS_RESOLUTION;
+	info.width = ( parameters->glyphs[ symbol ].max.GetX () - parameters->glyphs[ symbol ].min.GetX () ) * ATLAS_RESOLUTION;
+	info.height = ( parameters->glyphs[ symbol ].max.GetY () - parameters->glyphs[ symbol ].min.GetY () ) * ATLAS_RESOLUTION;
 	info.advance = parameters->glyphs[ symbol ].advance;
 
 	return GX_TRUE;
@@ -468,8 +468,8 @@ GXVoid GXFont::RenderGlyph ( GXUInt symbol ) const
 		break;
 	}
 
-	parameters->glyphs[ symbol ].min = GXCreateVec2 ( parameters->left * ATLAS_ONE_PIXEL, parameters->bottom * ATLAS_ONE_PIXEL );
-	parameters->glyphs[ symbol ].max = GXCreateVec2 ( ( parameters->left + bitmap.width + 1 ) * ATLAS_ONE_PIXEL, ( parameters->bottom + bitmap.rows ) * ATLAS_ONE_PIXEL );
+	parameters->glyphs[ symbol ].min.Init ( parameters->left * ATLAS_ONE_PIXEL, parameters->bottom * ATLAS_ONE_PIXEL );
+	parameters->glyphs[ symbol ].max.Init ( ( parameters->left + bitmap.width + 1 ) * ATLAS_ONE_PIXEL, ( parameters->bottom + bitmap.rows ) * ATLAS_ONE_PIXEL );
 
 	parameters->glyphs[ symbol ].atlasID = parameters->atlasID;
 

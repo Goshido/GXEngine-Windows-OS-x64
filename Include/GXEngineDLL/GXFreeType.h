@@ -1,12 +1,14 @@
-//version 1.1
+//version 1.2
 
 #ifndef GX_FREETYPE
 #define GX_FREETYPE
 
 
+#include <GXCommon/GXLogger.h>
+#include <GXCommon/GXDisable3rdPartyWarnings.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include <GXCommon/GXLogger.h>
+#include <GXCommon/GXRestoreWarnings.h>
 
 
 typedef GXVoid ( GXCALL* PFNGXFREETYPEDESTROY ) ();

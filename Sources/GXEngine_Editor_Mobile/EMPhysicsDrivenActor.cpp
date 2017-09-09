@@ -27,7 +27,7 @@ EMPhysicsDrivenActor::EMPhysicsDrivenActor ( const GXWChar* name, const GXTransf
 EMActor ( name, eEMActorType::PhysicsDrivenActor, transform )
 {
 	rigidBody.SetLocation ( transform.GetLocation () );
-	rigidBody.SetRotaton ( GXCreateQuat ( transform.GetRotation () ) );
+	rigidBody.SetRotaton ( GXQuat ( transform.GetRotation () ) );
 
 	albedo = GXTexture2D::LoadTexture ( DEFAULT_ALBEDO_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
 	normal = GXTexture2D::LoadTexture ( DEFAULT_NORMAL_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );

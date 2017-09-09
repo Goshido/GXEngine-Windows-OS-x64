@@ -1,8 +1,10 @@
 //version 1.0
 
 #include <GXCommon/GXTime.h>
+#include <GXCommon/GXDisable3rdPartyWarnings.h>
 #include <Windows.h>
 #include <intrin.h>
+#include <GXCommon/GXRestoreWarnings.h>
 
 
 GXDouble GXCALL GXGetProcessorTicks ()

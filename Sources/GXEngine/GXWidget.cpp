@@ -23,9 +23,9 @@ GXWidget::GXWidget ( GXWidget* parent, GXBool isNeedRegister )
 	renderer = nullptr;
 
 	GXAABB defaultBoundsLocal;
-	GXSetAABBEmpty ( defaultBoundsLocal );
-	GXAddVertexToAABB ( defaultBoundsLocal, -1.0f, -1.0f, -1.0f );
-	GXAddVertexToAABB ( defaultBoundsLocal, 1.0f, 1.0f, 1.0f );
+
+	defaultBoundsLocal.AddVertex ( -1.0f, -1.0f, -1.0f );
+	defaultBoundsLocal.AddVertex ( 1.0f, 1.0f, 1.0f );
 	UpdateBoundsWorld ( defaultBoundsLocal );
 
 	isRegistered = isNeedRegister;
@@ -62,7 +62,8 @@ GXVoid GXWidget::OnMessage ( GXUInt message, const GXVoid* data )
 		case GX_MSG_LMBDOWN:
 		{
 			const GXVec2* pos = (const GXVec2*)data;
-			GXWidget* dest = FindWidget ( pos->x, pos->y );
+			GXWidget* dest = FindWidget ( *pos );
+
 			if ( dest != this )
 				dest->OnMessage ( GX_MSG_LMBDOWN, data );
 		}
@@ -71,7 +72,8 @@ GXVoid GXWidget::OnMessage ( GXUInt message, const GXVoid* data )
 		case GX_MSG_LMBUP:
 		{
 			const GXVec2* pos = (const GXVec2*)data;
-			GXWidget* dest = FindWidget ( pos->x, pos->y );
+			GXWidget* dest = FindWidget ( *pos );
+
 			if ( dest != this )
 				dest->OnMessage ( GX_MSG_LMBUP, data );
 		}
@@ -80,7 +82,8 @@ GXVoid GXWidget::OnMessage ( GXUInt message, const GXVoid* data )
 		case GX_MSG_MMBDOWN:
 		{
 			const GXVec2* pos = (const GXVec2*)data;
-			GXWidget* dest = FindWidget ( pos->x, pos->y );
+			GXWidget* dest = FindWidget ( *pos );
+
 			if ( dest != this )
 				dest->OnMessage ( GX_MSG_MMBDOWN, data );
 		}
@@ -89,7 +92,8 @@ GXVoid GXWidget::OnMessage ( GXUInt message, const GXVoid* data )
 		case GX_MSG_MMBUP:
 		{
 			const GXVec2* pos = (const GXVec2*)data;
-			GXWidget* dest = FindWidget ( pos->x, pos->y );
+			GXWidget* dest = FindWidget ( *pos );
+
 			if ( dest != this )
 				dest->OnMessage ( GX_MSG_MMBUP, data );
 		}
@@ -98,7 +102,8 @@ GXVoid GXWidget::OnMessage ( GXUInt message, const GXVoid* data )
 		case GX_MSG_RMBDOWN:
 		{
 			const GXVec2* pos = (const GXVec2*)data;
-			GXWidget* dest = FindWidget ( pos->x, pos->y );
+			GXWidget* dest = FindWidget ( *pos );
+
 			if ( dest != this )
 				dest->OnMessage ( GX_MSG_RMBDOWN, data );
 		}
@@ -107,7 +112,8 @@ GXVoid GXWidget::OnMessage ( GXUInt message, const GXVoid* data )
 		case GX_MSG_RMBUP:
 		{
 			const GXVec2* pos = (const GXVec2*)data;
-			GXWidget* dest = FindWidget ( pos->x, pos->y );
+			GXWidget* dest = FindWidget ( *pos );
+
 			if ( dest != this )
 				dest->OnMessage ( GX_MSG_RMBUP, data );
 		}
@@ -116,8 +122,9 @@ GXVoid GXWidget::OnMessage ( GXUInt message, const GXVoid* data )
 		case GX_MSG_SCROLL:
 		{
 			const GXVec3* scrollData = (const GXVec3*)data;
-			GXVec2 mousePosition = GXCreateVec2 ( scrollData->x, scrollData->y );
-			GXWidget* dest = FindWidget ( scrollData->x, scrollData->y );
+			GXVec2 mousePosition ( scrollData->GetX (), scrollData->GetY () );
+			GXWidget* dest = FindWidget ( mousePosition );
+
 			if ( dest != this )
 				dest->OnMessage ( GX_MSG_SCROLL, data );
 		}
@@ -126,7 +133,8 @@ GXVoid GXWidget::OnMessage ( GXUInt message, const GXVoid* data )
 		case GX_MSG_MOUSE_MOVE:
 		{
 			const GXVec2* pos = (const GXVec2*)data;
-			GXWidget* dest = FindWidget ( pos->x, pos->y );
+			GXWidget* dest = FindWidget ( *pos );
+
 			if ( dest != this )
 				dest->OnMessage ( GX_MSG_MOUSE_MOVE, data );
 		}
@@ -135,7 +143,8 @@ GXVoid GXWidget::OnMessage ( GXUInt message, const GXVoid* data )
 		case GX_MSG_MOUSE_OVER:
 		{
 			const GXVec2* pos = (const GXVec2*)data;
-			GXWidget* dest = FindWidget ( pos->x, pos->y );
+			GXWidget* dest = FindWidget ( *pos );
+
 			if ( dest != this )
 				dest->OnMessage ( GX_MSG_MOUSE_OVER, data );
 		}
@@ -144,7 +153,8 @@ GXVoid GXWidget::OnMessage ( GXUInt message, const GXVoid* data )
 		case GX_MSG_MOUSE_LEAVE:
 		{
 			const GXVec2* pos = (const GXVec2*)data;
-			GXWidget* dest = FindWidget ( pos->x, pos->y );
+			GXWidget* dest = FindWidget ( *pos );
+
 			if ( dest != this )
 				dest->OnMessage ( GX_MSG_MOUSE_LEAVE, data );
 		}
@@ -154,6 +164,7 @@ GXVoid GXWidget::OnMessage ( GXUInt message, const GXVoid* data )
 		{
 			const GXAABB* newBoundsLocal = (const GXAABB*)data;
 			UpdateBoundsWorld ( *newBoundsLocal );
+
 			if ( renderer )
 				renderer->OnUpdate ();
 		}
@@ -197,8 +208,8 @@ GXVoid GXWidget::OnMessage ( GXUInt message, const GXVoid* data )
 GXVoid GXWidget::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height )
 {
 	GXAABB newBounds;
-	GXAddVertexToAABB ( newBounds, bottomLeftX, bottomLeftY, -1.0f );
-	GXAddVertexToAABB ( newBounds, bottomLeftX + width, bottomLeftY + height, 1.0f );
+	newBounds.AddVertex ( bottomLeftX, bottomLeftY, -1.0f );
+	newBounds.AddVertex ( bottomLeftX + width, bottomLeftY + height, 1.0f );
 
 	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_RESIZE, &newBounds, sizeof ( GXAABB ) );
 }
@@ -253,15 +264,16 @@ GXWidgetRenderer* GXWidget::GetRenderer () const
 	return renderer;
 }
 
-GXWidget* GXWidget::FindWidget ( GXFloat x, GXFloat y )
+GXWidget* GXWidget::FindWidget ( const GXVec2 &position )
 {
 	gx_ui_Mutex->Lock ();
 
 	GXWidgetIterator iterator;
 	GXWidget* p = iterator.Init ( childs );
+
 	while ( p )
 	{
-		if ( p->IsVisible () && GXIsOverlapedAABBVec3 ( p->GetBoundsWorld (), x, y, 0.0f ) )
+		if ( p->IsVisible () && p->GetBoundsWorld ().IsOverlaped ( position.GetX (), position.GetY (), 0.0f ) )
 		{
 			gx_ui_Mutex->Release ();
 			return p;
@@ -298,9 +310,9 @@ GXVoid GXWidget::UpdateBoundsWorld ( const GXAABB &newBoundsLocal )
 	if ( parent )
 	{
 		const GXAABB& originWorld = parent->GetBoundsWorld ();
-		GXSetAABBEmpty ( boundsWorld );
-		GXAddVertexToAABB ( boundsWorld, originWorld.min.x + boundsLocal.min.x, originWorld.min.y + boundsLocal.min.y, originWorld.min.z );
-		GXAddVertexToAABB ( boundsWorld, originWorld.min.x + boundsLocal.max.x, originWorld.min.y + boundsLocal.max.y, originWorld.max.z );
+		boundsWorld.Empty ();
+		boundsWorld.AddVertex ( originWorld.min.GetX () + boundsLocal.min.GetX (), originWorld.min.GetY () + boundsLocal.min.GetY (), originWorld.min.GetZ () );
+		boundsWorld.AddVertex ( originWorld.min.GetX () + boundsLocal.max.GetX (), originWorld.min.GetY () + boundsLocal.max.GetY (), originWorld.max.GetZ () );
 	}
 	else
 	{
@@ -398,7 +410,7 @@ GXWidget* GXWidgetIterator::GetChilds ()
 GXWidgetRenderer::GXWidgetRenderer ( GXWidget* widget )
 {
 	this->widget = widget;
-	GXSetAABBEmpty ( oldBounds );
+	oldBounds.Empty ();
 }
 
 GXWidgetRenderer::~GXWidgetRenderer ()
@@ -412,26 +424,27 @@ GXVoid GXWidgetRenderer::OnUpdate ()
 	{
 		const GXAABB& boundsWorld = widget->GetBoundsWorld ();
 
-		GXUShort width = (GXUShort)GXGetAABBWidth ( boundsWorld );
-		GXUShort height = (GXUShort)GXGetAABBHeight ( boundsWorld );
+		GXUShort width = (GXUShort)boundsWorld.GetWidth ();
+		GXUShort height = (GXUShort)boundsWorld.GetHeight ();
 
 		GXVec3 center;
-		GXGetAABBCenter ( center, boundsWorld );
+		boundsWorld.GetCenter ( center );
 		GXRenderer& renderer = GXRenderer::GetInstance ();
-		center.x -= 0.5f * renderer.GetWidth ();
-		center.y -= 0.5f * renderer.GetHeight ();
+		center.data[ 0 ] -= 0.5f * renderer.GetWidth ();
+		center.data[ 1 ] -= 0.5f * renderer.GetHeight ();
 
-		OnResized ( center.x, center.y, width, height );
+		OnResized ( center.GetX (), center.GetY (), width, height );
 		OnRefresh ();
 	}
 	else if ( IsMoved () )
 	{
 		GXVec3 center;
-		GXGetAABBCenter ( center, widget->GetBoundsWorld () );
+		widget->GetBoundsWorld ().GetCenter ( center );
 		GXRenderer& renderer = GXRenderer::GetInstance ();
-		center.x -= 0.5f * renderer.GetWidth ();
-		center.y -= 0.5f * renderer.GetHeight ();
-		OnMoved ( center.x, center.y );
+		center.data[ 0 ] -= 0.5f * renderer.GetWidth ();
+		center.data[ 1 ] -= 0.5f * renderer.GetHeight ();
+
+		OnMoved ( center.GetX (), center.GetY () );
 	}
 	else
 	{
@@ -464,9 +477,9 @@ GXBool GXWidgetRenderer::IsResized ()
 	if ( !widget ) return GX_FALSE;
 
 	const GXAABB& bounds = widget->GetBoundsWorld ();
-	if ( fabs ( GXGetAABBWidth ( oldBounds ) - GXGetAABBWidth ( bounds ) ) < GX_WIDGET_RENDERER_RESIZE_EPSILON )
+	if ( fabs ( oldBounds.GetWidth () - bounds.GetWidth () ) < GX_WIDGET_RENDERER_RESIZE_EPSILON )
 	{
-		if ( fabs ( GXGetAABBHeight ( oldBounds ) - GXGetAABBHeight ( bounds ) ) >= GX_WIDGET_RENDERER_RESIZE_EPSILON )
+		if ( fabs ( oldBounds.GetHeight () - bounds.GetHeight () ) >= GX_WIDGET_RENDERER_RESIZE_EPSILON )
 		{
 			memcpy ( &oldBounds, &bounds, sizeof ( GXAABB ) );
 			return GX_TRUE;
@@ -489,11 +502,11 @@ GXBool GXWidgetRenderer::IsMoved ()
 
 	const GXAABB& bounds = widget->GetBoundsWorld ();
 
-	if ( fabs ( bounds.min.x - oldBounds.min.x ) < GX_WIDGET_RENDERER_RESIZE_EPSILON )
+	if ( fabs ( bounds.min.GetX () - oldBounds.min.GetX () ) < GX_WIDGET_RENDERER_RESIZE_EPSILON )
 	{
-		if ( fabs ( bounds.min.y - oldBounds.min.y ) >= GX_WIDGET_RENDERER_RESIZE_EPSILON )
+		if ( fabs ( bounds.min.GetY () - oldBounds.min.GetY () ) >= GX_WIDGET_RENDERER_RESIZE_EPSILON )
 		{
-			memcpy ( &oldBounds, &bounds, sizeof ( GXAABB ) );
+			oldBounds = bounds;
 			return GX_TRUE;
 		}
 		else
@@ -503,7 +516,7 @@ GXBool GXWidgetRenderer::IsMoved ()
 	}
 	else
 	{
-		memcpy ( &oldBounds, &bounds, sizeof ( GXAABB ) );
+		oldBounds = bounds;
 		return GX_TRUE;
 	}
 }

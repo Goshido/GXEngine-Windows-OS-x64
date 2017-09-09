@@ -23,12 +23,12 @@ GXVoid GXCALL GXCompileNativeStaticMesh ( GXUByte** data, GXUInt &size, const GX
 	h->numUVs = descriptor.numUVs;
 	h->numElements = descriptor.numElements;
 
-	GXSetAABBEmpty ( h->bounds );
+	h->bounds.Empty ();
 
 	GXUInt offset = sizeof ( GXNativeStaticMeshHeader );
 	for ( GXUInt i = 0; i < descriptor.numVertices; i++ )
 	{
-		GXAddVertexToAABB ( h->bounds, descriptor.vertices[ i ] );
+		h->bounds.AddVertex ( descriptor.vertices[ i ] );
 
 		memcpy ( *data + offset, descriptor.vertices + i, sizeof ( GXVec3 ) );
 		offset += sizeof ( GXVec3 );

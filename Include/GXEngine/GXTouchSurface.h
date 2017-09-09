@@ -1,4 +1,4 @@
-//version 1.3
+//version 1.4
 
 #ifndef GX_TOUCH_SURFACE
 #define GX_TOUCH_SURFACE
@@ -65,7 +65,7 @@ class GXTouchSurface
 		explicit GXTouchSurface ();
 
 		GXVoid DeleteWidgets ();
-		GXWidget* FindWidget ( GXFloat x, GXFloat y );
+		GXWidget* FindWidget ( const GXVec2 &position );
 		GXVoid DrawWidgets ( GXWidget* widget );
 };
 

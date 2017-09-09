@@ -139,7 +139,7 @@ GXVoid GXUIEditBox::OnMessage ( GXUInt message, const GXVoid* data )
 
 			const GXVec2* pos = (const GXVec2*)data;
 
-			if ( GXIsOverlapedAABBVec3 ( boundsWorld, pos->x, pos->y, 0.0f ) )
+			if ( boundsWorld.IsOverlaped ( pos->GetX (), pos->GetY (), 0.0f ) )
 			{
 				LockInput ();
 				if ( GetKeyState ( VK_SHIFT ) & GX_UI_KEYSTATE_MASK )
@@ -214,7 +214,7 @@ GXVoid GXUIEditBox::OnMessage ( GXUInt message, const GXVoid* data )
 		case GX_MSG_MOUSE_MOVE:
 		{
 			const GXVec2* pos = (const GXVec2*)data;
-			if ( GXIsOverlapedAABBVec3 ( boundsWorld, pos->x, pos->y, 0.0f ) )
+			if ( boundsWorld.IsOverlaped ( pos->GetX (), pos->GetY (), 0.0f ) )
 			{
 				if ( currentCursor != &editCursor )
 				{
@@ -498,8 +498,8 @@ GXVoid GXUIEditBox::SetOnFinishEditingCallback ( GXVoid* handlerObject, PFNGXUIE
 GXInt GXUIEditBox::GetSelectionPosition ( const GXVec2 &mousePosition ) const
 {
 	GXVec3 center;
-	GXGetAABBCenter ( center, boundsWorld );
-	GXFloat width = GXGetAABBWidth ( boundsWorld );
+	boundsWorld.GetCenter ( center );
+	GXFloat width = boundsWorld.GetWidth ();
 	GXFloat offset = 0.0f;
 	GXFloat textLength = (GXFloat)font.GetTextLength ( 0, text );
 
@@ -508,20 +508,20 @@ GXInt GXUIEditBox::GetSelectionPosition ( const GXVec2 &mousePosition ) const
 		case  eGXUITextAlignment::Center:
 		{
 			GXFloat textOffset = ( width - textLength ) * 0.5f;
-			offset = GXClampf ( mousePosition.x - boundsWorld.min.x, textOffset, width - textOffset ) - textOffset;
+			offset = GXClampf ( mousePosition.GetX () - boundsWorld.min.GetX (), textOffset, width - textOffset ) - textOffset;
 		}
 		break;
 
 		case  eGXUITextAlignment::Right:
 		{
 			GXFloat textOffset = width - textLength;
-			offset = GXClampf ( mousePosition.x - boundsWorld.min.x - textRightOffset, textOffset, width ) - textOffset;
+			offset = GXClampf ( mousePosition.GetX () - boundsWorld.min.GetX () - textRightOffset, textOffset, width ) - textOffset;
 		}
 		break;
 
 		case eGXUITextAlignment::Left:
 			textLength = (GXFloat)font.GetTextLength ( 0, text );
-			offset = GXClampf ( mousePosition.x - boundsWorld.min.x + textLeftOffset, textLeftOffset, textLength );
+			offset = GXClampf ( mousePosition.GetX () - boundsWorld.min.GetX () + textLeftOffset, textLeftOffset, textLength );
 		break;
 	}
 
@@ -554,11 +554,11 @@ GXFloat GXUIEditBox::GetSelectionOffset ( GXUInt symbolIndex ) const
 	switch ( alignment )
 	{
 		case eGXUITextAlignment::Center:
-			textOffset = ( GXGetAABBWidth ( boundsWorld ) - textLength ) * 0.5f;
+			textOffset = ( boundsWorld.GetWidth () - textLength ) * 0.5f;
 		break;
 
 		case eGXUITextAlignment::Right:
-			textOffset = GXGetAABBWidth ( boundsWorld ) - textLength - textRightOffset;
+			textOffset = boundsWorld.GetWidth () - textLength - textRightOffset;
 		break;
 
 		case eGXUITextAlignment::Left:

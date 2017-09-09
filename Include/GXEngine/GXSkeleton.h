@@ -4,7 +4,7 @@
 #define GX_SKELETON
 
 
-#include <GXEngine/GXAnimSolver.h>
+#include <GXEngine/GXAnimationSolver.h>
 #include <GXCommon/GXNativeSkeletalMesh.h>
 
 
@@ -25,7 +25,7 @@ class GXSkeleton
 		~GXSkeleton ();
 
 		GXVoid LoadFromSkm ( const GXWChar* fileName );
-		GXVoid UpdatePose ( GXAnimSolver &solver );
+		GXVoid UpdatePose ( GXAnimationSolver &solver );
 		const GXQuatLocJoint* GetPose () const;
 		GXUShort GetTotalBones () const;
 

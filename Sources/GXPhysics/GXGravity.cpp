@@ -13,7 +13,7 @@ GXVoid GXGravity::UpdateForce ( GXRigidBody &body, GXFloat /*deltaTime*/ )
 	if ( body.IsKinematic () ) return;
 
 	GXVec3 force;
-	GXMulVec3Scalar ( force, gravity, body.GetMass () );
+	force.Multiply ( gravity, body.GetMass () );
 
 	body.AddForce ( force );
 }

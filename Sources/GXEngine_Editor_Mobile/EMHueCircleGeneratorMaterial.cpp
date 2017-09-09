@@ -46,7 +46,7 @@ GXVoid EMHueCircleGeneratorMaterial::Bind ( const GXTransform& /*transform*/ )
 
 	glUniform1f ( innerRadiusLocation, innerRadius );
 	glUniform1f ( outerRadiusLocation, outerRadius );
-	glUniform2fv ( halfResolutionLocation, 1, halfResolution.arr );
+	glUniform2fv ( halfResolutionLocation, 1, halfResolution.data );
 }
 
 GXVoid EMHueCircleGeneratorMaterial::Unbind ()
@@ -66,6 +66,5 @@ GXVoid EMHueCircleGeneratorMaterial::SetOuterRadius ( GXFloat radius )
 
 GXVoid EMHueCircleGeneratorMaterial::SetResolution ( GXUShort width, GXUShort height )
 {
-	halfResolution.x = width * 0.5f;
-	halfResolution.y = height * 0.5f;
+	halfResolution.Init ( width * 0.5f, height * 0.5f );
 }

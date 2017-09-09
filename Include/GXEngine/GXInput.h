@@ -72,16 +72,11 @@ enum class eGXInputButtonState
 	Up
 };
 
-union GXInputMouseFlags
+struct GXInputMouseFlags
 {
-	struct
-	{
-		GXUChar lmb 		: 1;
-		GXUChar mmb 		: 1;
-		GXUChar rmb 		: 1;
-		GXUChar reserved 	: 5;
-	};
-	GXUByte allflags;
+	GXBool lmb;
+	GXBool mmb;
+	GXBool rmb;
 };
 
 typedef GXVoid ( GXCALL* PFNGXTYPEPROC ) ( GXVoid* handler, GXWChar symbol );

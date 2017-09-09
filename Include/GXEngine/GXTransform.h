@@ -1,4 +1,4 @@
-//version 1.1
+//version 1.2
 
 #ifndef GX_TRANSFORM
 #define GX_TRANSFORM
@@ -26,9 +26,9 @@ class GXTransform
 		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
 		GXVoid SetLocation ( const GXVec3 &loc );
 
-		GXVoid SetRotation ( const GXVec3 &rot_rad );
+		GXVoid SetRotation ( const GXEuler &rot_rad );
 		GXVoid SetRotation ( const GXMat4 &rot );
-		GXVoid SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_rad );
+		GXVoid SetRotation ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians );
 		GXVoid SetRotation ( const GXQuat &quaternion );
 
 		GXVoid SetScale ( GXFloat x, GXFloat y, GXFloat z );

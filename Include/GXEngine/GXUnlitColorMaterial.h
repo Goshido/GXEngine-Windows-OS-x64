@@ -13,7 +13,7 @@ class GXUnlitColorMaterial : public GXMaterial
 		GLint		mod_view_proj_matLocation;
 		GLint		colorLocation;
 
-		GXVec4		color;
+		GXColorRGB	color;
 
 	public:
 		GXUnlitColorMaterial ();
@@ -23,7 +23,7 @@ class GXUnlitColorMaterial : public GXMaterial
 		GXVoid Unbind () override;
 
 		GXVoid SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
-		GXVoid SetColor ( const GXVec4 &newColor );
+		GXVoid SetColor ( const GXColorRGB &newColor );
 };
 
 

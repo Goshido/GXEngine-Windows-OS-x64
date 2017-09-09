@@ -1,28 +1,21 @@
-//version 1.3
+//version 1.4
 
-#ifndef	GX_ANIM_SOLVER
-#define	GX_ANIM_SOLVER
+#ifndef	GX_ANIMATION_SOLVER
+#define	GX_ANIMATION_SOLVER
 
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXNativeSkeletalMesh.h>
 
 
-class GXAnimSolver
+class GXAnimationSolver
 {
 	protected:
 		GXUShort			solverID;
 
 	public:
-		GXAnimSolver ( GXUShort solverID )
-		{
-			this->solverID = solverID;
-		}
-
-		virtual ~GXAnimSolver () 
-		{ 
-			/*PURE VIRTUAL*/ 
-		}
+		explicit GXAnimationSolver ( GXUShort solverID );
+		virtual ~GXAnimationSolver ();
 
 		virtual GXBool GetBone ( const GXUTF8* boneName, GXQuat &rotation, GXVec3 &location ) = 0;
 		virtual GXVoid Update ( GXFloat delta ) = 0;

@@ -62,7 +62,7 @@ GXVoid GXSkeleton::LoadFromSkm ( const GXWChar* fileName )
 	skeletalMeshData.Cleanup ();
 }
 
-GXVoid GXSkeleton::UpdatePose ( GXAnimSolver &solver )
+GXVoid GXSkeleton::UpdatePose ( GXAnimationSolver &solver )
 {
 	GXUInt boneNameOffset = 0;
 	for ( GXUShort i = 0; i < numBones; i++ )
@@ -102,21 +102,21 @@ GXVoid GXSkeleton::CalculatePose ()
 	tempPoseGlobal[ 0 ].rotation = tempPoseLocal[ 0 ].rotation;
 	tempPoseGlobal[ 0 ].location = tempPoseLocal[ 0 ].location;
 
-	GXMulQuatQuat ( pose[ 0 ].rotation, bindTransform[ 0 ].rotation, tempPoseGlobal[ 0 ].rotation );
+	pose[ 0 ].rotation.Multiply ( bindTransform[ 0 ].rotation, tempPoseGlobal[ 0 ].rotation );
 	GXVec3 alpha;
-	GXQuatTransform ( alpha, pose[ 0 ].rotation, bindTransform[ 0 ].location );
-	GXSumVec3Vec3 ( pose[ 0 ].location, alpha, tempPoseGlobal[ 0 ].location );
+	pose[ 0 ].rotation.Transform ( alpha, bindTransform[ 0 ].location );
+	pose[ 0 ].location.Sum ( alpha, tempPoseGlobal[ 0 ].location );
 
 	for ( GXUShort i = 1; i < numBones; i++ )
 	{
 		GXShort parentIndex = parentBoneIndices[ i ];
 
-		GXMulQuatQuat ( tempPoseGlobal[ i ].rotation, tempPoseLocal[ i ].rotation, tempPoseGlobal[ parentIndex ].rotation );
-		GXQuatTransform ( alpha, tempPoseGlobal[ parentIndex ].rotation, tempPoseLocal[ i ].location );
-		GXSumVec3Vec3 ( tempPoseGlobal[ i ].location, alpha, tempPoseGlobal[ parentIndex ].location );
+		tempPoseGlobal[ i ].rotation.Multiply ( tempPoseLocal[ i ].rotation, tempPoseGlobal[ parentIndex ].rotation );
+		tempPoseGlobal[ parentIndex ].rotation.Transform ( alpha, tempPoseLocal[ i ].location );
+		tempPoseGlobal[ i ].location.Sum ( alpha, tempPoseGlobal[ parentIndex ].location );
 
-		GXMulQuatQuat ( pose[ i ].rotation, bindTransform[ i ].rotation, tempPoseGlobal[ i ].rotation );
-		GXQuatTransform ( alpha, pose[ i ].rotation, bindTransform[ i ].location );
-		GXSumVec3Vec3 ( pose[ i ].location, alpha, tempPoseGlobal[ i ].location );
+		pose[ i ].rotation.Multiply ( bindTransform[ i ].rotation, tempPoseGlobal[ i ].rotation );
+		pose[ i ].rotation.Transform ( alpha, bindTransform[ i ].location );
+		pose[ i ].location.Sum ( alpha, tempPoseGlobal[ i ].location );
 	}
 }

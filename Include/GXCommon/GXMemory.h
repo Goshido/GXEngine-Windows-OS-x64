@@ -5,8 +5,10 @@
 
 
 #include <GXCommon/GXTypes.h>
+#include "GXDisable3rdPartyWarnings.h"
 #include <cstdlib>
 #include <cstring>
+#include "GXRestoreWarnings.h"
 
 
 #define GXSafeDelete(ptr)		\

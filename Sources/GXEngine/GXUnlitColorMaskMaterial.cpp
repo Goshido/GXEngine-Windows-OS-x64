@@ -59,13 +59,13 @@ GXVoid GXUnlitColorMaskMaterial::Bind ( const GXTransform &transform )
 	if ( !mask ) return;
 
 	GXMat4 mod_view_proj_mat;
-	GXMulMat4Mat4 ( mod_view_proj_mat, transform.GetCurrentFrameModelMatrix (), GXCamera::GetActiveCamera ()->GetCurrentFrameViewProjectionMatrix () );
+	mod_view_proj_mat.Multiply ( transform.GetCurrentFrameModelMatrix (), GXCamera::GetActiveCamera ()->GetCurrentFrameViewProjectionMatrix () );
 
 	glUseProgram ( shaderProgram.GetProgram () );
 
-	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.arr );
-	glUniform4fv ( uvScaleOffsetLocation, 1, uvScaleOffset.arr );
-	glUniform4fv ( colorLocation, 1, color.arr );
+	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.data );
+	glUniform4fv ( uvScaleOffsetLocation, 1, uvScaleOffset.data );
+	glUniform4fv ( colorLocation, 1, color.data );
 
 	mask->Bind ( MASK_SLOT );
 }
@@ -85,22 +85,22 @@ GXVoid GXUnlitColorMaskMaterial::SetMaskTexture ( GXTexture2D &texture )
 
 GXVoid GXUnlitColorMaskMaterial::SetMaskScale ( GXFloat x, GXFloat y )
 {
-	uvScaleOffset.x = x;
-	uvScaleOffset.y = y;
+	uvScaleOffset.data[ 0 ] = x;
+	uvScaleOffset.data[ 1 ] = y;
 }
 
 GXVoid GXUnlitColorMaskMaterial::SetMaskOffset ( GXFloat x, GXFloat y )
 {
-	uvScaleOffset.z = x;
-	uvScaleOffset.w = y;
+	uvScaleOffset.data[ 2 ] = x;
+	uvScaleOffset.data[ 3 ] = y;
 }
 
 GXVoid GXUnlitColorMaskMaterial::SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
 {
-	GXColorToVec4 ( color, red, green, blue, alpha );
+	color.From ( red, green, blue, alpha );
 }
 
-GXVoid GXUnlitColorMaskMaterial::SetColor ( const GXVec4 &newColor )
+GXVoid GXUnlitColorMaskMaterial::SetColor ( const GXColorRGB &newColor )
 {
 	color = newColor;
 }

@@ -49,7 +49,7 @@ GXVoid EMVelocityTileMaxMaterial::Bind ( const GXTransform& /*transform*/ )
 	
 	glUseProgram ( shaderProgram.GetProgram () );
 	glUniform1i ( maxBlurSamplesLocation, maxBlurSamples );
-	glUniform2fv ( inverseScreenResolutionLocation, 1, inverseScreenResolution.arr );
+	glUniform2fv ( inverseScreenResolutionLocation, 1, inverseScreenResolution.data );
 	velocityBlurTexture->Bind ( VELOCITY_BLUR_SLOT );
 }
 
@@ -73,6 +73,5 @@ GXVoid EMVelocityTileMaxMaterial::SetMaxBlurSamples ( GXUByte maxSamples )
 
 GXVoid EMVelocityTileMaxMaterial::SetScreenResolution ( GXUShort width, GXUShort height )
 {
-	inverseScreenResolution.x = 1.0f / (GXFloat)width;
-	inverseScreenResolution.y = 1.0f / (GXFloat)height;
+	inverseScreenResolution.Init ( 1.0f / (GXFloat)width, 1.0f / (GXFloat)height );
 }

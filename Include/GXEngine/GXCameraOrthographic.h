@@ -15,13 +15,13 @@ class GXCameraOrthographic : public GXCamera
 
 	public:
 		GXCameraOrthographic ();
-		explicit GXCameraOrthographic ( GXFloat width, GXFloat height, GXFloat znear, GXFloat zfar );
+		explicit GXCameraOrthographic ( GXFloat width, GXFloat height, GXFloat zNear, GXFloat zFar );
 		~GXCameraOrthographic () override;
 
-		GXVoid SetZnear ( GXFloat zNear ) override;
-		GXVoid SetZfar ( GXFloat zFar ) override;
+		GXVoid SetZNear ( GXFloat newZNear ) override;
+		GXVoid SetZFar ( GXFloat newZFar ) override;
 
-		GXVoid SetProjection ( GXFloat projectionWidth, GXFloat progectionHeight, GXFloat zNear, GXFloat zFar );
+		GXVoid SetProjection ( GXFloat newWidth, GXFloat newHeight, GXFloat newZNear, GXFloat newZFar );
 };
 
 

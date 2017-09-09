@@ -27,7 +27,7 @@ GXFloat GXPolygonShape::GetHeight () const
 
 GXVoid GXPolygonShape::CalculateInertiaTensor ( GXFloat /*mass*/ )
 {
-	GXSetMat3Identity ( inertialTensor );
+	inertialTensor.Identity ();
 }
 
 GXVoid GXPolygonShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const
@@ -37,21 +37,22 @@ GXVoid GXPolygonShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction 
 
 	GXVec3 vLocal[ 4 ];
 
-	vLocal[ 0 ] = GXCreateVec3 ( -w, 0.0f, -d );
-	vLocal[ 1 ] = GXCreateVec3 ( w, 0.0f, -d );
-	vLocal[ 2 ] = GXCreateVec3 ( w, 0.0f, d );
-	vLocal[ 3 ] = GXCreateVec3 ( -w, 0.0f, d );
+	vLocal[ 0 ].Init ( -w, 0.0f, -d );
+	vLocal[ 1 ].Init ( w, 0.0f, -d );
+	vLocal[ 2 ].Init ( w, 0.0f, d );
+	vLocal[ 3 ].Init ( -w, 0.0f, d );
 
 	GXVec3 vWorld[ 4 ];
 	for ( GXUByte i = 0; i < 4; i++ )
-		GXMulVec3Mat4AsPoint ( vWorld[ i ], vLocal[ 1 ], transformWorld );
+		transformWorld.MultiplyAsPoint ( vWorld[ i ], vLocal[ i ] );
 
 	GXUByte index = 0;
 	GXFloat projection = -FLT_MAX;
 
-		for ( GXUByte i = 0; i < 8; i++ )
+	for ( GXUByte i = 0; i < 8; i++ )
 	{
-		GXFloat p = GXDotVec3 ( direction, vWorld[ i ] );
+		GXFloat p = direction.DotProduct ( vWorld[ i ] );
+
 		if ( p > projection )
 		{
 			projection = p;

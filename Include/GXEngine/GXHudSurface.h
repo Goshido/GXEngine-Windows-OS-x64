@@ -28,7 +28,7 @@ struct GXImageInfo
 {
 	GXTexture2D*		texture;
 
-	GXVec4				color;
+	GXColorRGB			color;
 	GXFloat				insertX;
 	GXFloat				insertY;
 	GXFloat				insertWidth;
@@ -40,7 +40,7 @@ struct GXImageInfo
 struct GXPenInfo
 {
 	GXFont*				font;
-	GXVec4				color;
+	GXColorRGB			color;
 	GXFloat 			insertX;
 	GXFloat				insertY;
 
@@ -49,7 +49,7 @@ struct GXPenInfo
 
 struct GXLineInfo
 {
-	GXVec4				color;
+	GXColorRGB			color;
 	GXFloat				thickness;
 	GXVec2				startPoint;
 	GXVec2				endPoint;

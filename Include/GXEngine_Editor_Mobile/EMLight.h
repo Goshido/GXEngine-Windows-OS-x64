@@ -31,7 +31,7 @@ class EMLightEmitter
 
 		GXUByte					baseColor[ 3 ];
 		GXFloat					intensity;		//[ 0.0f, +inf )
-		GXVec3					color;
+		GXColorRGB				color;
 
 		GXMat4					mod_mat;
 
@@ -44,7 +44,7 @@ class EMLightEmitter
 		GXVoid SetIntensity ( GXFloat newIntensity );
 
 		GXVoid GetBaseColor ( GXUByte &red, GXUByte &green, GXUByte &blue );
-		const GXVec3& GetColor ();
+		const GXColorRGB& GetColor ();
 		GXFloat GetIntensity ();
 
 	private:
@@ -99,7 +99,7 @@ class EMSpotlight : public EMLightEmitter
 		GXVoid GetLocation ( GXVec3& out );
 
 		GXVoid SetRotation ( const GXMat4 &rot );
-		GXVoid SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_rad );
+		GXVoid SetRotation ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians );
 
 		const GXMat4& GetRotation ();
 
@@ -112,23 +112,23 @@ class EMSpotlight : public EMLightEmitter
 class EMDirectedLight : public EMLightEmitter
 {
 	private:
-		GXUByte	ambientBase[ 3 ];
-		GXFloat	ambientIntensity;
-		GXVec3	ambientColor;
+		GXUByte		ambientBase[ 3 ];
+		GXFloat		ambientIntensity;
+		GXColorRGB	ambientColor;
 
 	public:
 		EMDirectedLight ();
 		~EMDirectedLight () override;
 
-		GXVoid SetAmbientBaseColor ( GXUByte r, GXUByte g, GXUByte b );
+		GXVoid SetAmbientBaseColor ( GXUByte red, GXUByte green, GXUByte blue );
 		GXVoid SetAmbientIntensity ( GXFloat intens );
 
 		GXVoid GetAmbientBaseColor ( GXUByte &red, GXUByte &green, GXUByte &blue );
-		const GXVec3& GetAmbientColor ();
+		const GXColorRGB& GetAmbientColor ();
 		GXFloat GetAmbientIntensity ();
 
 		GXVoid SetRotation ( const GXMat4 &rot );
-		GXVoid SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_rad );
+		GXVoid SetRotation ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians );
 
 		const GXMat4& GetRotation ();
 };

@@ -42,10 +42,10 @@ GXVoid EMWireframeMaterial::Bind ( const GXTransform &transform )
 	glUseProgram ( shaderProgram.GetProgram () );
 
 	GXMat4 currentFrameModelViewProjectionMatrix;
-	GXMulMat4Mat4 ( currentFrameModelViewProjectionMatrix, transform.GetCurrentFrameModelMatrix (), GXCamera::GetActiveCamera ()->GetCurrentFrameViewProjectionMatrix () );
-	glUniformMatrix4fv ( currentFrameModelViewProjectionMatrixLocation, 1, GL_FALSE, currentFrameModelViewProjectionMatrix.arr );
+	currentFrameModelViewProjectionMatrix.Multiply ( transform.GetCurrentFrameModelMatrix (), GXCamera::GetActiveCamera ()->GetCurrentFrameViewProjectionMatrix () );
+	glUniformMatrix4fv ( currentFrameModelViewProjectionMatrixLocation, 1, GL_FALSE, currentFrameModelViewProjectionMatrix.data );
 
-	glUniform4fv ( colorLocation, 1, color.arr );
+	glUniform4fv ( colorLocation, 1, color.data );
 }
 
 GXVoid EMWireframeMaterial::Unbind ()
@@ -55,5 +55,5 @@ GXVoid EMWireframeMaterial::Unbind ()
 
 GXVoid EMWireframeMaterial::SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
 {
-	GXColorToVec4 ( color, red, green, blue, alpha );
+	color.From ( red, green, blue, alpha );
 }

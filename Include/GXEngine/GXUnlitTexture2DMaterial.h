@@ -16,7 +16,7 @@ class GXUnlitTexture2DMaterial : public GXMaterial
 		GLint			colorLocation;
 
 		GXTexture2D*	texture;
-		GXVec4			color;
+		GXColorRGB		color;
 		GXVec4			uvScaleOffset;
 
 	public:
@@ -31,7 +31,7 @@ class GXUnlitTexture2DMaterial : public GXMaterial
 		GXVoid SetTextureOffset ( GXFloat x, GXFloat y );
 
 		GXVoid SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
-		GXVoid SetColor ( const GXVec4 &newColor );
+		GXVoid SetColor ( const GXColorRGB &newColor );
 };
 
 

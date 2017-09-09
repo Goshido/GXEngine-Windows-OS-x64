@@ -8,7 +8,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 
-#define STBI_NO_SIMD // TODO: check if SIMD works on all ARM processors.
+#define STBI_NO_SIMD
 #define STBI_NO_STDIO
 #define STBI_NO_FAILURE_STRINGS
 
@@ -18,17 +18,10 @@
 #define STBI_ONLY_TGA
 #define STBI_ONLY_HDR
 
-#pragma warning ( push )
-#pragma warning ( disable : 4100 )
-#pragma warning ( disable : 4365 )
-#pragma warning ( disable : 4505 )
-#pragma warning ( disable : 4514 )
-#pragma warning ( disable : 4555 )
-#pragma warning ( disable : 4710 )
 
+#include <GXCommon/GXDisable3rdPartyWarnings.h>
 #include <STB/stb_image.h>
-
-#pragma warning ( pop )
+#include <GXCommon/GXRestoreWarnings.h>
 
 
 GXBool GXCALL GXLoadLDRImage ( const GXWChar* fileName, GXUInt &width, GXUInt &height, GXUByte &numChannels, GXUByte** data )

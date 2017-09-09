@@ -1,14 +1,14 @@
 //version 1.4
 
-#ifndef GX_ANIM_SOLVER_PLAYER
-#define GX_ANIM_SOLVER_PLAYER
+#ifndef GX_ANIMATION_SOLVER_PLAYER
+#define GX_ANIMATION_SOLVER_PLAYER
 
 
-#include "GXAnimSolver.h"
+#include "GXAnimationSolver.h"
 
 
 class GXBoneFinder;
-class GXAnimSolverPlayer : public GXAnimSolver
+class GXAnimationSolverPlayer : public GXAnimationSolver
 {
 	private:
 		GXBoneFinder*					finder;
@@ -22,8 +22,8 @@ class GXAnimSolverPlayer : public GXAnimSolver
 		GXBool							isNormalize;
 
 	public:
-		GXAnimSolverPlayer ( GXUShort solverID );
-		~GXAnimSolverPlayer () override;
+		GXAnimationSolverPlayer ( GXUShort solverID );
+		~GXAnimationSolverPlayer () override;
 
 		GXBool GetBone ( const GXUTF8* boneName, GXQuat &rotation, GXVec3 &location ) override;
 		GXVoid Update ( GXFloat delta ) override;
@@ -36,4 +36,4 @@ class GXAnimSolverPlayer : public GXAnimSolver
 };
 
 
-#endif //GX_ANIM_SOLVER_PLAYER
+#endif //GX_ANIMATION_SOLVER_PLAYER

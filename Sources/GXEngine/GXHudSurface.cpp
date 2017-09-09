@@ -92,23 +92,23 @@ GXVoid GXGlyphRenderable::Render ()
 GXVoid GXGlyphRenderable::UpdateGeometry ( const GXVec2 &min, const GXVec2 &max )
 {
 	static GXFloat buffer[ 30 ];
-	buffer[ 0 ] = 0.0f;		buffer[ 1 ] = 1.0f;		buffer[ 2 ] = 0.0f;
-	buffer[ 3 ] = min.x;	buffer[ 4 ] = max.y;
+	buffer[ 0 ] = 0.0f;			buffer[ 1 ] = 1.0f;			buffer[ 2 ] = 0.0f;
+	buffer[ 3 ] = min.GetX ();	buffer[ 4 ] = max.GetY ();
 
-	buffer[ 5 ] = 1.0f;		buffer[ 6 ] = 0.0f;		buffer[ 7 ] = 0.0f;
-	buffer[ 8 ] = max.x;	buffer[ 9 ] = min.y;
+	buffer[ 5 ] = 1.0f;			buffer[ 6 ] = 0.0f;			buffer[ 7 ] = 0.0f;
+	buffer[ 8 ] = max.GetX ();	buffer[ 9 ] = min.GetY ();
 
-	buffer[ 10 ] = 0.0f;	buffer[ 11 ] = 0.0f;	buffer[ 12 ] = 0.0f;
-	buffer[ 13 ] = min.x;	buffer[ 14 ] = min.y;
+	buffer[ 10 ] = 0.0f;		buffer[ 11 ] = 0.0f;		buffer[ 12 ] = 0.0f;
+	buffer[ 13 ] = min.GetX ();	buffer[ 14 ] = min.GetY ();
 
-	buffer[ 15 ] = 0.0f;	buffer[ 16 ] = 1.0f;	buffer[ 17 ] = 0.0f;
-	buffer[ 18 ] = min.x;	buffer[ 19 ] = max.y;
+	buffer[ 15 ] = 0.0f;		buffer[ 16 ] = 1.0f;		buffer[ 17 ] = 0.0f;
+	buffer[ 18 ] = min.GetX ();	buffer[ 19 ] = max.GetY ();
 
-	buffer[ 20 ] = 1.0f;	buffer[ 21 ] = 1.0f;	buffer[ 22 ] = 0.0f;
-	buffer[ 23 ] = max.x;	buffer[ 24 ] = max.y;
+	buffer[ 20 ] = 1.0f;		buffer[ 21 ] = 1.0f;		buffer[ 22 ] = 0.0f;
+	buffer[ 23 ] = max.GetX ();	buffer[ 24 ] = max.GetY ();
 
-	buffer[ 25 ] = 1.0f;	buffer[ 26 ] = 0.0f;	buffer[ 27 ] = 0.0f;
-	buffer[ 28 ] = max.x;	buffer[ 29 ] = min.y;
+	buffer[ 25 ] = 1.0f;		buffer[ 26 ] = 0.0f;		buffer[ 27 ] = 0.0f;
+	buffer[ 28 ] = max.GetX ();	buffer[ 29 ] = min.GetY ();
 
 	mesh.FillVertexBuffer ( buffer, 30 * sizeof ( GXFloat ), GL_DYNAMIC_DRAW );
 }
@@ -165,8 +165,8 @@ GXVoid GXLineRenderable::Render ()
 GXVoid GXLineRenderable::UpdateGeometry ( const GXVec2 &start, const GXVec2 &end )
 {
 	static GXFloat buffer[ 6 ];
-	buffer[ 0 ] = start.x;	buffer[ 1 ] = start.y;	buffer[ 2 ] = RENDER_Z;
-	buffer[ 3 ] = end.x;	buffer[ 4 ] = end.y;	buffer[ 5 ] = RENDER_Z;
+	buffer[ 0 ] = start.GetX ();	buffer[ 1 ] = start.GetY ();	buffer[ 2 ] = RENDER_Z;
+	buffer[ 3 ] = end.GetX ();		buffer[ 4 ] = end.GetY ();		buffer[ 5 ] = RENDER_Z;
 
 	mesh.FillVertexBuffer ( buffer, 6 * sizeof ( GXFloat ), GL_DYNAMIC_DRAW );
 }
@@ -521,7 +521,7 @@ GXVoid GXHudSurface::Render ()
 	glEnable ( GL_BLEND );
 	glBlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
-	static const GXVec4 color ( 1.0f, 1.0f, 1.0f, 1.0f );
+	static const GXColorRGB color ( 1.0f, 1.0f, 1.0f, 1.0f );
 
 	unlitTexture2DMaterial.SetColor ( color );
 	unlitTexture2DMaterial.SetTexture ( canvasTexture );

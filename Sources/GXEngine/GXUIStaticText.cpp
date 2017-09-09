@@ -19,7 +19,7 @@ GXWidget ( parent )
 {
 	text = nullptr;
 	alignment = GX_UI_DEFAULT_ALIGNMENT;
-	GXColorToVec4 ( textColor, DEFAULT_TEXT_COLOR_R, DEFAULT_TEXT_COLOR_G, DEFAULT_TEXT_COLOR_B, DEFAULT_TEXT_COLOR_A );
+	textColor.From ( DEFAULT_TEXT_COLOR_R, DEFAULT_TEXT_COLOR_G, DEFAULT_TEXT_COLOR_B, DEFAULT_TEXT_COLOR_A );
 }
 
 GXUIStaticText::~GXUIStaticText ()
@@ -79,9 +79,9 @@ GXVoid GXUIStaticText::SetText ( const GXWChar* newText )
 
 GXVoid GXUIStaticText::SetTextColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
 {
-	GXVec4 c;
-	GXColorToVec4 ( c, red, green, blue, alpha );
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_SET_TEXT_COLOR, &c, sizeof ( GXVec4 ) );
+	GXColorRGB c;
+	c.From ( red, green, blue, alpha );
+	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_SET_TEXT_COLOR, &c, sizeof ( GXColorRGB ) );
 }
 
 GXVoid GXUIStaticText::SetAlignment ( eGXUITextAlignment newAlignment )
@@ -94,7 +94,7 @@ const GXWChar* GXUIStaticText::GetText () const
 	return text;
 }
 
-const GXVec4& GXUIStaticText::GetTextColor () const
+const GXColorRGB& GXUIStaticText::GetTextColor () const
 {
 	return textColor;
 }

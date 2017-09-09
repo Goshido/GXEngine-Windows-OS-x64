@@ -5,8 +5,10 @@
 
 
 #include "GXTypes.h"
+#include "GXDisable3rdPartyWarnings.h"
 #include <locale.h>
 #include <iostream>
+#include "GXRestoreWarnings.h"
 
 
 #define GXDebugBox(x) MessageBoxW ( 0, x, L"Дебаг-окно", MB_ICONEXCLAMATION )

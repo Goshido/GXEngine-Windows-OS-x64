@@ -21,13 +21,13 @@ GXVoid GXSpring::UpdateForce ( GXRigidBody &body, GXFloat /*deltaTime*/ )
 	otherBody->TranslatePointToWorld ( b, otherConnectionPointLocal );
 
 	GXVec3 delta;
-	GXSubVec3Vec3 ( delta, a, b );
+	delta.Substract ( a, b );
 
-	GXFloat stress = fabsf ( GXLengthVec3 ( delta ) - restLength ) * hardness;
-	GXNormalizeVec3 ( delta );
+	GXFloat stress = fabsf ( delta.Length () - restLength ) * hardness;
+	delta.Normalize ();
 
 	GXVec3 force;
-	GXMulVec3Scalar ( force, delta, -stress );
+	force.Multiply ( delta, -stress );
 
 	body.AddForceAtPointWorld ( force, a );
 }

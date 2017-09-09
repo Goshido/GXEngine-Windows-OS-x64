@@ -5,9 +5,11 @@
 
 
 #include "GXTypes.h"
+#include "GXDisable3rdPartyWarnings.h"
 #include <math.h>
 #include <limits.h>
 #include <float.h>
+#include "GXRestoreWarnings.h"
 
 
 #define GX_MATH_DOUBLE_PI	6.2831853f
@@ -29,6 +31,7 @@ struct GXVec2
 	GXVoid SetY ( GXFloat y );
 	GXFloat GetY () const;
 
+	GXVoid Init ( GXFloat x, GXFloat y );
 	GXVoid Normalize ();
 
 	GXVoid CalculateNormalFast ( const GXVec2 &a, const GXVec2 &b );	//No normalization
@@ -45,8 +48,6 @@ struct GXVec2
 	GXFloat SquaredLength () const;
 
 	GXBool IsEqual ( const GXVec2 &other ) const;
-
-	static GXVec2 GXCALL Create ( GXFloat x, GXFloat y );
 
 	GXVec2& operator = ( const GXVec2 &vector );
 };
@@ -81,19 +82,24 @@ struct GXVec3
 	GXVoid SetZ ( GXFloat z );
 	GXFloat GetZ () const;
 
+	GXVoid Init ( GXFloat x, GXFloat y, GXFloat z );
 	GXVoid Normalize ();
+	GXVoid Reverse ();
+
 	GXVoid Sum ( const GXVec3 &a, const GXVec3 &b );
 	GXVoid Sum ( const GXVec3 &a, GXFloat scale, const GXVec3 &b );
 	GXVoid Substract ( const GXVec3 &a, const GXVec3 &b );
 	GXVoid Multiply ( const GXVec3 &a, GXFloat scale );
 	GXVoid Multiply ( const GXVec3 &a, const GXVec3 &b );
+
 	GXFloat DotProduct ( const GXVec3 &other ) const;
 	GXVoid CrossProduct ( const GXVec3 &a, const GXVec3 &b );
+
 	GXFloat Length () const;
 	GXFloat SquaredLength () const;
 	GXFloat Distance ( const GXVec3 &other ) const;
 	GXFloat SquaredDistance ( const GXVec3 &other ) const;
-	GXVoid Reverse ();
+
 	GXVoid LinearInterpolation ( const GXVec3 &start, const GXVec3 &finish, GXFloat interpolationFactor );
 	GXBool IsEqual ( const GXVec3 &other );
 
@@ -101,7 +107,6 @@ struct GXVec3
 	static const GXVec3& GetAbsoluteY ();
 	static const GXVec3& GetAbsoluteZ ();
 
-	static GXVec3 GXCALL Create ( GXFloat x, GXFloat y, GXFloat z );
 	static GXVoid GXCALL Projection ( GXVec3 &projection, const GXVec3 &vector, const GXVec3 &unitVector );
 	static GXVoid GXCALL MakeOrthonormalBasis ( GXVec3 &baseX, GXVec3 &adjustedY, GXVec3 &adjustedZ );	//baseX - correct direction, adjustedY - desirable, adjustedZ - calculated.
 
@@ -133,6 +138,8 @@ struct GXVec4
 	explicit GXVec4 ( GXVec3& vector, GXFloat w );
 	GXVec4 ( GXFloat x, GXFloat y, GXFloat z, GXFloat w );
 
+	GXVoid Init ( GXFloat x, GXFloat y, GXFloat z, GXFloat w );
+
 	GXVoid SetX ( GXFloat x );
 	GXFloat GetX () const;
 
@@ -146,8 +153,6 @@ struct GXVec4
 	GXFloat GetW () const;
 
 	GXVec4& operator = ( const GXVec4 &vector );
-
-	static GXVec4 GXCALL Create ( GXFloat x, GXFloat y, GXFloat z, GXFloat w );
 };
 
 //-------------------------------------------------------------
@@ -161,6 +166,8 @@ struct GXColorRGB
 	explicit GXColorRGB ( GXFloat red, GXFloat green, GXFloat blue, GXFloat alpha );
 	explicit GXColorRGB ( GXUByte red, GXUByte green, GXUByte blue, GXFloat alpha );
 	GXColorRGB ( const GXColorRGB &other );
+
+	GXVoid Init ( GXFloat red, GXFloat green, GXFloat blue, GXFloat alpha );
 
 	//[0.0f +inf)
 	GXVoid SetRed ( GXFloat red );
@@ -178,7 +185,10 @@ struct GXColorRGB
 	GXVoid SetAlpha ( GXFloat alpha );
 	GXFloat GetAlpha () const;
 
+	GXVoid From ( GXUByte red, GXUByte green, GXUByte blue, GXFloat alpha );
 	GXVoid From ( const GXColorHSV &color );
+
+	GXVoid ConvertToUByte ( GXUByte &red, GXUByte &green, GXUByte &blue, GXUByte &alpha ) const;
 
 	GXColorRGB& operator = ( const GXColorRGB &other );
 };
@@ -216,13 +226,19 @@ struct GXColorHSV
 
 //-------------------------------------------------------------
 
+struct GXMat3;
+struct GXMat4;
 struct GXQuat
 {
 	GXFloat		data[ 4 ];
 
 	GXQuat ();
 	explicit GXQuat ( GXFloat x, GXFloat y, GXFloat z, GXFloat w );
+	explicit GXQuat ( const GXMat3& rotationMatrix );
+	explicit GXQuat ( const GXMat4& rotationMatrix );
 	GXQuat ( const GXQuat &other );
+
+	GXVoid Init ( GXFloat x, GXFloat y, GXFloat z, GXFloat w );
 
 	GXVoid SetX ( GXFloat x );
 	GXFloat GetX () const;
@@ -237,27 +253,71 @@ struct GXQuat
 	GXFloat GetW () const;
 
 	GXVoid Identity ();
+	GXVoid Normalize ();
+	GXVoid Inverse ( const GXQuat &q );
 	GXVoid FromAxisAngle ( GXFloat x, GXFloat y, GXFloat z, GXFloat angle );
 	GXVoid FromAxisAngle ( const GXVec3 &axis, GXFloat angle );
+	GXVoid From ( const GXMat4& rotationMatrix );
+	GXVoid From ( const GXMat3& rotationMatrix );
 	GXVoid Rehand ();
-	GXVoid GetAxisAngle ( GXVec3 &axis, GXFloat &angle );
+
 	GXVoid Multiply ( const GXQuat &a, const GXQuat &b );
 	GXVoid Sum ( const GXQuat &a, const GXQuat &b );
 	GXVoid Sum ( const GXQuat &q, GXFloat s, const GXVec3 &v );
 	GXVoid Substract ( const GXQuat &a, const GXQuat &b );
+
 	GXVoid SphericalLinearInterpolation ( const GXQuat &start, const GXQuat &finish, GXFloat interpolationFactor );
-	GXVoid Inverse ( const GXQuat &q );
-	GXVoid Normalize ();
+	
+	GXVoid GetAxisAngle ( GXVec3 &axis, GXFloat &angle );
 	GXVoid Transform ( GXVec3 &out, const GXVec3 &v );
 
 	GXQuat& operator = ( const GXVec4 &other );
-
-	static GXQuat GXCALL Create ( GXFloat x, GXFloat y, GXFloat z, GXFloat w );
 };
 
 //-------------------------------------------------------------
 
-struct GXMat3;
+struct GXMat3
+{
+	union
+	{
+		GXFloat data[ 9 ];
+		GXFloat m[ 3 ][ 3 ];
+	};
+
+	GXMat3 ();
+	explicit GXMat3 ( const GXMat4& matrix );
+	GXMat3 ( const GXMat3 &other );
+
+	GXVoid From ( const GXQuat &quaternion );
+	GXVoid From ( const GXMat4 &matrix );
+
+	GXVoid GetX ( GXVec3& x ) const;
+	GXVoid SetX ( const GXVec3& x );
+
+	GXVoid GetY ( GXVec3& y ) const;
+	GXVoid SetY ( const GXVec3& y );
+
+	GXVoid GetZ ( GXVec3& z ) const;
+	GXVoid SetZ ( const GXVec3& z );
+
+	GXVoid Identity ();
+	GXVoid Zeros ();
+
+	GXVoid Inverse ( const GXMat3 &src );
+	GXVoid Transponse ( const GXMat3 &src );
+
+	GXVoid SkewSymmetric ( const GXVec3 &base );
+
+	GXVoid Sum ( const GXMat3 &a, const GXMat3 &b );
+	GXVoid Substract ( const GXMat3 &a, const GXMat3 &b );
+	GXVoid Multiply ( const GXMat3 &a, const GXMat3 &b );
+	GXVoid Multiply ( GXVec3 &out, const GXVec3 &v );
+	GXVoid Multiply ( const GXMat3 &a, GXFloat factor );
+
+	GXMat3& operator = ( const GXMat3 &matrix );
+};
+
+//-------------------------------------------------------------
 
 struct GXMat4
 {
@@ -308,8 +368,8 @@ struct GXMat4
 
 	GXVoid Multiply ( const GXMat4& a, const GXMat4& b );
 	GXVoid Multiply ( GXVec4 &out, const GXVec4 &v ) const;
-	GXVoid MultiplyAsNormal ( GXVec3 &out, GXVec3 &v ) const;
-	GXVoid MultiplyAsPoint ( GXVec3 &out, GXVec3 &v ) const;
+	GXVoid MultiplyAsNormal ( GXVec3 &out, const GXVec3 &v ) const;
+	GXVoid MultiplyAsPoint ( GXVec3 &out, const GXVec3 &v ) const;
 
 	GXVoid GetPerspectiveParams ( GXFloat &fieldOfViewYRadiands, GXFloat &aspectRatio, GXFloat &zNear, GXFloat &zFar );
 	GXVoid GetOrthoParams ( GXFloat &width, GXFloat &height, GXFloat &zNear, GXFloat &zFar );
@@ -317,48 +377,6 @@ struct GXMat4
 	GXVoid GetRayPerspective ( GXVec3 &rayView, const GXVec2 &mouseCVV );
 
 	GXMat4& operator = ( const GXMat4& other );
-};
-
-//-------------------------------------------------------------
-
-struct GXMat3
-{
-	union 
-	{
-		GXFloat data[ 9 ];
-		GXFloat m[ 3 ][ 3 ];
-	};
-
-	GXMat3 ();
-	GXMat3 ( const GXMat3 &other );
-
-	GXVoid From ( const GXQuat &quaternion );
-	GXVoid From ( const GXMat4 &matrix );
-
-	GXVoid GetX ( GXVec3& x ) const;
-	GXVoid SetX ( const GXVec3& x );
-
-	GXVoid GetY ( GXVec3& y ) const;
-	GXVoid SetY ( const GXVec3& y );
-
-	GXVoid GetZ ( GXVec3& z ) const;
-	GXVoid SetZ ( const GXVec3& z );
-
-	GXVoid Identity ();
-	GXVoid Zeros ();
-
-	GXVoid Inverse ( const GXMat4& src );
-	GXVoid Transponse ( const GXMat4& src );
-	
-	GXVoid SkewSymmetric ( const GXVec3 &base );
-
-	GXVoid Sum ( const GXMat3 &a, const GXMat3 &b );
-	GXVoid Substract ( const GXMat3 &a, const GXMat3 &b );
-	GXVoid Multiply ( const GXMat3 &a, const GXMat3 &b );
-	GXVoid Multiply ( GXVec3 &out, const GXVec3 &v );
-	GXVoid Multiply ( const GXMat3 &a, GXFloat factor );
-
-	GXMat3& operator = ( const GXMat3 &matrix );
 };
 
 //-------------------------------------------------------------
@@ -375,7 +393,7 @@ struct GXAABB
 
 	GXVoid Empty ();
 
-	GXVoid Transform ( const GXAABB &bounds, const GXMat4 &transform );
+	GXVoid Transform ( GXAABB &bounds, const GXMat4 &transform ) const;
 	GXVoid AddVertex ( const GXVec3 &vertex );
 	GXVoid AddVertex ( GXFloat x, GXFloat y, GXFloat z );
 

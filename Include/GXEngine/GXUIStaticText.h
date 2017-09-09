@@ -19,7 +19,7 @@ class GXUIStaticText : public GXWidget
 {
 	private:
 		GXWChar*				text;
-		GXVec4					textColor;
+		GXColorRGB				textColor;
 		eGXUITextAlignment		alignment;
 
 	public:
@@ -33,7 +33,7 @@ class GXUIStaticText : public GXWidget
 		GXVoid SetAlignment ( eGXUITextAlignment newAlignment );
 
 		const GXWChar* GetText () const;
-		const GXVec4& GetTextColor () const;
+		const GXColorRGB& GetTextColor () const;
 		eGXUITextAlignment GetAlignment () const;
 		
 };

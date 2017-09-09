@@ -44,7 +44,7 @@ GXVoid EMVelocityNeighborMaxMaterial::Bind ( const GXTransform& /*transform*/ )
 	if ( !velocityTileMaxTexture ) return;
 
 	glUseProgram ( shaderProgram.GetProgram () );
-	glUniform2fv ( inverseVelocityTileMaxTextureResolutionLocation, 1, inverseVelocityTileMaxTextureResolution.arr );
+	glUniform2fv ( inverseVelocityTileMaxTextureResolutionLocation, 1, inverseVelocityTileMaxTextureResolution.data );
 	velocityTileMaxTexture->Bind ( VELOCITY_TILE_MAX_SLOT );
 }
 
@@ -63,6 +63,5 @@ GXVoid EMVelocityNeighborMaxMaterial::SetVelocityTileMaxTexture ( GXTexture2D &t
 
 GXVoid EMVelocityNeighborMaxMaterial::SetVelocityTileMaxTextureResolution ( GXUShort width, GXUShort height )
 {
-	inverseVelocityTileMaxTextureResolution.x = 1.0f / (GXFloat)width;
-	inverseVelocityTileMaxTextureResolution.y = 1.0f / (GXFloat)height;
+	inverseVelocityTileMaxTextureResolution.Init ( 1.0f / (GXFloat)width, 1.0f / (GXFloat)height );
 }

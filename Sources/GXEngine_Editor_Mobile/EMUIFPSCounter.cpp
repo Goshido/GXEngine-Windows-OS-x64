@@ -43,7 +43,7 @@ void EMUIFPSCounter::Render ()
 		wsprintfW ( fpsBuffer, L"%i", currentFPS );
 
 		GXPenInfo pi;
-		GXColorToVec4 ( pi.color, FONT_COLOR_R, FONT_COLOR_G, FONT_COLOR_B, FONT_COLOR_A );
+		pi.color.From ( FONT_COLOR_R, FONT_COLOR_G, FONT_COLOR_B, FONT_COLOR_A );
 		pi.font = &font;
 		pi.overlayType = eGXImageOverlayType::SimpleReplace;
 		pi.insertX = (GXFloat)( (GXUInt)surface->GetWidth () - font.GetTextLength ( 0, fpsBuffer ) );
@@ -68,8 +68,8 @@ EMUIFPSCounter::EMUIFPSCounter ()
 	GXRenderer& renderer = GXRenderer::GetInstance ();
 	GXVec3 location;
 	surface->GetLocation ( location );
-	location.x = renderer.GetWidth () * 0.5f - ( requeredSize * 0.5f + LEFT_OFFSET * gx_ui_Scale );
-	location.y = renderer.GetHeight () * 0.5f - ( FONT_SIZE * 0.5f + TOP_OFFSET ) * gx_ui_Scale;
+	location.SetX ( renderer.GetWidth () * 0.5f - ( requeredSize * 0.5f + LEFT_OFFSET * gx_ui_Scale ) );
+	location.SetY ( renderer.GetHeight () * 0.5f - ( FONT_SIZE * 0.5f + TOP_OFFSET ) * gx_ui_Scale );
 	surface->SetLocation ( location );
 
 	lastFPS = DEFAULT_LAST_FPS;

@@ -63,9 +63,10 @@ GXVoid EMEnvironmentMapMaterial::Bind ( const GXTransform &transform )
 	const GXMat4& currentFrameViewProjectionMatrix = camera->GetCurrentFrameViewProjectionMatrix ();
 
 	GXMat4 modelViewProjectionMatrix;
-	GXMulMat4Mat4 ( modelViewProjectionMatrix, transform.GetCurrentFrameModelMatrix (), currentFrameViewProjectionMatrix );
+	modelViewProjectionMatrix.Multiply ( transform.GetCurrentFrameModelMatrix (), currentFrameViewProjectionMatrix );
 
-	GXVec2 currentFrameEnvironmentQuasiLocationScreen ( screenResolution.x * 0.5f, screenResolution.y * 0.5f );
+	GXVec2 currentFrameEnvironmentQuasiLocationScreen;
+	currentFrameEnvironmentQuasiLocationScreen.Multiply ( screenResolution, 0.5f );
 
 	GXVec3 currentFrameCameraLocationWorld;
 	camera->GetLocation ( currentFrameCameraLocationWorld );
@@ -74,53 +75,51 @@ GXVoid EMEnvironmentMapMaterial::Bind ( const GXTransform &transform )
 	GXVec3 lastFrameEnvironmentQuasiLocationWorld;
 	lastFrameCameraModelMatrix.GetZ ( lastFrameEnvironmentQuasiLocationWorld );
 
-	GXMulVec3Scalar ( lastFrameEnvironmentQuasiLocationWorld, lastFrameEnvironmentQuasiLocationWorld, environmentQuasiDistance );
-	GXSumVec3Vec3 ( lastFrameEnvironmentQuasiLocationWorld, lastFrameEnvironmentQuasiLocationWorld, currentFrameCameraLocationWorld );
+	lastFrameEnvironmentQuasiLocationWorld.Multiply ( lastFrameEnvironmentQuasiLocationWorld, environmentQuasiDistance );
+	lastFrameEnvironmentQuasiLocationWorld.Sum ( lastFrameEnvironmentQuasiLocationWorld, currentFrameCameraLocationWorld );
 	
 	GXVec4 v ( lastFrameEnvironmentQuasiLocationWorld, 1.0f );
 	GXVec4 temp;
-	GXMulVec4Mat4 ( temp, v, currentFrameViewProjectionMatrix );
+	currentFrameViewProjectionMatrix.Multiply ( temp, v );
 
-	GXVec2 lastFrameEnvironmentQuasiLocationScreen ( temp.x, temp.y );
-	GXFloat invW = 1.0f / temp.w;
-
-	GXMulVec2Scalar ( lastFrameEnvironmentQuasiLocationScreen, lastFrameEnvironmentQuasiLocationScreen, invW );
+	GXVec2 lastFrameEnvironmentQuasiLocationScreen ( temp.GetX (), temp.GetY () );
+	lastFrameEnvironmentQuasiLocationScreen.Multiply ( lastFrameEnvironmentQuasiLocationScreen, 1.0f / temp.GetW () );
 
 	static const GXVec2 biasScale ( 0.5f, 0.5f );
 	static const GXVec2 biasOffset ( 0.5f, 0.5f );
 
-	GXMulVec2Vec2 ( lastFrameEnvironmentQuasiLocationScreen, lastFrameEnvironmentQuasiLocationScreen, biasScale );
-	GXSumVec2Vec2 ( lastFrameEnvironmentQuasiLocationScreen, lastFrameEnvironmentQuasiLocationScreen, biasOffset );
+	lastFrameEnvironmentQuasiLocationScreen.Multiply ( lastFrameEnvironmentQuasiLocationScreen, biasScale );
+	lastFrameEnvironmentQuasiLocationScreen.Sum ( lastFrameEnvironmentQuasiLocationScreen, biasOffset );
 
-	GXMulVec2Vec2 ( lastFrameEnvironmentQuasiLocationScreen, lastFrameEnvironmentQuasiLocationScreen, screenResolution );
+	lastFrameEnvironmentQuasiLocationScreen.Multiply ( lastFrameEnvironmentQuasiLocationScreen, screenResolution );
 
 	GXVec2 velocityImage;
-	GXSubVec2Vec2 ( velocityImage, currentFrameEnvironmentQuasiLocationScreen, lastFrameEnvironmentQuasiLocationScreen );
-	GXMulVec2Scalar ( velocityImage, velocityImage, inverseDeltaTime );
+	velocityImage.Substract ( currentFrameEnvironmentQuasiLocationScreen, lastFrameEnvironmentQuasiLocationScreen );
+	velocityImage.Multiply ( velocityImage, inverseDeltaTime );
 
 	GXVec2 halfSpreadVelocityImage;
 	EMRenderer& renderer = EMRenderer::GetInstance ();
-	GXMulVec2Scalar ( halfSpreadVelocityImage, velocityImage, 0.5f * renderer.GetMotionBlurExposure () );
+	halfSpreadVelocityImage.Multiply ( velocityImage, 0.5f * renderer.GetMotionBlurExposure () );
 
 	GXVec2 velocityBlur;
 
-	if ( halfSpreadVelocityImage.x == 0.0f && halfSpreadVelocityImage.y == 0.0f )
+	if ( halfSpreadVelocityImage.GetX () == 0.0f && halfSpreadVelocityImage.GetY () == 0.0f )
 	{
-		velocityBlur = GXCreateVec2 ( ZERO_VELOCITY_BLUR_X, ZERO_VELOCITY_BLUR_Y );
+		velocityBlur.Init ( ZERO_VELOCITY_BLUR_X, ZERO_VELOCITY_BLUR_Y );
 	}
 	else
 	{
 		GXFloat maximumMotionBlurSamples = (GXFloat)renderer.GetMaximumMotionBlurSamples ();
-		GXFloat halfSpreadVelocityMagnitudeImage = GXMinf ( GXLengthVec2 ( halfSpreadVelocityImage ), maximumMotionBlurSamples );
+		GXFloat halfSpreadVelocityMagnitudeImage = GXMinf ( halfSpreadVelocityImage.Length (), maximumMotionBlurSamples );
 
 		velocityBlur = velocityImage;
-		GXNormalizeVec2 ( velocityBlur );
-		GXMulVec2Scalar ( velocityBlur, velocityBlur, halfSpreadVelocityMagnitudeImage / maximumMotionBlurSamples );
+		velocityBlur.Normalize ();
+		velocityBlur.Multiply ( velocityBlur, halfSpreadVelocityMagnitudeImage / maximumMotionBlurSamples );
 	}
 
-	glUniformMatrix4fv ( modelViewProjectionMatrixLocation, 1, GL_FALSE, modelViewProjectionMatrix.arr );
-	glUniform2fv ( inverseScreenResolutionLocation, 1, inverseScreenResolution.arr );
-	glUniform2fv ( velocityBlurLocation, 1, velocityBlur.arr );
+	glUniformMatrix4fv ( modelViewProjectionMatrixLocation, 1, GL_FALSE, modelViewProjectionMatrix.data );
+	glUniform2fv ( inverseScreenResolutionLocation, 1, inverseScreenResolution.data );
+	glUniform2fv ( velocityBlurLocation, 1, velocityBlur.data );
 
 	environmentTexture->Bind ( ENVIRONMENT_SLOT );
 	depthTexture->Bind ( DEPTH_SLOT );
@@ -147,11 +146,8 @@ GXVoid EMEnvironmentMapMaterial::SetDepthTexture ( GXTexture2D &texture )
 
 GXVoid EMEnvironmentMapMaterial::SetScreenResolution ( GXUShort width, GXUShort height )
 {
-	screenResolution.x = (GXFloat)width;
-	screenResolution.y = (GXFloat)height;
-
-	inverseScreenResolution.x = 1.0f / screenResolution.x;
-	inverseScreenResolution.y = 1.0f / screenResolution.y;
+	screenResolution.Init ( (GXFloat)width, (GXFloat)height );
+	inverseScreenResolution.Init ( 1.0f / screenResolution.data[ 0 ], 1.0f / screenResolution.data[ 1 ] );
 }
 
 GXVoid EMEnvironmentMapMaterial::SetDeltaTime ( GXFloat seconds )

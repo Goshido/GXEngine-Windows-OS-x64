@@ -13,8 +13,8 @@ class GXCamera
 		static GXCamera*		activeCamera;
 
 	protected:
-		GXFloat					znear;
-		GXFloat					zfar;
+		GXFloat					zNear;
+		GXFloat					zFar;
 
 		GXMat4					currentFrameModelMatrix;
 		GXMat4					currentFrameViewMatrix;
@@ -45,10 +45,10 @@ class GXCamera
 		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
 		GXVoid SetLocation ( const GXVec3 &location );
 
-		// pitch_rad increasing -> down to top rotation.
-		// yaw_rad increasing -> left to right rotation.
-		// roll_rad increasing -> clockwise rotation.
-		GXVoid SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_rad );
+		// pitchRadians increasing -> down to top rotation.
+		// yawRadians increasing -> left to right rotation.
+		// rollRadians increasing -> clockwise rotation.
+		GXVoid SetRotation ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians );
 
 		GXVoid SetRotation ( const GXMat4 &rotation );
 		GXVoid SetRotation ( const GXQuat &rotation );
@@ -63,11 +63,11 @@ class GXCamera
 		const GXProjectionClipPlanes& GetClipPlanesWorld ();
 		GXBool IsObjectVisible ( const GXAABB objectBoundsWorld );
 
-		virtual GXVoid SetZnear ( GXFloat znear ) = 0;
-		virtual GXVoid SetZfar ( GXFloat zfar ) = 0;
+		virtual GXVoid SetZNear ( GXFloat newZNear ) = 0;
+		virtual GXVoid SetZFar ( GXFloat newZFar ) = 0;
 
-		GXFloat GetZnear () const;
-		GXFloat GetZfar () const;
+		GXFloat GetZNear () const;
+		GXFloat GetZFar () const;
 
 		GXVoid UpdateLastFrameMatrices ();
 

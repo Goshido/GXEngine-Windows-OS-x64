@@ -8,10 +8,10 @@
 class EMCheckerGeneratorMaterial : public GXMaterial
 {
 	private:
-		GXVec4		colorOne;
+		GXColorRGB	colorOne;
 		GLint		colorOneLocation;
 
-		GXVec4		colorTwo;
+		GXColorRGB	colorTwo;
 		GLint		colorTwoLocation;
 
 		GXVec2		elementSize;

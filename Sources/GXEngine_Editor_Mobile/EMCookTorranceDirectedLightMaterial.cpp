@@ -22,6 +22,8 @@
 #define PARAMETER_SLOT						3
 #define DEPTH_SLOT							4
 
+#define ANY_ALPHA							255
+
 #define VERTEX_SHADER						L"Shaders/System/ScreenQuad_vs.txt"
 #define GEOMETRY_SHADER						nullptr
 #define FRAGMENT_SHADER						L"Shaders/Editor Mobile/CookTorranceDirectedLight_fs.txt"
@@ -63,7 +65,7 @@ EMCookTorranceDirectedLightMaterial::EMCookTorranceDirectedLightMaterial ()
 	intensity = DEFAULT_INTENCITY;
 	SetHue ( DEFAULT_HUE_R, DEFAULT_HUE_G, DEFAULT_HUE_B );
 
-	GXVec3 defaultAmbientColor ( DEFAULT_AMBIENT_COLOR_R, DEFAULT_AMBIENT_COLOR_G, DEFAULT_AMBIENT_COLOR_B );
+	GXColorRGB defaultAmbientColor ( DEFAULT_AMBIENT_COLOR_R, DEFAULT_AMBIENT_COLOR_G, DEFAULT_AMBIENT_COLOR_B, ANY_ALPHA );
 	SetAmbientColor ( defaultAmbientColor );
 }
 
@@ -79,13 +81,13 @@ GXVoid EMCookTorranceDirectedLightMaterial::Bind ( const GXTransform& /*transfor
 	glUseProgram ( shaderProgram.GetProgram () );
 
 	const GXMat4& inverseProjectionMatrix = GXCamera::GetActiveCamera ()->GetCurrentFrameInverseProjectionMatrix ();
-	glUniformMatrix4fv ( inverseProjectionMatrixLocation, 1, GL_FALSE, inverseProjectionMatrix.arr );
+	glUniformMatrix4fv ( inverseProjectionMatrixLocation, 1, GL_FALSE, inverseProjectionMatrix.data );
 
-	glUniform3fv ( hueLocation, 1, hue.arr );
+	glUniform3fv ( hueLocation, 1, hue.data );
 	glUniform1f ( intensityLocation, intensity );
-	glUniform3fv ( hdrColorLocation, 1, hdrColor.arr );
-	glUniform3fv ( ambientColorLocation, 1, ambientColor.arr );
-	glUniform3fv ( toLightDirectionViewLocation, 1, toLightDirectionView.arr );
+	glUniform3fv ( hdrColorLocation, 1, hdrColor.data );
+	glUniform3fv ( ambientColorLocation, 1, ambientColor.data );
+	glUniform3fv ( toLightDirectionViewLocation, 1, toLightDirectionView.data );
 
 	albedoTexture->Bind ( ALBEDO_SLOT );
 	normalTexture->Bind ( NORMAL_SLOT );
@@ -134,24 +136,27 @@ GXVoid EMCookTorranceDirectedLightMaterial::SetDepthTexture ( GXTexture2D &textu
 
 GXVoid EMCookTorranceDirectedLightMaterial::SetLightDirectionView ( const GXVec3 &direction )
 {
-	toLightDirectionView.x = -direction.x;
-	toLightDirectionView.y = -direction.y;
-	toLightDirectionView.z = -direction.z;
+	toLightDirectionView = direction;
+	toLightDirectionView.Reverse ();
 }
 
 GXVoid EMCookTorranceDirectedLightMaterial::SetHue ( GXUByte red, GXUByte green, GXUByte blue )
 {
-	GXColorToVec3 ( hue, red, green, blue );
-	GXMulVec3Scalar ( hdrColor, hue, intensity );
+	hue.From ( red, green, blue, ANY_ALPHA );
+	hdrColor.SetRed ( hue.GetRed () * intensity );
+	hdrColor.SetGreen ( hue.GetGreen () * intensity );
+	hdrColor.SetBlue ( hue.GetBlue () * intensity );
 }
 
 GXVoid EMCookTorranceDirectedLightMaterial::SetIntencity ( GXFloat intencity )
 {
 	this->intensity = intencity;
-	GXMulVec3Scalar ( hdrColor, hue, intencity );
+	hdrColor.SetRed ( hue.GetRed () * intensity );
+	hdrColor.SetGreen ( hue.GetGreen () * intensity );
+	hdrColor.SetBlue ( hue.GetBlue () * intensity );
 }
 
-GXVoid EMCookTorranceDirectedLightMaterial::SetAmbientColor ( const GXVec3 &color )
+GXVoid EMCookTorranceDirectedLightMaterial::SetAmbientColor ( const GXColorRGB &color )
 {
 	ambientColor = color;
 }

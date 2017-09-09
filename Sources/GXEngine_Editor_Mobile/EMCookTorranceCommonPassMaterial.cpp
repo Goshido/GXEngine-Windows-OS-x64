@@ -58,6 +58,8 @@
 
 #define DEFAULT_MAXIMUM_BLUR_SAMPLES		15
 
+#define ANY_ALPHA							255
+
 #define VERTEX_SHADER			L"Shaders/Editor Mobile/CookTorranceCommonPass_vs.txt"
 #define GEOMETRY_SHADER			nullptr
 #define FRAGMENT_SHADER			L"Shaders/Editor Mobile/CookTorranceCommonPass_fs.txt"
@@ -144,7 +146,7 @@ GXVoid EMCookTorranceCommonPassMaterial::Bind ( const GXTransform &transform )
 	GXMat4 lastFrameModelViewProjectionMatrix;
 
 	const GXMat4& currentFrameModelMatrix = transform.GetCurrentFrameModelMatrix ();
-	GXMulMat4Mat4 ( currentFrameModelViewProjectionMatrix, currentFrameModelMatrix, camera->GetCurrentFrameViewProjectionMatrix () );
+	currentFrameModelViewProjectionMatrix.Multiply ( currentFrameModelMatrix, camera->GetCurrentFrameViewProjectionMatrix () );
 
 	GXMat4 currentFrameRotationMatrix;
 	transform.GetRotation ( currentFrameRotationMatrix );
@@ -171,34 +173,33 @@ GXVoid EMCookTorranceCommonPassMaterial::Bind ( const GXTransform &transform )
 	currentFrameViewMatrix.GetZ ( tmp );
 	v.SetZ ( tmp );
 
-	GXMulMat3Mat3 ( currentFrameRotationViewMatrix, r, v );
+	currentFrameRotationViewMatrix.Multiply ( r, v );
+	lastFrameModelViewProjectionMatrix.Multiply ( transform.GetLastFrameModelMatrix (), camera->GetLastFrameViewProjectionMatrix () );
 
-	GXMulMat4Mat4 ( lastFrameModelViewProjectionMatrix, transform.GetLastFrameModelMatrix (), camera->GetLastFrameViewProjectionMatrix () );
-
-	glUniformMatrix4fv ( currentFrameModelViewProjectionMatrixLocation, 1, GL_FALSE, currentFrameModelViewProjectionMatrix.arr );
-	glUniformMatrix3fv ( currentFrameRotationViewMatrixLocation, 1, GL_FALSE, currentFrameRotationViewMatrix.arr );
-	glUniformMatrix4fv ( lastFrameModelViewProjectionMatrixLocation, 1, GL_FALSE, lastFrameModelViewProjectionMatrix.arr );
+	glUniformMatrix4fv ( currentFrameModelViewProjectionMatrixLocation, 1, GL_FALSE, currentFrameModelViewProjectionMatrix.data );
+	glUniformMatrix3fv ( currentFrameRotationViewMatrixLocation, 1, GL_FALSE, currentFrameRotationViewMatrix.data );
+	glUniformMatrix4fv ( lastFrameModelViewProjectionMatrixLocation, 1, GL_FALSE, lastFrameModelViewProjectionMatrix.data );
 
 	glUniform1f ( inverseDeltaTimeLocation, inverseDeltaTime );
 	glUniform1f ( exposureLocation, exposure );
-	glUniform2fv ( screenResolutionLocation, 1, screenResolution.arr );
+	glUniform2fv ( screenResolutionLocation, 1, screenResolution.data );
 	glUniform1f ( maximumBlurSamplesLocation, maximumBlurSamples );
 	glUniform1f ( inverseMaximumBlurSamplesLocation, inverseMaximumBlurSamples );
 
 	albedoTexture->Bind ( ALBEDO_SLOT );
-	glUniform4fv ( albedoTextureScaleOffsetLocation, 1, albedoTextureScaleOffset.arr );
-	glUniform4fv ( albedoColorLocation, 1, albedoColor.arr );
+	glUniform4fv ( albedoTextureScaleOffsetLocation, 1, albedoTextureScaleOffset.data );
+	glUniform4fv ( albedoColorLocation, 1, albedoColor.data );
 
 	normalTexture->Bind ( NORMAL_SLOT );
-	glUniform4fv ( normalTextureScaleOffsetLocation, 1, normalTextureScaleOffset.arr );
+	glUniform4fv ( normalTextureScaleOffsetLocation, 1, normalTextureScaleOffset.data );
 
 	emissionTexture->Bind ( EMISSION_SLOT );
-	glUniform4fv ( emissionTextureScaleOffsetLocation, 1, emissionTextureScaleOffset.arr );
-	glUniform3fv ( emissionScaledColorLocation, 1, emissionScaledColor.arr );
+	glUniform4fv ( emissionTextureScaleOffsetLocation, 1, emissionTextureScaleOffset.data );
+	glUniform3fv ( emissionScaledColorLocation, 1, emissionScaledColor.data );
 
 	parameterTexture->Bind ( PARAMETER_SLOT );
-	glUniform4fv ( parameterTextureScaleOffsetLocation, 1, parameterTextureScaleOffset.arr );
-	glUniform4fv ( parameterScaleLocation, 1, parameterScale.arr );
+	glUniform4fv ( parameterTextureScaleOffsetLocation, 1, parameterTextureScaleOffset.data );
+	glUniform4fv ( parameterScaleLocation, 1, parameterScale.data );
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::Unbind ()
@@ -225,39 +226,34 @@ GXTexture2D* EMCookTorranceCommonPassMaterial::GetAlbedoTexture ()
 
 GXVoid EMCookTorranceCommonPassMaterial::SetAlbedoTextureScale ( GXFloat scaleU, GXFloat scaleV )
 {
-	albedoTextureScaleOffset.x = scaleU;
-	albedoTextureScaleOffset.y = scaleV;
+	albedoTextureScaleOffset.data[ 0 ] = scaleU;
+	albedoTextureScaleOffset.data[ 1 ] = scaleV;
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::GetAlbedoTextureScale ( GXVec2 &scaleUV ) const
 {
-	scaleUV.x = albedoTextureScaleOffset.x;
-	scaleUV.y = albedoTextureScaleOffset.y;
+	scaleUV.Init ( albedoTextureScaleOffset.data[ 0 ], albedoTextureScaleOffset.data[ 1 ] );
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetAlbedoTextureOffset ( GXFloat offsetU, GXFloat offsetV )
 {
-	albedoTextureScaleOffset.z = offsetU;
-	albedoTextureScaleOffset.w = offsetV;
+	albedoTextureScaleOffset.data[ 2 ] = offsetU;
+	albedoTextureScaleOffset.data[ 3 ] = offsetV;
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::GetAlbedoTextureOffset ( GXVec2 &offsetUV ) const
 {
-	offsetUV.x = albedoTextureScaleOffset.z;
-	offsetUV.y = albedoTextureScaleOffset.w;
+	offsetUV.Init ( albedoTextureScaleOffset.data[ 2 ], albedoTextureScaleOffset.data[ 3 ] );
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetAlbedoColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
 {
-	GXColorToVec4 ( albedoColor, red, green, blue, alpha );
+	albedoColor.From ( red, green, blue, alpha );
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::GetAlbedoColor ( GXUByte &red, GXUByte &green, GXUByte &blue, GXUByte &alpha ) const
 {
-	red = (GXUByte)( albedoColor.r * 255.0f );
-	green = (GXUByte)( albedoColor.g * 255.0f );
-	blue = (GXUByte)( albedoColor.b * 255.0f );
-	alpha = (GXUByte)( albedoColor.a * 255.0f );
+	albedoColor.ConvertToUByte ( red, green, blue, alpha );
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetNormalTexture ( GXTexture2D &texture )
@@ -272,26 +268,24 @@ GXTexture2D* EMCookTorranceCommonPassMaterial::GetNormalTexture ()
 
 GXVoid EMCookTorranceCommonPassMaterial::SetNormalTextureScale ( GXFloat scaleU, GXFloat scaleV )
 {
-	normalTextureScaleOffset.x = scaleU;
-	normalTextureScaleOffset.y = scaleV;
+	normalTextureScaleOffset.data[ 0 ] = scaleU;
+	normalTextureScaleOffset.data[ 1 ] = scaleV;
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::GetNormalTextureScale ( GXVec2 &scaleUV ) const
 {
-	scaleUV.x = normalTextureScaleOffset.x;
-	scaleUV.y = normalTextureScaleOffset.y;
+	scaleUV.Init ( normalTextureScaleOffset.data[ 0 ], normalTextureScaleOffset.data[ 1 ] );
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetNormalTextureOffset ( GXFloat offsetU, GXFloat offsetV )
 {
-	normalTextureScaleOffset.z = offsetU;
-	normalTextureScaleOffset.w = offsetV;
+	normalTextureScaleOffset.data[ 2 ] = offsetU;
+	normalTextureScaleOffset.data[ 3 ] = offsetV;
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::GetNormalTextureOffset ( GXVec2 &offsetUV ) const
 {
-	offsetUV.x = normalTextureScaleOffset.z;
-	offsetUV.y = normalTextureScaleOffset.w;
+	offsetUV.Init ( normalTextureScaleOffset.data[ 2 ], normalTextureScaleOffset.data[ 3 ] );
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetEmissionTexture ( GXTexture2D &texture )
@@ -306,45 +300,46 @@ GXTexture2D* EMCookTorranceCommonPassMaterial::GetEmissionTexture ()
 
 GXVoid EMCookTorranceCommonPassMaterial::SetEmissionTextureScale ( GXFloat scaleU, GXFloat scaleV )
 {
-	emissionTextureScaleOffset.x = scaleU;
-	emissionTextureScaleOffset.y = scaleV;
+	emissionTextureScaleOffset.data[ 0 ] = scaleU;
+	emissionTextureScaleOffset.data[ 1 ] = scaleV;
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::GetEmissionTextureScale ( GXVec2 &scaleUV ) const
 {
-	scaleUV.x = emissionTextureScaleOffset.x;
-	scaleUV.y = emissionTextureScaleOffset.y;
+	scaleUV.Init ( emissionTextureScaleOffset.data[ 0 ], emissionTextureScaleOffset.data[ 1 ] );
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetEmissionTextureOffset ( GXFloat offsetU, GXFloat offsetV )
 {
-	emissionTextureScaleOffset.z = offsetU;
-	emissionTextureScaleOffset.w = offsetV;
+	emissionTextureScaleOffset.data[ 2 ] = offsetU;
+	emissionTextureScaleOffset.data[ 3 ] = offsetV;
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::GetEmissionTextureOffset ( GXVec2 &offsetUV ) const
 {
-	offsetUV.x = emissionTextureScaleOffset.z;
-	offsetUV.y = emissionTextureScaleOffset.w;
+	offsetUV.Init ( emissionTextureScaleOffset.data[ 2 ], emissionTextureScaleOffset.data[ 3 ] );
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetEmissionColor ( GXUByte red, GXUByte green, GXUByte blue )
 {
-	GXColorToVec3 ( emissionColor, red, green, blue );
-	GXMulVec3Scalar ( emissionScaledColor, emissionColor, emissionColorScale );
+	emissionColor.From ( red, green, blue, ANY_ALPHA );
+	emissionScaledColor.SetRed ( emissionColor.GetRed () * emissionColorScale );
+	emissionScaledColor.SetGreen ( emissionColor.GetGreen () * emissionColorScale );
+	emissionScaledColor.SetBlue ( emissionColor.GetBlue () * emissionColorScale );
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::GetEmissionColor ( GXUByte &red, GXUByte &green, GXUByte &blue ) const
 {
-	red = (GXUByte)( emissionColor.r * 255.0f );
-	green = (GXUByte)( emissionColor.g * 255.0f );
-	blue = (GXUByte)( emissionColor.b * 255.0f );
+	GXUByte anyAlpha;
+	emissionColor.ConvertToUByte ( red, green, blue, anyAlpha );
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetEmissionColorScale ( GXFloat scale )
 {
 	emissionColorScale = scale;
-	GXMulVec3Scalar ( emissionScaledColor, emissionColor, emissionColorScale );
+	emissionScaledColor.SetRed ( emissionColor.GetRed () * emissionColorScale );
+	emissionScaledColor.SetGreen ( emissionColor.GetGreen () * emissionColorScale );
+	emissionScaledColor.SetBlue ( emissionColor.GetBlue () * emissionColorScale );
 }
 
 GXFloat EMCookTorranceCommonPassMaterial::GetEmissionColorScale () const
@@ -364,66 +359,64 @@ GXTexture2D* EMCookTorranceCommonPassMaterial::GetParameterTexture ()
 
 GXVoid EMCookTorranceCommonPassMaterial::SetParameterTextureScale ( GXFloat scaleU, GXFloat scaleV )
 {
-	parameterTextureScaleOffset.x = scaleU;
-	parameterTextureScaleOffset.y = scaleV;
+	parameterTextureScaleOffset.data[ 0 ] = scaleU;
+	parameterTextureScaleOffset.data[ 1 ] = scaleV;
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::GetParameterTextureScale ( GXVec2 &scaleUV ) const
 {
-	scaleUV.x = parameterTextureScaleOffset.x;
-	scaleUV.y = parameterTextureScaleOffset.y;
+	scaleUV.Init ( parameterTextureScaleOffset.data[ 0 ], parameterTextureScaleOffset.data[ 1 ] );
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetParameterTextureOffset ( GXFloat offsetU, GXFloat offsetV )
 {
-	parameterTextureScaleOffset.z = offsetU;
-	parameterTextureScaleOffset.w = offsetV;
+	parameterTextureScaleOffset.data[ 2 ] = offsetU;
+	parameterTextureScaleOffset.data[ 3 ] = offsetV;
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::GetParameterTextureOffset ( GXVec2 &offsetUV ) const
 {
-	offsetUV.x = parameterTextureScaleOffset.z;
-	offsetUV.y = parameterTextureScaleOffset.w;
+	offsetUV.Init ( parameterTextureScaleOffset.data[ 2 ], parameterTextureScaleOffset.data[ 3 ] );
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetRoughnessScale ( GXFloat scale )
 {
-	parameterScale.x = scale;
+	parameterScale.data[ 0 ] = scale;
 }
 
 GXFloat EMCookTorranceCommonPassMaterial::GetRoughnessScale () const
 {
-	return parameterScale.x;
+	return parameterScale.data[ 0 ];
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetIndexOfRefractionScale ( GXFloat scale )
 {
-	parameterScale.y = scale;
+	parameterScale.data[ 1 ] = scale;
 }
 
 GXFloat EMCookTorranceCommonPassMaterial::GetIndexOfRefractionScale () const
 {
-	return parameterScale.y;
+	return parameterScale.data[ 1 ];
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetSpecularIntensityScale ( GXFloat scale )
 {
-	parameterScale.z = scale;
+	parameterScale.data[ 2 ] = scale;
 }
 
 GXFloat EMCookTorranceCommonPassMaterial::GetSpecularIntensityScale () const
 {
-	return parameterScale.z;
+	return parameterScale.data[ 2 ];
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetMetallicScale ( GXFloat scale )
 {
-	parameterScale.w = scale;
+	parameterScale.data[ 3 ] = scale;
 }
 
 GXFloat EMCookTorranceCommonPassMaterial::GetMetallicScale () const
 {
-	return parameterScale.w;
+	return parameterScale.data[ 3 ];
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetDeltaTime ( GXFloat seconds )
@@ -438,8 +431,7 @@ GXVoid EMCookTorranceCommonPassMaterial::SetExposure ( GXFloat seconds )
 
 GXVoid EMCookTorranceCommonPassMaterial::SetScreenResolution ( GXUShort width, GXUShort height )
 {
-	screenResolution.x = (GXFloat)width;
-	screenResolution.y = (GXFloat)height;
+	screenResolution.Init ( (GXFloat)width, (GXFloat)height );
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetMaximumBlurSamples ( GXUByte samples )

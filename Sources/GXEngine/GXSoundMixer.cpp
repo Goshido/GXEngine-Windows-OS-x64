@@ -1,4 +1,4 @@
-//version 1.5
+//version 1.6
 
 #include <GXEngine/GXSoundMixer.h>
 
@@ -21,7 +21,7 @@ GXSoundMixer::~GXSoundMixer ()
 
 GXVoid GXSoundMixer::SetListenerVelocity ( const GXVec3 &velocity )
 {
-	GXAlListenerfv ( AL_VELOCITY, velocity.arr );
+	GXAlListenerfv ( AL_VELOCITY, velocity.data );
 }
 
 GXVoid GXSoundMixer::SetListenerVelocity ( GXFloat x, GXFloat y, GXFloat z )
@@ -31,7 +31,7 @@ GXVoid GXSoundMixer::SetListenerVelocity ( GXFloat x, GXFloat y, GXFloat z )
 
 GXVoid GXSoundMixer::SetListenerLocation ( const GXVec3 &location )
 {
-	GXAlListenerfv ( AL_POSITION, location.arr );
+	GXAlListenerfv ( AL_POSITION, location.data );
 }
 
 GXVoid GXSoundMixer::SetListenerLocation ( GXFloat x, GXFloat y, GXFloat z )
@@ -58,18 +58,18 @@ GXVoid GXSoundMixer::SetListenerRotation ( const GXMat4 &rotation )
 	GXAlListenerfv ( AL_ORIENTATION, orientation );
 }
 
-GXVoid GXSoundMixer::SetListenerRotation ( const GXVec3 &rotation )
+GXVoid GXSoundMixer::SetListenerRotation ( const GXEuler &rotation )
 {
 	GXMat4 orientation;
-	GXSetMat4RotationXYZ ( orientation, rotation.pitch_rad, rotation.yaw_rad, rotation.roll_rad );
+	orientation.RotationXYZ ( rotation.pitchRadians, rotation.yawRadians, rotation.rollRadians );
 
 	SetListenerRotation ( orientation );
 }
 
-GXVoid GXSoundMixer::SetListenerRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_rad )
+GXVoid GXSoundMixer::SetListenerRotation ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians )
 {
 	GXMat4 orientation;
-	GXSetMat4RotationXYZ ( orientation, pitch_rad, yaw_rad, roll_rad );
+	orientation.RotationXYZ ( pitchRadians, yawRadians, rollRadians );
 
 	SetListenerRotation ( orientation );
 }

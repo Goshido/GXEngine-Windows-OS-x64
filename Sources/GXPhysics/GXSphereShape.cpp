@@ -21,18 +21,18 @@ GXFloat GXSphereShape::GetRadius () const
 
 GXVoid GXSphereShape::CalculateInertiaTensor ( GXFloat mass )
 {
-	inertialTensor.m11 = inertialTensor.m22 = inertialTensor.m33 = 0.4f * mass * radius * radius;
+	inertialTensor.m[ 0 ][ 0 ] = inertialTensor.m[ 1 ][ 1 ] = inertialTensor.m[ 2 ][ 2 ] = 0.4f * mass * radius * radius;
 
-	inertialTensor.m12 = inertialTensor.m13 = 0.0f;
-	inertialTensor.m21 = inertialTensor.m23 = 0.0f;
-	inertialTensor.m31 = inertialTensor.m32 = 0.0f;
+	inertialTensor.m[ 0 ][ 1 ] = inertialTensor.m[ 0 ][ 2 ] = 0.0f;
+	inertialTensor.m[ 1 ][ 0 ] = inertialTensor.m[ 1 ][ 2 ] = 0.0f;
+	inertialTensor.m[ 2 ][ 0 ] = inertialTensor.m[ 2 ][ 1 ] = 0.0f;
 }
 
 GXVoid GXSphereShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const
 {
 	GXVec3 d = direction;
-	GXNormalizeVec3 ( d );
+	d.Normalize ();
 	GXVec3 tmp;
 	transformWorld.GetW ( tmp );
-	GXSumVec3ScaledVec3 ( point, tmp, radius, d );
+	point.Sum ( tmp, radius, d );
 }

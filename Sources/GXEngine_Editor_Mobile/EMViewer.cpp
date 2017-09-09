@@ -109,7 +109,7 @@ EMViewer::EMViewer ()
 	yaw = EM_DEFAULT_YAW_RAD;
 	distance = EM_DEFAULT_DISTANCE;
 	target = nullptr;
-	origin = GXCreateVec3 ( EM_DEFAULT_ORIGIN_X, EM_DEFAULT_ORIGIN_Y, EM_DEFAULT_ORIGIN_Z );
+	origin.Init ( EM_DEFAULT_ORIGIN_X, EM_DEFAULT_ORIGIN_Y, EM_DEFAULT_ORIGIN_Z );
 
 	GXRenderer& renderer = GXRenderer::GetInstance ();
 	camera = GXCameraPerspective ( GXDegToRad ( EM_VIEWER_FOVY_DEGREES ), renderer.GetWidth () / (GXFloat)renderer.GetHeight (), EM_VIEWER_Z_NEAR, EM_VIEWER_Z_FAR );
@@ -130,14 +130,14 @@ GXVoid EMViewer::OnPan ( const GXVec2& mouseDelta )
 	GXVec3 deltaRight;
 	GXVec3 tmp;
 	cameraTransform.GetX ( tmp );
-	GXMulVec3Scalar ( deltaRight, tmp, -mouseDelta.x * panSpeed );
+	deltaRight.Multiply ( tmp, -mouseDelta.GetX () * panSpeed );
 
 	GXVec3 deltaUp;
 	cameraTransform.GetY ( tmp );
-	GXMulVec3Scalar ( deltaUp, tmp, -mouseDelta.y * panSpeed );
+	deltaUp.Multiply ( tmp, -mouseDelta.GetY () * panSpeed );
 
-	GXSumVec3Vec3 ( origin, origin, deltaRight );
-	GXSumVec3Vec3 ( origin, origin, deltaUp );
+	origin.Sum ( origin, deltaRight );
+	origin.Sum ( origin, deltaUp );
 
 	UpdateCamera ();
 
@@ -147,8 +147,8 @@ GXVoid EMViewer::OnPan ( const GXVec2& mouseDelta )
 
 GXVoid EMViewer::OnRotate ( const GXVec2& mouseDelta )
 {
-	GXFloat pitchDelta = -mouseDelta.y * rotationSpeed;
-	GXFloat yawDelta = mouseDelta.x * rotationSpeed;
+	GXFloat pitchDelta = -mouseDelta.GetY () * rotationSpeed;
+	GXFloat yawDelta = mouseDelta.GetX () * rotationSpeed;
 
 	pitch = FixPitch ( pitch + pitchDelta );
 	yaw = FixYaw ( yaw + yawDelta );
@@ -160,16 +160,16 @@ GXVoid EMViewer::OnRotate ( const GXVec2& mouseDelta )
 		targetLocation = origin;
 
 	GXVec3 targetOriginView;
-	GXMulVec3Mat4AsPoint ( targetOriginView, targetLocation, camera.GetCurrentFrameViewMatrix () );
+	camera.GetCurrentFrameViewMatrix ().MultiplyAsPoint ( targetOriginView, targetLocation );
 
 	UpdateCamera ();
 	GXVec3 tempTargetWorld;
-	GXMulVec3Mat4AsPoint ( tempTargetWorld, targetOriginView, camera.GetCurrentFrameModelMatrix () );
+	camera.GetCurrentFrameModelMatrix ().MultiplyAsPoint ( tempTargetWorld, targetOriginView );
 
 	GXVec3 deltaTargetWorld;
-	GXSubVec3Vec3 ( deltaTargetWorld, targetLocation, tempTargetWorld );
+	deltaTargetWorld.Substract ( targetLocation, tempTargetWorld );
 
-	GXSumVec3Vec3 ( origin, origin, deltaTargetWorld );
+	origin.Sum ( origin, deltaTargetWorld );
 
 	UpdateCamera ();
 	
@@ -189,14 +189,14 @@ GXVoid EMViewer::OnZoom ( GXFloat mouseWheelSteps )
 GXVoid EMViewer::UpdateCamera ()
 {
 	GXMat4 matrix;
-	GXSetMat4RotationXY ( matrix, pitch, yaw );
+	matrix.RotationXY ( pitch, yaw );
 
 	GXVec3 tmp;
 	GXVec3 stick;
 	matrix.GetZ ( tmp );
-	GXMulVec3Scalar ( stick, tmp, distance );
+	stick.Multiply ( tmp, distance );
 
-	GXSubVec3Vec3 ( tmp, origin, stick );
+	tmp.Substract ( origin, stick );
 	matrix.SetW ( tmp );
 
 	camera.SetCurrentFrameModelMatrix ( matrix );
@@ -274,7 +274,7 @@ GXVoid GXCALL EMViewer::OnMouseMoveCallback ( GXVoid* handler, GXUIInput& /*inpu
 		case EM_VIEWER_ROTATE_MODE:
 		{
 			GXVec2 delta;
-			GXSubVec2Vec2 ( delta, mousePosition, viewer->mousePosition );
+			delta.Substract ( mousePosition, viewer->mousePosition );
 			viewer->OnRotate ( delta );
 		}
 		break;
@@ -282,7 +282,7 @@ GXVoid GXCALL EMViewer::OnMouseMoveCallback ( GXVoid* handler, GXUIInput& /*inpu
 		case EM_VIEWER_PAN_MODE:
 		{
 			GXVec2 delta;
-			GXSubVec2Vec2 ( delta, mousePosition, viewer->mousePosition );
+			delta.Substract ( mousePosition, viewer->mousePosition );
 			viewer->OnPan ( delta );
 		}
 		break;

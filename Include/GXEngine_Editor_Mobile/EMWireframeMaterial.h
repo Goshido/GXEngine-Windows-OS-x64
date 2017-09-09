@@ -10,7 +10,7 @@ class EMWireframeMaterial : public GXMaterial
 	private:
 		GLint		currentFrameModelViewProjectionMatrixLocation;
 
-		GXVec4		color;
+		GXColorRGB	color;
 		GLint		colorLocation;
 
 	public:

@@ -1,4 +1,4 @@
-//version 1.5
+//version 1.6
 
 #ifndef GX_SOUND_MIXER
 #define GX_SOUND_MIXER
@@ -32,8 +32,8 @@ class GXSoundMixer
 		GXVoid SetListenerLocation ( GXFloat x, GXFloat y, GXFloat z );
 
 		GXVoid SetListenerRotation ( const GXMat4 &rotation );
-		GXVoid SetListenerRotation ( const GXVec3 &rotation );
-		GXVoid SetListenerRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_rad );
+		GXVoid SetListenerRotation ( const GXEuler &rotation );
+		GXVoid SetListenerRotation ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians );
 
 		GXVoid AddChannel ( GXSoundChannel* channel );
 

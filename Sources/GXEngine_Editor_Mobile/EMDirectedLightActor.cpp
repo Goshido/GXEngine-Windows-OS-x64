@@ -1,5 +1,7 @@
 #include <GXEngine_Editor_Mobile/EMDirectedLightActor.h>
+#include <GXCommon/GXDisable3rdPartyWarnings.h>
 #include <cstdlib>
+#include <GXCommon/GXRestoreWarnings.h>
 
 
 struct EMDirectedLightActorSaveData

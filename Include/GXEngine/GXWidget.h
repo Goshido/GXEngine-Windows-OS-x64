@@ -49,7 +49,7 @@ class GXWidget
 
 		GXVoid SetRenderer ( GXWidgetRenderer* rendererObject );
 		GXWidgetRenderer* GetRenderer () const;
-		GXWidget* FindWidget ( GXFloat x, GXFloat y );	//return child widget or itself. Never 0
+		GXWidget* FindWidget ( const GXVec2 &position );	//return child widget or itself. Never nullptr
 
 	protected:
 		GXVoid UpdateBoundsWorld ( const GXAABB &newBoundsLocal );

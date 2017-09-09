@@ -62,7 +62,7 @@ EMUIMenuRenderer::EMUIMenuRenderer ( GXUIMenu* widget ):
 GXWidgetRenderer ( widget )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
-	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
+	surface = new GXHudSurface ( (GXUShort)boundsLocal.GetWidth (), (GXUShort)boundsLocal.GetHeight () );
 	font = GXFont::GetFont ( FONT, (GXUShort)( FONT_SIZE * gx_ui_Scale ) );
 	texture = GXTexture2D::LoadTexture ( DEFAULT_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 }
@@ -94,7 +94,7 @@ GXVoid EMUIMenuRenderer::OnRefresh ()
 	surface->Reset ();
 
 	GXImageInfo ii;
-	GXColorToVec4 ( ii.color, BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
+	ii.color.From ( BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
 	ii.texture = &texture;
 	ii.overlayType = eGXImageOverlayType::SimpleReplace;
 	ii.insertX = 0.1f;
@@ -106,7 +106,7 @@ GXVoid EMUIMenuRenderer::OnRefresh ()
 
 	if ( selectedItemIndex != GX_UI_MENU_INVALID_INDEX )
 	{
-		GXColorToVec4 ( ii.color, SELECT_COLOR_R, SELECT_COLOR_G, SELECT_COLOR_B, SELECT_COLOR_A );
+		ii.color.From ( SELECT_COLOR_R, SELECT_COLOR_G, SELECT_COLOR_B, SELECT_COLOR_A );
 		ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 		ii.insertX = menu->GetItemOffset ( selectedItemIndex ) + 0.1f;
 		ii.insertY = 0.1f;
@@ -118,7 +118,7 @@ GXVoid EMUIMenuRenderer::OnRefresh ()
 
 	if ( highlightedItemIndex != GX_UI_MENU_INVALID_INDEX )
 	{
-		GXColorToVec4 ( ii.color, HIGHLIGHT_COLOR_R, HIGHLIGHT_COLOR_G, HIGHLIGHT_COLOR_B, HIGHLIGHT_COLOR_A );
+		ii.color.From ( HIGHLIGHT_COLOR_R, HIGHLIGHT_COLOR_G, HIGHLIGHT_COLOR_B, HIGHLIGHT_COLOR_A );
 		ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 		ii.insertX = menu->GetItemOffset ( highlightedItemIndex ) + 0.1f;
 		ii.insertY = 0.1f;
@@ -129,7 +129,7 @@ GXVoid EMUIMenuRenderer::OnRefresh ()
 	}
 
 	GXPenInfo pi;
-	GXColorToVec4 ( pi.color, FONT_COLOR_R, FONT_COLOR_G, FONT_COLOR_B, FONT_COLOR_A );
+	pi.color.From ( FONT_COLOR_R, FONT_COLOR_G, FONT_COLOR_B, FONT_COLOR_A );
 	pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 	pi.font = &font;
 	pi.insertY = ( h - font.GetSize () ) * 0.7f;
@@ -161,7 +161,7 @@ GXVoid EMUIMenuRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUSh
 	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 }
 
 GXVoid EMUIMenuRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -171,7 +171,7 @@ GXVoid EMUIMenuRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 }
 
 //---------------------------------------------------------

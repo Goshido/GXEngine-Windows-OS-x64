@@ -20,7 +20,7 @@
 
 
 EMGame::EMGame ():
-gravity ( GXCreateVec3 ( 0.0f, -9.81f, 0.0f ) )
+gravity ( GXVec3 ( 0.0f, -9.81f, 0.0f ) )
 {
 	hudCamera = nullptr;
 
@@ -424,18 +424,18 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 		GXVec3 z = collisionData.GetAllContacts ()->GetNormal ();
 
 		GXVec3 x;
-		if ( fabsf ( z.y ) > fabsf ( z.x ) && fabsf ( z.y ) > fabsf ( z.z ) )
-			GXCrossVec3Vec3 ( x, GXVec3::GetAbsoluteX (), z );
+		if ( fabsf ( z.GetY () ) > fabsf ( z.GetX () ) && fabsf ( z.GetY () ) > fabsf ( z.GetZ () ) )
+			x.CrossProduct ( GXVec3::GetAbsoluteX (), z );
 		else
-			GXCrossVec3Vec3 ( x, GXVec3::GetAbsoluteY (), z );
+			x.CrossProduct ( GXVec3::GetAbsoluteY (), z );
 
-		GXNormalizeVec3 ( x );
+		x.Normalize ();
 
 		GXVec3 y;
-		GXCrossVec3Vec3 ( y, z, x );
+		y.CrossProduct ( z, x );
 
 		GXMat4 rot;
-		GXSetMat4Identity ( rot );
+		rot.Identity ();
 		rot.SetX ( x );
 		rot.SetY ( y );
 		rot.SetZ ( z );
@@ -445,7 +445,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 		static const GXVec3 offset ( 1.0f, 0.0f, 3.0f );
 		GXVec3 location;
-		GXMulVec3Mat4AsPoint ( location, offset, viewerCamera.GetCurrentFrameModelMatrix () );
+		viewerCamera.GetCurrentFrameModelMatrix ().MultiplyAsPoint ( location, offset );
 		transform.SetLocation ( location );
 
 		physicsContactNormalMaterial->Bind ( transform );
@@ -473,7 +473,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	physicsInfo->Reset ();
 
 	GXImageInfo ii;
-	GXColorToVec4 ( ii.color, 0, 0, 0, 180 );
+	ii.color.From ( 0, 0, 0, 180 );
 	ii.texture = &physicsInfoBackgroundTexture;
 	ii.insertX = 0.0f;
 	ii.insertY = 0.0f;
@@ -484,7 +484,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	physicsInfo->AddImage ( ii );
 
 	GXPenInfo pi;
-	GXColorToVec4 ( pi.color, 115, 185, 0, 255 );
+	pi.color.From ( 115, 185, 0, 255 );
 	pi.font = &physicsInfoFont;
 	pi.insertX = 0.5f * gx_ui_Scale;
 	pi.insertY = 0.5f * gx_ui_Scale;
@@ -655,7 +655,7 @@ GXVoid GXCALL EMGame::OnMouseButton ( GXVoid* /*handler*/, GXInputMouseFlags mou
 	if ( !mouseflags.lmb ) return;
 
 	const GXVec2& mouse = GXTouchSurface::GetInstance ().GetMousePosition ();
-	EMRenderer::GetInstance ().GetObject ( (GXUShort)mouse.x, (GXUShort)mouse.y );
+	EMRenderer::GetInstance ().GetObject ( (GXUShort)mouse.GetX (), (GXUShort)mouse.GetY () );
 }
 
 GXVoid GXCALL EMGame::OnObject ( GXVoid* handler, GXVoid* object )

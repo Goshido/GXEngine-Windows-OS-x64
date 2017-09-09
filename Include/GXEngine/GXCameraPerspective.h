@@ -10,20 +10,20 @@
 class GXCameraPerspective : public GXCamera
 {
 	protected:
-		GXFloat		fovy_rad;
+		GXFloat		fieldOfViewYRadians;
 		GXFloat		aspectRatio;
 
 	public:
 		GXCameraPerspective ();
-		explicit GXCameraPerspective ( GXFloat fieldOfViewYRadians, GXFloat projectionAspectRatio, GXFloat zNear, GXFloat zFar );
+		explicit GXCameraPerspective ( GXFloat fieldOfViewYRadians, GXFloat aspectRatio, GXFloat zNear, GXFloat zFar );
 		~GXCameraPerspective () override;
 
-		GXVoid SetFov ( GXFloat radians );
-		GXVoid SetAspectRatio ( GXFloat projectionAspectRatio );
-		GXVoid SetZnear ( GXFloat zNear ) override;
-		GXVoid SetZfar ( GXFloat zFar ) override;
+		GXVoid SetFieldOfViewY ( GXFloat radians );
+		GXVoid SetAspectRatio ( GXFloat newAspectRatio );
+		GXVoid SetZNear ( GXFloat newZNear ) override;
+		GXVoid SetZFar ( GXFloat newZFar ) override;
 
-		GXFloat GetFovYRadians () const;
+		GXFloat GetFieldOFViewYRadians () const;
 		GXFloat GetAspectRatio () const;
 };
 

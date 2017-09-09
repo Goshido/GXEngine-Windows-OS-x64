@@ -45,7 +45,7 @@ GXVoid GXTouchSurface::OnLeftMouseButtonDown ( const GXVec2 &position )
 	}
 	else
 	{
-		GXWidget* target = FindWidget ( position.x, position.y );
+		GXWidget* target = FindWidget ( position );
 		if ( target )
 		{
 			SendMessage ( target, GX_MSG_LMBDOWN, &position, sizeof ( GXVec2 ) );
@@ -64,7 +64,7 @@ GXVoid GXTouchSurface::OnLeftMouseButtonUp ( const GXVec2 &position )
 	}
 	else
 	{
-		GXWidget* target = FindWidget ( position.x, position.y );
+		GXWidget* target = FindWidget ( position );
 		if ( target )
 			SendMessage ( target, GX_MSG_LMBUP, &position, sizeof ( GXVec2 ) );
 	}
@@ -80,7 +80,7 @@ GXVoid GXTouchSurface::OnMiddleMouseButtonDown ( const GXVec2 &position )
 	}
 	else
 	{
-		GXWidget* target = FindWidget ( position.x, position.y );
+		GXWidget* target = FindWidget ( position );
 		if ( target )
 			SendMessage ( target, GX_MSG_MMBDOWN, &position, sizeof ( GXVec2 ) );
 	}
@@ -96,7 +96,7 @@ GXVoid GXTouchSurface::OnMiddleMouseButtonUp ( const GXVec2 &position )
 	}
 	else
 	{
-		GXWidget* target = FindWidget ( position.x, position.y );
+		GXWidget* target = FindWidget ( position );
 		if ( target )
 			SendMessage ( target, GX_MSG_MMBUP, &position, sizeof ( GXVec2 ) );
 	}
@@ -112,7 +112,7 @@ GXVoid GXTouchSurface::OnRightMouseButtonDown ( const GXVec2 &position )
 	}
 	else
 	{
-		GXWidget* target = FindWidget ( position.x, position.y );
+		GXWidget* target = FindWidget ( position );
 		if ( target )
 			SendMessage ( target, GX_MSG_RMBDOWN, &position, sizeof ( GXVec2 ) );
 	}
@@ -128,7 +128,7 @@ GXVoid GXTouchSurface::OnRightMouseButtonUp ( const GXVec2 &position )
 	}
 	else
 	{
-		GXWidget* target = FindWidget ( position.x, position.y );
+		GXWidget* target = FindWidget ( position );
 		if ( target )
 			SendMessage ( target, GX_MSG_RMBUP, &position, sizeof ( GXVec2 ) );
 	}
@@ -145,7 +145,7 @@ GXVoid GXTouchSurface::OnDoubleClick ( const GXVec2 &position )
 	}
 	else
 	{
-		GXWidget* target = FindWidget ( position.x, position.y );
+		GXWidget* target = FindWidget ( position );
 		if ( target )
 		{
 			SendMessage ( target, GX_MSG_DOUBLE_CLICK, &position, sizeof ( GXVec2 ) );
@@ -160,15 +160,15 @@ GXVoid GXTouchSurface::OnScroll ( const GXVec2 &position, GXFloat scroll )
 
 	if ( lockedWidget )
 	{
-		GXVec3 data = GXCreateVec3 ( position.x, position.y, scroll );
+		GXVec3 data ( position.GetX (), position.GetY (), scroll );
 		SendMessage ( lockedWidget, GX_MSG_SCROLL, &data, sizeof ( GXVec3 ) );
 	}
 	else
 	{
-		GXWidget* target = FindWidget ( position.x, position.y );
+		GXWidget* target = FindWidget ( position );
 		if ( target )
 		{
-			GXVec3 data = GXCreateVec3 ( position.x, position.y, scroll );
+			GXVec3 data ( position.GetX (), position.GetY (), scroll );
 			SendMessage ( target, GX_MSG_SCROLL, &data, sizeof ( GXVec3 ) );
 		}
 	}
@@ -184,7 +184,7 @@ GXVoid GXTouchSurface::OnMouseMove ( const GXVec2 &position )
 		return;
 	}
 
-	GXWidget* target = FindWidget ( position.x, position.y );
+	GXWidget* target = FindWidget ( position );
 
 	if ( target != mouseOverWidget )
 	{
@@ -210,7 +210,7 @@ GXVoid GXTouchSurface::OnKeyDown ( GXInt keyCode )
 		return;
 	}
 
-	GXWidget* target = FindWidget ( mousePosition.x, mousePosition.y );
+	GXWidget* target = FindWidget ( mousePosition );
 
 	if ( target != mouseOverWidget )
 	{
@@ -234,7 +234,7 @@ GXVoid GXTouchSurface::OnKeyUp ( GXInt keyCode )
 		return;
 	}
 
-	GXWidget* target = FindWidget ( mousePosition.x, mousePosition.y );
+	GXWidget* target = FindWidget ( mousePosition );
 
 	if ( target != mouseOverWidget )
 	{
@@ -384,9 +384,9 @@ GXVoid GXTouchSurface::DeleteWidgets ()
 		UnRegisterWidget ( widgetHead );
 }
 
-GXWidget* GXTouchSurface::FindWidget ( GXFloat x, GXFloat y )
+GXWidget* GXTouchSurface::FindWidget ( const GXVec2 &position )
 {
-	GXVec3 v = GXCreateVec3 ( x, y, 0.0f );
+	GXVec3 v ( position.GetX (), position.GetY (), 0.0f );
 
 	gx_ui_Mutex->Lock ();
 
@@ -394,10 +394,10 @@ GXWidget* GXTouchSurface::FindWidget ( GXFloat x, GXFloat y )
 	GXWidget* p = iterator.Init ( widgetHead );
 	while ( p )
 	{
-		if ( p->IsVisible () && GXIsOverlapedAABBVec3 ( p->GetBoundsWorld (), v ) )
+		if ( p->IsVisible () && p->GetBoundsWorld ().IsOverlaped ( v ) )
 		{
 			gx_ui_Mutex->Release ();
-			return p->FindWidget ( x, y );
+			return p->FindWidget ( position );
 		}
 
 		p = iterator.GetNext ();

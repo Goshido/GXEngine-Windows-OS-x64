@@ -545,22 +545,22 @@ GXVoid EMRenderer::ApplyToneMapping ( GXFloat deltaTime )
 	glReadBuffer ( GL_COLOR_ATTACHMENT0 );
 
 	GXVec3 luminanceTriplet;
-	glReadPixels ( 0, 0, 1, 1, GL_RGB, GL_FLOAT, luminanceTriplet.arr );
+	glReadPixels ( 0, 0, 1, 1, GL_RGB, GL_FLOAT, luminanceTriplet.data );
 
 	glFramebufferTexture ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0 );
 	glReadBuffer ( GL_NONE );
 	glBindFramebuffer ( GL_READ_FRAMEBUFFER, 0 );
 
-	if ( toneMapperEffectiveLuminanceTriplet.x == INVALID_LUMINANCE )
+	if ( toneMapperEffectiveLuminanceTriplet.GetX () == INVALID_LUMINANCE )
 	{
 		toneMapperEffectiveLuminanceTriplet = luminanceTriplet;
 	}
 	else
 	{
 		GXVec3 delta;
-		GXSubVec3Vec3 ( delta, luminanceTriplet, toneMapperEffectiveLuminanceTriplet );
-		GXMulVec3Scalar ( delta, delta, toneMapperEyeAdaptationSpeed * deltaTime );
-		GXSumVec3Vec3 ( toneMapperEffectiveLuminanceTriplet, toneMapperEffectiveLuminanceTriplet, delta );
+		delta.Substract ( luminanceTriplet, toneMapperEffectiveLuminanceTriplet );
+		delta.Multiply ( delta, toneMapperEyeAdaptationSpeed * deltaTime );
+		toneMapperEffectiveLuminanceTriplet.Sum ( toneMapperEffectiveLuminanceTriplet, delta );
 	}
 
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, yottaTexture.GetTextureObject (), 0 );
@@ -571,7 +571,7 @@ GXVoid EMRenderer::ApplyToneMapping ( GXFloat deltaTime )
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::ApplyToneMapping::Error - Что-то не так с FBO на проходе тонирования (ошибка 0x%08x)\n", status );
 
-	toneMapperMaterial.SetLuminanceTriplet ( toneMapperEffectiveLuminanceTriplet.x, toneMapperEffectiveLuminanceTriplet.y, toneMapperEffectiveLuminanceTriplet.z );
+	toneMapperMaterial.SetLuminanceTriplet ( toneMapperEffectiveLuminanceTriplet.GetX (), toneMapperEffectiveLuminanceTriplet.GetY (), toneMapperEffectiveLuminanceTriplet.GetZ () );
 	toneMapperMaterial.Bind ( nullTransform );
 	screenQuadMesh.Render ();
 	toneMapperMaterial.Unbind ();
@@ -926,7 +926,7 @@ screenQuadMesh( L"3D Models/System/ScreenQuad.stm" ), gaussHorizontalBlurMateria
 
 	toneMapperLuminanceTripletReducerMaterial.SetLuminanceTripletTexture ( importantAreaTexture );
 
-	toneMapperEffectiveLuminanceTriplet = GXCreateVec3 ( INVALID_LUMINANCE, INVALID_LUMINANCE, INVALID_LUMINANCE );
+	toneMapperEffectiveLuminanceTriplet.Init ( INVALID_LUMINANCE, INVALID_LUMINANCE, INVALID_LUMINANCE );
 
 	importantAreaFilterMaterial.SetImageTexture ( omegaTexture );
 
@@ -1100,7 +1100,7 @@ GXVoid EMRenderer::LightUpByDirected ( EMDirectedLight* light )
 	const GXMat4& rotation = light->GetRotation ();
 	GXVec3 tmp;
 	rotation.GetZ ( tmp );
-	GXMulVec3Mat4AsNormal ( lightDirectionView, tmp, GXCamera::GetActiveCamera ()->GetCurrentFrameViewMatrix () );
+	GXCamera::GetActiveCamera ()->GetCurrentFrameViewMatrix ().MultiplyAsNormal ( lightDirectionView, tmp );
 	directedLightMaterial.SetLightDirectionView ( lightDirectionView );
 
 	GXUByte colorRed;

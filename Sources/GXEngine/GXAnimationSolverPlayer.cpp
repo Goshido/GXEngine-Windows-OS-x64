@@ -1,9 +1,11 @@
 //version 1.4
 
-#include <GXEngine/GXAnimSolverPlayer.h>
+#include <GXEngine/GXAnimationSolverPlayer.h>
 #include <GXCommon/GXAVLTree.h>
 #include <GXCommon/GXMemory.h>
+#include <GXCommon/GXDisable3rdPartyWarnings.h>
 #include <new>
+#include <GXCommon/GXRestoreWarnings.h>
 
 
 #define DEFAULT_MULTIPLIER					1.0f
@@ -96,8 +98,8 @@ GXUShort GXBoneFinder::FindBoneIndex ( const GXUTF8* boneName ) const
 
 //--------------------------------------------------------------------------------------------------
 
-GXAnimSolverPlayer::GXAnimSolverPlayer ( GXUShort solverID ):
-GXAnimSolver ( solverID )
+GXAnimationSolverPlayer::GXAnimationSolverPlayer ( GXUShort solverID ):
+GXAnimationSolver ( solverID )
 {
 	animPos = DEFAULT_ANIMATION_POSITION;
 	frameInterval = DEFAULT_FRAME_INTERVAL;
@@ -108,12 +110,12 @@ GXAnimSolver ( solverID )
 	SetAnimationMultiplier ( DEFAULT_MULTIPLIER );
 }
 
-GXAnimSolverPlayer::~GXAnimSolverPlayer ()
+GXAnimationSolverPlayer::~GXAnimationSolverPlayer ()
 {
 	GXSafeDelete ( finder );
 }
 
-GXBool GXAnimSolverPlayer::GetBone ( const GXUTF8* boneName, GXQuat &rotation, GXVec3 &location )
+GXBool GXAnimationSolverPlayer::GetBone ( const GXUTF8* boneName, GXQuat &rotation, GXVec3 &location )
 {
 	if ( !finder || !animationInfo ) return GX_FALSE;
 
@@ -134,16 +136,16 @@ GXBool GXAnimSolverPlayer::GetBone ( const GXUTF8* boneName, GXQuat &rotation, G
 
 	GXFloat alpha = frameInterpolationFactor * animationInfo->fps;
 
-	GXLerpVec3 ( location, doneJoint->location, nextJoint->location, alpha );
-	GXQuatSLerp ( rotation, doneJoint->rotation, nextJoint->rotation, alpha );
+	location.LinearInterpolation ( doneJoint->location, nextJoint->location, alpha );
+	rotation.SphericalLinearInterpolation ( doneJoint->rotation, nextJoint->rotation, alpha );
 
 	if ( isNormalize )
-		GXNormalizeQuat ( rotation );
+		rotation.Normalize ();
 
 	return GX_TRUE;
 }
 
-GXVoid GXAnimSolverPlayer::Update ( GXFloat delta )
+GXVoid GXAnimationSolverPlayer::Update ( GXFloat delta )
 {
 	GXFloat alpha = delta * speed;
 
@@ -173,7 +175,7 @@ GXVoid GXAnimSolverPlayer::Update ( GXFloat delta )
 	}
 }
 
-GXVoid GXAnimSolverPlayer::SetAnimationSequence ( const GXAnimationInfo* animData )
+GXVoid GXAnimationSolverPlayer::SetAnimationSequence ( const GXAnimationInfo* animData )
 {
 	GXSafeDelete ( finder );
 	finder = new GXBoneFinder ( *animData );
@@ -186,17 +188,17 @@ GXVoid GXAnimSolverPlayer::SetAnimationSequence ( const GXAnimationInfo* animDat
 	delta2PartFactor = 1.0f / totalTime;
 }
 
-GXVoid GXAnimSolverPlayer::SetAnimationMultiplier ( GXFloat multiplier )
+GXVoid GXAnimationSolverPlayer::SetAnimationMultiplier ( GXFloat multiplier )
 {
 	speed = multiplier;
 }
 
-GXVoid GXAnimSolverPlayer::EnableNormalization ()
+GXVoid GXAnimationSolverPlayer::EnableNormalization ()
 {
 	isNormalize = GX_TRUE;
 }
 
-GXVoid GXAnimSolverPlayer::DisableNormalization ()
+GXVoid GXAnimationSolverPlayer::DisableNormalization ()
 {
 	isNormalize = GX_FALSE;
 }

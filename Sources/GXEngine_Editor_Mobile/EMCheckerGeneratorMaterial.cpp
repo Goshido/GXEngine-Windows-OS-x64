@@ -53,10 +53,10 @@ GXVoid EMCheckerGeneratorMaterial::Bind ( const GXTransform& /*transform*/ )
 {
 	glUseProgram ( shaderProgram.GetProgram () );
 
-	glUniform4fv ( colorOneLocation, 1, colorOne.arr );
-	glUniform4fv ( colorTwoLocation, 1, colorTwo.arr );
-	glUniform2fv ( elementSizeLocation, 1, elementSize.arr );
-	glUniform2fv ( doubleElementSizeLocation, 1, doubleElementSize.arr );
+	glUniform4fv ( colorOneLocation, 1, colorOne.data );
+	glUniform4fv ( colorTwoLocation, 1, colorTwo.data );
+	glUniform2fv ( elementSizeLocation, 1, elementSize.data );
+	glUniform2fv ( doubleElementSizeLocation, 1, doubleElementSize.data );
 }
 
 GXVoid EMCheckerGeneratorMaterial::Unbind ()
@@ -66,19 +66,16 @@ GXVoid EMCheckerGeneratorMaterial::Unbind ()
 
 GXVoid EMCheckerGeneratorMaterial::SetColorOne ( GXUChar red, GXUChar green, GXUChar blue, GXUChar alpha )
 {
-	GXColorToVec4 ( colorOne, red, green, blue, alpha );
+	colorOne.From ( red, green, blue, alpha );
 }
 
 GXVoid EMCheckerGeneratorMaterial::SetColorTwo ( GXUChar red, GXUChar green, GXUChar blue, GXUChar alpha )
 {
-	GXColorToVec4 ( colorTwo, red, green, blue, alpha );
+	colorTwo.From ( red, green, blue, alpha );
 }
 
 GXVoid EMCheckerGeneratorMaterial::SetElementSize ( GXUShort width, GXUShort height )
 {
-	elementSize.x = (GXFloat)width;
-	elementSize.y = (GXFloat)height;
-
-	doubleElementSize.x = elementSize.x * 2.0f;
-	doubleElementSize.y = elementSize.y * 2.0f;
+	elementSize.Init ( (GXFloat)width, (GXFloat)height );
+	doubleElementSize.Multiply ( elementSize, 2.0f );
 }

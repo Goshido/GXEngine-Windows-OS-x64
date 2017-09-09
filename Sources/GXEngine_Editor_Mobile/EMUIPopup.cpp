@@ -101,12 +101,12 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
 	GXUByte totalItems = popup->GetTotalItems ();
 	GXFloat itemHeight = popup->GetItemHeight ();
 	GXFloat itemWidth = floorf ( popup->GetItemWidth () );
-	GXFloat totalHeight = floorf ( GXGetAABBHeight ( popup->GetBoundsLocal () ) );
+	GXFloat totalHeight = floorf ( popup->GetBoundsLocal ().GetHeight () );
 
 	surface->Reset ();
 
 	GXImageInfo ii;
-	GXColorToVec4 ( ii.color, BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
+	ii.color.From ( BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
 	ii.texture = &texture;
 	ii.overlayType = eGXImageOverlayType::SimpleReplace;
 	ii.insertX = 1.0f + 0.1f;
@@ -117,33 +117,33 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
 	surface->AddImage ( ii );
 
 	GXLineInfo li;
-	GXColorToVec4 ( li.color, BORDER_COLOR_R, BORDER_COLOR_G, BORDER_COLOR_B, BORDER_COLOR_A );
+	li.color.From ( BORDER_COLOR_R, BORDER_COLOR_G, BORDER_COLOR_B, BORDER_COLOR_A );
 	li.thickness = 1.0f;
 	li.overlayType = eGXImageOverlayType::SimpleReplace;
-	li.startPoint = GXCreateVec2 ( 1.0f + 0.1f, 0.1f );
-	li.endPoint = GXCreateVec2 ( itemWidth - 2.0f + 0.9f, 0.1f );
+	li.startPoint.Init (1.0f + 0.1f, 0.1f );
+	li.endPoint.Init ( itemWidth - 2.0f + 0.9f, 0.1f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec2 ( itemWidth - 1.0f + 0.9f, 1.0f + 0.1f );
-	li.endPoint = GXCreateVec2 ( itemWidth - 1.0f + 0.9f, totalHeight - 2.0f + 0.9f );
+	li.startPoint.Init ( itemWidth - 1.0f + 0.9f, 1.0f + 0.1f );
+	li.endPoint.Init ( itemWidth - 1.0f + 0.9f, totalHeight - 2.0f + 0.9f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec2 ( itemWidth - 2.0f + 0.9f, totalHeight - 1.0f + 0.9f );
-	li.endPoint = GXCreateVec2 ( 1.0f + 0.1f, totalHeight - 1.0f + 0.9f );
+	li.startPoint.Init ( itemWidth - 2.0f + 0.9f, totalHeight - 1.0f + 0.9f );
+	li.endPoint.Init ( 1.0f + 0.1f, totalHeight - 1.0f + 0.9f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec2 ( 0.1f, totalHeight - 2.0f + 0.9f );
-	li.endPoint = GXCreateVec2 ( 0.1f, 1.0f + 0.1f );
+	li.startPoint.Init ( 0.1f, totalHeight - 2.0f + 0.9f );
+	li.endPoint.Init ( 0.1f, 1.0f + 0.1f );
 
 	surface->AddLine ( li );
 
 	GXUByte hightlighted = popup->GetSelectedItemIndex ();
 	if ( hightlighted != GX_UI_POPUP_INVALID_INDEX )
 	{
-		GXColorToVec4 ( ii.color, HIGHTLIGHT_COLOR_R, HIGHTLIGHT_COLOR_G, HIGHTLIGHT_COLOR_B, HIGHTLIGHT_COLOR_A );
+		ii.color.From ( HIGHTLIGHT_COLOR_R, HIGHTLIGHT_COLOR_G, HIGHTLIGHT_COLOR_B, HIGHTLIGHT_COLOR_A );
 		ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 		ii.insertX = 0.5f;
 		ii.insertY = totalHeight - 0.5f - ( 1.0f + (GXFloat)hightlighted ) * itemHeight;
@@ -163,9 +163,9 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
 	for ( GXUByte i = 0; i < totalItems; i++ )
 	{
 		if ( popup->IsItemActive ( i ) )
-			GXColorToVec4 ( pi.color, ENABLE_ITEM_COLOR_R, ENABLE_ITEM_COLOR_G, ENABLE_ITEM_COLOR_B, ENABLE_ITEM_COLOR_A );
+			pi.color.From ( ENABLE_ITEM_COLOR_R, ENABLE_ITEM_COLOR_G, ENABLE_ITEM_COLOR_B, ENABLE_ITEM_COLOR_A );
 		else
-			GXColorToVec4 ( pi.color, DISABLE_ITEM_COLOR_R, DISABLE_ITEM_COLOR_G, DISABLE_ITEM_COLOR_B, DISABLE_ITEM_COLOR_A );
+			pi.color.From ( DISABLE_ITEM_COLOR_R, DISABLE_ITEM_COLOR_G, DISABLE_ITEM_COLOR_B, DISABLE_ITEM_COLOR_A );
 
 		surface->AddText ( pi, 0, names[ i ] );
 		pi.insertY -= itemHeight;
@@ -189,7 +189,7 @@ GXVoid EMUIPopupRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUS
 
 	delete surface;
 	surface = new GXHudSurface ( width, height );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 }
 
 GXVoid EMUIPopupRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -199,7 +199,7 @@ GXVoid EMUIPopupRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 }
 
 //-------------------------------------------------------
