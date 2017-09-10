@@ -45,7 +45,7 @@ GXWidgetRenderer ( draggableAreaWidget )
 	background = GXTexture2D::LoadTexture ( BACKGROUND_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 	GXCheckOpenGLError ();
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
-	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
+	surface = new GXHudSurface ( (GXUShort)boundsLocal.GetWidth (), (GXUShort)boundsLocal.GetHeight () );
 	GXCheckOpenGLError ();
 }
 
@@ -63,7 +63,7 @@ GXVoid EMUIDraggableAreaRenderer::OnRefresh ()
 
 	GXImageInfo ii;
 	ii.texture = &background;
-	GXColorToVec4 ( ii.color, BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
+	ii.color.From ( BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
 	ii.insertX = ii.insertY = 1.5f;
 	ii.insertWidth = w - 2.0f;
 	ii.insertHeight = h - 2.0f;
@@ -72,26 +72,26 @@ GXVoid EMUIDraggableAreaRenderer::OnRefresh ()
 	surface->AddImage ( ii );
 
 	GXLineInfo li;
-	GXColorToVec4 ( li.color, FRAME_COLOR_R, FRAME_COLOR_G, FRAME_COLOR_B, FRAME_COLOR_A );
+	li.color.From ( FRAME_COLOR_R, FRAME_COLOR_G, FRAME_COLOR_B, FRAME_COLOR_A );
 	li.thickness = 1.0f;
-	li.startPoint = GXCreateVec2 ( 1.5f, 0.5f );
-	li.endPoint = GXCreateVec2 ( w - 0.5f, 0.5f );
+	li.startPoint.Init ( 1.5f, 0.5f );
+	li.endPoint.Init ( w - 0.5f, 0.5f );
 	li.overlayType = eGXImageOverlayType::SimpleReplace;
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec2 ( w - 0.5f, 1.5f );
-	li.endPoint = GXCreateVec2 ( w - 0.5f, h - 0.5f );
+	li.startPoint.Init ( w - 0.5f, 1.5f );
+	li.endPoint.Init ( w - 0.5f, h - 0.5f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec2 ( w - 1.5f, h - 0.5f );
-	li.endPoint = GXCreateVec2 ( 0.5f, h - 0.5f );
+	li.startPoint.Init ( w - 1.5f, h - 0.5f );
+	li.endPoint.Init ( 0.5f, h - 0.5f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec2 ( 0.5f, h - 1.5f );
-	li.endPoint = GXCreateVec2 ( 0.5f, 0.5f );
+	li.startPoint.Init ( 0.5f, h - 1.5f );
+	li.endPoint.Init ( 0.5f, 0.5f );
 
 	surface->AddLine ( li );
 }
@@ -112,7 +112,7 @@ GXVoid EMUIDraggableAreaRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort wid
 	surface->GetLocation ( location );
 	delete surface;
 	surface = new GXHudSurface ( width, height );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 }
 
 GXVoid EMUIDraggableAreaRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -122,7 +122,7 @@ GXVoid EMUIDraggableAreaRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 }
 
 //---------------------------------------------------------------

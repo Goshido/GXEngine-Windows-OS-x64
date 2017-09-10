@@ -32,16 +32,16 @@ EMLightProbe::EMLightProbe ()
 
 	probes = this;
 
-	locationWorld = GXCreateVec3 ( DEFAULT_LOCATION_X, DEFAULT_LOCATION_Y, DEFAULT_LOCATION_Z );
+	locationWorld.Init ( DEFAULT_LOCATION_X, DEFAULT_LOCATION_Y, DEFAULT_LOCATION_Z );
 	
-	GXSetAABBEmpty ( boundsWorld );
+	boundsWorld.Empty ();
 
 	GXFloat halfRangeX = 0.5f * DEFAULT_BOUND_RANGE_X;
 	GXFloat halfRangeY = 0.5f * DEFAULT_BOUND_RANGE_Y;
 	GXFloat halfRangeZ = 0.5f * DEFAULT_BOUND_RANGE_Z;
 
-	GXAddVertexToAABB ( boundsWorld, locationWorld.x - halfRangeX, locationWorld.y - halfRangeY, locationWorld.z - halfRangeZ );
-	GXAddVertexToAABB ( boundsWorld, locationWorld.x + halfRangeX, locationWorld.y + halfRangeY, locationWorld.z + halfRangeZ );
+	boundsWorld.AddVertex ( locationWorld.GetX () - halfRangeX, locationWorld.GetY () - halfRangeY, locationWorld.GetZ () - halfRangeZ );
+	boundsWorld.AddVertex ( locationWorld.GetX () + halfRangeX, locationWorld.GetY () + halfRangeY, locationWorld.GetZ () + halfRangeZ );
 
 	cube = GXMeshGeometry::LoadFromStm ( L"3D Models/System/Unit Cube.stm" );
 	screenQuad = GXMeshGeometry::LoadFromStm ( L"3D Models/System/ScreenQuad.stm" );
@@ -76,8 +76,8 @@ EMLightProbe::~EMLightProbe ()
 
 GXVoid EMLightProbe::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 {
-	locationWorld = GXCreateVec3 ( x, y, z );
-	SetBoundLocal ( GXGetAABBWidth ( boundsWorld ), GXGetAABBHeight ( boundsWorld ), GXGetAABBDepth ( boundsWorld ) );
+	locationWorld.Init ( x, y, z );
+	SetBoundLocal ( boundsWorld.GetWidth (), boundsWorld.GetHeight (), boundsWorld.GetDepth () );
 }
 
 GXVoid EMLightProbe::SetEnvironmentMap ( GXTextureCubeMap &cubeMap )
@@ -97,9 +97,9 @@ GXVoid EMLightProbe::SetBoundLocal ( GXFloat xRange, GXFloat yRange, GXFloat zRa
 	GXFloat halfRangeY = 0.5f * yRange;
 	GXFloat halfRangeZ = 0.5f * zRange;
 
-	GXSetAABBEmpty ( boundsWorld );
-	GXAddVertexToAABB ( boundsWorld, locationWorld.x - halfRangeX, locationWorld.y - halfRangeY, locationWorld.z - halfRangeZ );
-	GXAddVertexToAABB ( boundsWorld, locationWorld.x + halfRangeX, locationWorld.y + halfRangeY, locationWorld.z + halfRangeZ );
+	boundsWorld.Empty ();
+	boundsWorld.AddVertex ( locationWorld.GetX () - halfRangeX, locationWorld.GetY () - halfRangeY, locationWorld.GetZ () - halfRangeZ );
+	boundsWorld.AddVertex ( locationWorld.GetX () + halfRangeX, locationWorld.GetY () + halfRangeY, locationWorld.GetZ () + halfRangeZ );
 }
 
 GXUInt EMLightProbe::SetDiffuseIrradianceConvolutionAngleStep ( GXFloat radians )

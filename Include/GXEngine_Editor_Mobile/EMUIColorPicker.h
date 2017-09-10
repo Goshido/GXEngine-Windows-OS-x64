@@ -11,8 +11,9 @@
 
 
 class EMUIColorPicker;
-typedef GXVoid ( GXCALL* PFNEMONHSVACOLORPROC ) ( GXVoid* handler, GXFloat h, GXFloat s, GXFloat v, GXFloat alpha );
-typedef GXVoid ( GXCALL* PFNEMONRGBACOLORPROC ) ( GXVoid* handler, GXUByte r, GXUByte g, GXUByte b, GXUByte alpha );
+typedef GXVoid ( GXCALL* PFNEMONHSVACOLORPROC ) ( GXVoid* handler, const GXColorHSV color );
+typedef GXVoid ( GXCALL* PFNEMONRGBACOLORPROC ) ( GXVoid* handler, const GXColorRGB color );
+typedef GXVoid ( GXCALL* PFNEMONRGBAUBYTECOLORPROC ) ( GXVoid* handler, GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
 
 
 class EMUIColorPicker : public EMUI
@@ -45,12 +46,9 @@ class EMUIColorPicker : public EMUI
 		EMUIButton*					cancel;
 		EMUIButton*					pick;
 
-		GXVec4						currentColorHSVA;
-		GXVec4						oldColorHSVA;
-		GXVec4						savedColorHSVAs[ 16 ];
-
-		PFNEMONHSVACOLORPROC		OnHSVAColor;
-		PFNEMONRGBACOLORPROC		OnRGBAColor;
+		PFNEMONHSVACOLORPROC		OnHSVColor;
+		PFNEMONRGBACOLORPROC		OnRGBColor;
+		PFNEMONRGBAUBYTECOLORPROC	OnRGBUByteColor;
 		GXVoid*						handler;
 
 		GXWChar*					buffer;
@@ -63,8 +61,9 @@ class EMUIColorPicker : public EMUI
 
 		GXWidget* GetWidget () const override;
 
-		GXVoid PickHSVAColor ( GXVoid* handlerObject, PFNEMONHSVACOLORPROC callback, const GXVec4 &oldColorHSVAValue );
-		GXVoid PickRGBAColor ( GXVoid* handlerObject, PFNEMONRGBACOLORPROC callback, GXUByte oldRed, GXUByte oldGreen, GXUByte oldBlue, GXUByte oldAlpha );
+		GXVoid PickColor ( GXVoid* handlerObject, PFNEMONHSVACOLORPROC callback, const GXColorHSV &oldColorValue );
+		GXVoid PickColor ( GXVoid* handlerObject, PFNEMONRGBACOLORPROC callback, const GXColorRGB &oldColorValue );
+		GXVoid PickColor ( GXVoid* handlerObject, PFNEMONRGBAUBYTECOLORPROC callback, GXUByte oldRed, GXUByte oldGreen, GXUByte oldBlue, GXUByte oldAlpha );
 
 	private:
 		EMUIColorPicker ();

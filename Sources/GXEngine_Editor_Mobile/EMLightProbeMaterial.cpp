@@ -68,9 +68,7 @@ GXVoid EMLightProbeMaterial::Bind ( const GXTransform& /*transform*/ )
 	glUniform3fv ( viewerLocationWorldLocation, 1, viewerLocationWorld.data );
 	glUniform1f ( prefilteredEnvironmentMapLODsLocation, (GXFloat)prefilteredEnvironmentMapTexture->GetLevelOfDetailNumber () );
 
-	GXMat3 tmp ( viewerModelMatrix );
-	GXMat3 inverseViewMatrix;
-	inverseViewMatrix.Inverse ( tmp );
+	GXMat3 inverseViewMatrix ( viewerModelMatrix );
 	glUniformMatrix3fv ( inverseViewMatrixLocation, 1, GL_FALSE, inverseViewMatrix.data );
 	glUniformMatrix4fv ( inverseViewProjectionMatrixLocation, 1, GL_FALSE, camera->GetCurrentFrameInverseViewProjectionMatrix ().data );
 

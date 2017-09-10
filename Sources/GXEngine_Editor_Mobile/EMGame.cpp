@@ -627,12 +627,12 @@ GXVoid GXCALL EMGame::OnExit ( GXVoid* /*handler*/ )
 
 GXVoid GXCALL EMGame::OnColorPicker ( GXVoid* /*handler*/ )
 {
-	EMUIColorPicker::GetInstance ().PickRGBAColor ( nullptr, &EMGame::OnPickRGBA, 115, 185, 0, 255 );
+	EMUIColorPicker::GetInstance ().PickColor ( nullptr, &EMGame::OnPickRGBUByte, 115, 185, 0, 255 );
 }
 
-GXVoid GXCALL EMGame::OnPickRGBA ( GXVoid* /*handler*/, GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
+GXVoid GXCALL EMGame::OnPickRGBUByte ( GXVoid* /*handler*/, GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
 {
-	GXLogW ( L"EMGame::OnPickRGBA::Info - Выбран цвет RGBA:\n\tКрасный - %hhu\n\tЗелёный - %hhu\n\tСиний - %hhu\n\tПрозрачность - %hhu\n", red, green, blue, alpha );
+	GXLogW ( L"EMGame::OnPickRGBUByte::Info - Выбран цвет RGBA:\n\tКрасный - %hhu\n\tЗелёный - %hhu\n\tСиний - %hhu\n\tПрозрачность - %hhu\n", red, green, blue, alpha );
 }
 
 GXVoid GXCALL EMGame::OnShowMotionBlurSettings ( GXVoid* /*handler*/ )

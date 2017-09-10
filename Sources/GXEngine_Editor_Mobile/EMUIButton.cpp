@@ -98,7 +98,7 @@ GXWidgetRenderer ( buttonWidget )
 	background = GXTexture2D::LoadTexture ( BACKGROUND_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
-	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
+	surface = new GXHudSurface ( (GXUShort)boundsLocal.GetWidth (), (GXUShort)boundsLocal.GetHeight () );
 }
 
 EMUIButtonRenderer::~EMUIButtonRenderer ()
@@ -126,23 +126,23 @@ GXVoid EMUIButtonRenderer::OnRefresh ()
 
 	if ( button->IsDisabled () )
 	{
-		GXColorToVec4 ( ii.color, DISABLE_BACKGROUND_COLOR_R, DISABLE_BACKGROUND_COLOR_G, DISABLE_BACKGROUND_COLOR_B, DISABLE_BACKGROUND_COLOR_A );
-		GXColorToVec4 ( pi.color, DISABLE_FONT_COLOR_R, DISABLE_FONT_COLOR_G, DISABLE_FONT_COLOR_B, DISABLE_FONT_COLOR_A );
+		ii.color.From ( DISABLE_BACKGROUND_COLOR_R, DISABLE_BACKGROUND_COLOR_G, DISABLE_BACKGROUND_COLOR_B, DISABLE_BACKGROUND_COLOR_A );
+		pi.color.From ( DISABLE_FONT_COLOR_R, DISABLE_FONT_COLOR_G, DISABLE_FONT_COLOR_B, DISABLE_FONT_COLOR_A );
 	}
 	else if ( !button->IsHighlighted () )
 	{
-		GXColorToVec4 ( ii.color, HIGHLIGHTED_BACKGROUND_COLOR_R, HIGHLIGHTED_BACKGROUND_COLOR_G, HIGHLIGHTED_BACKGROUND_COLOR_B, HIGHLIGHTED_BACKGROUND_COLOR_A );
-		GXColorToVec4 ( pi.color, HIGHLIGHTED_FONT_COLOR_R, HIGHLIGHTED_FONT_COLOR_G, HIGHLIGHTED_FONT_COLOR_B, HIGHLIGHTED_FONT_COLOR_A );
+		ii.color.From ( HIGHLIGHTED_BACKGROUND_COLOR_R, HIGHLIGHTED_BACKGROUND_COLOR_G, HIGHLIGHTED_BACKGROUND_COLOR_B, HIGHLIGHTED_BACKGROUND_COLOR_A );
+		pi.color.From ( HIGHLIGHTED_FONT_COLOR_R, HIGHLIGHTED_FONT_COLOR_G, HIGHLIGHTED_FONT_COLOR_B, HIGHLIGHTED_FONT_COLOR_A );
 	}
 	else if ( button->IsPressed () )
 	{
-		GXColorToVec4 ( ii.color, PRESSED_BACKGROUND_COLOR_R, PRESSED_BACKGROUND_COLOR_G, PRESSED_BACKGROUND_COLOR_B, PRESSED_BACKGROUND_COLOR_A );
-		GXColorToVec4 ( pi.color, PRESSED_FONT_COLOR_R, PRESSED_FONT_COLOR_G, PRESSED_FONT_COLOR_B, PRESSED_FONT_COLOR_A );
+		ii.color.From ( PRESSED_BACKGROUND_COLOR_R, PRESSED_BACKGROUND_COLOR_G, PRESSED_BACKGROUND_COLOR_B, PRESSED_BACKGROUND_COLOR_A );
+		pi.color.From ( PRESSED_FONT_COLOR_R, PRESSED_FONT_COLOR_G, PRESSED_FONT_COLOR_B, PRESSED_FONT_COLOR_A );
 	}
 	else
 	{
-		GXColorToVec4 ( ii.color, NORMAL_BACKGROUND_COLOR_R, NORMAL_BACKGROUND_COLOR_G, NORMAL_BACKGROUND_COLOR_B, NORMAL_BACKGROUND_COLOR_A );
-		GXColorToVec4 ( pi.color, NORMAL_FONT_COLOR_R, NORMAL_FONT_COLOR_G, NORMAL_FONT_COLOR_B, NORMAL_FONT_COLOR_A );
+		ii.color.From ( NORMAL_BACKGROUND_COLOR_R, NORMAL_BACKGROUND_COLOR_G, NORMAL_BACKGROUND_COLOR_B, NORMAL_BACKGROUND_COLOR_A );
+		pi.color.From ( NORMAL_FONT_COLOR_R, NORMAL_FONT_COLOR_G, NORMAL_FONT_COLOR_B, NORMAL_FONT_COLOR_A );
 	}
 
 	ii.insertX = ii.insertY = 1.5f;
@@ -163,26 +163,26 @@ GXVoid EMUIButtonRenderer::OnRefresh ()
 	surface->AddText ( pi, 0, caption );
 
 	GXLineInfo li;
-	GXColorToVec4 ( li.color, BORDER_COLOR_R, BORDER_COLOR_G, BORDER_COLOR_B, BORDER_COLOR_A );
+	li.color.From ( BORDER_COLOR_R, BORDER_COLOR_G, BORDER_COLOR_B, BORDER_COLOR_A );
 	li.thickness = 1.0f;
-	li.startPoint = GXCreateVec2 ( 1.5f, 0.5f );
-	li.endPoint = GXCreateVec2 ( w - 0.5f, 0.5f );
+	li.startPoint.Init ( 1.5f, 0.5f );
+	li.endPoint.Init ( w - 0.5f, 0.5f );
 	li.overlayType = eGXImageOverlayType::SimpleReplace;
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec2 ( w - 0.5f, 1.5f );
-	li.endPoint = GXCreateVec2 ( w - 0.5f, h - 0.5f );
+	li.startPoint.Init ( w - 0.5f, 1.5f );
+	li.endPoint.Init ( w - 0.5f, h - 0.5f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec2 ( w - 1.5f, h - 0.5f );
-	li.endPoint = GXCreateVec2 ( 0.5f, h - 0.5f );
+	li.startPoint.Init ( w - 1.5f, h - 0.5f );
+	li.endPoint.Init ( 0.5f, h - 0.5f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec2 ( 0.5f, h - 1.5f );
-	li.endPoint = GXCreateVec2 ( 0.5f, 0.5f );
+	li.startPoint.Init ( 0.5f, h - 1.5f );
+	li.endPoint.Init ( 0.5f, 0.5f );
 
 	surface->AddLine ( li );
 }
@@ -213,7 +213,7 @@ GXVoid EMUIButtonRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXU
 	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 }
 
 GXVoid EMUIButtonRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -223,7 +223,7 @@ GXVoid EMUIButtonRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 }
 
 //----------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-﻿//version 1.38
+﻿//version 1.39
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
@@ -277,9 +277,9 @@ GXVoid GXVec3::Substract ( const GXVec3 &a, const GXVec3 &b )
 
 GXVoid GXVec3::Multiply ( const GXVec3 &a, GXFloat scale )
 {
-	data[ 0 ] *= a.data[ 0 ] * scale;
-	data[ 1 ] *= a.data[ 1 ] * scale;
-	data[ 2 ] *= a.data[ 2 ] * scale;
+	data[ 0 ] = a.data[ 0 ] * scale;
+	data[ 1 ] = a.data[ 1 ] * scale;
+	data[ 2 ] = a.data[ 2 ] * scale;
 }
 
 GXVoid GXVec3::Multiply ( const GXVec3 &a, const GXVec3 &b )
@@ -332,6 +332,14 @@ GXVoid GXVec3::LinearInterpolation ( const GXVec3 &start, const GXVec3 &finish, 
 	Sum ( start, interpolationFactor, difference );
 }
 
+GXVoid GXVec3::Project ( const GXVec3 &vector, const GXVec3 &axis )
+{
+	GXVec3 normalVector = vector;
+	normalVector.Normalize ();
+	GXFloat factor = vector.Length () * axis.DotProduct ( normalVector );
+	Multiply ( axis, factor );
+}
+
 GXBool GXVec3::IsEqual ( const GXVec3 &other )
 {
 	if ( data[ 0 ] != other.data[ 0 ] ) return GX_FALSE;
@@ -354,14 +362,6 @@ const GXVec3& GXVec3::GetAbsoluteY ()
 const GXVec3& GXVec3::GetAbsoluteZ ()
 {
 	return absoluteZ;
-}
-
-GXVoid GXCALL GXVec3::Projection ( GXVec3 &projection, const GXVec3 &vector, const GXVec3 &unitVector )
-{
-	GXVec3 normalVector = vector;
-	normalVector.Normalize ();
-	GXFloat factor = vector.Length () * unitVector.DotProduct ( normalVector );
-	projection.Multiply ( unitVector, factor );
 }
 
 GXVoid GXCALL GXVec3::MakeOrthonormalBasis ( GXVec3 &baseX, GXVec3 &adjustedY, GXVec3 &adjustedZ )
@@ -429,10 +429,7 @@ GXVec4::GXVec4 ( GXVec3& vector, GXFloat w )
 
 GXVec4::GXVec4 ( GXFloat x, GXFloat y, GXFloat z, GXFloat w )
 {
-	data[ 0 ] = x;
-	data[ 1 ] = y;
-	data[ 2 ] = z;
-	data[ 3 ] = w;
+	Init ( x, y, z, w );
 }
 
 GXVoid GXVec4::Init ( GXFloat x, GXFloat y, GXFloat z, GXFloat w )
@@ -504,6 +501,11 @@ GXColorRGB::GXColorRGB ( GXFloat red, GXFloat green, GXFloat blue, GXFloat alpha
 GXColorRGB::GXColorRGB ( GXUByte red, GXUByte green, GXUByte blue, GXFloat alpha )
 {
 	From ( red, green, blue, alpha );
+}
+
+GXColorRGB::GXColorRGB ( const GXColorHSV &color )
+{
+	From ( color );
 }
 
 GXColorRGB::GXColorRGB ( const GXColorRGB &other )
@@ -658,6 +660,11 @@ GXColorHSV::GXColorHSV ( GXFloat hue, GXFloat saturation, GXFloat value, GXFloat
 	data[ 1 ] = saturation;
 	data[ 2 ] = value;
 	data[ 3 ] = alpha;
+}
+
+GXColorHSV::GXColorHSV ( const GXColorRGB &color )
+{
+	From ( color );
 }
 
 GXColorHSV::GXColorHSV ( const GXColorHSV &other )
@@ -1297,7 +1304,7 @@ GXVoid GXMat3::Multiply ( const GXMat3 &a, const GXMat3 &b )
 	m[ 2 ][ 2 ] = a.m[ 2 ][ 0 ] * b.m[ 0 ][ 2 ] + a.m[ 2 ][ 1 ] * b.m[ 1 ][ 2 ] + a.m[ 2 ][ 2 ] * b.m[ 2 ][ 2 ];
 }
 
-GXVoid GXMat3::Multiply ( GXVec3 &out, const GXVec3 &v )
+GXVoid GXMat3::Multiply ( GXVec3 &out, const GXVec3 &v ) const
 {
 	out.SetX ( v.data[ 0 ] * m[ 0 ][ 0 ] + v.data[ 1 ] * m[ 1 ][ 0 ] + v.data[ 2 ] * m[ 2 ][ 0 ] );
 	out.SetY ( v.data[ 0 ] * m[ 0 ][ 1 ] + v.data[ 1 ] * m[ 1 ][ 1 ] + v.data[ 2 ] * m[ 2 ][ 1 ] );
@@ -1587,7 +1594,7 @@ GXVoid GXMat4::RotationXYZ ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat r
 	y.RotationY ( yawRadians );
 
 	GXMat4 z;
-	y.RotationZ ( rollRadians );
+	z.RotationZ ( rollRadians );
 
 	GXMat4 temp;
 	temp.Multiply ( x, y );
@@ -1774,7 +1781,7 @@ GXVoid GXMat4::GetOrthoParams ( GXFloat &width, GXFloat &height, GXFloat &zNear,
 	zFar = ( 2.0f + zNear * m[ 2 ][ 2 ] ) * factor;
 }
 
-GXVoid GXMat4::GetRayPerspective ( GXVec3 &rayView, const GXVec2 &mouseCVV )
+GXVoid GXMat4::GetRayPerspective ( GXVec3 &rayView, const GXVec2 &mouseCVV ) const
 {
 	rayView.SetX ( mouseCVV.GetX () / m[ 0 ][ 0 ] );
 	rayView.SetY ( mouseCVV.GetY () / m[ 1 ][ 1 ] );
@@ -2155,70 +2162,6 @@ GXFloat GXCALL GXDegToRad ( GXFloat degrees )
 GXFloat GXCALL GXRadToDeg ( GXFloat radians )
 {
 	return radians * RADIANS_TO_DEGREES_FACTOR;
-}
-
-GXVoid GXCALL GXConvertHSVAToRGBA ( GXUByte &red, GXUByte &green, GXUByte &blue, GXUByte &alpha, const GXColorHSV &color )
-{
-	GXFloat correctedHue = color.GetHue ();
-
-	while ( correctedHue >= 360.0f )
-		correctedHue -= 360.0f;
-
-	while ( correctedHue < 0.0f )
-		correctedHue += 360.0f;
-
-	GXFloat value = color.GetValue ();
-
-	GXUByte selector = (GXUByte)( (GXInt)( correctedHue * HSVA_FACTOR ) % 6 );
-	GXFloat minValue = ( ( 100.0f - color.GetSaturation () ) * value ) * 0.01f;
-	GXFloat delta = ( value - minValue ) * ( ( (GXInt)correctedHue % 60 ) * HSVA_FACTOR );
-	GXFloat increment = minValue + delta;
-	GXFloat decrement = value - delta;
-
-	alpha = (GXUByte)( color.GetAlpha () * HSVA_ALPHA_TO_RGBA_ALPHA_BYTE );
-
-	switch ( selector )
-	{
-		case 0:
-			red = (GXUByte)( value * HSVA_TO_RGBA_FACTOR );
-			green = (GXUByte)( increment * HSVA_TO_RGBA_FACTOR );
-			blue = (GXUByte)( minValue * HSVA_TO_RGBA_FACTOR );
-		break;
-
-		case 1:
-			red = (GXUByte)( decrement * HSVA_TO_RGBA_FACTOR );
-			green = (GXUByte)( value * HSVA_TO_RGBA_FACTOR );
-			blue = (GXUByte)( minValue * HSVA_TO_RGBA_FACTOR );
-		break;
-
-		case 2:
-			red = (GXUByte)( minValue * HSVA_TO_RGBA_FACTOR );
-			green = (GXUByte)( value * HSVA_TO_RGBA_FACTOR );
-			blue = (GXUByte)( increment * HSVA_TO_RGBA_FACTOR );
-		break;
-
-		case 3:
-			red = (GXUByte)( minValue * HSVA_TO_RGBA_FACTOR );
-			green = (GXUByte)( decrement * HSVA_TO_RGBA_FACTOR );
-			blue = (GXUByte)( value * HSVA_TO_RGBA_FACTOR );
-		break;
-
-		case 4:
-			red = (GXUByte)( increment * HSVA_TO_RGBA_FACTOR );
-			green = (GXUByte)( minValue * HSVA_TO_RGBA_FACTOR );
-			blue = (GXUByte)( value * HSVA_TO_RGBA_FACTOR );
-		break;
-
-		case 5:
-			red = (GXUByte)( value * HSVA_TO_RGBA_FACTOR );
-			green = (GXUByte)( minValue * HSVA_TO_RGBA_FACTOR );
-			blue = (GXUByte)( decrement * HSVA_TO_RGBA_FACTOR );
-		break;
-
-		default:
-			GXLogW ( L"GXConvertHSVAToRGBA::Error (branch one) - Что-то пошло не так!\n" );
-		break;
-	}
 }
 
 GXVoid GXCALL GXConvert3DSMaxToGXEngine ( GXVec3 &gx_out, GXFloat max_x, GXFloat max_y, GXFloat max_z )

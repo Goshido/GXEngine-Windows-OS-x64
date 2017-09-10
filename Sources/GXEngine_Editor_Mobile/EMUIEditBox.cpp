@@ -69,7 +69,7 @@ GXWidgetRenderer ( widget )
 {
 	background = GXTexture2D::LoadTexture ( DEFAULT_BACKGROUND, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
-	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
+	surface = new GXHudSurface ( (GXUShort)boundsLocal.GetWidth (), (GXUShort)boundsLocal.GetHeight () );
 }
 
 EMUIEditBoxRenderer::~EMUIEditBoxRenderer ()
@@ -91,7 +91,7 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
 	GXImageInfo ii;
 
 	ii.texture = &background;
-	GXColorToVec4 ( ii.color, BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
+	ii.color.From ( BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
 	ii.insertX = ii.insertY = 1.5f;
 	ii.insertWidth = width - 2.0f;
 	ii.insertHeight = height - 2.0f;
@@ -106,7 +106,7 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
 
 		if ( beginOffset != endOffset )
 		{
-			GXColorToVec4 ( ii.color, SELECTION_COLOR_R, SELECTION_COLOR_G, SELECTION_COLOR_B, SELECTION_COLOR_A );
+			ii.color.From ( SELECTION_COLOR_R, SELECTION_COLOR_G, SELECTION_COLOR_B, SELECTION_COLOR_A );
 			ii.insertX = beginOffset;
 			ii.insertY = 0.0f;
 			ii.insertWidth = endOffset - beginOffset;
@@ -119,7 +119,7 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
 		pi.font = font;
 		pi.insertY = ( height - font->GetSize () * 0.6f ) * 0.5f;
 		pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
-		GXColorToVec4 ( pi.color, FONT_COLOR_R, FONT_COLOR_G, FONT_COLOR_B, FONT_COLOR_A );
+		pi.color.From ( FONT_COLOR_R, FONT_COLOR_G, FONT_COLOR_B, FONT_COLOR_A );
 
 		switch ( editBoxWidget->GetAlignment () )
 		{
@@ -153,31 +153,31 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
 
 	if ( editBoxWidget->IsActive () )
 	{
-		GXColorToVec4 ( li.color, CURSOR_COLOR_R, CURSOR_COLOR_G, CURSOR_COLOR_B, CURSOR_COLOR_A );
-		li.startPoint = GXCreateVec2 ( editBoxWidget->GetCursorOffset () + 0.5f, 0.5f );
-		li.endPoint = GXCreateVec2 ( li.startPoint.x, height );
+		li.color.From ( CURSOR_COLOR_R, CURSOR_COLOR_G, CURSOR_COLOR_B, CURSOR_COLOR_A );
+		li.startPoint.Init ( editBoxWidget->GetCursorOffset () + 0.5f, 0.5f );
+		li.endPoint.Init ( li.startPoint.GetX (), height );
 		surface->AddLine ( li );
 	}
 
-	GXColorToVec4 ( li.color, BORDER_COLOR_R , BORDER_COLOR_G , BORDER_COLOR_B, BORDER_COLOR_A );
+	li.color.From ( BORDER_COLOR_R , BORDER_COLOR_G , BORDER_COLOR_B, BORDER_COLOR_A );
 	
-	li.startPoint = GXCreateVec2 ( 0.5f, 0.5f );
-	li.endPoint = GXCreateVec2 ( width - 0.5f, 0.5f );
+	li.startPoint.Init ( 0.5f, 0.5f );
+	li.endPoint.Init ( width - 0.5f, 0.5f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec2 ( width - 0.5f, 0.5f );
-	li.endPoint = GXCreateVec2 ( width - 0.5f, height - 0.5f );
+	li.startPoint.Init ( width - 0.5f, 0.5f );
+	li.endPoint.Init ( width - 0.5f, height - 0.5f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec2 ( width - 0.5f, height - 0.5f );
-	li.endPoint = GXCreateVec2 ( 0.5f, height - 0.5f );
+	li.startPoint.Init ( width - 0.5f, height - 0.5f );
+	li.endPoint.Init ( 0.5f, height - 0.5f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec2 ( 0.5f, height - 0.5f );
-	li.endPoint = GXCreateVec2 ( 0.5f, 0.5f );
+	li.startPoint.Init ( 0.5f, height - 0.5f );
+	li.endPoint.Init ( 0.5f, 0.5f );
 
 	surface->AddLine ( li );
 }
@@ -198,7 +198,7 @@ GXVoid EMUIEditBoxRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GX
 	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 }
 
 GXVoid EMUIEditBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -208,7 +208,7 @@ GXVoid EMUIEditBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 }
 
 //-------------------------------------------------------------------------

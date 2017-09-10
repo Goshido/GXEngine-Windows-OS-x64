@@ -94,7 +94,7 @@ GXWidgetRenderer ( widget )
 	folderIcon = GXTexture2D::LoadTexture ( FOLDER_ICON, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
-	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
+	surface = new GXHudSurface ( (GXUShort)boundsLocal.GetWidth (), (GXUShort)boundsLocal.GetHeight () );
 }
 
 EMUIFileListBoxRenderer::~EMUIFileListBoxRenderer ()
@@ -114,12 +114,12 @@ GXVoid EMUIFileListBoxRenderer::OnRefresh ()
 	GXUInt totalItems = listBoxWidget->GetTotalItems ();
 	GXUIListBoxItem* items = listBoxWidget->GetItems ();
 	GXFloat itemHeight = listBoxWidget->GetItemHeight ();
-	GXFloat width = GXGetAABBWidth ( widget->GetBoundsLocal () );
-	GXFloat height = GXGetAABBHeight ( widget->GetBoundsLocal () );
+	GXFloat width = widget->GetBoundsLocal ().GetWidth ();
+	GXFloat height = widget->GetBoundsLocal ().GetHeight ();
 
 	surface->Reset ();
 	GXImageInfo ii;
-	GXColorToVec4 ( ii.color, BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
+	ii.color.From ( BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
 	ii.insertX = ii.insertY = 0.0f;
 	ii.insertWidth = width;
 	ii.insertHeight = height;
@@ -137,7 +137,7 @@ GXVoid EMUIFileListBoxRenderer::OnRefresh ()
 	GXFloat fileIconYOffset = ( itemHeight - fileIconWidth ) * 0.5f;
 
 	GXPenInfo pi;
-	GXColorToVec4 ( pi.color, ITEM_NAME_COLOR_R, ITEM_NAME_COLOR_G, ITEM_NAME_COLOR_B, ITEM_NAME_COLOR_A );
+	pi.color.From ( ITEM_NAME_COLOR_R, ITEM_NAME_COLOR_G, ITEM_NAME_COLOR_B, ITEM_NAME_COLOR_A );
 	pi.font = &font;
 	pi.insertX = ITEM_NAME_OFFSET_X * gx_ui_Scale;
 	pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
@@ -145,14 +145,9 @@ GXVoid EMUIFileListBoxRenderer::OnRefresh ()
 	GXFloat iconXOffset = ICON_OFFSET_X * gx_ui_Scale;
 	ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
-	GXVec4 highlightedColor;
-	GXColorToVec4 ( highlightedColor,HIGHLIGHTED_COLOR_R, HIGHLIGHTED_COLOR_G, HIGHLIGHTED_COLOR_B, HIGHLIGHTED_COLOR_A );
-
-	GXVec4 selectedColor;
-	GXColorToVec4 ( selectedColor, SELECTED_COLOR_R, SELECTED_COLOR_G, SELECTED_COLOR_B, SELECTED_COLOR_A );
-
-	GXVec4 iconColor;
-	GXColorToVec4 ( iconColor, 255, 255, 255, 255 );
+	static const GXColorRGB highlightedColor ( (GXUByte)HIGHLIGHTED_COLOR_R, (GXUByte)HIGHLIGHTED_COLOR_G, (GXUByte)HIGHLIGHTED_COLOR_B, (GXUByte)HIGHLIGHTED_COLOR_A );
+	static const GXColorRGB selectedColor ( (GXUByte)SELECTED_COLOR_R, (GXUByte)SELECTED_COLOR_G, (GXUByte)SELECTED_COLOR_B, (GXUByte)SELECTED_COLOR_A );
+	static const GXColorRGB iconColor ( (GXUByte)255, (GXUByte)255, (GXUByte)255, (GXUByte)255 );
 
 	GXFloat itemNameYOffset = ( itemHeight - font.GetSize () * 0.5f ) * 0.5f;
 
@@ -240,7 +235,7 @@ GXVoid EMUIFileListBoxRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width
 	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 }
 
 GXVoid EMUIFileListBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -250,7 +245,7 @@ GXVoid EMUIFileListBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 }
 
 //---------------------------------------------------------

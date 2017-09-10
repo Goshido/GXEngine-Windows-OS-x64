@@ -74,13 +74,13 @@ GXVoid EMSSAOSharpMaterial::Bind ( const GXTransform& /*transform*/ )
 	const GXMat4& projectionMatrix = camera->GetCurrentFrameProjectionMatrix ();
 	const GXMat4& inverseProjectionMatrix = camera->GetCurrentFrameInverseProjectionMatrix ();
 
-	glUniformMatrix4fv ( projectionMatrixLocation, 1, GL_FALSE, projectionMatrix.arr );
-	glUniformMatrix4fv ( inverseProjectionMatrixLocation, 1, GL_FALSE, inverseProjectionMatrix.arr );
+	glUniformMatrix4fv ( projectionMatrixLocation, 1, GL_FALSE, projectionMatrix.data );
+	glUniformMatrix4fv ( inverseProjectionMatrixLocation, 1, GL_FALSE, inverseProjectionMatrix.data );
 	glUniform3fv ( kernelLocation, EM_MAX_SSAO_SAMPLES, (const GLfloat*)kernel );
 	glUniform1f ( checkRadiusLocation, checkRadius );
 	glUniform1i ( samplesLocation, samples );
 	glUniform1f ( inverseSamplesLocation, inverseSamples );
-	glUniform2f ( noiseScaleLocation, noiseScale.x, noiseScale.y );
+	glUniform2fv ( noiseScaleLocation, 1, noiseScale.data );
 	glUniform1f ( maxDistanceLocation, maxDistance );
 
 	depthTexture->Bind ( DEPTH_SLOT );
@@ -122,16 +122,16 @@ GXVoid EMSSAOSharpMaterial::SetCheckRadius ( GXFloat meters )
 		scale = MINIMUM_KERNEL_SCALE + scale * ( 1.0f - MINIMUM_KERNEL_SCALE );
 
 		GXVec3 v;
-		v.x = GXRandomBetween ( -1.0f, 1.0f );
-		v.y = GXRandomBetween ( -1.0f, 1.0f );
-		v.z = GXRandomNormalize ();
+		v.SetX ( GXRandomBetween ( -1.0f, 1.0f ) );
+		v.SetY ( GXRandomBetween ( -1.0f, 1.0f ) );
+		v.SetZ ( GXRandomNormalize () );
 
-		if ( GXLengthVec3 ( v ) == 0.0f )
-			v.z = 1.0f;
+		if ( v.Length () == 0.0f )
+			v.SetZ ( 1.0f );
 		else
-			GXNormalizeVec3 ( v );
+			v.Normalize ();
 
-		GXMulVec3Scalar ( kernel[ i ], v, scale * meters );
+		kernel[ i ].Multiply ( v, scale * meters );
 	}
 
 	checkRadius = meters;
@@ -183,18 +183,18 @@ GXVoid EMSSAOSharpMaterial::SetNoiseTextureResolution ( GXUShort resolution )
 	for ( GXUInt i = 0; i < totalPixels; i++ )
 	{
 		GXVec2 v;
-		v.x = GXRandomBetween ( -1.0f, 1.0f );
-		v.y = GXRandomBetween ( -1.0f, 1.0f );
+		v.SetX ( GXRandomBetween ( -1.0f, 1.0f ) );
+		v.SetY ( GXRandomBetween ( -1.0f, 1.0f ) );
 
-		if ( GXLengthVec2 ( v ) == 0.0f )
-			v.x = CORRECTED_NOISE_X;
+		if ( v.Length () == 0.0f )
+			v.SetX ( CORRECTED_NOISE_X );
 		else
-			GXNormalizeVec2 ( v );
+			v.Normalize ();
 
-		noiseData[ offset ] = (GXUByte)( v.x * 128 + 127 );
+		noiseData[ offset ] = (GXUByte)( v.GetX () * 128 + 127 );
 		offset++;
 
-		noiseData[ offset ] = (GXUByte)( v.y * 128 + 127 );
+		noiseData[ offset ] = (GXUByte)( v.GetY () * 128 + 127 );
 		offset++;
 	}
 
@@ -206,8 +206,8 @@ GXVoid EMSSAOSharpMaterial::SetNoiseTextureResolution ( GXUShort resolution )
 	GXRenderer& renderer = GXRenderer::GetInstance ();
 	GXFloat inverseResolution = 1.0f / (GXFloat)resolution;
 
-	noiseScale.x = renderer.GetWidth () * inverseResolution;
-	noiseScale.y = renderer.GetHeight () * inverseResolution;
+	noiseScale.SetX ( renderer.GetWidth () * inverseResolution );
+	noiseScale.SetY ( renderer.GetHeight () * inverseResolution );
 }
 
 GXUShort EMSSAOSharpMaterial::GetNoiseTextureResolution () const

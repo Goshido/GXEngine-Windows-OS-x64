@@ -23,13 +23,13 @@ GXVoid GXBoxShape::CalculateInertiaTensor ( GXFloat mass )
 	GXFloat hh = height * height;
 	GXFloat dd = depth * depth;
 
-	inertialTensor.m11 = factor * ( hh + dd );
-	inertialTensor.m22 = factor * ( ww + dd );
-	inertialTensor.m33 = factor * ( ww + hh );
+	inertialTensor.m[ 0 ][ 0 ] = factor * ( hh + dd );
+	inertialTensor.m[ 1 ][ 1 ] = factor * ( ww + dd );
+	inertialTensor.m[ 2 ][ 2 ] = factor * ( ww + hh );
 
-	inertialTensor.m12 = inertialTensor.m13 = 0.0f;
-	inertialTensor.m21 = inertialTensor.m23 = 0.0f;
-	inertialTensor.m31 = inertialTensor.m32 = 0.0f;
+	inertialTensor.m[ 0 ][ 1 ] = inertialTensor.m[ 0 ][ 2 ] = 0.0f;
+	inertialTensor.m[ 1 ][ 0 ] = inertialTensor.m[ 1 ][ 2 ] = 0.0f;
+	inertialTensor.m[ 2 ][ 0 ] = inertialTensor.m[ 2 ][ 1 ] = 0.0f;
 }
 
 GXVoid GXBoxShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const
@@ -42,7 +42,7 @@ GXVoid GXBoxShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) co
 
 	for ( GXUByte i = 0; i < 8; i++ )
 	{
-		GXFloat p = GXDotVec3 ( direction, v.vertices[ i ] );
+		GXFloat p = direction.DotProduct ( v.vertices[ i ] );
 		if ( p > projection )
 		{
 			projection = p;
@@ -52,7 +52,7 @@ GXVoid GXBoxShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) co
 
 	GXVec3 originWorld;
 	transformWorld.GetW ( originWorld );
-	GXSumVec3Vec3 ( point, v.vertices[ index ], originWorld );
+	point.Sum ( v.vertices[ index ], originWorld );
 }
 
 GXFloat GXBoxShape::GetWidth () const
@@ -77,19 +77,20 @@ GXVoid GXBoxShape::GetRotatedVecticesWorld ( GXBoxShapeVertices &vertices ) cons
 	GXFloat d = depth * 0.5f;
 
 	GXVec3 v[ 8 ];
-	v[ 0 ] = GXCreateVec3 ( -w, -h, -d );
-	v[ 1 ] = GXCreateVec3 ( w, -h, -d );
-	v[ 2 ] = GXCreateVec3 ( w, h, -d );
-	v[ 3 ] = GXCreateVec3 ( -w, h, -d );
+	v[ 0 ].Init ( -w, -h, -d );
+	v[ 1 ].Init ( w, -h, -d );
+	v[ 2 ].Init ( w, h, -d );
+	v[ 3 ].Init ( -w, h, -d );
 
-	v[ 4 ] = GXCreateVec3 ( -w, -h, d );
-	v[ 5 ] = GXCreateVec3 ( w, -h, d );
-	v[ 6 ] = GXCreateVec3 ( w, h, d );
-	v[ 7 ] = GXCreateVec3 ( -w, h, d );
+	v[ 4 ].Init ( -w, -h, d );
+	v[ 5 ].Init ( w, -h, d );
+	v[ 6 ].Init ( w, h, d );
+	v[ 7 ].Init ( -w, h, d );
 
 	GXMat4 rotatationWorld = transformWorld;
-	rotatationWorld.SetW ( GXCreateVec3 ( 0.0f, 0.0f, 0.0f ) );
+	static const GXVec3 origin ( 0.0f, 0.0f, 0.0f );
+	rotatationWorld.SetW ( origin );
 
 	for ( GXUByte i = 0; i < 8; i++ )
-		GXMulVec3Mat4AsPoint ( vertices.vertices[ i ], v[ i ], rotatationWorld );
+		rotatationWorld.MultiplyAsPoint ( vertices.vertices[ i ], v[ i ] );
 }

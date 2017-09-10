@@ -172,7 +172,8 @@ class EMColorRenderer : public GXWidgetRenderer
 		GXHudSurface*				surface;
 		GXTexture2D					texture;
 		GXTexture2D					checkerTexture;
-		GXVec4						colorRGBA;
+		GXColorRGB					colorRGBA;
+		GXColorHSV					colorHSV;
 		EMCheckerGeneratorMaterial	checkerGeneratorMaterial;
 		GLuint						fbo;
 		EMMesh						screenQuad;
@@ -182,7 +183,8 @@ class EMColorRenderer : public GXWidgetRenderer
 		explicit EMColorRenderer ( GXUIInput* widget );
 		~EMColorRenderer () override;
 
-		GXVoid SetColorHSVA ( const GXVec4 &color );
+		GXVoid SetColor ( const GXColorHSV &color );
+		const GXColorHSV& GetColor () const;
 
 	protected:
 		GXVoid OnRefresh () override;
@@ -198,11 +200,10 @@ EMColorRenderer::EMColorRenderer ( GXUIInput* widget ) :
 GXWidgetRenderer ( widget ), screenQuad ( L"3D Models/System/ScreenQuad.stm" )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
-	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
+	surface = new GXHudSurface ( (GXUShort)boundsLocal.GetWidth (), (GXUShort)boundsLocal.GetHeight () );
 	texture = GXTexture2D::LoadTexture ( TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 	
-	GXVec4 colorHSVA ( DEFAULT_SAVED_COLOR_H, DEFAULT_SAVED_COLOR_S, DEFAULT_SAVED_COLOR_V, DEFAULT_SAVED_COLOR_A );
-	SetColorHSVA ( colorHSVA );
+	SetColor ( GXColorHSV ( DEFAULT_SAVED_COLOR_H, DEFAULT_SAVED_COLOR_S, DEFAULT_SAVED_COLOR_V, DEFAULT_SAVED_COLOR_A ) );
 
 	checkerGeneratorMaterial.SetColorOne ( CHECKER_COLOR_ONE_R, CHECKER_COLOR_ONE_G, CHECKER_COLOR_ONE_B, CHECKER_COLOR_ONE_A );
 	checkerGeneratorMaterial.SetColorTwo ( CHECKER_COLOR_TWO_R, CHECKER_COLOR_TWO_G, CHECKER_COLOR_TWO_B, CHECKER_COLOR_TWO_A );
@@ -221,9 +222,15 @@ EMColorRenderer::~EMColorRenderer ()
 	delete surface;
 }
 
-GXVoid EMColorRenderer::SetColorHSVA ( const GXVec4 &color )
+GXVoid EMColorRenderer::SetColor ( const GXColorHSV &color )
 {
-	GXConvertHSVAToRGBA ( colorRGBA, color );
+	colorHSV = color;
+	colorRGBA.From ( color );
+}
+
+const GXColorHSV& EMColorRenderer::GetColor () const
+{
+	return colorHSV;
 }
 
 GXVoid EMColorRenderer::OnRefresh ()
@@ -233,7 +240,7 @@ GXVoid EMColorRenderer::OnRefresh ()
 
 	GXImageInfo ii;
 
-	GXColorToVec4 ( ii.color, 255, 255, 255, 255 );
+	ii.color.From ( 255, 255, 255, 255 );
 	ii.insertX = 0.0f;
 	ii.insertY = 0.0f;
 	ii.insertWidth = w;
@@ -266,7 +273,7 @@ GXVoid EMColorRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUSho
 	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 
 	UpdateCheckerTexture ();
 }
@@ -278,7 +285,7 @@ GXVoid EMColorRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 }
 
 GXVoid EMColorRenderer::UpdateCheckerTexture ()
@@ -329,15 +336,15 @@ class EMColorSelectorRenderer : public GXWidgetRenderer
 		GXTexture2D						compositeTexture;
 		GXOpenGLState					openGLState;
 		GXCameraOrthographic			projectionCamera;
-		GXVec4							colorHSVA;
-		GXVec4							colorRGBA;
+		GXColorHSV						colorHSVA;
+		GXColorRGB						colorRGBA;
 		GXVec3							equilateralTriangleGeometryLocal[ 6 ];
 
 	public:
 		explicit EMColorSelectorRenderer ( GXUIInput* widget );
 		~EMColorSelectorRenderer () override;
 
-		GXVoid SetColorHSVA ( const GXVec4 &color );
+		GXVoid SetColor ( const GXColorHSV &color );
 
 	protected:
 		GXVoid OnRefresh () override;
@@ -354,7 +361,7 @@ EMColorSelectorRenderer::EMColorSelectorRenderer ( GXUIInput* widget ) :
 GXWidgetRenderer ( widget ), screenQuad ( L"3D Models/System/ScreenQuad.stm" )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
-	surface = new GXHudSurface ( (GXUShort)GXGetAABBWidth ( boundsLocal ), (GXUShort)GXGetAABBHeight ( boundsLocal ) );
+	surface = new GXHudSurface ( (GXUShort)boundsLocal.GetWidth (), (GXUShort)boundsLocal.GetHeight () );
 
 	glGenFramebuffers ( 1, &fbo );
 
@@ -364,12 +371,12 @@ GXWidgetRenderer ( widget ), screenQuad ( L"3D Models/System/ScreenQuad.stm" )
 	triangle.SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, stride, (const GLvoid*)0 );
 	triangle.SetBufferStream ( eGXMeshStreamIndex::Color, 3, GL_FLOAT, stride, (const GLvoid*)sizeof ( GXVec3 ) );
 
-	equilateralTriangleGeometryLocal[ 0 ] = GXCreateVec3 ( EQUILATERAL_TRIANGLE_A_X, EQUILATERAL_TRIANGLE_A_Y, EQUILATERAL_TRIANGLE_A_Z );
-	equilateralTriangleGeometryLocal[ 2 ] = GXCreateVec3 ( EQUILATERAL_TRIANGLE_B_X, EQUILATERAL_TRIANGLE_B_Y, EQUILATERAL_TRIANGLE_B_Z );
-	equilateralTriangleGeometryLocal[ 4 ] = GXCreateVec3 ( EQUILATERAL_TRIANGLE_C_X, EQUILATERAL_TRIANGLE_C_Y, EQUILATERAL_TRIANGLE_C_Z );
+	equilateralTriangleGeometryLocal[ 0 ].Init ( EQUILATERAL_TRIANGLE_A_X, EQUILATERAL_TRIANGLE_A_Y, EQUILATERAL_TRIANGLE_A_Z );
+	equilateralTriangleGeometryLocal[ 2 ].Init ( EQUILATERAL_TRIANGLE_B_X, EQUILATERAL_TRIANGLE_B_Y, EQUILATERAL_TRIANGLE_B_Z );
+	equilateralTriangleGeometryLocal[ 4 ].Init ( EQUILATERAL_TRIANGLE_C_X, EQUILATERAL_TRIANGLE_C_Y, EQUILATERAL_TRIANGLE_C_Z );
 
-	equilateralTriangleGeometryLocal[ 1 ] = GXCreateVec3 ( 0.0f, 0.0f, 0.0f );
-	equilateralTriangleGeometryLocal[ 5 ] = GXCreateVec3 ( 1.0f, 1.0f, 1.0f );
+	equilateralTriangleGeometryLocal[ 1 ].Init ( 0.0f, 0.0f, 0.0f );
+	equilateralTriangleGeometryLocal[ 5 ].Init ( 1.0f, 1.0f, 1.0f );
 
 	hueCircleGeneratorMaterial.SetInnerRadius ( COLOR_SELECTOR_MSAA_FACTOR * HUE_CIRCLE_INNER_RADIUS * gx_ui_Scale );
 	hueCircleGeneratorMaterial.SetOuterRadius ( COLOR_SELECTOR_MSAA_FACTOR * HUE_CIRCLE_OUTER_RADIUS * gx_ui_Scale );
@@ -379,8 +386,7 @@ GXWidgetRenderer ( widget ), screenQuad ( L"3D Models/System/ScreenQuad.stm" )
 
 	UpdateHueCircleTexture ();
 
-	GXVec4 newColorHSVA ( DEFAULT_CURRENT_COLOR_H, DEFAULT_CURRENT_COLOR_S, DEFAULT_CURRENT_COLOR_V, DEFAULT_CURRENT_COLOR_A );
-	SetColorHSVA ( newColorHSVA );
+	SetColor ( GXColorHSV ( DEFAULT_CURRENT_COLOR_H, DEFAULT_CURRENT_COLOR_S, DEFAULT_CURRENT_COLOR_V, DEFAULT_CURRENT_COLOR_A ) );
 
 	GXCheckOpenGLError ();
 }
@@ -393,10 +399,10 @@ EMColorSelectorRenderer::~EMColorSelectorRenderer ()
 	delete surface;
 }
 
-GXVoid EMColorSelectorRenderer::SetColorHSVA ( const GXVec4 &color )
+GXVoid EMColorSelectorRenderer::SetColor ( const GXColorHSV &color )
 {
 	colorHSVA = color;
-	GXConvertHSVAToRGBA ( colorRGBA, colorHSVA );
+	colorRGBA.From ( color );
 	UpdateCompositeTexture ();
 }
 
@@ -408,7 +414,7 @@ GXVoid EMColorSelectorRenderer::OnRefresh ()
 	surface->Reset ();
 
 	GXImageInfo ii;
-	GXColorToVec4 ( ii.color, 255, 255, 255, 255 );
+	ii.color.From ( 255, 255, 255, 255 );
 	ii.texture = &compositeTexture;
 	ii.overlayType = eGXImageOverlayType::SimpleReplace;
 
@@ -431,79 +437,78 @@ GXVoid EMColorSelectorRenderer::OnRefresh ()
 
 	surface->AddImage ( ii );
 
-	GXFloat hRadians = GXDegToRad ( colorHSVA.h );
+	GXFloat hRadians = GXDegToRad ( colorHSVA.GetHue () );
 	GXVec2 markerDirection ( gx_ui_Scale * cosf ( hRadians ), gx_ui_Scale * sinf ( hRadians ) );
 	GXVec2 center ( w * 0.5f, h * 0.5f );
 
 	GXLineInfo li;
-	GXColorToVec4 ( li.color, COLOR_SELECTOR_HUE_MARKER_COLOR_R, COLOR_SELECTOR_HUE_MARKER_COLOR_G, COLOR_SELECTOR_HUE_MARKER_COLOR_B, COLOR_SELECTOR_HUE_MARKER_COLOR_A );
+	li.color.From ( COLOR_SELECTOR_HUE_MARKER_COLOR_R, COLOR_SELECTOR_HUE_MARKER_COLOR_G, COLOR_SELECTOR_HUE_MARKER_COLOR_B, COLOR_SELECTOR_HUE_MARKER_COLOR_A );
 	li.thickness = 1.0f;
 	ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
 	GXVec2 tmp;
-	GXMulVec2Scalar ( tmp, markerDirection, HUE_CIRCLE_INNER_RADIUS );
-	GXSumVec2Vec2 ( tmp, tmp, center );
-	li.startPoint = GXCreateVec2 ( floorf ( tmp.x + 0.5f ) + 0.1f, floorf ( tmp.y + 0.5f ) + 0.1f );
+	tmp.Multiply ( markerDirection, HUE_CIRCLE_INNER_RADIUS );
+	tmp.Sum ( tmp, center );
+	li.startPoint.Init ( floorf ( tmp.GetX () + 0.5f ) + 0.1f, floorf ( tmp.GetY () + 0.5f ) + 0.1f );
 
-	GXMulVec2Scalar ( tmp, markerDirection, HUE_CIRCLE_OUTER_RADIUS );
-	GXSumVec2Vec2 ( tmp, tmp, center );
-	li.endPoint = GXCreateVec2 ( floorf ( tmp.x + 0.5f ) + 0.1f, floorf ( tmp.y + 0.5f ) + 0.1f );
+	tmp.Multiply ( markerDirection, HUE_CIRCLE_OUTER_RADIUS );
+	tmp.Sum ( tmp, center );
+	li.endPoint.Init ( floorf ( tmp.GetX () + 0.5f ) + 0.1f, floorf ( tmp.GetY () + 0.5f ) + 0.1f );
 
 	surface->AddLine ( li );
 
 	GXFloat triangleScale = HUE_CIRCLE_INNER_RADIUS * gx_ui_Scale;
 	GXTransform transform;
-	transform.SetRotation ( 0.0f, 0.0f, GXDegToRad ( colorHSVA.h ) );
+	transform.SetRotation ( 0.0f, 0.0f, GXDegToRad ( colorHSVA.GetHue () ) );
 	transform.SetScale ( triangleScale, triangleScale, 1.0f );
-	transform.SetLocation ( center.x, center.y, 0.0f );
+	transform.SetLocation ( center.GetX (), center.GetY (), 0.0f );
 
-	GXVec4 currentHueRGBA;
-	GXVec4 currentHueHSVA ( colorHSVA.h, 100.0f, 100.0f, 100.0f );
-	GXConvertHSVAToRGBA ( currentHueRGBA, currentHueHSVA );
+	GXColorRGB currentHueRGBA;
+	GXColorHSV currentHueHSVA ( colorHSVA.GetHue (), 100.0f, 100.0f, 100.0f );
+	currentHueRGBA.From ( currentHueHSVA );
 
 	GXVec3 colorA ( 0.0f, 0.0f, 0.0f );
-	GXVec3 colorB ( currentHueRGBA.r, currentHueRGBA.g, currentHueRGBA.b );
+	GXVec3 colorB ( currentHueRGBA.GetRed (), currentHueRGBA.GetGreen (), currentHueRGBA.GetBlue () );
 	GXVec3 colorC ( 1.0f, 1.0f, 1.0f );
-	GXVec3 currentRGB ( colorRGBA.r, colorRGBA.g, colorRGBA.b );
+	GXVec3 currentRGB ( colorRGBA.GetRed (), colorRGBA.GetGreen (), colorRGBA.GetBlue () );
 
 	GXVec3 barycentricCoords;
 	GXGetBarycentricCoords ( barycentricCoords, currentRGB, colorA, colorB, colorC );
 
 	GXVec3 colorCoordsLocal;
-	colorCoordsLocal.x = barycentricCoords.x * equilateralTriangleGeometryLocal[ 0 ].x + barycentricCoords.y * equilateralTriangleGeometryLocal[ 2 ].x + barycentricCoords.z * equilateralTriangleGeometryLocal[ 4 ].x;
-	colorCoordsLocal.y = barycentricCoords.x * equilateralTriangleGeometryLocal[ 0 ].y + barycentricCoords.y * equilateralTriangleGeometryLocal[ 2 ].y + barycentricCoords.z * equilateralTriangleGeometryLocal[ 4 ].y;
-	colorCoordsLocal.z = barycentricCoords.x * equilateralTriangleGeometryLocal[ 0 ].z + barycentricCoords.y * equilateralTriangleGeometryLocal[ 2 ].z + barycentricCoords.z * equilateralTriangleGeometryLocal[ 4 ].z;
+	colorCoordsLocal.SetX ( barycentricCoords.GetX () * equilateralTriangleGeometryLocal[ 0 ].GetX () + barycentricCoords.GetY () * equilateralTriangleGeometryLocal[ 2 ].GetX () + barycentricCoords.GetZ () * equilateralTriangleGeometryLocal[ 4 ].GetX () );
+	colorCoordsLocal.SetY ( barycentricCoords.GetX () * equilateralTriangleGeometryLocal[ 0 ].GetY () + barycentricCoords.GetY () * equilateralTriangleGeometryLocal[ 2 ].GetY () + barycentricCoords.GetZ () * equilateralTriangleGeometryLocal[ 4 ].GetY () );
+	colorCoordsLocal.SetZ ( barycentricCoords.GetX () * equilateralTriangleGeometryLocal[ 0 ].GetZ () + barycentricCoords.GetY () * equilateralTriangleGeometryLocal[ 2 ].GetZ () + barycentricCoords.GetZ () * equilateralTriangleGeometryLocal[ 4 ].GetZ () );
 
 	GXVec3 colorCoordsSurface;
-	GXMulVec3Mat4AsPoint ( colorCoordsSurface, colorCoordsLocal, transform.GetCurrentFrameModelMatrix () );
+	transform.GetCurrentFrameModelMatrix ().MultiplyAsPoint ( colorCoordsSurface, colorCoordsLocal );
 
-	GXVec4 borderColorHSVA ( colorHSVA.h + 180.0f, 100.0f, 100.0f, 100.0f );
-	if ( borderColorHSVA.h > 360.0f )
-		borderColorHSVA.h -= 360.0f;
+	GXColorHSV borderColorHSVA ( colorHSVA.GetHue () + 180.0f, 100.0f, 100.0f, 100.0f );
+	if ( borderColorHSVA.GetHue () > 360.0f )
+		borderColorHSVA.data[ 0 ] -= 360.0f;
 
 	GXFloat borderSideFactor = floorf ( COLOR_SELECTOR_SAMPLE_BORDER_SIDE * gx_ui_Scale * 0.5f + 0.5f );
-	colorCoordsSurface.x = floorf ( colorCoordsSurface.x + 0.5f );
-	colorCoordsSurface.y = floorf ( colorCoordsSurface.y + 0.5f );
+	colorCoordsSurface.Init ( floorf ( colorCoordsSurface.GetX () + 0.5f ), floorf ( colorCoordsSurface.GetY () + 0.5f ), colorCoordsSurface.GetZ () );
 
-	GXConvertHSVAToRGBA ( li.color, borderColorHSVA );
+	li.color.From ( borderColorHSVA );
 
-	li.startPoint = GXCreateVec2 ( colorCoordsSurface.x - borderSideFactor + 1.0f + 0.1f, colorCoordsSurface.y - borderSideFactor + 0.1f );
-	li.endPoint = GXCreateVec2 ( colorCoordsSurface.x + borderSideFactor - 1.0f + 0.9f, colorCoordsSurface.y - borderSideFactor + 0.1f );
-
-	surface->AddLine ( li );
-
-	li.startPoint = GXCreateVec2 ( colorCoordsSurface.x + borderSideFactor + 0.1f, colorCoordsSurface.y - borderSideFactor + 1.0f + 0.1f );
-	li.endPoint = GXCreateVec2 ( colorCoordsSurface.x + borderSideFactor + 0.1f, colorCoordsSurface.y + borderSideFactor - 1.0f + 0.9f );
+	li.startPoint.Init ( colorCoordsSurface.GetX () - borderSideFactor + 1.0f + 0.1f, colorCoordsSurface.GetY () - borderSideFactor + 0.1f );
+	li.endPoint.Init ( colorCoordsSurface.GetX () + borderSideFactor - 1.0f + 0.9f, colorCoordsSurface.GetY () - borderSideFactor + 0.1f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec2 ( colorCoordsSurface.x + borderSideFactor - 1.0f + 0.9f, colorCoordsSurface.y + borderSideFactor + 0.1f );
-	li.endPoint = GXCreateVec2 ( colorCoordsSurface.x - borderSideFactor + 1.0f + 0.1f, colorCoordsSurface.y + borderSideFactor + 0.1f );
+	li.startPoint.Init ( colorCoordsSurface.GetX () + borderSideFactor + 0.1f, colorCoordsSurface.GetY () - borderSideFactor + 1.0f + 0.1f );
+	li.endPoint.Init ( colorCoordsSurface.GetX () + borderSideFactor + 0.1f, colorCoordsSurface.GetY () + borderSideFactor - 1.0f + 0.9f );
 
 	surface->AddLine ( li );
 
-	li.startPoint = GXCreateVec2 ( colorCoordsSurface.x - borderSideFactor + 0.1f, colorCoordsSurface.y + borderSideFactor - 1.0f + 0.9f );
-	li.endPoint = GXCreateVec2 ( colorCoordsSurface.x - borderSideFactor + 0.1f, colorCoordsSurface.y - borderSideFactor + 1.0f + 0.1f );
+	li.startPoint.Init ( colorCoordsSurface.GetX () + borderSideFactor - 1.0f + 0.9f, colorCoordsSurface.GetY () + borderSideFactor + 0.1f );
+	li.endPoint.Init ( colorCoordsSurface.GetX () - borderSideFactor + 1.0f + 0.1f, colorCoordsSurface.GetY () + borderSideFactor + 0.1f );
+
+	surface->AddLine ( li );
+
+	li.startPoint.Init ( colorCoordsSurface.GetX () - borderSideFactor + 0.1f, colorCoordsSurface.GetY () + borderSideFactor - 1.0f + 0.9f );
+	li.endPoint.Init ( colorCoordsSurface.GetX () - borderSideFactor + 0.1f, colorCoordsSurface.GetY () - borderSideFactor + 1.0f + 0.1f );
 
 	surface->AddLine ( li );
 }
@@ -524,7 +529,7 @@ GXVoid EMColorSelectorRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width
 	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 
 	GXUShort w = surface->GetWidth ();
 	GXUShort h = surface->GetHeight ();
@@ -548,7 +553,7 @@ GXVoid EMColorSelectorRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.z );
+	surface->SetLocation ( x, y, location.GetZ () );
 }
 
 GXVoid EMColorSelectorRenderer::UpdateHueCircleTexture ()
@@ -599,11 +604,11 @@ GXVoid EMColorSelectorRenderer::UpdateHueCircleTexture ()
 
 GXVoid EMColorSelectorRenderer::UpdateCompositeTexture ()
 {
-	GXVec4 hueHSVA ( colorHSVA.h, 100.0f, 100.0f, 100.0f );
-	GXVec4 hueRGBA;
-	GXConvertHSVAToRGBA ( hueRGBA, hueHSVA );
+	GXColorHSV hueHSVA ( colorHSVA.GetHue (), 100.0f, 100.0f, 100.0f );
+	GXColorRGB hueRGBA;
+	hueRGBA.From ( hueHSVA );
 
-	equilateralTriangleGeometryLocal[ 3 ] = GXCreateVec3 ( hueRGBA.r, hueRGBA.g, hueRGBA.b );
+	equilateralTriangleGeometryLocal[ 3 ].Init ( hueRGBA.GetRed (), hueRGBA.GetGreen (), hueRGBA.GetBlue () );
 	triangle.FillVertexBuffer ( equilateralTriangleGeometryLocal, 6 * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
 
 	openGLState.Save ();
@@ -636,7 +641,7 @@ GXVoid EMColorSelectorRenderer::UpdateCompositeTexture ()
 	GXFloat triangleScale = COLOR_SELECTOR_MSAA_FACTOR * HUE_CIRCLE_INNER_RADIUS * gx_ui_Scale;
 
 	GXTransform transform;
-	transform.SetRotation ( 0.0f, 0.0f, GXDegToRad ( colorHSVA.h ) );
+	transform.SetRotation ( 0.0f, 0.0f, GXDegToRad ( colorHSVA.GetHue () ) );
 	transform.SetScale ( triangleScale, triangleScale, 1.0f );
 	transform.SetLocation ( 0.0f, 0.0f, COLOR_SELECTOR_VISIBLE_Z );
 
@@ -741,31 +746,49 @@ GXWidget* EMUIColorPicker::GetWidget () const
 	return mainPanel->GetWidget ();
 }
 
-GXVoid EMUIColorPicker::PickHSVAColor ( GXVoid* handlerObject, PFNEMONHSVACOLORPROC callback, const GXVec4 &oldColorHSVAValue )
+GXVoid EMUIColorPicker::PickColor ( GXVoid* handlerObject, PFNEMONHSVACOLORPROC callback, const GXColorHSV &oldColorHSVAValue )
 {
 	EMColorRenderer* renderer = (EMColorRenderer*)oldColor->GetRenderer ();
-	renderer->SetColorHSVA ( oldColorHSVAValue );
+	renderer->SetColor ( oldColorHSVAValue );
 	oldColor->Refresh ();
 
 	handler = handlerObject;
-	OnHSVAColor = callback;
-	OnRGBAColor = nullptr;
+	OnHSVColor = callback;
+	OnRGBColor = nullptr;
+	OnRGBUByteColor = nullptr;
+
 	mainPanel->Show ();
 }
 
-GXVoid EMUIColorPicker::PickRGBAColor ( GXVoid* handlerObject, PFNEMONRGBACOLORPROC callback, GXUByte oldRed, GXUByte oldGreen, GXUByte oldBlue, GXUByte oldAlpha )
+GXVoid EMUIColorPicker::PickColor ( GXVoid* handlerObject, PFNEMONRGBACOLORPROC callback, const GXColorRGB &oldColorValue )
 {
-	GXVec4 oldHSVA;
-	GXVec4 oldRGBA;
-	GXColorToVec4 ( oldRGBA, oldRed, oldGreen, oldBlue, oldAlpha );
-	GXConvertRGBAToHSVA ( oldHSVA, oldRGBA );
+	GXColorHSV oldColorHSV ( oldColorValue );
 	EMColorRenderer* renderer = (EMColorRenderer*)oldColor->GetRenderer ();
-	renderer->SetColorHSVA ( oldHSVA );
+	renderer->SetColor ( oldColorHSV );
 	oldColor->Refresh ();
 
 	handler = handlerObject;
-	OnRGBAColor = callback;
-	OnHSVAColor = nullptr;
+	OnRGBColor = callback;
+	OnHSVColor = nullptr;
+	OnRGBUByteColor = nullptr;
+
+	mainPanel->Show ();
+}
+
+GXVoid EMUIColorPicker::PickColor ( GXVoid* handlerObject, PFNEMONRGBAUBYTECOLORPROC callback, GXUByte oldRed, GXUByte oldGreen, GXUByte oldBlue, GXUByte oldAlpha )
+{
+	GXColorHSV oldHSVA;
+	GXColorRGB oldRGBA ( oldRed, oldGreen, oldBlue, oldAlpha );
+	oldHSVA.From ( oldRGBA );
+	EMColorRenderer* renderer = (EMColorRenderer*)oldColor->GetRenderer ();
+	renderer->SetColor ( oldHSVA );
+	oldColor->Refresh ();
+
+	handler = handlerObject;
+	OnRGBUByteColor = callback;
+	OnRGBColor = nullptr;
+	OnHSVColor = nullptr;
+
 	mainPanel->Show ();
 }
 
@@ -909,18 +932,25 @@ EMUI ( nullptr )
 
 	mainPanel->SetOnResizeCallback ( this, &EMUIColorPicker::OnResize );
 
-	OnHSVAColor = nullptr;
-	OnRGBAColor = nullptr;
+	OnHSVColor = nullptr;
+	OnRGBColor = nullptr;
+	OnRGBUByteColor = nullptr;
 	handler = nullptr;
 
 	buffer = (GXWChar*)malloc ( MAX_BUFFER_SYMBOLS * sizeof ( GXWChar ) );
 
 	UpdateCurrentColor ( DEFAULT_CURRENT_COLOR_H, DEFAULT_CURRENT_COLOR_S, DEFAULT_CURRENT_COLOR_V, DEFAULT_CURRENT_COLOR_A );
-	oldColorHSVA = currentColorHSVA;
+	EMColorRenderer* destinationRenderer = (EMColorRenderer*)oldColor->GetRenderer ();
+	EMColorRenderer* sourceRenderer = (EMColorRenderer*)currentColor->GetRenderer ();
+	destinationRenderer->SetColor ( sourceRenderer->GetColor () );
 
-	static const GXVec4 defaultSavedColorHSVA ( DEFAULT_SAVED_COLOR_H, DEFAULT_SAVED_COLOR_S, DEFAULT_SAVED_COLOR_V, DEFAULT_SAVED_COLOR_A );
+	static const GXColorHSV defaultSavedColor ( DEFAULT_SAVED_COLOR_H, DEFAULT_SAVED_COLOR_S, DEFAULT_SAVED_COLOR_V, DEFAULT_SAVED_COLOR_A );
+
 	for ( GXUByte i = 0; i < 16; i++ )
-		savedColorHSVAs[ i ] = defaultSavedColorHSVA;
+	{
+		EMColorRenderer* renderer = (EMColorRenderer*)savedColors[ i ]->GetRenderer ();
+		renderer->SetColor ( defaultSavedColor );
+	}
 
 	GXFloat height = DEFAULT_MAIN_PANEL_HEIGHT * gx_ui_Scale;
 	mainPanel->Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, (GXFloat)( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
@@ -931,7 +961,15 @@ EMUI ( nullptr )
 
 GXVoid EMUIColorPicker::UpdateCurrentColor ( GXFloat hue, GXFloat saturation, GXFloat value, GXFloat alpha )
 {
-	currentColorHSVA = GXCreateVec4 ( hue, saturation, value, alpha );
+	GXColorHSV newColorHSV ( hue, saturation, value, alpha );
+
+	EMColorRenderer* currentColorRenderer = (EMColorRenderer*)currentColor->GetRenderer ();
+	currentColorRenderer->SetColor ( newColorHSV );
+	currentColor->Refresh ();
+
+	EMColorSelectorRenderer* colorSelectorRenderer = (EMColorSelectorRenderer*)hsvColorWidget->GetRenderer ();
+	colorSelectorRenderer->SetColor ( newColorHSV );
+	hsvColorWidget->Refresh ();
 
 	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", hue );
 	h->SetText ( buffer );
@@ -946,7 +984,9 @@ GXVoid EMUIColorPicker::UpdateCurrentColor ( GXFloat hue, GXFloat saturation, GX
 	GXUByte newGreen;
 	GXUByte newBlue;
 	GXUByte newAlpha;
-	GXConvertHSVAToRGBA ( newRed, newGreen, newBlue, newAlpha, currentColorHSVA );
+	GXColorRGB newColorRGB;
+	newColorRGB.From ( newColorHSV );
+	newColorRGB.ConvertToUByte ( newRed, newGreen, newBlue, newAlpha );
 
 	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", newRed );
 	r->SetText ( buffer );
@@ -959,14 +999,6 @@ GXVoid EMUIColorPicker::UpdateCurrentColor ( GXFloat hue, GXFloat saturation, GX
 
 	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", newAlpha );
 	transparency->SetText ( buffer );
-
-	EMColorRenderer* currentColorRenderer = (EMColorRenderer*)currentColor->GetRenderer ();
-	currentColorRenderer->SetColorHSVA ( currentColorHSVA );
-	currentColor->Refresh ();
-
-	EMColorSelectorRenderer* colorSelectorRenderer = (EMColorSelectorRenderer*)hsvColorWidget->GetRenderer ();
-	colorSelectorRenderer->SetColorHSVA ( currentColorHSVA );
-	hsvColorWidget->Refresh ();
 }
 
 GXVoid EMUIColorPicker::UpdateCurrentColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
@@ -983,43 +1015,45 @@ GXVoid EMUIColorPicker::UpdateCurrentColor ( GXUByte red, GXUByte green, GXUByte
 	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", alpha );
 	transparency->SetText ( buffer );
 
-	GXVec4 rgbColor;
-	GXColorToVec4 ( rgbColor, red, green, blue, alpha );
-	GXConvertRGBAToHSVA ( currentColorHSVA, rgbColor );
+	GXColorRGB newColorRGB ( red, green, blue, alpha );
+	GXColorHSV newColorHSV;
+	newColorHSV.From ( newColorRGB );
 
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", currentColorHSVA.h );
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", newColorHSV.GetHue () );
 	this->h->SetText ( buffer );
 
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", currentColorHSVA.s );
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", newColorHSV.GetSaturation () );
 	this->s->SetText ( buffer );
 
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", currentColorHSVA.v );
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", newColorHSV.GetValue () );
 	this->v->SetText ( buffer );
 
 	EMColorRenderer* currentColorRenderer = (EMColorRenderer*)currentColor->GetRenderer ();
-	currentColorRenderer->SetColorHSVA ( currentColorHSVA );
+	currentColorRenderer->SetColor ( newColorHSV );
 	currentColor->Refresh ();
 
 	EMColorSelectorRenderer* colorSelectorRenderer = (EMColorSelectorRenderer*)hsvColorWidget->GetRenderer ();
-	colorSelectorRenderer->SetColorHSVA ( currentColorHSVA );
+	colorSelectorRenderer->SetColor ( newColorHSV );
 	hsvColorWidget->Refresh ();
 }
 
 GXVoid EMUIColorPicker::UpdateCurrentColorWithCorrection ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
 {
-	GXVec4 rgbColor;
-	GXColorToVec4 ( rgbColor, red, green, blue, alpha );
+	GXColorRGB newColorRGB ( red, green, blue, alpha );
 
-	GXFloat oldHue = currentColorHSVA.h;
-	GXConvertRGBAToHSVA ( currentColorHSVA, rgbColor );
+	EMColorRenderer* currentColorRenderer = (EMColorRenderer*)currentColor->GetRenderer ();
+	GXFloat oldHue = currentColorRenderer->GetColor ().GetHue ();
+	GXColorHSV newColorHSV;
+	newColorHSV.From ( newColorRGB );
 
 	GXUByte correctedRed;
 	GXUByte correctedGreen;
 	GXUByte correctedBlue;
 	GXUByte correctedAlpha;
 
-	currentColorHSVA.h = oldHue;
-	GXConvertHSVAToRGBA ( correctedRed, correctedGreen, correctedBlue, correctedAlpha, currentColorHSVA );
+	newColorHSV.SetHue ( oldHue );
+	newColorRGB.From ( newColorHSV );
+	newColorRGB.ConvertToUByte ( correctedRed, correctedGreen, correctedBlue, correctedAlpha );
 
 	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", correctedRed );
 	this->r->SetText ( buffer );
@@ -1033,21 +1067,20 @@ GXVoid EMUIColorPicker::UpdateCurrentColorWithCorrection ( GXUByte red, GXUByte 
 	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", correctedAlpha );
 	transparency->SetText ( buffer );
 
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", currentColorHSVA.h );
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", newColorHSV.GetHue () );
 	this->h->SetText ( buffer );
 
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", currentColorHSVA.s );
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", newColorHSV.GetSaturation () );
 	this->s->SetText ( buffer );
 
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", currentColorHSVA.v );
+	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", newColorHSV.GetValue () );
 	this->v->SetText ( buffer );
 
-	EMColorRenderer* currentColorRenderer = (EMColorRenderer*)currentColor->GetRenderer ();
-	currentColorRenderer->SetColorHSVA ( currentColorHSVA );
+	currentColorRenderer->SetColor ( newColorHSV );
 	currentColor->Refresh ();
 
 	EMColorSelectorRenderer* colorSelectorRenderer = (EMColorSelectorRenderer*)hsvColorWidget->GetRenderer ();
-	colorSelectorRenderer->SetColorHSVA ( currentColorHSVA );
+	colorSelectorRenderer->SetColor ( newColorHSV );
 	hsvColorWidget->Refresh ();
 }
 
@@ -1059,22 +1092,35 @@ GXVoid GXCALL EMUIColorPicker::OnButton ( GXVoid* handler, GXUIButton& button, G
 	
 	if ( &button == colorPicker->addColor->GetWidget () )
 	{
-		memmove ( colorPicker->savedColorHSVAs + 1, colorPicker->savedColorHSVAs, 15 * sizeof ( GXVec4 ) );
-		colorPicker->savedColorHSVAs[ 0 ] = colorPicker->currentColorHSVA;
-		
-		for ( GXUByte i = 0; i < 16; i++ )
+		for ( GXByte i = 15; i > 0; i-- )
 		{
-			EMColorRenderer* renderer = (EMColorRenderer*)colorPicker->savedColors[ i ]->GetRenderer ();
-			renderer->SetColorHSVA ( colorPicker->savedColorHSVAs[ i ] );
+			EMColorRenderer* destinationRenderer = (EMColorRenderer*)colorPicker->savedColors[ i ]->GetRenderer ();
+			EMColorRenderer* sourceRenderer = (EMColorRenderer*)colorPicker->savedColors[ i - 1 ]->GetRenderer ();
+			destinationRenderer->SetColor ( sourceRenderer->GetColor () );
 			colorPicker->savedColors[ i ]->Refresh ();
 		}
+
+		EMColorRenderer* newSavedColorRenderer = (EMColorRenderer*)colorPicker->savedColors[ 0 ]->GetRenderer ();
+		EMColorRenderer* currentColorRenderer = (EMColorRenderer*)colorPicker->currentColor->GetRenderer ();
+		newSavedColorRenderer->SetColor ( currentColorRenderer->GetColor () );
+		colorPicker->savedColors[ 0 ]->Refresh ();
 
 		return;
 	}
 	else if ( &button == colorPicker->pick->GetWidget () )
 	{
-		if ( colorPicker->OnHSVAColor )
-			colorPicker->OnHSVAColor ( colorPicker->handler, colorPicker->currentColorHSVA.h, colorPicker->currentColorHSVA.s, colorPicker->currentColorHSVA.v, colorPicker->currentColorHSVA.a );
+		if ( colorPicker->OnHSVColor )
+		{
+			EMColorRenderer* currentColorRenderer = (EMColorRenderer*)colorPicker->currentColor->GetRenderer ();
+			const GXColorHSV& currentColor = currentColorRenderer->GetColor ();
+			colorPicker->OnHSVColor ( colorPicker->handler, currentColor );
+		}
+		else if ( colorPicker->OnRGBColor )
+		{
+			EMColorRenderer* currentColorRenderer = (EMColorRenderer*)colorPicker->currentColor->GetRenderer ();
+			const GXColorHSV& currentColor = currentColorRenderer->GetColor ();
+			colorPicker->OnRGBColor ( colorPicker->handler, GXColorRGB ( currentColor ) );
+		}
 		else
 		{
 			GXUByte red;
@@ -1085,7 +1131,7 @@ GXVoid GXCALL EMUIColorPicker::OnButton ( GXVoid* handler, GXUIButton& button, G
 			swscanf_s ( colorPicker->g->GetText (), L"%hhu", &green );
 			swscanf_s ( colorPicker->b->GetText (), L"%hhu", &blue );
 			swscanf_s ( colorPicker->transparency->GetText (), L"%hhu", &alpha );
-			colorPicker->OnRGBAColor ( handler, red, green, blue, alpha );
+			colorPicker->OnRGBUByteColor ( handler, red, green, blue, alpha );
 		}
 
 		colorPicker->mainPanel->Hide ();
@@ -1102,39 +1148,44 @@ GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput& i
 	if ( &input == colorPicker->hsvColorWidget )
 	{
 		GXVec3 center;
-		GXGetAABBCenter ( center, colorPicker->hsvColorWidget->GetBoundsWorld () );
+		colorPicker->hsvColorWidget->GetBoundsWorld ().GetCenter ( center );
 		GXVec3 cursorWorld ( x, y, 0.0f );
 
 		GXVec3 direction;
-		GXSubVec3Vec3 ( direction, cursorWorld, center );
+		direction.Substract ( cursorWorld, center );
 
 		GXFloat innerRadius = HUE_CIRCLE_INNER_RADIUS * gx_ui_Scale;
 		GXFloat outerRadius = HUE_CIRCLE_OUTER_RADIUS * gx_ui_Scale;
-		GXFloat radius = GXLengthVec3 ( direction );
+		GXFloat radius = direction.Length ();
 
 		static const GXVec3 xAxis ( 1.0f, 0.0f, 0.0f );
-		GXNormalizeVec3 ( direction );
-		GXFloat cosAngle = GXDotVec3 ( direction, xAxis );
+		direction.Normalize ();
+		GXFloat cosAngle = direction.DotProduct ( xAxis );
 		GXFloat angleRadians = acosf ( cosAngle );
 
-		if ( y < center.y )
+		if ( y < center.GetY () )
 			angleRadians = GX_MATH_DOUBLE_PI - angleRadians;
 
 		if ( radius >= innerRadius && radius <= outerRadius )
 		{
 			GXFloat angleDegrees = GXRadToDeg ( angleRadians );
-			colorPicker->UpdateCurrentColor ( angleDegrees, colorPicker->currentColorHSVA.s, colorPicker->currentColorHSVA.v, colorPicker->currentColorHSVA.a );
+			EMColorRenderer* currentColorRenderer = (EMColorRenderer*)colorPicker->currentColor->GetRenderer ();
+			const GXColorHSV& color = currentColorRenderer->GetColor ();
+			colorPicker->UpdateCurrentColor ( angleDegrees, color.GetSaturation (), color.GetValue (), color.GetAlpha () );
 			return;
 		}
 
+		EMColorRenderer* currentColorRenderer = (EMColorRenderer*)colorPicker->currentColor->GetRenderer ();
+		const GXColorHSV& currentColor = currentColorRenderer->GetColor ();
+
 		GXTransform transform;
 		transform.SetScale ( innerRadius, innerRadius, 1.0f );
-		transform.SetRotation ( 0.0f, 0.0f, GXDegToRad ( colorPicker->currentColorHSVA.h ) );
+		transform.SetRotation ( 0.0f, 0.0f, GXDegToRad ( currentColor.GetHue () ) );
 		transform.SetLocation ( center );
 
 		static const GXVec3 equilateralTriangleLocal[ 3 ] = 
 		{
-			GXVec3 ( EQUILATERAL_TRIANGLE_A_X, EQUILATERAL_TRIANGLE_A_Y, EQUILATERAL_TRIANGLE_A_Z),
+			GXVec3 ( EQUILATERAL_TRIANGLE_A_X, EQUILATERAL_TRIANGLE_A_Y, EQUILATERAL_TRIANGLE_A_Z ),
 			GXVec3 ( EQUILATERAL_TRIANGLE_B_X, EQUILATERAL_TRIANGLE_B_Y, EQUILATERAL_TRIANGLE_B_Z ),
 			GXVec3 ( EQUILATERAL_TRIANGLE_C_X, EQUILATERAL_TRIANGLE_C_Y, EQUILATERAL_TRIANGLE_C_Z )
 		};
@@ -1144,28 +1195,30 @@ GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput& i
 		static GXVec3 equitaleralTriangleWorld[ 3 ];
 
 		for ( GXUByte i = 0; i < 3; i++ )
-			GXMulVec3Mat4AsPoint ( equitaleralTriangleWorld[ i ], equilateralTriangleLocal[ i ], modelMatrix );
+			modelMatrix.MultiplyAsPoint ( equitaleralTriangleWorld[ i ], equilateralTriangleLocal[ i ] );
 
 		GXVec3 barycentricCoordinates;
 		GXGetBarycentricCoords ( barycentricCoordinates, cursorWorld, equitaleralTriangleWorld[ 0 ], equitaleralTriangleWorld[ 1 ], equitaleralTriangleWorld[ 2 ] );
 
-		if ( barycentricCoordinates.x < 0.0f || barycentricCoordinates.x > 1.0f || barycentricCoordinates.y < 0.0f || barycentricCoordinates.y > 1.0f || barycentricCoordinates.z < 0.0f || barycentricCoordinates.z > 1.0f ) return;
+		if ( barycentricCoordinates.GetX () < 0.0f || barycentricCoordinates.GetX () > 1.0f || barycentricCoordinates.GetY () < 0.0f || barycentricCoordinates.GetY () > 1.0f || barycentricCoordinates.GetZ () < 0.0f || barycentricCoordinates.GetZ () > 1.0f ) return;
 
-		GXVec4 currentHueRGBA;
-		GXVec4 currentHueHSVA ( colorPicker->currentColorHSVA.h, 100.0f, 100.0f, 100.0f );
-		GXConvertHSVAToRGBA ( currentHueRGBA, currentHueHSVA );
+		GXColorHSV currentHueHSV ( currentColor.GetHue (), 100.0f, 100.0f, 100.0f );
+		GXColorRGB currentHueRGB ( currentHueHSV );
 
-		GXUByte selectedRed = (GXUByte)( 255.0f * ( barycentricCoordinates.y * currentHueRGBA.r + barycentricCoordinates.z ) );
-		GXUByte selectedGreen = (GXUByte)( 255.0f * ( barycentricCoordinates.y * currentHueRGBA.g + barycentricCoordinates.z ) );
-		GXUByte selectedBlue = (GXUByte)( 255.0f * ( barycentricCoordinates.y * currentHueRGBA.b + barycentricCoordinates.z ) );
+		GXUByte selectedRed = (GXUByte)( 255.0f * ( barycentricCoordinates.GetY () * currentHueRGB.GetRed () + barycentricCoordinates.GetZ () ) );
+		GXUByte selectedGreen = (GXUByte)( 255.0f * ( barycentricCoordinates.GetY () * currentHueRGB.GetGreen () + barycentricCoordinates.GetZ () ) );
+		GXUByte selectedBlue = (GXUByte)( 255.0f * ( barycentricCoordinates.GetY () * currentHueRGB.GetBlue () + barycentricCoordinates.GetZ () ) );
 
-		colorPicker->UpdateCurrentColorWithCorrection ( selectedRed, selectedGreen, selectedBlue, (GXUByte)( colorPicker->currentColorHSVA.a * 2.55f ) );
+		colorPicker->UpdateCurrentColorWithCorrection ( selectedRed, selectedGreen, selectedBlue, (GXUByte)( currentColor.GetAlpha () * 2.55f ) );
 
 		return;
 	}
 	else if ( &input == colorPicker->oldColor )
 	{
-		colorPicker->UpdateCurrentColor ( colorPicker->oldColorHSVA.h, colorPicker->oldColorHSVA.s, colorPicker->oldColorHSVA.v, colorPicker->oldColorHSVA.a );
+		EMColorRenderer* oldColorRenderer = (EMColorRenderer*)colorPicker->oldColor->GetRenderer ();
+		const GXColorHSV& oldColor = oldColorRenderer->GetColor ();
+
+		colorPicker->UpdateCurrentColor ( oldColor.GetHue (), oldColor.GetSaturation (), oldColor.GetValue (), oldColor.GetAlpha () );
 		return;
 	}
 
@@ -1173,7 +1226,10 @@ GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput& i
 	{
 		if ( &input != colorPicker->savedColors[ i ] ) continue;
 
-		colorPicker->UpdateCurrentColor ( colorPicker->savedColorHSVAs[ i ].h, colorPicker->savedColorHSVAs[ i ].s, colorPicker->savedColorHSVAs[ i ].v, colorPicker->savedColorHSVAs[ i ].a );
+		EMColorRenderer* savedColorRenderer = (EMColorRenderer*)colorPicker->savedColors[ i ]->GetRenderer ();
+		const GXColorHSV& savedColor = savedColorRenderer->GetColor ();
+
+		colorPicker->UpdateCurrentColor ( savedColor.GetHue (), savedColor.GetSaturation (), savedColor.GetValue (), savedColor.GetValue () );
 		return;
 	}
 }
@@ -1261,21 +1317,23 @@ GXVoid GXCALL EMUIColorPicker::OnResize ( GXVoid* handler, GXUIDragableArea& /*a
 GXVoid GXCALL EMUIColorPicker::OnFinishEditing ( GXVoid* handler, GXUIEditBox& editBox )
 {
 	EMUIColorPicker* colorPicker = (EMUIColorPicker*)handler;
+	EMColorRenderer* currentColorRenderer = (EMColorRenderer*)colorPicker->currentColor->GetRenderer ();
+	GXColorHSV newCurrentColor ( currentColorRenderer->GetColor () );
 
 	if ( &editBox == colorPicker->h->GetWidget () )
 	{
-		swscanf_s ( colorPicker->h->GetText (), L"%g", &( colorPicker->currentColorHSVA.h ) );
-		colorPicker->UpdateCurrentColor ( colorPicker->currentColorHSVA.h, colorPicker->currentColorHSVA.s, colorPicker->currentColorHSVA.v, colorPicker->currentColorHSVA.a );
+		swscanf_s ( colorPicker->h->GetText (), L"%g", &( newCurrentColor.data[ 0 ] ) );
+		colorPicker->UpdateCurrentColor ( newCurrentColor.GetHue (), newCurrentColor.GetSaturation (), newCurrentColor.GetValue (), newCurrentColor.GetAlpha () );
 	}
 	else if ( &editBox == colorPicker->s->GetWidget () )
 	{
-		swscanf_s ( colorPicker->s->GetText (), L"%g", &( colorPicker->currentColorHSVA.s ) );
-		colorPicker->UpdateCurrentColor ( colorPicker->currentColorHSVA.h, colorPicker->currentColorHSVA.s, colorPicker->currentColorHSVA.v, colorPicker->currentColorHSVA.a );
+		swscanf_s ( colorPicker->s->GetText (), L"%g", &( newCurrentColor.data[ 1 ] ) );
+		colorPicker->UpdateCurrentColor ( newCurrentColor.GetHue (), newCurrentColor.GetSaturation (), newCurrentColor.GetValue (), newCurrentColor.GetAlpha () );
 	}
 	else if ( &editBox == colorPicker->v->GetWidget () )
 	{
-		swscanf_s ( colorPicker->v->GetText (), L"%g", &( colorPicker->currentColorHSVA.v ) );
-		colorPicker->UpdateCurrentColor ( colorPicker->currentColorHSVA.h, colorPicker->currentColorHSVA.s, colorPicker->currentColorHSVA.v, colorPicker->currentColorHSVA.a );
+		swscanf_s ( colorPicker->v->GetText (), L"%g", &( newCurrentColor.data[ 2 ] ) );
+		colorPicker->UpdateCurrentColor ( newCurrentColor.GetHue (), newCurrentColor.GetSaturation (), newCurrentColor.GetValue (), newCurrentColor.GetAlpha () );
 	}
 	else if ( &editBox == colorPicker->r->GetWidget () || &editBox == colorPicker->g->GetWidget () || &editBox == colorPicker->b->GetWidget () || &editBox == colorPicker->transparency->GetWidget () )
 	{

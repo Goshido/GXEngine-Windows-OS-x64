@@ -1,4 +1,4 @@
-//version 1.38
+//version 1.39
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -56,9 +56,9 @@ struct GXVec2
 
 enum class eGXLineRelationship : GXUByte
 {
-	NoIntersection,
-	Intersection,
-	Overlap
+	NoIntersection = 0,
+	Intersection = 1,
+	Overlap = 2
 };
 
 eGXLineRelationship GXCALL GXLineIntersection2D ( GXVec2 &intersectionPoint, const GXVec2 &a0, const GXVec2 &a1, const GXVec2 &b0, const GXVec2 &b1 );
@@ -101,13 +101,13 @@ struct GXVec3
 	GXFloat SquaredDistance ( const GXVec3 &other ) const;
 
 	GXVoid LinearInterpolation ( const GXVec3 &start, const GXVec3 &finish, GXFloat interpolationFactor );
+	GXVoid Project ( const GXVec3 &vector, const GXVec3 &axis );
 	GXBool IsEqual ( const GXVec3 &other );
 
 	static const GXVec3& GetAbsoluteX ();
 	static const GXVec3& GetAbsoluteY ();
 	static const GXVec3& GetAbsoluteZ ();
 
-	static GXVoid GXCALL Projection ( GXVec3 &projection, const GXVec3 &vector, const GXVec3 &unitVector );
 	static GXVoid GXCALL MakeOrthonormalBasis ( GXVec3 &baseX, GXVec3 &adjustedY, GXVec3 &adjustedZ );	//baseX - correct direction, adjustedY - desirable, adjustedZ - calculated.
 
 	GXVec3& operator = ( const GXVec3 &vector );
@@ -165,6 +165,7 @@ struct GXColorRGB
 	GXColorRGB ();
 	explicit GXColorRGB ( GXFloat red, GXFloat green, GXFloat blue, GXFloat alpha );
 	explicit GXColorRGB ( GXUByte red, GXUByte green, GXUByte blue, GXFloat alpha );
+	explicit GXColorRGB ( const GXColorHSV &color );
 	GXColorRGB ( const GXColorRGB &other );
 
 	GXVoid Init ( GXFloat red, GXFloat green, GXFloat blue, GXFloat alpha );
@@ -201,7 +202,8 @@ struct GXColorHSV
 
 	GXColorHSV ();
 	explicit GXColorHSV ( GXFloat hue, GXFloat saturation, GXFloat value, GXFloat alpha );
-	explicit GXColorHSV ( const GXColorHSV &other );
+	explicit GXColorHSV ( const GXColorRGB &color );
+	GXColorHSV ( const GXColorHSV &other );
 
 	//[0.0f 360.0f]
 	GXVoid SetHue ( GXFloat hue );
@@ -311,7 +313,7 @@ struct GXMat3
 	GXVoid Sum ( const GXMat3 &a, const GXMat3 &b );
 	GXVoid Substract ( const GXMat3 &a, const GXMat3 &b );
 	GXVoid Multiply ( const GXMat3 &a, const GXMat3 &b );
-	GXVoid Multiply ( GXVec3 &out, const GXVec3 &v );
+	GXVoid Multiply ( GXVec3 &out, const GXVec3 &v ) const;
 	GXVoid Multiply ( const GXMat3 &a, GXFloat factor );
 
 	GXMat3& operator = ( const GXMat3 &matrix );
@@ -374,7 +376,7 @@ struct GXMat4
 	GXVoid GetPerspectiveParams ( GXFloat &fieldOfViewYRadiands, GXFloat &aspectRatio, GXFloat &zNear, GXFloat &zFar );
 	GXVoid GetOrthoParams ( GXFloat &width, GXFloat &height, GXFloat &zNear, GXFloat &zFar );
 
-	GXVoid GetRayPerspective ( GXVec3 &rayView, const GXVec2 &mouseCVV );
+	GXVoid GetRayPerspective ( GXVec3 &rayView, const GXVec2 &mouseCVV ) const;
 
 	GXMat4& operator = ( const GXMat4& other );
 };
@@ -412,11 +414,11 @@ struct GXAABB
 
 //-------------------------------------------------------------
 
-enum class eGXPlaneClassifyVertex
+enum class eGXPlaneClassifyVertex : GXUByte
 {
-	InFront,
-	Behind,
-	On
+	InFront = 0,
+	On = 1,
+	Behind = 2
 };
 
 struct GXPlane
@@ -465,8 +467,6 @@ class GXProjectionClipPlanes
 
 GXFloat GXCALL GXDegToRad ( GXFloat degrees );
 GXFloat GXCALL GXRadToDeg ( GXFloat radians );
-
-GXVoid GXCALL GXConvertHSVAToRGBA ( GXUByte &red, GXUByte &green, GXUByte &blue, GXUByte &alpha, const GXColorHSV &color );
 
 GXVoid GXCALL GXConvert3DSMaxToGXEngine ( GXVec3 &gx_out, GXFloat max_x, GXFloat max_y, GXFloat max_z );
 

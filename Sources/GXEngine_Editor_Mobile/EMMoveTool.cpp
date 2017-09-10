@@ -55,7 +55,7 @@ center ( L"3D Models/Editor Mobile/Move gismo center.stm" )
 
 	memset ( &startLocationWorld, 0, sizeof ( GXVec3 ) );
 	memset ( &deltaWorld, 0, sizeof ( GXVec3 ) );
-	GXSetMat4Identity ( gismoRotation );
+	gismoRotation.Identity ();
 
 	activeAxis = MOVE_TOOL_ACTIVE_AXIS_UNKNOWN;
 	isLMBPressed = GX_FALSE;
@@ -92,7 +92,7 @@ GXVoid EMMoveTool::OnViewerTransformChanged ()
 {
 	GXVec3 deltaView ( 0.0f, 0.0f, 0.0f );
 	GXVec3 axisLocationView;
-	GXMulVec3Mat4AsPoint ( axisLocationView, startLocationWorld, GXCamera::GetActiveCamera ()->GetCurrentFrameViewMatrix () );
+	GXCamera::GetActiveCamera ()->GetCurrentFrameViewMatrix ().MultiplyAsPoint ( axisLocationView, startLocationWorld );
 
 	gismoScaleCorrector = GetScaleCorrector ( axisLocationView, deltaView );
 }
@@ -194,7 +194,7 @@ GXBool EMMoveTool::OnLeftMouseButtonUp ( GXFloat /*x*/, GXFloat /*y*/ )
 {
 	if ( activeAxis == MOVE_TOOL_ACTIVE_AXIS_UNKNOWN ) return GX_FALSE;
 
-	GXSumVec3Vec3 ( startLocationWorld, startLocationWorld, deltaWorld );
+	startLocationWorld.Sum ( startLocationWorld, deltaWorld );
 
 	GXTransform newTransform = actor->GetTransform ();
 	newTransform.SetLocation ( startLocationWorld );
@@ -278,12 +278,12 @@ GXVoid EMMoveTool::UpdateModeMode ()
 		break;
 
 		case MOVE_TOOL_WORLD_MODE:
-			GXSetMat4Identity ( gismoRotation );
+			gismoRotation.Identity ();
 		break;
 	}
 
 	GXVec3 axisLocationView;
-	GXMulVec3Mat4AsPoint ( axisLocationView, startLocationWorld, activeCamera->GetCurrentFrameViewMatrix () );
+	activeCamera->GetCurrentFrameViewMatrix ().MultiplyAsPoint ( axisLocationView, startLocationWorld );
 
 	GXVec3 axisDirectionView;
 	GetAxis ( axisDirectionView );
@@ -304,7 +304,7 @@ GXVoid EMMoveTool::OnMoveActor ()
 	GXCamera* activeCamera = GXCamera::GetActiveCamera ();
 
 	GXVec3 axisLocationView;
-	GXMulVec3Mat4AsPoint ( axisLocationView, startLocationWorld, activeCamera->GetCurrentFrameViewMatrix () );
+	activeCamera->GetCurrentFrameViewMatrix ().MultiplyAsPoint ( axisLocationView, startLocationWorld );
 
 	GXVec3 axisDirectionView;
 	GetAxis ( axisDirectionView );
@@ -317,15 +317,15 @@ GXVoid EMMoveTool::OnMoveActor ()
 	if ( !isfinite ( axisParameterDelta ) ) return;
 
 	GXVec3 deltaView;
-	GXMulVec3Scalar ( deltaView, axisDirectionView, axisParameterDelta );
+	deltaView.Multiply ( axisDirectionView, axisParameterDelta );
 
 	gismoScaleCorrector = GetScaleCorrector ( axisLocationView, deltaView );
 
-	GXMulVec3Mat4AsNormal ( deltaWorld, deltaView, activeCamera->GetCurrentFrameModelMatrix () );
+	activeCamera->GetCurrentFrameModelMatrix ().MultiplyAsNormal ( deltaWorld, deltaView );
 	GXTransform newTransform = actor->GetTransform ();
 	GXVec3 w;
 	newTransform.GetLocation ( w );
-	GXSumVec3Vec3 ( w, startLocationWorld, deltaWorld );
+	w.Sum ( startLocationWorld, deltaWorld );
 	newTransform.SetLocation ( w );
 
 	actor->SetTransform ( newTransform );
@@ -339,21 +339,21 @@ GXVoid EMMoveTool::GetAxis ( GXVec3& axisView )
 	{
 		case MOVE_TOOL_ACTIVE_AXIS_X:
 			if ( mode == MOVE_TOOL_WORLD_MODE )
-				axisWorld = GXCreateVec3 ( 1.0f, 0.0f, 0.0f );
+				axisWorld.Init ( 1.0f, 0.0f, 0.0f );
 			else
 				gismoRotation.GetX ( axisWorld );
 		break;
 
 		case MOVE_TOOL_ACTIVE_AXIS_Y:
 			if ( mode == MOVE_TOOL_WORLD_MODE )
-				axisWorld = GXCreateVec3 ( 0.0f, 1.0f, 0.0f );
+				axisWorld.Init ( 0.0f, 1.0f, 0.0f );
 			else
 				gismoRotation.GetY ( axisWorld );
 		break;
 
 		case MOVE_TOOL_ACTIVE_AXIS_Z:
 			if ( mode == MOVE_TOOL_WORLD_MODE )
-				axisWorld = GXCreateVec3 ( 0.0f, 0.0f, 1.0f );
+				axisWorld.Init ( 0.0f, 0.0f, 1.0f );
 			else
 				gismoRotation.GetZ ( axisWorld );
 		break;
@@ -363,7 +363,7 @@ GXVoid EMMoveTool::GetAxis ( GXVec3& axisView )
 		break;
 	}
 
-	GXMulVec3Mat4AsNormal ( axisView, axisWorld, GXCamera::GetActiveCamera ()->GetCurrentFrameViewMatrix () );
+	GXCamera::GetActiveCamera ()->GetCurrentFrameViewMatrix ().MultiplyAsNormal ( axisView, axisWorld );
 }
 
 GXVoid EMMoveTool::GetRayPerspective ( GXVec3 &rayView )
@@ -372,19 +372,19 @@ GXVoid EMMoveTool::GetRayPerspective ( GXVec3 &rayView )
 	const GXMat4& proj_mat = GXCamera::GetActiveCamera ()->GetCurrentFrameProjectionMatrix ();
 
 	GXVec2 mouseCVV;
-	mouseCVV.x = ( mouseX / (GXFloat)renderer.GetWidth () ) * 2.0f - 1.0f;
-	mouseCVV.y = ( mouseY / (GXFloat)renderer.GetHeight () ) * 2.0f - 1.0f;
+	mouseCVV.SetX ( ( mouseX / (GXFloat)renderer.GetWidth () ) * 2.0f - 1.0f );
+	mouseCVV.SetY ( ( mouseY / (GXFloat)renderer.GetHeight () ) * 2.0f - 1.0f );
 
-	GXGetRayPerspective ( rayView, proj_mat, mouseCVV );
+	proj_mat.GetRayPerspective ( rayView, mouseCVV );
 }
 
 GXFloat EMMoveTool::GetAxisParameter ( const GXVec3 &axisLocationView, const GXVec3 &axisDirectionView, const GXVec3 &rayView )
 {
-	GXFloat b = axisLocationView.x * rayView.x + axisLocationView.y * rayView.y + axisLocationView.z * rayView.z;
-	GXFloat c = axisDirectionView.x * rayView.x + axisDirectionView.y * rayView.y + axisDirectionView.z * rayView.z;
-	GXFloat d = axisDirectionView.x * axisDirectionView.x + axisDirectionView.y * axisDirectionView.y + axisDirectionView.z * axisDirectionView.z;
-	GXFloat e = axisLocationView.x * axisDirectionView.x + axisLocationView.y * axisDirectionView.y + axisLocationView.z * axisDirectionView.z;
-	GXFloat zeta = ( rayView.x * rayView.x + rayView.y * rayView.y + rayView.z * rayView.z ) * c;
+	GXFloat b = axisLocationView.GetX () * rayView.GetX () + axisLocationView.GetY () * rayView.GetY () + axisLocationView.GetZ () * rayView.GetZ ();
+	GXFloat c = axisDirectionView.GetX () * rayView.GetX () + axisDirectionView.GetY () * rayView.GetY () + axisDirectionView.GetZ () * rayView.GetZ ();
+	GXFloat d = axisDirectionView.GetX () * axisDirectionView.GetX () + axisDirectionView.GetY () * axisDirectionView.GetY () + axisDirectionView.GetZ () * axisDirectionView.GetZ ();
+	GXFloat e = axisLocationView.GetX () * axisDirectionView.GetX () + axisLocationView.GetY () * axisDirectionView.GetY () + axisLocationView.GetZ () * axisDirectionView.GetZ ();
+	GXFloat zeta = ( rayView.GetX () * rayView.GetX () + rayView.GetY () * rayView.GetY () + rayView.GetZ () * rayView.GetZ () ) * c;
 	GXFloat omega = c * c;
 
 	return ( zeta * e - b * omega ) / ( c * omega - zeta * d );
@@ -392,7 +392,7 @@ GXFloat EMMoveTool::GetAxisParameter ( const GXVec3 &axisLocationView, const GXV
 
 GXFloat EMMoveTool::GetScaleCorrector ( const GXVec3 &axisLocationView, const GXVec3 &deltaView )
 {
-	return ( axisLocationView.z + deltaView.z ) * MOVE_TOOL_GISMO_SIZE_FACTOR;
+	return ( axisLocationView.GetZ () + deltaView.GetZ () ) * MOVE_TOOL_GISMO_SIZE_FACTOR;
 }
 
 GXVoid EMMoveTool::UpdateMeshTransform ( EMMesh &mesh )
