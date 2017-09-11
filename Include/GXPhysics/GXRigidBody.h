@@ -22,7 +22,7 @@ class GXRigidBody
 
 		GXVec3							linearVelocity;
 		GXVec3							angularVelocity;
-		GXMat3							invInertiaTensorLocal;
+		GXMat3							inverseInertiaTensorLocal;
 
 		GXVec3							totalForce;
 		GXVec3							totalTorque;
@@ -39,7 +39,9 @@ class GXRigidBody
 		GXVec3							lastFrameAcceleration;
 
 		GXMat4							transform;
-		GXMat3							invInertiaTensorWorld;
+		GXMat3							inverseTransform;
+		GXMat3							inverseInertiaTensorWorld;
+		GXMat3							transposeInverseInertiaTensorWorld;
 
 		GXShape*						shape;
 
@@ -57,6 +59,7 @@ class GXRigidBody
 
 		GXVoid SetInertiaTensor ( const GXMat3 &inertiaTensor );
 		const GXMat3& GetInverseInertiaTensorWorld () const;
+		const GXMat3& GetTransposeInverseInertiaTensorWorld () const;
 
 		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
 		GXVoid SetLocation ( const GXVec3 &newLocation );
@@ -69,7 +72,7 @@ class GXRigidBody
 		const GXVec3& GetLinearVelocity () const;
 		GXVoid AddLinearVelocity ( const GXVec3 &velocity );
 
-		GXVoid SetAngularVelocity ( const GXVec3 velocity );
+		GXVoid SetAngularVelocity ( const GXVec3 &velocity );
 		const GXVec3& GetAngularVelocity () const;
 		GXVoid AddAngularVelocity ( const GXVec3 &velocity );
 		

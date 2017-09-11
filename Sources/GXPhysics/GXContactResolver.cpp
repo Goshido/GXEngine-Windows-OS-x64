@@ -9,47 +9,32 @@ GXContactResolver::GXContactResolver ( GXUInt /*iterations*/ )
 	//NOTHING
 }
 
-GXVoid GXContactResolver::ResolveContacts ( GXContact* contactArray, GXUInt numContacts, GXFloat /*deltaTime*/ )
+GXVoid GXContactResolver::ResolveContacts ( GXContact* contactArray, GXUInt numContacts, GXFloat deltaTime )
 {
 	GXUInt i = 0;
 	while ( i < numContacts )
 	{
 		GXContact& contact = contactArray[ i ];
 
+		if ( contact.GetPenetration () > 100.0f )
+		{
+			GXUInt wtf = 0;
+			GXLogW ( L"%u\n", wtf );
+			continue;
+		}
+
 		GXUInt linkedContacts = contact.GetLinkedContacts ();
 		GXRigidBody& firstRigidBody = contact.GetFirstRigidBody ();
 		GXRigidBody& secondRigidBody = contact.GetSecondRigidBody ();
 
 		if ( firstRigidBody.IsKinematic () )
-			ResolveSingleBodyContacts ( secondRigidBody, contactArray + i );
+			ResolveSingleBodyContacts ( secondRigidBody, contactArray + i, deltaTime );
 		else if ( secondRigidBody.IsKinematic () )
-			ResolveSingleBodyContacts ( firstRigidBody, contactArray + i );
+			ResolveSingleBodyContacts ( firstRigidBody, contactArray + i, deltaTime );
 		else
 			ResolveDoubleBodyContacts ( contactArray + 1 );
 
 		i += linkedContacts;
-
-		if ( contact.GetPenetration () > 100.0f )
-		{
-			GXUInt wtf = 0;
-			GXLogW ( L"%u\n", wtf );
-		}
-
-		if ( firstRigidBody.IsKinematic () )
-		{
-			GXVec3 newLocation;
-			newLocation.Sum ( secondRigidBody.GetLocation (), contact.GetPenetration (), contact.GetNormal () );
-			secondRigidBody.SetLocation ( newLocation );
-		}
-		else
-		{
-			GXVec3 reverseContactNormal = contact.GetNormal ();
-			reverseContactNormal.Reverse ();
-
-			GXVec3 newLocation;
-			newLocation.Sum ( firstRigidBody.GetLocation (), contact.GetPenetration (), reverseContactNormal );
-			firstRigidBody.SetLocation ( newLocation );
-		}
 	}
 }
 
@@ -80,7 +65,7 @@ GXFloat GXContactResolver::CalculateAngularComponentContactSpace ( const GXVec3 
 	angularMomentum.CrossProduct ( centerOfMassToContactPoint, contactNormal );
 
 	GXVec3 angularVelocity;
-	rigidBody.GetInverseInertiaTensorWorld ().Multiply ( angularVelocity, angularMomentum );
+	rigidBody.GetTransposeInverseInertiaTensorWorld ().Multiply ( angularVelocity, angularMomentum );
 
 	GXVec3 velocity;
 	velocity.CrossProduct ( angularVelocity, centerOfMassToContactPoint );
@@ -88,67 +73,112 @@ GXFloat GXContactResolver::CalculateAngularComponentContactSpace ( const GXVec3 
 	return velocity.DotProduct ( contactNormal );
 }
 
-GXVoid GXContactResolver::ResolveSingleBodyContacts ( GXRigidBody &rigidBody, GXContact* contacts )
+GXVoid GXContactResolver::ResolveSingleBodyContacts ( GXRigidBody &rigidBody, GXContact* contacts, GXFloat /*deltaTime*/ )
 {
-	GXVec3 contactNormal = contacts[ 0 ].GetNormal ();
-	if ( &rigidBody == &contacts[ 0 ].GetFirstRigidBody () )
-		contactNormal.Reverse ();
+	GXVec3 deltaLocationWorld;
+	GXVec3 deltaRotationWorld;
+
+	GXVec3 deltaLinearVelocityWorld;
+	GXVec3 deltaAngularVelocityWorld;
+
+	GXUInt i = 0;
+	GXUInt linkedContacts = contacts->GetLinkedContacts ();
 
 	GXMat3 contactMatrix;
-	CalculateContactMatrix ( contactMatrix, contactNormal );
+	CalculateContactMatrix ( contactMatrix, contacts->GetNormal () );
 
 	GXMat3 inverseContactMatrix;
 	inverseContactMatrix.Transponse ( contactMatrix );
 
-	GXUInt linkedContacts = contacts[ 0 ].GetLinkedContacts ();
-
-	GXVec3 totalLinearVelocity ( 0.0f, 0.0f, 0.0f );
-	GXVec3 totalAngularVelocity ( 0.0f, 0.0f, 0.0f );
-
-	for ( GXUInt i = 0; i < linkedContacts; i++ )
+	while ( i < linkedContacts )
 	{
-		GXContact& contact = contacts[ i ];
+		const GXContact& contact = contacts[ i ];
 
-		GXFloat linearComponent = rigidBody.GetInverseMass ();
+		GXVec3 rigidBodyCenterOfMassToContactPointWorld;
+		rigidBodyCenterOfMassToContactPointWorld.Substract ( contact.GetContactPoint (), rigidBody.GetLocation () );
 
-		GXVec3 rigidBodyCenterOfMassToContactPoint;
-		rigidBodyCenterOfMassToContactPoint.Substract ( contact.GetContactPoint (), rigidBody.GetLocation () );
+		GXVec3 unitNormalAngularMomentumWorld;
+		unitNormalAngularMomentumWorld.CrossProduct ( rigidBodyCenterOfMassToContactPointWorld, contact.GetNormal () );
 
-		GXFloat deltaVelocity = linearComponent + CalculateAngularComponentContactSpace ( rigidBodyCenterOfMassToContactPoint, rigidBody, contactNormal );
+		GXVec3 deltaAngularVelocityFromUnitNormalAngularMomentumWorld;
+		rigidBody.GetTransposeInverseInertiaTensorWorld ().Multiply ( deltaAngularVelocityFromUnitNormalAngularMomentumWorld, unitNormalAngularMomentumWorld );
 
-		GXVec3 contactVelocity;
-		contactVelocity.CrossProduct ( rigidBody.GetAngularVelocity (), rigidBodyCenterOfMassToContactPoint );
-		contactVelocity.Sum ( contactVelocity, rigidBody.GetLinearVelocity () );
+		GXVec3 deltaLinearVelocityFromUnitNormalAngularMomentumWorld;
+		deltaLinearVelocityFromUnitNormalAngularMomentumWorld.CrossProduct ( deltaAngularVelocityFromUnitNormalAngularMomentumWorld, rigidBodyCenterOfMassToContactPointWorld );
+
+		GXFloat angularInertia = deltaLinearVelocityFromUnitNormalAngularMomentumWorld.DotProduct ( contact.GetNormal () );
+		GXFloat linearInertia = rigidBody.GetInverseMass ();
+		GXFloat totalInertia = angularInertia + linearInertia;
+		GXFloat inverseTotalInertia = 1.0f / totalInertia;
+
+		GXFloat linearMove = contact.GetPenetration () * linearInertia * inverseTotalInertia;
+		GXFloat angularMove = contact.GetPenetration () * angularInertia * inverseTotalInertia;
+
+		if ( fabsf ( angularMove ) > 0.2f )
+		{
+			GXFloat totalMove = linearMove + angularMove;
+
+			if ( angularMove < 0.0f )
+			{
+				angularMove = -0.2f;
+			}
+			else
+			{
+				angularMove = 0.2f;
+			}
+
+			linearMove = totalMove - angularMove;
+		}
+
+		deltaLocationWorld.Sum ( deltaLocationWorld, linearMove, contact.GetNormal () );
+
+		GXVec3 currentDeltaRotationWorld;
+		currentDeltaRotationWorld.Multiply ( deltaAngularVelocityFromUnitNormalAngularMomentumWorld, angularMove / angularInertia );
+		deltaRotationWorld.Sum ( deltaRotationWorld, currentDeltaRotationWorld );
+
+		GXVec3 contactVelocityWorld;
+		contactVelocityWorld.CrossProduct ( rigidBody.GetAngularVelocity (), rigidBodyCenterOfMassToContactPointWorld );
+		contactVelocityWorld.Sum ( contactVelocityWorld, rigidBody.GetLinearVelocity () );
 
 		GXVec3 contactVelocityContactSpace;
-		inverseContactMatrix.Multiply ( contactVelocityContactSpace, contactVelocity );
+		inverseContactMatrix.Multiply ( contactVelocityContactSpace, contactVelocityWorld );
 
-		if ( &rigidBody == &contact.GetFirstRigidBody () )
-			contactVelocityContactSpace.Reverse ();
+		GXFloat desiredVelocity = -contactVelocityContactSpace.GetZ () - contact.GetRestitution ();
 
-		GXFloat desiredVelocity = -contactVelocityContactSpace.GetZ () * ( 1.0f + contact.GetRestitution () );
+		GXVec3 impulseWorld;
+		impulseWorld.Multiply ( contact.GetNormal (), desiredVelocity / totalInertia );
 
-		GXVec3 impulse;
-		impulse.Multiply ( contactNormal, desiredVelocity / deltaVelocity );
+		GXVec3 linearVelocityWorld;
+		GXVec3 angularVelocityWorld;
 
-		if ( &rigidBody == &contact.GetFirstRigidBody () )
-			impulse.Reverse ();
+		GetRigidBodyKinematics ( linearVelocityWorld, angularVelocityWorld, rigidBody, impulseWorld, rigidBodyCenterOfMassToContactPointWorld );
 
-		GXVec3 linearVelocity;
-		GXVec3 angularVelocity;
-		GetRigidBodyKinematics ( linearVelocity, angularVelocity, rigidBody, impulse, rigidBodyCenterOfMassToContactPoint );
+		deltaLinearVelocityWorld.Sum ( deltaLinearVelocityWorld, linearVelocityWorld );
+		deltaAngularVelocityWorld.Sum ( deltaAngularVelocityWorld, angularVelocityWorld );
 
-		totalLinearVelocity.Sum ( totalLinearVelocity, linearVelocity );
-		totalAngularVelocity.Sum ( totalAngularVelocity, angularVelocity );
+		i++;
 	}
 
-	GXFloat inverseLinkedContacts = 1.0f / (GXFloat)linkedContacts;
+	GXVec3 newLocation;
+	newLocation.Sum ( rigidBody.GetLocation (), deltaLocationWorld );
+	rigidBody.SetLocation ( newLocation );
 
-	totalLinearVelocity.Multiply ( totalLinearVelocity, inverseLinkedContacts );
-	totalAngularVelocity.Multiply ( totalAngularVelocity, inverseLinkedContacts );
+	deltaRotationWorld.Multiply ( deltaRotationWorld, 0.5f );
+	GXQuat alpha ( deltaRotationWorld.GetX (), deltaRotationWorld.GetY (), deltaRotationWorld.GetZ (), 0.0f );
+	GXQuat betta;
+	betta.Multiply ( alpha, rigidBody.GetRotation () );
+	GXQuat newRotation;
+	newRotation.Sum ( rigidBody.GetRotation (), betta );
 
-	rigidBody.SetLinearVelocity ( totalLinearVelocity );
-	rigidBody.SetAngularVelocity ( totalAngularVelocity );
+	rigidBody.SetRotaton ( newRotation );
+
+	GXVec3 newLinearVelocityWorld;
+	newLinearVelocityWorld.Sum ( rigidBody.GetLinearVelocity (), 1.0f / (GXFloat)i, deltaLinearVelocityWorld );
+	rigidBody.SetLinearVelocity ( newLinearVelocityWorld );
+
+	GXVec3 newAngularVelocityWorld;
+	newAngularVelocityWorld.Sum ( rigidBody.GetAngularVelocity (), 1.0f / (GXFloat)i, deltaAngularVelocityWorld );
+	rigidBody.SetAngularVelocity ( newAngularVelocityWorld );
 }
 
 GXVoid GXContactResolver::ResolveDoubleBodyContacts ( GXContact* /*contacts*/ )
@@ -158,16 +188,13 @@ GXVoid GXContactResolver::ResolveDoubleBodyContacts ( GXContact* /*contacts*/ )
 	//TODO
 }
 
-GXVoid GXContactResolver::GetRigidBodyKinematics ( GXVec3 &linearVelocity, GXVec3 &angularVelocity, GXRigidBody &rigidBody, const GXVec3 &impulse, const GXVec3 &centerOfMassToContactPoint )
+GXVoid GXContactResolver::GetRigidBodyKinematics ( GXVec3 &linearVelocity, GXVec3 &angularVelocity, const GXRigidBody &rigidBody, const GXVec3 &impulse, const GXVec3 &centerOfMassToContactPoint )
 {
 	GXVec3 newVelocity;
-	linearVelocity.Sum ( rigidBody.GetLinearVelocity (), rigidBody.GetInverseMass (), impulse );
+	linearVelocity.Multiply ( impulse, rigidBody.GetInverseMass () );
 
 	GXVec3 angularMomentum;
-	angularMomentum.CrossProduct ( impulse, centerOfMassToContactPoint );
+	angularMomentum.CrossProduct ( centerOfMassToContactPoint, impulse );
 
-	GXVec3 deltaAngularVelocity;
-	rigidBody.GetInverseInertiaTensorWorld ().Multiply ( deltaAngularVelocity, angularMomentum );
-
-	angularVelocity.Sum ( rigidBody.GetAngularVelocity (), deltaAngularVelocity );
+	rigidBody.GetTransposeInverseInertiaTensorWorld ().Multiply ( angularVelocity, angularMomentum );
 }

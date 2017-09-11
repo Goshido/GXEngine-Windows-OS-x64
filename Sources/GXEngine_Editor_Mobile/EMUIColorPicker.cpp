@@ -1229,7 +1229,7 @@ GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput& i
 		EMColorRenderer* savedColorRenderer = (EMColorRenderer*)colorPicker->savedColors[ i ]->GetRenderer ();
 		const GXColorHSV& savedColor = savedColorRenderer->GetColor ();
 
-		colorPicker->UpdateCurrentColor ( savedColor.GetHue (), savedColor.GetSaturation (), savedColor.GetValue (), savedColor.GetValue () );
+		colorPicker->UpdateCurrentColor ( savedColor.GetHue (), savedColor.GetSaturation (), savedColor.GetValue (), savedColor.GetAlpha () );
 		return;
 	}
 }

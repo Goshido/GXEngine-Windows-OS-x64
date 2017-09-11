@@ -18,10 +18,10 @@ class GXContactResolver
 		GXVoid CalculateContactMatrix ( GXMat3 &out, const GXVec3 &contactNormal );
 		GXFloat CalculateAngularComponentContactSpace ( const GXVec3 &centerOfMassToContactPoint, const GXRigidBody& rigidBody, const GXVec3 &contactNormal );
 
-		GXVoid ResolveSingleBodyContacts ( GXRigidBody &rigidBody, GXContact* contacts );
+		GXVoid ResolveSingleBodyContacts ( GXRigidBody &rigidBody, GXContact* contacts, GXFloat deltaTime );
 		GXVoid ResolveDoubleBodyContacts ( GXContact* contacts );
 
-		GXVoid GetRigidBodyKinematics ( GXVec3 &linearVelocity, GXVec3 &angularVelocity, GXRigidBody &rigidBody, const GXVec3 &impulse, const GXVec3 &centerOfMassToContactPoint );
+		GXVoid GetRigidBodyKinematics ( GXVec3 &linearVelocity, GXVec3 &angularVelocity, const GXRigidBody &rigidBody, const GXVec3 &impulse, const GXVec3 &centerOfMassToContactPoint );
 };
 
 

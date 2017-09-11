@@ -264,6 +264,7 @@ struct GXQuat
 	GXVoid Rehand ();
 
 	GXVoid Multiply ( const GXQuat &a, const GXQuat &b );
+	GXVoid Multiply ( const GXQuat &q, GXFloat scale );
 	GXVoid Sum ( const GXQuat &a, const GXQuat &b );
 	GXVoid Sum ( const GXQuat &q, GXFloat s, const GXVec3 &v );
 	GXVoid Substract ( const GXQuat &a, const GXQuat &b );

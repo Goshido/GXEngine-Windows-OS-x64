@@ -966,6 +966,14 @@ GXVoid GXQuat::Multiply ( const GXQuat &a, const GXQuat &b )
 	data[ 3 ] = betta + ( -omega - yotta + phi + zetta ) * 0.5f;
 }
 
+GXVoid GXQuat::Multiply ( const GXQuat &q, GXFloat scale )
+{
+	data[ 0 ] = q.data[ 0 ] * scale;
+	data[ 1 ] = q.data[ 1 ] * scale;
+	data[ 2 ] = q.data[ 2 ] * scale;
+	data[ 3 ] = q.data[ 3 ] * scale;
+}
+
 GXVoid GXQuat::Sum ( const GXQuat &a, const GXQuat &b )
 {
 	data[ 0 ] = a.data[ 0 ] + b.data[ 0 ];

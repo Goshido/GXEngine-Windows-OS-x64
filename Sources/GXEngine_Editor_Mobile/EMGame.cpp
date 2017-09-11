@@ -165,10 +165,11 @@ GXVoid EMGame::OnInit ()
 	unitActor = new EMUnitActor ( L"Unit actor 01", transform );
 
 	transform.SetLocation ( -3.0f, 0.0f, 0.0f );
-	transform.SetRotation ( 0.5f, 0.0f, 0.5f );
+	transform.SetRotation ( 0.0f, 0.0f, 0.5f );
 	colliderOne = new EMPhysicsDrivenActor ( L"Collider One", transform );
 	GXBoxShape* colliderOneShape = new GXBoxShape ( &( colliderOne->GetRigidBody () ), 1.0f, 1.0f, 1.0f );
 	colliderOne->GetRigidBody ().SetShape ( *colliderOneShape );
+	//colliderOne->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 20.0f, 0.0f ) );
 	//colliderOne->GetRigidBody ().EnableKinematic ();
 	colliderOne->SetMesh ( L"3D Models/System/Unit Cube.stm" );
 	EMCookTorranceCommonPassMaterial& colliderOneMaterial = colliderOne->GetMaterial ();
@@ -188,7 +189,7 @@ GXVoid EMGame::OnInit ()
 	colliderTwo = new EMPhysicsDrivenActor ( L"Collider Two", transform );
 	GXSphereShape* colliderTwoShape = new GXSphereShape ( &( colliderTwo->GetRigidBody () ), 0.5f );
 	colliderTwo->GetRigidBody ().SetShape ( *colliderTwoShape );
-	//colliderTwo->GetRigidBody ().EnableKinematic ();
+	colliderTwo->GetRigidBody ().EnableKinematic ();
 	colliderTwo->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
 	EMCookTorranceCommonPassMaterial& colliderTwoMaterial = colliderTwo->GetMaterial ();
 	colliderTwoMaterial.SetAlbedoColor ( 247, 244, 233, 255 );
@@ -202,7 +203,7 @@ GXVoid EMGame::OnInit ()
 	world.RegisterForceGenerator ( colliderTwo->GetRigidBody (), gravity );
 
 	transform.SetLocation ( 0.0f, -3.0f, 0.0f );
-	transform.SetRotation ( 0.0f, 0.0, 0.0f );
+	transform.SetRotation ( 0.0f, GX_MATH_PI, 0.0f );
 	transform.SetScale ( 50.0f, 1.0, 50.0f );
 	kinematicPlane = new EMPhysicsDrivenActor ( L"Kinematic Plane", transform );
 	GXBoxShape* kinematicPlaneShape = new GXBoxShape ( &( kinematicPlane->GetRigidBody () ), 50.0f, 1.0f, 50.0f );
