@@ -1257,14 +1257,14 @@ GXVoid GXMat3::SkewSymmetric ( const GXVec3 &base )
 {
 	m[ 0 ][ 0 ] = m[ 1 ][ 1 ] = m[ 2 ][ 2 ] = 0.0f;
 
-	m[ 0 ][ 1 ] = base.GetZ ();
-	m[ 0 ][ 2 ] = -base.GetY ();
+	m[ 0 ][ 1 ] = -base.GetZ ();
+	m[ 0 ][ 2 ] = base.GetY ();
 
-	m[ 1 ][ 0 ] = -base.GetZ ();
-	m[ 1 ][ 2 ] = base.GetX ();
+	m[ 1 ][ 0 ] = base.GetZ ();
+	m[ 1 ][ 2 ] = -base.GetX ();
 
-	m[ 2 ][ 0 ] = base.GetY ();
-	m[ 2 ][ 1 ] = -base.GetX ();
+	m[ 2 ][ 0 ] = -base.GetY ();
+	m[ 2 ][ 1 ] = base.GetX ();
 }
 
 GXVoid GXMat3::Sum ( const GXMat3 &a, const GXMat3 &b )

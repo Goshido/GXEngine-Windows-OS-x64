@@ -31,12 +31,12 @@
 
 GXRigidBody::GXRigidBody ()
 {
+	SetMass ( DEFAULT_MASS );
+
 	shape = nullptr;
 
 	handler = nullptr;
 	OnTransformChanged = nullptr;
-
-	SetMass ( DEFAULT_MASS );
 
 	GXVec3 vec ( DEFAULT_LOCATION_X, DEFAULT_LOCATION_Y, DEFAULT_LOCATION_Z );
 	SetLocation ( vec );
@@ -59,6 +59,9 @@ GXRigidBody::GXRigidBody ()
 
 	DisableKinematic ();
 	ClearAccumulators ();
+	
+	SetAwake ();
+	SetCanSleep ( GX_TRUE );
 }
 
 GXRigidBody::~GXRigidBody ()
@@ -183,7 +186,7 @@ GXVoid GXRigidBody::AddLinearVelocity ( const GXVec3 &velocity )
 
 GXVoid GXRigidBody::SetAngularVelocity ( const GXVec3 &velocity )
 {
-	angularVelocity = velocity;
+	inverseTransform.Multiply ( angularVelocity, velocity );
 }
 
 const GXVec3& GXRigidBody::GetAngularVelocity () const
@@ -349,10 +352,7 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 
 	location.Sum ( location, deltaTime, linearVelocity );
 
-	GXVec3 alpha;
-	inverseTransform.Multiply ( alpha, angularVelocity );
-
-	GXQuat betta ( alpha.GetX (), alpha.GetY (), alpha.GetZ (), 0.0f );
+	GXQuat betta ( angularVelocity.GetX (), angularVelocity.GetY (), angularVelocity.GetZ (), 0.0f );
 	betta.Multiply ( betta, deltaTime * 0.5f );
 
 	GXQuat gamma;
@@ -362,12 +362,10 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 	
 	ClearAccumulators ();
 	CalculateCachedData ();
-
-	return;
 	/*
 	if ( canSleep )
 	{
-		GXFloat currentMotion = GXDotVec3 ( linearVelocity, linearVelocity ) + GXDotVec3 ( angularVelocity, angularVelocity );
+		GXFloat currentMotion = linearVelocity.DotProduct ( linearVelocity ) + angularVelocity.DotProduct ( angularVelocity );
 		GXFloat bias = powf ( 0.5f, deltaTime );
 
 		motion = bias * motion + ( 1.0f - bias ) * currentMotion;
@@ -375,8 +373,8 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 
 		if ( motion < sleepEpsilon )
 			SetSleep ();
-		else if ( motion > 10 * sleepEpsilon )
-			motion = 10 * sleepEpsilon;
+		else if ( motion > sleepEpsilon )
+			motion = sleepEpsilon;
 	}
 	*/
 }

@@ -47,6 +47,7 @@ class GXContact
 		GXVoid SetPenetration ( GXFloat contactPenetration );
 		GXFloat GetPenetration () const;
 
+		GXFloat GetFriction () const;
 		GXFloat GetRestitution () const;
 
 		GXVoid SetGJKIterations ( GXUInt iterations );

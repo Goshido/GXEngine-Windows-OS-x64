@@ -25,7 +25,7 @@
 #define EPA_DISTANCE_EPSILON						1.0e-5f
 
 #define DEFAULT_DEVIATION_AXES						8
-#define DEFAULT_DEVIATION_ANGLE						0.174533f	// 10 degrees
+#define DEFAULT_DEVIATION_ANGLE						0.008726f	// 0.5 degrees
 
 #define INITIAL_PLANAR_INTERSECTION_ARRAY_CAPACITY	128
 #define PLANAR_INTERSECTION_ALLOCATING_STEP			128
@@ -431,7 +431,9 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 		{
 			contactPenetration = smallestDistance;
 			contactNormal = smallestDistanceFaceNormal;
-			contactNormal.Reverse ();
+
+			if ( shapeA.GetRigidBody ()->IsKinematic () )
+				contactNormal.Reverse ();
 
 			break;
 		}

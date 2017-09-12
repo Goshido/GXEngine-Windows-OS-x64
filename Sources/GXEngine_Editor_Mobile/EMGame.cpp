@@ -165,12 +165,13 @@ GXVoid EMGame::OnInit ()
 	unitActor = new EMUnitActor ( L"Unit actor 01", transform );
 
 	transform.SetLocation ( -3.0f, 0.0f, 0.0f );
-	transform.SetRotation ( 0.0f, 0.0f, 0.5f );
+	transform.SetRotation ( 0.0f, 0.0f, 0.3f );
 	colliderOne = new EMPhysicsDrivenActor ( L"Collider One", transform );
 	GXBoxShape* colliderOneShape = new GXBoxShape ( &( colliderOne->GetRigidBody () ), 1.0f, 1.0f, 1.0f );
 	colliderOne->GetRigidBody ().SetShape ( *colliderOneShape );
-	//colliderOne->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 20.0f, 0.0f ) );
+	//colliderOne->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 10.0f, 0.0f ) );
 	//colliderOne->GetRigidBody ().EnableKinematic ();
+	colliderOne->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, -1.0f, 0.0f ) );
 	colliderOne->SetMesh ( L"3D Models/System/Unit Cube.stm" );
 	EMCookTorranceCommonPassMaterial& colliderOneMaterial = colliderOne->GetMaterial ();
 	colliderOneMaterial.SetAlbedoColor ( 253, 180, 17, 255 );
@@ -307,7 +308,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	GXTouchSurface::GetInstance ().ExecuteMessages ();
 
 	if ( deltaTime < 0.2f )
-		GXPhysicsEngine::GetInstance ().RunSimulateLoop ( deltaTime * 0.1f );
+		GXPhysicsEngine::GetInstance ().RunSimulateLoop ( 0.1f * deltaTime );
 
 	fluttershy->UpdatePose ( deltaTime );
 
@@ -523,6 +524,9 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 		pi.insertY += offset;
 		physicsInfo->AddText ( pi, 128, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Used faces: %i" ), contact->GetFaces () );
 	}
+
+	pi.insertY += offset;
+	physicsInfo->AddText ( pi, 128, L"”глова€ скорость: %g", colliderOne->GetRigidBody ().GetAngularVelocity ().GetZ () );
 
 	physicsInfo->Render ();
 

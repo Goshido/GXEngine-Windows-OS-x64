@@ -63,6 +63,11 @@ GXFloat GXContact::GetPenetration () const
 	return penetration;
 }
 
+GXFloat GXContact::GetFriction () const
+{
+	return friction;
+}
+
 GXFloat GXContact::GetRestitution () const
 {
 	return restitution;
