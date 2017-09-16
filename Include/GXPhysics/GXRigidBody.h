@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #ifndef GX_RIGID_BODY
 #define GX_RIGID_BODY
@@ -30,9 +30,9 @@ class GXRigidBody
 		GXFloat							linearDamping;
 		GXFloat							angularDamping;
 
-		GXFloat							motion;
 		GXBool							isAwake;
 		GXBool							canSleep;
+		GXFloat							sleepTimeout;
 		GXBool							isKinematic;
 
 		GXVec3							acceleration;

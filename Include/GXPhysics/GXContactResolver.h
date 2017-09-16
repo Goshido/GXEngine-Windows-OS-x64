@@ -25,7 +25,7 @@ class GXContactResolver
 		GXVoid ResolveSingleBodyContacts ( GXRigidBody &rigidBody, GXContact* contacts, GXFloat deltaTime );
 		GXVoid ResolveDoubleBodyContacts ( GXContact* contacts );
 
-		GXVoid GetRigidBodyKinematics ( GXVec3 &linearVelocity, GXVec3 &angularVelocity, const GXRigidBody &rigidBody, const GXVec3 &impulse, const GXVec3 &centerOfMassToContactPoint );
+		GXVoid GetRigidBodyKinematics ( GXVec3 &linearVelocityWorld, GXVec3 &angularVelocityWorld, const GXRigidBody &rigidBody, const GXVec3 &impulseWorld, const GXVec3 &centerOfMassToContactPointWorld );
 };
 
 

@@ -1,17 +1,14 @@
-//version 1.0
+//version 1.1
 
 #include <GXPhysics/GXPhysicsEngine.h>
 
+#define DEFAULT_SLEEP_TIMEOUT								0.05f
+#define DEFAULT_MAXIMUM_LINEAR_VELOCITY_SQUARED_DEVIATION	0.05f
+#define DEFAULT_MAXIMUM_ANGULAR_VELOCITY_SQUARED_DEVIATION	0.05f
+#define DEFAULT_TIME_STEP									0.00833f	//120 iterations per second
 
-#define DEFAULT_GRAVITY_X		0.0f
-#define DEFAULT_GRAVITY_Y		-9.8f
-#define DEFAULT_GRAVITY_Z		0.0f
-
-#define DEFAULT_SLEEP_EPSILON	0.1f
-#define DEFAULT_TIME_STEP		0.0155f
-
-#define MAX_CONTACTS			16384
-#define WORLD_ITERATIONS		50
+#define MAX_CONTACTS										16384
+#define WORLD_ITERATIONS									50
 
 
 GXPhysicsEngine* GXPhysicsEngine::instance = nullptr;
@@ -29,24 +26,34 @@ GXPhysicsEngine& GXPhysicsEngine::GetInstance ()
 	return *instance;
 }
 
-GXVoid GXPhysicsEngine::SetGravity ( GXFloat x, GXFloat y, GXFloat z )
+GXVoid GXPhysicsEngine::SetSleepTimeout ( GXFloat seconds )
 {
-	gravity.Init ( x, y, z );
+	sleepTimeout = seconds;
 }
 
-const GXVec3& GXPhysicsEngine::GetGravity () const
+GXFloat GXPhysicsEngine::GetSleepTimeout () const
 {
-	return gravity;
+	return sleepTimeout;
 }
 
-GXVoid GXPhysicsEngine::SetSleepEpsilon ( GXFloat epsilon )
+GXVoid GXPhysicsEngine::SetMaximumLinearVelocitySquaredDeviation ( GXFloat squaredDeviation )
 {
-	sleepEpsilon = epsilon;
+	maximumLinearVelocitySquaredDeviation = squaredDeviation;
 }
 
-GXFloat GXPhysicsEngine::GetSleepEpsilon () const
+GXFloat GXPhysicsEngine::GetMaximumLinearVelocitySquaredDeviation () const
 {
-	return sleepEpsilon;
+	return maximumLinearVelocitySquaredDeviation;
+}
+
+GXVoid GXPhysicsEngine::SetMaximumAngularVelocitySquaredDeviation ( GXFloat squaredDeviation )
+{
+	maximumAngularVelocitySquaredDeviation = squaredDeviation;
+}
+
+GXFloat GXPhysicsEngine::GetMaximumAngularelocitySquaredDeviation () const
+{
+	return maximumAngularVelocitySquaredDeviation;
 }
 
 GXVoid GXPhysicsEngine::SetTimeStep ( GXFloat step )
@@ -66,21 +73,21 @@ GXWorld& GXPhysicsEngine::GetWorld ()
 
 GXVoid GXPhysicsEngine::RunSimulateLoop ( GXFloat deltaTime )
 {
-	GXFloat time = deltaTime;
+	time += deltaTime;
+
 	while ( time > timeStep )
 	{
 		world.RunPhysics ( timeStep );
 		time -= timeStep;
 	}
-
-	if ( time > 0.0f )
-		world.RunPhysics ( time );
 }
 
-GXPhysicsEngine::GXPhysicsEngine ()
-: world ( MAX_CONTACTS, WORLD_ITERATIONS )
+GXPhysicsEngine::GXPhysicsEngine ():
+world ( MAX_CONTACTS, WORLD_ITERATIONS )
 {
-	SetGravity ( DEFAULT_GRAVITY_X, DEFAULT_GRAVITY_Y, DEFAULT_GRAVITY_Z );
+	time = 0.0f;
+	SetSleepTimeout ( DEFAULT_SLEEP_TIMEOUT );
+	SetMaximumLinearVelocitySquaredDeviation ( DEFAULT_MAXIMUM_LINEAR_VELOCITY_SQUARED_DEVIATION );
+	SetMaximumAngularVelocitySquaredDeviation ( DEFAULT_MAXIMUM_ANGULAR_VELOCITY_SQUARED_DEVIATION );
 	SetTimeStep ( DEFAULT_TIME_STEP );
-	SetSleepEpsilon ( DEFAULT_SLEEP_EPSILON );
 }

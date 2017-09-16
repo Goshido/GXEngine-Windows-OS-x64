@@ -171,7 +171,8 @@ GXVoid EMGame::OnInit ()
 	colliderOne->GetRigidBody ().SetShape ( *colliderOneShape );
 	//colliderOne->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 10.0f, 0.0f ) );
 	//colliderOne->GetRigidBody ().EnableKinematic ();
-	colliderOne->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, -1.0f, 0.0f ) );
+	colliderOne->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, -1.0f, 1.0f ) );
+	colliderOne->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 0.0f, 20.0f ) );
 	colliderOne->SetMesh ( L"3D Models/System/Unit Cube.stm" );
 	EMCookTorranceCommonPassMaterial& colliderOneMaterial = colliderOne->GetMaterial ();
 	colliderOneMaterial.SetAlbedoColor ( 253, 180, 17, 255 );
@@ -190,7 +191,8 @@ GXVoid EMGame::OnInit ()
 	colliderTwo = new EMPhysicsDrivenActor ( L"Collider Two", transform );
 	GXSphereShape* colliderTwoShape = new GXSphereShape ( &( colliderTwo->GetRigidBody () ), 0.5f );
 	colliderTwo->GetRigidBody ().SetShape ( *colliderTwoShape );
-	colliderTwo->GetRigidBody ().EnableKinematic ();
+	//colliderTwo->GetRigidBody ().EnableKinematic ();
+	//colliderTwo->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 10.0f, 0.0f ) );
 	colliderTwo->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
 	EMCookTorranceCommonPassMaterial& colliderTwoMaterial = colliderTwo->GetMaterial ();
 	colliderTwoMaterial.SetAlbedoColor ( 247, 244, 233, 255 );
@@ -308,7 +310,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	GXTouchSurface::GetInstance ().ExecuteMessages ();
 
 	if ( deltaTime < 0.2f )
-		GXPhysicsEngine::GetInstance ().RunSimulateLoop ( 0.1f * deltaTime );
+		GXPhysicsEngine::GetInstance ().RunSimulateLoop ( deltaTime );
 
 	fluttershy->UpdatePose ( deltaTime );
 
@@ -524,9 +526,6 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 		pi.insertY += offset;
 		physicsInfo->AddText ( pi, 128, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Used faces: %i" ), contact->GetFaces () );
 	}
-
-	pi.insertY += offset;
-	physicsInfo->AddText ( pi, 128, L"”глова€ скорость: %g", colliderOne->GetRigidBody ().GetAngularVelocity ().GetZ () );
 
 	physicsInfo->Render ();
 

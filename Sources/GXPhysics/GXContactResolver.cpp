@@ -5,6 +5,9 @@
 
 
 #define DEFAULT_ANGULAR_MOVE_LIMIT		0.1f
+#define ANGULAR_INERTIA_EPSILON			0.0001f
+#define PENETRATION_CORRECTOR			1.0e-5f
+#define LINEAR_MOVE_CORRECTOR			1.0e-5f
 
 
 GXContactResolver::GXContactResolver ( GXUInt /*iterations*/ )
@@ -18,24 +21,14 @@ GXVoid GXContactResolver::ResolveContacts ( GXContact* contactArray, GXUInt numC
 	while ( i < numContacts )
 	{
 		GXContact& contact = contactArray[ i ];
-
-		if ( contact.GetPenetration () > 100.0f )
-		{
-			GXUInt wtf = 0;
-			GXLogW ( L"%u\n", wtf );
-			continue;
-		}
-
 		GXUInt linkedContacts = contact.GetLinkedContacts ();
+
 		GXRigidBody& firstRigidBody = contact.GetFirstRigidBody ();
-		GXRigidBody& secondRigidBody = contact.GetSecondRigidBody ();
 
 		if ( firstRigidBody.IsKinematic () )
-			ResolveSingleBodyContacts ( secondRigidBody, contactArray + i, deltaTime );
-		else if ( secondRigidBody.IsKinematic () )
-			ResolveSingleBodyContacts ( firstRigidBody, contactArray + i, deltaTime );
-		else
 			ResolveDoubleBodyContacts ( contactArray + 1 );
+		else
+			ResolveSingleBodyContacts ( firstRigidBody, contactArray + i, deltaTime );
 
 		i += linkedContacts;
 	}
@@ -92,12 +85,6 @@ GXVoid GXContactResolver::ResolveSingleBodyContacts ( GXRigidBody &rigidBody, GX
 	GXUInt i = 0;
 	GXUInt linkedContacts = contacts->GetLinkedContacts ();
 
-	GXMat3 contactMatrix;
-	CalculateContactMatrix ( contactMatrix, contacts->GetNormal () );
-
-	GXMat3 inverseContactMatrix;
-	inverseContactMatrix.Transponse ( contactMatrix );
-
 	while ( i < linkedContacts )
 	{
 		const GXContact& contact = contacts[ i ];
@@ -109,7 +96,7 @@ GXVoid GXContactResolver::ResolveSingleBodyContacts ( GXRigidBody &rigidBody, GX
 		contactVelocityWorld.CrossProduct ( rigidBody.GetAngularVelocity (), rigidBodyCenterOfMassToContactPointWorld );
 		contactVelocityWorld.Sum ( contactVelocityWorld, rigidBody.GetLinearVelocity () );
 
-		if ( contactVelocityWorld.DotProduct ( contact.GetNormal () ) >= 0.0f )
+		if ( contactVelocityWorld.DotProduct ( contact.GetNormal () ) > 0.0f )
 		{
 			i++;
 			continue;
@@ -124,10 +111,9 @@ GXVoid GXContactResolver::ResolveSingleBodyContacts ( GXRigidBody &rigidBody, GX
 		GXVec3 deltaLinearVelocityFromUnitNormalAngularMomentumWorld;
 		deltaLinearVelocityFromUnitNormalAngularMomentumWorld.CrossProduct ( deltaAngularVelocityFromUnitNormalAngularMomentumWorld, rigidBodyCenterOfMassToContactPointWorld );
 
-		GXFloat angularInertia = deltaLinearVelocityFromUnitNormalAngularMomentumWorld.DotProduct ( contact.GetNormal () );
+		GXFloat angularInertia = deltaLinearVelocityFromUnitNormalAngularMomentumWorld.DotProduct ( contact.GetNormal () ) + ANGULAR_INERTIA_EPSILON;
 		GXFloat linearInertia = rigidBody.GetInverseMass ();
-		GXFloat totalInertia = angularInertia + linearInertia;
-		GXFloat inverseTotalInertia = 1.0f / totalInertia;
+		GXFloat inverseTotalInertia = 1.0f / ( angularInertia + linearInertia );
 
 		GXFloat linearMove = contact.GetPenetration () * linearInertia * inverseTotalInertia;
 		GXFloat angularMove = contact.GetPenetration () * angularInertia * inverseTotalInertia;
@@ -150,19 +136,19 @@ GXVoid GXContactResolver::ResolveSingleBodyContacts ( GXRigidBody &rigidBody, GX
 		currentDeltaRotationWorld.Multiply ( deltaAngularVelocityFromUnitNormalAngularMomentumWorld, angularMove / angularInertia );
 		deltaRotationWorld.Sum ( deltaRotationWorld, currentDeltaRotationWorld );
 
-		// TODO Friction collision
+		GXFloat alpha = -( 1.0f + contact.GetRestitution () ) * contactVelocityWorld.DotProduct ( contact.GetNormal () );
 
+		GXVec3 betta;
+		betta.CrossProduct ( rigidBodyCenterOfMassToContactPointWorld, contact.GetNormal () );
 
-		// Frictionless collision
-		
-		GXVec3 contactVelocityContactSpace;
-		inverseContactMatrix.Multiply ( contactVelocityContactSpace, contactVelocityWorld );
+		GXVec3 gamma;
+		rigidBody.GetTransposeInverseInertiaTensorWorld ().Multiply ( gamma, betta );
 
-		GXFloat desiredVelocity = -contactVelocityContactSpace.GetZ () * ( 1.0f + contact.GetRestitution () );
-		GXVec3 impulseContactSpace ( 0.0f, 0.0f, desiredVelocity * rigidBody.GetMass () );
+		betta.CrossProduct ( gamma, rigidBodyCenterOfMassToContactPointWorld );
+		GXFloat yotta = rigidBody.GetInverseMass () + contact.GetNormal ().DotProduct ( betta );
 
 		GXVec3 impulseWorld;
-		contactMatrix.Multiply ( impulseWorld, impulseContactSpace );
+		impulseWorld.Multiply ( contact.GetNormal (), alpha / yotta );
 
 		GXVec3 linearVelocityWorld;
 		GXVec3 angularVelocityWorld;
@@ -175,11 +161,13 @@ GXVoid GXContactResolver::ResolveSingleBodyContacts ( GXRigidBody &rigidBody, GX
 		i++;
 	}
 
+	GXFloat inverseLinkedContacts = 1.0f / (GXFloat)i;
+
 	GXVec3 newLocation;
-	newLocation.Sum ( rigidBody.GetLocation (), deltaLocationWorld );
+	newLocation.Sum ( rigidBody.GetLocation (), inverseLinkedContacts, deltaLocationWorld );
 	rigidBody.SetLocation ( newLocation );
 
-	deltaRotationWorld.Multiply ( deltaRotationWorld, -0.5f );
+	deltaRotationWorld.Multiply ( deltaRotationWorld, -0.5f * inverseLinkedContacts );
 	GXQuat alpha ( deltaRotationWorld.GetX (), deltaRotationWorld.GetY (), deltaRotationWorld.GetZ (), 0.0f );
 	GXQuat betta;
 	betta.Multiply ( alpha, rigidBody.GetRotation () );
@@ -188,15 +176,13 @@ GXVoid GXContactResolver::ResolveSingleBodyContacts ( GXRigidBody &rigidBody, GX
 
 	rigidBody.SetRotaton ( newRotation );
 
-	GXFloat inverseLinkedContacts = 1.0f / (GXFloat)i;
-
 	GXVec3 newLinearVelocityWorld;
-	newLinearVelocityWorld.Sum ( rigidBody.GetLinearVelocity (), inverseLinkedContacts, deltaLinearVelocityWorld );
+	newLinearVelocityWorld.Sum ( rigidBody.GetLinearVelocity (), deltaLinearVelocityWorld );
 	rigidBody.SetLinearVelocity ( newLinearVelocityWorld );
 
 	// Too complex. Need to find explanation or simplify!
 	GXVec3 newAngularVelocityWorld ( rigidBody.GetAngularVelocity () );
-	newAngularVelocityWorld.Sum ( rigidBody.GetAngularVelocity (), inverseLinkedContacts, deltaAngularVelocityWorld );
+	newAngularVelocityWorld.Sum ( rigidBody.GetAngularVelocity (), deltaAngularVelocityWorld );
 	newAngularVelocityWorld.Reverse ();
 	rigidBody.SetAngularVelocity ( newAngularVelocityWorld );
 }
@@ -208,13 +194,18 @@ GXVoid GXContactResolver::ResolveDoubleBodyContacts ( GXContact* /*contacts*/ )
 	//TODO
 }
 
-GXVoid GXContactResolver::GetRigidBodyKinematics ( GXVec3 &linearVelocity, GXVec3 &angularVelocity, const GXRigidBody &rigidBody, const GXVec3 &impulse, const GXVec3 &centerOfMassToContactPoint )
+GXVoid GXContactResolver::GetRigidBodyKinematics ( GXVec3 &linearVelocityWorld, GXVec3 &angularVelocityWorld, const GXRigidBody &rigidBody, const GXVec3 &impulseWorld, const GXVec3 &centerOfMassToContactPointWorld )
 {
-	GXVec3 newVelocity;
-	linearVelocity.Multiply ( impulse, rigidBody.GetInverseMass () );
+	GXVec3 alpha ( centerOfMassToContactPointWorld );
+	alpha.Normalize ();
 
-	GXVec3 angularMomentum;
-	angularMomentum.CrossProduct ( centerOfMassToContactPoint, impulse );
+	GXVec3 betta ( impulseWorld );
+	betta.Normalize ();
 
-	rigidBody.GetTransposeInverseInertiaTensorWorld ().Multiply ( angularVelocity, angularMomentum );
+	linearVelocityWorld.Multiply ( impulseWorld, -alpha.DotProduct ( betta ) * rigidBody.GetInverseMass () );
+
+	GXVec3 angularMomentumWorld;
+	angularMomentumWorld.CrossProduct ( centerOfMassToContactPointWorld, impulseWorld );
+
+	rigidBody.GetTransposeInverseInertiaTensorWorld ().Multiply ( angularVelocityWorld, angularMomentumWorld );
 }

@@ -35,9 +35,6 @@ struct GXSupportPoint
 {
 	GXVec3		difference;
 
-	GXVec3		extremeA;
-	GXVec3		extremeB;
-
 	GXVoid operator = ( const GXSupportPoint &point );
 };
 
@@ -254,6 +251,7 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 	GXUInt gjkIterations = 0;
 
 	CalculateSupportPoint ( supportPoint, shapeA, shapeB, initialDirection );
+
 	simplex.PushPoint ( supportPoint );
 	direction.Substract ( origin, supportPoint.difference );
 
@@ -515,13 +513,37 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 		}
 	}
 
+	// Disable contacts with penetration depth equal 0.0f
+
+	if ( contactPenetration == 0.0f )
+	{
+		totalShapeAContactGeometryPoints = 0;
+		totalShapeBContactGeometryPoints = 0;
+
+		return;
+	}
+
 	//Contact geometry search
 
 	if ( shapeA.GetType () == eGXShapeType::Sphere )
 	{
 		GXContact* contact = collisionData.GetContactsBegin ();
+
+		if ( shapeA.GetRigidBody ()->IsKinematic () )
+		{
+			contact->SetShapes ( shapeB, shapeA );
+			contactNormal.Reverse ();
+		}
+		else
+		{
+			contact->SetShapes ( shapeA, shapeB );
+		}
+
+		GXVec3 contactPoint;
+		shapeA.GetExtremePoint ( contactPoint, contactNormal );
+		contact->SetContactPoint ( contactPoint );
+
 		contact->SetLinkedContacts ( 1 );
-		contact->SetShapes ( shapeA, shapeB );
 		contact->SetNormal ( contactNormal );
 		contact->SetPenetration ( contactPenetration );
 		contact->SetGJKIterations ( gjkIterations );
@@ -529,10 +551,6 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 		contact->SetSupportPoints ( totalSupportPoints );
 		contact->SetEdges ( maximumEdgesUsed );
 		contact->SetFaces ( totalFaces );
-
-		GXVec3 contactPoint;
-		shapeA.GetExtremePoint ( contactPoint, contactNormal );
-		contact->SetContactPoint ( contactPoint );
 
 		collisionData.AddContacts ( 1 );
 
@@ -543,9 +561,31 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 	else if ( shapeB.GetType () == eGXShapeType::Sphere )
 	{
 		GXContact* contact = collisionData.GetContactsBegin ();
+
+		if ( shapeA.GetRigidBody ()->IsKinematic () )
+		{
+			contact->SetShapes ( shapeB, shapeA );
+			contact->SetNormal ( contactNormal );
+
+			contactNormal.Reverse ();
+
+			GXVec3 contactPoint;
+			shapeB.GetExtremePoint ( contactPoint, contactNormal );
+			contact->SetContactPoint ( contactPoint );
+		}
+		else
+		{
+			contact->SetShapes ( shapeA, shapeB );
+
+			GXVec3 contactPoint;
+			shapeB.GetExtremePoint ( contactPoint, contactNormal );
+			contact->SetContactPoint ( contactPoint );
+
+			contactNormal.Reverse ();
+			contact->SetNormal ( contactNormal );
+		}
+
 		contact->SetLinkedContacts ( 1 );
-		contact->SetShapes ( shapeA, shapeB );
-		contact->SetNormal ( contactNormal );
 		contact->SetPenetration ( contactPenetration );
 		contact->SetGJKIterations ( gjkIterations );
 		contact->SetEPAIterations ( epaIterations );
@@ -553,11 +593,6 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 		contact->SetEdges ( maximumEdgesUsed );
 		contact->SetFaces ( totalFaces );
 
-		contactNormal.Reverse ();
-		GXVec3 contactPoint;
-		shapeB.GetExtremePoint ( contactPoint, contactNormal );
-
-		contact->SetContactPoint ( contactPoint );
 		collisionData.AddContacts ( 1 );
 
 		totalIntersectionPoints = 0;
@@ -617,8 +652,18 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 	if ( totalShapeAContactGeometryPoints == 1 )
 	{
 		GXContact* contact = collisionData.GetContactsBegin ();
+
+		if ( shapeA.GetRigidBody ()->IsKinematic () )
+		{
+			contact->SetShapes ( shapeB, shapeA );
+		}
+		else
+		{
+			contact->SetShapes ( shapeA, shapeB );
+			contactNormal.Reverse ();
+		}
+
 		contact->SetLinkedContacts ( 1 );
-		contact->SetShapes ( shapeA, shapeB );
 		contact->SetNormal ( contactNormal );
 		contact->SetPenetration ( contactPenetration );
 		contact->SetGJKIterations ( gjkIterations );
@@ -638,8 +683,18 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 	if ( totalShapeBContactGeometryPoints == 1 )
 	{
 		GXContact* contact = collisionData.GetContactsBegin ();
+
+		if ( shapeA.GetRigidBody ()->IsKinematic () )
+		{
+			contact->SetShapes ( shapeB, shapeA );
+		}
+		else
+		{
+			contact->SetShapes ( shapeA, shapeB );
+			contactNormal.Reverse ();
+		}
+
 		contact->SetLinkedContacts ( 1 );
-		contact->SetShapes ( shapeA, shapeB );
 		contact->SetNormal ( contactNormal );
 		contact->SetPenetration ( contactPenetration );
 		contact->SetGJKIterations ( gjkIterations );
@@ -723,8 +778,17 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 			break;
 		}
 
+		if ( shapeA.GetRigidBody ()->IsKinematic () )
+		{
+			contact->SetShapes ( shapeB, shapeA );
+			contactNormal.Reverse ();
+		}
+		else
+		{
+			contact->SetShapes ( shapeA, shapeB );
+		}
+
 		contact->SetLinkedContacts ( 1 );
-		contact->SetShapes ( shapeA, shapeB );
 		contact->SetNormal ( contactNormal );
 		contact->SetPenetration ( contactPenetration );
 		contact->SetGJKIterations ( gjkIterations );
@@ -783,6 +847,22 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 	GXContact* contact = collisionData.GetContactsBegin ();
 	GXUInt contactIndex = 0;
 
+	const GXShape* correctedShapeA;
+	const GXShape* correctedShapeB;
+	GXVec3 correctedContactNormal ( contactNormal );
+
+	if ( shapeA.GetRigidBody ()->IsKinematic () )
+	{
+		correctedShapeA = &shapeB;
+		correctedShapeB = &shapeA;
+	}
+	else
+	{
+		correctedShapeA = &shapeA;
+		correctedShapeB = &shapeB;
+		correctedContactNormal.Reverse ();
+	}
+
 	for ( GXUInt i = 0; i < totalIntersectionPoints; i++ )
 	{
 		const GXVec3& intersectionPoint = intersection[ i ];
@@ -804,8 +884,10 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 
 		if ( checkDirection.DotProduct ( contactNormal ) < 0.0f ) continue;
 
-		contact[ contactIndex ].SetShapes ( shapeA, shapeB );
-		contact[ contactIndex ].SetNormal ( contactNormal );
+		contact[ contactIndex ].SetShapes ( *correctedShapeA, *correctedShapeB );
+		contact[ contactIndex ].SetNormal ( correctedContactNormal );
+		/*contact[ contactIndex ].SetShapes ( shapeA, shapeB );
+		contact[ contactIndex ].SetNormal ( contactNormal );*/
 		contact[ contactIndex ].SetContactPoint ( intersectionShapeAProjection );
 		contact[ contactIndex ].SetPenetration ( contactPenetration );
 		contact[ contactIndex ].SetGJKIterations ( gjkIterations );
@@ -1015,11 +1097,15 @@ intersectionGeometry ( sizeof ( GXVec3 ) )
 
 GXVoid GXCollisionDetector::CalculateSupportPoint ( GXSupportPoint &supportPoint, const GXShape &shapeA, const GXShape &shapeB, const GXVec3 &direction )
 {
-	shapeA.GetExtremePoint ( supportPoint.extremeA, direction );
-	GXVec3 reverseDirection = direction;
+	GXVec3 extremeA;
+	shapeA.GetExtremePoint ( extremeA, direction );
+
+	GXVec3 reverseDirection ( direction );
 	reverseDirection.Reverse ();
-	shapeB.GetExtremePoint ( supportPoint.extremeB, reverseDirection );
-	supportPoint.difference.Substract ( supportPoint.extremeA, supportPoint.extremeB );
+	GXVec3 extremeB;
+	shapeB.GetExtremePoint ( extremeB, reverseDirection );
+
+	supportPoint.difference.Substract ( extremeA, extremeB );
 }
 
 GXVoid GXCollisionDetector::ProceedEdge ( GXEdge &edge, GXUInt &lastEdgeIndex, GXEdge** edgeArrayPointer, GXUInt &totalEdgeNumber )

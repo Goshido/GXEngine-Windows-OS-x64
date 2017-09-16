@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #include <GXPhysics/GXRigidBody.h>
 #include <GXPhysics/GXShape.h>
@@ -54,8 +54,6 @@ GXRigidBody::GXRigidBody ()
 
 	SetLinearDamping ( DEFALUT_LINEAR_DAMPING );
 	SetAngularDamping ( DEFAULT_ANGULAR_DAMPING );
-
-	acceleration = GXPhysicsEngine::GetInstance ().GetGravity ();
 
 	DisableKinematic ();
 	ClearAccumulators ();
@@ -265,7 +263,7 @@ const GXMat4& GXRigidBody::GetTransform ()
 GXVoid GXRigidBody::SetAwake ()
 {
 	isAwake = GX_TRUE;
-	motion = GXPhysicsEngine::GetInstance ().GetSleepEpsilon () * 2.0f;
+	sleepTimeout = 0.0f;
 }
 
 GXVoid GXRigidBody::SetSleep ()
@@ -362,19 +360,26 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 	
 	ClearAccumulators ();
 	CalculateCachedData ();
-	/*
-	if ( canSleep )
+
+	if ( !canSleep ) return;
+
+	GXPhysicsEngine& physicsEngine = GXPhysicsEngine::GetInstance ();
+
+	if ( linearVelocity.SquaredLength () > physicsEngine.GetMaximumLinearVelocitySquaredDeviation () )
 	{
-		GXFloat currentMotion = linearVelocity.DotProduct ( linearVelocity ) + angularVelocity.DotProduct ( angularVelocity );
-		GXFloat bias = powf ( 0.5f, deltaTime );
-
-		motion = bias * motion + ( 1.0f - bias ) * currentMotion;
-		GXFloat sleepEpsilon = GXPhysicsEngine::GetInstance ().GetSleepEpsilon ();
-
-		if ( motion < sleepEpsilon )
-			SetSleep ();
-		else if ( motion > sleepEpsilon )
-			motion = sleepEpsilon;
+		sleepTimeout = 0.0f;
+		return;
 	}
-	*/
+
+	if ( angularVelocity.SquaredLength () > physicsEngine.GetMaximumAngularelocitySquaredDeviation () )
+	{
+		sleepTimeout = 0.0f;
+		return;
+	}
+
+	sleepTimeout += deltaTime;
+
+	if ( sleepTimeout < physicsEngine.GetSleepTimeout () ) return;
+
+	SetSleep ();
 }
