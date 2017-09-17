@@ -37,7 +37,7 @@ struct GXForceGeneratorsRegistration
 //----------------------------------------------------------------
 
 GXWorld::GXWorld ( GXUInt maxContacts, GXUInt iterations ):
-contactResolver ( iterations ), collisions ( maxContacts )
+collisions ( maxContacts )
 {
 	GXCollisionDetector::GetInstance ();
 
@@ -213,7 +213,7 @@ GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 		}
 	}
 
-	contactResolver.ResolveContacts ( collisions.GetAllContacts (), collisions.GetTotalContacts (), deltaTime );
+	contactResolver.ResolveContacts ( collisions.GetAllContacts (), collisions.GetTotalContacts () );
 }
 
 const GXCollisionData& GXWorld::GetCollisionData () const

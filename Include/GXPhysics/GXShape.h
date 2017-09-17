@@ -36,7 +36,7 @@ class GXShape
 
 		const GXMat4& GetTransformWorld () const;
 		GXVoid CalculateCacheData ();
-		GXRigidBody* GetRigidBody () const;
+		GXRigidBody& GetRigidBody () const;
 
 		virtual GXVoid CalculateInertiaTensor ( GXFloat mass ) = 0;
 		const GXMat3& GetInertialTensor () const;

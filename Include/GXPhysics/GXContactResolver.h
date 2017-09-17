@@ -13,19 +13,18 @@ class GXContactResolver
 		GXFloat		angularMoveLimit;
 
 	public:
-		GXContactResolver ( GXUInt iterations );
+		GXContactResolver ();
 
-		GXVoid ResolveContacts ( GXContact* contactArray, GXUInt numContacts, GXFloat deltaTime );
+		GXVoid ResolveContacts ( GXContact* contactArray, GXUInt numContacts );
 		GXVoid SetAngularMoveLimit ( GXFloat limit );
 
 	private:
-		GXVoid CalculateContactMatrix ( GXMat3 &out, const GXVec3 &contactNormal );
-		GXFloat CalculateAngularComponentContactSpace ( const GXVec3 &centerOfMassToContactPoint, const GXRigidBody& rigidBody, const GXVec3 &contactNormal );
-
-		GXVoid ResolveSingleBodyContacts ( GXRigidBody &rigidBody, GXContact* contacts, GXFloat deltaTime );
+		GXVoid ResolveSingleBodyContacts ( GXContact* contacts );
 		GXVoid ResolveDoubleBodyContacts ( GXContact* contacts );
 
-		GXVoid GetRigidBodyKinematics ( GXVec3 &linearVelocityWorld, GXVec3 &angularVelocityWorld, const GXRigidBody &rigidBody, const GXVec3 &impulseWorld, const GXVec3 &centerOfMassToContactPointWorld );
+		GXVoid GetRigidBodyKinematicsWorld ( GXVec3 &linearVelocityWorld, GXVec3 &angularVelocityWorld, const GXRigidBody &rigidBody, const GXVec3 &impulseWorld, const GXVec3 &centerOfMassToContactPointWorld );
+		GXVoid GetContactVelocityWorld ( GXVec3 &contactVelocityWorld, const GXRigidBody &rigidBodyA, const GXVec3 &rigidBodyACenterOfMassToContactPointWorld, const GXRigidBody &rigidBodyB, const GXVec3 &rigidBodyBCenterOfMassToContactPointWorld );
+		GXVoid ResolvePenetrationWorld ( GXVec3 &deltaLocationWorld, GXVec3 &deltaRotationWorld, const GXRigidBody &rigidBody, const GXVec3 &centerOfMassToContactPointWorld, const GXVec3 &contactNormalWorld, GXFloat contactPenetration );
 };
 
 

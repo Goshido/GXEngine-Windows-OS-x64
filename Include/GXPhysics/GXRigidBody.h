@@ -15,10 +15,13 @@ class GXRigidBody
 {
 	private:
 		GXFloat							mass;
-		GXFloat							invMass;
+		GXFloat							inverseMass;
 
 		GXVec3							location;
+		GXVec3							lastFrameLocation;
+
 		GXQuat							rotation;
+		GXQuat							lastFrameRotation;
 
 		GXVec3							linearVelocity;
 		GXVec3							angularVelocity;

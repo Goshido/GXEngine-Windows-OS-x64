@@ -30,17 +30,24 @@ class GXContact
 		GXUInt			linkedContacts;
 
 	public:
+		//Value makes sence when contact geometry is edge-face or face-face.
+		//Used by contact resolver.
 		GXVoid SetLinkedContacts ( GXUInt contacts );
 		GXUInt GetLinkedContacts () const;
 
 		GXVoid SetShapes ( const GXShape &a, const GXShape &b );
 
+		//Always not kinematic rigid body.
 		GXRigidBody& GetFirstRigidBody ();
+
+		//Can be kinematic or not kinemartic rigid body.
 		GXRigidBody& GetSecondRigidBody ();
 
+		//Direction to move first rigid body in world space.
 		GXVoid SetNormal ( const GXVec3 &contactNormal );
 		const GXVec3& GetNormal () const;
 
+		//Contact point in world space.
 		GXVoid SetContactPoint ( const GXVec3 &contactPoint );
 		const GXVec3& GetContactPoint () const;
 

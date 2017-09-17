@@ -16,8 +16,8 @@ GXUInt GXContact::GetLinkedContacts () const
 
 GXVoid GXContact::SetShapes ( const GXShape &a, const GXShape &b )
 {
-	bodies[ 0 ] = a.GetRigidBody ();
-	bodies[ 1 ] = b.GetRigidBody ();
+	bodies[ 0 ] = &a.GetRigidBody ();
+	bodies[ 1 ] = &b.GetRigidBody ();
 
 	friction = GXMinf ( a.GetFriction (), b.GetFriction () );
 	restitution = GXMinf ( a.GetRestitution (), b.GetRestitution () );

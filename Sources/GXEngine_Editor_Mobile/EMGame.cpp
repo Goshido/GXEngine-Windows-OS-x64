@@ -35,11 +35,7 @@ gravity ( GXVec3 ( 0.0f, -9.81f, 0.0f ) )
 	effectsPopup = nullptr;
 
 	physicsInfo = nullptr;
-	physicsContactNormalMaterial = nullptr;
 	physicsContactPointMaterial = nullptr;
-	physicsGeometry = nullptr;
-	physicsShapeAContactGeometryMaterial = nullptr;
-	physicsShapeBContactGeometryMaterial = nullptr;
 
 	directedLight = nullptr;
 
@@ -141,38 +137,21 @@ GXVoid EMGame::OnInit ()
 
 	physicsInfoBackgroundTexture = GXTexture2D::LoadTexture ( L"Textures/System/Default_Diffuse.tga", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 
-	physicsContactNormalMesh = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Move gismo Z axis.stm" );
-	physicsContactNormalMaterial = new GXUnlitColorMaterial ();
-	physicsContactNormalMaterial->SetColor ( 255, 0, 0, 255 );
-
 	physicsContactPointMesh = GXMeshGeometry::LoadFromObj ( L"3D Models/System/Unit Sphere.obj" );
 	physicsContactPointMaterial = new GXUnlitColorMaterial ();
 	physicsContactPointMaterial->SetColor ( 255, 0, 0, 255 );
 
-	physicsGeometry = new GXMeshGeometry ();
-	physicsGeometry->SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, sizeof ( GXVec3 ), 0 );
-
-	physicsShapeAContactGeometryMaterial = new GXUnlitColorMaterial ();
-	physicsShapeAContactGeometryMaterial->SetColor ( 255, 255, 0, 255 );
-
-	physicsShapeBContactGeometryMaterial = new GXUnlitColorMaterial ();
-	physicsShapeBContactGeometryMaterial->SetColor ( 0, 255, 255, 255 );
-
-	physicsPlanarIntersectionGeometryMaterial = new GXUnlitColorMaterial ();
-	physicsPlanarIntersectionGeometryMaterial->SetColor ( 255, 0, 0, 255 );
-
 	GXTransform transform;
 	unitActor = new EMUnitActor ( L"Unit actor 01", transform );
 
-	transform.SetLocation ( -3.0f, 0.0f, 0.0f );
-	transform.SetRotation ( 0.0f, 0.0f, 0.3f );
+	transform.SetLocation ( 3.0f, 3.0f, 0.0f );
+	//transform.SetRotation ( 0.0f, 0.0f, 0.3f );
 	colliderOne = new EMPhysicsDrivenActor ( L"Collider One", transform );
 	GXBoxShape* colliderOneShape = new GXBoxShape ( &( colliderOne->GetRigidBody () ), 1.0f, 1.0f, 1.0f );
 	colliderOne->GetRigidBody ().SetShape ( *colliderOneShape );
-	//colliderOne->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 10.0f, 0.0f ) );
 	//colliderOne->GetRigidBody ().EnableKinematic ();
-	colliderOne->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, -1.0f, 1.0f ) );
-	colliderOne->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 0.0f, 20.0f ) );
+	//colliderOne->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, -1.0f, 1.0f ) );
+	colliderOne->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 0.0f, -5.0f ) );
 	colliderOne->SetMesh ( L"3D Models/System/Unit Cube.stm" );
 	EMCookTorranceCommonPassMaterial& colliderOneMaterial = colliderOne->GetMaterial ();
 	colliderOneMaterial.SetAlbedoColor ( 253, 180, 17, 255 );
@@ -183,6 +162,7 @@ GXVoid EMGame::OnInit ()
 	colliderOneMaterial.SetEmissionColorScale ( 0.0f );
 	colliderOne->EnablePhysicsDebug ();
 
+	GXPhysicsEngine::GetInstance ().SetTimeMultiplier ( 1.0f );
 	GXWorld& world = GXPhysicsEngine::GetInstance ().GetWorld ();
 	world.RegisterForceGenerator ( colliderOne->GetRigidBody (), gravity );
 
@@ -207,11 +187,13 @@ GXVoid EMGame::OnInit ()
 
 	transform.SetLocation ( 0.0f, -3.0f, 0.0f );
 	transform.SetRotation ( 0.0f, GX_MATH_PI, 0.0f );
-	transform.SetScale ( 50.0f, 1.0, 50.0f );
+	transform.SetScale ( 25.0f, 1.0, 50.0f );
 	kinematicPlane = new EMPhysicsDrivenActor ( L"Kinematic Plane", transform );
-	GXBoxShape* kinematicPlaneShape = new GXBoxShape ( &( kinematicPlane->GetRigidBody () ), 50.0f, 1.0f, 50.0f );
+	GXBoxShape* kinematicPlaneShape = new GXBoxShape ( &( kinematicPlane->GetRigidBody () ), 25.0f, 1.0f, 50.0f );
 	kinematicPlane->GetRigidBody ().SetShape ( *kinematicPlaneShape );
 	kinematicPlane->GetRigidBody ().EnableKinematic ();
+	//kinematicPlane->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, 0.1f, 0.0f ) );
+	//kinematicPlane->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 0.0f, 0.2f ) );
 	kinematicPlane->SetMesh ( L"3D Models/System/Unit Cube.stm" );
 	EMCookTorranceCommonPassMaterial& kinematicPlaneMaterial = kinematicPlane->GetMaterial ();
 	kinematicPlaneMaterial.SetRoughnessScale ( 0.07f );
@@ -225,7 +207,7 @@ GXVoid EMGame::OnInit ()
 
 	world.RegisterForceGenerator ( kinematicPlane->GetRigidBody (), gravity );
 
-	transform.SetLocation ( 6.0f, 0.0f, 0.0f );
+	transform.SetLocation ( -2.0f, 0.0f, 0.0f );
 	transform.SetScale ( 1.0f, 1.0, 1.0f );
 	plasticSphere = new EMMeshActor ( L"Plastic sphere", transform );
 	plasticSphere->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
@@ -237,7 +219,7 @@ GXVoid EMGame::OnInit ()
 	plasticSphereMaterial.SetMetallicScale ( 1.0f );
 	plasticSphereMaterial.SetEmissionColorScale ( 0.0f );
 
-	transform.SetLocation ( 9.0f, 0.0f, 0.0f );
+	transform.SetLocation ( 4.0f, 0.0f, 0.0f );
 	goldSphere = new EMMeshActor ( L"Gold sphere", transform );
 	goldSphere->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
 	EMCookTorranceCommonPassMaterial& goldSphereMaterial = goldSphere->GetMaterial ();
@@ -248,7 +230,7 @@ GXVoid EMGame::OnInit ()
 	goldSphereMaterial.SetMetallicScale ( 1.0f );
 	goldSphereMaterial.SetEmissionColorScale ( 0.0f );
 
-	transform.SetLocation ( 12.0f, 0.0f, 0.0f );
+	transform.SetLocation ( 6.0f, 0.0f, 0.0f );
 	silverSphere = new EMMeshActor ( L"Silver sphere", transform );
 	silverSphere->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
 	EMCookTorranceCommonPassMaterial& silverSphereMaterial = silverSphere->GetMaterial ();
@@ -357,105 +339,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 		glDisable ( GL_DEPTH_TEST );
 
-		GXUShort points = (GXUShort)collisionDetector.GetTotalShapeAContactGeometryPoints ();
-		physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeAContactGeometry (), (GLsizeiptr)( points * sizeof ( GXVec3 ) ), GL_DYNAMIC_DRAW );
-		physicsGeometry->SetTotalVertices ( (GLsizei)points );
-
-		if ( points == 1 )
-			physicsGeometry->SetTopology ( GL_POINTS );
-		else
-			physicsGeometry->SetTopology ( GL_LINE_LOOP );
-
-		physicsShapeAContactGeometryMaterial->Bind ( GXTransform::GetNullTransform () );
-		physicsGeometry->Render ();
-		physicsShapeAContactGeometryMaterial->Unbind ();
-
-		points = (GXUShort)collisionDetector.GetTotalShapeBContactGeometryPoints ();
-		physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeBContactGeometry (), (GLsizeiptr)( points * sizeof ( GXVec3 ) ), GL_DYNAMIC_DRAW );
-		physicsGeometry->SetTotalVertices ( (GLsizei)points );
-
-		if ( points == 1 )
-			physicsGeometry->SetTopology ( GL_POINTS );
-		else
-			physicsGeometry->SetTopology ( GL_LINE_LOOP );
-
-		physicsShapeBContactGeometryMaterial->Bind ( GXTransform::GetNullTransform () );
-		physicsGeometry->Render ();
-		physicsShapeBContactGeometryMaterial->Unbind ();
-
-		if ( collisionDetector.GetTotalPlanarIntersectionPoints () > 0 )
-		{
-			points = (GXUShort)collisionDetector.GetTotalShapeAPlanarContactGeometryPoints ();
-			physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeAPlanarContactGeometry (), (GLsizeiptr)( points * sizeof ( GXVec3 ) ), GL_DYNAMIC_DRAW );
-			physicsGeometry->SetTotalVertices ( (GLsizei)points );
-
-			if ( points == 1 )
-				physicsGeometry->SetTopology ( GL_POINTS );
-			else
-				physicsGeometry->SetTopology ( GL_LINE_LOOP );
-
-			physicsShapeAContactGeometryMaterial->Bind ( GXTransform::GetNullTransform () );
-			physicsGeometry->Render ();
-			physicsShapeAContactGeometryMaterial->Unbind ();
-
-			points = (GXUShort)collisionDetector.GetTotalShapeBPlanarContactGeometryPoints ();
-			physicsGeometry->FillVertexBuffer ( collisionDetector.GetShapeBPlanarContactGeometry (), (GLsizeiptr)( points * sizeof ( GXVec3 ) ), GL_DYNAMIC_DRAW );
-			physicsGeometry->SetTotalVertices ( (GLsizei)points );
-
-			if ( points == 1 )
-				physicsGeometry->SetTopology ( GL_POINTS );
-			else
-				physicsGeometry->SetTopology ( GL_LINE_LOOP );
-
-			physicsShapeBContactGeometryMaterial->Bind ( GXTransform::GetNullTransform () );
-			physicsGeometry->Render ();
-			physicsShapeBContactGeometryMaterial->Unbind ();
-
-			points = (GXUShort)collisionDetector.GetTotalPlanarIntersectionPoints ();
-			physicsGeometry->FillVertexBuffer ( collisionDetector.GetPlanarIntersectionGeometry (), (GLsizeiptr)( points * sizeof ( GXVec3 ) ), GL_DYNAMIC_DRAW );
-			physicsGeometry->SetTotalVertices ( (GLsizei)points );
-
-			if ( points == 1 )
-				physicsGeometry->SetTopology ( GL_POINTS );
-			else
-				physicsGeometry->SetTopology ( GL_LINE_LOOP );
-
-			physicsPlanarIntersectionGeometryMaterial->Bind ( GXTransform::GetNullTransform () );
-			physicsGeometry->Render ();
-			physicsPlanarIntersectionGeometryMaterial->Unbind ();
-		}
-
-		GXVec3 z = collisionData.GetAllContacts ()->GetNormal ();
-
-		GXVec3 x;
-		if ( fabsf ( z.GetY () ) > fabsf ( z.GetX () ) && fabsf ( z.GetY () ) > fabsf ( z.GetZ () ) )
-			x.CrossProduct ( GXVec3::GetAbsoluteX (), z );
-		else
-			x.CrossProduct ( GXVec3::GetAbsoluteY (), z );
-
-		x.Normalize ();
-
-		GXVec3 y;
-		y.CrossProduct ( z, x );
-
-		GXMat4 rot;
-		rot.Identity ();
-		rot.SetX ( x );
-		rot.SetY ( y );
-		rot.SetZ ( z );
-
 		GXTransform transform;
-		transform.SetRotation ( rot );
-
-		static const GXVec3 offset ( 1.0f, 0.0f, 3.0f );
-		GXVec3 location;
-		viewerCamera.GetCurrentFrameModelMatrix ().MultiplyAsPoint ( location, offset );
-		transform.SetLocation ( location );
-
-		physicsContactNormalMaterial->Bind ( transform );
-		physicsContactNormalMesh.Render ();
-		physicsContactNormalMaterial->Unbind ();
-
 		transform.SetScale ( 0.1f, 0.1f, 0.1f );
 
 		for ( GXUInt i = 0; i < collisionData.GetTotalContacts (); i++ )
@@ -592,14 +476,8 @@ GXVoid EMGame::OnDestroy ()
 
 	GXSafeDelete ( directedLight );
 
-	GXSafeDelete ( physicsPlanarIntersectionGeometryMaterial );
-	GXSafeDelete ( physicsShapeBContactGeometryMaterial );
-	GXSafeDelete ( physicsShapeAContactGeometryMaterial );
-	GXSafeDelete ( physicsGeometry );
 	GXSafeDelete ( physicsContactPointMaterial );
-	GXSafeDelete ( physicsContactNormalMaterial );
 	GXMeshGeometry::RemoveMeshGeometry ( physicsContactPointMesh );
-	GXMeshGeometry::RemoveMeshGeometry ( physicsContactNormalMesh );
 	GXTexture2D::RemoveTexture ( physicsInfoBackgroundTexture );
 	GXFont::RemoveFont ( physicsInfoFont );
 	GXSafeDelete ( physicsInfo );

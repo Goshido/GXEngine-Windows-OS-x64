@@ -5,12 +5,6 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define TRY_AXIS_EPSILON							0.0001f
-#define CONTACT_POINT_EPSILON						0.0001f
-#define DEFAULT_MINKOWSKI_EPSILON					0.001f
-#define DEFAULT_MAX_EPA_ITERATIONS					35
-#define DEFAULT_MIN_EPA_DOT_DISTANCE				0.001f
-#define DEFAULT_EDGE_EPSILON						1.0e-3f
 #define INVALID_INDEX								0xFFFFFFFF
 
 #define EPA_INITIAL_SUPPORT_POINT_ARRAY_CAPACITY	64
@@ -427,10 +421,20 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 
 		if ( fabsf ( smallestDistance - contactPenetration ) <= EPA_DISTANCE_EPSILON )
 		{
+			// Disable contacts with penetration depth equal 0.0f or bigger than half FLT_MAX
+
+			if ( contactPenetration == 0.0f || contactPenetration > FLT_MAX * 0.5f )
+			{
+				totalShapeAContactGeometryPoints = 0;
+				totalShapeBContactGeometryPoints = 0;
+
+				return;
+			}
+
 			contactPenetration = smallestDistance;
 			contactNormal = smallestDistanceFaceNormal;
 
-			if ( shapeA.GetRigidBody ()->IsKinematic () )
+			if ( shapeA.GetRigidBody ().IsKinematic () )
 				contactNormal.Reverse ();
 
 			break;
@@ -478,6 +482,11 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 			if ( i == lastFaceIndex )
 				lastFaceIndex = gammaFace.prev;
 
+			if ( lastFaceIndex > 500 )
+			{
+				GXVec3 wtf;
+			}
+
 			if ( gammaFace.prev != INVALID_INDEX )
 				faceArray[ gammaFace.prev ].next = gammaFace.next;
 
@@ -507,20 +516,11 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 			omegaFace.next = INVALID_INDEX;
 			omegaFace.prev = lastFaceIndex;
 			lastFaceIndex = totalFaces;
+
 			faceArray[ lastFaceIndex ] = omegaFace;
 			faceArray[ omegaFace.prev ].next = lastFaceIndex;
 			totalFaces++;
 		}
-	}
-
-	// Disable contacts with penetration depth equal 0.0f
-
-	if ( contactPenetration == 0.0f )
-	{
-		totalShapeAContactGeometryPoints = 0;
-		totalShapeBContactGeometryPoints = 0;
-
-		return;
 	}
 
 	//Contact geometry search
@@ -529,22 +529,27 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 	{
 		GXContact* contact = collisionData.GetContactsBegin ();
 
-		if ( shapeA.GetRigidBody ()->IsKinematic () )
+		if ( shapeA.GetRigidBody ().IsKinematic () )
 		{
 			contact->SetShapes ( shapeB, shapeA );
 			contactNormal.Reverse ();
 		}
 		else
 		{
+			shapeA.GetRigidBody ().SetAwake ();
+			shapeB.GetRigidBody ().SetAwake ();
 			contact->SetShapes ( shapeA, shapeB );
 		}
+
+		contact->SetLinkedContacts ( 1 );
+		contact->SetNormal ( contactNormal );
+
+		contactNormal.Reverse ();
 
 		GXVec3 contactPoint;
 		shapeA.GetExtremePoint ( contactPoint, contactNormal );
 		contact->SetContactPoint ( contactPoint );
 
-		contact->SetLinkedContacts ( 1 );
-		contact->SetNormal ( contactNormal );
 		contact->SetPenetration ( contactPenetration );
 		contact->SetGJKIterations ( gjkIterations );
 		contact->SetEPAIterations ( epaIterations );
@@ -562,7 +567,7 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 	{
 		GXContact* contact = collisionData.GetContactsBegin ();
 
-		if ( shapeA.GetRigidBody ()->IsKinematic () )
+		if ( shapeA.GetRigidBody ().IsKinematic () )
 		{
 			contact->SetShapes ( shapeB, shapeA );
 			contact->SetNormal ( contactNormal );
@@ -575,6 +580,8 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 		}
 		else
 		{
+			shapeA.GetRigidBody ().SetAwake ();
+			shapeB.GetRigidBody ().SetAwake ();
 			contact->SetShapes ( shapeA, shapeB );
 
 			GXVec3 contactPoint;
@@ -653,12 +660,15 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 	{
 		GXContact* contact = collisionData.GetContactsBegin ();
 
-		if ( shapeA.GetRigidBody ()->IsKinematic () )
+		if ( shapeA.GetRigidBody ().IsKinematic () )
 		{
 			contact->SetShapes ( shapeB, shapeA );
 		}
 		else
 		{
+			shapeA.GetRigidBody ().SetAwake ();
+			shapeB.GetRigidBody ().SetAwake ();
+
 			contact->SetShapes ( shapeA, shapeB );
 			contactNormal.Reverse ();
 		}
@@ -684,12 +694,15 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 	{
 		GXContact* contact = collisionData.GetContactsBegin ();
 
-		if ( shapeA.GetRigidBody ()->IsKinematic () )
+		if ( shapeA.GetRigidBody ().IsKinematic () )
 		{
 			contact->SetShapes ( shapeB, shapeA );
 		}
 		else
 		{
+			shapeA.GetRigidBody ().SetAwake ();
+			shapeB.GetRigidBody ().SetAwake ();
+
 			contact->SetShapes ( shapeA, shapeB );
 			contactNormal.Reverse ();
 		}
@@ -778,13 +791,16 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 			break;
 		}
 
-		if ( shapeA.GetRigidBody ()->IsKinematic () )
+		if ( shapeA.GetRigidBody ().IsKinematic () )
 		{
 			contact->SetShapes ( shapeB, shapeA );
 			contactNormal.Reverse ();
 		}
 		else
 		{
+			shapeA.GetRigidBody ().SetAwake ();
+			shapeB.GetRigidBody ().SetAwake ();
+
 			contact->SetShapes ( shapeA, shapeB );
 		}
 
@@ -851,13 +867,16 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 	const GXShape* correctedShapeB;
 	GXVec3 correctedContactNormal ( contactNormal );
 
-	if ( shapeA.GetRigidBody ()->IsKinematic () )
+	if ( shapeA.GetRigidBody ().IsKinematic () )
 	{
 		correctedShapeA = &shapeB;
 		correctedShapeB = &shapeA;
 	}
 	else
 	{
+		shapeA.GetRigidBody ().SetAwake ();
+		shapeB.GetRigidBody ().SetAwake ();
+
 		correctedShapeA = &shapeA;
 		correctedShapeB = &shapeB;
 		correctedContactNormal.Reverse ();

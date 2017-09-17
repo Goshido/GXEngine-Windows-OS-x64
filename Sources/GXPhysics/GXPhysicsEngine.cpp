@@ -2,10 +2,11 @@
 
 #include <GXPhysics/GXPhysicsEngine.h>
 
-#define DEFAULT_SLEEP_TIMEOUT								0.05f
-#define DEFAULT_MAXIMUM_LINEAR_VELOCITY_SQUARED_DEVIATION	0.05f
-#define DEFAULT_MAXIMUM_ANGULAR_VELOCITY_SQUARED_DEVIATION	0.05f
+#define DEFAULT_SLEEP_TIMEOUT								0.5f
+#define DEFAULT_MAXIMUM_LOCATION_CHANGE_SQUARED_DEVIATION	3.0e-6f
+#define DEFAULT_MAXIMUM_ROTATION_CHANGE_SQUARED_DEVIATION	1.0e-4f
 #define DEFAULT_TIME_STEP									0.00833f	//120 iterations per second
+#define DEFAULT_TIME_MULTIPLIER								1.0f
 
 #define MAX_CONTACTS										16384
 #define WORLD_ITERATIONS									50
@@ -36,34 +37,41 @@ GXFloat GXPhysicsEngine::GetSleepTimeout () const
 	return sleepTimeout;
 }
 
-GXVoid GXPhysicsEngine::SetMaximumLinearVelocitySquaredDeviation ( GXFloat squaredDeviation )
+GXVoid GXPhysicsEngine::SetMaximumLocationChangeSquaredDeviation ( GXFloat squaredDeviation )
 {
-	maximumLinearVelocitySquaredDeviation = squaredDeviation;
+	maximumLocationChangeSquaredDeviation = squaredDeviation;
 }
 
-GXFloat GXPhysicsEngine::GetMaximumLinearVelocitySquaredDeviation () const
+GXFloat GXPhysicsEngine::GetMaximumLocationChangeSquaredDeviation () const
 {
-	return maximumLinearVelocitySquaredDeviation;
+	return maximumLocationChangeSquaredDeviation;
 }
 
-GXVoid GXPhysicsEngine::SetMaximumAngularVelocitySquaredDeviation ( GXFloat squaredDeviation )
+GXVoid GXPhysicsEngine::SetMaximumRotationChangeSquaredDeviation ( GXFloat squaredDeviation )
 {
-	maximumAngularVelocitySquaredDeviation = squaredDeviation;
+	maximumRotationChangeSquaredDeviation = squaredDeviation;
 }
 
-GXFloat GXPhysicsEngine::GetMaximumAngularelocitySquaredDeviation () const
+GXFloat GXPhysicsEngine::GetMaximumRotationChangeSquaredDeviation () const
 {
-	return maximumAngularVelocitySquaredDeviation;
+	return maximumRotationChangeSquaredDeviation;
 }
 
 GXVoid GXPhysicsEngine::SetTimeStep ( GXFloat step )
 {
 	timeStep = step;
+	adjustedTimeStep = step * timeMultiplier;
 }
 
 GXFloat GXPhysicsEngine::GetTimeStep () const
 {
 	return timeStep;
+}
+
+GXVoid GXPhysicsEngine::SetTimeMultiplier ( GXFloat multiplier )
+{
+	timeMultiplier = multiplier;
+	adjustedTimeStep = timeStep * multiplier;
 }
 
 GXWorld& GXPhysicsEngine::GetWorld ()
@@ -73,12 +81,12 @@ GXWorld& GXPhysicsEngine::GetWorld ()
 
 GXVoid GXPhysicsEngine::RunSimulateLoop ( GXFloat deltaTime )
 {
-	time += deltaTime;
+	time += deltaTime * timeMultiplier;
 
-	while ( time > timeStep )
+	while ( time > adjustedTimeStep )
 	{
-		world.RunPhysics ( timeStep );
-		time -= timeStep;
+		world.RunPhysics ( adjustedTimeStep );
+		time -= adjustedTimeStep;
 	}
 }
 
@@ -87,7 +95,8 @@ world ( MAX_CONTACTS, WORLD_ITERATIONS )
 {
 	time = 0.0f;
 	SetSleepTimeout ( DEFAULT_SLEEP_TIMEOUT );
-	SetMaximumLinearVelocitySquaredDeviation ( DEFAULT_MAXIMUM_LINEAR_VELOCITY_SQUARED_DEVIATION );
-	SetMaximumAngularVelocitySquaredDeviation ( DEFAULT_MAXIMUM_ANGULAR_VELOCITY_SQUARED_DEVIATION );
+	SetMaximumLocationChangeSquaredDeviation ( DEFAULT_MAXIMUM_LOCATION_CHANGE_SQUARED_DEVIATION );
+	SetMaximumRotationChangeSquaredDeviation ( DEFAULT_MAXIMUM_ROTATION_CHANGE_SQUARED_DEVIATION );
 	SetTimeStep ( DEFAULT_TIME_STEP );
+	SetTimeMultiplier ( DEFAULT_TIME_MULTIPLIER );
 }

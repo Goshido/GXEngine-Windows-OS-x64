@@ -480,6 +480,45 @@ GXFloat GXVec4::GetW () const
 	return data[ 3 ];
 }
 
+GXVoid GXVec4::Sum ( const GXVec4 &a, const GXVec4 &b )
+{
+	data[ 0 ] = a.data[ 0 ] + b.data[ 0 ];
+	data[ 1 ] = a.data[ 1 ] + b.data[ 1 ];
+	data[ 2 ] = a.data[ 2 ] + b.data[ 2 ];
+	data[ 3 ] = a.data[ 3 ] + b.data[ 3 ];
+}
+
+GXVoid GXVec4::Sum ( const GXVec4 &a, GXFloat scale, const GXVec4 &b )
+{
+	data[ 0 ] = a.data[ 0 ] + scale * b.data[ 0 ];
+	data[ 1 ] = a.data[ 1 ] + scale * b.data[ 1 ];
+	data[ 2 ] = a.data[ 2 ] + scale * b.data[ 2 ];
+	data[ 3 ] = a.data[ 3 ] + scale * b.data[ 3 ];
+}
+
+GXVoid GXVec4::Substract ( const GXVec4 &a, const GXVec4 &b )
+{
+	data[ 0 ] = a.data[ 0 ] - b.data[ 0 ];
+	data[ 1 ] = a.data[ 1 ] - b.data[ 1 ];
+	data[ 2 ] = a.data[ 2 ] - b.data[ 2 ];
+	data[ 3 ] = a.data[ 3 ] - b.data[ 3 ];
+}
+
+GXFloat GXVec4::DotProduct ( const GXVec4 &other ) const
+{
+	return data[ 0 ] * other.data[ 0 ] + data[ 1 ] * other.data[ 1 ] + data[ 2 ] * other.data[ 2 ] + data[ 3 ] * other.data[ 3 ];
+}
+
+GXFloat GXVec4::Length () const
+{
+	return sqrtf ( DotProduct ( *this ) );
+}
+
+GXFloat GXVec4::SquaredLength () const
+{
+	return DotProduct ( *this );
+}
+
 GXVec4& GXVec4::operator = ( const GXVec4 &vector )
 {
 	memcpy ( this, &vector, sizeof ( GXVec4 ) );

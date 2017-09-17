@@ -44,9 +44,9 @@ GXVoid GXShape::CalculateCacheData ()
 	transformWorld.Multiply ( transformRigidBody, matrix );
 }
 
-GXRigidBody* GXShape::GetRigidBody () const
+GXRigidBody& GXShape::GetRigidBody () const
 {
-	return body;
+	return *body;
 }
 
 const GXMat3& GXShape::GetInertialTensor () const

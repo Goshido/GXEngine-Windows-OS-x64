@@ -39,14 +39,8 @@ class EMGame : public GXGame
 		GXHudSurface*			physicsInfo;
 		GXFont					physicsInfoFont;
 		GXTexture2D				physicsInfoBackgroundTexture;
-		GXMeshGeometry			physicsContactNormalMesh;
 		GXMeshGeometry			physicsContactPointMesh;
-		GXUnlitColorMaterial*	physicsContactNormalMaterial;
 		GXUnlitColorMaterial*	physicsContactPointMaterial;
-		GXMeshGeometry*			physicsGeometry;
-		GXUnlitColorMaterial*	physicsShapeAContactGeometryMaterial;
-		GXUnlitColorMaterial*	physicsShapeBContactGeometryMaterial;
-		GXUnlitColorMaterial*	physicsPlanarIntersectionGeometryMaterial;
 
 		GXGravity				gravity;
 

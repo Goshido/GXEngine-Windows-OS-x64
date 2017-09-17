@@ -152,6 +152,15 @@ struct GXVec4
 	GXVoid SetW ( GXFloat w );
 	GXFloat GetW () const;
 
+	GXVoid Sum ( const GXVec4 &a, const GXVec4 &b );
+	GXVoid Sum ( const GXVec4 &a, GXFloat scale, const GXVec4 &b );
+	GXVoid Substract ( const GXVec4 &a, const GXVec4 &b );
+
+	GXFloat DotProduct ( const GXVec4 &other ) const;
+
+	GXFloat Length () const;
+	GXFloat SquaredLength () const;
+
 	GXVec4& operator = ( const GXVec4 &vector );
 };
 

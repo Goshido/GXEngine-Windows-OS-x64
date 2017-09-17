@@ -200,7 +200,7 @@ GXVoid GXRigidBody::AddAngularVelocity ( const GXVec3 &velocity )
 GXVoid GXRigidBody::SetMass ( GXFloat newMass )
 {
 	mass = newMass;
-	invMass = 1.0f / mass;
+	inverseMass = 1.0f / mass;
 }
 
 GXFloat GXRigidBody::GetMass () const
@@ -210,7 +210,7 @@ GXFloat GXRigidBody::GetMass () const
 
 GXFloat GXRigidBody::GetInverseMass () const
 {
-	return invMass;
+	return inverseMass;
 }
 
 GXVoid GXRigidBody::SetLinearDamping ( GXFloat damping )
@@ -331,13 +331,23 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 {
 	if ( isKinematic )
 	{
+		location.Sum ( location, deltaTime, linearVelocity );
+
+		GXQuat betta ( angularVelocity.GetX (), angularVelocity.GetY (), angularVelocity.GetZ (), 0.0f );
+		betta.Multiply ( betta, deltaTime * 0.5f );
+
+		GXQuat gamma;
+		gamma.Multiply ( betta, rotation );
+
+		rotation.Sum ( rotation, gamma );
+
 		CalculateCachedData ();
 		return;
 	}
 
 	if ( !isAwake ) return;
 
-	lastFrameAcceleration.Sum ( acceleration, invMass, totalForce );
+	lastFrameAcceleration.Sum ( acceleration, inverseMass, totalForce );
 
 	GXVec3 angularAcceleration;
 	transposeInverseInertiaTensorWorld.Multiply ( angularAcceleration, totalTorque );
@@ -348,6 +358,7 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 	linearVelocity.Multiply ( linearVelocity, powf ( linearDamping, deltaTime ) );
 	angularVelocity.Multiply ( angularVelocity, powf ( angularDamping, deltaTime ) );
 
+	lastFrameLocation = location;
 	location.Sum ( location, deltaTime, linearVelocity );
 
 	GXQuat betta ( angularVelocity.GetX (), angularVelocity.GetY (), angularVelocity.GetZ (), 0.0f );
@@ -356,6 +367,7 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 	GXQuat gamma;
 	gamma.Multiply ( betta, rotation );
 
+	lastFrameRotation = rotation;
 	rotation.Sum ( rotation, gamma );
 	
 	ClearAccumulators ();
@@ -365,13 +377,22 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 
 	GXPhysicsEngine& physicsEngine = GXPhysicsEngine::GetInstance ();
 
-	if ( linearVelocity.SquaredLength () > physicsEngine.GetMaximumLinearVelocitySquaredDeviation () )
+	GXVec3 locationDifference;
+	locationDifference.Substract ( location, lastFrameLocation );
+
+	if ( locationDifference.SquaredLength () > physicsEngine.GetMaximumLocationChangeSquaredDeviation () )
 	{
 		sleepTimeout = 0.0f;
 		return;
 	}
 
-	if ( angularVelocity.SquaredLength () > physicsEngine.GetMaximumAngularelocitySquaredDeviation () )
+	GXVec4 yotta ( rotation.GetX (), rotation.GetY (), rotation.GetZ (), rotation.GetW () );
+	GXVec4 phi ( lastFrameRotation.GetX (), lastFrameRotation.GetY (), lastFrameRotation.GetZ (), lastFrameRotation.GetW () );
+
+	GXVec4 difference;
+	difference.Substract ( yotta, phi );
+
+	if ( difference.SquaredLength () > physicsEngine.GetMaximumRotationChangeSquaredDeviation () )
 	{
 		sleepTimeout = 0.0f;
 		return;
