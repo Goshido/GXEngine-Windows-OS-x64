@@ -204,6 +204,7 @@
       <ImportLibrary />
       <ProgramDatabaseFile />
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
       <Command>del "$(OutDir)$(TargetName).exp"

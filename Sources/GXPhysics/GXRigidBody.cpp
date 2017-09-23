@@ -255,7 +255,7 @@ GXVoid GXRigidBody::TranslatePointToWorld ( GXVec3 &out, const GXVec3 &pointLoca
 	transform.MultiplyAsPoint ( out, pointLocal );
 }
 
-const GXMat4& GXRigidBody::GetTransform ()
+const GXMat4& GXRigidBody::GetTransform () const
 {
 	return transform;
 }
@@ -327,6 +327,11 @@ GXVoid GXRigidBody::AddForceAtPointWorld ( const GXVec3 &forceWorld, const GXVec
 	isAwake = GX_TRUE;
 }
 
+const GXVec3& GXRigidBody::GetTotalForce () const
+{
+	return totalForce;
+}
+
 GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 {
 	if ( isKinematic )
@@ -370,7 +375,6 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 	lastFrameRotation = rotation;
 	rotation.Sum ( rotation, gamma );
 	
-	ClearAccumulators ();
 	CalculateCachedData ();
 
 	if ( !canSleep ) return;
@@ -386,8 +390,8 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 		return;
 	}
 
-	GXVec4 yotta ( rotation.GetX (), rotation.GetY (), rotation.GetZ (), rotation.GetW () );
-	GXVec4 phi ( lastFrameRotation.GetX (), lastFrameRotation.GetY (), lastFrameRotation.GetZ (), lastFrameRotation.GetW () );
+	GXVec4 yotta ( rotation.GetI (), rotation.GetJ (), rotation.GetK (), rotation.GetR () );
+	GXVec4 phi ( lastFrameRotation.GetI (), lastFrameRotation.GetJ (), lastFrameRotation.GetK (), lastFrameRotation.GetR () );
 
 	GXVec4 difference;
 	difference.Substract ( yotta, phi );

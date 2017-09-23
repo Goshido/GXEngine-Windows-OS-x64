@@ -1,4 +1,4 @@
-﻿//version 1.39
+﻿//version 1.40
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
@@ -794,12 +794,9 @@ GXQuat::GXQuat ()
 	memset ( data, 0, 4 * sizeof ( GXFloat ) );
 }
 
-GXQuat::GXQuat ( GXFloat x, GXFloat y, GXFloat z, GXFloat w )
+GXQuat::GXQuat ( GXFloat i, GXFloat j, GXFloat k, GXFloat real )
 {
-	data[ 0 ] = x;
-	data[ 1 ] = y;
-	data[ 2 ] = z;
-	data[ 3 ] = w;
+	Init ( i, j, k, real );
 }
 
 GXQuat::GXQuat ( const GXMat3& rotationMatrix )
@@ -817,50 +814,50 @@ GXQuat::GXQuat ( const GXQuat &other )
 	memcpy ( this, &other, sizeof ( GXQuat ) );
 }
 
-GXVoid GXQuat::Init ( GXFloat x, GXFloat y, GXFloat z, GXFloat w )
+GXVoid GXQuat::Init ( GXFloat i, GXFloat j, GXFloat k, GXFloat real )
 {
-	data[ 0 ] = x;
-	data[ 1 ] = y;
-	data[ 2 ] = z;
-	data[ 3 ] = w;
+	data[ 0 ] = i;
+	data[ 1 ] = j;
+	data[ 2 ] = k;
+	data[ 3 ] = real;
 }
 
-GXVoid GXQuat::SetX ( GXFloat x )
+GXVoid GXQuat::SetI ( GXFloat i )
 {
-	data[ 0 ] = x;
+	data[ 0 ] = i;
 }
 
-GXFloat GXQuat::GetX () const
+GXFloat GXQuat::GetI () const
 {
 	return data[ 0 ];
 }
 
-GXVoid GXQuat::SetY ( GXFloat y )
+GXVoid GXQuat::SetJ ( GXFloat j )
 {
-	data[ 1 ] = y;
+	data[ 1 ] = j;
 }
 
-GXFloat GXQuat::GetY () const
+GXFloat GXQuat::GetJ () const
 {
 	return data[ 1 ];
 }
 
-GXVoid GXQuat::SetZ ( GXFloat z )
+GXVoid GXQuat::SetK ( GXFloat k )
 {
-	data[ 2 ] = z;
+	data[ 2 ] = k;
 }
 
-GXFloat GXQuat::GetZ () const
+GXFloat GXQuat::GetK () const
 {
 	return data[ 2 ];
 }
 
-GXVoid GXQuat::SetW ( GXFloat w )
+GXVoid GXQuat::SetR ( GXFloat real )
 {
-	data[ 3 ] = w;
+	data[ 3 ] = real;
 }
 
-GXFloat GXQuat::GetW () const
+GXFloat GXQuat::GetR () const
 {
 	return data[ 3 ];
 }
@@ -869,6 +866,41 @@ GXVoid GXQuat::Identity ()
 {
 	data[ 0 ] = data[ 1 ] = data[ 2 ] = 0.0f;
 	data[ 3 ] = 1.0f;
+}
+
+GXVoid GXQuat::Normalize ()
+{
+	GXFloat squaredLength = data[ 0 ] * data[ 0 ] + data[ 1 ] * data[ 1 ] + data[ 2 ] * data[ 2 ] + data[ 3 ] * data[ 3 ];
+
+	if ( squaredLength == 0.0f )
+	{
+		GXLogW ( L"GXQuat::Normalize - Error\n" );
+		return;
+	}
+
+	Multiply ( *this, 1.0f / sqrtf ( squaredLength ) );
+}
+
+GXVoid GXQuat::Inverse ( const GXQuat &q )
+{
+	GXFloat squaredLength = q.data[ 0 ] * q.data[ 0 ] + q.data[ 1 ] * q.data[ 1 ] + q.data[ 2 ] * q.data[ 2 ] + q.data[ 3 ] * q.data[ 3 ];
+
+	if ( squaredLength > 0.0f )
+	{
+		GXFloat inverseSquaredLength = 1.0f / squaredLength;
+
+		data[ 0 ] = -q.data[ 0 ] * inverseSquaredLength;
+		data[ 1 ] = -q.data[ 1 ] * inverseSquaredLength;
+		data[ 2 ] = -q.data[ 2 ] * inverseSquaredLength;
+		data[ 3 ] = q.data[ 3 ] * inverseSquaredLength;
+
+		return;
+	}
+	else
+	{
+		GXLogW ( L"GXQuat::Inverse - Error\n" );
+		Identity ();
+	}
 }
 
 GXVoid GXQuat::FromAxisAngle ( GXFloat x, GXFloat y, GXFloat z, GXFloat angle )
@@ -968,41 +1000,12 @@ GXVoid GXQuat::Rehand ()
 	data[ 3 ] = -data[ 3 ];
 }
 
-GXVoid GXQuat::GetAxisAngle ( GXVec3 &axis, GXFloat &angle )
-{
-	GXQuat q ( *this );
-
-	if ( q.data[ 3 ] > 1.0f )
-		q.Normalize ();
-
-	angle = 2.0f * acosf ( q.data[ 3 ] );
-
-	axis.SetX ( q.data[ 0 ] );
-	axis.SetY ( q.data[ 1 ] );
-	axis.SetZ ( q.data[ 2 ] );
-
-	GXFloat s = sqrtf ( 1.0f - q.data[ 3 ] * q.data[ 3 ] );
-
-	if ( s < 0.001 ) return;
-
-	axis.Multiply ( axis, 1.0f / s );
-}
-
 GXVoid GXQuat::Multiply ( const GXQuat &a, const GXQuat &b )
 {
-	GXFloat alpha = ( a.data[ 3 ] + a.data[ 0 ] ) * ( b.data[ 3 ] + b.data[ 0 ] );
-	GXFloat betta = ( a.data[ 2 ] - a.data[ 1 ] ) * ( b.data[ 1 ] - b.data[ 2 ] );
-	GXFloat gamma = ( a.data[ 0 ] - a.data[ 3 ] ) * ( b.data[ 1 ] + b.data[ 2 ] );
-	GXFloat eta = ( a.data[ 1 ] + a.data[ 2 ] ) * ( b.data[ 0 ] - b.data[ 3 ] );
-	GXFloat omega = ( a.data[ 0 ] + a.data[ 2 ] ) * ( b.data[ 0 ] + b.data[ 1 ] );
-	GXFloat yotta = ( a.data[ 0 ] - a.data[ 2 ] ) * ( b.data[ 0 ] - b.data[ 1 ] );
-	GXFloat phi = ( a.data[ 3 ] + a.data[ 1 ] ) * ( b.data[ 3 ] - b.data[ 2 ] );
-	GXFloat zetta = ( a.data[ 3 ] - a.data[ 1 ] ) * ( b.data[ 3 ] + b.data[ 2 ] );
-
-	data[ 0 ] = alpha - ( omega + yotta + phi + zetta ) * 0.5f;
-	data[ 1 ] = -gamma + ( omega - yotta + phi - zetta ) * 0.5f;
-	data[ 2 ] = -eta + ( omega - yotta - phi + zetta ) * 0.5f;
-	data[ 3 ] = betta + ( -omega - yotta + phi + zetta ) * 0.5f;
+	data[ 0 ] = a.data[ 3 ] * b.data[ 0 ] + a.data[ 0 ] * b.data[ 3 ] + a.data[ 1 ] * b.data[ 2 ] - a.data[ 2 ] * b.data[ 1 ];
+	data[ 1 ] = a.data[ 3 ] * b.data[ 1 ] - a.data[ 0 ] * b.data[ 2 ] + a.data[ 1 ] * b.data[ 3 ] + a.data[ 2 ] * b.data[ 0 ];
+	data[ 2 ] = a.data[ 3 ] * b.data[ 2 ] + a.data[ 0 ] * b.data[ 1 ] - a.data[ 1 ] * b.data[ 0 ] + a.data[ 2 ] * b.data[ 3 ];
+	data[ 3 ] = a.data[ 3 ] * b.data[ 3 ] - a.data[ 0 ] * b.data[ 0 ] - a.data[ 1 ] * b.data[ 1 ] - a.data[ 2 ] * b.data[ 2 ];
 }
 
 GXVoid GXQuat::Multiply ( const GXQuat &q, GXFloat scale )
@@ -1036,10 +1039,10 @@ GXVoid GXQuat::Sum ( const GXQuat &q, GXFloat s, const GXVec3 &v )
 
 GXVoid GXQuat::Substract ( const GXQuat &a, const GXQuat &b )
 {
-	GXQuat inverseB;
-	inverseB.Inverse ( b );
-
-	Multiply ( inverseB, a );
+	data[ 0 ] = a.data[ 0 ] - b.data[ 0 ];
+	data[ 1 ] = a.data[ 1 ] - b.data[ 1 ];
+	data[ 2 ] = a.data[ 2 ] - b.data[ 2 ];
+	data[ 3 ] = a.data[ 3 ] - b.data[ 3 ];
 }
 
 GXVoid GXQuat::SphericalLinearInterpolation ( const GXQuat &start, const GXQuat &finish, GXFloat interpolationFactor )
@@ -1097,47 +1100,27 @@ GXVoid GXQuat::SphericalLinearInterpolation ( const GXQuat &start, const GXQuat 
 	data[ 3 ] = start.data[ 3 ] * scale0 + temp.data[ 3 ] * scale1;
 }
 
-GXVoid GXQuat::Inverse ( const GXQuat &q )
+GXVoid GXQuat::GetAxisAngle ( GXVec3 &axis, GXFloat &angle ) const
 {
-	GXFloat squaredLength = q.data[ 0 ] * q.data[ 0 ] + q.data[ 1 ] * q.data[ 1 ] + q.data[ 2 ] * q.data[ 2 ] + q.data[ 3 ] * q.data[ 3 ];
+	GXQuat q ( *this );
 
-	if ( squaredLength > 0.0f )
-	{
-		GXFloat inverseSquaredLength = 1.0f / squaredLength;
+	if ( q.data[ 3 ] > 1.0f )
+		q.Normalize ();
 
-		data[ 0 ] = -q.data[ 0 ] * inverseSquaredLength;
-		data[ 1 ] = -q.data[ 1 ] * inverseSquaredLength;
-		data[ 2 ] = -q.data[ 2 ] * inverseSquaredLength;
-		data[ 3 ] = q.data[ 3 ] * inverseSquaredLength;
+	angle = 2.0f * acosf ( q.data[ 3 ] );
 
-		return;
-	}
-	else
-	{
-		GXLogW ( L"GXQuat::Inverse - Error\n" );
-		Identity ();
-	}
+	axis.SetX ( q.data[ 0 ] );
+	axis.SetY ( q.data[ 1 ] );
+	axis.SetZ ( q.data[ 2 ] );
+
+	GXFloat s = sqrtf ( 1.0f - q.data[ 3 ] * q.data[ 3 ] );
+
+	if ( s < 0.001 ) return;
+
+	axis.Multiply ( axis, 1.0f / s );
 }
 
-GXVoid GXQuat::Normalize ()
-{
-	GXFloat squaredLength = data[ 0 ] * data[ 0 ] + data[ 1 ] * data[ 1 ] + data[ 2 ] * data[ 2 ] + data[ 3 ] * data[ 3 ];
-
-	if ( squaredLength == 0.0f )
-	{
-		GXLogW ( L"GXQuat::Normalize - Error\n" );
-		return;
-	}
-
-	GXFloat inverseLength = 1.0f / sqrtf ( squaredLength );
-
-	data[ 0 ] *= inverseLength;
-	data[ 1 ] *= inverseLength;
-	data[ 2 ] *= inverseLength;
-	data[ 3 ] *= inverseLength;
-}
-
-GXVoid GXQuat::Transform ( GXVec3 &out, const GXVec3 &v )
+GXVoid GXQuat::Transform ( GXVec3 &out, const GXVec3 &v ) const
 {
 	GXFloat xxzz = data[ 0 ] * data[ 0 ] - data[ 2 ] * data[ 2 ];
 	GXFloat wwyy = data[ 3 ] * data[ 3 ] - data[ 1 ] * data[ 1 ];
@@ -1152,6 +1135,22 @@ GXVoid GXQuat::Transform ( GXVec3 &out, const GXVec3 &v )
 	out.SetX ( ( xxzz + wwyy ) * v.GetX () + ( xy2 + zw2 ) * v.GetY () + ( xz2 - yw2 ) * v.GetZ () );
 	out.SetY ( ( xy2 - zw2 ) * v.GetX () + ( data[ 1 ] * data[ 1 ] + data[ 3 ] * data[ 3 ] - data[ 0 ] * data[ 0 ] - data[ 2 ] * data[ 2 ] ) * v.GetY () + ( yz2 + xw2 ) * v.GetZ () );
 	out.SetZ ( ( xz2 + yw2 ) * v.GetX () + ( yz2 - xw2 ) * v.GetY () + ( wwyy - xxzz ) * v.GetZ () );
+}
+
+GXVoid GXQuat::TransformTest ( GXVec3 &out, const GXVec3 &v ) const
+{
+	GXQuat vQuaternion ( v.data[ 0 ], v.data[ 1 ], v.data[ 2 ], 0.0f );
+
+	GXQuat inverseQuaternion;
+	inverseQuaternion.Inverse ( *this );
+
+	GXQuat alpha;
+	alpha.Multiply ( *this, vQuaternion );
+
+	GXQuat betta;
+	betta.Multiply ( alpha, inverseQuaternion );
+
+	out.Init ( betta.data[ 0 ], betta.data[ 1 ], betta.data[ 2 ] );
 }
 
 GXQuat& GXQuat::operator = ( const GXVec4 &other )
@@ -1179,17 +1178,17 @@ GXMat3::GXMat3 ( const GXMat3 &other )
 
 GXVoid GXMat3::From ( const GXQuat &quaternion )
 {
-	GXFloat xx = quaternion.GetX () * quaternion.GetX ();
-	GXFloat xy = quaternion.GetX () * quaternion.GetY ();
-	GXFloat xz = quaternion.GetX () * quaternion.GetZ ();
-	GXFloat xw = quaternion.GetX () * quaternion.GetW ();
+	GXFloat xx = quaternion.GetI () * quaternion.GetI ();
+	GXFloat xy = quaternion.GetI () * quaternion.GetJ ();
+	GXFloat xz = quaternion.GetI () * quaternion.GetK ();
+	GXFloat xw = quaternion.GetI () * quaternion.GetR ();
 
-	GXFloat yy = quaternion.GetY () * quaternion.GetY ();
-	GXFloat yz = quaternion.GetY () * quaternion.GetZ ();
-	GXFloat yw = quaternion.GetY () * quaternion.GetW ();
+	GXFloat yy = quaternion.GetJ () * quaternion.GetJ ();
+	GXFloat yz = quaternion.GetJ () * quaternion.GetK ();
+	GXFloat yw = quaternion.GetJ () * quaternion.GetR ();
 
-	GXFloat zz = quaternion.GetZ () * quaternion.GetZ ();
-	GXFloat zw = quaternion.GetZ () * quaternion.GetW ();
+	GXFloat zz = quaternion.GetK () * quaternion.GetK ();
+	GXFloat zw = quaternion.GetK () * quaternion.GetR ();
 
 	m[ 0 ][ 0 ] = 1.0f - 2.0f * ( yy + zz );
 	m[ 0 ][ 1 ] = 2.0f * ( xy - zw );
@@ -1202,6 +1201,22 @@ GXVoid GXMat3::From ( const GXQuat &quaternion )
 	m[ 2 ][ 0 ] = 2.0f * ( xz - yw );
 	m[ 2 ][ 1 ] = 2.0f * ( yz + xw );
 	m[ 2 ][ 2 ] = 1.0f - 2.0f * ( xx + yy );
+}
+
+GXVoid GXMat3::FromTest ( const GXQuat &quaternion )
+{
+	GXVec3 x;
+	quaternion.TransformTest ( x, GXVec3::GetAbsoluteX () );
+
+	GXVec3 y;
+	quaternion.TransformTest ( y, GXVec3::GetAbsoluteY () );
+
+	GXVec3 z;
+	quaternion.TransformTest ( z, GXVec3::GetAbsoluteZ () );
+
+	SetX ( x );
+	SetY ( y );
+	SetZ ( z );
 }
 
 GXVoid GXMat3::From ( const GXMat4 &matrix )
@@ -1393,29 +1408,29 @@ GXMat4::GXMat4 ( const GXMat4 &other )
 
 GXVoid GXMat4::SetRotation ( const GXQuat& quaternion )
 {
-	GXFloat xx = quaternion.GetX () * quaternion.GetX ();
-	GXFloat xy = quaternion.GetX () * quaternion.GetY ();
-	GXFloat xz = quaternion.GetX () * quaternion.GetZ ();
-	GXFloat xw = quaternion.GetX () * quaternion.GetW ();
+	GXFloat ii = quaternion.GetI () * quaternion.GetI ();
+	GXFloat ij = quaternion.GetI () * quaternion.GetJ ();
+	GXFloat ik = quaternion.GetI () * quaternion.GetK ();
+	GXFloat ir = quaternion.GetI () * quaternion.GetR ();
 
-	GXFloat yy = quaternion.GetY () * quaternion.GetY ();
-	GXFloat yz = quaternion.GetY () * quaternion.GetZ ();
-	GXFloat yw = quaternion.GetY () * quaternion.GetW ();
+	GXFloat jj = quaternion.GetJ () * quaternion.GetJ ();
+	GXFloat jk = quaternion.GetJ () * quaternion.GetK ();
+	GXFloat jr = quaternion.GetJ () * quaternion.GetR ();
 
-	GXFloat zz = quaternion.GetZ () * quaternion.GetZ ();
-	GXFloat zw = quaternion.GetZ () * quaternion.GetW ();
+	GXFloat kk = quaternion.GetK () * quaternion.GetK ();
+	GXFloat kr = quaternion.GetK () * quaternion.GetR ();
 
-	m[ 0 ][ 0 ] = 1.0f - 2.0f * ( yy + zz );
-	m[ 0 ][ 1 ] = 2.0f * ( xy - zw );
-	m[ 0 ][ 2 ] = 2.0f * ( xz + yw );
+	m[ 0 ][ 0 ] = 1.0f - 2.0f * ( jj + kk );
+	m[ 0 ][ 1 ] = 2.0f * ( ij - kr );
+	m[ 0 ][ 2 ] = 2.0f * ( ik + jr );
 
-	m[ 1 ][ 0 ] = 2.0f * ( xy + zw );
-	m[ 1 ][ 1 ] = 1.0f - 2.0f * ( xx + zz );
-	m[ 1 ][ 2 ] = 2.0f * ( yz - xw );
+	m[ 1 ][ 0 ] = 2.0f * ( ij + kr );
+	m[ 1 ][ 1 ] = 1.0f - 2.0f * ( ii + kk );
+	m[ 1 ][ 2 ] = 2.0f * ( jk - ir );
 
-	m[ 2 ][ 0 ] = 2.0f * ( xz - yw );
-	m[ 2 ][ 1 ] = 2.0f * ( yz + xw );
-	m[ 2 ][ 2 ] = 1.0f - 2.0f * ( xx + yy );
+	m[ 2 ][ 0 ] = 2.0f * ( ik - jr );
+	m[ 2 ][ 1 ] = 2.0f * ( jk + ir );
+	m[ 2 ][ 2 ] = 1.0f - 2.0f * ( ii + jj );
 }
 
 GXVoid GXMat4::SetOrigin ( const GXVec3 &origin )

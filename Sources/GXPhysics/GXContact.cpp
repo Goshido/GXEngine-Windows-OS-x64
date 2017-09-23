@@ -19,7 +19,14 @@ GXVoid GXContact::SetShapes ( const GXShape &a, const GXShape &b )
 	bodies[ 0 ] = &a.GetRigidBody ();
 	bodies[ 1 ] = &b.GetRigidBody ();
 
-	friction = GXMinf ( a.GetFriction (), b.GetFriction () );
+	// TODO frictions|restitution imperical lookup table
+
+	staticFriction = GXMinf ( a.GetStaticFriction (), b.GetStaticFriction () );
+	dynamicFriction = GXMinf ( a.GetDynamicFriction (), b.GetDynamicFriction () );
+
+	if ( staticFriction < dynamicFriction )
+		dynamicFriction = staticFriction;
+
 	restitution = GXMinf ( a.GetRestitution (), b.GetRestitution () );
 }
 
@@ -63,9 +70,14 @@ GXFloat GXContact::GetPenetration () const
 	return penetration;
 }
 
-GXFloat GXContact::GetFriction () const
+GXFloat GXContact::GetStaticFriction () const
 {
-	return friction;
+	return staticFriction;
+}
+
+GXFloat GXContact::GetDynamicFriction () const
+{
+	return dynamicFriction;
 }
 
 GXFloat GXContact::GetRestitution () const

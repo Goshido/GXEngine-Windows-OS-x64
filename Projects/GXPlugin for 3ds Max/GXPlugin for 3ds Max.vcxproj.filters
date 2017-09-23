@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\GXCommon">
+      <UniqueIdentifier>{6526a175-46d8-462a-b808-c5793843c5e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GXPlugin">
+      <UniqueIdentifier>{18654a63-e388-4476-b9e7-b1fcfeada2c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GXPlugin">
+      <UniqueIdentifier>{d516e067-232b-42ac-b8a3-d7a8d8fe5a09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GXCommon">
+      <UniqueIdentifier>{3090f76b-e224-4837-9ca2-fdacef56ef02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Def">
+      <UniqueIdentifier>{1d363e69-df49-4e1a-b5d9-512a5166c9e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GXCommon\Windows">
+      <UniqueIdentifier>{c2aa6310-2f87-44ee-9c35-50bd32d796ab}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXDLLMain.cpp">
+      <Filter>Source Files\GXPlugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXMeshNormalHolder.cpp">
+      <Filter>Source Files\GXPlugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXSkeletalMeshExporter.cpp">
+      <Filter>Source Files\GXPlugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXUtility.cpp">
+      <Filter>Source Files\GXPlugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXLogger.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXMath.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp">
+      <Filter>Source Files\GXCommon\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXFileSystem.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractMutex.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXMemory.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshSaver.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXDLL.h">
+      <Filter>Header Files\GXPlugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXMeshNormalHolder.h">
+      <Filter>Header Files\GXPlugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXSkeletalMeshExporter.h">
+      <Filter>Header Files\GXPlugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXUIResource.h">
+      <Filter>Header Files\GXPlugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXUtility.h">
+      <Filter>Header Files\GXPlugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXResource.h">
+      <Filter>Header Files\GXPlugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXDisable3rdPartyWarnings.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXDisableWarning.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXFileSystem.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXImageLoader.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXLogger.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXMath.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXMemory.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXMutex.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeSkeletalMesh.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeStaticMeshLoader.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeStaticMeshSaver.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeStaticMeshStructs.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXOBJLoader.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXPHGStructs.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXRestoreWarnings.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXSCNStructs.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXSTGStructs.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXStrings.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXThread.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXTime.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXTypes.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXAVLTree.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXBKELoader.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXBKESaver.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXCFGLoader.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXCFGSaver.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXCFGStruct.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Sources\GXPlugin_for_3ds_Max\GXDll.def">
+      <Filter>Def</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\Include\GXPlugin_for_3ds_Max\GXPlugin for 3ds Max.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

@@ -25,7 +25,8 @@ class GXShape
 		GXMat4			transformWorld;
 		GXMat3			inertialTensor;
 
-		GXFloat			friction;
+		GXFloat			staticFriction;
+		GXFloat			dynamicFriction;
 		GXFloat			restitution;
 
 	public:
@@ -43,8 +44,9 @@ class GXShape
 
 		virtual GXVoid GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const = 0;
 
-		GXVoid SetFriction ( GXFloat newFriction );
-		GXFloat GetFriction () const;
+		GXVoid SetFriction ( GXFloat newStaticFriction, GXFloat newDynamicFriction );
+		GXFloat GetStaticFriction () const;
+		GXFloat GetDynamicFriction () const;
 
 		GXVoid SetRestitution ( GXFloat newRestitution );
 		GXFloat GetRestitution () const;

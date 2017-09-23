@@ -95,7 +95,7 @@ class GXRigidBody
 		const GXVec3& GetLastFrameAcceleration () const;
 
 		GXVoid TranslatePointToWorld ( GXVec3 &out, const GXVec3 &pointLocal );
-		const GXMat4& GetTransform ();
+		const GXMat4& GetTransform () const;
 
 		GXVoid SetAwake ();
 		GXVoid SetSleep ();
@@ -109,6 +109,7 @@ class GXRigidBody
 		GXVoid AddForce ( const GXVec3 &forceWorld );
 		GXVoid AddForceAtPointLocal ( const GXVec3 &forceWorld, const GXVec3 &pointLocal );
 		GXVoid AddForceAtPointWorld ( const GXVec3 &forceWorld, const GXVec3 &pointWorld );
+		const GXVec3& GetTotalForce () const;
 
 		GXVoid Integrate ( GXFloat deltaTime );
 };

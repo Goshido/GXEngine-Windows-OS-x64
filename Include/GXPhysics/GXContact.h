@@ -14,7 +14,8 @@ class GXContact
 	private:
 		GXRigidBody*	bodies[ 2 ];
 
-		GXFloat			friction;
+		GXFloat			staticFriction;
+		GXFloat			dynamicFriction;
 		GXFloat			restitution;
 		GXVec3			point;
 		GXVec3			normal;
@@ -54,7 +55,8 @@ class GXContact
 		GXVoid SetPenetration ( GXFloat contactPenetration );
 		GXFloat GetPenetration () const;
 
-		GXFloat GetFriction () const;
+		GXFloat GetStaticFriction () const;
+		GXFloat GetDynamicFriction () const;
 		GXFloat GetRestitution () const;
 
 		GXVoid SetGJKIterations ( GXUInt iterations );

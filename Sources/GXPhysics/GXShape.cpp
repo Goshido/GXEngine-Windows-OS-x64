@@ -5,8 +5,9 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define DEFAULT_FRICTION		0.5f
-#define DEFAULT_RESTITUTION		0.5f
+#define DEFAULT_STATIC_FRICTION		0.9f
+#define DEFAULT_DYNAMIC_FRICTION	0.8f
+#define DEFAULT_RESTITUTION			0.5f
 
 
 GXShape::GXShape ( eGXShapeType type, GXRigidBody* body )
@@ -14,7 +15,7 @@ GXShape::GXShape ( eGXShapeType type, GXRigidBody* body )
 	this->type = type;
 	this->body = body;
 
-	SetFriction ( DEFAULT_FRICTION );
+	SetFriction ( DEFAULT_STATIC_FRICTION, DEFAULT_DYNAMIC_FRICTION );
 	SetRestitution ( DEFAULT_RESTITUTION );
 
 	transformRigidBody.Identity ();
@@ -54,14 +55,20 @@ const GXMat3& GXShape::GetInertialTensor () const
 	return inertialTensor;
 }
 
-GXVoid GXShape::SetFriction ( GXFloat newFriction )
+GXVoid GXShape::SetFriction ( GXFloat newStaticFriction, GXFloat newDynamicFriction )
 {
-	friction = newFriction;
+	staticFriction = newStaticFriction;
+	dynamicFriction = newDynamicFriction;
 }
 
-GXFloat GXShape::GetFriction () const
+GXFloat GXShape::GetStaticFriction () const
 {
-	return friction;
+	return staticFriction;
+}
+
+GXFloat GXShape::GetDynamicFriction () const
+{
+	return dynamicFriction;
 }
 
 GXVoid GXShape::SetRestitution ( GXFloat newRestitution )

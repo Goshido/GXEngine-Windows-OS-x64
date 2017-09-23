@@ -1,4 +1,4 @@
-//version 1.39
+//version 1.40
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -241,27 +241,28 @@ struct GXMat3;
 struct GXMat4;
 struct GXQuat
 {
+	//Stores i, j, k, real order.
 	GXFloat		data[ 4 ];
 
 	GXQuat ();
-	explicit GXQuat ( GXFloat x, GXFloat y, GXFloat z, GXFloat w );
+	explicit GXQuat ( GXFloat i, GXFloat j, GXFloat k, GXFloat real );
 	explicit GXQuat ( const GXMat3& rotationMatrix );
 	explicit GXQuat ( const GXMat4& rotationMatrix );
 	GXQuat ( const GXQuat &other );
 
-	GXVoid Init ( GXFloat x, GXFloat y, GXFloat z, GXFloat w );
+	GXVoid Init ( GXFloat i, GXFloat j, GXFloat k, GXFloat real );
 
-	GXVoid SetX ( GXFloat x );
-	GXFloat GetX () const;
+	GXVoid SetI ( GXFloat i );
+	GXFloat GetI () const;
 
-	GXVoid SetY ( GXFloat y );
-	GXFloat GetY () const;
+	GXVoid SetJ ( GXFloat j );
+	GXFloat GetJ () const;
 
-	GXVoid SetZ ( GXFloat z );
-	GXFloat GetZ () const;
+	GXVoid SetK ( GXFloat k );
+	GXFloat GetK () const;
 
-	GXVoid SetW ( GXFloat w );
-	GXFloat GetW () const;
+	GXVoid SetR ( GXFloat real );
+	GXFloat GetR () const;
 
 	GXVoid Identity ();
 	GXVoid Normalize ();
@@ -280,8 +281,9 @@ struct GXQuat
 
 	GXVoid SphericalLinearInterpolation ( const GXQuat &start, const GXQuat &finish, GXFloat interpolationFactor );
 	
-	GXVoid GetAxisAngle ( GXVec3 &axis, GXFloat &angle );
-	GXVoid Transform ( GXVec3 &out, const GXVec3 &v );
+	GXVoid GetAxisAngle ( GXVec3 &axis, GXFloat &angle ) const;
+	GXVoid Transform ( GXVec3 &out, const GXVec3 &v ) const;
+	GXVoid TransformTest ( GXVec3 &out, const GXVec3 &v ) const;
 
 	GXQuat& operator = ( const GXVec4 &other );
 };
@@ -301,6 +303,7 @@ struct GXMat3
 	GXMat3 ( const GXMat3 &other );
 
 	GXVoid From ( const GXQuat &quaternion );
+	GXVoid FromTest ( const GXQuat &quaternion );
 	GXVoid From ( const GXMat4 &matrix );
 
 	GXVoid GetX ( GXVec3& x ) const;

@@ -6,7 +6,7 @@
 
 #include "GXContact.h"
 
-
+//Basic physics concept from https://en.wikipedia.org/wiki/Collision_response
 class GXContactResolver
 {
 	private:

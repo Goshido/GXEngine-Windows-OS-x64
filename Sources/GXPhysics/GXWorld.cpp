@@ -186,6 +186,9 @@ GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 	// We do not do anything unless 2 rigid bodies were registered
 	if ( !bodies || !bodies->next ) return;
 
+	for ( GXRigidBodyRegistration* p = bodies; p; p = p->next )
+		p->body->ClearAccumulators ();
+
 	for ( GXForceGeneratorsRegistration* p = forceGenerators; p; p = p->next )
 		p->generator->UpdateForce ( *p->body, deltaTime );
 

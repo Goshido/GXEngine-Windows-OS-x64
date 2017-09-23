@@ -31,6 +31,18 @@ Projects/GXGIMP Barycentric Fill Filter/*.sdf
 Projects/GXGIMP Barycentric Fill Filter/*.opendb
 Projects/GXGIMP Barycentric Fill Filter/*.db
 
+Projects/GXPlugin for 3ds Max/.vs
+Projects/GXPlugin for 3ds Maxr/Debug
+Projects/GXPlugin for 3ds Max/Generated Files
+Projects/GXPlugin for 3ds Max/x64
+Projects/GXPlugin for 3ds Max/*.sdf
+Projects/GXPlugin for 3ds Max/*.opendb
+Projects/GXPlugin for 3ds Max/*.db
+Projects/GXPlugin for 3ds Max/*.aps
+
+Include/GXPlugin_for_3ds_Max/RC*
+Include/GXPlugin_for_3ds_Max/*.aps
+
 Shaders/Precompiled shader program dictionary.bin
 Shaders/Precompiled shader programs.info
 Shaders/Precompiled shader programs

@@ -1,0 +1,222 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{28DEECDE-FDB5-4042-AC79-26F3FA77F88D}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>GXPluginfor3dsMax</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)..\..\$(Configuration)\$(Platform)\</OutDir>
+    <TargetName>GXPlugin</TargetName>
+    <TargetExt>.dlu</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;WINAPI_PARTITION_SYSTEM=0;_WIN32_WINNT_WINTHRESHOLD=0;NTDDI_WIN7SP1=0;TARGET_OS_MAC=0;MULTI_PROCESSING=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Include;$(SolutionDir)..\..\Include\3ds_Max\2018;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/wd4710 /wd4711 /wd4820 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\..\Libs\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>comctl32.lib;bmm.lib;core.lib;geom.lib;gfx.lib;gup.lib;IGame.lib;maxscrpt.lib;maxutil.lib;mesh.lib;paramblk2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ProgramDatabaseFile />
+      <FullProgramDatabaseFile>false</FullProgramDatabaseFile>
+      <AssemblyDebug>false</AssemblyDebug>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <LinkStatus>false</LinkStatus>
+    </Link>
+    <PostBuildEvent>
+      <Command>del "$(OutDir)$(TargetName).exp"
+del "$(OutDir)$(TargetName).lib"
+copy "$(OutDir)$(TargetFileName)" "$(PLUGIN_DIRECTORY_3DS_MAX)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractMutex.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXFileSystem.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXLogger.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXMath.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXMemory.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshSaver.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp" />
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXDLLMain.cpp" />
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXMeshNormalHolder.cpp" />
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXSkeletalMeshExporter.cpp" />
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXUtility.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Include\GXCommon\GXAVLTree.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXBKELoader.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXBKESaver.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXCFGLoader.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXCFGSaver.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXCFGStruct.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXDisable3rdPartyWarnings.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXDisableWarning.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXFileSystem.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXImageLoader.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXLogger.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXMath.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXMemory.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXMutex.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeSkeletalMesh.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeStaticMeshLoader.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeStaticMeshSaver.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeStaticMeshStructs.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXOBJLoader.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXPHGStructs.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXRestoreWarnings.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXSCNStructs.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXSTGStructs.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXStrings.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXThread.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXTime.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXTypes.h" />
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXDLL.h" />
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXMeshNormalHolder.h" />
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXSkeletalMeshExporter.h" />
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXUIResource.h" />
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXUtility.h" />
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXResource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Sources\GXPlugin_for_3ds_Max\GXDll.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\Include\GXPlugin_for_3ds_Max\GXPlugin for 3ds Max.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

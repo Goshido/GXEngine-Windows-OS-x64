@@ -4,8 +4,11 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define DEFAULT_ANGULAR_MOVE_LIMIT		0.1f
-#define ANGULAR_INERTIA_EPSILON			0.0001f
+#define DEFAULT_ANGULAR_MOVE_LIMIT				0.1f
+#define ANGULAR_INERTIA_EPSILON					1.0e-4f
+#define VELOCITY_PROJECTION_EPSILON				1.0e-4f
+#define TOTAL_FORCE_PROJECTION_EPSILON			1.0e-4f
+#define TANGENT_VECTOR_SQUARED_LENGTH_EPSILON	1.0e-4f
 
 
 GXContactResolver::GXContactResolver ()
@@ -72,7 +75,8 @@ GXVoid GXContactResolver::ResolveSingleBodyContacts ( GXContact* contacts )
 
 		ResolvePenetrationWorld ( deltaLocationWorld, deltaRotationWorld, notKinematicRigidBody, notKinematicRigidBodyCenterOfMassToContactPointWorld, contact.GetNormal (), contact.GetPenetration () );
 
-		GXFloat alpha = -( 1.0f + contact.GetRestitution () ) * contactVelocityWorld.DotProduct ( contact.GetNormal () );
+		GXFloat contactVelocityProjection = contactVelocityWorld.DotProduct ( contact.GetNormal () );
+		GXFloat alpha = -( 1.0f + contact.GetRestitution () ) * contactVelocityProjection;
 
 		if ( alpha == 0.0f )
 		{
@@ -90,13 +94,62 @@ GXVoid GXContactResolver::ResolveSingleBodyContacts ( GXContact* contacts )
 		betta.CrossProduct ( gamma, notKinematicRigidBodyCenterOfMassToContactPointWorld );
 		GXFloat yotta = notKinematicRigidBody.GetInverseMass () + contact.GetNormal ().DotProduct ( betta );
 
-		GXVec3 impulseWorld ( contact.GetNormal () );
-		impulseWorld.Multiply ( impulseWorld, alpha / yotta );
+		GXFloat reactionImpulseMagnitudeWorld = alpha / yotta;
+
+		GXFloat staticFrictionImpulseWorldMagnitudeMagnitude = contact.GetStaticFriction () * reactionImpulseMagnitudeWorld;
+		GXFloat dynamicFrictionImpulseMagnitudeWorld = contact.GetDynamicFriction () * reactionImpulseMagnitudeWorld;
+
+		GXVec3 tangentVector;
+
+		if ( fabsf ( contactVelocityProjection ) > VELOCITY_PROJECTION_EPSILON )
+		{
+			GXVec3 omega;
+			omega.Multiply ( contact.GetNormal (), contactVelocityProjection );
+			tangentVector.Substract ( contactVelocityWorld, omega );
+
+			if ( tangentVector.SquaredLength () > TANGENT_VECTOR_SQUARED_LENGTH_EPSILON )
+				tangentVector.Normalize ();
+		}
+
+		GXFloat tangentProjection = tangentVector.DotProduct ( contactVelocityWorld );
+		GXFloat frictionImpulseMagnitudeWorld;
+
+		if ( fabsf ( tangentProjection ) > VELOCITY_PROJECTION_EPSILON )
+		{
+			GXVec3 contactImpulseWorld;
+			contactImpulseWorld.Multiply ( contactVelocityWorld, notKinematicRigidBody.GetMass () );
+
+			GXFloat contactImpulseToTangentVectorProjectionWorld = tangentVector.DotProduct ( contactImpulseWorld );
+
+			if ( contactImpulseToTangentVectorProjectionWorld <= staticFrictionImpulseWorldMagnitudeMagnitude )
+			{
+				frictionImpulseMagnitudeWorld = contactImpulseToTangentVectorProjectionWorld;
+			}
+			else
+			{
+				frictionImpulseMagnitudeWorld = dynamicFrictionImpulseMagnitudeWorld;
+			}
+		}
+		else
+		{
+			frictionImpulseMagnitudeWorld = dynamicFrictionImpulseMagnitudeWorld;
+		}
+
+		GXVec3 reactionImpulseWorld;
+		reactionImpulseWorld.Multiply ( contact.GetNormal (), reactionImpulseMagnitudeWorld );
+
+		GXVec3 frictionImpulseWorld;
+		frictionImpulseWorld.Multiply ( tangentVector, frictionImpulseMagnitudeWorld );
 
 		GXVec3 linearVelocityWorld;
 		GXVec3 angularVelocityWorld;
 
-		GetRigidBodyKinematicsWorld ( linearVelocityWorld, angularVelocityWorld, notKinematicRigidBody, impulseWorld, notKinematicRigidBodyCenterOfMassToContactPointWorld );
+		GetRigidBodyKinematicsWorld ( linearVelocityWorld, angularVelocityWorld, notKinematicRigidBody, frictionImpulseWorld, notKinematicRigidBodyCenterOfMassToContactPointWorld );
+
+		deltaLinearVelocityWorld.Sum ( deltaLinearVelocityWorld, linearVelocityWorld );
+		deltaAngularVelocityWorld.Sum ( deltaAngularVelocityWorld, angularVelocityWorld );
+
+		GetRigidBodyKinematicsWorld ( linearVelocityWorld, angularVelocityWorld, notKinematicRigidBody, reactionImpulseWorld, notKinematicRigidBodyCenterOfMassToContactPointWorld );
 
 		deltaLinearVelocityWorld.Sum ( deltaLinearVelocityWorld, linearVelocityWorld );
 		deltaAngularVelocityWorld.Sum ( deltaAngularVelocityWorld, angularVelocityWorld );
@@ -116,18 +169,14 @@ GXVoid GXContactResolver::ResolveSingleBodyContacts ( GXContact* contacts )
 	betta.Multiply ( alpha, notKinematicRigidBody.GetRotation () );
 	GXQuat newRotation;
 	newRotation.Sum ( notKinematicRigidBody.GetRotation (), betta );
-
 	notKinematicRigidBody.SetRotaton ( newRotation );
 	
 	GXVec3 newLinearVelocityWorld;
 	newLinearVelocityWorld.Sum ( notKinematicRigidBody.GetLinearVelocity (), deltaLinearVelocityWorld );
-
 	notKinematicRigidBody.SetLinearVelocity ( newLinearVelocityWorld );
 
-	// Too complex. Need to find explanation or simplify!
 	GXVec3 newAngularVelocityWorld;
 	newAngularVelocityWorld.Sum ( notKinematicRigidBody.GetAngularVelocity (), deltaAngularVelocityWorld );
-	newAngularVelocityWorld.Reverse ();
 	notKinematicRigidBody.SetAngularVelocity ( newAngularVelocityWorld );
 }
 
@@ -245,13 +294,12 @@ GXVoid GXContactResolver::ResolveDoubleBodyContacts ( GXContact* contacts )
 
 GXVoid GXContactResolver::GetRigidBodyKinematicsWorld ( GXVec3 &linearVelocityWorld, GXVec3 &angularVelocityWorld, const GXRigidBody &rigidBody, const GXVec3 &impulseWorld, const GXVec3 &centerOfMassToContactPointWorld )
 {
-	GXVec3 alpha ( centerOfMassToContactPointWorld );
-	alpha.Normalize ();
+	//It is contact response impulse influense resolution.
+	//Real impulse affects rigid body linear velocity depending impulse application point.
+	//Experiment: Apply impulse to pencil center or pencil tip. Imagine how center of mass loction
+	//changes.
 
-	GXVec3 betta ( impulseWorld );
-	betta.Normalize ();
-
-	linearVelocityWorld.Multiply ( impulseWorld, -alpha.DotProduct ( betta ) * rigidBody.GetInverseMass () );
+	linearVelocityWorld.Multiply ( impulseWorld, rigidBody.GetInverseMass () );
 
 	GXVec3 angularMomentumWorld;
 	angularMomentumWorld.CrossProduct ( centerOfMassToContactPointWorld, impulseWorld );
