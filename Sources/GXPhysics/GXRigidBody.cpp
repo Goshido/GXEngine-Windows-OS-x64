@@ -76,7 +76,7 @@ GXVoid GXRigidBody::SetOnTransformChangedCallback ( GXVoid* handlerObject, PFNRI
 GXVoid GXRigidBody::CalculateCachedData ()
 {
 	rotation.Normalize ();
-	transform.From ( rotation, location );
+	transform.FromFast ( rotation, location );
 
 	GXMat3 alpha ( transform );
 	inverseTransform.Transponse ( alpha );
@@ -338,7 +338,7 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 	{
 		location.Sum ( location, deltaTime, linearVelocity );
 
-		GXQuat betta ( angularVelocity.GetX (), angularVelocity.GetY (), angularVelocity.GetZ (), 0.0f );
+		GXQuat betta ( 0.0f, angularVelocity.GetX (), angularVelocity.GetY (), angularVelocity.GetZ () );
 		betta.Multiply ( betta, deltaTime * 0.5f );
 
 		GXQuat gamma;
@@ -366,7 +366,7 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 	lastFrameLocation = location;
 	location.Sum ( location, deltaTime, linearVelocity );
 
-	GXQuat betta ( angularVelocity.GetX (), angularVelocity.GetY (), angularVelocity.GetZ (), 0.0f );
+	GXQuat betta ( 0.0f, angularVelocity.GetX (), angularVelocity.GetY (), angularVelocity.GetZ () );
 	betta.Multiply ( betta, deltaTime * 0.5f );
 
 	GXQuat gamma;
@@ -390,8 +390,8 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 		return;
 	}
 
-	GXVec4 yotta ( rotation.GetI (), rotation.GetJ (), rotation.GetK (), rotation.GetR () );
-	GXVec4 phi ( lastFrameRotation.GetI (), lastFrameRotation.GetJ (), lastFrameRotation.GetK (), lastFrameRotation.GetR () );
+	GXVec4 yotta ( rotation.GetA (), rotation.GetB (), rotation.GetC (), rotation.GetR () );
+	GXVec4 phi ( lastFrameRotation.GetA (), lastFrameRotation.GetB (), lastFrameRotation.GetC (), lastFrameRotation.GetR () );
 
 	GXVec4 difference;
 	difference.Substract ( yotta, phi );
