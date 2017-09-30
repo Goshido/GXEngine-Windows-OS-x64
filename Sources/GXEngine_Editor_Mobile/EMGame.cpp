@@ -194,7 +194,7 @@ GXVoid EMGame::OnInit ()
 	transform.SetRotation ( 0.0f, GX_MATH_PI, 0.0f );
 	transform.SetScale ( 50.0f, 1.0, 50.0f );
 	kinematicPlane = new EMPhysicsDrivenActor ( L"Kinematic Plane", transform );
-	GXBoxShape* kinematicPlaneShape = new GXBoxShape ( &( kinematicPlane->GetRigidBody () ), 25.0f, 1.0f, 50.0f );
+	GXBoxShape* kinematicPlaneShape = new GXBoxShape ( &( kinematicPlane->GetRigidBody () ), 50.0f, 1.0f, 50.0f );
 	kinematicPlane->GetRigidBody ().SetShape ( *kinematicPlaneShape );
 	kinematicPlane->GetRigidBody ().EnableKinematic ();
 	//kinematicPlane->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, 0.1f, 0.0f ) );

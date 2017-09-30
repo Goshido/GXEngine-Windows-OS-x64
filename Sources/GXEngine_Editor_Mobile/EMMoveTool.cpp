@@ -39,6 +39,8 @@
 #define SELECTED_AXIS_COLOR_B			255
 #define SELECTED_AXIS_COLOR_A			255
 
+#define CROSS_LINE_EPSILON				1.0e-5f
+
 
 static EMMoveTool* em_mt_Me = nullptr;
 
@@ -80,7 +82,33 @@ GXVoid EMMoveTool::Bind ()
 GXVoid EMMoveTool::SetActor ( EMActor* currentActor )
 {
 	actor = currentActor;
-	UpdateModeMode ();
+
+	if ( !actor ) return;
+
+	GXCamera* activeCamera = GXCamera::GetActiveCamera ();
+
+	if ( !activeCamera ) return;
+
+	switch ( mode )
+	{
+		case MOVE_TOOL_LOCAL_MODE:
+			actor->GetTransform ().GetRotation ( gismoRotation );
+		break;
+
+		case MOVE_TOOL_WORLD_MODE:
+			gismoRotation.Identity ();
+		break;
+
+		default:
+			//NOTHING
+		break;
+	}
+
+	GXVec3 gismoLocationView;
+	activeCamera->GetCurrentFrameViewMatrix ().MultiplyAsPoint ( gismoLocationView, actor->GetTransform ().GetLocation () );
+
+	static const GXVec3 deltaView ( 0.0f, 0.0f, 0.0f );
+	gismoScaleCorrector = GetScaleCorrector ( gismoLocationView, deltaView );
 }
 
 GXVoid EMMoveTool::UnBind ()
@@ -104,6 +132,7 @@ GXVoid EMMoveTool::OnDrawHudColorPass ()
 	glDisable ( GL_BLEND );
 
 	UpdateMeshTransform ( xAxis );
+
 	if ( activeAxis == MOVE_TOOL_ACTIVE_AXIS_X )
 		unlitColorMaterial.SetColor ( SELECTED_AXIS_COLOR_R, SELECTED_AXIS_COLOR_G, SELECTED_AXIS_COLOR_B, SELECTED_AXIS_COLOR_A );
 	else
@@ -114,6 +143,7 @@ GXVoid EMMoveTool::OnDrawHudColorPass ()
 	unlitColorMaterial.Unbind ();
 
 	UpdateMeshTransform ( yAxis );
+
 	if ( activeAxis == MOVE_TOOL_ACTIVE_AXIS_Y )
 		unlitColorMaterial.SetColor ( SELECTED_AXIS_COLOR_R, SELECTED_AXIS_COLOR_G, SELECTED_AXIS_COLOR_B, SELECTED_AXIS_COLOR_A );
 	else
@@ -124,6 +154,7 @@ GXVoid EMMoveTool::OnDrawHudColorPass ()
 	unlitColorMaterial.Unbind ();
 
 	UpdateMeshTransform ( zAxis );
+
 	if ( activeAxis == MOVE_TOOL_ACTIVE_AXIS_Z )
 		unlitColorMaterial.SetColor ( SELECTED_AXIS_COLOR_R, SELECTED_AXIS_COLOR_G, SELECTED_AXIS_COLOR_B, SELECTED_AXIS_COLOR_A );
 	else
@@ -205,7 +236,6 @@ GXBool EMMoveTool::OnLeftMouseButtonUp ( GXFloat /*x*/, GXFloat /*y*/ )
 	return GX_FALSE;
 }
 
-
 GXBool EMMoveTool::OnObject ( GXVoid* object )
 {
 	if ( !actor ) return GX_FALSE;
@@ -244,7 +274,13 @@ GXBool EMMoveTool::OnObject ( GXVoid* object )
 		case MOVE_TOOL_LOCAL_MODE:
 			SetLocalMode ();
 		break;
+
+		default:
+			//NOTHING
+		break;
 	}
+
+	UpdateModeMode ();
 
 	return GX_TRUE;
 }
@@ -280,6 +316,10 @@ GXVoid EMMoveTool::UpdateModeMode ()
 		case MOVE_TOOL_WORLD_MODE:
 			gismoRotation.Identity ();
 		break;
+
+		default:
+			//NOTHING
+		break;
 	}
 
 	GXVec3 axisLocationView;
@@ -292,9 +332,6 @@ GXVoid EMMoveTool::UpdateModeMode ()
 	GetRayPerspective ( rayView );
 
 	axisStartParameter = GetAxisParameter ( axisLocationView, axisDirectionView, rayView );
-
-	GXVec3 deltaView ( 0.0f, 0.0f, 0.0f );
-	gismoScaleCorrector = GetScaleCorrector ( axisLocationView, deltaView );
 }
 
 GXVoid EMMoveTool::OnMoveActor ()
@@ -387,7 +424,7 @@ GXFloat EMMoveTool::GetAxisParameter ( const GXVec3 &axisLocationView, const GXV
 	GXFloat zeta = ( rayView.GetX () * rayView.GetX () + rayView.GetY () * rayView.GetY () + rayView.GetZ () * rayView.GetZ () ) * c;
 	GXFloat omega = c * c;
 
-	return ( zeta * e - b * omega ) / ( c * omega - zeta * d );
+	return ( zeta * e - b * omega ) / ( c * omega - zeta * d + CROSS_LINE_EPSILON );
 }
 
 GXFloat EMMoveTool::GetScaleCorrector ( const GXVec3 &axisLocationView, const GXVec3 &deltaView )

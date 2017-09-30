@@ -263,7 +263,7 @@ GXMeshNormalHolder* gx_utilityMeshNormalHolder = 0;
 GXBool GXCALL GXUtilityExportNativeStaticMesh ( const GXWChar* fileName, INode* node, GXBool elements, GXBool isExportUVs, GXBool isExportNormals, GXBool isExportTangentBitangentPairs )
 {
 	const ObjectState& os = node->EvalWorldState ( gx_UtilityInterface->GetTime () );
-	Object *obj = os.obj;
+	Object* obj = os.obj;
 
 	if ( !obj->CanConvertToType ( Class_ID ( TRIOBJ_CLASS_ID, 0 ) ) )
 		return GX_FALSE;

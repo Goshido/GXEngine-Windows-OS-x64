@@ -1,4 +1,4 @@
-﻿//version 1.41
+﻿//version 1.42
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
@@ -22,6 +22,13 @@
 #define RADIANS_TO_DEGREES_FACTOR		57.295779f
 
 #define FLOAT_EPSILON					1.0e-4f
+#define INVERSE_RAND_MAX				3.05185e-5f
+
+#define SOLUTION_ALPHA					0
+#define SOLUTION_BETTA					1
+#define SOLUTION_GAMMA					2
+#define SOLUTION_YOTTA					3
+#define UNKNOWN_SOLUTION				0xFF
 
 
 GXVec2::GXVec2 ()
@@ -803,24 +810,12 @@ GXQuat::GXQuat ( GXFloat r, GXFloat a, GXFloat b, GXFloat c )
 
 GXQuat::GXQuat ( const GXMat3 &rotationMatrix )
 {
-	GXVec3 x;
-	rotationMatrix.GetX ( x );
-
-	if ( fabsf ( 1.0f - x.SquaredLength () ) < FLOAT_EPSILON )
-		FromFast ( rotationMatrix );
-	else
-		From ( rotationMatrix );
+	From ( rotationMatrix );
 }
 
 GXQuat::GXQuat ( const GXMat4 &rotationMatrix )
 {
-	GXVec3 x;
-	rotationMatrix.GetX ( x );
-
-	if ( fabsf ( 1.0f - x.SquaredLength () ) < FLOAT_EPSILON )
-		FromFast ( rotationMatrix );
-	else
-		From ( rotationMatrix );
+	From ( rotationMatrix );
 }
 
 GXQuat::GXQuat ( const GXQuat &other )
@@ -886,7 +881,7 @@ GXVoid GXQuat::Normalize ()
 {
 	GXFloat squaredLength = data[ 0 ] * data[ 0 ] + data[ 1 ] * data[ 1 ] + data[ 2 ] * data[ 2 ] + data[ 3 ] * data[ 3 ];
 
-	if ( squaredLength == 0.0f )
+	if ( fabsf ( squaredLength ) < FLOAT_EPSILON )
 	{
 		GXLogW ( L"GXQuat::Normalize - Error\n" );
 		return;
@@ -899,7 +894,7 @@ GXVoid GXQuat::Inverse ( const GXQuat &q )
 {
 	GXFloat squaredLength = q.data[ 0 ] * q.data[ 0 ] + q.data[ 1 ] * q.data[ 1 ] + q.data[ 2 ] * q.data[ 2 ] + q.data[ 3 ] * q.data[ 3 ];
 
-	if ( squaredLength > 0.0f )
+	if ( fabsf ( squaredLength ) > FLOAT_EPSILON )
 	{
 		GXFloat inverseSquaredLength = 1.0f / squaredLength;
 
@@ -933,98 +928,238 @@ GXVoid GXQuat::FromAxisAngle ( const GXVec3 &axis, GXFloat angle )
 	FromAxisAngle ( axis.GetX (), axis.GetY (), axis.GetZ (), angle );
 }
 
-GXVoid GXQuat::From ( const GXMat4 &rotationMatrix )
-{
-	static const GXInt next[ 3 ] = { 1, 2, 0 };
-
-	GXFloat trace = rotationMatrix.m[ 0 ][ 0 ] + rotationMatrix.m[ 1 ][ 1 ] + rotationMatrix.m[ 2 ][ 2 ];
-
-	if ( trace > 0.0f )
-	{
-		GXFloat t = trace + 1.0f;
-		GXFloat s = 1.0f / sqrtf ( t ) * 0.5f;
-
-		data[ 3 ] = s * t;
-		data[ 0 ] = ( rotationMatrix.m[ 2 ][ 1 ] - rotationMatrix.m[ 1 ][ 2 ] ) * s;
-		data[ 1 ] = ( rotationMatrix.m[ 0 ][ 2 ] - rotationMatrix.m[ 2 ][ 0 ] ) * s;
-		data[ 2 ] = ( rotationMatrix.m[ 1 ][ 0 ] - rotationMatrix.m[ 0 ][ 1 ] ) * s;
-
-		return;
-	}
-
-	GXInt i = 0;
-
-	if ( rotationMatrix.m[ 1 ][ 1 ] > rotationMatrix.m[ 0 ][ 0 ] )
-		i = 1;
-
-	if ( rotationMatrix.m[ 2 ][ 2 ] > rotationMatrix.m[ i ][ i ] )
-		i = 2;
-
-	GXInt j = next[ i ];
-	GXInt k = next[ j ];
-
-	GXFloat t = ( rotationMatrix.m[ i ][ i ] - ( rotationMatrix.m[ j ][ j ] + rotationMatrix.m[ k ][ k ] ) ) + 1.0f;
-	GXFloat s = 1.0f / sqrtf ( t ) * 0.5f;
-
-	data[ i ] = s * t;
-	data[ 3 ] = ( rotationMatrix.m[ k ][ j ] - rotationMatrix.m[ j ][ k ] ) * s;
-	data[ j ] = ( rotationMatrix.m[ j ][ i ] + rotationMatrix.m[ i ][ j ] ) * s;
-	data[ k ] = ( rotationMatrix.m[ k ][ i ] + rotationMatrix.m[ i ][ k ] ) * s;
-}
-
 GXVoid GXQuat::From ( const GXMat3 &rotationMatrix )
 {
-	static const GXInt next[ 3 ] = { 1, 2, 0 };
+	GXMat3 pureRotationMatrix;
+	pureRotationMatrix.ClearRotation ( rotationMatrix );
+	FromFast ( pureRotationMatrix );
+}
 
-	GXFloat trace = rotationMatrix.m[ 0 ][ 0 ] + rotationMatrix.m[ 1 ][ 1 ] + rotationMatrix.m[ 2 ][ 2 ];
+GXVoid GXQuat::From ( const GXMat4 &rotationMatrix )
+{
+	GXMat4 pureRotationMatrix;
+	pureRotationMatrix.ClearRotation ( rotationMatrix );
+	FromFast ( pureRotationMatrix );
+}
 
-	if ( trace > 0.0f )
+GXVoid GXQuat::FromFast ( const GXMat3 &pureRotationMatrix )
+{
+	//In ideal mathematics world all solutions are right.
+	//But in practice more precise solution is the biggest "solutionFactorXXX" because of square root operation.
+
+	GXFloat solutionFactorAlpha = pureRotationMatrix.m[ 0 ][ 0 ] + pureRotationMatrix.m[ 1 ][ 1 ] + pureRotationMatrix.m[ 2 ][ 2 ] + 1.0f;
+	GXFloat solutionFactorBetta = pureRotationMatrix.m[ 0 ][ 0 ] - pureRotationMatrix.m[ 1 ][ 1 ] - pureRotationMatrix.m[ 2 ][ 2 ] + 1.0f;
+	GXFloat solutionFactorGamma = -pureRotationMatrix.m[ 0 ][ 0 ] + pureRotationMatrix.m[ 1 ][ 1 ] - pureRotationMatrix.m[ 2 ][ 2 ] + 1.0f;
+	GXFloat solutionFactorYotta = -pureRotationMatrix.m[ 0 ][ 0 ] - pureRotationMatrix.m[ 1 ][ 1 ] + pureRotationMatrix.m[ 2 ][ 2 ] + 1.0f;
+
+	GXUByte solution = UNKNOWN_SOLUTION;
+
+	if ( solutionFactorAlpha > solutionFactorBetta )
 	{
-		GXFloat t = trace + 1.0f;
-		GXFloat s = 1.0f / sqrtf ( t ) * 0.5f;
-
-		data[ 3 ] = s * t;
-		data[ 0 ] = ( rotationMatrix.m[ 2 ][ 1 ] - rotationMatrix.m[ 1 ][ 2 ] ) * s;
-		data[ 1 ] = ( rotationMatrix.m[ 0 ][ 2 ] - rotationMatrix.m[ 2 ][ 0 ] ) * s;
-		data[ 2 ] = ( rotationMatrix.m[ 1 ][ 0 ] - rotationMatrix.m[ 0 ][ 1 ] ) * s;
-
-		return;
+		if ( solutionFactorAlpha > solutionFactorGamma )
+		{
+			if ( solutionFactorAlpha > solutionFactorYotta )
+			{
+				solution = SOLUTION_ALPHA;
+			}
+			else
+			{
+				solution = SOLUTION_YOTTA;
+			}
+		}
+		else if ( solutionFactorGamma > solutionFactorYotta )
+		{
+			solution = SOLUTION_GAMMA;
+		}
+		else
+		{
+			solution = SOLUTION_YOTTA;
+		}
+	}
+	else if ( solutionFactorBetta > solutionFactorGamma )
+	{
+		if ( solutionFactorBetta > solutionFactorYotta )
+		{
+			solution = SOLUTION_BETTA;
+		}
+		else
+		{
+			solution = SOLUTION_YOTTA;
+		}
+	}
+	else if ( solutionFactorGamma > solutionFactorYotta )
+	{
+		solution = SOLUTION_GAMMA;
+	}
+	else
+	{
+		solution = SOLUTION_YOTTA;
 	}
 
-	GXInt i = 0;
-	if ( rotationMatrix.m[ 1 ][ 1 ] > rotationMatrix.m[ 0 ][ 0 ] )
-		i = 1;
+	switch ( solution )
+	{
+		case SOLUTION_ALPHA:
+		{
+			GXFloat phi = 0.5f * sqrtf ( solutionFactorAlpha );
+			GXFloat omega = 1.0f / ( 4.0f * phi );
 
-	if ( rotationMatrix.m[ 2 ][ 2 ] > rotationMatrix.m[ i ][ i ] )
-		i = 2;
+			data[ 0 ] = phi;
+			data[ 1 ] = omega * ( pureRotationMatrix.m[ 1 ][ 2 ] - pureRotationMatrix.m[ 2 ][ 1 ] );
+			data[ 2 ] = omega * ( pureRotationMatrix.m[ 2 ][ 0 ] - pureRotationMatrix.m[ 0 ][ 2 ] );
+			data[ 3 ] = omega * ( pureRotationMatrix.m[ 0 ][ 1 ] - pureRotationMatrix.m[ 1 ][ 0 ] );
+		}
+		break;
 
-	GXInt j = next[ i ];
-	GXInt k = next[ j ];
+		case SOLUTION_BETTA:
+		{
+			GXFloat phi = 0.5f * sqrtf ( solutionFactorBetta );
+			GXFloat omega = 1.0f / ( 4.0f * phi );
 
-	GXFloat t = ( rotationMatrix.m[ i ][ i ] - ( rotationMatrix.m[ j ][ j ] + rotationMatrix.m[ k ][ k ] ) ) + 1.0f;
-	GXFloat s = 1.0f / sqrtf ( t ) * 0.5f;
+			data[ 0 ] = omega * ( pureRotationMatrix.m[ 1 ][ 2 ] - pureRotationMatrix.m[ 2 ][ 1 ] );
+			data[ 1 ] = phi;
+			data[ 2 ] = omega * ( pureRotationMatrix.m[ 0 ][ 1 ] + pureRotationMatrix.m[ 1 ][ 0 ] );
+			data[ 3 ] = omega * ( pureRotationMatrix.m[ 0 ][ 2 ] + pureRotationMatrix.m[ 2 ][ 0 ] );
+		}
+		break;
 
-	data[ i ] = s * t;
-	data[ 3 ] = ( rotationMatrix.m[ k ][ j ] - rotationMatrix.m[ j ][ k ] ) * s;
-	data[ j ] = ( rotationMatrix.m[ j ][ i ] + rotationMatrix.m[ i ][ j ] ) * s;
-	data[ k ] = ( rotationMatrix.m[ k ][ i ] + rotationMatrix.m[ i ][ k ] ) * s;
+		case SOLUTION_GAMMA:
+		{
+			GXFloat phi = 0.5f * sqrtf ( solutionFactorGamma );
+			GXFloat omega = 1.0f / ( 4.0f * phi );
+
+			data[ 0 ] = omega * ( pureRotationMatrix.m[ 2 ][ 0 ] - pureRotationMatrix.m[ 0 ][ 2 ] );
+			data[ 1 ] = omega * ( pureRotationMatrix.m[ 0 ][ 1 ] + pureRotationMatrix.m[ 1 ][ 0 ] );
+			data[ 2 ] = phi;
+			data[ 3 ] = omega * ( pureRotationMatrix.m[ 1 ][ 2 ] + pureRotationMatrix.m[ 2 ][ 1 ] );
+		}
+		break;
+
+		case SOLUTION_YOTTA:
+		{
+			GXFloat phi = 0.5f * sqrtf ( solutionFactorYotta );
+			GXFloat omega = 1.0f / ( 4.0f * phi );
+
+			data[ 0 ] = omega * ( pureRotationMatrix.m[ 0 ][ 1 ] - pureRotationMatrix.m[ 1 ][ 0 ] );
+			data[ 1 ] = omega * ( pureRotationMatrix.m[ 0 ][ 2 ] + pureRotationMatrix.m[ 2 ][ 0 ] );
+			data[ 2 ] = omega * ( pureRotationMatrix.m[ 1 ][ 2 ] + pureRotationMatrix.m[ 2 ][ 1 ] );
+			data[ 3 ] = phi;
+		}
+		break;
+
+		default:
+			//NOTHING
+		break;
+	}
 }
 
-GXVoid GXQuat::FromFast ( const GXMat4 &rotationMatrix )
+GXVoid GXQuat::FromFast ( const GXMat4 &pureRotationMatrix )
 {
-	From ( rotationMatrix );
-	//TODO
-}
+	//In ideal mathematics world all solutions are right.
+	//But in practice more precise solution is the biggest "solutionFactorXXX" because of square root operation.
 
-GXVoid GXQuat::FromFast ( const GXMat3 &rotationMatrix )
-{
-	From ( rotationMatrix );
-	//TODO
-}
+	GXFloat solutionFactorAlpha = pureRotationMatrix.m[ 0 ][ 0 ] + pureRotationMatrix.m[ 1 ][ 1 ] + pureRotationMatrix.m[ 2 ][ 2 ] + 1.0f;
+	GXFloat solutionFactorBetta = pureRotationMatrix.m[ 0 ][ 0 ] - pureRotationMatrix.m[ 1 ][ 1 ] - pureRotationMatrix.m[ 2 ][ 2 ] + 1.0f;
+	GXFloat solutionFactorGamma = -pureRotationMatrix.m[ 0 ][ 0 ] + pureRotationMatrix.m[ 1 ][ 1 ] - pureRotationMatrix.m[ 2 ][ 2 ] + 1.0f;
+	GXFloat solutionFactorYotta = -pureRotationMatrix.m[ 0 ][ 0 ] - pureRotationMatrix.m[ 1 ][ 1 ] + pureRotationMatrix.m[ 2 ][ 2 ] + 1.0f;
 
-GXVoid GXQuat::Rehand ()
-{
-	data[ 0 ] = -data[ 0 ];
+	GXUByte solution = UNKNOWN_SOLUTION;
+
+	if ( solutionFactorAlpha > solutionFactorBetta )
+	{
+		if ( solutionFactorAlpha > solutionFactorGamma )
+		{
+			if ( solutionFactorAlpha > solutionFactorYotta )
+			{
+				solution = SOLUTION_ALPHA;
+			}
+			else
+			{
+				solution = SOLUTION_YOTTA;
+			}
+		}
+		else if ( solutionFactorGamma > solutionFactorYotta )
+		{
+			solution = SOLUTION_GAMMA;
+		}
+		else
+		{
+			solution = SOLUTION_YOTTA;
+		}
+	}
+	else if ( solutionFactorBetta > solutionFactorGamma )
+	{
+		if ( solutionFactorBetta > solutionFactorYotta )
+		{
+			solution = SOLUTION_BETTA;
+		}
+		else
+		{
+			solution = SOLUTION_YOTTA;
+		}
+	}
+	else if ( solutionFactorGamma > solutionFactorYotta )
+	{
+		solution = SOLUTION_GAMMA;
+	}
+	else
+	{
+		solution = SOLUTION_YOTTA;
+	}
+
+	switch ( solution )
+	{
+		case SOLUTION_ALPHA:
+		{
+			GXFloat phi = 0.5f * sqrtf ( solutionFactorAlpha );
+			GXFloat omega = 1.0f / ( 4.0f * phi );
+
+			data[ 0 ] = phi;
+			data[ 1 ] = omega * ( pureRotationMatrix.m[ 1 ][ 2 ] - pureRotationMatrix.m[ 2 ][ 1 ] );
+			data[ 2 ] = omega * ( pureRotationMatrix.m[ 2 ][ 0 ] - pureRotationMatrix.m[ 0 ][ 2 ] );
+			data[ 3 ] = omega * ( pureRotationMatrix.m[ 0 ][ 1 ] - pureRotationMatrix.m[ 1 ][ 0 ] );
+		}
+		break;
+
+		case SOLUTION_BETTA:
+		{
+			GXFloat phi = 0.5f * sqrtf ( solutionFactorBetta );
+			GXFloat omega = 1.0f / ( 4.0f * phi );
+
+			data[ 0 ] = omega * ( pureRotationMatrix.m[ 1 ][ 2 ] - pureRotationMatrix.m[ 2 ][ 1 ] );
+			data[ 1 ] = phi;
+			data[ 2 ] = omega * ( pureRotationMatrix.m[ 0 ][ 1 ] + pureRotationMatrix.m[ 1 ][ 0 ] );
+			data[ 3 ] = omega * ( pureRotationMatrix.m[ 0 ][ 2 ] + pureRotationMatrix.m[ 2 ][ 0 ] );
+		}
+		break;
+
+		case SOLUTION_GAMMA:
+		{
+			GXFloat phi = 0.5f * sqrtf ( solutionFactorGamma );
+			GXFloat omega = 1.0f / ( 4.0f * phi );
+
+			data[ 0 ] = omega * ( pureRotationMatrix.m[ 2 ][ 0 ] - pureRotationMatrix.m[ 0 ][ 2 ] );
+			data[ 1 ] = omega * ( pureRotationMatrix.m[ 0 ][ 1 ] + pureRotationMatrix.m[ 1 ][ 0 ] );
+			data[ 2 ] = phi;
+			data[ 3 ] = omega * ( pureRotationMatrix.m[ 1 ][ 2 ] + pureRotationMatrix.m[ 2 ][ 1 ] );
+		}
+		break;
+
+		case SOLUTION_YOTTA:
+		{
+			GXFloat phi = 0.5f * sqrtf ( solutionFactorYotta );
+			GXFloat omega = 1.0f / ( 4.0f * phi );
+
+			data[ 0 ] = omega * ( pureRotationMatrix.m[ 0 ][ 1 ] - pureRotationMatrix.m[ 1 ][ 0 ] );
+			data[ 1 ] = omega * ( pureRotationMatrix.m[ 0 ][ 2 ] + pureRotationMatrix.m[ 2 ][ 0 ] );
+			data[ 2 ] = omega * ( pureRotationMatrix.m[ 1 ][ 2 ] + pureRotationMatrix.m[ 2 ][ 1 ] );
+			data[ 3 ] = phi;
+		}
+		break;
+
+		default:
+			//NOTHING
+		break;
+	}
 }
 
 GXVoid GXQuat::Multiply ( const GXQuat &a, const GXQuat &b )
@@ -1095,7 +1230,7 @@ GXVoid GXQuat::SphericalLinearInterpolation ( const GXQuat &start, const GXQuat 
 		temp = finish;
 	}
 
-	if ( ( 1.0f - cosom ) > 1e-6f )
+	if ( ( 1.0f - cosom ) > FLOAT_EPSILON )
 	{
 		omega = acosf ( cosom );
 		sinom = 1.0f / sinf ( omega );
@@ -1129,7 +1264,7 @@ GXVoid GXQuat::GetAxisAngle ( GXVec3 &axis, GXFloat &angle ) const
 
 	GXFloat s = sqrtf ( 1.0f - q.data[ 0 ] * q.data[ 0 ] );
 
-	if ( s < 0.001 ) return;
+	if ( s < FLOAT_EPSILON ) return;
 
 	axis.Multiply ( axis, 1.0f / s );
 }
@@ -1232,6 +1367,15 @@ GXVoid GXMat3::From ( const GXQuat &quaternion )
 	m[ 2 ][ 2 ] = inverseSquaredLength * ( rr - aa - bb + cc );
 }
 
+GXVoid GXMat3::From ( const GXMat4 &matrix )
+{
+	GXUPointer lineSize = 3 * sizeof ( GXFloat );
+
+	memcpy ( data, matrix.data, lineSize );
+	memcpy ( data + 3, matrix.data + 4, lineSize );
+	memcpy ( data + 6, matrix.data + 8, lineSize );
+}
+
 GXVoid GXMat3::FromFast ( const GXQuat &quaternion )
 {
 	GXFloat rr = quaternion.data[ 0 ] * quaternion.data[ 0 ];
@@ -1259,15 +1403,6 @@ GXVoid GXMat3::FromFast ( const GXQuat &quaternion )
 	m[ 2 ][ 0 ] = rb2 + ac2;
 	m[ 2 ][ 1 ] = bc2 - ra2;
 	m[ 2 ][ 2 ] = rr - aa - bb + cc;
-}
-
-GXVoid GXMat3::From ( const GXMat4 &matrix )
-{
-	GXUPointer lineSize = 3 * sizeof ( GXFloat );
-
-	memcpy ( data, matrix.data, lineSize );
-	memcpy ( data + 3, matrix.data + 4, lineSize );
-	memcpy ( data + 6, matrix.data + 8, lineSize );
 }
 
 GXVoid GXMat3::SetX ( const GXVec3 &x )
@@ -1313,40 +1448,90 @@ GXVoid GXMat3::Zeros ()
 	memset ( data, 0, 9 * sizeof ( GXFloat ) );
 }
 
-GXVoid GXMat3::Inverse ( const GXMat3 &src )
+GXVoid GXMat3::Inverse ( const GXMat3 &sourceMatrix )
 {
-	GXFloat determinant = src.m[ 0 ][ 0 ] * ( src.m[ 1 ][ 1 ] * src.m[ 2 ][ 2 ] - src.m[ 2 ][ 1 ] * src.m[ 1 ][ 2 ] );
-	determinant -= src.m[ 0 ][ 1 ] * ( src.m[ 1 ][ 0 ] * src.m[ 2 ][ 2 ] - src.m[ 2 ][ 0 ] * src.m[ 1 ][ 2 ] );
-	determinant += src.m[ 0 ][ 2 ] * ( src.m[ 1 ][ 0 ] * src.m[ 2 ][ 1 ] - src.m[ 2 ][ 0 ] * src.m[ 1 ][ 1 ] );
+	GXFloat determinant = sourceMatrix.m[ 0 ][ 0 ] * ( sourceMatrix.m[ 1 ][ 1 ] * sourceMatrix.m[ 2 ][ 2 ] - sourceMatrix.m[ 2 ][ 1 ] * sourceMatrix.m[ 1 ][ 2 ] );
+	determinant -= sourceMatrix.m[ 0 ][ 1 ] * ( sourceMatrix.m[ 1 ][ 0 ] * sourceMatrix.m[ 2 ][ 2 ] - sourceMatrix.m[ 2 ][ 0 ] * sourceMatrix.m[ 1 ][ 2 ] );
+	determinant += sourceMatrix.m[ 0 ][ 2 ] * ( sourceMatrix.m[ 1 ][ 0 ] * sourceMatrix.m[ 2 ][ 1 ] - sourceMatrix.m[ 2 ][ 0 ] * sourceMatrix.m[ 1 ][ 1 ] );
 
 	GXFloat invDeterminant = 1.0f / determinant;
 
-	m[ 0 ][ 0 ] = invDeterminant * ( src.m[ 1 ][ 1 ] * src.m[ 2 ][ 2 ] - src.m[ 2 ][ 1 ] * src.m[ 1 ][ 2 ] );
-	m[ 0 ][ 1 ] = invDeterminant * ( src.m[ 0 ][ 2 ] * src.m[ 2 ][ 1 ] - src.m[ 2 ][ 2 ] * src.m[ 0 ][ 1 ] );
-	m[ 0 ][ 2 ] = invDeterminant * ( src.m[ 0 ][ 1 ] * src.m[ 1 ][ 2 ] - src.m[ 1 ][ 1 ] * src.m[ 0 ][ 2 ] );
+	m[ 0 ][ 0 ] = invDeterminant * ( sourceMatrix.m[ 1 ][ 1 ] * sourceMatrix.m[ 2 ][ 2 ] - sourceMatrix.m[ 2 ][ 1 ] * sourceMatrix.m[ 1 ][ 2 ] );
+	m[ 0 ][ 1 ] = invDeterminant * ( sourceMatrix.m[ 0 ][ 2 ] * sourceMatrix.m[ 2 ][ 1 ] - sourceMatrix.m[ 2 ][ 2 ] * sourceMatrix.m[ 0 ][ 1 ] );
+	m[ 0 ][ 2 ] = invDeterminant * ( sourceMatrix.m[ 0 ][ 1 ] * sourceMatrix.m[ 1 ][ 2 ] - sourceMatrix.m[ 1 ][ 1 ] * sourceMatrix.m[ 0 ][ 2 ] );
 
-	m[ 1 ][ 0 ] = invDeterminant * ( src.m[ 1 ][ 2 ] * src.m[ 2 ][ 0 ] - src.m[ 2 ][ 2 ] * src.m[ 1 ][ 0 ] );
-	m[ 1 ][ 1 ] = invDeterminant * ( src.m[ 0 ][ 0 ] * src.m[ 2 ][ 2 ] - src.m[ 2 ][ 0 ] * src.m[ 0 ][ 2 ] );
-	m[ 1 ][ 2 ] = invDeterminant * ( src.m[ 0 ][ 2 ] * src.m[ 1 ][ 0 ] - src.m[ 1 ][ 2 ] * src.m[ 0 ][ 0 ] );
+	m[ 1 ][ 0 ] = invDeterminant * ( sourceMatrix.m[ 1 ][ 2 ] * sourceMatrix.m[ 2 ][ 0 ] - sourceMatrix.m[ 2 ][ 2 ] * sourceMatrix.m[ 1 ][ 0 ] );
+	m[ 1 ][ 1 ] = invDeterminant * ( sourceMatrix.m[ 0 ][ 0 ] * sourceMatrix.m[ 2 ][ 2 ] - sourceMatrix.m[ 2 ][ 0 ] * sourceMatrix.m[ 0 ][ 2 ] );
+	m[ 1 ][ 2 ] = invDeterminant * ( sourceMatrix.m[ 0 ][ 2 ] * sourceMatrix.m[ 1 ][ 0 ] - sourceMatrix.m[ 1 ][ 2 ] * sourceMatrix.m[ 0 ][ 0 ] );
 
-	m[ 2 ][ 0 ] = invDeterminant * ( src.m[ 1 ][ 0 ] * src.m[ 2 ][ 1 ] - src.m[ 2 ][ 0 ] * src.m[ 1 ][ 1 ] );
-	m[ 2 ][ 1 ] = invDeterminant * ( src.m[ 0 ][ 1 ] * src.m[ 2 ][ 0 ] - src.m[ 2 ][ 1 ] * src.m[ 0 ][ 0 ] );
-	m[ 2 ][ 2 ] = invDeterminant * ( src.m[ 0 ][ 0 ] * src.m[ 1 ][ 1 ] - src.m[ 1 ][ 0 ] * src.m[ 0 ][ 1 ] );
+	m[ 2 ][ 0 ] = invDeterminant * ( sourceMatrix.m[ 1 ][ 0 ] * sourceMatrix.m[ 2 ][ 1 ] - sourceMatrix.m[ 2 ][ 0 ] * sourceMatrix.m[ 1 ][ 1 ] );
+	m[ 2 ][ 1 ] = invDeterminant * ( sourceMatrix.m[ 0 ][ 1 ] * sourceMatrix.m[ 2 ][ 0 ] - sourceMatrix.m[ 2 ][ 1 ] * sourceMatrix.m[ 0 ][ 0 ] );
+	m[ 2 ][ 2 ] = invDeterminant * ( sourceMatrix.m[ 0 ][ 0 ] * sourceMatrix.m[ 1 ][ 1 ] - sourceMatrix.m[ 1 ][ 0 ] * sourceMatrix.m[ 0 ][ 1 ] );
 }
 
-GXVoid GXMat3::Transponse ( const GXMat3 &src )
+GXVoid GXMat3::Transponse ( const GXMat3 &sourceMatrix )
 {
-	m[ 0 ][ 0 ] = src.m[ 0 ][ 0 ];
-	m[ 0 ][ 1 ] = src.m[ 1 ][ 0 ];
-	m[ 0 ][ 2 ] = src.m[ 2 ][ 0 ];
+	m[ 0 ][ 0 ] = sourceMatrix.m[ 0 ][ 0 ];
+	m[ 0 ][ 1 ] = sourceMatrix.m[ 1 ][ 0 ];
+	m[ 0 ][ 2 ] = sourceMatrix.m[ 2 ][ 0 ];
 
-	m[ 1 ][ 0 ] = src.m[ 0 ][ 1 ];
-	m[ 1 ][ 1 ] = src.m[ 1 ][ 1 ];
-	m[ 1 ][ 2 ] = src.m[ 2 ][ 1 ];
+	m[ 1 ][ 0 ] = sourceMatrix.m[ 0 ][ 1 ];
+	m[ 1 ][ 1 ] = sourceMatrix.m[ 1 ][ 1 ];
+	m[ 1 ][ 2 ] = sourceMatrix.m[ 2 ][ 1 ];
 
-	m[ 2 ][ 0 ] = src.m[ 0 ][ 2 ];
-	m[ 2 ][ 1 ] = src.m[ 1 ][ 2 ];
-	m[ 2 ][ 2 ] = src.m[ 2 ][ 2 ];
+	m[ 2 ][ 0 ] = sourceMatrix.m[ 0 ][ 2 ];
+	m[ 2 ][ 1 ] = sourceMatrix.m[ 1 ][ 2 ];
+	m[ 2 ][ 2 ] = sourceMatrix.m[ 2 ][ 2 ];
+}
+
+GXVoid GXMat3::ClearRotation ( const GXMat3 &sourceMatrix )
+{
+	GXVec3 outX;
+	GXVec3 outY;
+	GXVec3 outZ;
+
+	GXVec3 modelX;
+	GXVec3 modelY;
+	GXVec3 modelZ;
+
+	sourceMatrix.GetX ( modelX );
+	sourceMatrix.GetY ( modelY );
+	sourceMatrix.GetZ ( modelZ );
+
+	GXVec3 tmp;
+	tmp.Multiply ( modelX, 1.0f / modelX.Length () );
+	SetX ( tmp );
+
+	tmp.Multiply ( modelY, 1.0f / modelY.Length () );
+	SetY ( tmp );
+
+	tmp.Multiply ( modelZ, 1.0f / modelZ.Length () );
+	SetZ ( tmp );
+}
+
+GXVoid GXMat3::ClearRotation ( const GXMat4 &sourceMatrix )
+{
+	GXVec3 outX;
+	GXVec3 outY;
+	GXVec3 outZ;
+
+	GXVec3 modelX;
+	GXVec3 modelY;
+	GXVec3 modelZ;
+
+	sourceMatrix.GetX ( modelX );
+	sourceMatrix.GetY ( modelY );
+	sourceMatrix.GetZ ( modelZ );
+
+	GXVec3 tmp;
+	tmp.Multiply ( modelX, 1.0f / modelX.Length () );
+	SetX ( tmp );
+
+	tmp.Multiply ( modelY, 1.0f / modelY.Length () );
+	SetY ( tmp );
+
+	tmp.Multiply ( modelZ, 1.0f / modelZ.Length () );
+	SetZ ( tmp );
 }
 
 GXVoid GXMat3::SkewSymmetric ( const GXVec3 &base )
@@ -1522,15 +1707,6 @@ GXVoid GXMat4::From ( const GXQuat &quaternion, const GXVec3 &origin )
 	m[ 3 ][ 3 ] = 1.0f;
 }
 
-GXVoid GXMat4::FromFast ( const GXQuat &quaternion, const GXVec3 &origin )
-{
-	SetRotationFast ( quaternion );
-	SetOrigin ( origin );
-
-	m[ 0 ][ 3 ] = m[ 1 ][ 3 ] = m[ 2 ][ 3 ] = 0.0f;
-	m[ 3 ][ 3 ] = 1.0f;
-}
-
 GXVoid GXMat4::From ( const GXMat3 &rotation, const GXVec3 &origin )
 {
 	GXVec3 tmp;
@@ -1544,6 +1720,15 @@ GXVoid GXMat4::From ( const GXMat3 &rotation, const GXVec3 &origin )
 	SetZ ( tmp );
 
 	SetW ( origin );
+
+	m[ 0 ][ 3 ] = m[ 1 ][ 3 ] = m[ 2 ][ 3 ] = 0.0f;
+	m[ 3 ][ 3 ] = 1.0f;
+}
+
+GXVoid GXMat4::FromFast ( const GXQuat &quaternion, const GXVec3 &origin )
+{
+	SetRotationFast ( quaternion );
+	SetOrigin ( origin );
 
 	m[ 0 ][ 3 ] = m[ 1 ][ 3 ] = m[ 2 ][ 3 ] = 0.0f;
 	m[ 3 ][ 3 ] = 1.0f;
@@ -1748,7 +1933,7 @@ GXVoid GXMat4::RotationXYZ ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat r
 	Multiply ( temp, z );
 }
 
-GXVoid GXMat4::ClearRotation ( const GXMat4 &matrix )
+GXVoid GXMat4::ClearRotation ( const GXMat3 &sourceMatrix )
 {
 	GXVec3 outX;
 	GXVec3 outY;
@@ -1758,9 +1943,39 @@ GXVoid GXMat4::ClearRotation ( const GXMat4 &matrix )
 	GXVec3 modelY;
 	GXVec3 modelZ;
 
-	matrix.GetX ( modelX );
-	matrix.GetY ( modelY );
-	matrix.GetZ ( modelZ );
+	sourceMatrix.GetX ( modelX );
+	sourceMatrix.GetY ( modelY );
+	sourceMatrix.GetZ ( modelZ );
+
+	GXVec3 tmp;
+	tmp.Multiply ( modelX, 1.0f / modelX.Length () );
+	SetX ( tmp );
+
+	tmp.Multiply ( modelY, 1.0f / modelY.Length () );
+	SetY ( tmp );
+
+	tmp.Multiply ( modelZ, 1.0f / modelZ.Length () );
+	SetZ ( tmp );
+
+	m[ 0 ][ 3 ] = m[ 1 ][ 3 ] = m[ 2 ][ 3 ] = 0.0f;
+	m[ 3 ][ 0 ] = m[ 3 ][ 1 ] = m[ 3 ][ 2 ] = 0.0f;
+
+	m[ 3 ][ 3 ] = 1.0f;
+}
+
+GXVoid GXMat4::ClearRotation ( const GXMat4 &sourceMatrix )
+{
+	GXVec3 outX;
+	GXVec3 outY;
+	GXVec3 outZ;
+
+	GXVec3 modelX;
+	GXVec3 modelY;
+	GXVec3 modelZ;
+
+	sourceMatrix.GetX ( modelX );
+	sourceMatrix.GetY ( modelY );
+	sourceMatrix.GetZ ( modelZ );
 
 	GXVec3 tmp;
 	tmp.Multiply ( modelX, 1.0f / modelX.Length () );
@@ -1792,54 +2007,54 @@ GXVoid GXMat4::Scale ( GXFloat x, GXFloat y, GXFloat z )
 	m[ 3 ][ 0 ] = m[ 3 ][ 1 ] = m[ 3 ][ 2 ] = m[ 0 ][ 3 ] = m[ 1 ][ 3 ] = m[ 2 ][ 3 ] = 0.0f;
 }
 
-GXVoid GXMat4::Inverse ( const GXMat4 &src )
+GXVoid GXMat4::Inverse ( const GXMat4 &sourceMatrix )
 {
 	// 2x2 sub-determinants required to calculate 4x4 determinant
-	GXFloat det2_01_01 = src.m[ 0 ][ 0 ] * src.m[ 1 ][ 1 ] - src.m[ 1 ][ 0 ] * src.m[ 0 ][ 1 ];
-	GXFloat det2_01_02 = src.m[ 0 ][ 0 ] * src.m[ 2 ][ 1 ] - src.m[ 2 ][ 0 ] * src.m[ 0 ][ 1 ];
-	GXFloat det2_01_03 = src.m[ 0 ][ 0 ] * src.m[ 3 ][ 1 ] - src.m[ 3 ][ 0 ] * src.m[ 0 ][ 1 ];
-	GXFloat det2_01_12 = src.m[ 1 ][ 0 ] * src.m[ 2 ][ 1 ] - src.m[ 2 ][ 0 ] * src.m[ 1 ][ 1 ];
-	GXFloat det2_01_13 = src.m[ 1 ][ 0 ] * src.m[ 3 ][ 1 ] - src.m[ 3 ][ 0 ] * src.m[ 1 ][ 1 ];
-	GXFloat det2_01_23 = src.m[ 2 ][ 0 ] * src.m[ 3 ][ 1 ] - src.m[ 3 ][ 0 ] * src.m[ 2 ][ 1 ];
+	GXFloat det2_01_01 = sourceMatrix.m[ 0 ][ 0 ] * sourceMatrix.m[ 1 ][ 1 ] - sourceMatrix.m[ 1 ][ 0 ] * sourceMatrix.m[ 0 ][ 1 ];
+	GXFloat det2_01_02 = sourceMatrix.m[ 0 ][ 0 ] * sourceMatrix.m[ 2 ][ 1 ] - sourceMatrix.m[ 2 ][ 0 ] * sourceMatrix.m[ 0 ][ 1 ];
+	GXFloat det2_01_03 = sourceMatrix.m[ 0 ][ 0 ] * sourceMatrix.m[ 3 ][ 1 ] - sourceMatrix.m[ 3 ][ 0 ] * sourceMatrix.m[ 0 ][ 1 ];
+	GXFloat det2_01_12 = sourceMatrix.m[ 1 ][ 0 ] * sourceMatrix.m[ 2 ][ 1 ] - sourceMatrix.m[ 2 ][ 0 ] * sourceMatrix.m[ 1 ][ 1 ];
+	GXFloat det2_01_13 = sourceMatrix.m[ 1 ][ 0 ] * sourceMatrix.m[ 3 ][ 1 ] - sourceMatrix.m[ 3 ][ 0 ] * sourceMatrix.m[ 1 ][ 1 ];
+	GXFloat det2_01_23 = sourceMatrix.m[ 2 ][ 0 ] * sourceMatrix.m[ 3 ][ 1 ] - sourceMatrix.m[ 3 ][ 0 ] * sourceMatrix.m[ 2 ][ 1 ];
 
 	// 3x3 sub-determinants required to calculate 4x4 determinant
-	GXFloat det3_201_012 = src.m[ 0 ][ 2 ] * det2_01_12 - src.m[ 1 ][ 2 ] * det2_01_02 + src.m[ 2 ][ 2 ] * det2_01_01;
-	GXFloat det3_201_013 = src.m[ 0 ][ 2 ] * det2_01_13 - src.m[ 1 ][ 2 ] * det2_01_03 + src.m[ 3 ][ 2 ] * det2_01_01;
-	GXFloat det3_201_023 = src.m[ 0 ][ 2 ] * det2_01_23 - src.m[ 2 ][ 2 ] * det2_01_03 + src.m[ 3 ][ 2 ] * det2_01_02;
-	GXFloat det3_201_123 = src.m[ 1 ][ 2 ] * det2_01_23 - src.m[ 2 ][ 2 ] * det2_01_13 + src.m[ 3 ][ 2 ] * det2_01_12;
+	GXFloat det3_201_012 = sourceMatrix.m[ 0 ][ 2 ] * det2_01_12 - sourceMatrix.m[ 1 ][ 2 ] * det2_01_02 + sourceMatrix.m[ 2 ][ 2 ] * det2_01_01;
+	GXFloat det3_201_013 = sourceMatrix.m[ 0 ][ 2 ] * det2_01_13 - sourceMatrix.m[ 1 ][ 2 ] * det2_01_03 + sourceMatrix.m[ 3 ][ 2 ] * det2_01_01;
+	GXFloat det3_201_023 = sourceMatrix.m[ 0 ][ 2 ] * det2_01_23 - sourceMatrix.m[ 2 ][ 2 ] * det2_01_03 + sourceMatrix.m[ 3 ][ 2 ] * det2_01_02;
+	GXFloat det3_201_123 = sourceMatrix.m[ 1 ][ 2 ] * det2_01_23 - sourceMatrix.m[ 2 ][ 2 ] * det2_01_13 + sourceMatrix.m[ 3 ][ 2 ] * det2_01_12;
 
-	GXFloat inverseDeterminant = 1.0f / ( -det3_201_123 * src.m[ 0 ][ 3 ] + det3_201_023 * src.m[ 1 ][ 3 ] - det3_201_013 * src.m[ 2 ][ 3 ] + det3_201_012 * src.m[ 3 ][ 3 ] );
+	GXFloat inverseDeterminant = 1.0f / ( -det3_201_123 * sourceMatrix.m[ 0 ][ 3 ] + det3_201_023 * sourceMatrix.m[ 1 ][ 3 ] - det3_201_013 * sourceMatrix.m[ 2 ][ 3 ] + det3_201_012 * sourceMatrix.m[ 3 ][ 3 ] );
 
 	// remaining 2x2 sub-determinants
-	GXFloat det2_03_01 = src.m[ 0 ][ 0 ] * src.m[ 1 ][ 3 ] - src.m[ 1 ][ 0 ] * src.m[ 0 ][ 3 ];
-	GXFloat det2_03_02 = src.m[ 0 ][ 0 ] * src.m[ 2 ][ 3 ] - src.m[ 2 ][ 0 ] * src.m[ 0 ][ 3 ];
-	GXFloat det2_03_03 = src.m[ 0 ][ 0 ] * src.m[ 3 ][ 3 ] - src.m[ 3 ][ 0 ] * src.m[ 0 ][ 3 ];
-	GXFloat det2_03_12 = src.m[ 1 ][ 0 ] * src.m[ 2 ][ 3 ] - src.m[ 2 ][ 0 ] * src.m[ 1 ][ 3 ];
-	GXFloat det2_03_13 = src.m[ 1 ][ 0 ] * src.m[ 3 ][ 3 ] - src.m[ 3 ][ 0 ] * src.m[ 1 ][ 3 ];
-	GXFloat det2_03_23 = src.m[ 2 ][ 0 ] * src.m[ 3 ][ 3 ] - src.m[ 3 ][ 0 ] * src.m[ 2 ][ 3 ];
+	GXFloat det2_03_01 = sourceMatrix.m[ 0 ][ 0 ] * sourceMatrix.m[ 1 ][ 3 ] - sourceMatrix.m[ 1 ][ 0 ] * sourceMatrix.m[ 0 ][ 3 ];
+	GXFloat det2_03_02 = sourceMatrix.m[ 0 ][ 0 ] * sourceMatrix.m[ 2 ][ 3 ] - sourceMatrix.m[ 2 ][ 0 ] * sourceMatrix.m[ 0 ][ 3 ];
+	GXFloat det2_03_03 = sourceMatrix.m[ 0 ][ 0 ] * sourceMatrix.m[ 3 ][ 3 ] - sourceMatrix.m[ 3 ][ 0 ] * sourceMatrix.m[ 0 ][ 3 ];
+	GXFloat det2_03_12 = sourceMatrix.m[ 1 ][ 0 ] * sourceMatrix.m[ 2 ][ 3 ] - sourceMatrix.m[ 2 ][ 0 ] * sourceMatrix.m[ 1 ][ 3 ];
+	GXFloat det2_03_13 = sourceMatrix.m[ 1 ][ 0 ] * sourceMatrix.m[ 3 ][ 3 ] - sourceMatrix.m[ 3 ][ 0 ] * sourceMatrix.m[ 1 ][ 3 ];
+	GXFloat det2_03_23 = sourceMatrix.m[ 2 ][ 0 ] * sourceMatrix.m[ 3 ][ 3 ] - sourceMatrix.m[ 3 ][ 0 ] * sourceMatrix.m[ 2 ][ 3 ];
 
-	GXFloat det2_13_01 = src.m[ 0 ][ 1 ] * src.m[ 1 ][ 3 ] - src.m[ 1 ][ 1 ] * src.m[ 0 ][ 3 ];
-	GXFloat det2_13_02 = src.m[ 0 ][ 1 ] * src.m[ 2 ][ 3 ] - src.m[ 2 ][ 1 ] * src.m[ 0 ][ 3 ];
-	GXFloat det2_13_03 = src.m[ 0 ][ 1 ] * src.m[ 3 ][ 3 ] - src.m[ 3 ][ 1 ] * src.m[ 0 ][ 3 ];
-	GXFloat det2_13_12 = src.m[ 1 ][ 1 ] * src.m[ 2 ][ 3 ] - src.m[ 2 ][ 1 ] * src.m[ 1 ][ 3 ];
-	GXFloat det2_13_13 = src.m[ 1 ][ 1 ] * src.m[ 3 ][ 3 ] - src.m[ 3 ][ 1 ] * src.m[ 1 ][ 3 ];
-	GXFloat det2_13_23 = src.m[ 2 ][ 1 ] * src.m[ 3 ][ 3 ] - src.m[ 3 ][ 1 ] * src.m[ 2 ][ 3 ];
+	GXFloat det2_13_01 = sourceMatrix.m[ 0 ][ 1 ] * sourceMatrix.m[ 1 ][ 3 ] - sourceMatrix.m[ 1 ][ 1 ] * sourceMatrix.m[ 0 ][ 3 ];
+	GXFloat det2_13_02 = sourceMatrix.m[ 0 ][ 1 ] * sourceMatrix.m[ 2 ][ 3 ] - sourceMatrix.m[ 2 ][ 1 ] * sourceMatrix.m[ 0 ][ 3 ];
+	GXFloat det2_13_03 = sourceMatrix.m[ 0 ][ 1 ] * sourceMatrix.m[ 3 ][ 3 ] - sourceMatrix.m[ 3 ][ 1 ] * sourceMatrix.m[ 0 ][ 3 ];
+	GXFloat det2_13_12 = sourceMatrix.m[ 1 ][ 1 ] * sourceMatrix.m[ 2 ][ 3 ] - sourceMatrix.m[ 2 ][ 1 ] * sourceMatrix.m[ 1 ][ 3 ];
+	GXFloat det2_13_13 = sourceMatrix.m[ 1 ][ 1 ] * sourceMatrix.m[ 3 ][ 3 ] - sourceMatrix.m[ 3 ][ 1 ] * sourceMatrix.m[ 1 ][ 3 ];
+	GXFloat det2_13_23 = sourceMatrix.m[ 2 ][ 1 ] * sourceMatrix.m[ 3 ][ 3 ] - sourceMatrix.m[ 3 ][ 1 ] * sourceMatrix.m[ 2 ][ 3 ];
 
 	// remaining 3x3 sub-determinants
-	GXFloat det3_203_012 = src.m[ 0 ][ 2 ] * det2_03_12 - src.m[ 1 ][ 2 ] * det2_03_02 + src.m[ 2 ][ 2 ] * det2_03_01;
-	GXFloat det3_203_013 = src.m[ 0 ][ 2 ] * det2_03_13 - src.m[ 1 ][ 2 ] * det2_03_03 + src.m[ 3 ][ 2 ] * det2_03_01;
-	GXFloat det3_203_023 = src.m[ 0 ][ 2 ] * det2_03_23 - src.m[ 2 ][ 2 ] * det2_03_03 + src.m[ 3 ][ 2 ] * det2_03_02;
-	GXFloat det3_203_123 = src.m[ 1 ][ 2 ] * det2_03_23 - src.m[ 2 ][ 2 ] * det2_03_13 + src.m[ 3 ][ 2 ] * det2_03_12;
+	GXFloat det3_203_012 = sourceMatrix.m[ 0 ][ 2 ] * det2_03_12 - sourceMatrix.m[ 1 ][ 2 ] * det2_03_02 + sourceMatrix.m[ 2 ][ 2 ] * det2_03_01;
+	GXFloat det3_203_013 = sourceMatrix.m[ 0 ][ 2 ] * det2_03_13 - sourceMatrix.m[ 1 ][ 2 ] * det2_03_03 + sourceMatrix.m[ 3 ][ 2 ] * det2_03_01;
+	GXFloat det3_203_023 = sourceMatrix.m[ 0 ][ 2 ] * det2_03_23 - sourceMatrix.m[ 2 ][ 2 ] * det2_03_03 + sourceMatrix.m[ 3 ][ 2 ] * det2_03_02;
+	GXFloat det3_203_123 = sourceMatrix.m[ 1 ][ 2 ] * det2_03_23 - sourceMatrix.m[ 2 ][ 2 ] * det2_03_13 + sourceMatrix.m[ 3 ][ 2 ] * det2_03_12;
 
-	GXFloat det3_213_012 = src.m[ 0 ][ 2 ] * det2_13_12 - src.m[ 1 ][ 2 ] * det2_13_02 + src.m[ 2 ][ 2 ] * det2_13_01;
-	GXFloat det3_213_013 = src.m[ 0 ][ 2 ] * det2_13_13 - src.m[ 1 ][ 2 ] * det2_13_03 + src.m[ 3 ][ 2 ] * det2_13_01;
-	GXFloat det3_213_023 = src.m[ 0 ][ 2 ] * det2_13_23 - src.m[ 2 ][ 2 ] * det2_13_03 + src.m[ 3 ][ 2 ] * det2_13_02;
-	GXFloat det3_213_123 = src.m[ 1 ][ 2 ] * det2_13_23 - src.m[ 2 ][ 2 ] * det2_13_13 + src.m[ 3 ][ 2 ] * det2_13_12;
+	GXFloat det3_213_012 = sourceMatrix.m[ 0 ][ 2 ] * det2_13_12 - sourceMatrix.m[ 1 ][ 2 ] * det2_13_02 + sourceMatrix.m[ 2 ][ 2 ] * det2_13_01;
+	GXFloat det3_213_013 = sourceMatrix.m[ 0 ][ 2 ] * det2_13_13 - sourceMatrix.m[ 1 ][ 2 ] * det2_13_03 + sourceMatrix.m[ 3 ][ 2 ] * det2_13_01;
+	GXFloat det3_213_023 = sourceMatrix.m[ 0 ][ 2 ] * det2_13_23 - sourceMatrix.m[ 2 ][ 2 ] * det2_13_03 + sourceMatrix.m[ 3 ][ 2 ] * det2_13_02;
+	GXFloat det3_213_123 = sourceMatrix.m[ 1 ][ 2 ] * det2_13_23 - sourceMatrix.m[ 2 ][ 2 ] * det2_13_13 + sourceMatrix.m[ 3 ][ 2 ] * det2_13_12;
 
-	GXFloat det3_301_012 = src.m[ 0 ][ 3 ] * det2_01_12 - src.m[ 1 ][ 3 ] * det2_01_02 + src.m[ 2 ][ 3 ] * det2_01_01;
-	GXFloat det3_301_013 = src.m[ 0 ][ 3 ] * det2_01_13 - src.m[ 1 ][ 3 ] * det2_01_03 + src.m[ 3 ][ 3 ] * det2_01_01;
-	GXFloat det3_301_023 = src.m[ 0 ][ 3 ] * det2_01_23 - src.m[ 2 ][ 3 ] * det2_01_03 + src.m[ 3 ][ 3 ] * det2_01_02;
-	GXFloat det3_301_123 = src.m[ 1 ][ 3 ] * det2_01_23 - src.m[ 2 ][ 3 ] * det2_01_13 + src.m[ 3 ][ 3 ] * det2_01_12;
+	GXFloat det3_301_012 = sourceMatrix.m[ 0 ][ 3 ] * det2_01_12 - sourceMatrix.m[ 1 ][ 3 ] * det2_01_02 + sourceMatrix.m[ 2 ][ 3 ] * det2_01_01;
+	GXFloat det3_301_013 = sourceMatrix.m[ 0 ][ 3 ] * det2_01_13 - sourceMatrix.m[ 1 ][ 3 ] * det2_01_03 + sourceMatrix.m[ 3 ][ 3 ] * det2_01_01;
+	GXFloat det3_301_023 = sourceMatrix.m[ 0 ][ 3 ] * det2_01_23 - sourceMatrix.m[ 2 ][ 3 ] * det2_01_03 + sourceMatrix.m[ 3 ][ 3 ] * det2_01_02;
+	GXFloat det3_301_123 = sourceMatrix.m[ 1 ][ 3 ] * det2_01_23 - sourceMatrix.m[ 2 ][ 3 ] * det2_01_13 + sourceMatrix.m[ 3 ][ 3 ] * det2_01_12;
 
 	m[ 0 ][ 0 ] = -det3_213_123 * inverseDeterminant;
 	m[ 0 ][ 1 ] = +det3_213_023 * inverseDeterminant;
@@ -2322,11 +2537,7 @@ GXVoid GXCALL GXRandomize ()
 
 GXFloat GXCALL GXRandomNormalize ()
 {
-	#define INV_RAND_MAX		3.05185e-5f;
-
-	return (GXFloat)rand () * INV_RAND_MAX;
-
-	#undef INV_RAND_MAX
+	return (GXFloat)rand () * INVERSE_RAND_MAX;
 }
 
 GXFloat GXCALL GXRandomBetween ( GXFloat from, GXFloat to )

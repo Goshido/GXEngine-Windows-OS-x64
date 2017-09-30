@@ -1,4 +1,4 @@
-//version 1.41
+//version 1.42
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -248,7 +248,8 @@ struct GXColorHSV
 struct GXMat3;
 struct GXMat4;
 
-//Quaternion representation: r + ai + bj + ck
+//Quaternion representation: r + ai + bj + ck.
+//By convention stores only orientation without any scale.
 struct GXQuat
 {
 	//Stores quaternion components in r, a, b, c order.
@@ -257,10 +258,10 @@ struct GXQuat
 	GXQuat ();
 	explicit GXQuat ( GXFloat r, GXFloat a, GXFloat b, GXFloat c );
 
-	//Result is valid if rotationMatrix is pure rotation matrix or equaly scaled rotation matrix.
+	//Result is valid if rotationMatrix is rotation matrix. Any scale will be ignored.
 	explicit GXQuat ( const GXMat3 &rotationMatrix );
 
-	//Result is valid if rotationMatrix is pure rotation matrix or equaly scaled rotation matrix.
+	//Result is valid if rotationMatrix is rotation matrix. Any scale will be ignored.
 	explicit GXQuat ( const GXMat4 &rotationMatrix );
 
 	GXQuat ( const GXQuat &other );
@@ -285,19 +286,17 @@ struct GXQuat
 	GXVoid FromAxisAngle ( GXFloat x, GXFloat y, GXFloat z, GXFloat angle );
 	GXVoid FromAxisAngle ( const GXVec3 &axis, GXFloat angle );
 
-	//Result is valid if rotationMatrix is not scaled rotation matrix or equaly scaled rotation matrix.
-	GXVoid From ( const GXMat4& rotationMatrix );
-
-	//Result is valid if rotationMatrix is not scaled rotation matrix or equaly scaled rotation matrix.
+	//Result is valid if rotationMatrix is rotation matrix. Any scale will be ignored.
 	GXVoid From ( const GXMat3& rotationMatrix );
 
-	//Result is valid if rotationMatrix is not scaled rotation matrix.
-	GXVoid FromFast ( const GXMat4& rotationMatrix );
+	//Result is valid if rotationMatrix is rotation matrix. Any scale will be ignored.
+	GXVoid From ( const GXMat4& rotationMatrix );
 
-	//Result is valid if rotationMatrix is not scaled rotation matrix.
-	GXVoid FromFast ( const GXMat3& rotationMatrix );
+	//Result is valid if pureRotationMatrix is not scaled rotation matrix.
+	GXVoid FromFast ( const GXMat3& pureRotationMatrix );
 
-	GXVoid Rehand ();
+	//Result is valid if pureRotationMatrix is not scaled rotation matrix.
+	GXVoid FromFast ( const GXMat4& pureRotationMatrix );
 
 	GXVoid Multiply ( const GXQuat &a, const GXQuat &b );
 	GXVoid Multiply ( const GXQuat &q, GXFloat scale );
@@ -330,11 +329,10 @@ struct GXMat3
 	GXMat3 ( const GXMat3 &other );
 
 	GXVoid From ( const GXQuat &quaternion );
+	GXVoid From ( const GXMat4 &matrix );
 
 	//Result is valid if quaternion is normalized.
 	GXVoid FromFast ( const GXQuat &quaternion );
-
-	GXVoid From ( const GXMat4 &matrix );
 
 	GXVoid SetX ( const GXVec3& x );
 	GXVoid GetX ( GXVec3 &x ) const;
@@ -348,8 +346,10 @@ struct GXMat3
 	GXVoid Identity ();
 	GXVoid Zeros ();
 
-	GXVoid Inverse ( const GXMat3 &src );
-	GXVoid Transponse ( const GXMat3 &src );
+	GXVoid Inverse ( const GXMat3 &sourceMatrix );
+	GXVoid Transponse ( const GXMat3 &sourceMatrix );
+	GXVoid ClearRotation ( const GXMat3 &sourceMatrix );
+	GXVoid ClearRotation ( const GXMat4 &sourceMatrix );
 
 	GXVoid SkewSymmetric ( const GXVec3 &base );
 
@@ -385,11 +385,10 @@ struct GXMat4
 
 	GXVoid SetOrigin ( const GXVec3 &origin );
 	GXVoid From ( const GXQuat &quaternion, const GXVec3 &origin );
+	GXVoid From ( const GXMat3 &rotation, const GXVec3 &origin );
 
 	//Result is valid if quaternion is normalized.
 	GXVoid FromFast ( const GXQuat &quaternion, const GXVec3 &origin );
-
-	GXVoid From ( const GXMat3 &rotation, const GXVec3 &origin );
 
 	GXVoid SetX ( const GXVec3 &x );
 	GXVoid GetX ( GXVec3 &x ) const;
@@ -416,11 +415,12 @@ struct GXMat4
 	GXVoid RotationZ ( GXFloat angle );
 	GXVoid RotationXY ( GXFloat pitchRadians, GXFloat yawRadians );
 	GXVoid RotationXYZ ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians );
-	GXVoid ClearRotation ( const GXMat4 &matrix );
+	GXVoid ClearRotation ( const GXMat3 &sourceMatrix );
+	GXVoid ClearRotation ( const GXMat4 &sourceMatrix );
 
 	GXVoid Scale ( GXFloat x, GXFloat y, GXFloat z );
 
-	GXVoid Inverse ( const GXMat4 &src );
+	GXVoid Inverse ( const GXMat4 &sourceMatrix );
 
 	GXVoid Multiply ( const GXMat4 &a, const GXMat4 &b );
 
