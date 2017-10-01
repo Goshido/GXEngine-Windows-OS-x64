@@ -121,13 +121,33 @@ GXBool GXAnimationSolverPlayer::GetBone ( const GXUTF8* boneName, GXQuat &rotati
 
 	GXUShort boneIndex = finder->FindBoneIndex ( boneName );
 
-	if ( boneIndex == 0xFFFF ) return GX_FALSE;
+	if ( boneIndex == 0xFFFF )
+	{
+		static const GXUTF8 skull[] = "b_Skull";
+
+		if ( strcmp ( boneName, skull ) == 0 )
+		{
+			GXQuat q;
+			q.FromAxisAngle ( 0.0f, 1.0f, 0.0f, animPos * GX_MATH_DOUBLE_PI );
+			rotation = q;
+
+			location.Init ( 0.0f, 1.0f, 0.0f );
+
+			return GX_TRUE;
+		}
+		else
+		{
+			return GX_FALSE;
+		}
+	}
 
 	GXUInt doneFrame = (GXUInt)( animPos * animationInfo->numFrames );
+
 	if ( doneFrame >= animationInfo->numFrames )
 		doneFrame = animationInfo->numFrames - 1;
 
 	GXUInt nextFrame = doneFrame + 1;
+
 	if ( nextFrame >= animationInfo->numFrames )
 		nextFrame = 0;
 

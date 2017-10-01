@@ -545,16 +545,9 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Text Include="..\..\Shaders\System\HudSurface_vs.txt" />
     <Text Include="..\..\Shaders\System\Line_fs.txt" />
     <Text Include="..\..\Shaders\System\Line_vs.txt" />
-    <Text Include="..\..\Shaders\System\MotionBlur_fs.txt" />
-    <Text Include="..\..\Shaders\System\MotionBlur_vs.txt" />
-    <Text Include="..\..\Shaders\System\NativeSkin_vs.txt" />
     <Text Include="..\..\Shaders\System\Particle_fs.txt" />
     <Text Include="..\..\Shaders\System\Particle_vs.txt" />
     <Text Include="..\..\Shaders\System\ScreenQuad_vs.txt" />
-    <Text Include="..\..\Shaders\System\Skeleton_fs.txt" />
-    <Text Include="..\..\Shaders\System\Skeleton_vs.txt" />
-    <Text Include="..\..\Shaders\System\SkinExt_fs.txt" />
-    <Text Include="..\..\Shaders\System\SkinExt_vs.txt" />
     <Text Include="..\..\Shaders\System\Skinning_vs.txt" />
     <Text Include="..\..\Shaders\System\TextureOuter_fs.txt" />
     <Text Include="..\..\Shaders\System\TextureOuter_vs.txt" />

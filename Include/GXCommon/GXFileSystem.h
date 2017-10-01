@@ -1,4 +1,4 @@
-//version 1.7
+//version 1.8
 
 #ifndef GX_FILE_SYSTEM
 #define GX_FILE_SYSTEM
@@ -48,6 +48,7 @@ class GXWriteFileStream
 		~GXWriteFileStream ();
 
 		GXVoid Write ( const GXVoid* data, GXUPointer size );
+		GXVoid Flush ();
 		GXVoid Close ();
 };
 

@@ -601,6 +601,7 @@ GXShaderProgram::GXShaderProgram ( const GXShaderProgramInfo &info )
 		GLenum binaryFormat = GL_INVALID_ENUM;
 
 		doesPrecompiledShaderProgramExist = precompiledShaderProgramFinder->FindProgram ( &binaryPath, binaryFormat, vs, gs, fs );
+
 		if ( doesPrecompiledShaderProgramExist )
 		{
 			GXUByte* precompiledShaderProgram;

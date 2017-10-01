@@ -40,6 +40,15 @@ Projects/GXPlugin for 3ds Max/*.opendb
 Projects/GXPlugin for 3ds Max/*.db
 Projects/GXPlugin for 3ds Max/*.aps
 
+Projects/GXDummy/.vs
+Projects/GXDummy/Debug
+Projects/GXDummy/Generated Files
+Projects/GXDummy/x64
+Projects/GXDummy/*.sdf
+Projects/GXDummy/*.opendb
+Projects/GXDummy/*.db
+Projects/GXDummy/*.aps
+
 Include/GXPlugin_for_3ds_Max/RC*
 Include/GXPlugin_for_3ds_Max/*.aps
 

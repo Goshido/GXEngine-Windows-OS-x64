@@ -65,6 +65,7 @@ GXVoid GXSkeleton::LoadFromSkm ( const GXWChar* fileName )
 GXVoid GXSkeleton::UpdatePose ( GXAnimationSolver &solver )
 {
 	GXUInt boneNameOffset = 0;
+
 	for ( GXUShort i = 0; i < numBones; i++ )
 	{
 		GXQuat rotation;
@@ -111,7 +112,7 @@ GXVoid GXSkeleton::CalculatePose ()
 	{
 		GXShort parentIndex = parentBoneIndices[ i ];
 
-		tempPoseGlobal[ i ].rotation.Multiply ( tempPoseLocal[ i ].rotation, tempPoseGlobal[ parentIndex ].rotation );
+		tempPoseGlobal[ i ].rotation.Multiply ( tempPoseGlobal[ parentIndex ].rotation, tempPoseLocal[ i ].rotation );
 		tempPoseGlobal[ parentIndex ].rotation.Transform ( alpha, tempPoseLocal[ i ].location );
 		tempPoseGlobal[ i ].location.Sum ( alpha, tempPoseGlobal[ parentIndex ].location );
 

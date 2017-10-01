@@ -37,13 +37,14 @@ struct GXBone;
 class GXAnimationExporter
 {
 	private:
-		GXBool		isValid;
 		IGameSkin*	skin;
 		IGameScene*	game;
 		IGameNode*	node;
 
-		GXUShort	numBones;
+		GXUShort	totalBones;
 		GXBone*		bones;
+
+		GXBool		isValid;
 
 	public:
 		explicit GXAnimationExporter ( INode* selection, const GXUTF8* fileName, GXUInt startFrame, GXUInt lastFrame );

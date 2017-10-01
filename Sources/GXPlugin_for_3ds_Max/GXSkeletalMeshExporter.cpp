@@ -10,34 +10,41 @@
 #include <GXCommon/GXRestoreWarnings.h>
 
 
-#define GX_BONE_UNDEFINED	-1
+#define UNDEFINED_BONE_INDEX			0xFFFF
+#define UNKNOWN_BONE_NUMBER				0xFFFF
+#define ROOT_BONE_INDEX					0xFFFF
+
 
 struct GXBone
 {
 	GXUTF8			name[ GX_BONE_NAME_SIZE ];
-	GXUShort		id;
-	GXShort			parentID;
+	GXUShort		ownIndex;
+	GXUShort		parentIndex;
+	GXBool			isRootBone;
+
 	IGameNode*		node;
 
-	GXMat4			globalMat;
+	GXMat4			transformWorld;
 	GXQuatLocJoint	globalTransform;
-	GXQuatLocJoint	refTransform;
+	GXQuatLocJoint	referenceTransform;
 	GXQuatLocJoint	bindTransform;
 
 	GXBone*			father;
 	GXBone*			brother;
 	GXBone*			son;
 
-	GXVoid Init ( GXUShort newID, IGameNode* newNode, const GXMat4 &newGlobalMatrix );
+	GXVoid Init ( GXUShort newID, IGameNode* newNode, const GXMat4 &newTransformWorld );
 	GXVoid AddSon ( GXBone* newSon );
+
+	GXBone& operator = ( const GXBone &other );
 };
 
-GXVoid GXBone::Init ( GXUShort newID, IGameNode* newNode, const GXMat4 &newGlobalMatrix )
+GXVoid GXBone::Init ( GXUShort newOwnIndex, IGameNode* newNode, const GXMat4 &newTransformWorld )
 {
 	GXUTF8* s = nullptr;
-	GXToUTF8 ( &s, node->GetName () );
-
+	GXToUTF8 ( &s, newNode->GetName () );
 	GXUInt size = GXUTF8size ( s );
+
 	if ( size > GX_BONE_NAME_SIZE * sizeof ( GXUTF8 ) )
 	{
 		memcpy ( name, s, ( GX_BONE_NAME_SIZE - 1 ) * sizeof ( GXUTF8 ) );
@@ -50,13 +57,15 @@ GXVoid GXBone::Init ( GXUShort newID, IGameNode* newNode, const GXMat4 &newGloba
 
 	free ( s );
 
-	id = newID;
-	parentID = GX_BONE_UNDEFINED;
+	ownIndex = newOwnIndex;
+	parentIndex = UNDEFINED_BONE_INDEX;
+	isRootBone = GX_FALSE;
 	node = newNode;
+	transformWorld = newTransformWorld;
 
-	globalMat = newGlobalMatrix;
-	globalTransform.rotation.From ( globalMat );
-	globalMat.GetW ( globalTransform.location );
+	globalTransform.rotation.From ( transformWorld );
+	globalTransform.rotation.Normalize ();
+	transformWorld.GetW ( globalTransform.location );
 
 	father = brother = son = nullptr;
 }
@@ -69,6 +78,12 @@ GXVoid GXBone::AddSon ( GXBone* newSon )
 	son->father = this;
 }
 
+GXBone& GXBone::operator = ( const GXBone &other )
+{
+	memcpy ( this, &other, sizeof ( GXBone ) );
+	return *this;
+}
+
 //-----------------------------------------------------------------------------------------
 
 class GXSkeleton
@@ -77,8 +92,8 @@ class GXSkeleton
 		GXBool		isValid;
 		IGameSkin*	skin;
 
-		GXUShort	numBones;
-		GXUShort	currentBoneID;
+		GXUShort	totalBones;
+		GXUShort	currentBoneIndex;
 		GXBone*		bones;
 		GXBone*		rootBone;
 
@@ -88,12 +103,15 @@ class GXSkeleton
 
 		GXBool IsValid ();
 
+		const GXUTF8* GetBoneName ( GXUShort boneIndex ) const;
+
 		GXUShort GetBoneIndex ( IGameNode* bone ) const;
-		const GXUTF8* GetBoneName ( GXUShort boneID ) const;
-		GXShort GetBoneParent ( GXUShort boneID ) const;
-		const GXQuatLocJoint* GetBoneRefTransform ( GXUShort boneID ) const;
-		const GXQuatLocJoint* GetBoneBindTransform ( GXUShort boneID ) const;
-		GXUShort GetBoneNumber () const;
+		GXUShort GetBoneParentIndex ( GXUShort boneIndex ) const;
+
+		const GXQuatLocJoint* GetBoneReferenceTransform ( GXUShort boneIndex ) const;
+		const GXQuatLocJoint* GetBoneBindTransform ( GXUShort boneIndex ) const;
+
+		GXUShort GetTotalBones () const;
 
 	private:
 		GXVoid AddBone ( IGameNode* bone );
@@ -102,11 +120,13 @@ class GXSkeleton
 		GXVoid LinkBones ();
 
 		GXVoid RebuildBoneArray ();
-		GXVoid RegroupBones ( GXBone* bone, GXBone* allBones );
-		GXVoid MakeReferencePose ();
-		GXVoid MakeBindTransform ();
+		GXVoid RegroupBones ( GXBone* bone );
 
-		GXShort Find ( IGameNode* bone ) const;
+		GXVoid CalculateReferenceTransform ();
+		GXVoid CalculateBindTransform ();
+
+		GXBool IsRootBone ( IGameNode* boneFather ) const;
+		GXUShort FindBoneIndex ( IGameNode* bone ) const;
 };
 
 GXSkeleton::GXSkeleton ( IGameObject &skinMesh )
@@ -114,16 +134,17 @@ GXSkeleton::GXSkeleton ( IGameObject &skinMesh )
 	isValid = GX_TRUE;
 	skin = nullptr;
 
-	numBones = (GXUShort)0;
-	currentBoneID = (GXUShort)0;
+	totalBones = (GXUShort)0;
+	currentBoneIndex = (GXUShort)0;
 	bones = nullptr;
+	rootBone = nullptr;
 
 	ExtractBones ( skinMesh );
 	LinkBones ();
-
 	RebuildBoneArray ();
-	MakeReferencePose ();
-	MakeBindTransform ();
+
+	CalculateReferenceTransform ();
+	CalculateBindTransform ();
 }
 
 GXSkeleton::~GXSkeleton ()
@@ -136,30 +157,32 @@ GXBool GXSkeleton::IsValid ()
 	return isValid;
 }
 
-GXUShort GXSkeleton::GetBoneIndex ( IGameNode* bone ) const
-{
-	if ( !isValid ) return 0xFFFF;
-
-	return (GXUShort)Find ( bone );
-}
-
-const GXUTF8* GXSkeleton::GetBoneName ( GXUShort boneID ) const
+const GXUTF8* GXSkeleton::GetBoneName ( GXUShort boneIndex ) const
 {
 	if ( !isValid ) return nullptr;
 
-	return bones[ boneID ].name;
+	return bones[ boneIndex ].name;
 }
 
-GXShort GXSkeleton::GetBoneParent ( GXUShort boneID ) const
+GXUShort GXSkeleton::GetBoneIndex ( IGameNode* bone ) const
 {
-	if ( !isValid ) return GX_BONE_UNDEFINED;
+	if ( !isValid ) return UNDEFINED_BONE_INDEX;
 
-	return bones[ boneID ].parentID;
+	return FindBoneIndex ( bone );
 }
 
-const GXQuatLocJoint* GXSkeleton::GetBoneRefTransform ( GXUShort boneID ) const
+GXUShort GXSkeleton::GetBoneParentIndex ( GXUShort boneIndex ) const
 {
-	return &bones[ boneID ].refTransform;
+	if ( !isValid ) return UNDEFINED_BONE_INDEX;
+
+	if ( bones[ boneIndex ].isRootBone ) return UNDEFINED_BONE_INDEX;
+
+	return bones[ boneIndex ].parentIndex;
+}
+
+const GXQuatLocJoint* GXSkeleton::GetBoneReferenceTransform ( GXUShort boneID ) const
+{
+	return &bones[ boneID ].referenceTransform;
 }
 
 const GXQuatLocJoint* GXSkeleton::GetBoneBindTransform ( GXUShort boneID ) const
@@ -167,30 +190,31 @@ const GXQuatLocJoint* GXSkeleton::GetBoneBindTransform ( GXUShort boneID ) const
 	return &bones[ boneID ].bindTransform;
 }
 
-GXUShort GXSkeleton::GetBoneNumber () const
+GXUShort GXSkeleton::GetTotalBones () const
 {
-	if ( !isValid ) return 0xFFFF;
+	if ( !isValid ) return UNKNOWN_BONE_NUMBER;
 
-	return numBones;
+	return totalBones;
 }
 
 GXVoid GXSkeleton::AddBone ( IGameNode* bone )
 {
-	GXShort id = Find ( bone );
+	if ( FindBoneIndex ( bone ) != UNDEFINED_BONE_INDEX ) return;
 
-	if ( id != GX_BONE_UNDEFINED ) return;
+	GMatrix matrix;
+	skin->GetInitBoneTM ( bone, matrix );
 
-	GMatrix mat;
-	skin->GetInitBoneTM ( bone, mat );
-	GXMat4& m = (GXMat4&)mat;
+	GXMat4 transformWorld;
+	memcpy ( &transformWorld, &matrix, sizeof ( GXMat4 ) );
 
-	bones[ currentBoneID ].Init ( currentBoneID, bone, m );
-	currentBoneID++;
+	bones[ currentBoneIndex ].Init ( currentBoneIndex, bone, transformWorld );
+	currentBoneIndex++;
 }
 
 GXVoid GXSkeleton::ExtractBones ( IGameObject &skinMesh )
 {
 	skin = skinMesh.GetIGameSkin ();
+
 	if ( !skin )
 	{
 		isValid = GX_FALSE;
@@ -203,10 +227,10 @@ GXVoid GXSkeleton::ExtractBones ( IGameObject &skinMesh )
 		return;
 	}
 
-	numBones = (GXUShort)skin->GetTotalSkinBoneCount ();
-	bones = (GXBone*)malloc ( numBones * sizeof ( GXBone ) );
+	totalBones = (GXUShort)skin->GetTotalSkinBoneCount ();
+	bones = (GXBone*)malloc ( totalBones * sizeof ( GXBone ) );
 
-	for ( GXUShort i = 0; i < numBones; i++ )
+	for ( GXUShort i = 0; i < totalBones; i++ )
 		AddBone ( skin->GetIGameBone ( i, false ) );
 }
 
@@ -214,16 +238,20 @@ GXVoid GXSkeleton::LinkBones ()
 {
 	if ( !isValid ) return;
 
-	for ( GXUShort i = 0; i < numBones; i++ )
+	for ( GXUShort i = 0; i < totalBones; i++ )
 	{
 		IGameNode* father = bones[ i ].node->GetNodeParent ();
 
-		bones[ i ].parentID = Find ( father );
-
-		if ( bones[ i ].parentID != GX_BONE_UNDEFINED )
-			bones[ bones[ i ].parentID ].AddSon ( bones + i );
-		else
+		if ( IsRootBone ( father ) )
+		{
+			bones[ i ].isRootBone = GX_TRUE;
 			rootBone = bones + i;
+		}
+		else
+		{
+			bones[ i ].parentIndex = FindBoneIndex ( father );
+			bones[ bones[ i ].parentIndex ].AddSon ( bones + i );
+		}
 	}
 }
 
@@ -232,57 +260,63 @@ GXVoid GXSkeleton::RebuildBoneArray ()
 	if ( !isValid ) return;
 
 	GXBone* oldBones = bones;
-	bones = (GXBone*)malloc ( numBones * sizeof ( GXBone ) );
+	bones = (GXBone*)malloc ( totalBones * sizeof ( GXBone ) );
 
-	currentBoneID = 0;
-	RegroupBones ( rootBone, bones );
+	currentBoneIndex = 0;
+	RegroupBones ( rootBone );
 
-	for ( GXUShort i = 0; i < numBones; i++ )
-		bones[ i ].parentID = Find ( bones[ i ].node->GetNodeParent () );
+	bones[ 0 ].isRootBone = GX_TRUE;
+	bones[ 0 ].parentIndex = ROOT_BONE_INDEX;
+
+	for ( GXUShort i = 1; i < totalBones; i++ )
+		bones[ i ].parentIndex = FindBoneIndex ( bones[ i ].node->GetNodeParent () );
 
 	free ( oldBones );
 }
 
-GXVoid GXSkeleton::RegroupBones ( GXBone* bone, GXBone* allBones )
+GXVoid GXSkeleton::RegroupBones ( GXBone* bone )
 {
-	memcpy ( allBones + currentBoneID, bone, sizeof ( GXBone ) );
-	allBones[ currentBoneID ].id = currentBoneID;
-	currentBoneID++;
+	bones[ currentBoneIndex ] = *bone;
+	bones[ currentBoneIndex ].ownIndex = currentBoneIndex;
+	currentBoneIndex++;
 
 	bone = bone->son;
 
 	while ( bone )
 	{
-		RegroupBones ( bone, allBones );
+		RegroupBones ( bone );
 		bone = bone->brother;
 	}
 }
 
-GXVoid GXSkeleton::MakeReferencePose ()
+GXVoid GXSkeleton::CalculateReferenceTransform ()
 {
 	if ( !isValid ) return;
 
-	bones[ 0 ].refTransform.rotation.From ( bones[ 0 ].globalMat );
-	bones[ 0 ].globalMat.GetW ( bones[ 0 ].refTransform.location );
+	bones[ 0 ].referenceTransform.rotation = bones[ 0 ].globalTransform.rotation;
+	bones[ 0 ].referenceTransform.location = bones[ 0 ].globalTransform.location;
 
-	for ( GXUShort i = 1; i < numBones; i++ )
+	GXVec3 v;
+	bones[ 0 ].transformWorld.GetW ( v );
+
+	for ( GXUShort i = 1; i < totalBones; i++ )
 	{
-		GXMat4 ref;
-		GXMat4 invParent;
+		GXMat4 inverseParentTransform;
+		inverseParentTransform.Inverse ( bones[ bones[ i ].parentIndex ].transformWorld );
 
-		invParent.Inverse ( bones[ bones[ i ].parentID ].globalMat );
-		ref.Multiply ( bones[ i ].globalMat, invParent );
+		GXMat4 referenceTransform;
+		referenceTransform.Multiply ( bones[ i ].transformWorld, inverseParentTransform );
 
-		bones[ i ].refTransform.rotation.From ( ref );
-		ref.GetW ( bones[ i ].refTransform.location );
+		bones[ i ].referenceTransform.rotation.From ( referenceTransform );
+		referenceTransform.GetW ( bones[ i ].referenceTransform.location );
 	}
 }
 
-GXVoid GXSkeleton::MakeBindTransform ()
+GXVoid GXSkeleton::CalculateBindTransform ()
 {
 	if ( !isValid ) return;
 
-	for ( GXUInt i = 0; i < numBones; i++ )
+	for ( GXUInt i = 0; i < totalBones; i++ )
 	{
 		bones[ i ].bindTransform.rotation.Inverse ( bones[ i ].globalTransform.rotation );
 		bones[ i ].bindTransform.location = bones[ i ].globalTransform.location;
@@ -290,16 +324,28 @@ GXVoid GXSkeleton::MakeBindTransform ()
 	}
 }
 
-GXShort GXSkeleton::Find ( IGameNode* bone ) const
+GXBool GXSkeleton::IsRootBone ( IGameNode* boneFather ) const
 {
-	if ( currentBoneID == 0 || !bone ) return GX_BONE_UNDEFINED;
+	if ( currentBoneIndex == 0 || !boneFather ) return GX_TRUE;
 
-	for ( GXUShort i = 0; i < currentBoneID; i++ )
+	for ( GXUShort i = 0; i < currentBoneIndex; i++ )
 	{
-		if ( bones[ i ].node == bone ) return (GXShort)i;
+		if ( bones[ i ].node == boneFather ) return GX_FALSE;
 	}
 
-	return GX_BONE_UNDEFINED;
+	return GX_TRUE;
+}
+
+GXUShort GXSkeleton::FindBoneIndex ( IGameNode* bone ) const
+{
+	if ( currentBoneIndex == 0 || !bone ) return UNDEFINED_BONE_INDEX;
+
+	for ( GXUShort i = 0; i < currentBoneIndex; i++ )
+	{
+		if ( bones[ i ].node == bone ) return i;
+	}
+
+	return UNDEFINED_BONE_INDEX;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -315,12 +361,13 @@ class GXIndexWeightStack
 		~GXIndexWeightStack ();
 
 		GXVoid Reset ();
-		GXVoid Add ( GXFloat boneID, GXFloat weight );
+		GXVoid Add ( GXFloat boneIndex, GXFloat weight );
 		const GXVec2* GetStackData ();
+		GXVoid Check () const;
 
 	private:
 		GXVoid Normalize ();
-		GXVoid Replace ( GXFloat boneID, GXFloat weight );
+		GXVoid Replace ( GXFloat boneIndex, GXFloat weight );
 };
 
 GXIndexWeightStack::GXIndexWeightStack ()
@@ -339,16 +386,15 @@ GXVoid GXIndexWeightStack::Reset ()
 	memset ( iw, 0, 4 * sizeof ( GXVec2 ) );
 }
 
-GXVoid GXIndexWeightStack::Add ( GXFloat boneID, GXFloat weight )
+GXVoid GXIndexWeightStack::Add ( GXFloat boneIndex, GXFloat weight )
 {
 	if ( samples >= 4 )
 	{
-		Replace ( boneID, weight );
-		samples++;
+		Replace ( boneIndex, weight );
 		return;
 	}
 
-	iw[ samples ].Init ( boneID, weight );
+	iw[ samples ].Init ( boneIndex, weight );
 	samples++;
 }
 
@@ -358,11 +404,22 @@ const GXVec2* GXIndexWeightStack::GetStackData ()
 	return iw;
 }
 
+GXVoid GXIndexWeightStack::Check () const
+{
+	GXFloat sum = 0.0f;
+
+	for ( GXUByte i = 0; i < samples; i++ )
+		sum += iw[ i ].data[ 1 ];
+}
+
 GXVoid GXIndexWeightStack::Normalize ()
 {
-	if ( samples <= 4 ) return;
+	GXFloat sum = 0.0f;
 
-	GXFloat invSum = 1.0f / ( iw[ 0 ].data[ 1 ] + iw[ 1 ].data[ 1 ] + iw[ 2 ].data[ 1 ] + iw[ 3 ].data[ 1 ] );
+	for ( GXUByte i = 0; i < samples; i++ )
+		sum += iw[ i ].data[ 1 ];
+
+	GXFloat invSum = 1.0f / sum;
 
 	iw[ 0 ].data[ 1 ] *= invSum;
 	iw[ 1 ].data[ 1 ] *= invSum;
@@ -370,7 +427,7 @@ GXVoid GXIndexWeightStack::Normalize ()
 	iw[ 3 ].data[ 1 ] *= invSum;
 }
 
-GXVoid GXIndexWeightStack::Replace ( GXFloat boneID, GXFloat weight )
+GXVoid GXIndexWeightStack::Replace ( GXFloat boneIndex, GXFloat weight )
 {
 	GXUByte m = 0;
 
@@ -381,7 +438,7 @@ GXVoid GXIndexWeightStack::Replace ( GXFloat boneID, GXFloat weight )
 		m = i;
 	}
 
-	iw[ m ].Init ( boneID, weight );
+	iw[ m ].Init ( boneIndex, weight );
 }
 
 //------------------------------------------------------------------------------------------------
@@ -403,7 +460,9 @@ GXSkeletalMeshExporter::GXSkeletalMeshExporter ( INode &selection, const GXUTF8*
 		MessageBoxA ( 0, "Skeletal mesh saved", GX_ENGINE_EXPORTER_MESSAGE_BOX_TITLE, MB_ICONINFORMATION );
 	}
 	else
+	{
 		MessageBoxA ( 0, "Can't save skeletal mesh", GX_ENGINE_EXPORTER_MESSAGE_BOX_TITLE, MB_ICONWARNING );
+	}
 }
 
 GXSkeletalMeshExporter::~GXSkeletalMeshExporter ()
@@ -418,16 +477,15 @@ GXVoid GXSkeletalMeshExporter::Init ( INode &selection )
 	isValid = GX_TRUE;
 
 	IGameScene* game = GetIGameInterface ();
-
 	IGameConversionManager* cm = GetConversionManager ();
-	
+
 	UserCoord coordSystem;
 	coordSystem.rotation = 0;
-	coordSystem.uAxis = 1;
-	coordSystem.vAxis = 0;
 	coordSystem.xAxis = 1;
 	coordSystem.yAxis = 2;
 	coordSystem.zAxis = 4;
+	coordSystem.uAxis = 1;
+	coordSystem.vAxis = 0;
 	cm->SetUserCoordSystem ( coordSystem );
 
 	cm->SetCoordSystem ( IGameConversionManager::IGAME_USER );
@@ -441,7 +499,6 @@ GXVoid GXSkeletalMeshExporter::Init ( INode &selection )
 	{
 		isValid = GX_FALSE;
 		game->ReleaseIGame ();
-
 		return;
 	}
 
@@ -453,10 +510,8 @@ GXVoid GXSkeletalMeshExporter::Init ( INode &selection )
 	if ( !skeleton->IsValid () )
 	{
 		isValid = GX_FALSE;
-
 		node->ReleaseIGameObject ();
 		game->ReleaseIGame ();
-
 		return;
 	}
 
@@ -465,10 +520,8 @@ GXVoid GXSkeletalMeshExporter::Init ( INode &selection )
 	if ( !isValid )
 	{
 		GXSafeDelete ( skeleton );
-
 		node->ReleaseIGameObject ();
 		game->ReleaseIGame ();
-
 		return;
 	}
 
@@ -515,6 +568,7 @@ GXVoid GXSkeletalMeshExporter::ExtractGeometryData ( IGameObject &skinMesh )
 			offset += sizeof ( GXVec3 );
 
 			DWORD indices[ 3 ];
+
 			if ( mesh->GetMapFaceIndex ( (int)texMaps[ 0 ], (int)i, indices ) )
 				p = mesh->GetMapVertex ( (int)texMaps[ 0 ], (int)indices[ j ] );
 			else
@@ -546,6 +600,8 @@ GXVoid GXSkeletalMeshExporter::ExtractGeometryData ( IGameObject &skinMesh )
 
 			const GXVec2* iw = stack->GetStackData ();
 
+			stack->Check ();
+
 			GXVec4* v4 = (GXVec4*)( vboData + offset );
 			v4->Init ( iw[ 0 ].data[ 0 ], iw[ 1 ].data[ 0 ], iw[ 2 ].data[ 0 ], iw[ 3 ].data[ 0 ] );
 
@@ -572,7 +628,7 @@ GXVoid GXSkeletalMeshExporter::ExtractGeometryData ( IGameObject &skinMesh )
 
 GXVoid GXSkeletalMeshExporter::Save ( const GXUTF8* fileName ) const
 {
-	GXUInt numBones = skeleton->GetBoneNumber ();
+	GXUInt numBones = skeleton->GetTotalBones ();
 
 	GXUByte stride = sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec4 ) + sizeof ( GXVec4 );
 	GXUInt vboSize = numVertices * stride;
@@ -603,7 +659,7 @@ GXVoid GXSkeletalMeshExporter::Save ( const GXUTF8* fileName ) const
 	GXShort* parent = (GXShort*)( data + offset );
 
 	for ( GXUShort i = 0; i < numBones; i++ )
-		parent[ i ] = skeleton->GetBoneParent ( i );
+		parent[ i ] = (GXShort)skeleton->GetBoneParentIndex ( i );
 
 	offset += numBones * sizeof ( GXShort );
 
@@ -611,7 +667,7 @@ GXVoid GXSkeletalMeshExporter::Save ( const GXUTF8* fileName ) const
 
 	for ( GXUShort i = 0; i < numBones; i++ )
 	{
-		memcpy ( data + offset, skeleton->GetBoneRefTransform ( i ), sizeof ( GXQuatLocJoint ) );
+		memcpy ( data + offset, skeleton->GetBoneReferenceTransform ( i ), sizeof ( GXQuatLocJoint ) );
 		offset += sizeof ( GXQuatLocJoint );
 	}
 
@@ -636,12 +692,13 @@ GXVoid GXSkeletalMeshExporter::Save ( const GXUTF8* fileName ) const
 
 GXAnimationExporter::GXAnimationExporter ( INode* selection, const GXUTF8* fileName, GXUInt startFrame, GXUInt lastFrame )
 {
-	isValid = GX_TRUE;
 	skin = 0;
-	numBones = 0;
-	bones = 0;
-	game = 0;
-	node = 0;
+	totalBones = 0;
+	bones = nullptr;
+	game = nullptr;
+	node = nullptr;
+
+	isValid = GX_TRUE;
 
 	Init ( selection );
 
@@ -653,7 +710,9 @@ GXAnimationExporter::GXAnimationExporter ( INode* selection, const GXUTF8* fileN
 		MessageBoxA ( 0, "Animation is saved", GX_ENGINE_EXPORTER_MESSAGE_BOX_TITLE, MB_ICONINFORMATION );
 	}
 	else
+	{
 		MessageBoxA ( 0, "Can't save animation", GX_ENGINE_EXPORTER_MESSAGE_BOX_TITLE, MB_ICONWARNING );
+	}
 }
 
 GXAnimationExporter::~GXAnimationExporter ()
@@ -669,11 +728,11 @@ GXVoid GXAnimationExporter::Init ( INode* selection )
 	
 	UserCoord coordSystem;
 	coordSystem.rotation = 0;
-	coordSystem.uAxis = 1;
-	coordSystem.vAxis = 0;
 	coordSystem.xAxis = 1;
 	coordSystem.yAxis = 2;
 	coordSystem.zAxis = 4;
+	coordSystem.uAxis = 1;
+	coordSystem.vAxis = 0;
 	cm->SetUserCoordSystem ( coordSystem );
 
 	cm->SetCoordSystem ( IGameConversionManager::IGAME_USER );
@@ -682,6 +741,7 @@ GXVoid GXAnimationExporter::Init ( INode* selection )
 	game->SetStaticFrame ( 0 );
 
 	node = game->GetIGameNode ( selection );
+
 	if ( !node )
 	{
 		isValid = GX_FALSE;
@@ -707,7 +767,7 @@ GXVoid GXAnimationExporter::Save ( const GXUTF8* fileName, GXUInt startFrame, GX
 	if ( !isValid ) return;
 
 	GXUInt numFrames = ( lastFrame - startFrame ) + 1;
-	GXUInt size = sizeof ( GXNativeAnimationHeader ) + numBones * ( GX_BONE_NAME_SIZE * sizeof ( GXUTF8 ) ) + numFrames * numBones * sizeof ( GXQuatLocJoint );
+	GXUInt size = sizeof ( GXNativeAnimationHeader ) + totalBones * ( GX_BONE_NAME_SIZE * sizeof ( GXUTF8 ) ) + numFrames * totalBones * sizeof ( GXQuatLocJoint );
 
 	GXUByte* data = (GXUByte*)malloc ( size );
 
@@ -715,12 +775,12 @@ GXVoid GXAnimationExporter::Save ( const GXUTF8* fileName, GXUInt startFrame, GX
 
 	h->fps = (GXFloat)GetFrameRate ();
 	h->numFrames = numFrames;
-	h->numBones = numBones;
+	h->numBones = totalBones;
 
 	GXUInt offset = sizeof ( GXNativeAnimationHeader );
 	h->boneNamesOffset = offset;
 
-	for ( GXUShort i = 0; i < numBones; i++ )
+	for ( GXUShort i = 0; i < totalBones; i++ )
 	{
 		memcpy ( data + offset, bones[ i ].name, GX_BONE_NAME_SIZE * sizeof ( GXUTF8 ) );
 		offset += GX_BONE_NAME_SIZE * sizeof ( GXUTF8 );
@@ -732,9 +792,9 @@ GXVoid GXAnimationExporter::Save ( const GXUTF8* fileName, GXUInt startFrame, GX
 	{
 		ExtractFrame ( frame );
 
-		for ( GXUShort i = 0; i < numBones; i++ )
+		for ( GXUShort i = 0; i < totalBones; i++ )
 		{
-			memcpy ( data + offset, &bones[ i ].refTransform, sizeof ( GXQuatLocJoint ) );
+			memcpy ( data + offset, &bones[ i ].referenceTransform, sizeof ( GXQuatLocJoint ) );
 			offset += sizeof ( GXQuatLocJoint );
 		}
 	}
@@ -751,6 +811,7 @@ GXVoid GXAnimationExporter::Save ( const GXUTF8* fileName, GXUInt startFrame, GX
 GXVoid GXAnimationExporter::ExtractBones ( IGameObject* skinMesh )
 {
 	skin = skinMesh->GetIGameSkin ();
+
 	if ( !skin )
 	{
 		isValid = GX_FALSE;
@@ -763,44 +824,51 @@ GXVoid GXAnimationExporter::ExtractBones ( IGameObject* skinMesh )
 		return;
 	}
 
-	numBones = (GXUShort)skin->GetTotalSkinBoneCount ();
-	bones = (GXBone*)malloc ( numBones * sizeof ( GXBone ) );
+	totalBones = (GXUShort)skin->GetTotalSkinBoneCount ();
+	bones = (GXBone*)malloc ( totalBones * sizeof ( GXBone ) );
 
-	GXMat4 m;
-	m.Identity ();
+	GXMat4 matrix;
+	matrix.Identity ();
 
-	for ( GXUShort i = 0; i < numBones; i++ )
-		bones[ i ].Init ( i, skin->GetIGameBone ( i, false ), m );
+	for ( GXUShort i = 0; i < totalBones; i++ )
+		bones[ i ].Init ( i, skin->GetIGameBone ( i, false ), matrix );
 }
 
 GXVoid GXAnimationExporter::ExtractFrame ( GXUInt frame )
 {
 	GXUInt time = frame * GetTicksPerFrame ();
 
-	for ( GXUShort i = (GXUShort)0; i < numBones; i++ )
+	for ( GXUShort i = (GXUShort)0; i < totalBones; i++ )
 	{
-		GMatrix globalTransform = bones[ i ].node->GetWorldTM ( (TimeValue)time );
-		GXMat4& globalMat = (GXMat4&)globalTransform;
+		GMatrix matrix = bones[ i ].node->GetWorldTM ( (TimeValue)time );
+		GXMat4 transformWorld;
+		memcpy ( &transformWorld, &matrix, sizeof ( GXMat4 ) );
+
 		IGameNode* parent = bones[ i ].node->GetNodeParent ();
 
 		if ( !parent )
 		{
-			globalMat.GetW ( bones[ i ].refTransform.location );
-			bones[ i ].refTransform.rotation.From ( globalMat );
+			transformWorld.GetW ( bones[ i ].referenceTransform.location );
+
+			bones[ i ].referenceTransform.rotation.From ( transformWorld );
+			bones[ i ].referenceTransform.rotation.Normalize ();
 
 			continue;
 		}
 
-		GMatrix parentTransform = parent->GetWorldTM ( (TimeValue)time );
-		GXMat4& parentMat = (GXMat4&)parentTransform;
+		matrix = parent->GetWorldTM ( (TimeValue)time );
+		GXMat4 parentTransformWorld;
+		memcpy ( &parentTransformWorld, &matrix, sizeof ( GXMat4 ) );
 
-		GXMat4 invParentMat;
-		invParentMat.Inverse ( parentMat );
+		GXMat4 inverseParentTransformWorld;
+		inverseParentTransformWorld.Inverse ( parentTransformWorld );
 
-		GXMat4 refTransform;
-		refTransform.Multiply ( globalMat, invParentMat );
+		GXMat4 referenceTransform;
+		referenceTransform.Multiply ( transformWorld, inverseParentTransformWorld );
 
-		refTransform.GetW ( bones[ i ].refTransform.location );
-		bones[ i ].refTransform.rotation.From ( refTransform );
+		referenceTransform.GetW ( bones[ i ].referenceTransform.location );
+
+		bones[ i ].referenceTransform.rotation.From ( referenceTransform );
+		bones[ i ].referenceTransform.rotation.Normalize ();
 	}
 }

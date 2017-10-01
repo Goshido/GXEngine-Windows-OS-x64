@@ -13,12 +13,15 @@
 
 EMFluttershy::EMFluttershy () :
 mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLVER_ID )
+//mesh ( L"3D Models/Editor Mobile/Test1.skm" ), animationSolverPlayer ( SOLVER_ID )
 {
-	GXLoadNativeAnimation ( L"Animations/Editor Mobile/Battle.ani", animationInfo );
+	//GXLoadNativeAnimation ( L"Animations/Editor Mobile/Test1.ani", animationInfo );
+	GXLoadNativeAnimation ( L"Animations/Editor Mobile/Neutral.ani", animationInfo );
 	skeleton.LoadFromSkm ( L"3D Models/Editor Mobile/Fluttershy.skm" );
+	//skeleton.LoadFromSkm ( L"3D Models/Editor Mobile/Test1.skm" );
 	animationSolverPlayer.SetAnimationSequence ( &animationInfo );
-	animationSolverPlayer.SetAnimationMultiplier ( 0.8f );
-	animationSolverPlayer.EnableNormalization ();
+	animationSolverPlayer.SetAnimationMultiplier ( 0.1f );
+	//animationSolverPlayer.EnableNormalization ();
 
 	albedoTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Fluttershy_Diffuse.tga", GX_TRUE, GL_REPEAT, GX_FALSE );
 	normalTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE, GL_REPEAT, GX_FALSE );

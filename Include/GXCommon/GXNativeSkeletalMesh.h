@@ -51,8 +51,8 @@ struct GXNativeAnimationHeader
 	GXUInt		numFrames;
 
 	GXUShort	numBones;
-	GXUInt		boneNamesOffset;		//array of numBones elements: 64 byte slot with zero terminated UTF8 string
-	GXUInt		keysOffset;				//array of [numBones * numFrames] elements: location (GXVec3), rotation (GXQuat). Relative parent
+	GXUInt		boneNamesOffset;		//array of numBones elements: 64 byte slot with zero terminated UTF-8 string
+	GXUInt		keysOffset;				//array of [numBones * numFrames] elements: rotation (GXQuat), location (GXVec3). Relative parent.
 };
 
 struct GXAnimationInfo

@@ -1,4 +1,4 @@
-//version 1.7
+//version 1.8
 
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXMemory.h>
@@ -421,6 +421,11 @@ GXVoid GXWriteFileStream::Write ( const GXVoid* data, GXUPointer size )
 	if ( !file ) return;
 
 	fwrite ( data, size, 1, file );
+}
+
+GXVoid GXWriteFileStream::Flush ()
+{
+	fflush ( file );
 }
 
 GXVoid GXWriteFileStream::Close ()

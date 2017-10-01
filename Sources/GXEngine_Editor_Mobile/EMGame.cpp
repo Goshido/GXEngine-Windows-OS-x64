@@ -298,7 +298,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	if ( deltaTime < 0.2f )
 		GXPhysicsEngine::GetInstance ().RunSimulateLoop ( deltaTime );
 
-	//fluttershy->UpdatePose ( deltaTime );
+	fluttershy->UpdatePose ( deltaTime );
 
 	GXCamera& viewerCamera = EMViewer::GetInstance ()->GetCamera ();
 	GXCamera::SetActiveCamera ( &viewerCamera );
@@ -313,7 +313,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	plasticSphere->OnDrawCommonPass ( deltaTime );
 	goldSphere->OnDrawCommonPass ( deltaTime );
 	silverSphere->OnDrawCommonPass ( deltaTime );
-	//fluttershy->Render ( deltaTime );
+	fluttershy->Render ( deltaTime );
 
 	renderer.StartEnvironmentPass ();
 

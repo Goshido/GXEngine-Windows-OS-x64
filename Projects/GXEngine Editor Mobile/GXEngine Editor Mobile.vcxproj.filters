@@ -1095,31 +1095,10 @@
     <Text Include="..\..\Shaders\System\Line_vs.txt">
       <Filter>Shaders\System</Filter>
     </Text>
-    <Text Include="..\..\Shaders\System\MotionBlur_fs.txt">
-      <Filter>Shaders\System</Filter>
-    </Text>
-    <Text Include="..\..\Shaders\System\MotionBlur_vs.txt">
-      <Filter>Shaders\System</Filter>
-    </Text>
-    <Text Include="..\..\Shaders\System\NativeSkin_vs.txt">
-      <Filter>Shaders\System</Filter>
-    </Text>
     <Text Include="..\..\Shaders\System\Particle_fs.txt">
       <Filter>Shaders\System</Filter>
     </Text>
     <Text Include="..\..\Shaders\System\Particle_vs.txt">
-      <Filter>Shaders\System</Filter>
-    </Text>
-    <Text Include="..\..\Shaders\System\Skeleton_fs.txt">
-      <Filter>Shaders\System</Filter>
-    </Text>
-    <Text Include="..\..\Shaders\System\Skeleton_vs.txt">
-      <Filter>Shaders\System</Filter>
-    </Text>
-    <Text Include="..\..\Shaders\System\SkinExt_fs.txt">
-      <Filter>Shaders\System</Filter>
-    </Text>
-    <Text Include="..\..\Shaders\System\SkinExt_vs.txt">
       <Filter>Shaders\System</Filter>
     </Text>
     <Text Include="..\..\Shaders\System\TextureOuter_fs.txt">
