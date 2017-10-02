@@ -25,7 +25,6 @@ struct GXBone
 	IGameNode*		node;
 
 	GXMat4			transformWorld;
-	GXQuatLocJoint	globalTransform;
 	GXQuatLocJoint	referenceTransform;
 	GXQuatLocJoint	bindTransform;
 
@@ -62,10 +61,6 @@ GXVoid GXBone::Init ( GXUShort newOwnIndex, IGameNode* newNode, const GXMat4 &ne
 	isRootBone = GX_FALSE;
 	node = newNode;
 	transformWorld = newTransformWorld;
-
-	globalTransform.rotation.From ( transformWorld );
-	globalTransform.rotation.Normalize ();
-	transformWorld.GetW ( globalTransform.location );
 
 	father = brother = son = nullptr;
 }
@@ -249,6 +244,7 @@ GXVoid GXSkeleton::LinkBones ()
 		}
 		else
 		{
+			bones[ i ].isRootBone = GX_FALSE;
 			bones[ i ].parentIndex = FindBoneIndex ( father );
 			bones[ bones[ i ].parentIndex ].AddSon ( bones + i );
 		}
@@ -293,11 +289,8 @@ GXVoid GXSkeleton::CalculateReferenceTransform ()
 {
 	if ( !isValid ) return;
 
-	bones[ 0 ].referenceTransform.rotation = bones[ 0 ].globalTransform.rotation;
-	bones[ 0 ].referenceTransform.location = bones[ 0 ].globalTransform.location;
-
-	GXVec3 v;
-	bones[ 0 ].transformWorld.GetW ( v );
+	bones[ 0 ].referenceTransform.rotation.From ( bones[ 0 ].transformWorld );
+	bones[ 0 ].transformWorld.GetW ( bones[ 0 ].referenceTransform.location );
 
 	for ( GXUShort i = 1; i < totalBones; i++ )
 	{
@@ -305,9 +298,11 @@ GXVoid GXSkeleton::CalculateReferenceTransform ()
 		inverseParentTransform.Inverse ( bones[ bones[ i ].parentIndex ].transformWorld );
 
 		GXMat4 referenceTransform;
-		referenceTransform.Multiply ( bones[ i ].transformWorld, inverseParentTransform );
+		referenceTransform.Multiply ( inverseParentTransform, bones[ i ].transformWorld );
 
 		bones[ i ].referenceTransform.rotation.From ( referenceTransform );
+		bones[ i ].referenceTransform.rotation.Normalize ();
+
 		referenceTransform.GetW ( bones[ i ].referenceTransform.location );
 	}
 }
@@ -318,9 +313,13 @@ GXVoid GXSkeleton::CalculateBindTransform ()
 
 	for ( GXUInt i = 0; i < totalBones; i++ )
 	{
-		bones[ i ].bindTransform.rotation.Inverse ( bones[ i ].globalTransform.rotation );
-		bones[ i ].bindTransform.location = bones[ i ].globalTransform.location;
-		bones[ i ].bindTransform.location.Reverse ();
+		GXMat4 inverseBoneTransformWorld;
+		inverseBoneTransformWorld.Inverse ( bones[ i ].transformWorld );
+
+		bones[ i ].bindTransform.rotation.From ( inverseBoneTransformWorld );
+		bones[ i ].bindTransform.rotation.Normalize ();
+
+		inverseBoneTransformWorld.GetW ( bones[ i ].bindTransform.location );
 	}
 }
 
@@ -848,10 +847,10 @@ GXVoid GXAnimationExporter::ExtractFrame ( GXUInt frame )
 
 		if ( !parent )
 		{
-			transformWorld.GetW ( bones[ i ].referenceTransform.location );
-
 			bones[ i ].referenceTransform.rotation.From ( transformWorld );
 			bones[ i ].referenceTransform.rotation.Normalize ();
+
+			transformWorld.GetW ( bones[ i ].referenceTransform.location );
 
 			continue;
 		}
@@ -864,11 +863,11 @@ GXVoid GXAnimationExporter::ExtractFrame ( GXUInt frame )
 		inverseParentTransformWorld.Inverse ( parentTransformWorld );
 
 		GXMat4 referenceTransform;
-		referenceTransform.Multiply ( transformWorld, inverseParentTransformWorld );
-
-		referenceTransform.GetW ( bones[ i ].referenceTransform.location );
+		referenceTransform.Multiply ( inverseParentTransformWorld, transformWorld );
 
 		bones[ i ].referenceTransform.rotation.From ( referenceTransform );
 		bones[ i ].referenceTransform.rotation.Normalize ();
+
+		referenceTransform.GetW ( bones[ i ].referenceTransform.location );
 	}
 }

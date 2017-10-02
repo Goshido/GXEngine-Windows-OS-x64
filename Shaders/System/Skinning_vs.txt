@@ -69,7 +69,7 @@ vec3 VertexSkinning ( const in vec3 p, const in int index )
 	rotation[ 1 ][ 2 ] = ra2 + bc2;
 	rotation[ 2 ][ 2 ] = rr - aa - bb + cc;
 
-	return p * rotation + vec3 ( bones[ i + 4 ], bones[ i + 5 ], bones[ i + 6 ] );
+	return rotation * p + vec3 ( bones[ i + 4 ], bones[ i + 5 ], bones[ i + 6 ] );
 }
 
 vec3 VectorSkinning ( const in vec3 v, const in int index )
@@ -111,7 +111,7 @@ vec3 VectorSkinning ( const in vec3 v, const in int index )
 	rotation[ 1 ][ 2 ] = ra2 + bc2;
 	rotation[ 2 ][ 2 ] = rr - aa - bb + cc;
 
-	return v * rotation;
+	return rotation * v;
 }
 
 void main ()

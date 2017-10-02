@@ -22,10 +22,10 @@ class GXAnimationSolverPlayer : public GXAnimationSolver
 		GXBool							isNormalize;
 
 	public:
-		GXAnimationSolverPlayer ( GXUShort solverID );
+		explicit GXAnimationSolverPlayer ( GXUShort solverID );
 		~GXAnimationSolverPlayer () override;
 
-		GXBool GetBone ( const GXUTF8* boneName, GXQuat &rotation, GXVec3 &location ) override;
+		GXBool GetBone ( GXQuat &rotation, GXVec3 &location, const GXUTF8* boneName ) override;
 		GXVoid Update ( GXFloat delta ) override;
 
 		GXVoid SetAnimationSequence ( const GXAnimationInfo* animData );

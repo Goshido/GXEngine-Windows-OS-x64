@@ -71,7 +71,7 @@ GXVoid GXSkeleton::UpdatePose ( GXAnimationSolver &solver )
 		GXQuat rotation;
 		GXVec3 location;
 
-		if ( solver.GetBone ( boneNames + boneNameOffset, rotation, location ) )
+		if ( solver.GetBone ( rotation, location, boneNames + boneNameOffset ) )
 		{
 			tempPoseLocal[ i ].rotation = rotation;
 			tempPoseLocal[ i ].location = location;
@@ -103,21 +103,54 @@ GXVoid GXSkeleton::CalculatePose ()
 	tempPoseGlobal[ 0 ].rotation = tempPoseLocal[ 0 ].rotation;
 	tempPoseGlobal[ 0 ].location = tempPoseLocal[ 0 ].location;
 
-	pose[ 0 ].rotation.Multiply ( bindTransform[ 0 ].rotation, tempPoseGlobal[ 0 ].rotation );
+	GXMat4 bindPoseMatrix;
+	bindPoseMatrix.From ( bindTransform[ 0 ].rotation, bindTransform[ 0 ].location );
+
+	GXMat4 poseGlobalMatrix;
+	poseGlobalMatrix.From ( tempPoseGlobal[ 0 ].rotation, tempPoseGlobal[ 0 ].location );
+
+	GXMat4 poseMatrix;
+	poseMatrix.Multiply ( poseGlobalMatrix, bindPoseMatrix );
+
+	pose[ 0 ].rotation.From ( poseMatrix );
+	poseMatrix.GetW ( pose[ 0 ].location );
+
+	/*
 	GXVec3 alpha;
-	pose[ 0 ].rotation.Transform ( alpha, bindTransform[ 0 ].location );
+
+	pose[ 0 ].rotation.Multiply ( tempPoseGlobal[ 0 ].rotation, bindTransform[ 0 ].rotation );
+	tempPoseGlobal[ 0 ].rotation.Transform ( alpha, bindTransform[ 0 ].location );
 	pose[ 0 ].location.Sum ( alpha, tempPoseGlobal[ 0 ].location );
+	*/
 
 	for ( GXUShort i = 1; i < numBones; i++ )
 	{
 		GXShort parentIndex = parentBoneIndices[ i ];
 
+		GXMat4 poseLocalMatrix;
+		poseLocalMatrix.From ( tempPoseLocal[ i ].rotation, tempPoseLocal[ i ].location );
+
+		GXMat4 poseParentGlobalMatrix;
+		poseParentGlobalMatrix.From ( tempPoseGlobal[ parentIndex ].rotation, tempPoseGlobal[ parentIndex ].location );
+
+		poseGlobalMatrix.Multiply ( poseParentGlobalMatrix, poseLocalMatrix );
+		tempPoseGlobal[ i ].rotation.From ( poseGlobalMatrix );
+		poseGlobalMatrix.GetW ( tempPoseGlobal[ i ].location );
+
+		bindPoseMatrix.From ( bindTransform[ i ].rotation, bindTransform[ i ].location );
+		poseMatrix.Multiply ( poseGlobalMatrix, bindPoseMatrix );
+
+		pose[ i ].rotation.From ( poseMatrix );
+		poseMatrix.GetW ( pose[ i ].location );
+
+		/*
 		tempPoseGlobal[ i ].rotation.Multiply ( tempPoseGlobal[ parentIndex ].rotation, tempPoseLocal[ i ].rotation );
 		tempPoseGlobal[ parentIndex ].rotation.Transform ( alpha, tempPoseLocal[ i ].location );
 		tempPoseGlobal[ i ].location.Sum ( alpha, tempPoseGlobal[ parentIndex ].location );
 
-		pose[ i ].rotation.Multiply ( bindTransform[ i ].rotation, tempPoseGlobal[ i ].rotation );
-		pose[ i ].rotation.Transform ( alpha, bindTransform[ i ].location );
+		pose[ i ].rotation.Multiply ( tempPoseGlobal[ i ].rotation, bindTransform[ i ].rotation );
+		tempPoseGlobal[ i ].rotation.Transform ( alpha, bindTransform[ i ].location );
 		pose[ i ].location.Sum ( alpha, tempPoseGlobal[ i ].location );
+		*/
 	}
 }
