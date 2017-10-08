@@ -181,8 +181,8 @@ GXVoid GXCALL GXPrecompiledShaderProgramNode::DestroyFinderNode ( GXPrecompiledS
 
 //-------------------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
+#pragma pack ( push )
+#pragma pack ( 1 )
 
 struct GXDictionaryHeader
 {
@@ -200,7 +200,7 @@ struct GXChunk
 	GLenum		binaryFormat;
 };
 
-#pragma pack(pop)
+#pragma pack ( pop )
 
 //-------------------------------------------------------------------------------
 

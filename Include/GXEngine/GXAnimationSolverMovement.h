@@ -21,10 +21,11 @@ class GXAnimationSolverMovement : public GXAnimationSolver
 		GXAnimationSolver*					animationStreams[ 3 ];
 
 	public:
-		GXAnimationSolverMovement ( GXUShort solverID );
+		explicit GXAnimationSolverMovement ( GXUShort solverID );
 		~GXAnimationSolverMovement () override;
 
 		GXBool GetBone ( GXQuat &rotation, GXVec3 &location, const GXUTF8* boneName ) override;
+		GXBool GetBone2 ( GXMat4 &transform, const GXUTF8* boneName ) override;
 		GXVoid Update ( GXFloat delta ) override;
 
 		GXVoid SetAnimationStream ( eGXAnimationSolverMovementState animationState, GXAnimationSolver* animationStream );

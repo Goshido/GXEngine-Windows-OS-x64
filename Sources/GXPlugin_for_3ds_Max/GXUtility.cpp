@@ -1,8 +1,8 @@
 //vesion 1.1
 
 #include <GXPlugin_for_3ds_Max/GXUtility.h>
-#include <GXPlugin_for_3ds_Max/GXMeshNormalHolder.h>
 #include <GXPlugin_for_3ds_Max/GXSkeletalMeshExporter.h>
+#include <GXPlugin_for_3ds_Max/GXAnimationExporter.h>
 #include <GXCommon/GXSTGStructs.h>
 #include <GXCommon/GXNativeStaticMeshSaver.h>
 #include <GXCommon/GXStrings.h>
@@ -149,7 +149,7 @@ INT_PTR CALLBACK GXUtilityDlgProc ( HWND dlgHwnd, UINT msg, WPARAM wParam, LPARA
 
 					GXUTF8* fileName = nullptr;
 					GXToUTF8 ( &fileName, buf );
-					GXSkeletalMeshExporter exp ( *selected, fileName );
+					GXSkeletalMeshExporter exp ( *selected, fileName, nullptr );
 					free ( fileName );
 				}
 				break;
@@ -190,7 +190,7 @@ INT_PTR CALLBACK GXUtilityDlgProc ( HWND dlgHwnd, UINT msg, WPARAM wParam, LPARA
 					ReleaseICustEdit ( edit );
 
 					if ( startFlag == TRUE && lastFlag == TRUE )
-						GXAnimationExporter exp ( selected, fileName, startFrame, lastFrame );
+						GXAnimationExporter exp ( *selected, fileName, startFrame, lastFrame );
 					else
 						MessageBoxA ( 0, "Start or last frame is incorrect", GX_ENGINE_EXPORTER_MESSAGE_BOX_TITLE, MB_ICONWARNING );
 
@@ -251,183 +251,17 @@ INT_PTR CALLBACK GXUtilityDlgProc ( HWND dlgHwnd, UINT msg, WPARAM wParam, LPARA
 			gx_UtilityInterface->RollupMouseMessage ( dlgHwnd, msg, wParam, lParam );
 		return TRUE;
 		
-		default: return FALSE;
-		
+		default:
+			//NOTHING
+		return FALSE;
 	}
 }
 
 //-------------------------------------------------------------------------------------
 
-GXMeshNormalHolder* gx_utilityMeshNormalHolder = 0;
-
-GXBool GXCALL GXUtilityExportNativeStaticMesh ( const GXWChar* fileName, INode* node, GXBool elements, GXBool isExportUVs, GXBool isExportNormals, GXBool isExportTangentBitangentPairs )
+GXBool GXCALL GXUtilityExportNativeStaticMesh ( const GXWChar* /*fileName*/, INode* /*node*/, GXBool /*elements*/, GXBool /*isExportUVs*/, GXBool /*isExportNormals*/, GXBool /*isExportTangentBitangentPairs*/ )
 {
-	const ObjectState& os = node->EvalWorldState ( gx_UtilityInterface->GetTime () );
-	Object* obj = os.obj;
-
-	if ( !obj->CanConvertToType ( Class_ID ( TRIOBJ_CLASS_ID, 0 ) ) )
-		return GX_FALSE;
-
-	TriObject* tri = (TriObject*)obj->ConvertToType ( gx_UtilityInterface->GetTime(), Class_ID ( TRIOBJ_CLASS_ID, 0 ) );
-
-	if ( ( tri->HasUVW () == FALSE ) && isExportUVs )
-	{
-		MessageBoxA ( 0, "Mesh doesn't contain UVs", GX_ENGINE_EXPORTER_MESSAGE_BOX_TITLE, MB_ICONWARNING );
-		return GX_FALSE;
-	}
-
-	GXNativeStaticMeshDesc desc;
-	desc.numElements = (GXUInt)( elements ? tri->mesh.numFaces * 3 : 0 );
-	desc.numVertices = (GXUInt)( elements ? tri->mesh.numVerts : (GXUInt)tri->mesh.numFaces * 3 );
-	desc.numUVs = isExportUVs ? desc.numVertices : 0u;
-	desc.numNormals = isExportNormals ? desc.numVertices : 0u;
-	desc.numTBPairs = isExportTangentBitangentPairs ? desc.numVertices : 0u;
-
-	desc.elements = 0u;
-	desc.vertices = nullptr;
-	desc.uvs = nullptr;
-	desc.normals = nullptr;
-	desc.tangents = nullptr;
-	desc.bitangents = nullptr;
-
-	if ( elements )
-	{
-		desc.elements = (GXUInt*)malloc ( desc.numElements * sizeof ( GXUInt ) );
-
-		for ( GXInt face = 0; face < tri->mesh.numFaces; face++ )
-		{
-			const DWORD* ind = tri->mesh.faces[ face ].v;
-
-			desc.elements[ face * 3 ] = (GXUInt)ind[ 0 ];
-			desc.elements[ face * 3 + 1 ] = (GXUInt)ind[ 2 ];
-			desc.elements[ face * 3 + 2 ] = (GXUInt)ind[ 1 ];
-		}
-
-		desc.vertices = (GXVec3*)malloc ( desc.numVertices * sizeof ( GXVec3 ) );
-
-		for ( GXInt i = 0; i < tri->mesh.numVerts; i++ )
-		{
-			const Point3& vertex = tri->mesh.verts[ i ];
-			GXConvert3DSMaxToGXEngine ( desc.vertices[ i ], vertex.x, vertex.y, vertex.z );
-		}
-
-		if ( isExportUVs )
-		{
-			desc.uvs = (GXVec2*)malloc ( desc.numUVs * sizeof ( GXVec2 ) );
-
-			for ( GXInt face = 0; face < tri->mesh.numFaces; face++ )
-			{
-				const DWORD* vertexIndex = tri->mesh.faces[ face ].v;
-				const DWORD* uvIndex = tri->mesh.tvFace[ face ].t;
-				const UVVert* uvs = tri->mesh.tVerts;
-
-				desc.uvs[ vertexIndex[ 0 ] ].Init ( uvs[ uvIndex[ 0 ] ].x, uvs[ uvIndex[ 0 ] ].y );
-				desc.uvs[ vertexIndex[ 2 ] ].Init ( uvs[ uvIndex[ 2 ] ].x, uvs[ uvIndex[ 2 ] ].y );
-				desc.uvs[ vertexIndex[ 1 ] ].Init ( uvs[ uvIndex[ 1 ] ].x, uvs[ uvIndex[ 1 ] ].y );
-			}
-		}
-	}
-	else
-	{
-		desc.vertices = (GXVec3*)malloc ( desc.numVertices * sizeof ( GXVec3 ) );
-
-		for ( GXInt face = 0; face < tri->mesh.numFaces; face++ )
-		{
-			const DWORD* ind = tri->mesh.faces[ face ].v;
-			const Point3* vertex = tri->mesh.verts;
-
-			GXUInt offset = (GXUInt)( face * 3 );
-
-			GXConvert3DSMaxToGXEngine ( desc.vertices[ offset ], vertex[ ind[ 0 ] ].x, vertex[ ind[ 0 ] ].y, vertex[ ind[ 0 ] ].z );
-			GXConvert3DSMaxToGXEngine ( desc.vertices[ offset + 1 ], vertex[ ind[ 2 ] ].x, vertex[ ind[ 2 ] ].y, vertex[ ind[ 2 ] ].z );
-			GXConvert3DSMaxToGXEngine ( desc.vertices[ offset + 2 ], vertex[ ind[ 1 ] ].x, vertex[ ind[ 1 ] ].y, vertex[ ind[ 1 ] ].z );
-		}
-
-		if ( isExportUVs )
-		{
-			desc.uvs = (GXVec2*)malloc ( desc.numUVs * sizeof ( GXVec2 ) );
-
-			for ( GXInt face = 0; face < tri->mesh.numFaces; face++ )
-			{
-				const DWORD* uvIndex = tri->mesh.tvFace[ face ].t;
-				const UVVert* uvs = tri->mesh.tVerts;
-				GXUInt offset = (GXUInt)( face * 3 );
-
-				desc.uvs[ offset ].Init ( uvs[ uvIndex[ 0 ] ].x, uvs[ uvIndex[ 0 ] ].y );
-				desc.uvs[ offset + 1 ].Init ( uvs[ uvIndex[ 2 ] ].x, uvs[ uvIndex[ 2 ] ].y );
-				desc.uvs[ offset + 2 ].Init ( uvs[ uvIndex[ 1 ] ].x, uvs[ uvIndex[ 1 ] ].y );
-			}
-		}
-	}
-
-	if ( isExportNormals )
-	{
-		gx_utilityMeshNormalHolder = new GXMeshNormalHolder ( tri->mesh );
-		gx_utilityMeshNormalHolder->BuildNormals ();
-
-		desc.normals = (GXVec3*)malloc ( desc.numNormals * sizeof ( GXVec3 ) );
-		for ( GXInt face = 0; face < tri->mesh.numFaces; face++ )
-		{
-			const Face& f = tri->mesh.faces[ face ];
-			GXUInt offset = (GXUInt)( face * 3 );
-
-			GXUInt ind = f.v[ 0 ];
-			GXVec3 temp;
-			gx_utilityMeshNormalHolder->GetNormal ( temp, ind, f.smGroup );
-			GXConvert3DSMaxToGXEngine ( desc.normals[ offset ], temp.GetX (), temp.GetY (), temp.GetZ () );
-
-			ind = f.v[ 2 ];
-			gx_utilityMeshNormalHolder->GetNormal ( temp, ind, f.smGroup );
-			GXConvert3DSMaxToGXEngine ( desc.normals[ offset + 1 ], temp.GetX (), temp.GetY (), temp.GetZ () );
-
-			ind = f.v[ 1 ];
-			gx_utilityMeshNormalHolder->GetNormal ( temp, ind, f.smGroup );
-			GXConvert3DSMaxToGXEngine ( desc.normals[ offset + 2 ], temp.GetX (), temp.GetY (), temp.GetZ () );
-		}
-
-		delete gx_utilityMeshNormalHolder;
-	}
-
-	if ( isExportTangentBitangentPairs )
-	{
-		desc.tangents = (GXVec3*)malloc ( desc.numTBPairs * sizeof ( GXVec3 ) );
-		desc.bitangents = (GXVec3*)malloc ( desc.numTBPairs * sizeof ( GXVec3 ) );
-
-		GXUInt numTriangles = desc.numVertices / 3;
-
-		GXUInt ind = 0;
-		for ( GXUInt i = 0; i < numTriangles; i++ )
-		{
-			const GXUByte* vertices = (const GXUByte*)( desc.vertices + i * 3 );
-			const GXUByte* uvs = (const GXUByte*)( desc.uvs + i * 3 );
-
-			GXGetTangentBitangent ( desc.tangents[ ind ], desc.bitangents[ ind ], 0, vertices, sizeof ( GXVec3 ), uvs, sizeof ( GXVec2 ) );
-			ind++;
-
-			GXGetTangentBitangent ( desc.tangents[ ind ], desc.bitangents[ ind ], 1, vertices, sizeof ( GXVec3 ), uvs, sizeof ( GXVec2 ) );
-			ind++;
-
-			GXGetTangentBitangent ( desc.tangents[ ind ], desc.bitangents[ ind ], 2, vertices, sizeof ( GXVec3 ), uvs, sizeof ( GXVec2 ) );
-			ind++;
-		}
-	}
-
-	GXExportNativeStaticMesh ( fileName, desc );
-
-	free ( desc.vertices );
-
-	if ( elements ) free ( desc.elements );
-	if ( isExportUVs ) free ( desc.uvs );
-	if ( isExportNormals ) free ( desc.normals );
-
-	if ( isExportTangentBitangentPairs )
-	{
-		free ( desc.tangents );
-		free ( desc.bitangents );
-	}
-
-	if ( obj != tri )
-		tri->DeleteMe ();
+	MessageBoxA ( 0, "Need to implement", "Warning", MB_ICONWARNING | MB_OK );
 
 	return GX_TRUE;
 }

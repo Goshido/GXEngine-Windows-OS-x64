@@ -10,7 +10,6 @@
 #define WEIGHTS_STREAM			6
 
 #define MAX_BONES				80
-#define FLOATS_PER_BONE			7
 
 
 layout ( location = VERTEX_STREAM ) in vec3 vertex;
@@ -21,7 +20,7 @@ layout ( location = BITANGENT_STREAM ) in vec3 bitangent;
 layout ( location = WEIGHT_INDICES_STREAM ) in vec4 weightIndices;
 layout ( location = WEIGHTS_STREAM ) in vec4 weights;
 
-uniform float bones[ MAX_BONES * FLOATS_PER_BONE ];
+uniform mat4 bones[ MAX_BONES ];
 
 flat out vec3 v_vertex;
 flat out vec2 v_uv;
@@ -32,86 +31,12 @@ flat out vec3 v_bitangent;
 
 vec3 VertexSkinning ( const in vec3 p, const in int index )
 {
-	int i = index * FLOATS_PER_BONE;
-
-	float r = bones[ i ];
-	float a = bones[ i + 1 ];
-	float b = bones[ i + 2 ];
-	float c = bones[ i + 3 ];
-
-	float rr = r * r;
-	float ra2 = r * a * 2.0f;
-	float rb2 = r * b * 2.0f;
-	float rc2 = r * c * 2.0f;
-
-	float aa = a * a;
-	float ab2 = a * b * 2.0f;
-	float ac2 = a * c * 2.0f;
-
-	float bb = b * b;
-	float bc2 = b * c * 2.0f;
-
-	float cc = c * c;
-
-	mat3 rotation;
-
-	//GLSL is column-major matrix notation. See GLSL 3.30 specification (49 page).
-
-	rotation[ 0 ][ 0 ] = rr + aa - bb - cc;
-	rotation[ 1 ][ 0 ] = ab2 - rc2;
-	rotation[ 2 ][ 0 ] = rb2 + ac2;
-
-	rotation[ 0 ][ 1 ] = rc2 + ab2;
-	rotation[ 1 ][ 1 ] = rr - aa + bb - cc;
-	rotation[ 2 ][ 1 ] = bc2 - ra2;
-
-	rotation[ 0 ][ 2 ] = ac2 - rb2;
-	rotation[ 1 ][ 2 ] = ra2 + bc2;
-	rotation[ 2 ][ 2 ] = rr - aa - bb + cc;
-
-	return rotation * p + vec3 ( bones[ i + 4 ], bones[ i + 5 ], bones[ i + 6 ] );
+	return ( bones[ index ] * vec4 ( p, 1.0 ) ).xyz;
 }
 
 vec3 VectorSkinning ( const in vec3 v, const in int index )
 {
-	int i = index * FLOATS_PER_BONE;
-
-	float r = bones[ i ];
-	float a = bones[ i + 1 ];
-	float b = bones[ i + 2 ];
-	float c = bones[ i + 3 ];
-
-	float rr = r * r;
-	float ra2 = r * a * 2.0f;
-	float rb2 = r * b * 2.0f;
-	float rc2 = r * c * 2.0f;
-
-	float aa = a * a;
-	float ab2 = a * b * 2.0f;
-	float ac2 = a * c * 2.0f;
-
-	float bb = b * b;
-	float bc2 = b * c * 2.0f;
-
-	float cc = c * c;
-
-	mat3 rotation;
-
-	//GLSL is column-major matrix notation. See GLSL 3.30 specification (49 page).
-
-	rotation[ 0 ][ 0 ] = rr + aa - bb - cc;
-	rotation[ 1 ][ 0 ] = ab2 - rc2;
-	rotation[ 2 ][ 0 ] = rb2 + ac2;
-
-	rotation[ 0 ][ 1 ] = rc2 + ab2;
-	rotation[ 1 ][ 1 ] = rr - aa + bb - cc;
-	rotation[ 2 ][ 1 ] = bc2 - ra2;
-
-	rotation[ 0 ][ 2 ] = ac2 - rb2;
-	rotation[ 1 ][ 2 ] = ra2 + bc2;
-	rotation[ 2 ][ 2 ] = rr - aa - bb + cc;
-
-	return rotation * v;
+	return mat3 ( bones[ index ] ) * v;
 }
 
 void main ()

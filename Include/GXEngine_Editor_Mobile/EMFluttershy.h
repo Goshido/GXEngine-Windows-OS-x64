@@ -29,6 +29,8 @@ class EMFluttershy : public GXTransform
 		GXVoid Render ( GXFloat deltaTime );
 		GXVoid UpdatePose ( GXFloat deltaTime );
 
+		const GXSkeleton& GetSkeleton () const;
+
 	protected:
 		GXVoid TransformUpdated () override;
 };

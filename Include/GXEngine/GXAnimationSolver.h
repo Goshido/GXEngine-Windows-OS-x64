@@ -18,6 +18,7 @@ class GXAnimationSolver
 		virtual ~GXAnimationSolver ();
 
 		virtual GXBool GetBone ( GXQuat &rotation, GXVec3 &location, const GXUTF8* boneName ) = 0;
+		virtual GXBool GetBone2 ( GXMat4 &transform, const GXUTF8* boneName ) = 0;
 		virtual GXVoid Update ( GXFloat delta ) = 0;
 };
 

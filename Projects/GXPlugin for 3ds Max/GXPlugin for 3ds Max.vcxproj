@@ -169,9 +169,11 @@ copy "$(OutDir)$(TargetFileName)" "$(PLUGIN_DIRECTORY_3DS_MAX)"</Command>
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshSaver.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp" />
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXAnimationExporter.cpp" />
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXBone.cpp" />
     <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXDLLMain.cpp" />
-    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXMeshNormalHolder.cpp" />
     <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXSkeletalMeshExporter.cpp" />
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXSkeleton.cpp" />
     <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -203,9 +205,11 @@ copy "$(OutDir)$(TargetFileName)" "$(PLUGIN_DIRECTORY_3DS_MAX)"</Command>
     <ClInclude Include="..\..\Include\GXCommon\GXThread.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXTime.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXTypes.h" />
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXAnimationExporter.h" />
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXBone.h" />
     <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXDLL.h" />
-    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXMeshNormalHolder.h" />
     <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXSkeletalMeshExporter.h" />
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXSkeleton.h" />
     <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXUIResource.h" />
     <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXUtility.h" />
     <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXResource.h" />

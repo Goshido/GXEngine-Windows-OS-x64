@@ -19,6 +19,11 @@ GXBool GXAnimationSolverMovement::GetBone ( GXQuat &rotation, GXVec3 &location, 
 	return animationStreams[ (GXUShort)state ]->GetBone ( rotation, location, boneName );
 }
 
+GXBool GXAnimationSolverMovement::GetBone2 ( GXMat4 &transform, const GXUTF8* boneName )
+{
+	return animationStreams[ (GXUShort)state ]->GetBone2 ( transform, boneName );
+}
+
 GXVoid GXAnimationSolverMovement::Update ( GXFloat delta )
 {
 	animationStreams[ (GXUShort)state ]->Update ( delta );

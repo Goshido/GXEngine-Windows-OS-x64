@@ -410,14 +410,14 @@ GXMeshGeometry& GXCALL GXMeshGeometry::LoadFromStm ( const GXWChar* fileName )
 GXMeshGeometry& GXCALL GXMeshGeometry::LoadFromSkm ( const GXWChar* fileName )
 {
 	GXSkeletalMeshData skeletalMeshData;
-	GXLoadNativeSkeletalMesh ( fileName, skeletalMeshData );
+	GXLoadNativeSkeletalMesh ( skeletalMeshData, fileName );
 
-	GLsizeiptr originalVBOSize = (GLsizeiptr)( skeletalMeshData.numVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec4 ) + sizeof ( GXVec4 ) ) );
-	GLsizeiptr poseVBOSize = (GLsizeiptr)( skeletalMeshData.numVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) ) );
+	GLsizeiptr originalVBOSize = (GLsizeiptr)( skeletalMeshData.totalVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec4 ) + sizeof ( GXVec4 ) ) );
+	GLsizeiptr poseVBOSize = (GLsizeiptr)( skeletalMeshData.totalVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) ) );
 
 	GXMeshGeometry* meshGeometry = new GXMeshGeometry ();
 	meshGeometry->InitSkeletalResources ();
-	meshGeometry->totalSkeletalVertices = (GLsizei)skeletalMeshData.numVertices;
+	meshGeometry->totalSkeletalVertices = (GLsizei)skeletalMeshData.totalVertices;
 	meshGeometry->skeletalTopology = GL_TRIANGLES;
 	meshGeometry->skinningMaterial = new GXSkinningMaterial ();
 

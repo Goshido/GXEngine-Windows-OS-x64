@@ -36,9 +36,6 @@
     <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXDLLMain.cpp">
       <Filter>Source Files\GXPlugin</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXMeshNormalHolder.cpp">
-      <Filter>Source Files\GXPlugin</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXSkeletalMeshExporter.cpp">
       <Filter>Source Files\GXPlugin</Filter>
     </ClCompile>
@@ -69,12 +66,18 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshSaver.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXAnimationExporter.cpp">
+      <Filter>Source Files\GXPlugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXBone.cpp">
+      <Filter>Source Files\GXPlugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXSkeleton.cpp">
+      <Filter>Source Files\GXPlugin</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXDLL.h">
-      <Filter>Header Files\GXPlugin</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXMeshNormalHolder.h">
       <Filter>Header Files\GXPlugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXSkeletalMeshExporter.h">
@@ -172,6 +175,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\GXCommon\GXCFGStruct.h">
       <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXAnimationExporter.h">
+      <Filter>Header Files\GXPlugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXBone.h">
+      <Filter>Header Files\GXPlugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXSkeleton.h">
+      <Filter>Header Files\GXPlugin</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

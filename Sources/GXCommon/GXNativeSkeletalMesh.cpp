@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.2
 
 #include <GXCommon/GXNativeSkeletalMesh.h>
 #include <GXCommon/GXFileSystem.h>
@@ -6,91 +6,110 @@
 #include <GXCommon/GXMemory.h>
 
 
+#define UNKNOWN_BONE_INDEX	0xFFFE
+
+
 GXSkeletalMeshData::GXSkeletalMeshData ()
 {
-	numVertices = 0;
-	vboData = 0;
-	numBones = 0;
-	boneNames = 0;
-	parentIndex = 0;
-	refPose = bindTransform = 0;
+	totalVertices = 0;
+	vboData = nullptr;
+
+	totalBones = 0;
+	boneNames = nullptr;
+	parentBoneIndices = nullptr;
+	referencePose = inverseBindTransform = nullptr;
+	referencePose2 = inverseBindTransform2 = nullptr;
 }
 
 GXVoid GXSkeletalMeshData::Cleanup ()
 {
 	GXSafeFree ( vboData );
-	GXSafeFree ( parentIndex );
-	GXSafeFree ( refPose );
-	GXSafeFree ( bindTransform );
+	GXSafeFree ( boneNames );
+	GXSafeFree ( parentBoneIndices );
+	GXSafeFree ( referencePose );
+	GXSafeFree ( referencePose2 );
+	GXSafeFree ( inverseBindTransform );
+	GXSafeFree ( inverseBindTransform2 );
 }
 
 //-------------------------------------------------------------------------------------------------------------
 
 GXAnimationInfo::GXAnimationInfo ()
 {
-	numBones = 0;
+	totalBones = 0;
 	boneNames = nullptr;
 
 	fps = 60.0f;
-	numFrames = 0;
+	totalFrames = 0;
 	keys = nullptr;
 }
 
 GXVoid GXAnimationInfo::Cleanup ()
 {
-	numBones = 0;
+	totalBones = 0;
 	GXSafeFree ( boneNames );
 
 	fps = 60.0f;
-	numFrames = 0;
+	totalFrames = 0;
 	GXSafeFree ( keys );
 }
 
 //-------------------------------------------------------------------------------------------------------------
 
-GXVoid GXCALL GXLoadNativeSkeletalMesh ( const GXWChar* fileName, GXSkeletalMeshData &info )
+GXVoid GXCALL GXLoadNativeSkeletalMesh ( GXSkeletalMeshData &info, const GXWChar* fileName )
 {
 	GXUByte* data;
-	GXUBigInt size;
+	GXUBigInt fileSize;
 
-	if ( !GXLoadFile ( fileName, (GXVoid**)&data, size, GX_TRUE ) )
+	if ( !GXLoadFile ( fileName, (GXVoid**)&data, fileSize, GX_TRUE ) )
 	{
 		GXLogW ( L"GXLoadNativeSkeletalMesh::Error - Can't load file %s\n", fileName );
 		return;
 	}
 
+	GXUPointer size = 0;
+
 	GXNativeSkeletalMeshHeader* h = (GXNativeSkeletalMeshHeader*)data;
 
-	info.numVertices = h->numVertices;
+	info.totalVertices = h->totalVertices;
 
-	size = info.numVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec4 ) + sizeof ( GXVec4 ) );
+	size = info.totalVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec4 ) + sizeof ( GXVec4 ) );
 	info.vboData = (GXFloat*)malloc ( size );
 	memcpy ( info.vboData, data + h->vboOffset, size );
 
-	info.numBones = h->numBones;
+	info.totalBones = h->totalBones;
 
-	size = info.numBones * GX_BONE_NAME_SIZE * sizeof ( GXUTF8 );
+	size = info.totalBones * GX_BONE_NAME_SIZE * sizeof ( GXUTF8 );
 	info.boneNames = (GXUTF8*)malloc ( size );
 	memcpy ( info.boneNames, data + h->boneNamesOffset, size );
 
-	size = info.numBones * sizeof ( GXShort );
-	info.parentIndex = (GXShort*)malloc ( size );
-	memcpy ( info.parentIndex, data + h->boneParentIndicesOffset, size );
+	size = info.totalBones * sizeof ( GXShort );
+	info.parentBoneIndices = (GXUShort*)malloc ( size );
+	memcpy ( info.parentBoneIndices, data + h->parentBoneIndicesOffset, size );
 
-	size = info.numBones * sizeof ( GXQuatLocJoint );
-	info.refPose = (GXQuatLocJoint*)malloc ( size );
-	memcpy ( info.refPose, data + h->refPoseOffset, size );
+	size = info.totalBones * sizeof ( GXQuatLocJoint );
+	info.referencePose = (GXQuatLocJoint*)malloc ( size );
+	memcpy ( info.referencePose, data + h->referensePoseOffset, size );
 
-	info.bindTransform = (GXQuatLocJoint*)malloc ( size );
-	memcpy ( info.bindTransform, data + h->bindTransformOffset, size );
+	size = info.totalBones * sizeof ( GXMat4 );
+	info.referencePose2 = (GXMat4*)malloc ( size );
+	memcpy ( info.referencePose2, data + h->referensePoseOffset2, size );
+
+	size = info.totalBones * sizeof ( GXQuatLocJoint );
+	info.inverseBindTransform = (GXQuatLocJoint*)malloc ( size );
+	memcpy ( info.inverseBindTransform, data + h->inverseBindTransformOffset, size );
+
+	size = info.totalBones * sizeof ( GXMat4 );
+	info.inverseBindTransform2 = (GXMat4*)malloc ( size );
+	memcpy ( info.inverseBindTransform2, data + h->inverseBindTransformOffset2, size );
 
 	free ( data );
 }
 
-GXVoid GXCALL GXLoadNativeAnimation ( const GXWChar* fileName, GXAnimationInfo &info )
+GXVoid GXCALL GXLoadNativeAnimation ( GXAnimationInfo &info, const GXWChar* fileName )
 {
 	GXUByte* data;
-	GXUBigInt size;
+	GXUPointer size;
 
 	if ( !GXLoadFile ( fileName, (GXVoid**)&data, size, GX_TRUE ) )
 	{
@@ -101,16 +120,20 @@ GXVoid GXCALL GXLoadNativeAnimation ( const GXWChar* fileName, GXAnimationInfo &
 	GXNativeAnimationHeader* h = (GXNativeAnimationHeader*)data;
 
 	info.fps = h->fps;
-	info.numBones = h->numBones;
-	info.numFrames = h->numFrames;
+	info.totalBones = h->totalBones;
+	info.totalFrames = h->totalFrames;
 	
-	size = h->numBones * GX_BONE_NAME_SIZE * sizeof ( GXUTF8 );
+	size = h->totalBones * GX_BONE_NAME_SIZE * sizeof ( GXUTF8 );
 	info.boneNames = (GXUTF8*)malloc ( size );
 	memcpy ( info.boneNames, data + h->boneNamesOffset, size );
 
-	size = h->numBones * h->numFrames * sizeof ( GXQuatLocJoint );
+	size = h->totalBones * h->totalFrames * sizeof ( GXQuatLocJoint );
 	info.keys = (GXQuatLocJoint*)malloc ( size );
 	memcpy ( info.keys, data + h->keysOffset, size );
+
+	size = h->totalBones * h->totalFrames * sizeof ( GXMat4 );
+	info.keys2 = (GXMat4*)malloc ( size );
+	memcpy ( info.keys2, data + h->keysOffset2, size );
 
 	free ( data );
 }

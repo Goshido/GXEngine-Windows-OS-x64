@@ -4,30 +4,37 @@
 
 int wmain ( int /*argc*/, const wchar_t** /*argv*/ )
 {
-	GXVec3 v ( 1.0f, 0.0f, 0.0f );
+	GXMat4 m;
+	m.m[ 0 ][ 0 ] = 1.0f;
+	m.m[ 0 ][ 1 ] = -0.0f;
+	m.m[ 0 ][ 2 ] = -0.0f;
+	m.m[ 0 ][ 3 ] = 0.0f;
 
-	GXVec3 rotationAxis ( 0.0f, 1.0f, 0.0f );
-	rotationAxis.Normalize ();
+	m.m[ 1 ][ 0 ] = 0.0f;
+	m.m[ 1 ][ 1 ] = 0.994846f;
+	m.m[ 1 ][ 2 ] = 0.101396f;
+	m.m[ 1 ][ 3 ] = 0.0f;
 
-	GXQuat rotationQuaternion;
-	rotationQuaternion.FromAxisAngle ( rotationAxis, GXDegToRad ( 180.0f ) );
+	m.m[ 2 ][ 0 ] = 0.0f;
+	m.m[ 2 ][ 1 ] = -0.101396f;
+	m.m[ 2 ][ 2 ] = 0.994846f;
+	m.m[ 2 ][ 3 ] = 0.0f;
 
-	GXVec3 rotatedV0;
-	rotationQuaternion.Transform ( rotatedV0, v );
+	m.m[ 3 ][ 0 ] = 13.349850f;
+	m.m[ 3 ][ 1 ] = -0.000023f;
+	m.m[ 3 ][ 2 ] = 0.000008f;
+	m.m[ 3 ][ 3 ] = 1.0f;
 
-	GXMat3 rotationMatrix;
-	rotationMatrix.From ( rotationQuaternion );
+	GXQuat q ( m );
 
-	GXVec3 rotatedV1;
-	rotationMatrix.Multiply ( rotatedV1, v );
+	GXMat4 m1;
+	m1.From ( q, GXVec3 ( 13.349850f, -0.000023f, 0.000008f ) );
 
-	GXQuat q ( rotationMatrix );
+	GXQuat q1 (q);
+	q1.Normalize ();
 
-	GXFloat vl = v.Length ();
-	GXFloat rotatedV0l = rotatedV0.Length ();
-	GXFloat rotatedV1l = rotatedV1.Length ();
-
-	GXLogA ( "%f %f %f\n", vl, rotatedV0l, rotatedV1l );
+	GXMat4 m2;
+	m2.From ( q1, GXVec3 ( 13.349850f, -0.000023f, 0.000008f ) );
 
 	return 0;
 }

@@ -26,6 +26,7 @@ class GXAnimationSolverPlayer : public GXAnimationSolver
 		~GXAnimationSolverPlayer () override;
 
 		GXBool GetBone ( GXQuat &rotation, GXVec3 &location, const GXUTF8* boneName ) override;
+		GXBool GetBone2 ( GXMat4 &transform, const GXUTF8* boneName ) override;
 		GXVoid Update ( GXFloat delta ) override;
 
 		GXVoid SetAnimationSequence ( const GXAnimationInfo* animData );

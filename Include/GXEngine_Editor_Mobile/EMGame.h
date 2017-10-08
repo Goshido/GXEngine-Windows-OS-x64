@@ -57,6 +57,10 @@ class EMGame : public GXGame
 		EMMoveTool*				moveTool;
 
 		EMFluttershy*			fluttershy;
+		GXMeshGeometry*			toParentBoneLine;
+		GXUnlitColorMaterial*	toParentBoneLineMaterial;
+		GXMeshGeometry			jointMesh;
+		GXUnlitColorMaterial*	jointMeshMaterial;
 
 		GXTextureCubeMap*		environmentMap;
 		GXTextureCubeMap*		lightProbeSourceTexture;

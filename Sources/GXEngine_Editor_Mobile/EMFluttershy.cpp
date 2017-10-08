@@ -13,17 +13,18 @@
 
 EMFluttershy::EMFluttershy () :
 //mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLVER_ID )
-mesh ( L"3D Models/Editor Mobile/Test1.skm" ), animationSolverPlayer ( SOLVER_ID )
+mesh ( L"3D Models/Editor Mobile/1.skm" ), animationSolverPlayer ( SOLVER_ID )
 {
-	//GXLoadNativeAnimation ( L"Animations/Editor Mobile/Test1.ani", animationInfo );
-	GXLoadNativeAnimation ( L"Animations/Editor Mobile/Neutral.ani", animationInfo );
+	GXLoadNativeAnimation ( animationInfo, L"Animations/Editor Mobile/1.ani" );
+	//GXLoadNativeAnimation ( animationInfo, L"Animations/Editor Mobile/Neutral.ani" );
 	//skeleton.LoadFromSkm ( L"3D Models/Editor Mobile/Fluttershy.skm" );
-	skeleton.LoadFromSkm ( L"3D Models/Editor Mobile/Test1.skm" );
+	skeleton.LoadFromSkm ( L"3D Models/Editor Mobile/1.skm" );
 	animationSolverPlayer.SetAnimationSequence ( &animationInfo );
 	animationSolverPlayer.SetAnimationMultiplier ( 1.0f );
 	//animationSolverPlayer.EnableNormalization ();
 
-	albedoTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Fluttershy_Diffuse.tga", GX_TRUE, GL_REPEAT, GX_FALSE );
+	//albedoTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Fluttershy_Diffuse.tga", GX_TRUE, GL_REPEAT, GX_FALSE );
+	albedoTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/body01.png", GX_TRUE, GL_REPEAT, GX_FALSE );
 	normalTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE, GL_REPEAT, GX_FALSE );
 	emissionTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE, GL_REPEAT, GX_FALSE );
 	parameterTexture = GXTexture2D::LoadTexture ( L"Textures/System/Default_Diffuse.tga", GX_FALSE, GL_REPEAT, GX_FALSE );
@@ -69,8 +70,13 @@ GXVoid EMFluttershy::Render ( GXFloat deltaTime )
 GXVoid EMFluttershy::UpdatePose ( GXFloat deltaTime )
 {
 	animationSolverPlayer.Update ( deltaTime );
-	skeleton.UpdatePose ( animationSolverPlayer );
+	skeleton.UpdatePose ( animationSolverPlayer, deltaTime );
 	mesh.UpdatePose ( skeleton );
+}
+
+const GXSkeleton& EMFluttershy::GetSkeleton () const
+{
+	return skeleton;
 }
 
 GXVoid EMFluttershy::TransformUpdated ()
