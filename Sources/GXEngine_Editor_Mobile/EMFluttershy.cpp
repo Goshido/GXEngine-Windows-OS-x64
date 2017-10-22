@@ -16,7 +16,7 @@ EMFluttershy::EMFluttershy () :
 mesh ( L"3D Models/Editor Mobile/1.skm" ), animationSolverPlayer ( SOLVER_ID )
 {
 	GXLoadNativeAnimation ( animationInfo, L"Animations/Editor Mobile/1.ani" );
-	//GXLoadNativeAnimation ( animationInfo, L"Animations/Editor Mobile/Neutral.ani" );
+	//GXLoadNativeAnimation ( animationInfo, L"Animations/Editor Mobile/default.ani" );
 	//skeleton.LoadFromSkm ( L"3D Models/Editor Mobile/Fluttershy.skm" );
 	skeleton.LoadFromSkm ( L"3D Models/Editor Mobile/1.skm" );
 	animationSolverPlayer.SetAnimationSequence ( &animationInfo );

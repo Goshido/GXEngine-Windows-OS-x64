@@ -198,7 +198,7 @@ GXBool GXSkeletalMeshExporter::ExtractGeometryData ( IGameObject &skinMesh )
 	if ( skinMesh.GetIGameType () != IGameMesh::IGAME_MESH ) return GX_FALSE;
 
 	IGameSkin* skin = skinMesh.GetIGameSkin ();
-	IGameMesh* mesh = (IGameMesh*)( &skinMesh );
+	IGameMesh* mesh = skin->GetInitialPose ();
 	GXUInt numFaces = (GXUInt)mesh->GetNumberOfFaces ();
 	Tab<GXInt> texMaps = mesh->GetActiveMapChannelNum ();
 
