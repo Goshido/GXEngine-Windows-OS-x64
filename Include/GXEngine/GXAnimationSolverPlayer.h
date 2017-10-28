@@ -1,4 +1,4 @@
-//version 1.4
+//version 1.5
 
 #ifndef GX_ANIMATION_SOLVER_PLAYER
 #define GX_ANIMATION_SOLVER_PLAYER
@@ -16,7 +16,7 @@ class GXAnimationSolverPlayer : public GXAnimationSolver
 		GXFloat							speed;
 		GXFloat							animPos;
 		const GXAnimationInfo*			animationInfo;
-		GXFloat							delta2PartFactor;
+		GXFloat							deltaToPartFactor;
 		GXFloat							frameInterval;
 		GXFloat							frameInterpolationFactor;
 		GXBool							isNormalize;
@@ -25,8 +25,7 @@ class GXAnimationSolverPlayer : public GXAnimationSolver
 		explicit GXAnimationSolverPlayer ( GXUShort solverID );
 		~GXAnimationSolverPlayer () override;
 
-		GXBool GetBone ( GXQuat &rotation, GXVec3 &location, const GXUTF8* boneName ) override;
-		GXBool GetBone2 ( GXMat4 &transform, const GXUTF8* boneName ) override;
+		GXBool GetBoneJoint ( GXBoneJoint &joint, const GXUTF8* boneName ) override;
 		GXVoid Update ( GXFloat delta ) override;
 
 		GXVoid SetAnimationSequence ( const GXAnimationInfo* animData );

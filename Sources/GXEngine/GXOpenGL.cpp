@@ -4,6 +4,8 @@
 #include <GXCommon/GXLogger.h>
 
 
+#define DEFAULT_OPENGL_FRAMEBUFFER 0
+
 #define OPENGL_GET_PROC(p,n)																		\
 {																									\
 	n = reinterpret_cast <p> ( reinterpret_cast <GXVoid*> ( wglGetProcAddress ( #n ) ) );			\
@@ -235,9 +237,16 @@ GXVoid GXOpenGLState::Restore ()
 	else
 		glDisable ( GL_BLEND );
 
-	GLint maxDrawBuffers = 0;
-	glGetIntegerv ( GL_MAX_DRAW_BUFFERS, &maxDrawBuffers );
-	glDrawBuffers ( (GLsizei)maxDrawBuffers, drawBuffers );
+	if ( fbo == (GLuint)DEFAULT_OPENGL_FRAMEBUFFER )
+	{
+		glDrawBuffer ( drawBuffers[ 0 ] );
+	}
+	else
+	{
+		GLint maxDrawBuffers = 0;
+		glGetIntegerv ( GL_MAX_DRAW_BUFFERS, &maxDrawBuffers );
+		glDrawBuffers ( (GLsizei)maxDrawBuffers, drawBuffers );
+	}
 
 	GXCheckOpenGLError ();
 }

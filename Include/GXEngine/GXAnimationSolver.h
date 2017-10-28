@@ -1,4 +1,4 @@
-//version 1.4
+//version 1.5
 
 #ifndef	GX_ANIMATION_SOLVER
 #define	GX_ANIMATION_SOLVER
@@ -17,10 +17,9 @@ class GXAnimationSolver
 		explicit GXAnimationSolver ( GXUShort solverID );
 		virtual ~GXAnimationSolver ();
 
-		virtual GXBool GetBone ( GXQuat &rotation, GXVec3 &location, const GXUTF8* boneName ) = 0;
-		virtual GXBool GetBone2 ( GXMat4 &transform, const GXUTF8* boneName ) = 0;
+		virtual GXBool GetBoneJoint ( GXBoneJoint &joint, const GXUTF8* boneName ) = 0;
 		virtual GXVoid Update ( GXFloat delta ) = 0;
 };
 
 
-#endif //GX_ANIM_SOLVER
+#endif //GX_ANIMATION_SOLVER

@@ -8,9 +8,9 @@
 #include "GXStrings.h"
 
 
-#define GX_BONE_NAME_SIZE			64
-#define GX_FLOATS_PER_BONE			7
-#define GX_MAXIMUM_BONES_PER_MESH	80
+#define GX_BONE_NAME_SIZE				64
+#define GX_FLOATS_PER_BONE				7
+#define GX_MAXIMUM_BONES_PER_MESH		80
 
 #define GX_UNKNOWN_BONE_INDEX			0xFFFE
 #define GX_ROOT_BONE_PARENT_INDEX		0xFFFF
@@ -28,14 +28,12 @@ struct GXNativeSkeletalMeshHeader
 	GXUBigInt	boneNamesOffset;				//array of totalBones elements: 64 byte slot with zero terminated UTF8 string.
 	GXUBigInt	parentBoneIndicesOffset;		//array of totalBones elements: zero based index (GXUShort).
 	GXUBigInt	referensePoseOffset;			//array of totalBones elements: location (GXVec3), rotation (GXQuat). Relative parent.
-	GXUBigInt	referensePoseOffset2;
 	GXUBigInt	inverseBindTransformOffset;		//array of totalBones elements: location (GXVec3), rotation (GXQuat).
-	GXUBigInt	inverseBindTransformOffset2;
 };
 
 #pragma pack ( pop )
 
-struct GXQuatLocJoint
+struct GXBoneJoint
 {
 	GXQuat	rotation;
 	GXVec3	location;
@@ -49,10 +47,8 @@ struct GXSkeletalMeshData
 	GXUShort				totalBones;
 	GXUTF8*					boneNames;
 	GXUShort*				parentBoneIndices;
-	GXQuatLocJoint*			referencePose;
-	GXMat4*					referencePose2;
-	GXQuatLocJoint*			inverseBindTransform;
-	GXMat4*					inverseBindTransform2;
+	GXBoneJoint*			referencePose;
+	GXBoneJoint*			inverseBindTransform;
 
 	GXSkeletalMeshData ();
 	GXVoid Cleanup ();
@@ -81,8 +77,7 @@ struct GXAnimationInfo
 
 	GXFloat					fps;
 	GXUInt					totalFrames;
-	GXQuatLocJoint*			keys;
-	GXMat4*					keys2;
+	GXBoneJoint*			keys;
 
 	GXAnimationInfo ();
 	GXVoid Cleanup ();

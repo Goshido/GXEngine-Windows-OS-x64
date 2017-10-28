@@ -35,12 +35,9 @@ class GXSkeleton
 		GXVoid CalculateInverseBindTransform ();
 		GXVoid CalculatePoseTransform ( GXUInt frame );
 
-		const GXQuatLocJoint& GetBoneReferenceTransform ( GXUShort boneIndex ) const;
-		const GXMat4& GetBoneReferenceTransform2 ( GXUShort boneIndex ) const;
-		const GXQuatLocJoint& GetBoneInverseBindTransform ( GXUShort boneIndex ) const;
-		const GXMat4& GetBoneInverseBindTransform2 ( GXUShort boneIndex ) const;
-		const GXQuatLocJoint& GetBonePoseTransform ( GXUShort boneIndex ) const;
-		const GXMat4& GetBonePoseTransform2 ( GXUShort boneIndex ) const;
+		const GXBoneJoint& GetBoneReferenceTransform ( GXUShort boneIndex ) const;
+		const GXBoneJoint& GetBoneInverseBindTransform ( GXUShort boneIndex ) const;
+		const GXBoneJoint& GetBonePoseTransform ( GXUShort boneIndex ) const;
 
 		GXUShort GetTotalBones () const;
 

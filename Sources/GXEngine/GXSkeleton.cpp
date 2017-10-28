@@ -1,4 +1,4 @@
-//version 1.1
+//version 1.2
 
 #include <GXEngine/GXSkeleton.h>
 #include <GXCommon/GXMemory.h>
@@ -15,30 +15,20 @@ GXSkeleton::GXSkeleton ()
 	tempPoseLocal = nullptr;
 	tempPoseGlobal = nullptr;
 	referencePose = nullptr;
-	referencePose2 = nullptr;
 	inverseBindTransform = nullptr;
-	inverseBindTransform2 = nullptr;
-	pose = nullptr;
-	pose2 = nullptr;
+	skinTransform = nullptr;
 }
 
 GXSkeleton::~GXSkeleton ()
 {
-	if ( totalBones == 0 ) return;
+	GXSafeFree ( boneNames );
+	GXSafeFree ( parentBoneIndices );
 
-	free ( boneNames );
-	free ( parentBoneIndices );
-
-	free ( tempPoseLocal );
-	free ( tempPoseLocal2 );
-	free ( tempPoseGlobal );
-	free ( tempPoseGlobal2 );
-	free ( referencePose );
-	free ( referencePose2 );
-	free ( inverseBindTransform );
-	free ( inverseBindTransform2 );
-	free ( pose );
-	free ( pose2 );
+	GXSafeFree ( tempPoseLocal );
+	GXSafeFree ( tempPoseGlobal );
+	GXSafeFree ( referencePose );
+	GXSafeFree ( inverseBindTransform );
+	GXSafeFree ( skinTransform );
 }
 
 GXVoid GXSkeleton::LoadFromSkm ( const GXWChar* fileName )
@@ -56,41 +46,18 @@ GXVoid GXSkeleton::LoadFromSkm ( const GXWChar* fileName )
 	parentBoneIndices = (GXShort*)malloc ( size );
 	memcpy ( parentBoneIndices, skeletalMeshData.parentBoneIndices, size );
 
-	size = totalBones * sizeof ( GXQuatLocJoint );
-	referencePose = (GXQuatLocJoint*)malloc ( size );
+	size = totalBones * sizeof ( GXBoneJoint );
+	referencePose = (GXBoneJoint*)malloc ( size );
 	memcpy ( referencePose, skeletalMeshData.referencePose, size );
 
-	size = totalBones * sizeof ( GXMat4 );
-	referencePose2 = (GXMat4*)malloc ( size );
-	memcpy ( referencePose2, skeletalMeshData.referencePose2, size );
-
-	size = totalBones * sizeof ( GXQuatLocJoint );
-	inverseBindTransform = (GXQuatLocJoint*)malloc ( size );
+	inverseBindTransform = (GXBoneJoint*)malloc ( size );
 	memcpy ( inverseBindTransform, skeletalMeshData.inverseBindTransform, size );
 
-	size = totalBones * sizeof ( GXMat4 );
-	inverseBindTransform2 = (GXMat4*)malloc ( size );
-	memcpy ( inverseBindTransform2, skeletalMeshData.inverseBindTransform2, size );
-
-	size = totalBones * sizeof ( GXQuatLocJoint );
-	tempPoseLocal = (GXQuatLocJoint*)malloc ( size );
+	tempPoseLocal = (GXBoneJoint*)malloc ( size );
 	memcpy ( tempPoseLocal, referencePose, size );
 
-	size = totalBones * sizeof ( GXMat4 );
-	tempPoseLocal2 = (GXMat4*)malloc ( size );
-	memcpy ( tempPoseLocal2, referencePose2, size );
-
-	size = totalBones * sizeof ( GXQuatLocJoint );
-	tempPoseGlobal = (GXQuatLocJoint*)malloc ( size );
-
-	size = totalBones * sizeof ( GXMat4 );
-	tempPoseGlobal2 = (GXMat4*)malloc ( size );
-
-	size = totalBones * sizeof ( GXQuatLocJoint );
-	pose = (GXQuatLocJoint*)malloc ( size );
-
-	size = totalBones * sizeof ( GXMat4 );
-	pose2 = (GXMat4*)malloc ( size );
+	tempPoseGlobal = (GXBoneJoint*)malloc ( size );
+	skinTransform = (GXBoneJoint*)malloc ( size );
 
 	CalculatePose ();
 
@@ -103,26 +70,12 @@ GXVoid GXSkeleton::UpdatePose ( GXAnimationSolver &solver, GXFloat /*deltaTime*/
 
 	for ( GXUShort i = 0; i < totalBones; i++ )
 	{
-		GXQuat rotation;
-		GXVec3 location;
+		GXBoneJoint joint;
 
-		if ( solver.GetBone ( rotation, location, boneNames + boneNameOffset ) )
-		{
-			tempPoseLocal[ i ].rotation = rotation;
-			tempPoseLocal[ i ].location = location;
-		}
+		if ( solver.GetBoneJoint ( joint, boneNames + boneNameOffset ) )
+			tempPoseLocal[ i ] = joint;
 		else
-		{
-			tempPoseLocal[ i ].location = referencePose[ i ].location;
-			tempPoseLocal[ i ].rotation = referencePose[ i ].rotation;
-		}
-
-		GXMat4 transform;
-
-		if ( solver.GetBone2 ( transform, boneNames + boneNameOffset ) )
-			tempPoseLocal2[ i ] = transform;
-		else
-			tempPoseLocal2[ i ] = referencePose2[ i ];
+			tempPoseLocal[ i ] = referencePose[ i ];
 
 		boneNameOffset += GX_BONE_NAME_SIZE;
 	}
@@ -130,24 +83,19 @@ GXVoid GXSkeleton::UpdatePose ( GXAnimationSolver &solver, GXFloat /*deltaTime*/
 	CalculatePose ();
 }
 
-const GXQuatLocJoint* GXSkeleton::GetPose () const
+const GXBoneJoint* GXSkeleton::GetSkinTransform () const
 {
-	return pose;
+	return skinTransform;
 }
 
-const GXMat4* GXSkeleton::GetPose2 () const
+const GXBoneJoint& GXSkeleton::GetBoneTransformWorld ( GXUShort boneIndex ) const
 {
-	return pose2;
+	return tempPoseGlobal[ boneIndex ];
 }
 
-const GXMat4& GXSkeleton::GetBoneTransformWorld ( GXUShort boneIndex ) const
+const GXBoneJoint& GXSkeleton::GetParentBoneTransformWorld ( GXUShort boneIndex ) const
 {
-	return tempPoseGlobal2[ boneIndex ];
-}
-
-const GXMat4& GXSkeleton::GetParentBoneTransformWorld ( GXUShort boneIndex ) const
-{
-	return tempPoseGlobal2[ parentBoneIndices[ boneIndex ] ];
+	return tempPoseGlobal[ parentBoneIndices[ boneIndex ] ];
 }
 
 GXUShort GXSkeleton::GetTotalBones () const
@@ -157,18 +105,29 @@ GXUShort GXSkeleton::GetTotalBones () const
 
 GXVoid GXSkeleton::CalculatePose ()
 {
-	//=======================================
-	tempPoseGlobal2[ 0 ] = tempPoseLocal2[ 0 ];
-	pose2[ 0 ].Multiply ( inverseBindTransform2[ 0 ], tempPoseGlobal2[ 0 ] );
-	//=======================================
+	//Note: Quaternion mathematics simular to column-major notation matrix mathematics.
+	//So we need to do multiplication in reverse order to calculate skin transform.
+
+	tempPoseGlobal[ 0 ] = tempPoseLocal[ 0 ];
+	skinTransform[ 0 ].rotation.Multiply ( tempPoseGlobal[ 0 ].rotation, inverseBindTransform[ 0 ].rotation );
+	GXVec3 buffer;
+	tempPoseGlobal[ 0 ].rotation.TransformFast ( buffer, inverseBindTransform[ 0 ].location );
+	skinTransform[ 0 ].location.Sum ( buffer, tempPoseGlobal[ 0 ].location );
 
 	for ( GXUShort i = 1; i < totalBones; i++ )
 	{
-		GXShort parentIndex = parentBoneIndices[ i ];
+		const GXBoneJoint& parentBoneTransformGlobal = tempPoseGlobal[ parentBoneIndices[ i ] ];
+		const GXBoneJoint& boneInverseBindTransform = inverseBindTransform[ i ];
+		const GXBoneJoint& boneTransformLocal = tempPoseLocal[ i ];
+		GXBoneJoint& boneTransformGlobal = tempPoseGlobal[ i ];
+		GXBoneJoint& boneSkinTransform = skinTransform[ i ];
 
-		//=======================================
-		tempPoseGlobal2[ i ].Multiply ( tempPoseLocal2[ i ], tempPoseGlobal2[ parentIndex ] );
-		pose2[ i ].Multiply ( inverseBindTransform2[ i ], tempPoseGlobal2[ i ] );
-		//=======================================
+		boneTransformGlobal.rotation.Multiply ( parentBoneTransformGlobal.rotation, boneTransformLocal.rotation );
+		parentBoneTransformGlobal.rotation.TransformFast ( buffer, boneTransformLocal.location );
+		boneTransformGlobal.location.Sum ( parentBoneTransformGlobal.location, buffer );
+
+		boneSkinTransform.rotation.Multiply ( boneTransformGlobal.rotation, boneInverseBindTransform.rotation );
+		boneTransformGlobal.rotation.TransformFast ( buffer, boneInverseBindTransform.location );
+		boneSkinTransform.location.Sum ( boneTransformGlobal.location, buffer );
 	}
 }

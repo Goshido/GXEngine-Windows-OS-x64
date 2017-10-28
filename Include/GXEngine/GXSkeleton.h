@@ -1,4 +1,4 @@
-//version 1.1
+//version 1.2
 
 #ifndef GX_SKELETON
 #define GX_SKELETON
@@ -15,17 +15,12 @@ class GXSkeleton
 		GXUTF8*				boneNames;
 		GXShort*			parentBoneIndices;
 
-		GXQuatLocJoint*		tempPoseLocal;
-		GXMat4*				tempPoseLocal2;
-		GXQuatLocJoint*		tempPoseGlobal;
-		GXMat4*				tempPoseGlobal2;
+		GXBoneJoint*		tempPoseLocal;
+		GXBoneJoint*		tempPoseGlobal;
 
-		GXQuatLocJoint*		referencePose;
-		GXMat4*				referencePose2;
-		GXQuatLocJoint*		inverseBindTransform;
-		GXMat4*				inverseBindTransform2;
-		GXQuatLocJoint*		pose;
-		GXMat4*				pose2;
+		GXBoneJoint*		referencePose;
+		GXBoneJoint*		inverseBindTransform;
+		GXBoneJoint*		skinTransform;
 
 	public:
 		GXSkeleton ();
@@ -33,11 +28,10 @@ class GXSkeleton
 
 		GXVoid LoadFromSkm ( const GXWChar* fileName );
 		GXVoid UpdatePose ( GXAnimationSolver &solver, GXFloat deltaTime );
-		const GXQuatLocJoint* GetPose () const;
-		const GXMat4* GetPose2 () const;
+		const GXBoneJoint* GetSkinTransform () const;
 
-		const GXMat4& GetBoneTransformWorld ( GXUShort boneIndex ) const;
-		const GXMat4& GetParentBoneTransformWorld ( GXUShort boneIndex ) const;
+		const GXBoneJoint& GetBoneTransformWorld ( GXUShort boneIndex ) const;
+		const GXBoneJoint& GetParentBoneTransformWorld ( GXUShort boneIndex ) const;
 
 		GXUShort GetTotalBones () const;
 

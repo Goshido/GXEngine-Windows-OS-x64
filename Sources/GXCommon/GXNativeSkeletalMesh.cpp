@@ -18,7 +18,6 @@ GXSkeletalMeshData::GXSkeletalMeshData ()
 	boneNames = nullptr;
 	parentBoneIndices = nullptr;
 	referencePose = inverseBindTransform = nullptr;
-	referencePose2 = inverseBindTransform2 = nullptr;
 }
 
 GXVoid GXSkeletalMeshData::Cleanup ()
@@ -27,9 +26,7 @@ GXVoid GXSkeletalMeshData::Cleanup ()
 	GXSafeFree ( boneNames );
 	GXSafeFree ( parentBoneIndices );
 	GXSafeFree ( referencePose );
-	GXSafeFree ( referencePose2 );
 	GXSafeFree ( inverseBindTransform );
-	GXSafeFree ( inverseBindTransform2 );
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -87,21 +84,12 @@ GXVoid GXCALL GXLoadNativeSkeletalMesh ( GXSkeletalMeshData &info, const GXWChar
 	info.parentBoneIndices = (GXUShort*)malloc ( size );
 	memcpy ( info.parentBoneIndices, data + h->parentBoneIndicesOffset, size );
 
-	size = info.totalBones * sizeof ( GXQuatLocJoint );
-	info.referencePose = (GXQuatLocJoint*)malloc ( size );
+	size = info.totalBones * sizeof ( GXBoneJoint );
+	info.referencePose = (GXBoneJoint*)malloc ( size );
 	memcpy ( info.referencePose, data + h->referensePoseOffset, size );
 
-	size = info.totalBones * sizeof ( GXMat4 );
-	info.referencePose2 = (GXMat4*)malloc ( size );
-	memcpy ( info.referencePose2, data + h->referensePoseOffset2, size );
-
-	size = info.totalBones * sizeof ( GXQuatLocJoint );
-	info.inverseBindTransform = (GXQuatLocJoint*)malloc ( size );
+	info.inverseBindTransform = (GXBoneJoint*)malloc ( size );
 	memcpy ( info.inverseBindTransform, data + h->inverseBindTransformOffset, size );
-
-	size = info.totalBones * sizeof ( GXMat4 );
-	info.inverseBindTransform2 = (GXMat4*)malloc ( size );
-	memcpy ( info.inverseBindTransform2, data + h->inverseBindTransformOffset2, size );
 
 	free ( data );
 }
@@ -127,13 +115,9 @@ GXVoid GXCALL GXLoadNativeAnimation ( GXAnimationInfo &info, const GXWChar* file
 	info.boneNames = (GXUTF8*)malloc ( size );
 	memcpy ( info.boneNames, data + h->boneNamesOffset, size );
 
-	size = h->totalBones * h->totalFrames * sizeof ( GXQuatLocJoint );
-	info.keys = (GXQuatLocJoint*)malloc ( size );
+	size = h->totalBones * h->totalFrames * sizeof ( GXBoneJoint );
+	info.keys = (GXBoneJoint*)malloc ( size );
 	memcpy ( info.keys, data + h->keysOffset, size );
-
-	size = h->totalBones * h->totalFrames * sizeof ( GXMat4 );
-	info.keys2 = (GXMat4*)malloc ( size );
-	memcpy ( info.keys2, data + h->keysOffset2, size );
 
 	free ( data );
 }

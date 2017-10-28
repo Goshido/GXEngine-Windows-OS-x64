@@ -290,7 +290,7 @@ GXVoid GXSkeletalMeshExporter::Save ( const GXUTF8* fileName ) const
 
 	GXUByte stride = sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec4 ) + sizeof ( GXVec4 );
 	GXUInt vboSize = numVertices * stride;
-	GXUPointer size = sizeof ( GXNativeSkeletalMeshHeader ) + vboSize + numBones * ( GX_BONE_NAME_SIZE * sizeof ( GXUTF8 ) + sizeof ( GXShort ) + sizeof ( GXQuatLocJoint ) + sizeof ( GXMat4 ) + sizeof ( GXQuatLocJoint ) + sizeof ( GXMat4 ) );
+	GXUPointer size = sizeof ( GXNativeSkeletalMeshHeader ) + vboSize + numBones * ( GX_BONE_NAME_SIZE * sizeof ( GXUTF8 ) + sizeof ( GXShort ) + sizeof ( GXBoneJoint ) + sizeof ( GXBoneJoint ) );
 	GXUByte* data = (GXUByte*)malloc ( size );
 
 	GXNativeSkeletalMeshHeader* h = (GXNativeSkeletalMeshHeader*)data;
@@ -325,32 +325,16 @@ GXVoid GXSkeletalMeshExporter::Save ( const GXUTF8* fileName ) const
 
 	for ( GXUShort i = 0; i < numBones; i++ )
 	{
-		memcpy ( data + offset, &( skeleton.GetBoneReferenceTransform ( i ) ), sizeof ( GXQuatLocJoint ) );
-		offset += sizeof ( GXQuatLocJoint );
-	}
-
-	h->referensePoseOffset2 = (GXUBigInt)offset;
-
-	for ( GXUShort i = 0; i < numBones; i++ )
-	{
-		memcpy ( data + offset, &( skeleton.GetBoneReferenceTransform2 ( i ) ), sizeof ( GXMat4 ) );
-		offset += sizeof ( GXMat4 );
+		memcpy ( data + offset, &( skeleton.GetBoneReferenceTransform ( i ) ), sizeof ( GXBoneJoint ) );
+		offset += sizeof ( GXBoneJoint );
 	}
 
 	h->inverseBindTransformOffset = (GXUBigInt)offset;
 	
 	for ( GXUShort i = 0; i < numBones; i++ )
 	{
-		memcpy ( data + offset, &( skeleton.GetBoneInverseBindTransform ( i ) ), sizeof ( GXQuatLocJoint ) );
-		offset += sizeof ( GXQuatLocJoint );
-	}
-
-	h->inverseBindTransformOffset2 = (GXUBigInt)offset;
-
-	for ( GXUShort i = 0; i < numBones; i++ )
-	{
-		memcpy ( data + offset, &( skeleton.GetBoneInverseBindTransform2 ( i ) ), sizeof ( GXMat4 ) );
-		offset += sizeof ( GXMat4 );
+		memcpy ( data + offset, &( skeleton.GetBoneInverseBindTransform ( i ) ), sizeof ( GXBoneJoint ) );
+		offset += sizeof ( GXBoneJoint );
 	}
 
 	GXWChar* fileNameW;

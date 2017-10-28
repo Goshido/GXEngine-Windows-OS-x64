@@ -1,4 +1,4 @@
-//version 1.4
+//version 1.5
 
 #include <GXEngine/GXAnimationSolver.h>
 

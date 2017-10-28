@@ -361,8 +361,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	glDisable ( GL_DEPTH_TEST );
 
 	GXTransform transform;
-	GXVec3 location;
-	skeleton.GetBoneTransformWorld ( 0 ).GetW ( location );
+	GXVec3 location ( skeleton.GetBoneTransformWorld ( 0 ).location );
 	location.Multiply ( location, FLUTTERSHY_SCALE );
 	transform.SetLocation ( location );
 	transform.SetScale ( 3.0e-2f, 3.0e-2f, 3.0e-2f );
@@ -375,10 +374,10 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	{
 		GXVec3 toParentLineGeometry[ 2 ];
 
-		skeleton.GetBoneTransformWorld ( i ).GetW ( toParentLineGeometry[ 0 ] );
+		toParentLineGeometry[ 0 ] = skeleton.GetBoneTransformWorld ( i ).location;
 		toParentLineGeometry[ 0 ].Multiply ( toParentLineGeometry[ 0 ], FLUTTERSHY_SCALE );
 
-		skeleton.GetParentBoneTransformWorld ( i ).GetW ( toParentLineGeometry[ 1 ] );
+		toParentLineGeometry[ 1 ] = skeleton.GetParentBoneTransformWorld ( i ).location;
 		toParentLineGeometry[ 1 ].Multiply ( toParentLineGeometry[ 1 ], FLUTTERSHY_SCALE );
 
 		toParentBoneLine->FillVertexBuffer ( toParentLineGeometry, 2 * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
@@ -387,7 +386,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 		toParentBoneLine->Render ();
 		toParentBoneLineMaterial->Unbind ();
 
-		skeleton.GetBoneTransformWorld ( i ).GetW ( location );
+		location = skeleton.GetBoneTransformWorld ( i ).location;
 		location.Multiply ( location, FLUTTERSHY_SCALE );
 		transform.SetLocation ( location );
 

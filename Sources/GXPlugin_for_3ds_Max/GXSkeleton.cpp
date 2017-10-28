@@ -95,7 +95,6 @@ GXVoid GXSkeleton::CalculateReferenceTransform ()
 
 	baseBone.referenceTransform.rotation.From ( baseBone.transformWorld );
 	baseBone.transformWorld.GetW ( baseBone.referenceTransform.location );
-	baseBone.referenceTransform2 = baseBone.transformWorld;
 
 	for ( GXUShort i = 1; i < totalBones; i++ )
 	{
@@ -121,8 +120,6 @@ GXVoid GXSkeleton::CalculateReferenceTransform ()
 		bone.referenceTransform.rotation.Normalize ();
 
 		referenceTransform.GetW ( bone.referenceTransform.location );
-
-		bone.referenceTransform2 = referenceTransform;
 	}
 }
 
@@ -141,8 +138,6 @@ GXVoid GXSkeleton::CalculateInverseBindTransform ()
 		bone.inverseBindTransform.rotation.Normalize ();
 
 		inverseBoneTransformWorld.GetW ( bone.inverseBindTransform.location );
-
-		bone.inverseBindTransform2 = inverseBoneTransformWorld;
 	}
 }
 
@@ -160,7 +155,6 @@ GXVoid GXSkeleton::CalculatePoseTransform ( GXUInt frame )
 
 	baseBone.poseTransform.rotation.From ( boneTransform );
 	boneTransform.GetW ( baseBone.poseTransform.location );
-	baseBone.poseTransform2 = boneTransform;
 
 	for ( GXUShort i = (GXUShort)1; i < totalBones; i++ )
 	{
@@ -193,39 +187,22 @@ GXVoid GXSkeleton::CalculatePoseTransform ( GXUInt frame )
 		bone.poseTransform.rotation.Normalize ();
 
 		poseTransform.GetW ( bone.poseTransform.location );
-
-		bone.poseTransform2 = poseTransform;
 	}
 }
 
-const GXQuatLocJoint& GXSkeleton::GetBoneReferenceTransform ( GXUShort boneIndex ) const
+const GXBoneJoint& GXSkeleton::GetBoneReferenceTransform ( GXUShort boneIndex ) const
 {
 	return bones[ boneIndex ].referenceTransform;
 }
 
-const GXMat4& GXSkeleton::GetBoneReferenceTransform2 ( GXUShort boneIndex ) const
-{
-	return bones[ boneIndex ].referenceTransform2;
-}
-
-const GXQuatLocJoint& GXSkeleton::GetBoneInverseBindTransform ( GXUShort boneIndex ) const
+const GXBoneJoint& GXSkeleton::GetBoneInverseBindTransform ( GXUShort boneIndex ) const
 {
 	return bones[ boneIndex ].inverseBindTransform;
 }
 
-const GXMat4& GXSkeleton::GetBoneInverseBindTransform2 ( GXUShort boneIndex ) const
-{
-	return bones[ boneIndex ].inverseBindTransform2;
-}
-
-const GXQuatLocJoint& GXSkeleton::GetBonePoseTransform ( GXUShort boneIndex ) const
+const GXBoneJoint& GXSkeleton::GetBonePoseTransform ( GXUShort boneIndex ) const
 {
 	return bones[ boneIndex ].poseTransform;
-}
-
-const GXMat4& GXSkeleton::GetBonePoseTransform2 ( GXUShort boneIndex ) const
-{
-	return bones[ boneIndex ].poseTransform2;
 }
 
 GXUShort GXSkeleton::GetTotalBones () const

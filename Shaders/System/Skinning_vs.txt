@@ -10,6 +10,7 @@
 #define WEIGHTS_STREAM			6
 
 #define MAX_BONES				80
+#define FLOATS_PER_BONE			7
 
 
 layout ( location = VERTEX_STREAM ) in vec3 vertex;
@@ -20,7 +21,7 @@ layout ( location = BITANGENT_STREAM ) in vec3 bitangent;
 layout ( location = WEIGHT_INDICES_STREAM ) in vec4 weightIndices;
 layout ( location = WEIGHTS_STREAM ) in vec4 weights;
 
-uniform mat4 bones[ MAX_BONES ];
+uniform float bones[ MAX_BONES * FLOATS_PER_BONE ];
 
 flat out vec3 v_vertex;
 flat out vec2 v_uv;
@@ -29,45 +30,70 @@ flat out vec3 v_tangent;
 flat out vec3 v_bitangent;
 
 
-vec3 VertexSkinning ( const in vec3 p, const in int index )
+mat4 extractBoneTransform ( const in int index )
 {
-	return ( bones[ index ] * vec4 ( p, 1.0 ) ).xyz;
-}
+	int i = index * FLOATS_PER_BONE;
 
-vec3 VectorSkinning ( const in vec3 v, const in int index )
-{
-	return mat3 ( bones[ index ] ) * v;
+	float r = bones[ i ];
+	float a = bones[ i + 1 ];
+	float b = bones[ i + 2 ];
+	float c = bones[ i + 3 ];
+
+	float rr = r * r;
+	float ra2 = r * a * 2.0f;
+	float rb2 = r * b * 2.0f;
+	float rc2 = r * c * 2.0f;
+
+	float aa = a * a;
+	float ab2 = a * b * 2.0f;
+	float ac2 = a * c * 2.0f;
+
+	float bb = b * b;
+	float bc2 = b * c * 2.0f;
+
+	float cc = c * c;
+
+	mat4 transform;
+
+	//GLSL is column-major matrix notation. See GLSL 3.30 specification (49 page).
+
+	transform[ 0 ][ 0 ] = rr + aa - bb - cc;
+	transform[ 1 ][ 0 ] = rc2 + ab2;
+	transform[ 2 ][ 0 ] = ac2 - rb2;
+	transform[ 3 ][ 0 ] = 0.0;
+
+	transform[ 0 ][ 1 ] = ab2 - rc2;
+	transform[ 1 ][ 1 ] = rr - aa + bb - cc;
+	transform[ 2 ][ 1 ] = ra2 + bc2;
+	transform[ 3 ][ 1 ] = 0.0;
+
+	transform[ 0 ][ 2 ] = rb2 + ac2;
+	transform[ 1 ][ 2 ] = bc2 - ra2;
+	transform[ 2 ][ 2 ] = rr - aa - bb + cc;
+	transform[ 3 ][ 2 ] = 0.0;
+
+	transform[ 0 ][ 3 ] = bones[ i + 4 ];
+	transform[ 1 ][ 3 ] = bones[ i + 5 ];
+	transform[ 2 ][ 3 ] = bones[ i + 6 ];
+	transform[ 3 ][ 3 ] = 1.0;
+
+	return transform;
 }
 
 void main ()
 {
-	vec3 v = VertexSkinning ( vertex, int ( weightIndices.x ) ) * weights.x;
-	v += VertexSkinning ( vertex, int ( weightIndices.y ) ) * weights.y;
-	v += VertexSkinning ( vertex, int ( weightIndices.z ) ) * weights.z;
-	v += VertexSkinning ( vertex, int ( weightIndices.w ) ) * weights.w;
+	mat4 skinTransform = extractBoneTransform ( int ( weightIndices.x ) ) * weights.x;
+	skinTransform += extractBoneTransform ( int ( weightIndices.y ) ) * weights.y;
+	skinTransform += extractBoneTransform ( int ( weightIndices.z ) ) * weights.z;
+	skinTransform += extractBoneTransform ( int ( weightIndices.w ) ) * weights.w;
 
-	v_vertex = v;
+	v_vertex = vec3 ( vec4 ( vertex, 1.0 ) * skinTransform );
 
 	v_uv = uv;
 
-	v = VectorSkinning ( normal, int ( weightIndices.x ) ) * weights.x;
-	v += VectorSkinning ( normal, int ( weightIndices.y ) ) * weights.y;
-	v += VectorSkinning ( normal, int ( weightIndices.z ) ) * weights.z;
-	v += VectorSkinning ( normal, int ( weightIndices.w ) ) * weights.w;
+	mat3 skinRotation = mat3 ( skinTransform );
 
-	v_normal = v;
-
-	v = VectorSkinning ( tangent, int ( weightIndices.x ) ) * weights.x;
-	v += VectorSkinning ( tangent, int ( weightIndices.y ) ) * weights.y;
-	v += VectorSkinning ( tangent, int ( weightIndices.z ) ) * weights.z;
-	v += VectorSkinning ( tangent, int ( weightIndices.w ) ) * weights.w;
-
-	v_tangent = v;
-
-	v = VectorSkinning ( bitangent, int ( weightIndices.x ) ) * weights.x;
-	v += VectorSkinning ( bitangent, int ( weightIndices.y ) ) * weights.y;
-	v += VectorSkinning ( bitangent, int ( weightIndices.z ) ) * weights.z;
-	v += VectorSkinning ( bitangent, int ( weightIndices.w ) ) * weights.w;
-
-	v_bitangent = v;
+	v_normal = normal * skinRotation;
+	v_tangent = tangent * skinRotation;
+	v_bitangent = bitangent * skinRotation;
 }

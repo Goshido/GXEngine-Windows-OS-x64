@@ -301,6 +301,7 @@ GXVoid EMLightProbe::UpdateBRDFIntegrationMap ()
 	glDrawBuffers ( 1, buffers );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMLightProbe::UpdateBRDFIntegrationMap::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 

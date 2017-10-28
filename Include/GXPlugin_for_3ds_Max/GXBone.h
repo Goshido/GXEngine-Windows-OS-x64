@@ -20,12 +20,9 @@ struct GXBone
 	IGameNode*		node;
 
 	GXMat4			transformWorld;
-	GXQuatLocJoint	referenceTransform;
-	GXMat4			referenceTransform2;
-	GXQuatLocJoint	inverseBindTransform;
-	GXMat4			inverseBindTransform2;
-	GXQuatLocJoint	poseTransform;
-	GXMat4			poseTransform2;
+	GXBoneJoint		referenceTransform;
+	GXBoneJoint		inverseBindTransform;
+	GXBoneJoint		poseTransform;
 
 	GXBone*			father;
 	GXBone*			brother;

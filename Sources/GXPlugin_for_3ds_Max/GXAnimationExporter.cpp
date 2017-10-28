@@ -75,7 +75,7 @@ GXBool GXAnimationExporter::Init ( INode& selection )
 GXVoid GXAnimationExporter::Save ( const GXUTF8* fileName, GXUInt startFrame, GXUInt lastFrame )
 {
 	GXUInt totalFrames = ( lastFrame - startFrame ) + 1;
-	GXUPointer size = sizeof ( GXNativeAnimationHeader ) + skeleton.GetTotalBones () * ( ( GX_BONE_NAME_SIZE * sizeof ( GXUTF8 ) ) + totalFrames * ( sizeof ( GXQuatLocJoint ) + sizeof ( GXMat4 ) ) );
+	GXUPointer size = sizeof ( GXNativeAnimationHeader ) + skeleton.GetTotalBones () * ( ( GX_BONE_NAME_SIZE * sizeof ( GXUTF8 ) ) + totalFrames * sizeof ( GXBoneJoint ) );
 
 	GXUByte* data = (GXUByte*)malloc ( size );
 
@@ -102,21 +102,8 @@ GXVoid GXAnimationExporter::Save ( const GXUTF8* fileName, GXUInt startFrame, GX
 
 		for ( GXUShort i = 0; i < h->totalBones; i++ )
 		{
-			memcpy ( data + offset, &skeleton.GetBonePoseTransform ( i ), sizeof ( GXQuatLocJoint ) );
-			offset += sizeof ( GXQuatLocJoint );
-		}
-	}
-
-	h->keysOffset2 = (GXUBigInt)offset;
-
-	for ( GXUInt frame = startFrame; frame <= lastFrame; frame++ )
-	{
-		skeleton.CalculatePoseTransform ( frame );
-
-		for ( GXUShort i = 0; i < h->totalBones; i++ )
-		{
-			memcpy ( data + offset, &skeleton.GetBonePoseTransform2 ( i ), sizeof ( GXMat4 ) );
-			offset += sizeof ( GXMat4 );
+			memcpy ( data + offset, &skeleton.GetBonePoseTransform ( i ), sizeof ( GXBoneJoint ) );
+			offset += sizeof ( GXBoneJoint );
 		}
 	}
 

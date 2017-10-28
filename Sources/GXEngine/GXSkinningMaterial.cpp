@@ -39,12 +39,9 @@ GXVoid GXSkinningMaterial::Bind ( const GXTransform& /*transform*/ )
 	if ( !skeletonObject ) return;
 
 	glUseProgram ( shaderProgram.GetProgram () );
-	/*
+	
 	GLsizei floats = (GLsizei)( skeletonObject->GetTotalBones () * GX_FLOATS_PER_BONE );
-	glUniform1fv ( bonesLocation, floats, (const GLfloat*)skeletonObject->GetPose () );
-	*/
-
-	glUniformMatrix4fv ( bonesLocation, skeletonObject->GetTotalBones (), GL_FALSE, (const GLfloat*)skeletonObject->GetPose2 () );
+	glUniform1fv ( bonesLocation, floats, (const GLfloat*)skeletonObject->GetSkinTransform () );
 }
 
 GXVoid GXSkinningMaterial::Unbind ()
