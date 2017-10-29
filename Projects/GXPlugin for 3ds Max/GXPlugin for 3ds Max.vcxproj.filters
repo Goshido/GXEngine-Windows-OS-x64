@@ -36,9 +36,6 @@
     <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXDLLMain.cpp">
       <Filter>Source Files\GXPlugin</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXSkeletalMeshExporter.cpp">
-      <Filter>Source Files\GXPlugin</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXUtility.cpp">
       <Filter>Source Files\GXPlugin</Filter>
     </ClCompile>
@@ -75,15 +72,33 @@
     <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXSkeleton.cpp">
       <Filter>Source Files\GXPlugin</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeMesh.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeSkin.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeAnimation.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeSkeleton.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXMeshExporter.cpp">
+      <Filter>Source Files\GXPlugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXSkinExporter.cpp">
+      <Filter>Source Files\GXPlugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXSkeletonExporter.cpp">
+      <Filter>Source Files\GXPlugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXExporter.cpp">
+      <Filter>Source Files\GXPlugin</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXDLL.h">
-      <Filter>Header Files\GXPlugin</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXSkeletalMeshExporter.h">
-      <Filter>Header Files\GXPlugin</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXUIResource.h">
       <Filter>Header Files\GXPlugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXUtility.h">
@@ -114,9 +129,6 @@
       <Filter>Header Files\GXCommon</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXCommon\GXMutex.h">
-      <Filter>Header Files\GXCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXCommon\GXNativeSkeletalMesh.h">
       <Filter>Header Files\GXCommon</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXCommon\GXNativeStaticMeshLoader.h">
@@ -183,6 +195,33 @@
       <Filter>Header Files\GXPlugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXSkeleton.h">
+      <Filter>Header Files\GXPlugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeAnimation.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeMesh.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeSkin.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXBoneJoint.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeSkeleton.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXMeshExporter.h">
+      <Filter>Header Files\GXPlugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXSkinExporter.h">
+      <Filter>Header Files\GXPlugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXSkeletonExporter.h">
+      <Filter>Header Files\GXPlugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXExporter.h">
       <Filter>Header Files\GXPlugin</Filter>
     </ClInclude>
   </ItemGroup>

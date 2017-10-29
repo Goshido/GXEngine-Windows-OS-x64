@@ -282,12 +282,16 @@ GXUInt GXCALL GXUTF8len ( const GXUTF8* str )
 	if ( !str ) return 0;
 
 	GXUInt numBytes = (GXUInt)strlen ( str );
+
 	if ( numBytes == 0 ) return 0;
 
 	GXUInt numSymbols = 0;
+
 	for ( GXUInt i = 0; i < numBytes; i++ )
+	{
 		if ( ( str[ i ] & 0xC0 ) != 0x80 )
 			numSymbols++;
+	}
 
 	return numSymbols;
 }
@@ -314,6 +318,7 @@ GXInt GXCALL GXMbscmp ( const GXMBChar* a, const GXMBChar* b )
 GXUInt GXCALL GXUTF8size ( const GXUTF8* str )
 {
 	GXUInt len;
+
 	for ( len = 0; str[ len ]; len++ );
 
 	return len + 1;

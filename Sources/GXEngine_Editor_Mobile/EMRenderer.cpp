@@ -847,7 +847,7 @@ GXTexture2D& EMRenderer::GetDepthTexture ()
 }
 
 EMRenderer::EMRenderer ():
-screenQuadMesh( L"3D Models/System/ScreenQuad.stm" ), gaussHorizontalBlurMaterial ( eEMGaussHorizontalBlurKernelType::ONE_CHANNEL_FIVE_PIXEL_KERNEL ), gaussVerticalBlurMaterial ( eEMGaussVerticalBlurKernelType::ONE_CHANNEL_FIVE_PIXEL_KERNEL )
+screenQuadMesh( L"Meshes/System/ScreenQuad.stm" ), gaussHorizontalBlurMaterial ( eEMGaussHorizontalBlurKernelType::ONE_CHANNEL_FIVE_PIXEL_KERNEL ), gaussVerticalBlurMaterial ( eEMGaussVerticalBlurKernelType::ONE_CHANNEL_FIVE_PIXEL_KERNEL )
 {
 	memset ( objectMask, 0, 8 * sizeof ( GXUByte ) );
 	mouseX = mouseY = -1;

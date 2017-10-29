@@ -5,7 +5,6 @@
 
 
 #include "GXResource.h"
-#include "GXUIResource.h"
 #include <GXCommon/GXTypes.h>
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXDisable3rdPartyWarnings.h>

@@ -1,6 +1,7 @@
 //version 1.1
 
 #include <GXPlugin_for_3ds_Max/GXBone.h>
+#include <GXCommon/GXStrings.h>
 
 
 GXVoid GXBone::Init ( GXUShort newOwnIndex, IGameNode* newNode, const GXMat4 &newTransformWorld )

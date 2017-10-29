@@ -3,6 +3,7 @@
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXLocale.h>
 #include <GXPhysics/GXPhysicsEngine.h>
+#include <GXCommon/GXStrings.h>
 #include <GXCommon/GXLogger.h>
 
 
@@ -184,8 +185,8 @@ GXVoid EMPhysicsDrivenActor::EnablePhysicsDebug ()
 	wireframeMaterial = new EMWireframeMaterial ();
 	wireframeMaterial->SetColor ( SHAPE_COLOR_RED, SHAPE_COLOR_GREEN, SHAPE_COLOR_BLUE, SHAPE_COLOR_ALPHA );
 
-	unitSphereMesh = GXMeshGeometry::LoadFromObj ( L"3D Models/System/Unit Sphere.obj" );
-	unitCubeMesh = GXMeshGeometry::LoadFromStm ( L"3D Models/System/Unit Cube.stm" );
+	unitSphereMesh = GXMeshGeometry::LoadFromObj ( L"Meshes/System/Unit Sphere.obj" );
+	unitCubeMesh = GXMeshGeometry::LoadFromStm ( L"Meshes/System/Unit Cube.stm" );
 }
 
 GXVoid EMPhysicsDrivenActor::DisablePhysicsDebug ()

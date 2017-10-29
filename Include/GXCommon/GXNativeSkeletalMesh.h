@@ -5,7 +5,6 @@
 
 
 #include "GXMath.h"
-#include "GXStrings.h"
 
 
 #define GX_BONE_NAME_SIZE				64

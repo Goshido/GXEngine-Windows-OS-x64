@@ -1,4 +1,4 @@
-﻿//version 1.42
+﻿//version 1.43
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
@@ -2553,7 +2553,7 @@ GXVoid GXCALL GXRandomBetween ( GXVec3 &out, const GXVec3 &from, const GXVec3 &t
 	out.data[ 2 ] = GXRandomBetween ( from.data[ 2 ], to.data[ 2 ] );
 }
 
-GXVoid GXCALL GXGetTangentBitangent ( GXVec3 &outTangent, GXVec3 &outBitangent, GXUByte vertexID, const GXUByte* vertices, GXUInt vertexStride, const GXUByte* uvs, GXUInt uvStride )
+GXVoid GXCALL GXGetTangentBitangent ( GXVec3 &outTangent, GXVec3 &outBitangent, GXUByte vertexID, const GXUByte* vertices, GXUPointer vertexStride, const GXUByte* uvs, GXUPointer uvStride )
 {
 	const GXVec3* v0;
 	const GXVec3* v1;

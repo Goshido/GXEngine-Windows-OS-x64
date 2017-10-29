@@ -197,7 +197,7 @@ class EMColorRenderer : public GXWidgetRenderer
 };
 
 EMColorRenderer::EMColorRenderer ( GXUIInput* widget ) :
-GXWidgetRenderer ( widget ), screenQuad ( L"3D Models/System/ScreenQuad.stm" )
+GXWidgetRenderer ( widget ), screenQuad ( L"Meshes/System/ScreenQuad.stm" )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 	surface = new GXHudSurface ( (GXUShort)boundsLocal.GetWidth (), (GXUShort)boundsLocal.GetHeight () );
@@ -358,7 +358,7 @@ class EMColorSelectorRenderer : public GXWidgetRenderer
 };
 
 EMColorSelectorRenderer::EMColorSelectorRenderer ( GXUIInput* widget ) :
-GXWidgetRenderer ( widget ), screenQuad ( L"3D Models/System/ScreenQuad.stm" )
+GXWidgetRenderer ( widget ), screenQuad ( L"Meshes/System/ScreenQuad.stm" )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 	surface = new GXHudSurface ( (GXUShort)boundsLocal.GetWidth (), (GXUShort)boundsLocal.GetHeight () );

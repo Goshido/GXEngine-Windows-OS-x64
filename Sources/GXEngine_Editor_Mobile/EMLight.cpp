@@ -142,7 +142,7 @@ GXVoid EMBulp::DrawLightVolume ()
 
 GXVoid EMBulp::LoadLightVolume ()
 {
-	lightVolume = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Bulp light volume.stm" );
+	lightVolume = GXMeshGeometry::LoadFromStm ( L"Meshes/Editor Mobile/Bulp light volume.stm" );
 }
 
 //---------------------------------------------------------------
@@ -229,7 +229,7 @@ GXVoid EMSpotlight::DrawLightVolume ()
 
 GXVoid EMSpotlight::LoadLightVolume ()
 {
-	lightVolume = GXMeshGeometry::LoadFromStm ( L"3D Models/Editor Mobile/Spot light volume.stm" );
+	lightVolume = GXMeshGeometry::LoadFromStm ( L"Meshes/Editor Mobile/Spot light volume.stm" );
 }
 
 //---------------------------------------------------------------

@@ -141,7 +141,7 @@ GXVoid EMGame::OnInit ()
 
 	physicsInfoBackgroundTexture = GXTexture2D::LoadTexture ( L"Textures/System/Default_Diffuse.tga", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 
-	physicsContactPointMesh = GXMeshGeometry::LoadFromObj ( L"3D Models/System/Unit Sphere.obj" );
+	physicsContactPointMesh = GXMeshGeometry::LoadFromObj ( L"Meshes/System/Unit Sphere.obj" );
 	physicsContactPointMaterial = new GXUnlitColorMaterial ();
 	physicsContactPointMaterial->SetColor ( 255, 0, 0, 255 );
 
@@ -161,7 +161,7 @@ GXVoid EMGame::OnInit ()
 	//colliderOne->GetRigidBody ().EnableKinematic ();
 	//colliderOne->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, -1.0f, 1.0f ) );
 	colliderOne->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 0.0f, -5.0f ) );
-	colliderOne->SetMesh ( L"3D Models/System/Unit Cube.stm" );
+	colliderOne->SetMesh ( L"Meshes/System/Unit Cube.stm" );
 	EMCookTorranceCommonPassMaterial& colliderOneMaterial = colliderOne->GetMaterial ();
 	colliderOneMaterial.SetAlbedoColor ( 253, 180, 17, 255 );
 	colliderOneMaterial.SetRoughnessScale ( 0.25f );
@@ -182,7 +182,7 @@ GXVoid EMGame::OnInit ()
 	//colliderTwo->GetRigidBody ().SetCanSleep ( GX_FALSE );
 	//colliderTwo->GetRigidBody ().EnableKinematic ();
 	colliderTwo->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 0.0f, 10.0f ) );
-	colliderTwo->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
+	colliderTwo->SetMesh ( L"Meshes/System/Unit Sphere.obj" );
 	EMCookTorranceCommonPassMaterial& colliderTwoMaterial = colliderTwo->GetMaterial ();
 	colliderTwoMaterial.SetAlbedoColor ( 247, 244, 233, 255 );
 	colliderTwoMaterial.SetRoughnessScale ( 0.19f );
@@ -204,7 +204,7 @@ GXVoid EMGame::OnInit ()
 	//kinematicPlane->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, 0.1f, 0.0f ) );
 	//kinematicPlane->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 0.0f, 0.2f ) );
 	kinematicPlane->GetRigidBody ().GetShape ().SetRestitution ( 1.0f );
-	kinematicPlane->SetMesh ( L"3D Models/System/Unit Cube.stm" );
+	kinematicPlane->SetMesh ( L"Meshes/System/Unit Cube.stm" );
 	EMCookTorranceCommonPassMaterial& kinematicPlaneMaterial = kinematicPlane->GetMaterial ();
 	kinematicPlaneMaterial.SetRoughnessScale ( 0.07f );
 	kinematicPlaneMaterial.SetSpecularIntensityScale ( 0.15f );
@@ -218,7 +218,7 @@ GXVoid EMGame::OnInit ()
 	transform.SetLocation ( -2.0f, 0.0f, 0.0f );
 	transform.SetScale ( 1.0f, 1.0, 1.0f );
 	plasticSphere = new EMMeshActor ( L"Plastic sphere", transform );
-	plasticSphere->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
+	plasticSphere->SetMesh ( L"Meshes/System/Unit Sphere.obj" );
 	EMCookTorranceCommonPassMaterial& plasticSphereMaterial = plasticSphere->GetMaterial ();
 	plasticSphereMaterial.SetAlbedoColor ( 115, 185, 0, 255 );
 	plasticSphereMaterial.SetRoughnessScale ( 0.5f );
@@ -229,7 +229,7 @@ GXVoid EMGame::OnInit ()
 
 	transform.SetLocation ( 4.0f, 0.0f, 0.0f );
 	goldSphere = new EMMeshActor ( L"Gold sphere", transform );
-	goldSphere->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
+	goldSphere->SetMesh ( L"Meshes/System/Unit Sphere.obj" );
 	EMCookTorranceCommonPassMaterial& goldSphereMaterial = goldSphere->GetMaterial ();
 	goldSphereMaterial.SetAlbedoColor ( 253, 180, 17, 255 );
 	goldSphereMaterial.SetRoughnessScale ( 0.25f );
@@ -240,7 +240,7 @@ GXVoid EMGame::OnInit ()
 
 	transform.SetLocation ( 6.0f, 0.0f, 0.0f );
 	silverSphere = new EMMeshActor ( L"Silver sphere", transform );
-	silverSphere->SetMesh ( L"3D Models/System/Unit Sphere.obj" );
+	silverSphere->SetMesh ( L"Meshes/System/Unit Sphere.obj" );
 	EMCookTorranceCommonPassMaterial& silverSphereMaterial = silverSphere->GetMaterial ();
 	silverSphereMaterial.SetAlbedoColor ( 247, 244, 233, 255 );
 	silverSphereMaterial.SetRoughnessScale ( 0.19f );
@@ -281,7 +281,7 @@ GXVoid EMGame::OnInit ()
 	toParentBoneLineMaterial = new GXUnlitColorMaterial ();
 	toParentBoneLineMaterial->SetColor ( 115, 185, 0, 255 );
 
-	jointMesh = GXMeshGeometry::LoadFromObj ( L"3D Models/System/Unit Sphere.obj" );
+	jointMesh = GXMeshGeometry::LoadFromObj ( L"Meshes/System/Unit Sphere.obj" );
 
 	jointMeshMaterial = new GXUnlitColorMaterial ();
 	jointMeshMaterial->SetColor ( 255, 255, 255, 255 );

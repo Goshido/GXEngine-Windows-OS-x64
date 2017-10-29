@@ -22,6 +22,7 @@ GX_DISABLE_WARNING ( warning ( disable : 4555 ) )	// expression has no effect; e
 GX_DISABLE_WARNING ( warning ( disable : 4625 ) )	// copy constructor was implicitly defined as deleted
 GX_DISABLE_WARNING ( warning ( disable : 4626 ) )	// assignment operator was implicitly defined as deleted
 GX_DISABLE_WARNING ( warning ( disable : 4710 ) )	// 'function' : function not inlined
+GX_DISABLE_WARNING ( warning ( disable : 4917 ) )	// 'declarator' : a GUID can only be associated with a class, interface or namespace
 GX_DISABLE_WARNING ( warning ( disable : 5026 ) )	// move constructor was implicitly defined as deleted
 GX_DISABLE_WARNING ( warning ( disable : 5027 ) )	// move assignment operator was implicitly defined as deleted
 GX_DISABLE_WARNING ( warning ( disable : 5031 ) )	// #pragma warning(pop): likely mismatch, popping warning state pushed in different file

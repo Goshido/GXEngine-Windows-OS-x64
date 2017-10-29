@@ -4,7 +4,7 @@
 #define GX_BONE
 
 
-#include <GXCommon/GXNativeSkeletalMesh.h>
+#include <GXCommon/GXBoneJoint.h>
 #include <GXCommon/GXDisable3rdPartyWarnings.h>
 #include <IGame/IGame.h>
 #include <GXCommon/GXRestoreWarnings.h>

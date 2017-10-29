@@ -45,13 +45,13 @@
 static EMMoveTool* em_mt_Me = nullptr;
 
 EMMoveTool::EMMoveTool () :
-xAxis ( L"3D Models/Editor Mobile/Move gismo X axis.stm" ),
-xAxisMask ( L"3D Models/Editor Mobile/Move gismo X axis mask.stm" ),
-yAxis ( L"3D Models/Editor Mobile/Move gismo Y axis.stm" ),
-yAxisMask ( L"3D Models/Editor Mobile/Move gismo Y axis mask.stm" ),
-zAxis ( L"3D Models/Editor Mobile/Move gismo Z axis.stm" ),
-zAxisMask ( L"3D Models/Editor Mobile/Move gismo z axis mask.stm" ),
-center ( L"3D Models/Editor Mobile/Move gismo center.stm" )
+xAxis ( L"Meshes/Editor Mobile/Move gismo X axis.stm" ),
+xAxisMask ( L"Meshes/Editor Mobile/Move gismo X axis mask.stm" ),
+yAxis ( L"Meshes/Editor Mobile/Move gismo Y axis.stm" ),
+yAxisMask ( L"Meshes/Editor Mobile/Move gismo Y axis mask.stm" ),
+zAxis ( L"Meshes/Editor Mobile/Move gismo Z axis.stm" ),
+zAxisMask ( L"Meshes/Editor Mobile/Move gismo z axis mask.stm" ),
+center ( L"Meshes/Editor Mobile/Move gismo center.stm" )
 {
 	mode = MOVE_TOOL_LOCAL_MODE;
 

@@ -16,7 +16,7 @@
 
 
 EMScaleGismo::EMScaleGismo () :
-mesh ( L"3D Models/Editor Mobile/Scale Gismo.stm" )
+mesh ( L"Meshes/Editor Mobile/Scale Gismo.stm" )
 {
 	isVisible = GX_TRUE;
 

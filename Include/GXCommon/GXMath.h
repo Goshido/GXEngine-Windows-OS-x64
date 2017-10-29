@@ -1,4 +1,4 @@
-//version 1.42
+//version 1.43
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -542,7 +542,7 @@ GXFloat GXCALL GXRandomNormalize ();
 GXFloat GXCALL GXRandomBetween ( GXFloat from, GXFloat to );
 GXVoid GXCALL GXRandomBetween ( GXVec3 &out, const GXVec3 &from, const GXVec3 &to );
 
-GXVoid GXCALL GXGetTangentBitangent ( GXVec3 &outTangent, GXVec3 &outBitangent, GXUByte vertexID, const GXUByte* vertices, GXUInt vertexStride, const GXUByte* uvs, GXUInt uvStride );
+GXVoid GXCALL GXGetTangentBitangent ( GXVec3 &outTangent, GXVec3 &outBitangent, GXUByte vertexID, const GXUByte* vertices, GXUPointer vertexStride, const GXUByte* uvs, GXUPointer uvStride );
 
 GXFloat GXCALL GXClampf ( GXFloat value, GXFloat minValue, GXFloat maxValue );
 GXInt GXCALL GXClampi ( GXInt value, GXInt minValue, GXInt maxValue );

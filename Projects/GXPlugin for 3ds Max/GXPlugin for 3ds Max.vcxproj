@@ -166,14 +166,21 @@ copy "$(OutDir)$(TargetFileName)" "$(PLUGIN_DIRECTORY_3DS_MAX)"</Command>
     <ClCompile Include="..\..\Sources\GXCommon\GXLogger.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXMath.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXMemory.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeAnimation.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeMesh.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeSkeleton.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeSkin.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshSaver.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp" />
     <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXAnimationExporter.cpp" />
     <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXBone.cpp" />
     <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXDLLMain.cpp" />
-    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXSkeletalMeshExporter.cpp" />
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXExporter.cpp" />
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXMeshExporter.cpp" />
     <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXSkeleton.cpp" />
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXSkeletonExporter.cpp" />
+    <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXSkinExporter.cpp" />
     <ClCompile Include="..\..\Sources\GXPlugin_for_3ds_Max\GXUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +188,7 @@ copy "$(OutDir)$(TargetFileName)" "$(PLUGIN_DIRECTORY_3DS_MAX)"</Command>
     <ClInclude Include="..\..\Include\GXCommon\GXBKELoader.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXBKESaver.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXBoneJoint.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXCFGLoader.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXCFGSaver.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXCFGStruct.h" />
@@ -192,7 +200,10 @@ copy "$(OutDir)$(TargetFileName)" "$(PLUGIN_DIRECTORY_3DS_MAX)"</Command>
     <ClInclude Include="..\..\Include\GXCommon\GXMath.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXMemory.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXMutex.h" />
-    <ClInclude Include="..\..\Include\GXCommon\GXNativeSkeletalMesh.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeAnimation.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeMesh.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeSkeleton.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeSkin.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXNativeStaticMeshLoader.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXNativeStaticMeshSaver.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXNativeStaticMeshStructs.h" />
@@ -208,9 +219,11 @@ copy "$(OutDir)$(TargetFileName)" "$(PLUGIN_DIRECTORY_3DS_MAX)"</Command>
     <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXAnimationExporter.h" />
     <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXBone.h" />
     <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXDLL.h" />
-    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXSkeletalMeshExporter.h" />
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXExporter.h" />
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXMeshExporter.h" />
     <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXSkeleton.h" />
-    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXUIResource.h" />
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXSkeletonExporter.h" />
+    <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXSkinExporter.h" />
     <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXUtility.h" />
     <ClInclude Include="..\..\Include\GXPlugin_for_3ds_Max\GXResource.h" />
   </ItemGroup>

@@ -23,7 +23,7 @@
 
 EMUnitActor::EMUnitActor ( const GXWChar* name, const GXTransform &transform ):
 EMActor ( name, eEMActorType::UnitCube, transform ),
-mesh ( L"3D Models/System/Unit Cube.stm" )
+mesh ( L"Meshes/System/Unit Cube.stm" )
 {
 	OnTransformChanged ();
 

@@ -551,7 +551,7 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"GXTexture2D::LoadTexture::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
-	GXMeshGeometry screenQuad = GXMeshGeometry::LoadFromStm ( L"3D Models/System/ScreenQuad.stm" );
+	GXMeshGeometry screenQuad = GXMeshGeometry::LoadFromStm ( L"Meshes/System/ScreenQuad.stm" );
 	GXTexture2DGammaCorrectorMaterial gammaCorrectorMaterial;
 
 	gammaCorrectorMaterial.SetsRGBTexture ( *texture );

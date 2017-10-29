@@ -1,4 +1,4 @@
-//version 1.1
+//version 1.2
 
 #ifndef GX_UTILITY
 #define GX_UTILITY

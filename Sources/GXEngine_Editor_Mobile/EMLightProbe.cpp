@@ -43,8 +43,8 @@ EMLightProbe::EMLightProbe ()
 	boundsWorld.AddVertex ( locationWorld.GetX () - halfRangeX, locationWorld.GetY () - halfRangeY, locationWorld.GetZ () - halfRangeZ );
 	boundsWorld.AddVertex ( locationWorld.GetX () + halfRangeX, locationWorld.GetY () + halfRangeY, locationWorld.GetZ () + halfRangeZ );
 
-	cube = GXMeshGeometry::LoadFromStm ( L"3D Models/System/Unit Cube.stm" );
-	screenQuad = GXMeshGeometry::LoadFromStm ( L"3D Models/System/ScreenQuad.stm" );
+	cube = GXMeshGeometry::LoadFromStm ( L"Meshes/System/Unit Cube.stm" );
+	screenQuad = GXMeshGeometry::LoadFromStm ( L"Meshes/System/ScreenQuad.stm" );
 
 	if ( brdfIntegrationMap.GetTextureObject () == INVALID_TEXTURE_OBJECT )
 	{

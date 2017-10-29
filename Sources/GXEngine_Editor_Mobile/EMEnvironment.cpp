@@ -66,7 +66,7 @@ GXVoid EMEnvironment::OnViewerLocationChanged ()
 }
 
 EMEnvironment::EMEnvironment () :
-cube ( L"3D Models/System/Unit Cube.stm" )
+cube ( L"Meshes/System/Unit Cube.stm" )
 {
 	GXRenderer& renderer = GXRenderer::GetInstance ();
 

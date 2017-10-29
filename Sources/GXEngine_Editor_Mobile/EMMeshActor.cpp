@@ -2,6 +2,7 @@
 #include <GXEngine_Editor_Mobile/EMRenderer.h>
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXLocale.h>
+#include <GXCommon/GXStrings.h>
 #include <GXCommon/GXLogger.h>
 
 
