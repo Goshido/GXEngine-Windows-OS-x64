@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #ifndef GX_MESH_GEOMETRY
 #define GX_MESH_GEOMETRY
@@ -9,6 +9,76 @@
 #include "GXSkinningMaterial.h"
 #include <GXCommon/GXMath.h>
 
+
+class GXMesh
+{
+	private:
+		GXMesh*					next;
+		GXMesh*					previous;
+		static GXMesh*			top;
+
+		GXUInt					referenceCount;
+		GXWChar*				meshFile;
+		GLsizeiptr				vboSize;
+
+	public:
+		GLsizei					totalVertices;
+		GLuint					meshVBO;
+
+	public:
+		GXMesh ();
+		explicit GXMesh ( const GXWChar* fileName );
+
+		GXVoid AddReference ();
+		GXVoid Release ();
+
+		const GXWChar* GetMeshFileName () const;
+		GXVoid FillVBO ( const GXVoid* data, GLsizeiptr size, GLenum usage );
+
+		// Method returns valid pointer or nullptr.
+		static GXMesh* GXCALL Find ( const GXWChar* fileName );
+		static GXUInt GXCALL GetTotalLoadedMeshes ( const GXWChar** lastMesh );
+
+	private:
+		~GXMesh ();
+
+		GXBool LoadFromOBJ ( const GXWChar* fileName );
+		GXBool LoadFromSTM ( const GXWChar* fileName );
+		GXBool LoadFromSKM ( const GXWChar* fileName );
+		GXBool LoadFromMESH ( const GXWChar* fileName );
+};
+
+class GXSkin
+{
+	private:
+		GXSkin*			next;
+		GXSkin*			previous;
+		static GXSkin*	top;
+
+		GXUInt			referenceCount;
+		GXWChar*		skinFile;
+
+	public:
+		GLsizei			totalVertices;
+		GLuint			skinVBO;
+
+		explicit GXSkin ( const GXWChar* fileName );
+
+		GXVoid AddReference ();
+		GXVoid Release ();
+
+		const GXWChar* GetSkinFileName () const;
+
+		// Method returns valid pointer or nullptr.
+		static GXSkin* GXCALL Find ( const GXWChar* fileName );
+		static GXUInt GXCALL GetTotalLoadedSkins ( const GXWChar** lastSkin );
+
+	private:
+		~GXSkin ();
+
+		GXBool LoadFromSKM ( const GXWChar* fileName );
+		GXBool LoadFromSKIN ( const GXWChar* fileName );
+};
 
 enum class eGXMeshStreamIndex : GLuint
 {
@@ -23,23 +93,19 @@ enum class eGXMeshStreamIndex : GLuint
 	Color				= 8
 };
 
-class GXMeshGeometryEntry;
 class GXMeshGeometry
 {
 	private:
-		GLsizei					totalStaticVertices;
-		GLuint					staticVAO;
-		GLuint					staticVBO;
-		GLenum					staticTopology;
+		GXMesh*					mesh;
+		GLuint					meshVAO;
+		GLenum					topology;
 
-		GLsizei					totalSkeletalVertices;
-		GLuint					skeletalVAO[ 2 ];
-		GLuint					skeletalVBO;
+		GXSkin*					skin;
 		GLuint					skinningVAO;
+		GLuint					poseVAO[ 2 ];
 		GLuint					poseVBO[ 2 ];
 		GXUByte					skinningSwitchIndex;
 		GXSkinningMaterial*		skinningMaterial;
-		GLenum					skeletalTopology;
 
 		GXAABB					boundsLocal;
 
@@ -56,27 +122,18 @@ class GXMeshGeometry
 		GXVoid FillVertexBuffer ( const GXVoid* data, GLsizeiptr size, GLenum usage );
 		GXVoid SetBufferStream ( eGXMeshStreamIndex streamIndex, GLint numElements, GLenum elementType, GLsizei stride, const GLvoid* offset );
 
-		GXVoid SetTopology ( GLenum topology );
+		GXVoid SetTopology ( GLenum newTopology );
 
 		GXVoid UpdatePose ( const GXSkeleton &skeleton );
 
-		static GXMeshGeometry& GXCALL LoadFromObj ( const GXWChar* fileName );
-		static GXMeshGeometry& GXCALL LoadFromStm ( const GXWChar* fileName );
-		static GXMeshGeometry& GXCALL LoadFromSkm ( const GXWChar* fileName );
+		//Unloads previous mesh if it exists.
+		GXBool LoadMesh ( const GXWChar* fileName );
 
-		static GXVoid GXCALL RemoveMeshGeometry ( GXMeshGeometry& mesh );
-		static GXUInt GXCALL GetTotalLoadedMeshGeometries ( const GXWChar** lastMeshGeometry );
-
-		GXBool operator == ( const GXMeshGeometryEntry &entry ) const;
-		GXVoid operator = ( const GXMeshGeometry &meshGeometry );
+		//Unloads previous skin if it exists.
+		GXBool LoadSkin ( const GXWChar* fileName );
 
 	private:
-		GXVoid InitStaticResources ();
-		GXVoid InitSkeletalResources ();
-
-		GXBool IsSkeletalMesh () const;
-
-		static GXMeshGeometry& GXCALL GetGeometryFromStm ( const GXWChar* fileName );
+		GXVoid UpdateGraphicResources ();
 };
 
 

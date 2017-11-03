@@ -110,7 +110,7 @@ EMBulp::EMBulp ()
 
 EMBulp::~EMBulp ()
 {
-	GXMeshGeometry::RemoveMeshGeometry ( lightVolume );
+	//NOTHING
 }
 
 GXVoid EMBulp::SetInfluenceDistance ( GXFloat newDistance )
@@ -142,7 +142,7 @@ GXVoid EMBulp::DrawLightVolume ()
 
 GXVoid EMBulp::LoadLightVolume ()
 {
-	lightVolume = GXMeshGeometry::LoadFromStm ( L"Meshes/Editor Mobile/Bulp light volume.stm" );
+	lightVolume.LoadMesh ( L"Meshes/Editor Mobile/Bulp light volume.stm" );
 }
 
 //---------------------------------------------------------------
@@ -163,7 +163,7 @@ EMSpotlight::EMSpotlight ()
 
 EMSpotlight::~EMSpotlight ()
 {
-	GXMeshGeometry::RemoveMeshGeometry ( lightVolume );
+	//NOTHING
 }
 
 GXVoid EMSpotlight::SetInfluenceDistance ( GXFloat newDistance )
@@ -229,7 +229,7 @@ GXVoid EMSpotlight::DrawLightVolume ()
 
 GXVoid EMSpotlight::LoadLightVolume ()
 {
-	lightVolume = GXMeshGeometry::LoadFromStm ( L"Meshes/Editor Mobile/Spot light volume.stm" );
+	lightVolume.LoadMesh ( L"Meshes/Editor Mobile/Spot light volume.stm" );
 }
 
 //---------------------------------------------------------------

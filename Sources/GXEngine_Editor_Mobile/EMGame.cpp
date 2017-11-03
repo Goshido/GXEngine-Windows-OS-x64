@@ -141,7 +141,8 @@ GXVoid EMGame::OnInit ()
 
 	physicsInfoBackgroundTexture = GXTexture2D::LoadTexture ( L"Textures/System/Default_Diffuse.tga", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 
-	physicsContactPointMesh = GXMeshGeometry::LoadFromObj ( L"Meshes/System/Unit Sphere.obj" );
+	physicsContactPointMesh = new GXMeshGeometry ();
+	physicsContactPointMesh->LoadMesh ( L"Meshes/System/Unit Sphere.obj" );
 	physicsContactPointMaterial = new GXUnlitColorMaterial ();
 	physicsContactPointMaterial->SetColor ( 255, 0, 0, 255 );
 
@@ -281,7 +282,8 @@ GXVoid EMGame::OnInit ()
 	toParentBoneLineMaterial = new GXUnlitColorMaterial ();
 	toParentBoneLineMaterial->SetColor ( 115, 185, 0, 255 );
 
-	jointMesh = GXMeshGeometry::LoadFromObj ( L"Meshes/System/Unit Sphere.obj" );
+	jointMesh = new GXMeshGeometry ();
+	jointMesh->LoadMesh ( L"Meshes/System/Unit Sphere.obj" );
 
 	jointMeshMaterial = new GXUnlitColorMaterial ();
 	jointMeshMaterial->SetColor ( 255, 255, 255, 255 );
@@ -367,7 +369,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	transform.SetScale ( 3.0e-2f, 3.0e-2f, 3.0e-2f );
 
 	jointMeshMaterial->Bind ( transform );
-	jointMesh.Render ();
+	jointMesh->Render ();
 	jointMeshMaterial->Unbind ();
 
 	for ( GXUShort i = 1; i < skeleton.GetTotalBones (); i++ )
@@ -391,7 +393,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 		transform.SetLocation ( location );
 
 		jointMeshMaterial->Bind ( transform );
-		jointMesh.Render ();
+		jointMesh->Render ();
 		jointMeshMaterial->Unbind ();
 	}
 
@@ -414,7 +416,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 			transform.SetLocation ( contact[ i ].GetContactPoint () );
 
 			physicsContactPointMaterial->Bind ( transform );
-			physicsContactPointMesh.Render ();
+			physicsContactPointMesh->Render ();
 			physicsContactPointMaterial->Unbind ();
 		}
 
@@ -524,7 +526,7 @@ GXVoid EMGame::OnDestroy ()
 	GXSafeDelete ( environmentMap );
 
 	GXSafeDelete ( jointMeshMaterial );
-	GXMeshGeometry::RemoveMeshGeometry ( jointMesh );
+	GXSafeDelete ( jointMesh );
 
 	GXSafeDelete ( toParentBoneLineMaterial );
 	GXSafeDelete ( toParentBoneLine );
@@ -550,7 +552,7 @@ GXVoid EMGame::OnDestroy ()
 	GXSafeDelete ( directedLight );
 
 	GXSafeDelete ( physicsContactPointMaterial );
-	GXMeshGeometry::RemoveMeshGeometry ( physicsContactPointMesh );
+	GXSafeDelete ( physicsContactPointMesh );
 	GXTexture2D::RemoveTexture ( physicsInfoBackgroundTexture );
 	GXFont::RemoveFont ( physicsInfoFont );
 	GXSafeDelete ( physicsInfo );

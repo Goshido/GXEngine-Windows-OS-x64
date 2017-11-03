@@ -167,10 +167,13 @@ GXVoid GXCore::CheckMemoryLeak ()
 	const GXWChar* lastTextureCubeMap = nullptr;
 	GXUInt textureCubeMaps = GXTextureCubeMap::GetTotalLoadedTextures ( &lastTextureCubeMap );
 
-	const GXWChar* lastMeshGeometry = nullptr;
-	GXUInt meshGeometries = GXMeshGeometry::GetTotalLoadedMeshGeometries ( &lastMeshGeometry );
+	const GXWChar* lastMesh = nullptr;
+	GXUInt meshes = GXMesh::GetTotalLoadedMeshes ( &lastMesh );
 
-	if ( ( fonts + shaders + sounds + texture2Ds + textureCubeMaps + meshGeometries ) != 0 )
+	const GXWChar* lastSkin = nullptr;
+	GXUInt skins = GXSkin::GetTotalLoadedSkins ( &lastSkin );
+
+	if ( ( fonts + shaders + sounds + texture2Ds + textureCubeMaps + meshes + skins ) != 0 )
 	{
 		GXLogW ( L"GXCore::CheckMemoryLeak::Warning - Обнаружена утечка памяти\n" );
 
@@ -189,8 +192,11 @@ GXVoid GXCore::CheckMemoryLeak ()
 		if ( textureCubeMaps > 0 )
 			GXLogW ( L"Текстурные объекты (Cube map текстуры)- %i [%s]\n", textureCubeMaps, lastTextureCubeMap );
 
-		if ( meshGeometries > 0 )
-			GXLogW ( L"Меши - %i [%s]\n", meshGeometries, lastMeshGeometry );
+		if ( meshes > 0 )
+			GXLogW ( L"Меши - %i [%s]\n", meshes, lastMesh );
+
+		if ( meshes > 0 )
+			GXLogW ( L"Скины - %i [%s]\n", skins, lastSkin );
 
 		system ( "pause" );
 	}

@@ -480,6 +480,12 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimationSolverMovement.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeMesh.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeSkin.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">

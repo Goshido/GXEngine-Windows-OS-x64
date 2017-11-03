@@ -39,7 +39,7 @@ class EMGame : public GXGame
 		GXHudSurface*			physicsInfo;
 		GXFont					physicsInfoFont;
 		GXTexture2D				physicsInfoBackgroundTexture;
-		GXMeshGeometry			physicsContactPointMesh;
+		GXMeshGeometry*			physicsContactPointMesh;
 		GXUnlitColorMaterial*	physicsContactPointMaterial;
 
 		GXGravity				gravity;
@@ -59,7 +59,7 @@ class EMGame : public GXGame
 		EMFluttershy*			fluttershy;
 		GXMeshGeometry*			toParentBoneLine;
 		GXUnlitColorMaterial*	toParentBoneLineMaterial;
-		GXMeshGeometry			jointMesh;
+		GXMeshGeometry*			jointMesh;
 		GXUnlitColorMaterial*	jointMeshMaterial;
 
 		GXTextureCubeMap*		environmentMap;

@@ -44,8 +44,6 @@ EMMeshActor::~EMMeshActor ()
 	GXTexture2D::RemoveTexture ( normal );
 	GXTexture2D::RemoveTexture ( emission );
 	GXTexture2D::RemoveTexture ( parameter );
-
-	GXMeshGeometry::RemoveMeshGeometry ( mesh );
 }
 
 GXVoid EMMeshActor::OnDrawCommonPass ( GXFloat deltaTime )
@@ -71,24 +69,7 @@ GXVoid EMMeshActor::OnDrawCommonPass ( GXFloat deltaTime )
 
 GXVoid EMMeshActor::SetMesh ( const GXWChar* meshFile )
 {
-	GXMeshGeometry::RemoveMeshGeometry ( mesh );
-
-	GXWChar* extension = nullptr;
-	GXGetFileExtension ( &extension, meshFile );
-
-	if ( GXWcscmp ( extension, L"obj" ) == 0 || GXWcscmp ( extension, L"OBJ" ) == 0 )
-		mesh = GXMeshGeometry::LoadFromObj ( meshFile );
-	else if ( GXWcscmp ( extension, L"stm" ) == 0 || GXWcscmp ( extension, L"STM" ) == 0 )
-		mesh = GXMeshGeometry::LoadFromStm ( meshFile );
-	else if ( GXWcscmp ( extension, L"skm" ) == 0 || GXWcscmp ( extension, L"SKM" ) == 0 )
-		mesh = GXMeshGeometry::LoadFromStm ( meshFile );
-	else
-	{
-		const GXWChar* message = GXLocale::GetInstance ().GetString ( L"EMMeshActor::SetMesh::Error - Can't load mesh %s. Unknown format %s" );
-		GXLogW ( message, meshFile, extension );
-	}
-
-	free ( extension );
+	mesh.LoadMesh ( meshFile );
 }
 
 EMCookTorranceCommonPassMaterial& EMMeshActor::GetMaterial ()

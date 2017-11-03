@@ -894,7 +894,8 @@ GXVoid GXCALL GXTextureCubeMap::ProjectFaces ( GLuint fbo, GLuint textureObject,
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"GXTextureCubeMap::ProjectSide::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
-	GXMeshGeometry unitCube = GXMeshGeometry::LoadFromStm ( L"Meshes/System/Unit Cube.stm" );
+	GXMeshGeometry unitCube;
+	unitCube.LoadMesh ( L"Meshes/System/Unit Cube.stm" );
 
 	GXEquirectangularToCubeMapMaterial equirectangularToCubeMapMaterial;
 	equirectangularToCubeMapMaterial.SetEquirectangularTexture ( equirectangularTexture );
@@ -907,8 +908,6 @@ GXVoid GXCALL GXTextureCubeMap::ProjectFaces ( GLuint fbo, GLuint textureObject,
 	equirectangularToCubeMapMaterial.Bind ( GXTransform::GetNullTransform () );
 	unitCube.Render ();
 	equirectangularToCubeMapMaterial.Unbind ();
-
-	GXMeshGeometry::RemoveMeshGeometry ( unitCube );
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
 

@@ -25,6 +25,7 @@ PFNGLBINDVERTEXARRAYPROC			glBindVertexArray			= nullptr;
 PFNGLGENBUFFERSPROC					glGenBuffers				= nullptr;
 PFNGLBINDBUFFERPROC					glBindBuffer				= nullptr;
 PFNGLBUFFERDATAPROC					glBufferData				= nullptr;
+PFNGLBUFFERSUBDATAPROC				glBufferSubData				= nullptr;
 PFNGLCREATEPROGRAMPROC				glCreateProgram				= nullptr;
 PFNGLCREATESHADERPROC				glCreateShader				= nullptr;
 PFNGLSHADERSOURCEPROC				glShaderSource				= nullptr;
@@ -102,6 +103,7 @@ GXVoid GXCALL GXOpenGLInit ()
 	OPENGL_GET_PROC ( PFNGLGENBUFFERSPROC,					glGenBuffers				);
 	OPENGL_GET_PROC ( PFNGLBINDBUFFERPROC,					glBindBuffer				);
 	OPENGL_GET_PROC ( PFNGLBUFFERDATAPROC,					glBufferData				);
+	OPENGL_GET_PROC ( PFNGLBUFFERSUBDATAPROC,				glBufferSubData				);
 	OPENGL_GET_PROC ( PFNGLCREATEPROGRAMPROC,				glCreateProgram				);
 	OPENGL_GET_PROC ( PFNGLCREATESHADERPROC,				glCreateShader				);
 	OPENGL_GET_PROC ( PFNGLSHADERSOURCEPROC,				glShaderSource				);

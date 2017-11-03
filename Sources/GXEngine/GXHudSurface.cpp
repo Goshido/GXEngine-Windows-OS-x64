@@ -36,7 +36,7 @@ GXImageRenderable::GXImageRenderable ()
 
 GXImageRenderable::~GXImageRenderable ()
 {
-	GXMeshGeometry::RemoveMeshGeometry ( mesh );
+	// NOTHING
 }
 
 GXVoid GXImageRenderable::Render ()
@@ -46,7 +46,7 @@ GXVoid GXImageRenderable::Render ()
 
 GXVoid GXImageRenderable::InitGraphicResources ()
 {
-	mesh = GXMeshGeometry::LoadFromStm ( L"Meshes/System/ScreenQuad1x1.stm" );
+	mesh.LoadMesh ( L"Meshes/System/ScreenQuad1x1.stm" );
 }
 
 GXVoid GXImageRenderable::TransformUpdated ()
@@ -214,7 +214,7 @@ canvasCamera ( (GXFloat)width, (GXFloat)height, Z_NEAR, Z_FAR )
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
 
-	screenQuadMesh = GXMeshGeometry::LoadFromStm ( L"Meshes/System/ScreenQuad.stm" );
+	screenQuadMesh.LoadMesh ( L"Meshes/System/ScreenQuad.stm" );
 
 	image = new GXImageRenderable ();
 	glyph = new GXGlyphRenderable ();
@@ -234,8 +234,6 @@ GXHudSurface::~GXHudSurface ()
 	delete image;
 	delete glyph;
 	delete line;
-
-	GXMeshGeometry::RemoveMeshGeometry ( screenQuadMesh );
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
 	glDeleteFramebuffers ( 1, &fbo );

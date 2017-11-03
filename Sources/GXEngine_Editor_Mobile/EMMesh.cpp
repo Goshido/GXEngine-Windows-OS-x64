@@ -14,7 +14,6 @@ EMMesh::EMMesh ( const GXWChar* meshFileName )
 EMMesh::~EMMesh ()
 {
 	free ( meshFileName );
-	GXMeshGeometry::RemoveMeshGeometry ( meshGeometry );
 }
 
 GXVoid EMMesh::Render ()
@@ -29,18 +28,7 @@ GXVoid EMMesh::UpdatePose ( GXSkeleton &skeleton )
 
 GXVoid EMMesh::InitGraphicResources ()
 {
-	GXWChar* extension = nullptr;
-	GXGetFileExtension ( &extension, meshFileName );
-
-	if ( GXWcscmp ( extension, L"stm") == 0 || GXWcscmp ( extension, L"STM" ) == 0 )
-		meshGeometry = GXMeshGeometry::LoadFromStm ( meshFileName );
-	else if ( GXWcscmp ( extension, L"skm" ) == 0 || GXWcscmp ( extension, L"SKM" ) == 0 )
-		meshGeometry = GXMeshGeometry::LoadFromSkm ( meshFileName );
-	else
-		meshGeometry = GXMeshGeometry::LoadFromObj ( meshFileName );
-
-	GXSafeFree ( extension );
-
+	meshGeometry.LoadMesh ( meshFileName );
 	TransformUpdated ();
 }
 

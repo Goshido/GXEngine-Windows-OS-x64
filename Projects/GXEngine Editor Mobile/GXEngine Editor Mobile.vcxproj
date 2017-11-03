@@ -177,7 +177,9 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXCommon\GXLogger.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXMath.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXMemory.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeMesh.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeSkeletalMesh.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeSkin.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshSaver.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXOBJLoader.cpp" />

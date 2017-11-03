@@ -60,15 +60,11 @@ EMPhysicsDrivenActor::~EMPhysicsDrivenActor ()
 	GXTexture2D::RemoveTexture ( emission );
 	GXTexture2D::RemoveTexture ( parameter );
 
-	GXMeshGeometry::RemoveMeshGeometry ( mesh );
-
 	GXPhysicsEngine::GetInstance ().GetWorld ().UnregisterRigidBody ( rigidBody );
 
 	if ( !wireframeMaterial ) return;
 
 	delete wireframeMaterial;
-	GXMeshGeometry::RemoveMeshGeometry ( unitSphereMesh );
-	GXMeshGeometry::RemoveMeshGeometry ( unitCubeMesh );
 }
 
 GXVoid EMPhysicsDrivenActor::OnDrawCommonPass ( GXFloat deltaTime )
@@ -148,24 +144,7 @@ GXVoid EMPhysicsDrivenActor::OnTransformChanged ()
 
 GXVoid EMPhysicsDrivenActor::SetMesh ( const GXWChar* meshFile )
 {
-	GXMeshGeometry::RemoveMeshGeometry ( mesh );
-
-	GXWChar* extension = nullptr;
-	GXGetFileExtension ( &extension, meshFile );
-
-	if ( GXWcscmp ( extension, L"obj" ) == 0 || GXWcscmp ( extension, L"OBJ" ) == 0 )
-		mesh = GXMeshGeometry::LoadFromObj ( meshFile );
-	else if ( GXWcscmp ( extension, L"stm" ) == 0 || GXWcscmp ( extension, L"STM" ) == 0 )
-		mesh = GXMeshGeometry::LoadFromStm ( meshFile );
-	else if ( GXWcscmp ( extension, L"skm" ) == 0 || GXWcscmp ( extension, L"SKM" ) == 0 )
-		mesh = GXMeshGeometry::LoadFromStm ( meshFile );
-	else
-	{
-		const GXWChar* message = GXLocale::GetInstance ().GetString ( L"EMPhysicsDrivenActor::SetMesh::Error - Can't load mesh %s. Unknown format %s" );
-		GXLogW ( message, meshFile, extension );
-	}
-
-	free ( extension );
+	mesh.LoadMesh ( meshFile );
 }
 
 GXRigidBody& EMPhysicsDrivenActor::GetRigidBody ()
@@ -185,8 +164,8 @@ GXVoid EMPhysicsDrivenActor::EnablePhysicsDebug ()
 	wireframeMaterial = new EMWireframeMaterial ();
 	wireframeMaterial->SetColor ( SHAPE_COLOR_RED, SHAPE_COLOR_GREEN, SHAPE_COLOR_BLUE, SHAPE_COLOR_ALPHA );
 
-	unitSphereMesh = GXMeshGeometry::LoadFromObj ( L"Meshes/System/Unit Sphere.obj" );
-	unitCubeMesh = GXMeshGeometry::LoadFromStm ( L"Meshes/System/Unit Cube.stm" );
+	unitSphereMesh.LoadMesh ( L"Meshes/System/Unit Sphere.obj" );
+	unitCubeMesh.LoadMesh ( L"Meshes/System/Unit Cube.stm" );
 }
 
 GXVoid EMPhysicsDrivenActor::DisablePhysicsDebug ()
@@ -194,8 +173,6 @@ GXVoid EMPhysicsDrivenActor::DisablePhysicsDebug ()
 	if ( !wireframeMaterial ) return;
 
 	GXSafeDelete ( wireframeMaterial );
-	GXMeshGeometry::RemoveMeshGeometry ( unitSphereMesh );
-	GXMeshGeometry::RemoveMeshGeometry ( unitCubeMesh );
 }
 
 GXVoid GXCALL EMPhysicsDrivenActor::OnRigidBodyTransformChanged ( GXVoid* handler, const GXRigidBody& rigidBody )

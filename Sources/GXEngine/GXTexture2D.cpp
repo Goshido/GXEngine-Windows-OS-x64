@@ -551,15 +551,14 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"GXTexture2D::LoadTexture::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
-	GXMeshGeometry screenQuad = GXMeshGeometry::LoadFromStm ( L"Meshes/System/ScreenQuad.stm" );
+	GXMeshGeometry screenQuad;
+	screenQuad.LoadMesh ( L"Meshes/System/ScreenQuad.stm" );
 	GXTexture2DGammaCorrectorMaterial gammaCorrectorMaterial;
 
 	gammaCorrectorMaterial.SetsRGBTexture ( *texture );
 	gammaCorrectorMaterial.Bind ( GXTransform::GetNullTransform () );
 	screenQuad.Render ();
 	gammaCorrectorMaterial.Unbind ();
-
-	GXMeshGeometry::RemoveMeshGeometry ( screenQuad );
 
 	glPixelStorei ( GL_PACK_ALIGNMENT, packAlignment );
 	glReadPixels ( 0, 0, (GLsizei)cacheHeader.width, (GLsizei)cacheHeader.height, readPixelFormat, readPixelType, pixels );
