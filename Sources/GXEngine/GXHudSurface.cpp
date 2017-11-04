@@ -209,6 +209,7 @@ canvasCamera ( (GXFloat)width, (GXFloat)height, Z_NEAR, Z_FAR )
 	glDrawBuffers ( 1, &buffer );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"GXHudSurface::GXHudSurfaceExt::Error - Что-то с fbo. Ошибка 0x%04x\n", status );
 

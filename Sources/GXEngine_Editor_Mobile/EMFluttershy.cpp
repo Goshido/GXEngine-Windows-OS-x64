@@ -13,7 +13,7 @@
 
 EMFluttershy::EMFluttershy () :
 //mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLVER_ID )
-mesh ( L"Meshes/Editor Mobile/pilot.skm" ), animationSolverPlayer ( SOLVER_ID )
+mesh ( L"Meshes/Editor Mobile/pilot.skm", L"Meshes/Editor Mobile/pilot.skm" ), animationSolverPlayer ( SOLVER_ID )
 {
 	//GXLoadNativeAnimation ( animationInfo, L"Animations/Editor Mobile/pony animation.ani" );
 	//GXLoadNativeAnimation ( animationInfo, L"Animations/Editor Mobile/default.ani" );

@@ -24,7 +24,8 @@ GXMesh::GXMesh ()
 	referenceCount = 1;
 	meshFile = nullptr;
 	vboSize = 0;
-	glGenBuffers ( 1, &meshVBO );
+	vboUsage = GL_INVALID_ENUM;
+	meshVBO = 0;
 	totalVertices = 0;
 }
 
@@ -84,15 +85,23 @@ const GXWChar* GXMesh::GetMeshFileName () const
 
 GXVoid GXMesh::FillVBO ( const GXVoid* data, GLsizeiptr size, GLenum usage )
 {
+	GXSafeFree ( meshFile );
+
 	if ( meshVBO == 0 )
 		glGenBuffers ( 1, &meshVBO );
 
 	glBindBuffer ( GL_ARRAY_BUFFER, meshVBO );
 	//{
-		if ( size <= vboSize )
+		if ( size <= vboSize && usage == vboUsage )
+		{
 			glBufferSubData ( GL_ARRAY_BUFFER, (GLintptr)0, size, data );
+		}
 		else
-			glBufferData ( GL_ARRAY_BUFFER, size, data, usage );
+		{
+			vboUsage = usage;
+			vboSize = size;
+			glBufferData ( GL_ARRAY_BUFFER, vboSize, data, vboUsage );
+		}
 	//}
 	glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 }
@@ -258,10 +267,12 @@ GXBool GXMesh::LoadFromOBJ ( const GXWChar* fileName )
 	free ( baseFileName );
 	free ( cacheFileName );
 
+	vboUsage = GL_STATIC_DRAW;
+
 	glGenBuffers ( 1, &meshVBO );
 	glBindBuffer ( GL_ARRAY_BUFFER, meshVBO );
 	//{
-		glBufferData ( GL_ARRAY_BUFFER, vboSize, cache, GL_STATIC_DRAW );
+		glBufferData ( GL_ARRAY_BUFFER, vboSize, cache, vboUsage );
 	//}
 	glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 
@@ -275,13 +286,14 @@ GXBool GXMesh::LoadFromSTM ( const GXWChar* fileName )
 	GXNativeStaticMeshInfo info;
 	GXLoadNativeStaticMesh ( fileName, info );
 
-	vboSize = (GLsizeiptr)( totalVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) ) );
 	totalVertices = (GLsizei)info.numVertices;
+	vboSize = (GLsizeiptr)( totalVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) ) );
+	vboUsage = GL_STATIC_DRAW;
 
 	glGenBuffers ( 1, &meshVBO );
 	glBindBuffer ( GL_ARRAY_BUFFER, meshVBO );
 	//{
-		glBufferData ( GL_ARRAY_BUFFER, vboSize, info.vboData, GL_STATIC_DRAW );
+		glBufferData ( GL_ARRAY_BUFFER, vboSize, info.vboData, vboUsage );
 	//}
 	glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 
@@ -315,10 +327,12 @@ GXBool GXMesh::LoadFromSKM ( const GXWChar* fileName )
 
 	skeletalMeshData.Cleanup ();
 
+	vboUsage = GL_STATIC_DRAW;
+
 	glGenBuffers ( 1, &meshVBO );
 	glBindBuffer ( GL_ARRAY_BUFFER, meshVBO );
 	//{
-		glBufferData ( GL_ARRAY_BUFFER, vboSize, destination, GL_STATIC_DRAW );
+		glBufferData ( GL_ARRAY_BUFFER, vboSize, destination, vboUsage );
 	//}
 	glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 
@@ -332,13 +346,14 @@ GXBool GXMesh::LoadFromMESH ( const GXWChar* fileName )
 	GXMeshInfo meshInfo;
 	GXLoadNativeMesh ( meshInfo, fileName );
 
-	vboSize = (GLsizeiptr)( totalVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) ) );
 	totalVertices = (GLsizei)meshInfo.totalVertices;
+	vboSize = (GLsizeiptr)( totalVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) ) );
+	vboUsage = GL_STATIC_DRAW;
 
 	glGenBuffers ( 1, &meshVBO );
 	glBindBuffer ( GL_ARRAY_BUFFER, meshVBO );
 	//{
-		glBufferData ( GL_ARRAY_BUFFER, vboSize, meshInfo.vboData, GL_STATIC_DRAW );
+		glBufferData ( GL_ARRAY_BUFFER, vboSize, meshInfo.vboData, vboUsage );
 	//}
 	glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 
@@ -396,11 +411,6 @@ GXVoid GXSkin::Release ()
 	delete this;
 }
 
-const GXWChar* GXSkin::GetSkinFileName () const
-{
-	return skinFile;
-}
-
 GXSkin* GXCALL GXSkin::Find ( const GXWChar* fileName )
 {
 	for ( GXSkin* skin = top; skin; skin = skin->next )
@@ -417,7 +427,7 @@ GXUInt GXCALL GXSkin::GetTotalLoadedSkins ( const GXWChar** lastSkin )
 		total++;
 
 	if ( total > 0 )
-		*lastSkin = top->GetSkinFileName ();
+		*lastSkin = top->skinFile;
 	else
 		*lastSkin = nullptr;
 
@@ -426,8 +436,6 @@ GXUInt GXCALL GXSkin::GetTotalLoadedSkins ( const GXWChar** lastSkin )
 
 GXSkin::~GXSkin ()
 {
-	if ( !skinFile ) return;
-
 	free ( skinFile );
 
 	glBindBuffer ( GL_ARRAY_BUFFER, 0 );
@@ -459,7 +467,7 @@ GXBool GXSkin::LoadFromSKM ( const GXWChar* fileName )
 	for ( GLsizei i = 0; i < totalVertices; i++ )
 	{
 		//Bone index, bone weight
-		memcpy ( destination + offset, source, skinVBOSize );
+		memcpy ( destination + offset, source, skinVBOStride );
 
 		offset += skinVBOStride;
 		source += skeletalMeshVBOStride;
@@ -507,9 +515,8 @@ GXMeshGeometry::GXMeshGeometry ()
 	topology = GL_TRIANGLES;
 
 	skin = nullptr;
-	skinningVAO = 0;
+	pose[ 0 ] = pose[ 1 ] = nullptr;
 	poseVAO[ 0 ] = poseVAO[ 1 ] = 0;
-	poseVBO[ 0 ] = poseVBO[ 1 ] = 0;
 
 	skinningSwitchIndex = 0;
 	skinningMaterial = nullptr;
@@ -518,19 +525,22 @@ GXMeshGeometry::GXMeshGeometry ()
 GXMeshGeometry::~GXMeshGeometry ()
 {
 	if ( mesh )
+	{
+		glDeleteVertexArrays ( 1, &meshVAO );
 		mesh->Release ();
+	}
 
 	if ( skin )
 		skin->Release ();
 
-	if ( skinningMaterial )
-	{
-		glDeleteVertexArrays ( 1, &skinningVAO );
-		glDeleteVertexArrays ( 2, poseVAO );
-		glDeleteBuffers ( 2, poseVBO );
+	if ( !skinningMaterial ) return;
 
-		delete skinningMaterial;
-	}
+	delete skinningMaterial;
+
+	glDeleteVertexArrays ( 2, poseVAO );
+
+	pose[ 0 ]->Release ();
+	pose[ 1 ]->Release ();
 }
 
 GXVoid GXMeshGeometry::Render ()
@@ -575,7 +585,7 @@ GXVoid GXMeshGeometry::SetTotalVertices ( GLsizei totalVertices )
 		if ( !mesh )
 			mesh = new GXMesh ();
 
-		mesh->totalVertices;
+		mesh->totalVertices = totalVertices;
 		return;
 	}
 
@@ -620,6 +630,9 @@ GXVoid GXMeshGeometry::SetBufferStream ( eGXMeshStreamIndex streamIndex, GLint n
 
 		glBindVertexArray ( meshVAO );
 		//{
+			if ( mesh->meshVBO == 0 )
+				glGenBuffers ( 1, &mesh->meshVBO );
+
 			glBindBuffer ( GL_ARRAY_BUFFER, mesh->meshVBO );
 			glEnableVertexAttribArray ( (GLuint)streamIndex );
 			glVertexAttribPointer ( (GLuint)streamIndex, numElements, elementType, GL_FALSE, stride, offset );
@@ -650,17 +663,17 @@ GXVoid GXMeshGeometry::SetTopology ( GLenum newTopology )
 
 GXVoid GXMeshGeometry::UpdatePose ( const GXSkeleton &skeleton )
 {
-	if ( skinningVAO == 0 ) return;
+	if ( !skinningMaterial ) return;
 
 	skinningMaterial->SetSkeleton ( skeleton );
 	skinningMaterial->Bind ( GXTransform::GetNullTransform () );
 
 	glDisable ( GL_DEPTH_TEST );
 	glEnable ( GL_RASTERIZER_DISCARD );
-	glBindBufferBase ( GL_TRANSFORM_FEEDBACK_BUFFER, 0, poseVBO[ skinningSwitchIndex ] );
+	glBindBufferBase ( GL_TRANSFORM_FEEDBACK_BUFFER, 0, pose[ skinningSwitchIndex ]->meshVBO );
 	glBeginTransformFeedback ( GL_POINTS );
 
-	glBindVertexArray ( skinningVAO );
+	glBindVertexArray ( meshVAO );
 
 	glDrawArrays ( GL_POINTS, 0, skin->totalVertices );
 
@@ -740,34 +753,45 @@ GXVoid GXMeshGeometry::UpdateGraphicResources ()
 
 				glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::Bitangent );
 				glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::Bitangent, 3, GL_FLOAT, GL_FALSE, meshStride, (const GLvoid*)offset );
+
+				glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::LastFrameVertex );
+				glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::LastFrameVertex, 3, GL_FLOAT, GL_FALSE, meshStride, (const GLvoid*)0 );
 			//}
 			glBindVertexArray ( 0 );
 		}
 
 		if ( !skinningMaterial ) return;
 
-		GXSafeDelete ( skinningMaterial );
+		delete skinningMaterial;
 
 		glBindVertexArray ( 0 );
-		glDeleteVertexArrays ( 1, &skinningVAO );
 		glDeleteVertexArrays ( 2, poseVAO );
-		glDeleteBuffers ( 2, poseVBO );
+
+		pose[ 0 ]->Release ();
+		pose[ 1 ]->Release ();
+
+		pose[ 0 ] = pose[ 1 ] = nullptr;
 
 		return;
 	}
 
 	skinningMaterial = new GXSkinningMaterial ();
+	GLsizei meshStride = sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 );
+	GLsizeiptr poseVBOSize = (GLsizeiptr)( meshStride * skin->totalVertices );
 
 	glGenVertexArrays ( 2, poseVAO );
-	glGenVertexArrays ( 1, &skinningVAO );
-	glGenBuffers ( 2, poseVBO );
+	
+	pose[ 0 ] = new GXMesh ();
+	pose[ 0 ]->FillVBO ( nullptr, poseVBOSize, GL_DYNAMIC_DRAW );
 
-	GLsizei meshStride = sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 );
+	pose[ 1 ] = new GXMesh ();
+	pose[ 1 ]->FillVBO ( nullptr, poseVBOSize, GL_DYNAMIC_DRAW );
+
 	GXUPointer offset = 0;
 
 	glBindVertexArray ( poseVAO[ 0 ] );
 	//{
-		glBindBuffer ( GL_ARRAY_BUFFER, poseVBO[ 0 ] );
+		glBindBuffer ( GL_ARRAY_BUFFER, pose[ 0 ]->meshVBO );
 
 		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::CurrenVertex );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, GL_FALSE, meshStride, (const GLvoid*)offset );
@@ -788,7 +812,7 @@ GXVoid GXMeshGeometry::UpdateGraphicResources ()
 		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::Bitangent );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::Bitangent, 3, GL_FLOAT, GL_FALSE, meshStride, (const GLvoid*)offset );
 
-		glBindBuffer ( GL_ARRAY_BUFFER, poseVBO[ 1 ] );
+		glBindBuffer ( GL_ARRAY_BUFFER, pose[ 1 ]->meshVBO );
 
 		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::LastFrameVertex );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::LastFrameVertex, 3, GL_FLOAT, GL_FALSE, meshStride, (const GLvoid*)0 );
@@ -799,7 +823,7 @@ GXVoid GXMeshGeometry::UpdateGraphicResources ()
 
 	glBindVertexArray ( poseVAO[ 1 ] );
 	//{
-		glBindBuffer ( GL_ARRAY_BUFFER, poseVBO[ 1 ] );
+		glBindBuffer ( GL_ARRAY_BUFFER, pose[ 1 ]->meshVBO );
 
 		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::CurrenVertex );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, GL_FALSE, meshStride, (const GLvoid*)offset );
@@ -820,7 +844,7 @@ GXVoid GXMeshGeometry::UpdateGraphicResources ()
 		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::Bitangent );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::Bitangent, 3, GL_FLOAT, GL_FALSE, meshStride, (const GLvoid*)offset );
 
-		glBindBuffer ( GL_ARRAY_BUFFER, poseVBO[ 0 ] );
+		glBindBuffer ( GL_ARRAY_BUFFER, pose[ 0 ]->meshVBO );
 
 		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::LastFrameVertex );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::LastFrameVertex, 3, GL_FLOAT, GL_FALSE, meshStride, (const GLvoid*)0 );
@@ -830,7 +854,7 @@ GXVoid GXMeshGeometry::UpdateGraphicResources ()
 	offset = 0;
 	GLsizei skinStride = sizeof ( GXVec4 ) + sizeof ( GXVec4 );
 
-	glBindVertexArray ( skinningVAO );
+	glBindVertexArray ( meshVAO );
 	//{
 		glBindBuffer ( GL_ARRAY_BUFFER, mesh->meshVBO );
 

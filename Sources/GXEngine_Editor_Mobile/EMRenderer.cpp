@@ -847,7 +847,7 @@ GXTexture2D& EMRenderer::GetDepthTexture ()
 }
 
 EMRenderer::EMRenderer ():
-screenQuadMesh( L"Meshes/System/ScreenQuad.stm" ), gaussHorizontalBlurMaterial ( eEMGaussHorizontalBlurKernelType::ONE_CHANNEL_FIVE_PIXEL_KERNEL ), gaussVerticalBlurMaterial ( eEMGaussVerticalBlurKernelType::ONE_CHANNEL_FIVE_PIXEL_KERNEL )
+screenQuadMesh ( L"Meshes/System/ScreenQuad.stm" ), gaussHorizontalBlurMaterial ( eEMGaussHorizontalBlurKernelType::ONE_CHANNEL_FIVE_PIXEL_KERNEL ), gaussVerticalBlurMaterial ( eEMGaussVerticalBlurKernelType::ONE_CHANNEL_FIVE_PIXEL_KERNEL )
 {
 	memset ( objectMask, 0, 8 * sizeof ( GXUByte ) );
 	mouseX = mouseY = -1;
@@ -980,6 +980,7 @@ GXVoid EMRenderer::CreateFBO ()
 	glDrawBuffers ( 7, buffers );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::CreateFBO::Error - Что-то не так с FBO (ошибка 0x%08X)\n", (GXUInt)status );
 

@@ -18,25 +18,36 @@ class GXMesh
 		static GXMesh*			top;
 
 		GXUInt					referenceCount;
+
 		GXWChar*				meshFile;
 		GLsizeiptr				vboSize;
+		GLenum					vboUsage;
 
 	public:
 		GLsizei					totalVertices;
 		GLuint					meshVBO;
 
 	public:
+		//Creates procedure mesh.
 		GXMesh ();
+
+		//Creates static mesh.
 		explicit GXMesh ( const GXWChar* fileName );
 
 		GXVoid AddReference ();
 		GXVoid Release ();
 
+		//Method return nullptr if mesh is procedure mesh.
+		//Method returns valid zero terminated string if mesh is not procedure mesh.
 		const GXWChar* GetMeshFileName () const;
+
+		//Method automatically converts static mesh to procedure mesh if needed.
 		GXVoid FillVBO ( const GXVoid* data, GLsizeiptr size, GLenum usage );
 
-		// Method returns valid pointer or nullptr.
+		//Method returns valid pointer if mesh was found.
+		//Method returns nullptr if mesh was not found.
 		static GXMesh* GXCALL Find ( const GXWChar* fileName );
+
 		static GXUInt GXCALL GetTotalLoadedMeshes ( const GXWChar** lastMesh );
 
 	private:
@@ -67,9 +78,7 @@ class GXSkin
 		GXVoid AddReference ();
 		GXVoid Release ();
 
-		const GXWChar* GetSkinFileName () const;
-
-		// Method returns valid pointer or nullptr.
+		//Method returns valid pointer or nullptr.
 		static GXSkin* GXCALL Find ( const GXWChar* fileName );
 		static GXUInt GXCALL GetTotalLoadedSkins ( const GXWChar** lastSkin );
 
@@ -101,9 +110,8 @@ class GXMeshGeometry
 		GLenum					topology;
 
 		GXSkin*					skin;
-		GLuint					skinningVAO;
 		GLuint					poseVAO[ 2 ];
-		GLuint					poseVBO[ 2 ];
+		GXMesh*					pose[ 2 ];
 		GXUByte					skinningSwitchIndex;
 		GXSkinningMaterial*		skinningMaterial;
 

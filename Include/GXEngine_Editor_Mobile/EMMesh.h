@@ -12,10 +12,12 @@ class EMMesh : public GXTransform, public GXRenderable
 	private:
 		GXMeshGeometry	meshGeometry;
 		GXWChar*		meshFileName;
+		GXWChar*		skinFileName;
 		GXAABB			boundsWorld;
 
 	public:
 		EMMesh ( const GXWChar* meshFileName );
+		EMMesh ( const GXWChar* meshFileName, const GXWChar* skinFileName );
 		~EMMesh () override;
 
 		GXVoid Render () override;

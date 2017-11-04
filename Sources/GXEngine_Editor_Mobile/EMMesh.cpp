@@ -8,12 +8,23 @@
 EMMesh::EMMesh ( const GXWChar* meshFileName )
 {
 	GXWcsclone ( &this->meshFileName, meshFileName );
+	skinFileName = nullptr;
+
+	InitGraphicResources ();
+}
+
+EMMesh::EMMesh ( const GXWChar* meshFileName, const GXWChar* skinFileName )
+{
+	GXWcsclone ( &this->meshFileName, meshFileName );
+	GXWcsclone ( &this->skinFileName, skinFileName );
+
 	InitGraphicResources ();
 }
 
 EMMesh::~EMMesh ()
 {
 	free ( meshFileName );
+	GXSafeFree ( skinFileName );
 }
 
 GXVoid EMMesh::Render ()
@@ -29,6 +40,10 @@ GXVoid EMMesh::UpdatePose ( GXSkeleton &skeleton )
 GXVoid EMMesh::InitGraphicResources ()
 {
 	meshGeometry.LoadMesh ( meshFileName );
+
+	if ( skinFileName )
+		meshGeometry.LoadSkin ( skinFileName );
+
 	TransformUpdated ();
 }
 

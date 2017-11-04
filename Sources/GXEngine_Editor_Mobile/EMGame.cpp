@@ -494,6 +494,8 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	viewerCamera.UpdateLastFrameMatrices ();
 
+	GXCheckOpenGLError ();
+
 	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
 
 	if ( coreRenderer.IsVisible () ) return;

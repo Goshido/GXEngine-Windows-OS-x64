@@ -12,14 +12,17 @@ EMUI::EMUI ( EMUI* parent )
 	this->parent = parent;
 	prev = nullptr;
 	next = em_UIElements;
+
 	if ( em_UIElements )
 		em_UIElements->prev = this;
+
 	em_UIElements = this;
 }
 
 EMUI::~EMUI ()
 {
 	if ( next ) next->prev = prev;
+
 	if ( prev ) 
 		prev->next = next;
 	else
