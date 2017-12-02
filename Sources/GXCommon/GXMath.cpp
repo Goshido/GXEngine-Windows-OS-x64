@@ -629,7 +629,7 @@ GXVoid GXColorRGB::From ( const GXColorHSV &color )
 
 	GXFloat value = color.GetValue ();
 
-	GXUByte selector = (GXUByte)( (GXInt)( correctedHue * HSVA_FACTOR ) % 6 );
+	GXUByte selector = (GXUByte)( ( (GXInt)correctedHue / 60 ) % 6 );
 	GXFloat minValue = ( ( 100.0f - color.GetSaturation () ) * value ) * 0.01f;
 	GXFloat delta = ( value - minValue ) * ( ( (GXInt)correctedHue % 60 ) * HSVA_FACTOR );
 	GXFloat increment = minValue + delta;
