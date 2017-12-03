@@ -442,7 +442,7 @@ GXVoid EMColorSelectorRenderer::OnRefresh ()
 	GXVec2 center ( w * 0.5f, h * 0.5f );
 
 	GXLineInfo li;
-	li.color.From ( COLOR_SELECTOR_HUE_MARKER_COLOR_R, COLOR_SELECTOR_HUE_MARKER_COLOR_G, COLOR_SELECTOR_HUE_MARKER_COLOR_B, COLOR_SELECTOR_HUE_MARKER_COLOR_A );
+	li.color.From ( GXColorHSV ( colorHSVA.GetHue () + 180.0f, 85.0f, 100.0f, 100.0f ) );
 	li.thickness = 1.0f;
 	ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
@@ -475,15 +475,19 @@ GXVoid EMColorSelectorRenderer::OnRefresh ()
 	GXVec3 barycentricCoords;
 	GXGetBarycentricCoords ( barycentricCoords, currentRGB, colorA, colorB, colorC );
 
+	GXMat3 barycentricToLocalTransform;
+	barycentricToLocalTransform.SetX ( equilateralTriangleGeometryLocal[ 0 ] );
+	barycentricToLocalTransform.SetY ( equilateralTriangleGeometryLocal[ 2 ] );
+	barycentricToLocalTransform.SetZ ( equilateralTriangleGeometryLocal[ 4 ] );
+
 	GXVec3 colorCoordsLocal;
-	colorCoordsLocal.SetX ( barycentricCoords.GetX () * equilateralTriangleGeometryLocal[ 0 ].GetX () + barycentricCoords.GetY () * equilateralTriangleGeometryLocal[ 2 ].GetX () + barycentricCoords.GetZ () * equilateralTriangleGeometryLocal[ 4 ].GetX () );
-	colorCoordsLocal.SetY ( barycentricCoords.GetX () * equilateralTriangleGeometryLocal[ 0 ].GetY () + barycentricCoords.GetY () * equilateralTriangleGeometryLocal[ 2 ].GetY () + barycentricCoords.GetZ () * equilateralTriangleGeometryLocal[ 4 ].GetY () );
-	colorCoordsLocal.SetZ ( barycentricCoords.GetX () * equilateralTriangleGeometryLocal[ 0 ].GetZ () + barycentricCoords.GetY () * equilateralTriangleGeometryLocal[ 2 ].GetZ () + barycentricCoords.GetZ () * equilateralTriangleGeometryLocal[ 4 ].GetZ () );
+	barycentricToLocalTransform.Multiply ( colorCoordsLocal, barycentricCoords );
 
 	GXVec3 colorCoordsSurface;
 	transform.GetCurrentFrameModelMatrix ().MultiplyAsPoint ( colorCoordsSurface, colorCoordsLocal );
 
 	GXColorHSV borderColorHSVA ( colorHSVA.GetHue () + 180.0f, 100.0f, 100.0f, 100.0f );
+
 	if ( borderColorHSVA.GetHue () > 360.0f )
 		borderColorHSVA.data[ 0 ] -= 360.0f;
 
