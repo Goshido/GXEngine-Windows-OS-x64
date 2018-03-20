@@ -192,6 +192,15 @@ const GXMat4& GXTransform::GetCurrentFrameModelMatrix () const
 	return currentFrameModelMatrix;
 }
 
+GXVoid GXTransform::SetCurrentFrameModelMatrix ( const GXMat4 &matrix )
+{
+	currentFrameModelMatrix = matrix;
+
+	matrix.GetW ( currentFrameLocation );
+	currentFrameRotationMatrix.ClearRotation ( matrix );
+	matrix.ClearScale ( currentFrameScale );
+}
+
 const GXMat4& GXTransform::GetLastFrameModelMatrix () const
 {
 	return lastFrameModelMatrix;

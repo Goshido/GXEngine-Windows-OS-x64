@@ -222,16 +222,10 @@
     <ClCompile Include="..\..\Sources\GXPhysics\GXCollisionData.cpp">
       <Filter>Source Files\GXPhysics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXPlaneShape.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXPhysics\GXBoxShape.cpp">
       <Filter>Source Files\GXPhysics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXPhysics\GXContactResolver.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXPolygonShape.cpp">
       <Filter>Source Files\GXPhysics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXTextureDuplicator.cpp">
@@ -485,6 +479,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeSkin.cpp">
       <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPhysics\GXRectangleShape.cpp">
+      <Filter>Source Files\GXPhysics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -806,9 +803,6 @@
     <ClInclude Include="..\..\Include\GXPhysics\GXCollisionDetector.h">
       <Filter>Header Files\GXPhysics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXPlaneShape.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXPhysics\GXBoxShape.h">
       <Filter>Header Files\GXPhysics</Filter>
     </ClInclude>
@@ -817,9 +811,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMPhysicsDrivenActor.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXPolygonShape.h">
-      <Filter>Header Files\GXPhysics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXTextureDuplicator.h">
       <Filter>Header Files\GXEngine</Filter>
@@ -1021,6 +1012,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXAnimationSolverMovement.h">
       <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPhysics\GXRectangleShape.h">
+      <Filter>Header Files\GXPhysics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

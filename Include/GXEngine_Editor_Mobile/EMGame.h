@@ -57,10 +57,12 @@ class EMGame : public GXGame
 		EMMoveTool*				moveTool;
 
 		EMFluttershy*			fluttershy;
-		GXMeshGeometry*			toParentBoneLine;
-		GXUnlitColorMaterial*	toParentBoneLineMaterial;
-		GXMeshGeometry*			jointMesh;
-		GXUnlitColorMaterial*	jointMeshMaterial;
+
+		GXMeshGeometry*			contactLocationMesh;
+		GXUnlitColorMaterial*	contactLocationMaterial;
+
+		GXMeshGeometry*			contactNormalMesh;
+		GXUnlitColorMaterial*	contactNormalMaterial;
 
 		GXTextureCubeMap*		environmentMap;
 		GXTextureCubeMap*		lightProbeSourceTexture;
@@ -68,6 +70,9 @@ class EMGame : public GXGame
 		EMLightProbe*			lightProbe;
 
 		GXUIInput*				uiInput;
+
+		static GXBool			isContact;
+		static GXMat4			contactNormalTransform;
 
 	public:
 		EMGame ();

@@ -1,6 +1,7 @@
 //version 1.0
 
 #include <GXPhysics/GXBoxShape.h>
+#include <GXCommon/GXLogger.h>
 
 
 GXBoxShape::GXBoxShape ( GXRigidBody* body, GXFloat width, GXFloat height, GXFloat depth )
@@ -9,6 +10,15 @@ GXBoxShape::GXBoxShape ( GXRigidBody* body, GXFloat width, GXFloat height, GXFlo
 	this->width = width;
 	this->height = height;
 	this->depth = depth;
+
+	GXFloat halfWidth = 0.5f * width;
+	GXFloat halfHeight = 0.5f * height;
+	GXFloat halfDepth = 0.5f * depth;
+
+	boundsLocal.AddVertex ( -halfWidth, -halfHeight, -halfDepth );
+	boundsLocal.AddVertex ( halfWidth, halfHeight, halfDepth );
+
+	boundsWorld = boundsLocal;
 }
 
 GXBoxShape::~GXBoxShape ()
@@ -23,13 +33,13 @@ GXVoid GXBoxShape::CalculateInertiaTensor ( GXFloat mass )
 	GXFloat hh = height * height;
 	GXFloat dd = depth * depth;
 
-	inertialTensor.m[ 0 ][ 0 ] = factor * ( hh + dd );
-	inertialTensor.m[ 1 ][ 1 ] = factor * ( ww + dd );
-	inertialTensor.m[ 2 ][ 2 ] = factor * ( ww + hh );
+	inertiaTensor.m[ 0 ][ 0 ] = factor * ( hh + dd );
+	inertiaTensor.m[ 1 ][ 1 ] = factor * ( ww + dd );
+	inertiaTensor.m[ 2 ][ 2 ] = factor * ( ww + hh );
 
-	inertialTensor.m[ 0 ][ 1 ] = inertialTensor.m[ 0 ][ 2 ] = 0.0f;
-	inertialTensor.m[ 1 ][ 0 ] = inertialTensor.m[ 1 ][ 2 ] = 0.0f;
-	inertialTensor.m[ 2 ][ 0 ] = inertialTensor.m[ 2 ][ 1 ] = 0.0f;
+	inertiaTensor.m[ 0 ][ 1 ] = inertiaTensor.m[ 0 ][ 2 ] = 0.0f;
+	inertiaTensor.m[ 1 ][ 0 ] = inertiaTensor.m[ 1 ][ 2 ] = 0.0f;
+	inertiaTensor.m[ 2 ][ 0 ] = inertiaTensor.m[ 2 ][ 1 ] = 0.0f;
 }
 
 GXVoid GXBoxShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const
@@ -68,6 +78,11 @@ GXFloat GXBoxShape::GetHeight () const
 GXFloat GXBoxShape::GetDepth () const
 {
 	return depth;
+}
+
+GXVoid GXBoxShape::UpdateBoundsWorld ()
+{
+	boundsLocal.Transform ( boundsWorld, transformWorld );
 }
 
 GXVoid GXBoxShape::GetRotatedVecticesWorld ( GXBoxShapeVertices &vertices ) const

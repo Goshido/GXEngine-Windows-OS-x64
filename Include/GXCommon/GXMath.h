@@ -1,4 +1,4 @@
-//version 1.43
+//version 1.44
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -116,6 +116,10 @@ struct GXVec3
 
 	GXVec3& operator = ( const GXVec3 &vector );
 };
+
+//-------------------------------------------------------------
+
+GXBool GXCALL GXRayTriangleIntersection3D ( GXFloat &outT, const GXVec3 &origin, const GXVec3 &direction, GXFloat length, const GXVec3 &a, const GXVec3 &b, const GXVec3 &c );
 
 //-------------------------------------------------------------
 
@@ -386,6 +390,7 @@ struct GXMat4
 	GXVoid SetOrigin ( const GXVec3 &origin );
 	GXVoid From ( const GXQuat &quaternion, const GXVec3 &origin );
 	GXVoid From ( const GXMat3 &rotation, const GXVec3 &origin );
+	GXVoid From ( const GXVec3 &zDirection, const GXVec3 &origin );
 
 	//Result is valid if quaternion is normalized.
 	GXVoid FromFast ( const GXQuat &quaternion, const GXVec3 &origin );
@@ -419,6 +424,7 @@ struct GXMat4
 	GXVoid ClearRotation ( const GXMat4 &sourceMatrix );
 
 	GXVoid Scale ( GXFloat x, GXFloat y, GXFloat z );
+	GXVoid ClearScale ( GXVec3 &scale ) const;
 
 	GXVoid Inverse ( const GXMat4 &sourceMatrix );
 
@@ -551,6 +557,8 @@ GXFloat GXCALL GXMinf ( GXFloat a, GXFloat b );
 GXFloat GXCALL GXMaxf ( GXFloat a, GXFloat b );
 
 GXVoid GXCALL GXGetBarycentricCoords ( GXVec3 &out, const GXVec3 &point, const GXVec3 &a, const GXVec3 &b, const GXVec3 &c );
+
+GXVoid GXCALL GXGetRayFromViewer ( GXVec3 &origin, GXVec3 &direction, GXUShort x, GXUShort y, GXUShort viewportWidth, GXUShort viewportHeight, const GXVec3& viewerLocation, const GXMat4 &viewProjectionMatrix );
 
 
 #endif //GX_MATH

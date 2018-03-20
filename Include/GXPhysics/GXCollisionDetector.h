@@ -4,9 +4,7 @@
 #define GX_COLLISION_DETECTOR
 
 
-#include "GXSphereShape.h"
-#include "GXPlaneShape.h"
-#include "GXBoxShape.h"
+#include "GXShape.h"
 #include "GXCollisionData.h"
 #include <GXCommon/GXMemory.h>
 

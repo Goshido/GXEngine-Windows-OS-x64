@@ -113,6 +113,7 @@
       </DisableSpecificWarnings>
       <CompileAs>CompileAsCpp</CompileAs>
       <AdditionalOptions>/wd4710 /wd4820 %(AdditionalOptions)</AdditionalOptions>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -304,8 +305,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXPhysics\GXContactResolver.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXGravity.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXPhysicsEngine.cpp" />
-    <ClCompile Include="..\..\Sources\GXPhysics\GXPlaneShape.cpp" />
-    <ClCompile Include="..\..\Sources\GXPhysics\GXPolygonShape.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXRectangleShape.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXRigidBody.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXShape.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXSphereShape.cpp" />
@@ -483,8 +483,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXPhysics\GXForceGenerator.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXGravity.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXPhysicsEngine.h" />
-    <ClInclude Include="..\..\Include\GXPhysics\GXPlaneShape.h" />
-    <ClInclude Include="..\..\Include\GXPhysics\GXPolygonShape.h" />
+    <ClInclude Include="..\..\Include\GXPhysics\GXRectangleShape.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXRigidBody.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXShape.h" />
     <ClInclude Include="..\..\Include\GXPhysics\GXSphereShape.h" />

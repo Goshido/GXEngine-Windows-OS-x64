@@ -3,6 +3,8 @@
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXLocale.h>
 #include <GXPhysics/GXPhysicsEngine.h>
+#include <GXPhysics/GXSphereShape.h>
+#include <GXPhysics/GXBoxShape.h>
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXLogger.h>
 
@@ -111,11 +113,7 @@ GXVoid EMPhysicsDrivenActor::OnDrawHudColorPass ()
 		}
 		break;
 
-		case eGXShapeType::Plane:
-			//NOT SUPPORTED YET
-		return;
-
-		case eGXShapeType::Polygon:
+		case eGXShapeType::Rectangle:
 			//NOT SUPPORTED YET
 		return;
 

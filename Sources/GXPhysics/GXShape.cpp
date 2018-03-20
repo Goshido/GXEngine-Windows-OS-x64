@@ -43,6 +43,8 @@ GXVoid GXShape::CalculateCacheData ()
 
 	const GXMat4& matrix = body->GetTransform ();
 	transformWorld.Multiply ( transformRigidBody, matrix );
+
+	UpdateBoundsWorld ();
 }
 
 GXRigidBody& GXShape::GetRigidBody () const
@@ -50,9 +52,9 @@ GXRigidBody& GXShape::GetRigidBody () const
 	return *body;
 }
 
-const GXMat3& GXShape::GetInertialTensor () const
+const GXMat3& GXShape::GetInertiaTensor () const
 {
-	return inertialTensor;
+	return inertiaTensor;
 }
 
 GXVoid GXShape::SetFriction ( GXFloat newStaticFriction, GXFloat newDynamicFriction )
@@ -79,4 +81,14 @@ GXVoid GXShape::SetRestitution ( GXFloat newRestitution )
 GXFloat GXShape::GetRestitution () const
 {
 	return restitution;
+}
+
+const GXAABB& GXShape::GetBoundsLocal () const
+{
+	return boundsLocal;
+}
+
+const GXAABB& GXShape::GetBoundsWorld () const
+{
+	return boundsWorld;
 }

@@ -27,7 +27,7 @@ class GXWorld
 		GXCollisionData						collisions;
 
 	public:
-		GXWorld ( GXUInt maxContacts, GXUInt iterations = 0 );
+		GXWorld ( GXUInt maxContacts, GXUInt iterations );
 		~GXWorld ();
 
 		GXVoid RegisterRigidBody ( GXRigidBody &body );
@@ -41,6 +41,8 @@ class GXWorld
 		GXVoid RunPhysics ( GXFloat deltaTime );
 
 		const GXCollisionData& GetCollisionData () const;
+
+		GXBool Raycast ( const GXVec3 &origin, const GXVec3 &direction, GXFloat length, GXVec3 &contactLocation, GXVec3 &contactNormal, const GXShape** shape ) const;
 
 	private:
 		GXRigidBodyRegistration* FindRigidBodyRegistration ( GXRigidBody &body );

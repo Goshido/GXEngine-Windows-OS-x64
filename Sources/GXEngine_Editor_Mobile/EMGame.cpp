@@ -13,11 +13,17 @@
 #include <GXEngine/GXSplashScreen.h>
 #include <GXEngine/GXTextureCubeMap.h>
 #include <GXPhysics/GXPhysicsEngine.h>
+#include <GXPhysics/GXSphereShape.h>
+#include <GXPhysics/GXBoxShape.h>
 
 
 #define EM_WINDOW_NAME					L"GXEditor Mobile"
 #define ENVIRONMENT_QUASI_DISTANCE		7.77f
 #define FLUTTERSHY_SCALE				2.0e-2f
+
+
+GXBool EMGame::isContact;
+GXMat4 EMGame::contactNormalTransform;
 
 
 EMGame::EMGame ():
@@ -51,9 +57,14 @@ gravity ( GXVec3 ( 0.0f, -9.81f, 0.0f ) )
 	moveTool = nullptr;
 
 	fluttershy = nullptr;
-	toParentBoneLine = nullptr;
-	toParentBoneLineMaterial = nullptr;
-	jointMeshMaterial = nullptr;
+
+	contactLocationMesh = nullptr;
+	contactLocationMaterial = nullptr;
+
+	contactNormalMesh = nullptr;
+	contactNormalMaterial = nullptr;
+
+	isContact = GX_FALSE;
 
 	environmentMap = nullptr;
 	lightProbeSourceTexture = nullptr;
@@ -200,6 +211,7 @@ GXVoid EMGame::OnInit ()
 	transform.SetScale ( 50.0f, 1.0, 50.0f );
 	kinematicPlane = new EMPhysicsDrivenActor ( L"Kinematic Plane", transform );
 	GXBoxShape* kinematicPlaneShape = new GXBoxShape ( &( kinematicPlane->GetRigidBody () ), 50.0f, 1.0f, 50.0f );
+	kinematicPlane->GetRigidBody ().SetMass ( 1000.0f );
 	kinematicPlane->GetRigidBody ().SetShape ( *kinematicPlaneShape );
 	kinematicPlane->GetRigidBody ().EnableKinematic ();
 	//kinematicPlane->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, 0.1f, 0.0f ) );
@@ -272,21 +284,17 @@ GXVoid EMGame::OnInit ()
 	fluttershy->SetScale ( FLUTTERSHY_SCALE, FLUTTERSHY_SCALE, FLUTTERSHY_SCALE );
 	//fluttershy->SetRotation ( -GX_MATH_HALF_PI, 0.0f, 0.0f );
 
-	toParentBoneLine = new GXMeshGeometry ();
-	toParentBoneLine->SetTopology ( GL_LINES );
-	toParentBoneLine->SetTotalVertices ( 2 );
-	toParentBoneLine->SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, sizeof ( GXVec3 ), 0 );
-	GXVec3 v[ 2 ];
-	toParentBoneLine->FillVertexBuffer ( v, 2 * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+	contactLocationMesh = new GXMeshGeometry ();
+	contactLocationMesh->LoadMesh ( L"Meshes/System/Unit Sphere.obj" );
 
-	toParentBoneLineMaterial = new GXUnlitColorMaterial ();
-	toParentBoneLineMaterial->SetColor ( 115, 185, 0, 255 );
+	contactNormalMesh = new GXMeshGeometry ();
+	contactNormalMesh->LoadMesh ( L"Meshes/Editor Mobile/Move gismo Z axis.stm" );
 
-	jointMesh = new GXMeshGeometry ();
-	jointMesh->LoadMesh ( L"Meshes/System/Unit Sphere.obj" );
+	contactLocationMaterial = new GXUnlitColorMaterial ();
+	contactLocationMaterial->SetColor ( 255u, 255u, 255u, 255u );
 
-	jointMeshMaterial = new GXUnlitColorMaterial ();
-	jointMeshMaterial->SetColor ( 255, 255, 255, 255 );
+	contactNormalMaterial = new GXUnlitColorMaterial ();
+	contactNormalMaterial->SetColor ( 0u, 0u, 255u, 255u );
 
 	environmentMap = new GXTextureCubeMap ();
 	*environmentMap = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default LDR environment map.jpg", GX_FALSE, GX_TRUE );
@@ -355,49 +363,32 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 	kinematicPlane->OnDrawHudColorPass ();
 	moveTool->OnDrawHudColorPass ();
 
-	const GXSkeleton& skeleton = fluttershy->GetSkeleton ();
-
 	GXOpenGLState state;
-	state.Save ();
 
-	glDisable ( GL_DEPTH_TEST );
 
 	GXTransform transform;
-	GXVec3 location ( skeleton.GetBoneTransformWorld ( 0 ).location );
-	location.Multiply ( location, FLUTTERSHY_SCALE );
-	transform.SetLocation ( location );
-	transform.SetScale ( 3.0e-2f, 3.0e-2f, 3.0e-2f );
 
-	jointMeshMaterial->Bind ( transform );
-	jointMesh->Render ();
-	jointMeshMaterial->Unbind ();
-
-	for ( GXUShort i = 1; i < skeleton.GetTotalBones (); i++ )
+	if ( isContact )
 	{
-		GXVec3 toParentLineGeometry[ 2 ];
+		state.Save ();
 
-		toParentLineGeometry[ 0 ] = skeleton.GetBoneTransformWorld ( i ).location;
-		toParentLineGeometry[ 0 ].Multiply ( toParentLineGeometry[ 0 ], FLUTTERSHY_SCALE );
+		transform.SetCurrentFrameModelMatrix ( contactNormalTransform );
+		transform.SetScale ( 0.1f, 0.1f, 0.1f );
 
-		toParentLineGeometry[ 1 ] = skeleton.GetParentBoneTransformWorld ( i ).location;
-		toParentLineGeometry[ 1 ].Multiply ( toParentLineGeometry[ 1 ], FLUTTERSHY_SCALE );
+		contactLocationMaterial->Bind ( transform );
+		contactLocationMesh->Render ();
+		contactLocationMaterial->Unbind ();
 
-		toParentBoneLine->FillVertexBuffer ( toParentLineGeometry, 2 * sizeof ( GXVec3 ), GL_DYNAMIC_DRAW );
+		transform.SetScale ( 1.0f, 1.0f, 1.0f );
 
-		toParentBoneLineMaterial->Bind ( GXTransform::GetNullTransform () );
-		toParentBoneLine->Render ();
-		toParentBoneLineMaterial->Unbind ();
+		contactNormalMaterial->Bind ( transform );
+		contactNormalMesh->Render ();
+		contactNormalMaterial->Unbind ();
 
-		location = skeleton.GetBoneTransformWorld ( i ).location;
-		location.Multiply ( location, FLUTTERSHY_SCALE );
-		transform.SetLocation ( location );
+		glDisable ( GL_DEPTH_TEST );
 
-		jointMeshMaterial->Bind ( transform );
-		jointMesh->Render ();
-		jointMeshMaterial->Unbind ();
+		state.Restore ();
 	}
-
-	state.Restore ();
 
 	GXCollisionDetector& collisionDetector = GXCollisionDetector::GetInstance ();
 	const GXCollisionData& collisionData = GXPhysicsEngine::GetInstance ().GetWorld ().GetCollisionData ();
@@ -527,11 +518,11 @@ GXVoid EMGame::OnDestroy ()
 	GXTextureCubeMap::RemoveTexture ( *environmentMap );
 	GXSafeDelete ( environmentMap );
 
-	GXSafeDelete ( jointMeshMaterial );
-	GXSafeDelete ( jointMesh );
+	GXSafeDelete ( contactNormalMaterial );
+	GXSafeDelete ( contactNormalMesh );
 
-	GXSafeDelete ( toParentBoneLineMaterial );
-	GXSafeDelete ( toParentBoneLine );
+	GXSafeDelete ( contactLocationMaterial );
+	GXSafeDelete ( contactLocationMesh );
 
 	GXSafeDelete ( fluttershy );
 	GXSafeDelete ( moveTool );
@@ -542,7 +533,7 @@ GXVoid EMGame::OnDestroy ()
 
 	GXWorld& world = GXPhysicsEngine::GetInstance ().GetWorld ();
 
-	world.UnregisterForceGenerator ( kinematicPlane->GetRigidBody (), gravity );
+	//world.UnregisterForceGenerator ( kinematicPlane->GetRigidBody (), gravity );
 	world.UnregisterForceGenerator ( colliderOne->GetRigidBody (), gravity );
 	world.UnregisterForceGenerator ( colliderTwo->GetRigidBody (), gravity );
 
@@ -614,7 +605,42 @@ GXVoid GXCALL EMGame::OnMouseButton ( GXVoid* /*handler*/, GXInputMouseFlags mou
 	if ( !mouseflags.lmb ) return;
 
 	const GXVec2& mouse = GXTouchSurface::GetInstance ().GetMousePosition ();
-	EMRenderer::GetInstance ().GetObject ( (GXUShort)mouse.GetX (), (GXUShort)mouse.GetY () );
+
+	GXUShort x = (GXUShort)mouse.GetX ();
+	GXUShort y = (GXUShort)mouse.GetY ();
+
+	EMRenderer::GetInstance ().GetObject ( x, y );
+
+	EMViewer* viewer = EMViewer::GetInstance ();
+
+	if ( !viewer ) return;
+
+	GXCamera& camera = viewer->GetCamera ();
+	GXVec3 viewerLocation;
+	camera.GetLocation ( viewerLocation );
+
+	GXRenderer& renderer = GXRenderer::GetInstance ();
+	
+	GXVec3 rayOrigin;
+	GXVec3 rayDirection;
+
+	GXGetRayFromViewer ( rayOrigin, rayDirection, x, y, (GXUShort)renderer.GetWidth (), (GXUShort)renderer.GetHeight (), viewerLocation, camera.GetCurrentFrameViewProjectionMatrix () );
+
+	const GXFloat rayLength = 10000.0f;
+	GXVec3 contactLocation;
+	GXVec3 contactNormal;
+	const GXShape* contactShape;
+
+	isContact = GXPhysicsEngine::GetInstance ().GetWorld ().Raycast ( rayOrigin, rayDirection, rayLength, contactLocation, contactNormal, &contactShape );
+	if ( !isContact ) return;
+
+	contactNormalTransform.From ( contactNormal, contactLocation );
+
+	const GXFloat impulseModule = 2.0f;
+	GXVec3 impulseWorld;
+	impulseWorld.Multiply ( rayDirection, impulseModule );
+
+	contactShape->GetRigidBody ().AddImpulseAtPointWorld ( impulseWorld, contactLocation );
 }
 
 GXVoid GXCALL EMGame::OnObject ( GXVoid* handler, GXVoid* object )

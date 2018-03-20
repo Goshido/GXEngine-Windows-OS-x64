@@ -4,6 +4,7 @@
 #include <GXPhysics/GXShape.h>
 #include <GXPhysics/GXPhysicsEngine.h>
 #include <GXCommon/GXMemory.h>
+#include <GXCommon/GXLogger.h>
 
 
 #define DEFAULT_MASS				1.0f
@@ -85,7 +86,7 @@ GXVoid GXRigidBody::CalculateCachedData ()
 		OnTransformChanged ( handler, *this );
 
 	GXMat3 betta;
-	betta.Multiply ( alpha, shape->GetInertialTensor () );
+	betta.Multiply ( alpha, shape->GetInertiaTensor () );
 
 	GXMat3 transformedInertiaTensor;
 	transformedInertiaTensor.Multiply ( betta, inverseTransform );
@@ -237,7 +238,8 @@ GXVoid GXRigidBody::SetShape ( GXShape &newShape )
 {
 	shape = &newShape;
 	shape->CalculateInertiaTensor ( mass );
-	SetInertiaTensor ( shape->GetInertialTensor () );
+	shape->CalculateCacheData ();
+	SetInertiaTensor ( shape->GetInertiaTensor () );
 }
 
 GXShape& GXRigidBody::GetShape ()
@@ -330,6 +332,29 @@ GXVoid GXRigidBody::AddForceAtPointWorld ( const GXVec3 &forceWorld, const GXVec
 const GXVec3& GXRigidBody::GetTotalForce () const
 {
 	return totalForce;
+}
+
+GXVoid GXRigidBody::AddImpulseAtPointWorld ( const GXVec3 &impulseWorld, const GXVec3 &pointWorld )
+{
+	if ( isKinematic ) return;
+
+	GXVec3 centerOfMassToPointWorld;
+	centerOfMassToPointWorld.Substract ( pointWorld, location );
+
+	GXVec3 alpha ( centerOfMassToPointWorld );
+	alpha.Normalize ();
+
+	GXVec3 betta ( impulseWorld );
+	betta.Normalize ();
+
+	GXVec3 gamma;
+	gamma.Multiply ( impulseWorld, -alpha.DotProduct ( betta ) * inverseMass );
+
+	linearVelocity.Sum ( linearVelocity, gamma );
+
+	if ( !isAwake )
+		isAwake = GX_TRUE;
+	// TODO
 }
 
 GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )

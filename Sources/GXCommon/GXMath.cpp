@@ -1,4 +1,4 @@
-﻿//version 1.43
+﻿//version 1.44
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
@@ -394,6 +394,98 @@ GXVec3& GXVec3::operator = ( const GXVec3 &vector )
 {
 	memcpy ( this, &vector, sizeof ( GXVec3 ) );
 	return *this;
+}
+
+//----------------------------------------------------------------------------
+
+GXBool GXCALL GXRayTriangleIntersection3D ( GXFloat &outT, const GXVec3 &origin, const GXVec3 &direction, GXFloat length, const GXVec3 &a, const GXVec3 &b, const GXVec3 &c )
+{
+	//Implementation https://graphics.stanford.edu/courses/cs348b-98/gg/intersect.html
+
+	GXPlane plane;
+	plane.From ( a, b, c );
+	GXVec3 normal ( plane.a, plane.b, plane.c );
+
+	GXFloat t = ( plane.d + normal.DotProduct ( origin ) ) / ( -normal.DotProduct ( direction ) );
+
+	if ( t < 0.0f ) return GX_FALSE;
+
+	if ( t > length ) return GX_FALSE;
+
+	GXVec3 triangle[ 3 ];
+	triangle[ 0 ] = a;
+	triangle[ 1 ] = b;
+	triangle[ 2 ] = c;
+
+	GXVec3 point;
+	point.Sum ( origin, t, direction );
+
+	GXUByte selector;
+
+	GXFloat gamma = fabsf ( plane.a );
+	GXFloat omega = fabsf ( plane.b );
+	GXFloat yotta = fabsf ( plane.c );
+
+	if ( gamma > omega )
+	{
+		if ( gamma > yotta )
+			selector = 0;
+		else
+			selector = 2;
+	}
+	else
+	{
+		if ( omega > yotta )
+			selector = 1;
+		else
+			selector = 2;
+	}
+
+	GXUByte i1;
+	GXUByte i2;
+
+	switch ( selector )
+	{
+		case 0:
+			i1 = 1;
+			i2 = 2;
+		break;
+
+		case 1:
+			i1 = 2;
+			i2 = 0;
+		break;
+
+		case 2:
+			i1 = 0;
+			i2 = 1;
+		break;
+
+		default:
+			//NOTHING
+		break;
+	}
+
+	GXFloat u0 = point.data[ i1 ] - triangle[ 0 ].data[ i1 ];
+	GXFloat v0 = point.data[ i2 ] - triangle[ 0 ].data[ i2 ];
+
+	GXFloat u1 = triangle[ 1 ].data[ i1 ] - triangle[ 0 ].data[ i1 ];
+	GXFloat v1 = triangle[ 1 ].data[ i2 ] - triangle[ 0 ].data[ i2 ];
+
+	GXFloat u2 = triangle[ 2 ].data[ i1 ] - triangle[ 0 ].data[ i1 ];
+	GXFloat v2 = triangle[ 2 ].data[ i2 ] - triangle[ 0 ].data[ i2 ];
+
+	gamma = 1.0f / ( u1 * v2 - v1 * u2 );
+	GXFloat alpha = ( u0 * v2 - v0 * u2 ) * gamma;
+
+	if ( alpha < 0.0f || alpha > 1.0f ) return GX_FALSE;
+
+	GXFloat betta = ( u1 * v0 - v1 * u0 ) * gamma;
+
+	if ( betta < 0.0f || betta > 1.0f || ( alpha + betta ) > 1.0f ) return GX_FALSE;
+
+	outT = t;
+	return GX_TRUE;
 }
 
 //----------------------------------------------------------------------------
@@ -1725,6 +1817,36 @@ GXVoid GXMat4::From ( const GXMat3 &rotation, const GXVec3 &origin )
 	m[ 3 ][ 3 ] = 1.0f;
 }
 
+GXVoid GXMat4::From ( const GXVec3 &zDirection, const GXVec3 &origin )
+{
+	GXVec3 xAxis;
+	GXVec3 yAxis;
+
+	if ( zDirection.DotProduct ( GXVec3::GetAbsoluteX () ) < 0.5f )
+	{
+		GXVec3 tmp;
+		tmp.CrossProduct ( zDirection, GXVec3::GetAbsoluteX () );
+		xAxis.CrossProduct ( tmp, zDirection );
+		xAxis.Normalize ();
+		yAxis.CrossProduct ( zDirection, xAxis );
+	}
+	else
+	{
+		GXVec3 tmp;
+		tmp.CrossProduct ( zDirection, GXVec3::GetAbsoluteY () );
+		yAxis.CrossProduct ( zDirection, tmp );
+		yAxis.Normalize ();
+		xAxis.CrossProduct ( yAxis, zDirection );
+	}
+
+	SetX ( xAxis );
+	SetY ( yAxis );
+	SetZ ( zDirection );
+	SetW ( origin );
+
+	m[ 3 ][ 3 ] = 1.0f;
+}
+
 GXVoid GXMat4::FromFast ( const GXQuat &quaternion, const GXVec3 &origin )
 {
 	SetRotationFast ( quaternion );
@@ -2007,6 +2129,20 @@ GXVoid GXMat4::Scale ( GXFloat x, GXFloat y, GXFloat z )
 	m[ 3 ][ 0 ] = m[ 3 ][ 1 ] = m[ 3 ][ 2 ] = m[ 0 ][ 3 ] = m[ 1 ][ 3 ] = m[ 2 ][ 3 ] = 0.0f;
 }
 
+GXVoid GXMat4::ClearScale ( GXVec3 &scale ) const
+{
+	GXVec3 alpha;
+
+	GetX ( alpha );
+	scale.data[ 0 ] = alpha.Length ();
+
+	GetY ( alpha );
+	scale.data[ 1 ] = alpha.Length ();
+
+	GetZ ( alpha );
+	scale.data[ 2 ] = alpha.Length ();
+}
+
 GXVoid GXMat4::Inverse ( const GXMat4 &sourceMatrix )
 {
 	// 2x2 sub-determinants required to calculate 4x4 determinant
@@ -2178,19 +2314,19 @@ GXVoid GXAABB::Empty ()
 GXVoid GXAABB::Transform ( GXAABB &bounds, const GXMat4 &transform ) const
 {
 	GXVec3 verticesLocal[ 8 ];
-	verticesLocal[ 0 ].Init ( bounds.min.data[ 0 ], bounds.min.data[ 1 ], bounds.min.data[ 2 ] );
-	verticesLocal[ 1 ].Init ( bounds.max.data[ 0 ], bounds.min.data[ 1 ], bounds.min.data[ 2 ] );
-	verticesLocal[ 2 ].Init ( bounds.max.data[ 0 ], bounds.min.data[ 1 ], bounds.max.data[ 2 ] );
-	verticesLocal[ 3 ].Init ( bounds.min.data[ 0 ], bounds.min.data[ 1 ], bounds.max.data[ 2 ] );
+	verticesLocal[ 0 ].Init ( min.data[ 0 ], min.data[ 1 ], min.data[ 2 ] );
+	verticesLocal[ 1 ].Init ( max.data[ 0 ], min.data[ 1 ], min.data[ 2 ] );
+	verticesLocal[ 2 ].Init ( max.data[ 0 ], min.data[ 1 ], max.data[ 2 ] );
+	verticesLocal[ 3 ].Init ( min.data[ 0 ], min.data[ 1 ], max.data[ 2 ] );
 
-	verticesLocal[ 4 ].Init ( bounds.min.data[ 0 ], bounds.max.data[ 1 ], bounds.min.data[ 2 ] );
-	verticesLocal[ 5 ].Init ( bounds.max.data[ 0 ], bounds.max.data[ 1 ], bounds.min.data[ 2 ] );
-	verticesLocal[ 6 ].Init ( bounds.max.data[ 0 ], bounds.max.data[ 1 ], bounds.max.data[ 2 ] );
-	verticesLocal[ 7 ].Init ( bounds.min.data[ 0 ], bounds.max.data[ 1 ], bounds.max.data[ 2 ] );
+	verticesLocal[ 4 ].Init ( min.data[ 0 ], max.data[ 1 ], min.data[ 2 ] );
+	verticesLocal[ 5 ].Init ( max.data[ 0 ], max.data[ 1 ], min.data[ 2 ] );
+	verticesLocal[ 6 ].Init ( max.data[ 0 ], max.data[ 1 ], max.data[ 2 ] );
+	verticesLocal[ 7 ].Init ( min.data[ 0 ], max.data[ 1 ], max.data[ 2 ] );
 
 	bounds.Empty ();
 
-	for ( GXUByte i = 0; i < 8; i++ )
+	for ( GXUByte i = 0u; i < 8u; i++ )
 	{
 		GXVec3 vertex;
 		transform.MultiplyAsPoint ( vertex, verticesLocal[ i ] );
@@ -2667,4 +2803,28 @@ GXVoid GXCALL GXGetBarycentricCoords ( GXVec3 &out, const GXVec3 &point, const G
 	out.data[ 1 ] = ( d11 * d20 - d01 * d21 ) * denom;
 	out.data[ 2 ] = ( d00 * d21 - d01 * d20 ) * denom;
 	out.data[ 0 ] = 1.0f - out.data[ 1 ] - out.data[ 2 ];
+}
+
+GXVoid GXCALL GXGetRayFromViewer ( GXVec3 &origin, GXVec3 &direction, GXUShort x, GXUShort y, GXUShort viewportWidth, GXUShort viewportHeight, const GXVec3& viewerLocation, const GXMat4 &viewProjectionMatrix )
+{
+	GXFloat halfWidth = viewportWidth * 0.5f;
+	GXFloat halfHeight = viewportHeight * 0.5f;
+
+	GXVec4 pointCVV ( ( (GXFloat)x - halfWidth ) / halfWidth, ( (GXFloat)y - halfHeight ) / halfHeight, 1.0f, 1.0f );
+
+	GXMat4 inverseViewProjectionMatrix;
+	inverseViewProjectionMatrix.Inverse ( viewProjectionMatrix );
+
+	GXVec4 pointWorld;
+	inverseViewProjectionMatrix.Multiply ( pointWorld, pointCVV );
+	GXFloat alpha = 1.0f / pointWorld.data[ 3 ];
+
+	pointWorld.data[ 0 ] *= alpha;
+	pointWorld.data[ 1 ] *= alpha;
+	pointWorld.data[ 2 ] *= alpha;
+
+	direction.Substract ( GXVec3 ( pointWorld.data[ 0 ], pointWorld.data[ 1 ], pointWorld.data[ 2 ] ), viewerLocation );
+	direction.Normalize ();
+
+	origin = viewerLocation;
 }

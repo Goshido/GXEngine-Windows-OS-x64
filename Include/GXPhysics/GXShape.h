@@ -11,8 +11,7 @@ enum class eGXShapeType
 {
 	Sphere,
 	Box,
-	Plane,
-	Polygon
+	Rectangle
 };
 
 class GXRigidBody;
@@ -23,11 +22,14 @@ class GXShape
 		GXRigidBody*	body;
 		GXMat4			transformRigidBody;
 		GXMat4			transformWorld;
-		GXMat3			inertialTensor;
+		GXMat3			inertiaTensor;
 
 		GXFloat			staticFriction;
 		GXFloat			dynamicFriction;
 		GXFloat			restitution;
+
+		GXAABB			boundsLocal;
+		GXAABB			boundsWorld;
 
 	public:
 		GXShape ( eGXShapeType type, GXRigidBody* body );
@@ -40,7 +42,7 @@ class GXShape
 		GXRigidBody& GetRigidBody () const;
 
 		virtual GXVoid CalculateInertiaTensor ( GXFloat mass ) = 0;
-		const GXMat3& GetInertialTensor () const;
+		const GXMat3& GetInertiaTensor () const;
 
 		virtual GXVoid GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const = 0;
 
@@ -50,6 +52,12 @@ class GXShape
 
 		GXVoid SetRestitution ( GXFloat newRestitution );
 		GXFloat GetRestitution () const;
+
+		const GXAABB& GetBoundsLocal () const;
+		const GXAABB& GetBoundsWorld () const;
+
+	protected:
+		virtual GXVoid UpdateBoundsWorld () = 0;
 };
 
 

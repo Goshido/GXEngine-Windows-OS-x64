@@ -20,6 +20,9 @@ class GXSphereShape : public GXShape
 
 		GXVoid CalculateInertiaTensor ( GXFloat mass ) override;
 		GXVoid GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const override;
+
+	protected:
+		GXVoid UpdateBoundsWorld () override;
 };
 
 
