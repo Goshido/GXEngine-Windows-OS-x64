@@ -1,7 +1,7 @@
 //version 1.0
 
-#ifndef GX_POLYGON_SHAPE
-#define GX_POLYGON_SHAPE
+#ifndef GX_RECTANGLE_SHAPE
+#define GX_RECTANGLE_SHAPE
 
 
 #include "GXShape.h"
@@ -28,4 +28,4 @@ class GXRectangleShape : public GXShape
 };
 
 
-#endif //GX_POLYGON_SHAPE
+#endif //GX_RECTANGLE_SHAPE
