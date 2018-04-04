@@ -25,6 +25,10 @@ class GXContactResolver
 		GXVoid GetRigidBodyKinematicsWorld ( GXVec3 &linearVelocityWorld, GXVec3 &angularVelocityWorld, const GXRigidBody &rigidBody, const GXVec3 &impulseWorld, const GXVec3 &centerOfMassToContactPointWorld );
 		GXVoid GetContactVelocityWorld ( GXVec3 &contactVelocityWorld, const GXRigidBody &rigidBodyA, const GXVec3 &rigidBodyACenterOfMassToContactPointWorld, const GXRigidBody &rigidBodyB, const GXVec3 &rigidBodyBCenterOfMassToContactPointWorld );
 		GXVoid ResolvePenetrationWorld ( GXVec3 &deltaLocationWorld, GXVec3 &deltaRotationWorld, const GXRigidBody &rigidBody, const GXVec3 &centerOfMassToContactPointWorld, const GXVec3 &contactNormalWorld, GXFloat contactPenetration );
+
+		GXVoid CalculateContactVelocity ( GXVec3 &velocity, const GXRigidBody &body, const GXVec3 &point ) const;
+		GXFloat CalculateIdealImpulseMagnitude ( GXContact &contact ) const;
+		GXFloat CalculateFrictionImpulseMagnitude ( GXContact &contact ) const;
 };
 
 

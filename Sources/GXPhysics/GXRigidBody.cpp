@@ -92,7 +92,6 @@ GXVoid GXRigidBody::CalculateCachedData ()
 	transformedInertiaTensor.Multiply ( betta, inverseTransform );
 
 	inverseInertiaTensorWorld.Inverse ( transformedInertiaTensor );
-	transposeInverseInertiaTensorWorld.Transponse ( inverseInertiaTensorWorld );
 
 	shape->CalculateCacheData ();
 }
@@ -112,11 +111,6 @@ GXVoid GXRigidBody::SetInertiaTensor ( const GXMat3 &inertiaTensor )
 const GXMat3& GXRigidBody::GetInverseInertiaTensorWorld () const
 {
 	return inverseInertiaTensorWorld;
-}
-
-const GXMat3& GXRigidBody::GetTransposeInverseInertiaTensorWorld () const
-{
-	return transposeInverseInertiaTensorWorld;
 }
 
 GXVoid GXRigidBody::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
@@ -185,7 +179,7 @@ GXVoid GXRigidBody::AddLinearVelocity ( const GXVec3 &velocity )
 
 GXVoid GXRigidBody::SetAngularVelocity ( const GXVec3 &velocity )
 {
-	inverseTransform.Multiply ( angularVelocity, velocity );
+	inverseTransform.MultiplyVectorMatrix ( angularVelocity, velocity );
 }
 
 const GXVec3& GXRigidBody::GetAngularVelocity () const
@@ -380,7 +374,7 @@ GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 	lastFrameAcceleration.Sum ( acceleration, inverseMass, totalForce );
 
 	GXVec3 angularAcceleration;
-	transposeInverseInertiaTensorWorld.Multiply ( angularAcceleration, totalTorque );
+	inverseInertiaTensorWorld.MultiplyMatrixVector ( angularAcceleration, totalTorque );
 
 	linearVelocity.Sum ( linearVelocity, deltaTime, lastFrameAcceleration );
 	angularVelocity.Sum ( angularVelocity, deltaTime, angularAcceleration );

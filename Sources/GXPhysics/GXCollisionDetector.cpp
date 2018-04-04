@@ -632,7 +632,7 @@ GXVoid GXCollisionDetector::Check ( const GXShape &shapeA, const GXShape &shapeB
 
 	for ( GXUShort i = 0; i < totalDeviationAxes; i++ )
 	{
-		tbn.Multiply ( direction, deviationAxesLocal[ i ] );
+		tbn.MultiplyVectorMatrix ( direction, deviationAxesLocal[ i ] );
 
 		GXVec3 shapeAPoint;
 		shapeA.GetExtremePoint ( shapeAPoint, direction );

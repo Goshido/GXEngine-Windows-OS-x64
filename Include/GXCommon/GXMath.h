@@ -361,8 +361,8 @@ struct GXMat3
 	GXVoid Substract ( const GXMat3 &a, const GXMat3 &b );
 	GXVoid Multiply ( const GXMat3 &a, const GXMat3 &b );
 
-	//Multiply row-vector [1x3] by own matrix [3x3].
-	GXVoid Multiply ( GXVec3 &out, const GXVec3 &v ) const;
+	GXVoid MultiplyVectorMatrix ( GXVec3 &out, const GXVec3 &v ) const;
+	GXVoid MultiplyMatrixVector ( GXVec3 &out, const GXVec3 &v ) const;
 
 	GXVoid Multiply ( const GXMat3 &a, GXFloat factor );
 

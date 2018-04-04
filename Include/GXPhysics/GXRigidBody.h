@@ -44,7 +44,6 @@ class GXRigidBody
 		GXMat4							transform;
 		GXMat3							inverseTransform;
 		GXMat3							inverseInertiaTensorWorld;
-		GXMat3							transposeInverseInertiaTensorWorld;
 
 		GXShape*						shape;
 
@@ -62,7 +61,6 @@ class GXRigidBody
 
 		GXVoid SetInertiaTensor ( const GXMat3 &inertiaTensor );
 		const GXMat3& GetInverseInertiaTensorWorld () const;
-		const GXMat3& GetTransposeInverseInertiaTensorWorld () const;
 
 		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
 		GXVoid SetLocation ( const GXVec3 &newLocation );

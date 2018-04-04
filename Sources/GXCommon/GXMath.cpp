@@ -1685,11 +1685,18 @@ GXVoid GXMat3::Multiply ( const GXMat3 &a, const GXMat3 &b )
 	m[ 2 ][ 2 ] = a.m[ 2 ][ 0 ] * b.m[ 0 ][ 2 ] + a.m[ 2 ][ 1 ] * b.m[ 1 ][ 2 ] + a.m[ 2 ][ 2 ] * b.m[ 2 ][ 2 ];
 }
 
-GXVoid GXMat3::Multiply ( GXVec3 &out, const GXVec3 &v ) const
+GXVoid GXMat3::MultiplyVectorMatrix ( GXVec3 &out, const GXVec3 &v ) const
 {
-	out.SetX ( v.data[ 0 ] * m[ 0 ][ 0 ] + v.data[ 1 ] * m[ 1 ][ 0 ] + v.data[ 2 ] * m[ 2 ][ 0 ] );
-	out.SetY ( v.data[ 0 ] * m[ 0 ][ 1 ] + v.data[ 1 ] * m[ 1 ][ 1 ] + v.data[ 2 ] * m[ 2 ][ 1 ] );
-	out.SetZ ( v.data[ 0 ] * m[ 0 ][ 2 ] + v.data[ 1 ] * m[ 1 ][ 2 ] + v.data[ 2 ] * m[ 2 ][ 2 ] );
+	out.data[ 0 ] = v.data[ 0 ] * m[ 0 ][ 0 ] + v.data[ 1 ] * m[ 1 ][ 0 ] + v.data[ 2 ] * m[ 2 ][ 0 ];
+	out.data[ 1 ] = v.data[ 0 ] * m[ 0 ][ 1 ] + v.data[ 1 ] * m[ 1 ][ 1 ] + v.data[ 2 ] * m[ 2 ][ 1 ];
+	out.data[ 2 ] = v.data[ 0 ] * m[ 0 ][ 2 ] + v.data[ 1 ] * m[ 1 ][ 2 ] + v.data[ 2 ] * m[ 2 ][ 2 ];
+}
+
+GXVoid GXMat3::MultiplyMatrixVector ( GXVec3 &out, const GXVec3 &v ) const
+{
+	out.data[ 0 ] = m[ 0 ][ 0 ] * v.data[ 0 ] + m[ 0 ][ 1 ] * v.data[ 1 ] + m[ 0 ][ 2 ] * v.data[ 2 ];
+	out.data[ 1 ] = m[ 1 ][ 0 ] * v.data[ 0 ] + m[ 1 ][ 1 ] * v.data[ 1 ] + m[ 1 ][ 2 ] * v.data[ 2 ];
+	out.data[ 2 ] = m[ 2 ][ 0 ] * v.data[ 0 ] + m[ 2 ][ 1 ] * v.data[ 1 ] + m[ 2 ][ 2 ] * v.data[ 2 ];
 }
 
 GXVoid GXMat3::Multiply ( const GXMat3 &a, GXFloat factor )

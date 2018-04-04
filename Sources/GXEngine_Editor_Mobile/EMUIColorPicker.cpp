@@ -481,7 +481,7 @@ GXVoid EMColorSelectorRenderer::OnRefresh ()
 	barycentricToLocalTransform.SetZ ( equilateralTriangleGeometryLocal[ 4 ] );
 
 	GXVec3 colorCoordsLocal;
-	barycentricToLocalTransform.Multiply ( colorCoordsLocal, barycentricCoords );
+	barycentricToLocalTransform.MultiplyVectorMatrix ( colorCoordsLocal, barycentricCoords );
 
 	GXVec3 colorCoordsSurface;
 	transform.GetCurrentFrameModelMatrix ().MultiplyAsPoint ( colorCoordsSurface, colorCoordsLocal );

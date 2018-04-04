@@ -483,6 +483,18 @@
     <ClCompile Include="..\..\Sources\GXPhysics\GXRectangleShape.cpp">
       <Filter>Source Files\GXPhysics</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPhysics\GXSparseMatrix.cpp">
+      <Filter>Source Files\GXPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPhysics\GXConstraint.cpp">
+      <Filter>Source Files\GXPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPhysics\GXContactConstraint.cpp">
+      <Filter>Source Files\GXPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPhysics\GXConstraintSolver.cpp">
+      <Filter>Source Files\GXPhysics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -1014,6 +1026,18 @@
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXPhysics\GXRectangleShape.h">
+      <Filter>Header Files\GXPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPhysics\GXSparseMatrix.h">
+      <Filter>Header Files\GXPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPhysics\GXConstraint.h">
+      <Filter>Header Files\GXPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPhysics\GXContactConstraint.h">
+      <Filter>Header Files\GXPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPhysics\GXConstraintSolver.h">
       <Filter>Header Files\GXPhysics</Filter>
     </ClInclude>
   </ItemGroup>

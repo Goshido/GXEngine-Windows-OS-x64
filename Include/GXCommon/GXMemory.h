@@ -47,7 +47,7 @@ class GXDynamicArray
 		GXUInt		numElements;
 
 	public:
-		GXDynamicArray ( GXUInt elementSize );
+		explicit GXDynamicArray ( GXUInt elementSize );
 		~GXDynamicArray ();
 
 		GXVoid SetValue ( GXUInt i, const GXVoid* element );
