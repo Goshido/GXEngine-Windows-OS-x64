@@ -98,8 +98,10 @@ GXVoid GXRigidBody::CalculateCachedData ()
 
 GXVoid GXRigidBody::ClearAccumulators ()
 {
-	totalForce.Init ( 0.0f, 0.0f, 0.0f );
-	totalTorque.Init ( 0.0f, 0.0f, 0.0f );
+	const GXVec3 zero ( 0.0f, 0.0f, 0.0f );
+
+	totalForce = zero;
+	totalTorque = zero;
 }
 
 GXVoid GXRigidBody::SetInertiaTensor ( const GXMat3 &inertiaTensor )
@@ -326,6 +328,11 @@ GXVoid GXRigidBody::AddForceAtPointWorld ( const GXVec3 &forceWorld, const GXVec
 const GXVec3& GXRigidBody::GetTotalForce () const
 {
 	return totalForce;
+}
+
+const GXVec3& GXRigidBody::GetTotalTorque () const
+{
+	return totalTorque;
 }
 
 GXVoid GXRigidBody::AddImpulseAtPointWorld ( const GXVec3 &impulseWorld, const GXVec3 &pointWorld )

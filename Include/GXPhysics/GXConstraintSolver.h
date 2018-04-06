@@ -9,18 +9,29 @@
 #include <GXCommon/GXMemory.h>
 
 
-//Implementation from paper
+//Implementation is based on paper
 //"Iterative Dynamics with Temporal Coherence"
 //by Erin Catto
 
 class GXConstraintSolver
 {
 	private:
-		GXDynamicArray				jacobianElements;
-		GXDynamicArray				mapper;
+		//s is number of constaints.
 
-		// TODO working arrays
-		GXDynamicArray				etaElements;
+		GXDynamicArray				jacobian;			// s x 2 GXSparseMatrixElement's
+		GXDynamicArray				mapper;				// s x 2 GXUByte's
+		GXDynamicArray				bias;				// s GXFloat's
+		GXDynamicArray				lambdaRange;		// s GXVec2's
+		GXDynamicArray				initialLambda;		// s GXFloat's
+
+		// working arrays
+		GXDynamicArray				lambda;				// s GXFloat's
+		GXDynamicArray				eta;				// s GXFloat's
+		GXDynamicArray				d;					// s GXFloat's
+		GXDynamicArray				b;					// s x 2 GXSparseMatrixElement's
+
+		GXSparseMatrixElement		a[ 2 ];				// 2 x 1 GXSparseMatrixElement's
+		GXSparseMatrixElement		inverseM[ 24 ];		// 12 x 2 GXSparseMatrixElement's
 
 		GXUShort					maximumIterations;
 		GXUInt						constraints;
@@ -37,6 +48,12 @@ class GXConstraintSolver
 		GXVoid AddConstraint ( const GXConstraint &constraint );
 
 		GXVoid Solve ();
+
+	private:
+		GXVoid UpdateMapper ();
+		GXVoid UpdateInverseM ();
+		GXVoid UpdateB ();
+		GXVoid UpdateEta ();
 };
 
 

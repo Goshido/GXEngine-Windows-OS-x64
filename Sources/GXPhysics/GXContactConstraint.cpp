@@ -31,8 +31,7 @@ GXContactConstraint::GXContactConstraint ( GXContact &contact, GXFloat baumgarte
 
 	bias = ( -baumgarteFactor * contact.GetPenetration () ) / GXPhysicsEngine::GetInstance ().GetTimeStep ();
 
-	minimumLambda = 0.0f;
-	maximumLambda = FLT_MAX;
+	lambdaRange.Init ( 0.0f, FLT_MAX );
 }
 
 GXContactConstraint::~GXContactConstraint ()

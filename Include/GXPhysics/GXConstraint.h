@@ -5,6 +5,7 @@
 
 
 #include "GXSparseMatrix.h"
+#include <GXCommon/GXMath.h>
 
 
 class GXConstraint
@@ -12,13 +13,12 @@ class GXConstraint
 	protected:
 		GXSparseMatrixElement		jacobian[ 2 ];
 		GXFloat						bias;
-		GXFloat						minimumLambda;
-		GXFloat						maximumLambda;
+		GXVec2						lambdaRange;
 
 	public:
 		const GXSparseMatrixElement* GetJacobian () const;
 		GXFloat GetBias () const;
-		GXVoid GetLambdaRange ( GXFloat &minimum, GXFloat &maximum ) const;
+		const GXVec2& GetLambdaRange () const;
 
 	protected:
 		GXConstraint ();

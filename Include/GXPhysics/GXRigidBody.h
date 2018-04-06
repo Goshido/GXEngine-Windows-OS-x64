@@ -109,6 +109,8 @@ class GXRigidBody
 		GXVoid AddForceAtPointWorld ( const GXVec3 &forceWorld, const GXVec3 &pointWorld );
 		const GXVec3& GetTotalForce () const;
 
+		const GXVec3& GetTotalTorque () const;
+
 		GXVoid AddImpulseAtPointWorld ( const GXVec3 &impulseWorld, const GXVec3 &pointWorld );
 
 		GXVoid Integrate ( GXFloat deltaTime );

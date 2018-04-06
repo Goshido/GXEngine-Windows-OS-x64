@@ -13,10 +13,9 @@ GXFloat GXConstraint::GetBias () const
 	return bias;
 }
 
-GXVoid GXConstraint::GetLambdaRange ( GXFloat &minimum, GXFloat &maximum ) const
+const GXVec2& GXConstraint::GetLambdaRange () const
 {
-	minimum = minimumLambda;
-	maximum = maximumLambda;
+	return lambdaRange;
 }
 
 GXConstraint::GXConstraint ()

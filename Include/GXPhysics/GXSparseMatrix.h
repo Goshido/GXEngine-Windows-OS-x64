@@ -11,16 +11,16 @@ struct GXSparseMatrixElement
 {
 	GXFloat		data[ 6 ];
 
+	GXSparseMatrixElement ();
+	explicit GXSparseMatrixElement ( GXFloat a1, GXFloat a2, GXFloat a3, GXFloat a4, GXFloat a5, GXFloat a6 );
+
+	GXVoid Init ( GXFloat a1, GXFloat a2, GXFloat a3, GXFloat a4, GXFloat a5, GXFloat a6 );
+
 	GXFloat DotProduct ( const GXSparseMatrixElement &other ) const;
 	GXVoid Sum ( const GXSparseMatrixElement &a, const GXSparseMatrixElement &b );
-};
+	GXVoid Multiply ( const GXSparseMatrixElement &a, GXFloat factor );
 
-//-------------------------------------------------------------
-
-struct GXSparseMatrix
-{
-	GXSparseMatrixElement*		elements;
-	GXUByte*					map;
+	GXSparseMatrixElement& operator = ( const GXSparseMatrixElement &other );
 };
 
 
