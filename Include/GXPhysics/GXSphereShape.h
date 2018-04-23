@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_SPHERE_SHAPE
 #define GX_SPHERE_SHAPE
@@ -26,4 +26,4 @@ class GXSphereShape : public GXShape
 };
 
 
-#endif GX_SPHERE_SHAPE
+#endif // GX_SPHERE_SHAPE

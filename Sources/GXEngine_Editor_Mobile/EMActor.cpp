@@ -35,43 +35,43 @@ EMActor::~EMActor ()
 
 GXVoid EMActor::OnDrawCommonPass ( GXFloat /*deltaTime*/ )
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid EMActor::OnDrawHudColorPass ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid EMActor::OnDrawHudMaskPass ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid EMActor::OnUpdate ( GXFloat /*deltaTime*/ )
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid EMActor::OnSave ( GXUByte** /*data*/ )
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid EMActor::OnLoad ( const GXUByte* /*data*/ )
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXUInt EMActor::OnRequeredSaveSize ()
 {
-	//NOTHING
+	// NOTHING
 	return 0;
 }
 
 GXVoid EMActor::OnTransformChanged ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 const GXWChar* EMActor::GetName ()

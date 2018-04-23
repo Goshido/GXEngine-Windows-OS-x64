@@ -61,4 +61,4 @@ class EMSSAOSharpMaterial : public GXMaterial
 };
 
 
-#endif //EM_SSAO_SHARP_MATERIAL
+#endif // EM_SSAO_SHARP_MATERIAL

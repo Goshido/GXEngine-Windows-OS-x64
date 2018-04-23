@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_BOX_SHAPE
 #define GX_BOX_SHAPE
@@ -38,4 +38,4 @@ class GXBoxShape : public GXShape
 };
 
 
-#endif GX_BOX_SHAPE
+#endif // GX_BOX_SHAPE

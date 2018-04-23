@@ -69,7 +69,7 @@ center ( L"Meshes/Editor Mobile/Move gismo center.stm" )
 
 EMMoveTool::~EMMoveTool ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid EMMoveTool::Bind ()
@@ -100,7 +100,7 @@ GXVoid EMMoveTool::SetActor ( EMActor* currentActor )
 		break;
 
 		default:
-			//NOTHING
+			// NOTHING
 		break;
 	}
 
@@ -276,7 +276,7 @@ GXBool EMMoveTool::OnObject ( GXVoid* object )
 		break;
 
 		default:
-			//NOTHING
+			// NOTHING
 		break;
 	}
 
@@ -318,7 +318,7 @@ GXVoid EMMoveTool::UpdateModeMode ()
 		break;
 
 		default:
-			//NOTHING
+			// NOTHING
 		break;
 	}
 

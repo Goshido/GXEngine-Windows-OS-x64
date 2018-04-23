@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_TORQUE_GENERATOR
 #define GX_TORQUE_GENERATOR
@@ -14,4 +14,4 @@ class GXTorgueGenerator
 };
 
 
-#endif GX_TORQUE_GENERATOR
+#endif // GX_TORQUE_GENERATOR

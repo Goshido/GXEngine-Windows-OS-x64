@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #ifndef GX_SKELETON
 #define GX_SKELETON
@@ -40,4 +40,4 @@ class GXSkeleton
 };
 
 
-#endif //GX_SKELETON
+#endif // GX_SKELETON

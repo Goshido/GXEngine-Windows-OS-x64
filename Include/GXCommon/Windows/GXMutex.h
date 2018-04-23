@@ -1,4 +1,4 @@
-﻿//version 1.1
+﻿// version 1.1
 
 #ifndef GX_MUTEX_WINDOWS
 #define GX_MUTEX_WINDOWS
@@ -21,4 +21,4 @@ class GXMutex : public GXAbstractMutex
 };
 
 
-#endif //GX_MUTEX_WINDOWS
+#endif // GX_MUTEX_WINDOWS

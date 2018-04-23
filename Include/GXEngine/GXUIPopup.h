@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_UI_POPUP
 #define GX_UI_POPUP

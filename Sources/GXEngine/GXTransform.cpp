@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #include <GXEngine/GXTransform.h>
 #include <GXEngine/GXCamera.h>
@@ -218,5 +218,5 @@ const GXTransform& GXTransform::GetNullTransform ()
 
 GXVoid GXTransform::TransformUpdated ()
 {
-	//NOTHING
+	// NOTHING
 }

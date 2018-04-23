@@ -1,4 +1,4 @@
-//version 1.18
+// version 1.18
 
 #ifndef GX_HUD_SURFACE
 #define GX_HUD_SURFACE
@@ -104,4 +104,4 @@ class GXHudSurface : public GXTransform
 };
 
 
-#endif //GX_HUD_SURFACE
+#endif // GX_HUD_SURFACE

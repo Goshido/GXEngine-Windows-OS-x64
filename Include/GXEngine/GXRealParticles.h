@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_REAL_PARTICLES
 #define GX_REAL_PARTICLES
@@ -53,4 +53,4 @@ class GXRealParticles : public GXMesh
 };
 
 
-#endif	//GX_REAL_PARTICLES
+#endif //GX_REAL_PARTICLES

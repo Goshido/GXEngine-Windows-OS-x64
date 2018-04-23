@@ -12,19 +12,19 @@
 
 
 EMFluttershy::EMFluttershy () :
-//mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLVER_ID )
+// mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLVER_ID )
 mesh ( L"Meshes/Editor Mobile/pilot.skm", L"Meshes/Editor Mobile/pilot.skm" ), animationSolverPlayer ( SOLVER_ID )
 {
-	//GXLoadNativeAnimation ( animationInfo, L"Animations/Editor Mobile/pony animation.ani" );
-	//GXLoadNativeAnimation ( animationInfo, L"Animations/Editor Mobile/default.ani" );
+	// GXLoadNativeAnimation ( animationInfo, L"Animations/Editor Mobile/pony animation.ani" );
+	// GXLoadNativeAnimation ( animationInfo, L"Animations/Editor Mobile/default.ani" );
 	GXLoadNativeAnimation ( animationInfo, L"Animations/Editor Mobile/pilot.ani" );
-	//skeleton.LoadFromSkm ( L"Meshes/Editor Mobile/Fluttershy.skm" );
+	// skeleton.LoadFromSkm ( L"Meshes/Editor Mobile/Fluttershy.skm" );
 	skeleton.LoadFromSkm ( L"Meshes/Editor Mobile/pilot.skm" );
 	animationSolverPlayer.SetAnimationSequence ( &animationInfo );
 	animationSolverPlayer.SetAnimationMultiplier ( 1.0f );
-	//animationSolverPlayer.EnableNormalization ();
+	// animationSolverPlayer.EnableNormalization ();
 
-	//albedoTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Fluttershy_Diffuse.tga", GX_TRUE, GL_REPEAT, GX_FALSE );
+	// albedoTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Fluttershy_Diffuse.tga", GX_TRUE, GL_REPEAT, GX_FALSE );
 	albedoTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/soldier.png", GX_TRUE, GL_REPEAT, GX_FALSE );
 	normalTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE, GL_REPEAT, GX_FALSE );
 	emissionTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE, GL_REPEAT, GX_FALSE );

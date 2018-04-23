@@ -1,10 +1,10 @@
-//version 1.0
+// version 1.0
 
 #include <GXPhysics/GXSphereShape.h>
 
 
-GXSphereShape::GXSphereShape ( GXRigidBody* body, GXFloat radius )
-: GXShape ( eGXShapeType::Sphere, body )
+GXSphereShape::GXSphereShape ( GXRigidBody* body, GXFloat radius ):
+	GXShape ( eGXShapeType::Sphere, body )
 {
 	this->radius = radius;
 
@@ -16,7 +16,7 @@ GXSphereShape::GXSphereShape ( GXRigidBody* body, GXFloat radius )
 
 GXSphereShape::~GXSphereShape ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXFloat GXSphereShape::GetRadius () const

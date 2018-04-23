@@ -19,4 +19,4 @@ class EMVertexColorMaterial : public GXMaterial
 };
 
 
-#endif //EM_VERTEX_COLOR_MATERIAL
+#endif // EM_VERTEX_COLOR_MATERIAL

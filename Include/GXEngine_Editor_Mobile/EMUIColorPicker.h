@@ -79,4 +79,4 @@ class EMUIColorPicker : public EMUI
 };
 
 
-#endif //EM_UI_COLOR_PICKER
+#endif // EM_UI_COLOR_PICKER

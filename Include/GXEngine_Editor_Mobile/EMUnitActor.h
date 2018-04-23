@@ -31,4 +31,4 @@ class EMUnitActor : public EMActor
 };
 
 
-#endif //EM_UNIT_ACTOR
+#endif // EM_UNIT_ACTOR

@@ -55,7 +55,7 @@ mat4 extractBoneTransform ( const in int index )
 
 	mat4 transform;
 
-	//GLSL is column-major matrix notation. See GLSL 3.30 specification (49 page).
+	// GLSL is column-major matrix notation. See GLSL 3.30 specification (49 page).
 
 	transform[ 0 ][ 0 ] = rr + aa - bb - cc;
 	transform[ 1 ][ 0 ] = rc2 + ab2;

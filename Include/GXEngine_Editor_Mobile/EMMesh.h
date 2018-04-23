@@ -30,4 +30,4 @@ class EMMesh : public GXTransform, public GXRenderable
 };
 
 
-#endif //EM_MESH
+#endif // EM_MESH

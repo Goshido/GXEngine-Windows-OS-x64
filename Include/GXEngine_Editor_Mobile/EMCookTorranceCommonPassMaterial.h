@@ -13,11 +13,11 @@ class EMCookTorranceCommonPassMaterial : public GXMaterial
 		GXTexture2D*		normalTexture;
 		GXTexture2D*		emissionTexture;
 
-		//texture components:
-		//red - roughness. Remapping to [0.0f, 1.0f] and take square.
-		//green - index of refraction. Remapping [0.0f, 5.0f]
-		//blue - specular intensity. Remapping to [0.0f, 1.0f]
-		//alpha - metallic. Remapping rule: 1.0f if value > 129, 0.0f otherwise
+		// texture components:
+		// red - roughness. Remapping to [0.0f, 1.0f] and take square.
+		// green - index of refraction. Remapping [0.0f, 5.0f]
+		// blue - specular intensity. Remapping to [0.0f, 1.0f]
+		// alpha - metallic. Remapping rule: 1.0f if value > 129, 0.0f otherwise
 		GXTexture2D*		parameterTexture;
 
 		GXVec4				albedoTextureScaleOffset;
@@ -40,10 +40,10 @@ class EMCookTorranceCommonPassMaterial : public GXMaterial
 		GXVec4				parameterTextureScaleOffset;
 		GLint				parameterTextureScaleOffsetLocation;
 
-		//x - roughness scale
-		//y - index of refraction scale
-		//z - specular intencity scale
-		//w - metallic scale
+		// x - roughness scale
+		// y - index of refraction scale
+		// z - specular intencity scale
+		// w - metallic scale
 		GXVec4				parameterScale;
 		GLint				parameterScaleLocation;
 
@@ -122,4 +122,4 @@ class EMCookTorranceCommonPassMaterial : public GXMaterial
 };
 
 
-#endif //EM_COOK_TORRANCE_COMMON_PASS_MATERIAL
+#endif // EM_COOK_TORRANCE_COMMON_PASS_MATERIAL

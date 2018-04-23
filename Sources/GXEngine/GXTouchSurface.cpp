@@ -1,4 +1,4 @@
-//version 1.3
+// version 1.3
 
 #include <GXEngine/GXTouchSurface.h>
 #include <GXEngine/GXUIMessage.h>
@@ -12,7 +12,7 @@ GXFloat				gx_ui_Scale = 1.0f;
 GXMutex*			gx_ui_Mutex = nullptr;
 GXCircleBuffer*		gx_ui_MessageBuffer = nullptr;
 
-#define GX_UI_MESSAGE_BUFFER_SIZE		1048576		//1 Mb
+#define GX_UI_MESSAGE_BUFFER_SIZE		1048576		// 1 Mb
 
 
 struct GXMessage

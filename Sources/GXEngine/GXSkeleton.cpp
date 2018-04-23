@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #include <GXEngine/GXSkeleton.h>
 #include <GXCommon/GXMemory.h>
@@ -105,8 +105,8 @@ GXUShort GXSkeleton::GetTotalBones () const
 
 GXVoid GXSkeleton::CalculatePose ()
 {
-	//Note: Quaternion mathematics simular to column-major notation matrix mathematics.
-	//So we need to do multiplication in reverse order to calculate skin transform.
+	// Note: Quaternion mathematics simular to column-major notation matrix mathematics.
+	// So we need to do multiplication in reverse order to calculate skin transform.
 
 	tempPoseGlobal[ 0 ] = tempPoseLocal[ 0 ];
 	skinTransform[ 0 ].rotation.Multiply ( tempPoseGlobal[ 0 ].rotation, inverseBindTransform[ 0 ].rotation );

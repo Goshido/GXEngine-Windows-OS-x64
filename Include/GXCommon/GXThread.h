@@ -41,7 +41,7 @@ class GXAbstractThread
 	#include "Posix/GXThread.h"
 #else
 	#include "Windows/GXThread.h"
-#endif //__GNUC__
+#endif // __GNUC__
 
 
-#endif //GX_THREAD
+#endif // GX_THREAD

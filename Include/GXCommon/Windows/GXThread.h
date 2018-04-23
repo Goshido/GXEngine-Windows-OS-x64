@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #ifndef GX_THREAD_WINDOWS
 #define GX_THREAD_WINDOWS
@@ -25,4 +25,4 @@ class GXThread : public GXAbstractThread
 };
 
 
-#endif //GX_THREAD_WINDOWS
+#endif // GX_THREAD_WINDOWS

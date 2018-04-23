@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_UI_EDIT_BOX_FLOAT_VALIDATOR
 #define GX_UI_EDIT_BOX_FLOAT_VALIDATOR
@@ -26,4 +26,4 @@ class GXUIEditBoxFloatValidator : public GXTextValidator
 };
 
 
-#endif //GX_UI_EDIT_BOX_FLOAT_VALIDATOR
+#endif // GX_UI_EDIT_BOX_FLOAT_VALIDATOR

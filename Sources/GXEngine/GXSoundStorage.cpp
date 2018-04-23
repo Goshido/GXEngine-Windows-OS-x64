@@ -1,4 +1,4 @@
-//version 1.3
+// version 1.3
 
 #include <GXEngine/GXSoundStorage.h>
 #include <GXCommon/GXStrings.h>

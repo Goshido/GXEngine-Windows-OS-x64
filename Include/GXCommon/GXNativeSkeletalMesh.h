@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #ifndef GX_NATIVE_SKELETAL_MESH
 #define GX_NATIVE_SKELETAL_MESH
@@ -21,13 +21,13 @@
 struct GXNativeSkeletalMeshHeader
 {
 	GXUInt		totalVertices;
-	GXUBigInt	vboOffset;						//VBO element struct: position (GXVec3), uv (GXVec2), normal (GXVec3), tangent (GXVec3), bitangent (GXVec3), indices (GXVec4), weights (GXVec4).
+	GXUBigInt	vboOffset;						// VBO element struct: position (GXVec3), uv (GXVec2), normal (GXVec3), tangent (GXVec3), bitangent (GXVec3), indices (GXVec4), weights (GXVec4).
 
 	GXUShort	totalBones;
-	GXUBigInt	boneNamesOffset;				//array of totalBones elements: 64 byte slot with zero terminated UTF8 string.
-	GXUBigInt	parentBoneIndicesOffset;		//array of totalBones elements: zero based index (GXUShort).
-	GXUBigInt	referensePoseOffset;			//array of totalBones elements: location (GXVec3), rotation (GXQuat). Relative parent.
-	GXUBigInt	inverseBindTransformOffset;		//array of totalBones elements: location (GXVec3), rotation (GXQuat).
+	GXUBigInt	boneNamesOffset;				// array of totalBones elements: 64 byte slot with zero terminated UTF8 string.
+	GXUBigInt	parentBoneIndicesOffset;		// array of totalBones elements: zero based index (GXUShort).
+	GXUBigInt	referensePoseOffset;			// array of totalBones elements: location (GXVec3), rotation (GXQuat). Relative parent.
+	GXUBigInt	inverseBindTransformOffset;		// array of totalBones elements: location (GXVec3), rotation (GXQuat).
 };
 
 #pragma pack ( pop )
@@ -62,8 +62,8 @@ struct GXNativeAnimationHeader
 	GXUInt		totalFrames;
 
 	GXUShort	totalBones;
-	GXUBigInt	boneNamesOffset;		//array of totalBones elements: 64 byte slot with zero terminated UTF-8 string
-	GXUBigInt	keysOffset;				//array of [totalBones * totalFrames] elements: rotation (GXQuat), location (GXVec3). Relative parent.
+	GXUBigInt	boneNamesOffset;		// array of totalBones elements: 64 byte slot with zero terminated UTF-8 string
+	GXUBigInt	keysOffset;				// array of [totalBones * totalFrames] elements: rotation (GXQuat), location (GXVec3). Relative parent.
 	GXUBigInt	keysOffset2;
 };
 
@@ -88,4 +88,4 @@ GXVoid GXCALL GXLoadNativeSkeletalMesh ( GXSkeletalMeshData &info, const GXWChar
 GXVoid GXCALL GXLoadNativeAnimation ( GXAnimationInfo &info, const GXWChar* fileName );
 
 
-#endif //GX_NATIVE_SKELETAL_MESH
+#endif // GX_NATIVE_SKELETAL_MESH

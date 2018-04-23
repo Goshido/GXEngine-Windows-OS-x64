@@ -31,4 +31,4 @@ class EMUIButton : public EMUI
 };
 
 
-#endif //EM_UI_BUTTON
+#endif // EM_UI_BUTTON

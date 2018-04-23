@@ -1,4 +1,4 @@
-//version 1.14
+// version 1.14
 
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXOpenGL.h>

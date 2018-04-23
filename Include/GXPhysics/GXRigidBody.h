@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #ifndef GX_RIGID_BODY
 #define GX_RIGID_BODY
@@ -117,4 +117,4 @@ class GXRigidBody
 };
 
 
-#endif GX_RIGID_BODY
+#endif // GX_RIGID_BODY

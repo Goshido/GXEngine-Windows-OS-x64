@@ -26,4 +26,4 @@ class EMVelocityNeighborMaxMaterial : public GXMaterial
 };
 
 
-#endif //EM_VELOCITY_NEIGHBOR_MAX_MATERIAL
+#endif // EM_VELOCITY_NEIGHBOR_MAX_MATERIAL

@@ -1,4 +1,4 @@
-//version 1.6
+// version 1.6
 
 #ifndef GX_SOUND_MIXER
 #define GX_SOUND_MIXER
@@ -49,4 +49,4 @@ class GXSoundMixer
 };
 
 
-#endif	// GX_SOUND_MIXER
+#endif // GX_SOUND_MIXER

@@ -1,4 +1,4 @@
-//version 1.9
+// version 1.9
 
 #include <GXEngine/GXOpenGL.h>
 #include <GXCommon/GXLogger.h>
@@ -180,12 +180,12 @@ GXVoid GXCALL GXCheckOpenGLError ()
 
 GXOpenGLState::GXOpenGLState ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXOpenGLState::~GXOpenGLState ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid GXOpenGLState::Save ()

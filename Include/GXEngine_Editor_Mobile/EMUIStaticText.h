@@ -30,4 +30,4 @@ class EMUIStaticText : public EMUI
 };
 
 
-#endif //EM_UI_STATIC_TEXT
+#endif // EM_UI_STATIC_TEXT

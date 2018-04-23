@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_UI_BUTTON
 #define GX_UI_BUTTON
@@ -40,4 +40,4 @@ class GXUIButton : public GXWidget
 };
 
 
-#endif //GX_UI_BUTTON
+#endif // GX_UI_BUTTON

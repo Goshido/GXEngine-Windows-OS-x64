@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #include <GXCommon/GXCFGSaver.h>
 #include <GXCommon/GXFileSystem.h>

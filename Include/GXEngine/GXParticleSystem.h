@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #ifndef GX_PARTICLE_SYSTEM
 #define GX_PARTICLE_SYSTEM
@@ -38,4 +38,4 @@ struct GXIdealParticleSystemParams
 };
 
 
-#endif	//GX_PARTICLE_SYSTEM
+#endif	// GX_PARTICLE_SYSTEM

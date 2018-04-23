@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_CFG_STRUCT
 #define GX_CFG_STRUCT
@@ -20,4 +20,4 @@ struct GXEngineConfiguration
 };
 
 
-#endif	//GX_CFG_STRUCT
+#endif // GX_CFG_STRUCT

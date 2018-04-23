@@ -114,7 +114,7 @@ GXVoid EMPhysicsDrivenActor::OnDrawHudColorPass ()
 		break;
 
 		case eGXShapeType::Rectangle:
-			//NOT SUPPORTED YET
+			// NOT SUPPORTED YET
 		return;
 
 		case eGXShapeType::Sphere:
@@ -130,14 +130,14 @@ GXVoid EMPhysicsDrivenActor::OnDrawHudColorPass ()
 		break;
 
 		default:
-			//NOTHING
+			// NOTHING
 		break;
 	}
 }
 
 GXVoid EMPhysicsDrivenActor::OnTransformChanged ()
 {
-	//rigidBody.SetLocation ( transform.GetLocation () );
+	// rigidBody.SetLocation ( transform.GetLocation () );
 }
 
 GXVoid EMPhysicsDrivenActor::SetMesh ( const GXWChar* meshFile )

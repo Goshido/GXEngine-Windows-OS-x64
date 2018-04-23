@@ -20,4 +20,4 @@ class EMUISeparator : public EMUI
 };
 
 
-#endif //EM_UI_SEPARATOR
+#endif // EM_UI_SEPARATOR

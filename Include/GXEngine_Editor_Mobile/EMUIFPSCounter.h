@@ -26,4 +26,4 @@ class EMUIFPSCounter
 };
 
 
-#endif //EM_UI_FPS_COUNTER
+#endif // EM_UI_FPS_COUNTER

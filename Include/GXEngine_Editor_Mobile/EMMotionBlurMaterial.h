@@ -48,4 +48,4 @@ class EMMotionBlurMaterial : public GXMaterial
 };
 
 
-#endif //EM_MOTION_BLUR_MATERIAL
+#endif // EM_MOTION_BLUR_MATERIAL

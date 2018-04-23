@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_FORCE_GENERATOR
 #define GX_FORCE_GENERATOR
@@ -14,4 +14,4 @@ class GXForceGenerator
 };
 
 
-#endif GX_FORCE_GENERATOR
+#endif // GX_FORCE_GENERATOR

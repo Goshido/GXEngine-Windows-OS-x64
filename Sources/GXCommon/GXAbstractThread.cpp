@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #include <GXCommon/GXThread.h>
 
@@ -12,7 +12,7 @@ GXAbstractThread::GXAbstractThread ( PFNGXTHREADPROC procedure, GXVoid* argument
 
 GXAbstractThread::~GXAbstractThread ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 eGXThreadState GXAbstractThread::GetState () const

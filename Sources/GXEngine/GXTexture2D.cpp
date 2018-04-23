@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #include <GXEngine/GXTexture2D.h>
 #include <GXEngine/GXSamplerUtils.h>
@@ -188,17 +188,17 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 	GXGetFileDirectoryPath ( &path, fileName );
 	GXUPointer size = GXWcslen ( path ) * sizeof ( GXWChar );
 
-	size += sizeof ( GXWChar );		//L'/' symbol
+	size += sizeof ( GXWChar );		// L'/' symbol
 	size += GXWcslen ( CACHE_DIRECTORY_NAME ) * sizeof ( GXWChar );
-	size += sizeof ( GXWChar );		//L'/' symbol
+	size += sizeof ( GXWChar );		// L'/' symbol
 
 	GXWChar* baseFileName = nullptr;
 	GXGetBaseFileName ( &baseFileName, fileName );
 	size += GXWcslen ( baseFileName ) * sizeof ( GXWChar );
 
-	size += sizeof ( GXWChar );		//L'.' symbol
+	size += sizeof ( GXWChar );		// L'.' symbol
 	size += GXWcslen ( CACHE_FILE_EXTENSION ) * sizeof ( GXWChar );
-	size += sizeof ( GXWChar );		//L'\0' symbol
+	size += sizeof ( GXWChar );		// L'\0' symbol
 
 	GXWChar* cacheFileName = (GXWChar*)malloc ( size );
 	wsprintfW ( cacheFileName, L"%s/%s/%s.%s", path, CACHE_DIRECTORY_NAME, baseFileName, CACHE_FILE_EXTENSION );
@@ -233,7 +233,7 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 					break;
 
 					default:
-						//NOTHING
+						// NOTHING
 					break;
 				}
 			}
@@ -252,7 +252,7 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 					break;
 
 					default:
-						//NOTHING
+						// NOTHING
 					break;
 				}
 			}
@@ -271,7 +271,7 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 					break;
 
 					default:
-						//NOTHING
+						// NOTHING
 					break;
 				}
 			}
@@ -290,14 +290,14 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 					break;
 
 					default:
-						//NOTHING
+						// NOTHING
 					break;
 				}
 			}
 			break;
 
 			default:
-				//NOTHING
+				// NOTHING
 			break;
 		}
 
@@ -312,9 +312,9 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 	}
 
 	size = GXWcslen ( path ) * sizeof ( GXWChar );
-	size += sizeof ( GXWChar );		//L'/' symbol
+	size += sizeof ( GXWChar );		// L'/' symbol
 	size += GXWcslen ( CACHE_DIRECTORY_NAME ) * sizeof ( GXWChar );
-	size += sizeof ( GXWChar );		//L'\0' symbol
+	size += sizeof ( GXWChar );		// L'\0' symbol
 
 	GXWChar* cacheDirectory = (GXWChar*)malloc ( size );
 	wsprintfW ( cacheDirectory, L"%s/%s", path, CACHE_DIRECTORY_NAME );
@@ -376,7 +376,7 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 				break;
 
 				default:
-					//NOTHING
+					// NOTHING
 				break;
 			}
 
@@ -445,7 +445,7 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 				break;
 
 				default:
-					//NOTHING
+					// NOTHING
 				break;
 			}
 
@@ -531,7 +531,7 @@ GXTexture2D& GXCALL GXTexture2D::LoadTexture ( const GXWChar* fileName, GXBool i
 		break;
 
 		default:
-			//NOTHING
+			// NOTHING
 		break;
 	}
 

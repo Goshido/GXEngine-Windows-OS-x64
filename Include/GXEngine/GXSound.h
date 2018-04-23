@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #ifndef GX_SOUND
 #define GX_SOUND
@@ -50,4 +50,4 @@ GXBool GXCALL GXSoundInit ();
 GXBool GXCALL GXSoundDestroy ();
 
 
-#endif //GXSOUND
+#endif // GXSOUND

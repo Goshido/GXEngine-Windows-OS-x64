@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #ifndef GX_LOCALE
 #define GX_LOCALE
@@ -38,4 +38,4 @@ class GXLocale
 };
 
 
-#endif //GX_LOCALE
+#endif // GX_LOCALE

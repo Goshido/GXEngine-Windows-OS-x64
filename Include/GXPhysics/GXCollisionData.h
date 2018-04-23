@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_COLLISION_DATA
 #define GX_COLLISION_DATA
@@ -40,4 +40,4 @@ class GXCollisionData
 };
 
 
-#endif GX_COLLISION_DATA
+#endif // GX_COLLISION_DATA

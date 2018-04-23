@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_SPRING
 #define GX_SPRING
@@ -24,4 +24,4 @@ class GXSpring : public GXForceGenerator
 };
 
 
-#endif GX_SPRING
+#endif // GX_SPRING

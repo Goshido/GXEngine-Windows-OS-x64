@@ -185,17 +185,17 @@ GXTextureCubeMap& GXCALL GXTextureCubeMap::LoadEquirectangularTexture ( const GX
 	GXGetFileDirectoryPath ( &path, fileName );
 	GXUPointer size = GXWcslen ( path ) * sizeof ( GXWChar );
 
-	size += sizeof ( GXWChar );		//L'/' symbol
+	size += sizeof ( GXWChar );		// L'/' symbol
 	size += GXWcslen ( CACHE_DIRECTORY_NAME ) * sizeof ( GXWChar );
-	size += sizeof ( GXWChar );		//L'/' symbol
+	size += sizeof ( GXWChar );		// L'/' symbol
 
 	GXWChar* baseFileName = nullptr;
 	GXGetBaseFileName ( &baseFileName, fileName );
 	size += GXWcslen ( baseFileName ) * sizeof ( GXWChar );
 
-	size += sizeof ( GXWChar );		//L'.' symbol
+	size += sizeof ( GXWChar );		// L'.' symbol
 	size += GXWcslen ( CACHE_FILE_EXTENSION ) * sizeof ( GXWChar );
-	size += sizeof ( GXWChar );		//L'\0' symbol
+	size += sizeof ( GXWChar );		// L'\0' symbol
 
 	GXWChar* cacheFileName = (GXWChar*)malloc ( size );
 	wsprintfW ( cacheFileName, L"%s/%s/%s.%s", path, CACHE_DIRECTORY_NAME, baseFileName, CACHE_FILE_EXTENSION );
@@ -227,7 +227,7 @@ GXTextureCubeMap& GXCALL GXTextureCubeMap::LoadEquirectangularTexture ( const GX
 					break;
 
 					default:
-						//NOTHING
+						// NOTHING
 					break;
 				}
 			}
@@ -246,7 +246,7 @@ GXTextureCubeMap& GXCALL GXTextureCubeMap::LoadEquirectangularTexture ( const GX
 					break;
 
 					default:
-						//NOTHING
+						// NOTHING
 					break;
 				}
 			}
@@ -265,14 +265,14 @@ GXTextureCubeMap& GXCALL GXTextureCubeMap::LoadEquirectangularTexture ( const GX
 					break;
 
 					default:
-						//NOTHING
+						// NOTHING
 					break;
 				}
 			}
 			break;
 
 			default:
-				//NOTHING
+				// NOTHING
 			break;
 		}
 
@@ -384,9 +384,9 @@ GXTextureCubeMap& GXCALL GXTextureCubeMap::LoadEquirectangularTexture ( const GX
 	cacheHeader.faceLength = (GXUShort)( width / 4 );
 
 	size = GXWcslen ( path ) * sizeof ( GXWChar );
-	size += sizeof ( GXWChar );		//L'/' symbol
+	size += sizeof ( GXWChar );		// L'/' symbol
 	size += GXWcslen ( CACHE_DIRECTORY_NAME ) * sizeof ( GXWChar );
-	size += sizeof ( GXWChar );		//L'\0' symbol
+	size += sizeof ( GXWChar );		// L'\0' symbol
 
 	GXWChar* cacheDirectory = (GXWChar*)malloc ( size );
 	wsprintfW ( cacheDirectory, L"%s/%s", path, CACHE_DIRECTORY_NAME );
@@ -431,7 +431,7 @@ GXTextureCubeMap& GXCALL GXTextureCubeMap::LoadEquirectangularTexture ( const GX
 				break;
 
 				default:
-					//NOTHING
+					// NOTHING
 				break;
 			}
 		}
@@ -456,7 +456,7 @@ GXTextureCubeMap& GXCALL GXTextureCubeMap::LoadEquirectangularTexture ( const GX
 				break;
 
 				default:
-					//NOTHING
+					// NOTHING
 				break;
 			}
 		}
@@ -481,14 +481,14 @@ GXTextureCubeMap& GXCALL GXTextureCubeMap::LoadEquirectangularTexture ( const GX
 				break;
 
 				default:
-					//NOTHING
+					// NOTHING
 				break;
 			}
 		}
 		break;
 
 		default:
-			//NOTHING
+			// NOTHING
 		break;
 	}
 
@@ -528,7 +528,7 @@ GXTextureCubeMap& GXCALL GXTextureCubeMap::LoadEquirectangularTexture ( const GX
 		break;
 
 		default:
-			//NOTHING
+			// NOTHING
 		break;
 	}
 
@@ -873,7 +873,7 @@ GXVoid GXCALL GXTextureCubeMap::ProjectFaces ( GLuint fbo, GLuint textureObject,
 		break;
 
 		default:
-			//NOTHING
+			// NOTHING
 		break;
 	}
 

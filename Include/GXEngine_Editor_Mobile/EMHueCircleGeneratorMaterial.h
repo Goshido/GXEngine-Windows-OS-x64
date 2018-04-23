@@ -31,4 +31,4 @@ class EMHueCircleGeneratorMaterial : public GXMaterial
 };
 
 
-#endif //EM_HUE_CIRCLE_GENERATOR_MATERIAL
+#endif // EM_HUE_CIRCLE_GENERATOR_MATERIAL

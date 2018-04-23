@@ -46,4 +46,4 @@ class EMToneMapperMaterial : public GXMaterial
 };
 
 
-#endif //EM_TONE_MAPPER_MATERIAL
+#endif // EM_TONE_MAPPER_MATERIAL

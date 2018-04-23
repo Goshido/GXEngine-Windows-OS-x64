@@ -1,4 +1,4 @@
-//version 1.3
+// version 1.3
 
 #include <GXEngine/GXAnimationSolverMovement.h>
 
@@ -11,7 +11,7 @@ GXAnimationSolver ( solverID )
 
 GXAnimationSolverMovement::~GXAnimationSolverMovement ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXBool GXAnimationSolverMovement::GetBoneJoint ( GXBoneJoint &joint, const GXUTF8* boneName )

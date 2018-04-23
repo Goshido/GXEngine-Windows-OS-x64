@@ -1,4 +1,4 @@
-//version 1.8
+// version 1.8
 
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXMemory.h>

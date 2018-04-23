@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_TEXUTE_2D_GAMMA_CORRECTOR_MATERIAL
 #define GX_TEXUTE_2D_GAMMA_CORRECTOR_MATERIAL
@@ -25,4 +25,4 @@ class GXTexture2DGammaCorrectorMaterial : public GXMaterial
 };
 
 
-#endif //GX_TEXUTE_2D_GAMMA_CORRECTOR_MATERIAL
+#endif // GX_TEXUTE_2D_GAMMA_CORRECTOR_MATERIAL

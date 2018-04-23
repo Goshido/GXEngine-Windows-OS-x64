@@ -1,4 +1,4 @@
-//version 1.7
+// version 1.7
 
 #ifndef EM_LIGHT
 #define EM_LIGHT
@@ -30,7 +30,7 @@ class EMLightEmitter
 		eEMLightEmitterType		type;
 
 		GXUByte					baseColor[ 3 ];
-		GXFloat					intensity;		//[ 0.0f, +inf )
+		GXFloat					intensity;		// [ 0.0f, +inf )
 		GXColorRGB				color;
 
 		GXMat4					mod_mat;
@@ -134,4 +134,4 @@ class EMDirectedLight : public EMLightEmitter
 };
 
 
-#endif //EM_LIGHT
+#endif // EM_LIGHT

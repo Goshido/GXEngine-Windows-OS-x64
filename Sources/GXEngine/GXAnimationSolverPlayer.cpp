@@ -1,4 +1,4 @@
-//version 1.5
+// version 1.5
 
 #include <GXEngine/GXAnimationSolverPlayer.h>
 #include <GXCommon/GXNativeSkeletalMesh.h>

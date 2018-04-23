@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #include <GXEngine/GXSplashScreen.h>
 #include <GXEngine/GXResource.h>
@@ -88,7 +88,7 @@ GXVoid GXSplashScreen::FillRGB ( GXUByte** destination, const GXUByte* source, G
 	{
 		for ( GXUShort w = 0; w < width; w++ )
 		{
-			//BGRA model
+			// BGRA model
 			dst[ offsetDst ] = source[ offsetSrc + 2 ];
 			dst[ offsetDst + 1 ] = source[ offsetSrc + 1 ];
 			dst[ offsetDst + 2 ] = source[ offsetSrc ];
@@ -115,7 +115,7 @@ GXVoid GXSplashScreen::FillARGB ( GXUByte** destination, const GXUByte* source, 
 	{
 		for ( GXUShort w = 0; w < width; w++ )
 		{
-			//BGRA model
+			// BGRA model
 			dst[ offsetDst ] = source[ offsetSrc + 2 ];
 			dst[ offsetDst + 1 ] = source[ offsetSrc + 1 ];
 			dst[ offsetDst + 2 ] = source[ offsetSrc ];
@@ -257,7 +257,7 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
 				break;
 
 				default:
-					//NOTHING
+					// NOTHING
 				break;
 			}
 
@@ -313,7 +313,7 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
 		break;
 
 		default:
-			//NOTHING
+			// NOTHING
 		break;
 	}
 

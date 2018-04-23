@@ -24,4 +24,4 @@ class EMUIMenu : public EMUI
 };
 
 
-#endif //EM_UI_MENU
+#endif // EM_UI_MENU

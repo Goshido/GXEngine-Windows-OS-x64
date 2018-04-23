@@ -1,4 +1,4 @@
-//version 1.9
+// version 1.9
 
 #ifndef GX_CAMERA_ORHTOGRAPHIC
 #define GX_CAMERA_ORHTOGRAPHIC
@@ -25,4 +25,4 @@ class GXCameraOrthographic : public GXCamera
 };
 
 
-#endif //GX_CAMERA_ORHTOGRAPHIC
+#endif // GX_CAMERA_ORHTOGRAPHIC

@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #ifndef GX_OGG_SOUND_PROVIDER
 #define GX_OGG_SOUND_PROVIDER
@@ -36,4 +36,4 @@ class GXOGGSoundTrack : public GXSoundTrack
 };
 
 
-#endif	//GX_OGG_SOUND_PROVIDER
+#endif	// GX_OGG_SOUND_PROVIDER

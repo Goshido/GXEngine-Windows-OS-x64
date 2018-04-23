@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_UNLIT_COLOR_MATERIAL
 #define GX_UNLIT_COLOR_MATERIAL
@@ -27,4 +27,4 @@ class GXUnlitColorMaterial : public GXMaterial
 };
 
 
-#endif //GX_UNLIT_COLOR_MATERIAL
+#endif // GX_UNLIT_COLOR_MATERIAL

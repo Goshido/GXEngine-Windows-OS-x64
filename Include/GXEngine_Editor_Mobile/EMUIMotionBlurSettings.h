@@ -46,4 +46,4 @@ class EMUIMotionBlurSettings : public EMUI
 };
 
 
-#endif //EM_UI_MOTION_BLUR_SETTINGS
+#endif // EM_UI_MOTION_BLUR_SETTINGS

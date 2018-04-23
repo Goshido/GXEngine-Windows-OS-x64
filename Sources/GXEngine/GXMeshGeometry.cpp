@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #include <GXEngine/GXMeshGeometry.h>
 #include <GXCommon/GXStrings.h>
@@ -91,7 +91,7 @@ GXVoid GXMesh::FillVBO ( const GXVoid* data, GLsizeiptr size, GLenum usage )
 		glGenBuffers ( 1, &meshVBO );
 
 	glBindBuffer ( GL_ARRAY_BUFFER, meshVBO );
-	//{
+	// {
 		if ( size <= vboSize && usage == vboUsage )
 		{
 			glBufferSubData ( GL_ARRAY_BUFFER, (GLintptr)0, size, data );
@@ -102,7 +102,7 @@ GXVoid GXMesh::FillVBO ( const GXVoid* data, GLsizeiptr size, GLenum usage )
 			vboSize = size;
 			glBufferData ( GL_ARRAY_BUFFER, vboSize, data, vboUsage );
 		}
-	//}
+	// }
 	glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 }
 
@@ -155,17 +155,17 @@ GXBool GXMesh::LoadFromOBJ ( const GXWChar* fileName )
 	GXGetFileDirectoryPath ( &path, fileName );
 	GXUInt size = GXWcslen ( path ) * sizeof ( GXWChar );
 
-	size += sizeof ( GXWChar );		//L'/' symbol
+	size += sizeof ( GXWChar );		// L'/' symbol
 	size += GXWcslen ( CACHE_DIRECTORY_NAME ) * sizeof ( GXWChar );
-	size += sizeof ( GXWChar );		//L'/' symbol
+	size += sizeof ( GXWChar );		// L'/' symbol
 
 	GXWChar* baseFileName = nullptr;
 	GXGetBaseFileName ( &baseFileName, fileName );
 	size += GXWcslen ( baseFileName ) * sizeof ( GXWChar );
 
-	size += sizeof ( GXWChar );		//L'.' symbol
+	size += sizeof ( GXWChar );		// L'.' symbol
 	size += GXWcslen ( CACHE_FILE_EXTENSION ) * sizeof ( GXWChar );
-	size += sizeof ( GXWChar );		//L'\0' symbol
+	size += sizeof ( GXWChar );		// L'\0' symbol
 
 	GXWChar* cacheFileName = (GXWChar*)malloc ( size );
 	wsprintfW ( cacheFileName, L"%s/%s/%s.%s", path, CACHE_DIRECTORY_NAME, baseFileName, CACHE_FILE_EXTENSION );
@@ -243,9 +243,9 @@ GXBool GXMesh::LoadFromOBJ ( const GXWChar* fileName )
 	free ( points );
 
 	size = GXWcslen ( path ) * sizeof ( GXWChar );
-	size += sizeof ( GXWChar );		//L'/' symbol
+	size += sizeof ( GXWChar );		// L'/' symbol
 	size += GXWcslen ( CACHE_DIRECTORY_NAME ) * sizeof ( GXWChar );
-	size += sizeof ( GXWChar );		//L'\0' symbol
+	size += sizeof ( GXWChar );		// L'\0' symbol
 
 	GXWChar* cacheDirectory = (GXWChar*)malloc ( size );
 	wsprintfW ( cacheDirectory, L"%s/%s", path, CACHE_DIRECTORY_NAME );
@@ -271,9 +271,9 @@ GXBool GXMesh::LoadFromOBJ ( const GXWChar* fileName )
 
 	glGenBuffers ( 1, &meshVBO );
 	glBindBuffer ( GL_ARRAY_BUFFER, meshVBO );
-	//{
+	// {
 		glBufferData ( GL_ARRAY_BUFFER, vboSize, cache, vboUsage );
-	//}
+	// }
 	glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 
 	free ( cache );
@@ -292,9 +292,9 @@ GXBool GXMesh::LoadFromSTM ( const GXWChar* fileName )
 
 	glGenBuffers ( 1, &meshVBO );
 	glBindBuffer ( GL_ARRAY_BUFFER, meshVBO );
-	//{
+	// {
 		glBufferData ( GL_ARRAY_BUFFER, vboSize, info.vboData, vboUsage );
-	//}
+	// }
 	glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 
 	info.Cleanup ();
@@ -318,7 +318,7 @@ GXBool GXMesh::LoadFromSKM ( const GXWChar* fileName )
 
 	for ( GLsizei i = 0; i < totalVertices; i++ )
 	{
-		//Vertex, UV, normal, tangent, bitangent.
+		// Vertex, UV, normal, tangent, bitangent.
 		memcpy ( destination + offset, source, meshVBOStride );
 
 		offset += meshVBOStride;
@@ -331,9 +331,9 @@ GXBool GXMesh::LoadFromSKM ( const GXWChar* fileName )
 
 	glGenBuffers ( 1, &meshVBO );
 	glBindBuffer ( GL_ARRAY_BUFFER, meshVBO );
-	//{
+	// {
 		glBufferData ( GL_ARRAY_BUFFER, vboSize, destination, vboUsage );
-	//}
+	// }
 	glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 
 	free ( destination );
@@ -352,9 +352,9 @@ GXBool GXMesh::LoadFromMESH ( const GXWChar* fileName )
 
 	glGenBuffers ( 1, &meshVBO );
 	glBindBuffer ( GL_ARRAY_BUFFER, meshVBO );
-	//{
+	// {
 		glBufferData ( GL_ARRAY_BUFFER, vboSize, meshInfo.vboData, vboUsage );
-	//}
+	// }
 	glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 
 	meshInfo.Cleanup ();
@@ -466,7 +466,7 @@ GXBool GXSkin::LoadFromSKM ( const GXWChar* fileName )
 
 	for ( GLsizei i = 0; i < totalVertices; i++ )
 	{
-		//Bone index, bone weight
+		// Bone index, bone weight
 		memcpy ( destination + offset, source, skinVBOStride );
 
 		offset += skinVBOStride;
@@ -477,9 +477,9 @@ GXBool GXSkin::LoadFromSKM ( const GXWChar* fileName )
 
 	glGenBuffers ( 1, &skinVBO );
 	glBindBuffer ( GL_ARRAY_BUFFER, skinVBO );
-	//{
+	// {
 		glBufferData ( GL_ARRAY_BUFFER, (GLsizeiptr)skinVBOSize, destination, GL_STATIC_DRAW );
-	//}
+	// }
 	glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 
 	free ( destination );
@@ -496,9 +496,9 @@ GXBool GXSkin::LoadFromSKIN ( const GXWChar* fileName )
 
 	glGenBuffers ( 1, &skinVBO );
 	glBindBuffer ( GL_ARRAY_BUFFER, skinVBO );
-	//{
+	// {
 		glBufferData ( GL_ARRAY_BUFFER, (GLsizeiptr)( skinInfo.totalVertices * ( sizeof ( GXVec4 ) + sizeof ( GXVec4 ) ) ), skinInfo.vboData, GL_STATIC_DRAW );
-	//}
+	// }
 	glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 
 	skinInfo.Cleanup ();
@@ -580,7 +580,7 @@ GXVoid GXMeshGeometry::SetTotalVertices ( GLsizei totalVertices )
 {
 	if ( !mesh || !mesh->GetMeshFileName () )
 	{
-		//Procedure generated mesh.
+		// Procedure generated mesh.
 
 		if ( !mesh )
 			mesh = new GXMesh ();
@@ -600,7 +600,7 @@ GXVoid GXMeshGeometry::FillVertexBuffer ( const GXVoid* data, GLsizeiptr size, G
 {
 	if ( !mesh || !mesh->GetMeshFileName () )
 	{
-		//Procedure generated mesh.
+		// Procedure generated mesh.
 
 		if ( !mesh )
 			mesh = new GXMesh ();
@@ -623,20 +623,20 @@ GXVoid GXMeshGeometry::SetBufferStream ( eGXMeshStreamIndex streamIndex, GLint n
 
 	if ( !mesh || !mesh->GetMeshFileName () )
 	{
-		//Procedure generated mesh.
+		// Procedure generated mesh.
 
 		if ( !mesh )
 			mesh = new GXMesh ();
 
 		glBindVertexArray ( meshVAO );
-		//{
+		// {
 			if ( mesh->meshVBO == 0 )
 				glGenBuffers ( 1, &mesh->meshVBO );
 
 			glBindBuffer ( GL_ARRAY_BUFFER, mesh->meshVBO );
 			glEnableVertexAttribArray ( (GLuint)streamIndex );
 			glVertexAttribPointer ( (GLuint)streamIndex, numElements, elementType, GL_FALSE, stride, offset );
-		//}
+		// }
 		glBindVertexArray ( 0 );
 
 		return;
@@ -648,11 +648,11 @@ GXVoid GXMeshGeometry::SetBufferStream ( eGXMeshStreamIndex streamIndex, GLint n
 	mesh = new GXMesh ();
 
 	glBindVertexArray ( meshVAO );
-	//{
+	// {
 		glBindBuffer ( GL_ARRAY_BUFFER, mesh->meshVBO );
 		glEnableVertexAttribArray ( (GLuint)streamIndex );
 		glVertexAttribPointer ( (GLuint)streamIndex, numElements, elementType, GL_FALSE, stride, offset );
-	//}
+	// }
 	glBindVertexArray ( 0 );
 }
 
@@ -729,7 +729,7 @@ GXVoid GXMeshGeometry::UpdateGraphicResources ()
 		{
 			glGenVertexArrays ( 1, &meshVAO );
 			glBindVertexArray ( meshVAO );
-			//{
+			// {
 				GLsizei meshStride = sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 );
 				GXUPointer offset = 0;
 
@@ -756,7 +756,7 @@ GXVoid GXMeshGeometry::UpdateGraphicResources ()
 
 				glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::LastFrameVertex );
 				glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::LastFrameVertex, 3, GL_FLOAT, GL_FALSE, meshStride, (const GLvoid*)0 );
-			//}
+			// }
 			glBindVertexArray ( 0 );
 		}
 
@@ -790,7 +790,7 @@ GXVoid GXMeshGeometry::UpdateGraphicResources ()
 	GXUPointer offset = 0;
 
 	glBindVertexArray ( poseVAO[ 0 ] );
-	//{
+	// {
 		glBindBuffer ( GL_ARRAY_BUFFER, pose[ 0 ]->meshVBO );
 
 		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::CurrenVertex );
@@ -816,13 +816,13 @@ GXVoid GXMeshGeometry::UpdateGraphicResources ()
 
 		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::LastFrameVertex );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::LastFrameVertex, 3, GL_FLOAT, GL_FALSE, meshStride, (const GLvoid*)0 );
-	//}
+	// }
 	glBindVertexArray ( 0 );
 
 	offset = 0;
 
 	glBindVertexArray ( poseVAO[ 1 ] );
-	//{
+	// {
 		glBindBuffer ( GL_ARRAY_BUFFER, pose[ 1 ]->meshVBO );
 
 		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::CurrenVertex );
@@ -848,14 +848,14 @@ GXVoid GXMeshGeometry::UpdateGraphicResources ()
 
 		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::LastFrameVertex );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::LastFrameVertex, 3, GL_FLOAT, GL_FALSE, meshStride, (const GLvoid*)0 );
-	//}
+	// }
 	glBindVertexArray ( 0 );
 
 	offset = 0;
 	GLsizei skinStride = sizeof ( GXVec4 ) + sizeof ( GXVec4 );
 
 	glBindVertexArray ( meshVAO );
-	//{
+	// {
 		glBindBuffer ( GL_ARRAY_BUFFER, mesh->meshVBO );
 
 		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::CurrenVertex );
@@ -888,6 +888,6 @@ GXVoid GXMeshGeometry::UpdateGraphicResources ()
 
 		glEnableVertexAttribArray ( (GLuint)eGXMeshStreamIndex::SkinnngWeights );
 		glVertexAttribPointer ( (GLuint)eGXMeshStreamIndex::SkinnngWeights, 4, GL_FLOAT, GL_FALSE, skinStride, (const GLvoid*)offset );
-	//}
+	// }
 	glBindVertexArray ( 0 );
 }

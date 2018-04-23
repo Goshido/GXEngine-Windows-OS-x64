@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #ifndef GX_FREETYPE
 #define GX_FREETYPE
@@ -40,4 +40,4 @@ struct GXFreeTypeFunctions
 };
 
 
-#endif //GX_FREETYPE
+#endif // GX_FREETYPE

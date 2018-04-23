@@ -34,7 +34,7 @@ EMGaussVerticalBlurMaterial::EMGaussVerticalBlurMaterial ( eEMGaussVerticalBlurK
 		break;
 
 		default:
-			//NOTHING
+			// NOTHING
 		break;
 	}
 
@@ -75,7 +75,7 @@ GXVoid EMGaussVerticalBlurMaterial::SetImageTexture ( GXTexture2D &texture )
 		break;
 
 		default:
-			//NOTHING
+			// NOTHING
 		break;
 	}
 

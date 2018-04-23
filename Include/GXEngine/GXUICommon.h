@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_UI_COMMON
 #define GX_UI_COMMON
@@ -20,10 +20,10 @@ typedef GXVoid ( GXCALL* PFNGXONMOUSESCROLLPROC ) ( GXFloat scroll, GXFloat x, G
 typedef GXVoid ( GXCALL* PFNGXONMOUSEMOVEPROC ) ( GXFloat x, GXFloat y );
 
 
-extern GXFloat gx_ui_Scale;		//rough pixels in centimeter
+extern GXFloat gx_ui_Scale;		// rough pixels in centimeter
 
 extern GXMutex* gx_ui_Mutex;
 extern GXCircleBuffer* gx_ui_MessageBuffer;
 
 
-#endif //GX_UI_COMMON
+#endif // GX_UI_COMMON

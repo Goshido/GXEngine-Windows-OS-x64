@@ -1,4 +1,4 @@
-﻿//version 1.44
+﻿// version 1.46
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
@@ -400,7 +400,7 @@ GXVec3& GXVec3::operator = ( const GXVec3 &vector )
 
 GXBool GXCALL GXRayTriangleIntersection3D ( GXFloat &outT, const GXVec3 &origin, const GXVec3 &direction, GXFloat length, const GXVec3 &a, const GXVec3 &b, const GXVec3 &c )
 {
-	//Implementation https://graphics.stanford.edu/courses/cs348b-98/gg/intersect.html
+	// Implementation https://graphics.stanford.edu/courses/cs348b-98/gg/intersect.html
 
 	GXPlane plane;
 	plane.From ( a, b, c );
@@ -462,7 +462,7 @@ GXBool GXCALL GXRayTriangleIntersection3D ( GXFloat &outT, const GXVec3 &origin,
 		break;
 
 		default:
-			//NOTHING
+			// NOTHING
 		break;
 	}
 
@@ -519,7 +519,7 @@ GXEuler& GXEuler::operator = ( const GXEuler &other )
 
 GXVec4::GXVec4 ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVec4::GXVec4 ( const GXVec3 &vector, GXFloat w )
@@ -623,6 +623,70 @@ GXFloat GXVec4::SquaredLength () const
 GXVec4& GXVec4::operator = ( const GXVec4 &vector )
 {
 	memcpy ( this, &vector, sizeof ( GXVec4 ) );
+	return *this;
+}
+
+//------------------------------------------------------------------
+
+GXVec6::GXVec6 ()
+{
+	// NOTHING
+}
+
+GXVec6::GXVec6 ( GXFloat a1, GXFloat a2, GXFloat a3, GXFloat a4, GXFloat a5, GXFloat a6 )
+{
+	data[ 0 ] = a1;
+	data[ 1 ] = a2;
+	data[ 2 ] = a3;
+	data[ 3 ] = a4;
+	data[ 4 ] = a5;
+	data[ 5 ] = a6;
+}
+
+GXVoid GXVec6::Init ( GXFloat a1, GXFloat a2, GXFloat a3, GXFloat a4, GXFloat a5, GXFloat a6 )
+{
+	data[ 0 ] = a1;
+	data[ 1 ] = a2;
+	data[ 2 ] = a3;
+	data[ 3 ] = a4;
+	data[ 4 ] = a5;
+	data[ 5 ] = a6;
+}
+
+GXVoid GXVec6::From ( const GXVec3 &v1, const GXVec3 &v2 )
+{
+	memcpy ( data, &v1, sizeof ( GXVec3 ) );
+	memcpy ( data + 3, &v2, sizeof ( GXVec3 ) );
+}
+
+GXFloat GXVec6::DotProduct ( const GXVec6 &other ) const
+{
+	return data[ 0 ] * other.data[ 0 ] + data[ 1 ] * other.data[ 1 ] + data[ 2 ] * other.data[ 2 ] + data[ 3 ] * other.data[ 3 ] + data[ 4 ] * other.data[ 4 ] + data[ 5 ] * other.data[ 5 ];
+}
+
+GXVoid GXVec6::Sum ( const GXVec6 &a, const GXVec6 &b )
+{
+	data[ 0 ] = a.data[ 0 ] + b.data[ 0 ];
+	data[ 1 ] = a.data[ 1 ] + b.data[ 1 ];
+	data[ 2 ] = a.data[ 2 ] + b.data[ 2 ];
+	data[ 3 ] = a.data[ 3 ] + b.data[ 3 ];
+	data[ 4 ] = a.data[ 4 ] + b.data[ 4 ];
+	data[ 5 ] = a.data[ 5 ] + b.data[ 5 ];
+}
+
+GXVoid GXVec6::Multiply ( const GXVec6 &a, GXFloat factor )
+{
+	data[ 0 ] = a.data[ 0 ] * factor;
+	data[ 1 ] = a.data[ 1 ] * factor;
+	data[ 2 ] = a.data[ 2 ] * factor;
+	data[ 3 ] = a.data[ 3 ] * factor;
+	data[ 4 ] = a.data[ 4 ] * factor;
+	data[ 5 ] = a.data[ 5 ] * factor;
+}
+
+GXVec6& GXVec6::operator = ( const GXVec6 &other )
+{
+	memcpy ( this, &other, sizeof ( GXVec6 ) );
 	return *this;
 }
 
@@ -1036,8 +1100,8 @@ GXVoid GXQuat::From ( const GXMat4 &rotationMatrix )
 
 GXVoid GXQuat::FromFast ( const GXMat3 &pureRotationMatrix )
 {
-	//In ideal mathematics world all solutions are right.
-	//But in practice more precise solution is the biggest "solutionFactorXXX" because of square root operation.
+	// In ideal mathematics world all solutions are right.
+	// But in practice more precise solution is the biggest "solutionFactorXXX" because of square root operation.
 
 	GXFloat solutionFactorAlpha = pureRotationMatrix.m[ 0 ][ 0 ] + pureRotationMatrix.m[ 1 ][ 1 ] + pureRotationMatrix.m[ 2 ][ 2 ] + 1.0f;
 	GXFloat solutionFactorBetta = pureRotationMatrix.m[ 0 ][ 0 ] - pureRotationMatrix.m[ 1 ][ 1 ] - pureRotationMatrix.m[ 2 ][ 2 ] + 1.0f;
@@ -1139,15 +1203,15 @@ GXVoid GXQuat::FromFast ( const GXMat3 &pureRotationMatrix )
 		break;
 
 		default:
-			//NOTHING
+			// NOTHING
 		break;
 	}
 }
 
 GXVoid GXQuat::FromFast ( const GXMat4 &pureRotationMatrix )
 {
-	//In ideal mathematics world all solutions are right.
-	//But in practice more precise solution is the biggest "solutionFactorXXX" because of square root operation.
+	// In ideal mathematics world all solutions are right.
+	// But in practice more precise solution is the biggest "solutionFactorXXX" because of square root operation.
 
 	GXFloat solutionFactorAlpha = pureRotationMatrix.m[ 0 ][ 0 ] + pureRotationMatrix.m[ 1 ][ 1 ] + pureRotationMatrix.m[ 2 ][ 2 ] + 1.0f;
 	GXFloat solutionFactorBetta = pureRotationMatrix.m[ 0 ][ 0 ] - pureRotationMatrix.m[ 1 ][ 1 ] - pureRotationMatrix.m[ 2 ][ 2 ] + 1.0f;
@@ -1249,7 +1313,7 @@ GXVoid GXQuat::FromFast ( const GXMat4 &pureRotationMatrix )
 		break;
 
 		default:
-			//NOTHING
+			// NOTHING
 		break;
 	}
 }
@@ -1466,6 +1530,33 @@ GXVoid GXMat3::From ( const GXMat4 &matrix )
 	memcpy ( data, matrix.data, lineSize );
 	memcpy ( data + 3, matrix.data + 4, lineSize );
 	memcpy ( data + 6, matrix.data + 8, lineSize );
+}
+
+GXVoid GXMat3::From ( const GXVec3 &zDirection )
+{
+	GXVec3 xAxis;
+	GXVec3 yAxis;
+
+	if ( zDirection.DotProduct ( GXVec3::GetAbsoluteX () ) < 0.5f )
+	{
+		GXVec3 tmp;
+		tmp.CrossProduct ( zDirection, GXVec3::GetAbsoluteX () );
+		xAxis.CrossProduct ( tmp, zDirection );
+		xAxis.Normalize ();
+		yAxis.CrossProduct ( zDirection, xAxis );
+	}
+	else
+	{
+		GXVec3 tmp;
+		tmp.CrossProduct ( zDirection, GXVec3::GetAbsoluteY () );
+		yAxis.CrossProduct ( zDirection, tmp );
+		yAxis.Normalize ();
+		xAxis.CrossProduct ( yAxis, zDirection );
+	}
+
+	SetX ( xAxis );
+	SetY ( yAxis );
+	SetZ ( zDirection );
 }
 
 GXVoid GXMat3::FromFast ( const GXQuat &quaternion )
@@ -2585,37 +2676,37 @@ GXProjectionClipPlanes::GXProjectionClipPlanes ( const GXMat4 &src )
 
 GXVoid GXProjectionClipPlanes::From ( const GXMat4 &src )
 {
-	//Left clipping plane
+	// Left clipping plane
 	planes[ 0 ].a = src.m[ 0 ][ 3 ] + src.m[ 0 ][ 0 ];
 	planes[ 0 ].b = src.m[ 1 ][ 3 ] + src.m[ 1 ][ 0 ];
 	planes[ 0 ].c = src.m[ 2 ][ 3 ] + src.m[ 2 ][ 0 ];
 	planes[ 0 ].d = src.m[ 3 ][ 3 ] + src.m[ 3 ][ 0 ];
 	
-	//Right clipping plane
+	// Right clipping plane
 	planes[ 1 ].a = src.m[ 0 ][ 3 ] - src.m[ 0 ][ 0 ];
 	planes[ 1 ].b = src.m[ 1 ][ 3 ] - src.m[ 1 ][ 0 ];
 	planes[ 1 ].c = src.m[ 2 ][ 3 ] - src.m[ 2 ][ 0 ];
 	planes[ 1 ].d = src.m[ 3 ][ 3 ] - src.m[ 3 ][ 0 ];
 	
-	//Top clipping plane
+	// Top clipping plane
 	planes[ 2 ].a = src.m[ 0 ][ 3 ] - src.m[ 0 ][ 1 ];
 	planes[ 2 ].b = src.m[ 1 ][ 3 ] - src.m[ 1 ][ 1 ];
 	planes[ 2 ].c = src.m[ 2 ][ 3 ] - src.m[ 2 ][ 1 ];
 	planes[ 2 ].d = src.m[ 3 ][ 3 ] - src.m[ 3 ][ 1 ];
 	
-	//Bottom clipping plane
+	// Bottom clipping plane
 	planes[ 3 ].a = src.m[ 0 ][ 3 ] + src.m[ 0 ][ 1 ];
 	planes[ 3 ].b = src.m[ 1 ][ 3 ] + src.m[ 1 ][ 1 ];
 	planes[ 3 ].c = src.m[ 2 ][ 3 ] + src.m[ 2 ][ 1 ];
 	planes[ 3 ].d = src.m[ 3 ][ 3 ] + src.m[ 3 ][ 1 ];
 	
-	//Near clipping plane
+	// Near clipping plane
 	planes[ 4 ].a = src.m[ 0 ][ 3 ] + src.m[ 0 ][ 2 ];
 	planes[ 4 ].b = src.m[ 1 ][ 3 ] + src.m[ 1 ][ 2 ];
 	planes[ 4 ].c = src.m[ 2 ][ 3 ] + src.m[ 2 ][ 2 ];
 	planes[ 4 ].d = src.m[ 3 ][ 3 ] + src.m[ 3 ][ 2 ];
 	
-	//Far clipping plane
+	// Far clipping plane
 	planes[ 5 ].a = src.m[ 0 ][ 3 ] - src.m[ 0 ][ 2 ];
 	planes[ 5 ].b = src.m[ 1 ][ 3 ] - src.m[ 1 ][ 2 ];
 	planes[ 5 ].c = src.m[ 2 ][ 3 ] - src.m[ 2 ][ 2 ];

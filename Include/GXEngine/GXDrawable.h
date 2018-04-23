@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #ifndef GX_DRAWABLE
 #define	GX_DRAWABLE
@@ -14,4 +14,4 @@ class GXDrawable
 };
 
 
-#endif //GX_DRAWABLE
+#endif // GX_DRAWABLE

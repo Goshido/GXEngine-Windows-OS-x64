@@ -47,4 +47,4 @@ class EMUIFileListBox : public EMUI
 };
 
 
-#endif //EM_UI_FILE_LIST_BOX
+#endif // EM_UI_FILE_LIST_BOX

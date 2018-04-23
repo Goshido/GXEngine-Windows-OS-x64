@@ -1,4 +1,4 @@
-//version 1.5
+// version 1.5
 
 #ifndef GX_SOUND_EMITTER
 #define GX_SOUND_EMITTER
@@ -63,4 +63,4 @@ class GXSoundEmitter
 };
 
 
-#endif	//GX_SOUND_EMMITER
+#endif // GX_SOUND_EMMITER

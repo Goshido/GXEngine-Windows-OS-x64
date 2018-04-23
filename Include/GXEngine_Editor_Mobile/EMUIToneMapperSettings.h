@@ -48,4 +48,4 @@ class EMUIToneMapperSettings : public EMUI
 };
 
 
-#endif //EM_UI_TONE_MAPPER_SETTINGS
+#endif // EM_UI_TONE_MAPPER_SETTINGS

@@ -1,4 +1,4 @@
-//version 1.7
+// version 1.7
 
 #include <GXEngine/GXNetwork.h>
 #include <GXCommon/GXMemory.h>

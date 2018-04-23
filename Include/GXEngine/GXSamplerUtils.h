@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #ifndef GX_SAMPLER_UTILS
 #define GX_SAMPLER_UTILS
@@ -28,4 +28,4 @@ struct GXGLSamplerInfo
 GLuint GXCALL GXCreateSampler ( const GXGLSamplerInfo &samplerInfo );
 
 
-#endif //GX_SAMPLER_UTILS
+#endif // GX_SAMPLER_UTILS

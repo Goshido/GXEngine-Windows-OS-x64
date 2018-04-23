@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_BKE_STRUCTS
 #define GX_BKE_STRUCTS
@@ -23,4 +23,4 @@ struct GXBakeInfo
 };
 
 
-#endif	//GX_BKE_STRUCTS
+#endif	// GX_BKE_STRUCTS

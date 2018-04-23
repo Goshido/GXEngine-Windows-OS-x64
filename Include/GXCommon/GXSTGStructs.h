@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_STG_STRUCTS
 #define GX_STG_STRUCTS
@@ -23,4 +23,4 @@ struct GXStaticGeometryHeader
 };
 
 
-#endif //GX_STG_STRUCTS
+#endif // GX_STG_STRUCTS

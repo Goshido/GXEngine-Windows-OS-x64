@@ -1,4 +1,4 @@
-//version 1.5
+// version 1.5
 
 #include <GXCommon/GXOBJLoader.h>
 #include <GXCommon/GXFileSystem.h>

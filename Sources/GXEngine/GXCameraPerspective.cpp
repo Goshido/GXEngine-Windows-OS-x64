@@ -1,10 +1,10 @@
-//version 1.10
+// version 1.10
 
 #include <GXEngine/GXCameraPerspective.h>
 
 
 #define DEFAULT_FIELD_OF_VIEW_Y_DEGREES		60.0f
-#define DEFAULT_PROJECTION_ASPECT_RATIO		1.7777f		//16 : 9
+#define DEFAULT_PROJECTION_ASPECT_RATIO		1.7777f		// 16 : 9
 #define DEFAULT_Z_NEAR						0.01f
 #define DEFAULT_Z_FAR						1000.0f
 
@@ -45,7 +45,7 @@ GXCameraPerspective::GXCameraPerspective ( GXFloat fieldOfViewYRadians, GXFloat 
 
 GXCameraPerspective::~GXCameraPerspective ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid GXCameraPerspective::SetFieldOfViewY ( GXFloat radians )

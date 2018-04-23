@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_UNLIT_TEXTURE2D_MATERIAL
 #define GX_UNLIT_TEXTURE2D_MATERIAL
@@ -35,4 +35,4 @@ class GXUnlitTexture2DMaterial : public GXMaterial
 };
 
 
-#endif //GX_UNLIT_TEXTURE2D_MATERIAL
+#endif // GX_UNLIT_TEXTURE2D_MATERIAL

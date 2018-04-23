@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_XINPUT
 #define GX_XINPUT
@@ -20,4 +20,4 @@ struct GXXInputFunctions
 };
 
 
-#endif //GX_XINPUT
+#endif // GX_XINPUT

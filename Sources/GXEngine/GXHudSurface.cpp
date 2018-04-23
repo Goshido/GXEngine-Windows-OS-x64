@@ -1,4 +1,4 @@
-//version 1.18
+// version 1.18
 
 #include <GXEngine/GXHudSurface.h>
 #include <GXEngine/GXSamplerUtils.h>
@@ -51,7 +51,7 @@ GXVoid GXImageRenderable::InitGraphicResources ()
 
 GXVoid GXImageRenderable::TransformUpdated ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 //-----------------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ GXGlyphRenderable::GXGlyphRenderable ()
 
 GXGlyphRenderable::~GXGlyphRenderable ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid GXGlyphRenderable::Render ()
@@ -124,7 +124,7 @@ GXVoid GXGlyphRenderable::InitGraphicResources ()
 
 GXVoid GXGlyphRenderable::TransformUpdated ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 //-----------------------------------------------------------------------------------------
@@ -154,7 +154,7 @@ GXLineRenderable::GXLineRenderable ()
 
 GXLineRenderable::~GXLineRenderable ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid GXLineRenderable::Render ()
@@ -180,7 +180,7 @@ GXVoid GXLineRenderable::InitGraphicResources ()
 
 GXVoid GXLineRenderable::TransformUpdated ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 //-----------------------------------------------------------------------------------------
@@ -536,5 +536,5 @@ GXVoid GXHudSurface::Render ()
 
 GXVoid GXHudSurface::TransformUpdated ()
 {
-	//NOTHING
+	// NOTHING
 }

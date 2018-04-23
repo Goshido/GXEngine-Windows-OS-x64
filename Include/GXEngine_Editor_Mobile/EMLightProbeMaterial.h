@@ -42,4 +42,4 @@ class EMLightProbeMaterial : public GXMaterial
 };
 
 
-#endif //EM_LIGHT_PROBE_MATERIAL
+#endif // EM_LIGHT_PROBE_MATERIAL

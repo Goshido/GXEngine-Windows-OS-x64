@@ -1,4 +1,4 @@
-//version 1.3
+// version 1.3
 
 #include <GXEngine/GXWidget.h>
 #include <GXEngine/GXRenderer.h>
@@ -415,7 +415,7 @@ GXWidgetRenderer::GXWidgetRenderer ( GXWidget* widget )
 
 GXWidgetRenderer::~GXWidgetRenderer ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid GXWidgetRenderer::OnUpdate ()
@@ -454,22 +454,22 @@ GXVoid GXWidgetRenderer::OnUpdate ()
 
 GXVoid GXWidgetRenderer::OnRefresh ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid GXWidgetRenderer::OnDraw ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid GXWidgetRenderer::OnResized ( GXFloat /*x*/, GXFloat /*y*/, GXUShort /*width*/, GXUShort /*height*/ )
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid GXWidgetRenderer::OnMoved ( GXFloat /*x*/, GXFloat /*y*/ )
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXBool GXWidgetRenderer::IsResized ()

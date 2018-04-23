@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #include <GXEngine/GXTextValidator.h>
 #include <GXCommon/GXStrings.h>

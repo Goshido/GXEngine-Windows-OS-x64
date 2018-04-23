@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #ifndef GX_SOUND_CHANNEL
 #define GX_SOUND_CHANNEL
@@ -29,4 +29,4 @@ class GXSoundChannel
 };
 
 
-#endif	//GX_SOUND_CHANNEL
+#endif //GX_SOUND_CHANNEL

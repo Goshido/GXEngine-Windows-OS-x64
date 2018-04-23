@@ -39,4 +39,4 @@ class EMPrefilteredEnvironmentMapGeneratorMaterial : public GXMaterial
 };
 
 
-#endif //EM_PREFILTERED_ENVIRONMENT_MAP_GENERATOR_MATERIAL
+#endif // EM_PREFILTERED_ENVIRONMENT_MAP_GENERATOR_MATERIAL

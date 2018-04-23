@@ -1,4 +1,4 @@
-//version 1.3
+// version 1.3
 
 #ifndef GX_IDEAL_PARTICLES
 #define GX_IDEAL_PARTICLES
@@ -48,10 +48,10 @@ class GXIdealParticles : public GXMesh
 		virtual GXVoid Load3DModel () = 0;
 		virtual GXVoid InitUniforms () = 0;
 
-		virtual GXVoid InitGraphicalResources ();	//Обязательно вызывать в потомках
+		virtual GXVoid InitGraphicalResources ();	// Обязательно вызывать в потомках
 
 		GXVoid SwapTransformFeedbackBuffers();
 };
 
 
-#endif	//GX_IDEAL_PARTICLES
+#endif	// GX_IDEAL_PARTICLES

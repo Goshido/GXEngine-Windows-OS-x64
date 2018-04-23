@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #include <GXEngine/GXUIDraggableArea.h>
 #include <GXEngine/GXUICommon.h>
@@ -8,8 +8,8 @@
 #define DEFAULT_MINIMUM_WIDTH		0.7f
 #define DEFAULT_MINIMUM_HEIGHT		1.5f
 
-#define DEFAULT_BORDER_THICKNESS	0.2f //2 mm
-#define DEFAULT_HEADER_HEIGHT		0.9f //9 mm
+#define DEFAULT_BORDER_THICKNESS	0.2f // 2 mm
+#define DEFAULT_HEADER_HEIGHT		0.9f // 9 mm
 
 #define TOLERANCE_FACTOR			0.25f
 
@@ -37,7 +37,7 @@ GXWidget ( parent )
 
 GXUIDragableArea::~GXUIDragableArea ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
@@ -395,7 +395,7 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 				break;
 
 				default:
-					//NOTHING
+					// NOTHING
 				break;
 			}
 		}

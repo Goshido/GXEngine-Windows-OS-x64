@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #ifndef GX_ARRAY_TEXTURE_OUTER
 #define GX_ARRAY_TEXTURE_OUTER
@@ -23,4 +23,4 @@ class GXArrayTextureOuter
 };
 
 
-#endif //GX_ARRAY_TEXTURE_OUTER
+#endif // GX_ARRAY_TEXTURE_OUTER

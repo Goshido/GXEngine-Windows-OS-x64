@@ -24,4 +24,4 @@ class EMWireframeMaterial : public GXMaterial
 };
 
 
-#endif //EM_WIREFRAME_MATERIAL
+#endif // EM_WIREFRAME_MATERIAL

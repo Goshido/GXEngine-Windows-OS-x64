@@ -26,4 +26,4 @@ class EMToneMapperLuminanceTripletReducerMaterial : public GXMaterial
 };
 
 
-#endif //EM_TONE_MAPPER_LIMINANCE_TRIPLET_REDUCER_MATERIAL
+#endif // EM_TONE_MAPPER_LIMINANCE_TRIPLET_REDUCER_MATERIAL

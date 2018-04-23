@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #ifndef GX_CFG_SAVER
 #define GX_CFG_SAVER
@@ -10,4 +10,4 @@
 GXVoid GXCALL GXExportCFG ( const GXEngineConfiguration &config_info );
 
 
-#endif	//GX_CFG_SAVER
+#endif // GX_CFG_SAVER

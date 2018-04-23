@@ -1,4 +1,4 @@
-//version 1.6
+// version 1.6
 
 #ifndef GX_TYPES
 #define GX_TYPES
@@ -8,7 +8,7 @@
 	#include "Posix/GXTypes.h"
 #else
 	#include "Windows/GXTypes.h"
-#endif //__GNUC__
+#endif // __GNUC__
 
 
-#endif //GX_TYPES
+#endif // GX_TYPES

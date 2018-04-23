@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #ifndef GX_OPEN_AL
 #define GX_OPEN_AL
@@ -76,4 +76,4 @@ struct GXOpenALFunctions
 };
 
 
-#endif //GX_OPEN_AL
+#endif // GX_OPEN_AL

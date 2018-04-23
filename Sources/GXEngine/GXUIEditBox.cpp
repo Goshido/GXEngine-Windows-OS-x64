@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #include <GXEngine/GXUIEditBox.h>
 #include <GXEngine/GXUIMessage.h>
@@ -131,11 +131,11 @@ GXVoid GXUIEditBox::OnMessage ( GXUInt message, const GXVoid* data )
 
 		case GX_MSG_LMBDOWN:
 		{
-			//Захватить ввод с клавиатуры, если курсор в области виджета.
-			//Освободить ввод с клавиатуры, если курсор не в области виджета,
-			//и отправить сообщение на нужный виджет.
-			//Поставить курсор в правильное место, если щелчок в области виджета.
-			//Если щелчок в области виджета и зажат Shift, то выделить область текста.
+			// Захватить ввод с клавиатуры, если курсор в области виджета.
+			// Освободить ввод с клавиатуры, если курсор не в области виджета,
+			// и отправить сообщение на нужный виджет.
+			// Поставить курсор в правильное место, если щелчок в области виджета.
+			// Если щелчок в области виджета и зажат Shift, то выделить область текста.
 
 			const GXVec2* pos = (const GXVec2*)data;
 
@@ -250,11 +250,11 @@ GXVoid GXUIEditBox::OnMessage ( GXUInt message, const GXVoid* data )
 
 		case GX_MSG_ADD_SYMBOL:
 		{
-			//Вставка обычного символа, END, HOME, стрелочки
-			//Ctrl + V, Ctrl + C, Ctrl + X
-			//Shift + HOME, Shift + END.
-			//Del, Backspace
-			//Учёт выделенного текста.
+			// Вставка обычного символа, END, HOME, стрелочки
+			// Ctrl + V, Ctrl + C, Ctrl + X
+			// Shift + HOME, Shift + END.
+			// Del, Backspace
+			// Учёт выделенного текста.
 
 			const GXWChar* symbol = (const GXWChar*)data;
 
@@ -352,7 +352,7 @@ GXVoid GXUIEditBox::OnMessage ( GXUInt message, const GXVoid* data )
 
 				default:
 				{
-					//Добавить символ
+					// Добавить символ
 					static GXWChar buffer[ 2 ] = { 0 };
 					buffer[ 0 ] = *symbol;
 

@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_SKINNING_MATERIAL
 #define GX_SKINNING_MATERIAL
@@ -25,4 +25,4 @@ class GXSkinningMaterial : public GXMaterial
 };
 
 
-#endif //GX_SKINNING_MATERIAL
+#endif // GX_SKINNING_MATERIAL

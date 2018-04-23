@@ -1,4 +1,4 @@
-//verison 1.0
+// verison 1.0
 
 #ifndef GX_GAME
 #define GX_GAME
@@ -20,4 +20,4 @@ class GXGame
 };
 
 
-#endif //GX_GAME
+#endif // GX_GAME

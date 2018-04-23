@@ -1,4 +1,4 @@
-//version 1.9
+// version 1.9
 
 #ifndef GX_OPENGL
 #define GX_OPENGL
@@ -119,4 +119,4 @@ class GXOpenGLState
 };
 
 
-#endif //GX_OPENGL
+#endif // GX_OPENGL

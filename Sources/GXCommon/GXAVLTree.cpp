@@ -1,4 +1,4 @@
-//vesrion 1.5
+// vesrion 1.5
 
 
 #include <GXCommon/GXAVLTree.h>
@@ -14,7 +14,7 @@ GXAVLTreeNode::GXAVLTreeNode ()
 
 GXAVLTreeNode::~GXAVLTreeNode ()
 {
-	//PURE VIRTUAL
+	// PURE VIRTUAL
 }
 
 //----------------------------------------------------------------------------------------------
@@ -90,7 +90,7 @@ GXVoid GXAVLTree::Add ( GXAVLTreeNode &node )
 					break;
 
 					default:
-						//NOTHING
+						// NOTHING
 					break;
 				}
 			}

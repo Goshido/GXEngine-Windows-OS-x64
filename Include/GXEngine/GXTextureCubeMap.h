@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_TEXTURE_CUBE_MAP
 #define GX_TEXTURE_CUBE_MAP
@@ -61,4 +61,4 @@ class GXTextureCubeMap
 };
 
 
-#endif //GX_TEXTURE_CUBE_MAP
+#endif // GX_TEXTURE_CUBE_MAP

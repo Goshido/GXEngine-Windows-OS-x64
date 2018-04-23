@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_NATIVE_STATIC_MESH_LOADER
 #define GX_NATIVE_STATIC_MESH_LOADER
@@ -28,4 +28,4 @@ struct GXNativeStaticMeshInfo
 GXVoid GXCALL GXLoadNativeStaticMesh ( const GXWChar* fileName, GXNativeStaticMeshInfo &info );
 
 
-#endif //GX_NATIVE_STATIC_MESH_LOADER
+#endif // GX_NATIVE_STATIC_MESH_LOADER

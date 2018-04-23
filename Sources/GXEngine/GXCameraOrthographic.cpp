@@ -1,4 +1,4 @@
-//version 1.9
+// version 1.9
 
 #include <GXEngine/GXCameraOrthographic.h>
 
@@ -45,7 +45,7 @@ GXCameraOrthographic::GXCameraOrthographic ( GXFloat width, GXFloat height, GXFl
 
 GXCameraOrthographic::~GXCameraOrthographic ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid GXCameraOrthographic::SetZNear ( GXFloat newZNear )

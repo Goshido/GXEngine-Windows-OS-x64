@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_UI_MENU_EXT
 #define GX_UI_MENU_EXT
@@ -35,4 +35,4 @@ class GXUIMenu : public GXWidget
 };
 
 
-#endif //GX_UI_MENU_EXT
+#endif // GX_UI_MENU_EXT

@@ -1,11 +1,11 @@
-//version 1.1
+// version 1.1
 
 #include <GXPhysics/GXPhysicsEngine.h>
 
 #define DEFAULT_SLEEP_TIMEOUT								0.2f
 #define DEFAULT_MAXIMUM_LOCATION_CHANGE_SQUARED_DEVIATION	2.0e-5f
 #define DEFAULT_MAXIMUM_ROTATION_CHANGE_SQUARED_DEVIATION	1.5e-5f
-#define DEFAULT_TIME_STEP									0.016f	//60 iterations per second
+#define DEFAULT_TIME_STEP									0.016f	// 60 iterations per second
 #define DEFAULT_TIME_MULTIPLIER								1.0f
 
 #define MAX_CONTACTS										16384
@@ -16,7 +16,7 @@ GXPhysicsEngine* GXPhysicsEngine::instance = nullptr;
 
 GXPhysicsEngine::~GXPhysicsEngine ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXPhysicsEngine& GXPhysicsEngine::GetInstance ()

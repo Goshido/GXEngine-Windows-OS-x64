@@ -110,7 +110,7 @@ EMBulp::EMBulp ()
 
 EMBulp::~EMBulp ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid EMBulp::SetInfluenceDistance ( GXFloat newDistance )
@@ -163,7 +163,7 @@ EMSpotlight::EMSpotlight ()
 
 EMSpotlight::~EMSpotlight ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid EMSpotlight::SetInfluenceDistance ( GXFloat newDistance )
@@ -246,7 +246,7 @@ EMDirectedLight::EMDirectedLight ()
 
 EMDirectedLight::~EMDirectedLight ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid EMDirectedLight::SetAmbientBaseColor ( GXUByte red, GXUByte green, GXUByte blue )

@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #ifndef GX_UI_INPUT
 #define GX_UI_INPUT
@@ -64,4 +64,4 @@ class GXUIInput : public GXWidget
 };
 
 
-#endif //GX_UI_INPUT
+#endif // GX_UI_INPUT

@@ -2,7 +2,7 @@
 
 
 #define CUBE_MAP_FACES			6
-#define MAX_VERTICES			18	//CUBE_MAP_FACES * "vertices per triangle"
+#define MAX_VERTICES			18	// CUBE_MAP_FACES * "vertices per triangle"
 
 
 layout ( triangles ) in;

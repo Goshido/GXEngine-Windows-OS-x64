@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #ifndef GX_SOUND_PROVIDER
 #define GX_SOUND_PROVIDER
@@ -8,7 +8,7 @@
 #include <GXCommon/GXFileSystem.h>
 
 
-#define GX_SOUND_PROVIDER_BUFFER_SIZE	2097152		//2 мегабайта
+#define GX_SOUND_PROVIDER_BUFFER_SIZE	2097152		// 2 Mb
 
 class GXSoundStreamer
 {
@@ -64,4 +64,4 @@ class GXSoundTrack
 };
 
 
-#endif	//GX_SOUND_PROVIDER
+#endif //GX_SOUND_PROVIDER

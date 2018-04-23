@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #ifndef GX_SCN_STRUCTS
 #define GX_SCN_STRUCTS
@@ -107,4 +107,4 @@ struct GXScenePhysicalMeshHeader
 };
 
 
-#endif //GX_SCN_STRUCTS
+#endif // GX_SCN_STRUCTS

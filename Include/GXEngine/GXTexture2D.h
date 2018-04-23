@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_TEXTURE_2D
 #define GX_TEXTURE_2D
@@ -59,4 +59,4 @@ class GXTexture2D
 };
 
 
-#endif //GX_TEXTURE_2D
+#endif // GX_TEXTURE_2D

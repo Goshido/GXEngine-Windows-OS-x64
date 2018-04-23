@@ -66,4 +66,4 @@ class EMActor
 };
 
 
-#endif //EM_ACTOR
+#endif // EM_ACTOR

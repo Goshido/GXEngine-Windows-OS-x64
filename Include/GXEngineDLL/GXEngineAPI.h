@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #ifndef GX_ENGINE_API
 #define GX_ENGINE_API
@@ -36,4 +36,4 @@ typedef GXVoid ( GXCALL* PFNGXXINPUTINITPROC ) ( GXXInputFunctions &out );
 //--------------------------------------------------------------------------------------------------
 
 
-#endif //GX_ENGINE_API
+#endif // GX_ENGINE_API

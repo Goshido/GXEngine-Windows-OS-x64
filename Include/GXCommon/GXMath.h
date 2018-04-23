@@ -1,4 +1,4 @@
-//version 1.44
+// version 1.46
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -17,10 +17,10 @@
 #define GX_MATH_DOUBLE_PI	6.2831853f
 
 
-//By convention it is row-vertex.
+// By convention it is row-vertex.
 struct GXVec2
 {
-	//Stores vector components in x, y order.
+	// Stores vector components in x, y order.
 	GXFloat		data[ 2 ];
 
 	GXVec2 ();
@@ -36,7 +36,7 @@ struct GXVec2
 	GXVoid Init ( GXFloat x, GXFloat y );
 	GXVoid Normalize ();
 
-	GXVoid CalculateNormalFast ( const GXVec2 &a, const GXVec2 &b );	//No normalization
+	GXVoid CalculateNormalFast ( const GXVec2 &a, const GXVec2 &b );	// No normalization
 	GXVoid CalculateNormal ( const GXVec2 &a, const GXVec2 &b );
 
 	GXVoid Sum ( const GXVec2 &a, const GXVec2 &b );
@@ -67,10 +67,10 @@ eGXLineRelationship GXCALL GXLineIntersection2D ( GXVec2 &intersectionPoint, con
 
 //-------------------------------------------------------------
 
-//By convention it is row-vertex.
+// By convention it is row-vertex.
 struct GXVec3
 {
-	//Stores vector components in x, y, z order.
+	// Stores vector components in x, y, z order.
 	GXFloat		data[ 3 ];
 
 	GXVec3 ();
@@ -138,10 +138,10 @@ struct GXEuler
 
 //-------------------------------------------------------------
 
-//By convention it is row-vertex.
+// By convention it is row-vertex.
 struct GXVec4
 {
-	//Stores vector components in x, y, z, w order.
+	// Stores vector components in x, y, z, w order.
 	GXFloat		data[ 4 ];
 
 	GXVec4 ();
@@ -176,10 +176,29 @@ struct GXVec4
 
 //-------------------------------------------------------------
 
+struct GXVec6
+{
+	GXFloat		data[ 6 ];
+
+	GXVec6 ();
+	explicit GXVec6 ( GXFloat a1, GXFloat a2, GXFloat a3, GXFloat a4, GXFloat a5, GXFloat a6 );
+
+	GXVoid Init ( GXFloat a1, GXFloat a2, GXFloat a3, GXFloat a4, GXFloat a5, GXFloat a6 );
+	GXVoid From ( const GXVec3 &v1, const GXVec3 &v2 );
+
+	GXFloat DotProduct ( const GXVec6 &other ) const;
+	GXVoid Sum ( const GXVec6 &a, const GXVec6 &b );
+	GXVoid Multiply ( const GXVec6 &a, GXFloat factor );
+
+	GXVec6& operator = ( const GXVec6 &other );
+};
+
+//-------------------------------------------------------------
+
 struct GXColorHSV;
 struct GXColorRGB
 {
-	//Stores components in red, green, blue, alpha order.
+	// Stores components in red, green, blue, alpha order.
 	GXFloat		data[ 4 ];
 
 	GXColorRGB ();
@@ -190,19 +209,19 @@ struct GXColorRGB
 
 	GXVoid Init ( GXFloat red, GXFloat green, GXFloat blue, GXFloat alpha );
 
-	//[0.0f +inf)
+	// [0.0f +inf)
 	GXVoid SetRed ( GXFloat red );
 	GXFloat GetRed () const;
 
-	//[0.0f +inf)
+	// [0.0f +inf)
 	GXVoid SetGreen ( GXFloat green );
 	GXFloat GetGreen () const;
 
-	//[0.0f +inf)
+	// [0.0f +inf)
 	GXVoid SetBlue ( GXFloat blue );
 	GXFloat GetBlue () const;
 
-	//[0.0f 1.0f]
+	// [0.0f 1.0f]
 	GXVoid SetAlpha ( GXFloat alpha );
 	GXFloat GetAlpha () const;
 
@@ -218,7 +237,7 @@ struct GXColorRGB
 
 struct GXColorHSV
 {
-	//Stores components in hue, saturation, value, alpha order.
+	// Stores components in hue, saturation, value, alpha order.
 	GXFloat		data[ 4 ];
 
 	GXColorHSV ();
@@ -226,19 +245,19 @@ struct GXColorHSV
 	explicit GXColorHSV ( const GXColorRGB &color );
 	GXColorHSV ( const GXColorHSV &other );
 
-	//[0.0f 360.0f]
+	// [0.0f 360.0f]
 	GXVoid SetHue ( GXFloat hue );
 	GXFloat GetHue () const;
 
-	//[0.0f 100.0f]
+	// [0.0f 100.0f]
 	GXVoid SetSaturation ( GXFloat saturation );
 	GXFloat GetSaturation () const;
 
-	//[0.0f 100.0f]
+	// [0.0f 100.0f]
 	GXVoid SetValue ( GXFloat value );
 	GXFloat GetValue () const;
 
-	//[0.0f 100.0f]
+	// [0.0f 100.0f]
 	GXVoid SetAlpha ( GXFloat alpha );
 	GXFloat GetAlpha () const;
 
@@ -252,20 +271,20 @@ struct GXColorHSV
 struct GXMat3;
 struct GXMat4;
 
-//Quaternion representation: r + ai + bj + ck.
-//By convention stores only orientation without any scale.
+// Quaternion representation: r + ai + bj + ck.
+// By convention stores only orientation without any scale.
 struct GXQuat
 {
-	//Stores quaternion components in r, a, b, c order.
+	// Stores quaternion components in r, a, b, c order.
 	GXFloat		data[ 4 ];
 
 	GXQuat ();
 	explicit GXQuat ( GXFloat r, GXFloat a, GXFloat b, GXFloat c );
 
-	//Result is valid if rotationMatrix is rotation matrix. Any scale will be ignored.
+	// Result is valid if rotationMatrix is rotation matrix. Any scale will be ignored.
 	explicit GXQuat ( const GXMat3 &rotationMatrix );
 
-	//Result is valid if rotationMatrix is rotation matrix. Any scale will be ignored.
+	// Result is valid if rotationMatrix is rotation matrix. Any scale will be ignored.
 	explicit GXQuat ( const GXMat4 &rotationMatrix );
 
 	GXQuat ( const GXQuat &other );
@@ -290,16 +309,16 @@ struct GXQuat
 	GXVoid FromAxisAngle ( GXFloat x, GXFloat y, GXFloat z, GXFloat angle );
 	GXVoid FromAxisAngle ( const GXVec3 &axis, GXFloat angle );
 
-	//Result is valid if rotationMatrix is rotation matrix. Any scale will be ignored.
+	// Result is valid if rotationMatrix is rotation matrix. Any scale will be ignored.
 	GXVoid From ( const GXMat3& rotationMatrix );
 
-	//Result is valid if rotationMatrix is rotation matrix. Any scale will be ignored.
+	// Result is valid if rotationMatrix is rotation matrix. Any scale will be ignored.
 	GXVoid From ( const GXMat4& rotationMatrix );
 
-	//Result is valid if pureRotationMatrix is not scaled rotation matrix.
+	// Result is valid if pureRotationMatrix is not scaled rotation matrix.
 	GXVoid FromFast ( const GXMat3& pureRotationMatrix );
 
-	//Result is valid if pureRotationMatrix is not scaled rotation matrix.
+	// Result is valid if pureRotationMatrix is not scaled rotation matrix.
 	GXVoid FromFast ( const GXMat4& pureRotationMatrix );
 
 	GXVoid Multiply ( const GXQuat &a, const GXQuat &b );
@@ -312,7 +331,7 @@ struct GXQuat
 	GXVoid GetAxisAngle ( GXVec3 &axis, GXFloat &angle ) const;
 	GXVoid Transform ( GXVec3 &out, const GXVec3 &v ) const;
 
-	//Result is valid if quaternion is normalized.
+	// Result is valid if quaternion is normalized.
 	GXVoid TransformFast ( GXVec3 &out, const GXVec3 &v ) const;
 
 	GXQuat& operator = ( const GXVec4 &other );
@@ -335,7 +354,10 @@ struct GXMat3
 	GXVoid From ( const GXQuat &quaternion );
 	GXVoid From ( const GXMat4 &matrix );
 
-	//Result is valid if quaternion is normalized.
+	// Constructs orthonormal basis. Result is valid if zDirection is unit vector.
+	GXVoid From ( const GXVec3 &zDirection );
+
+	// Result is valid if quaternion is normalized.
 	GXVoid FromFast ( const GXQuat &quaternion );
 
 	GXVoid SetX ( const GXVec3& x );
@@ -384,7 +406,7 @@ struct GXMat4
 
 	GXVoid SetRotation ( const GXQuat &quaternion );
 
-	//Result is valid if quaternion is normalized.
+	// Result is valid if quaternion is normalized.
 	GXVoid SetRotationFast ( const GXQuat &quaternion );
 
 	GXVoid SetOrigin ( const GXVec3 &origin );
@@ -392,7 +414,7 @@ struct GXMat4
 	GXVoid From ( const GXMat3 &rotation, const GXVec3 &origin );
 	GXVoid From ( const GXVec3 &zDirection, const GXVec3 &origin );
 
-	//Result is valid if quaternion is normalized.
+	// Result is valid if quaternion is normalized.
 	GXVoid FromFast ( const GXQuat &quaternion, const GXVec3 &origin );
 
 	GXVoid SetX ( const GXVec3 &x );
@@ -430,22 +452,22 @@ struct GXMat4
 
 	GXVoid Multiply ( const GXMat4 &a, const GXMat4 &b );
 
-	//Multiply row-vector [1x4] by own matrix [4x4].
+	// Multiply row-vector [1x4] by own matrix [4x4].
 	GXVoid Multiply ( GXVec4 &out, const GXVec4 &v ) const;
 
-	//Multiply row-vector [1x3] by own matrix sub matrix [3x3].
+	// Multiply row-vector [1x3] by own matrix sub matrix [3x3].
 	GXVoid MultiplyAsNormal ( GXVec3 &out, const GXVec3 &v ) const;
 
-	//Multiply row-vector [1x3] by own matrix sub matrix [3x3] and add own w-vector.
+	// Multiply row-vector [1x3] by own matrix sub matrix [3x3] and add own w-vector.
 	GXVoid MultiplyAsPoint ( GXVec3 &out, const GXVec3 &v ) const;
 
-	//Result is valid if own matrix is perspective matrix.
+	// Result is valid if own matrix is perspective matrix.
 	GXVoid GetPerspectiveParams ( GXFloat &fieldOfViewYRadiands, GXFloat &aspectRatio, GXFloat &zNear, GXFloat &zFar );
 
-	//Result is valid if own matrix is ortho matrix.
+	// Result is valid if own matrix is ortho matrix.
 	GXVoid GetOrthoParams ( GXFloat &width, GXFloat &height, GXFloat &zNear, GXFloat &zFar );
 
-	//Result is valid if own matrix is perspective matrix.
+	// Result is valid if own matrix is perspective matrix.
 	GXVoid GetRayPerspective ( GXVec3 &rayView, const GXVec2 &mouseCVV ) const;
 
 	GXMat4& operator = ( const GXMat4 &other );
@@ -524,10 +546,10 @@ class GXProjectionClipPlanes
 		GXProjectionClipPlanes ();
 		GXProjectionClipPlanes ( const GXMat4 &src );
 
-		//Normals will be directed inside view volume.
+		// Normals will be directed inside view volume.
 		GXVoid From ( const GXMat4 &src );
 
-		//Trivial invisibility test.
+		// Trivial invisibility test.
 		GXBool IsVisible ( const GXAABB &bounds );
 
 		GXProjectionClipPlanes& operator = ( const GXProjectionClipPlanes &clipPlanes );
@@ -561,4 +583,4 @@ GXVoid GXCALL GXGetBarycentricCoords ( GXVec3 &out, const GXVec3 &point, const G
 GXVoid GXCALL GXGetRayFromViewer ( GXVec3 &origin, GXVec3 &direction, GXUShort x, GXUShort y, GXUShort viewportWidth, GXUShort viewportHeight, const GXVec3& viewerLocation, const GXMat4 &viewProjectionMatrix );
 
 
-#endif //GX_MATH
+#endif // GX_MATH

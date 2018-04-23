@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_ENGINE_SETTINGS
 #define GX_ENGINE_SETTINGS
@@ -27,4 +27,4 @@ struct GXEngineSettings
 extern GXEngineSettings gx_EngineSettings;
 
 
-#endif //GX_ENGINE_SETTINGS
+#endif // GX_ENGINE_SETTINGS

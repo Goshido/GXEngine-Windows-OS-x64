@@ -48,4 +48,4 @@ class EMUIOpenFile : public EMUI
 };
 
 
-#endif //EM_UI_OPEN_FILE
+#endif // EM_UI_OPEN_FILE

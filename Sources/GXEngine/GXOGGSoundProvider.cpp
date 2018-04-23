@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #include <GXEngine/GXOGGSoundProvider.h>
 
@@ -98,7 +98,7 @@ GXVoid GXOGGSoundStreamer::DecompressAll ( ALuint buffer )
 GXOGGSoundTrack::GXOGGSoundTrack ( const GXWChar* trackFile ):
 GXSoundTrack ( trackFile )
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXSoundStreamer* GXOGGSoundTrack::GetStreamer ()

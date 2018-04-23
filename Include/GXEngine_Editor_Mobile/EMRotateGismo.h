@@ -29,4 +29,4 @@ class EMRotateGismo : public GXTransform
 };
 
 
-#endif //EM_ROTATE_GISMO
+#endif // EM_ROTATE_GISMO

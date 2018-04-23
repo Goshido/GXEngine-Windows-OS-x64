@@ -1,4 +1,4 @@
-//version 1.3
+// version 1.3
 
 #ifndef GX_WIDGET
 #define GX_WIDGET
@@ -49,7 +49,7 @@ class GXWidget
 
 		GXVoid SetRenderer ( GXWidgetRenderer* rendererObject );
 		GXWidgetRenderer* GetRenderer () const;
-		GXWidget* FindWidget ( const GXVec2 &position );	//return child widget or itself. Never nullptr
+		GXWidget* FindWidget ( const GXVec2 &position );	// return child widget or itself. Never nullptr
 
 	protected:
 		GXVoid UpdateBoundsWorld ( const GXAABB &newBoundsLocal );
@@ -105,4 +105,4 @@ class GXWidgetRenderer
 		GXBool IsMoved ();
 };
 
-#endif //GX_WIDGET
+#endif // GX_WIDGET

@@ -24,4 +24,4 @@ class EMSSAOApplyMaterial : public GXMaterial
 };
 
 
-#endif //EM_SSAO_APPLY_MATERIAL
+#endif // EM_SSAO_APPLY_MATERIAL

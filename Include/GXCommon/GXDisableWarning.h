@@ -1,4 +1,4 @@
-//verison 1.0
+// verison 1.0
 
 #ifndef GX_DISABLE_WARNING
 #define GX_DISABLE_WARNING
@@ -13,4 +13,4 @@
 #endif
 
 
-#endif //GX_DISABLE_WARNING
+#endif // GX_DISABLE_WARNING

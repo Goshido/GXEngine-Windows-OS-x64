@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_TIME
 #define GX_TIME
@@ -11,4 +11,4 @@ GXDouble GXCALL GXGetProcessorTicks ();
 GXDouble GXCALL GXGetProcessorTicksPerSecond ();
 
 
-#endif //GX_TIME
+#endif // GX_TIME

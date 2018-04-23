@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_WORLD
 #define GX_WORLD
@@ -27,7 +27,7 @@ class GXWorld
 		GXCollisionData						collisions;
 
 	public:
-		GXWorld ( GXUInt maxContacts, GXUInt iterations );
+		explicit GXWorld ( GXUInt maxContacts, GXUInt iterations );
 		~GXWorld ();
 
 		GXVoid RegisterRigidBody ( GXRigidBody &body );
@@ -50,4 +50,4 @@ class GXWorld
 };
 
 
-#endif GX_WORLD
+#endif // GX_WORLD

@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_TEXT_VALIDATOR
 #define GX_TEXT_VALIDATOR
@@ -20,4 +20,4 @@ class GXTextValidator
 };
 
 
-#endif //GX_TEXT_VALIDATOR
+#endif // GX_TEXT_VALIDATOR

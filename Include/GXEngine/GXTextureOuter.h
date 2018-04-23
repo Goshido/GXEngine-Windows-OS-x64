@@ -1,4 +1,4 @@
-//version 1.6
+// version 1.6
 
 #ifndef GX_TEXTURE_OUTER
 #define GX_TEXTURE_OUTER
@@ -24,4 +24,4 @@ class GXTextureOuter : public GXMesh
 };
 
 
-#endif //GX_TEXTURE_OUTER
+#endif // GX_TEXTURE_OUTER

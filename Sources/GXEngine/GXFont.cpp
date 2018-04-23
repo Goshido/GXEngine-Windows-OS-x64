@@ -1,4 +1,4 @@
-//version 1.6
+// version 1.6
 
 #include <GXEngine/GXFont.h>
 #include <GXEngineDLL/GXEngineAPI.h>
@@ -13,7 +13,7 @@
 #define ATLAS_NEW_TEXTURE	1
 #define ATLAS_FILL			2
 #define ATLAS_RESOLUTION	512
-#define ATLAS_ONE_PIXEL		0.0019531f	//1 pixel in uv coordinate system
+#define ATLAS_ONE_PIXEL		0.0019531f	// 1 pixel in uv coordinate system
 #define ATLAS_SPACING		2
 
 

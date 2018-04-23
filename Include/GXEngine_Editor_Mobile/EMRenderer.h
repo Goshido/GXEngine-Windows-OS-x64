@@ -180,4 +180,4 @@ class EMRenderer
 };
 
 
-#endif //EM_RENDERER
+#endif // EM_RENDERER

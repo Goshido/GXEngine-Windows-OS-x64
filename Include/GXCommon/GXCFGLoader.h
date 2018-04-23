@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #ifndef GX_CFG_LOADER
 #define GX_CFG_LOADER
@@ -10,4 +10,4 @@
 GXVoid GXCALL GXLoadCFG ( GXEngineConfiguration &out_config_info );
 
 
-#endif	//GX_CFG_LOADER
+#endif // GX_CFG_LOADER

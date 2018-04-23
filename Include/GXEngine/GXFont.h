@@ -1,4 +1,4 @@
-//version 1.6
+// version 1.6
 
 #ifndef GX_FONT
 #define GX_FONT
@@ -59,4 +59,4 @@ class GXFont
 };
 
 
-#endif //GX_FONT
+#endif // GX_FONT

@@ -1,4 +1,4 @@
-//version 1.5
+// version 1.5
 
 #ifndef GX_ANIMATION_SOLVER_PLAYER
 #define GX_ANIMATION_SOLVER_PLAYER
@@ -36,4 +36,4 @@ class GXAnimationSolverPlayer : public GXAnimationSolver
 };
 
 
-#endif //GX_ANIMATION_SOLVER_PLAYER
+#endif // GX_ANIMATION_SOLVER_PLAYER

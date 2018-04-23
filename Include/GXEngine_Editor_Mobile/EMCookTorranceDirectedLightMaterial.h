@@ -52,4 +52,4 @@ class EMCookTorranceDirectedLightMaterial : public GXMaterial
 };
 
 
-#endif //EM_COOK_TORRANCE_DIRECTED_LIGHT_MATERIAL
+#endif // EM_COOK_TORRANCE_DIRECTED_LIGHT_MATERIAL

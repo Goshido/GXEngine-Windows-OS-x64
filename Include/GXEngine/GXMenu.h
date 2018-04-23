@@ -1,4 +1,4 @@
-//version 1.4
+// version 1.4
 
 #ifndef GX_MENU
 #define	GX_MENU
@@ -110,4 +110,4 @@ class GXMenu
 };
 
 
-#endif //GX_MENU
+#endif // GX_MENU

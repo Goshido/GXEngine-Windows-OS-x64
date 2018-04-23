@@ -1,4 +1,4 @@
-//version 1.13
+// version 1.13
 
 #ifndef GX_CAMERA
 #define GX_CAMERA
@@ -79,4 +79,4 @@ class GXCamera
 };
 
 
-#endif //GX_CAMERA
+#endif // GX_CAMERA

@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #include <GXEngine/GXShaderProgram.h>
 #include <GXEngine/GXLocale.h>

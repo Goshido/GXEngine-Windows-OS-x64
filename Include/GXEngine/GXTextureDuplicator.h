@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_TEXTURE_DUPLICATOR
 #define GX_TEXTURE_DUPLICATOR
@@ -24,4 +24,4 @@ private:
 };
 
 
-#endif GX_TEXTURE_DUPLICATOR
+#endif // GX_TEXTURE_DUPLICATOR

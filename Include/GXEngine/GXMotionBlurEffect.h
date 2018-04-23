@@ -1,4 +1,4 @@
-//version 1.6
+// version 1.6
 
 #ifndef GX_MOTION_BLUR_EFFECT
 #define GX_MOTION_BLUR_EFFECT
@@ -34,4 +34,4 @@ class GXMotionBlurEffect : public GXMesh
 };
 
 
-#endif	//GX_MOTION_BLUR_EFFECT
+#endif // GX_MOTION_BLUR_EFFECT

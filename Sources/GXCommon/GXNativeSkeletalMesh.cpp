@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #include <GXCommon/GXNativeSkeletalMesh.h>
 #include <GXCommon/GXFileSystem.h>

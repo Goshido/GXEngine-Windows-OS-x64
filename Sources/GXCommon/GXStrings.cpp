@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXLogger.h>
@@ -12,7 +12,7 @@ GXUTF8Parser::GXUTF8Parser ( const GXUTF8* string )
 
 GXUTF8Parser::~GXUTF8Parser ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXUInt GXUTF8Parser::GetSymbol ( GXUInt position )
@@ -360,19 +360,19 @@ GXUInt GXCALL GXCalculateSpaceForUTF8 ( const GXWChar* str )
 	{
 		if ( str[ i ] < 0x0080 )
 		{
-			//One byte per symbol
+			// One byte per symbol
 			space++;
 			continue;
 		}
 
 		if ( str[ i ] < 0x0800 )
 		{
-			//Two bytes per symbol
+			// Two bytes per symbol
 			space += 2;
 			continue;
 		}
 
-		//Three bytes per symbol
+		// Three bytes per symbol
 		space += 3;
 	}
 

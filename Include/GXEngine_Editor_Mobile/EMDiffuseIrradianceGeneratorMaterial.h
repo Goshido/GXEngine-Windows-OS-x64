@@ -32,4 +32,4 @@ class EMDiffuseIrradianceGeneratorMaterial : public GXMaterial
 };
 
 
-#endif //EM_DIFFUSE_IRRADIANCE_GENERATOR_MATERIAL
+#endif // EM_DIFFUSE_IRRADIANCE_GENERATOR_MATERIAL

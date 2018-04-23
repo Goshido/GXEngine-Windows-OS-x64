@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #ifndef GX_OGG_VORBIS
 #define GX_OGG_VORBIS
@@ -26,4 +26,4 @@ struct GXOGGVorbisFunctions
 };
 
 
-#endif //GX_OGG_VORBIS
+#endif // GX_OGG_VORBIS

@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_SHAPE
 #define GX_SHAPE
@@ -61,4 +61,4 @@ class GXShape
 };
 
 
-#endif GX_SHAPE
+#endif // GX_SHAPE

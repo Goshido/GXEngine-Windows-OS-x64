@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #ifndef GX_EQUIRECTANGULAR_TO_CUBE_MAP_MATERIAL
 #define GX_EQUIRECTANGULAR_TO_CUBE_MAP_MATERIAL
@@ -32,4 +32,4 @@ class GXEquirectangularToCubeMapMaterial : public GXMaterial
 };
 
 
-#endif //GX_EQUIRECTANGULAR_TO_CUBE_MAP_MATERIAL
+#endif // GX_EQUIRECTANGULAR_TO_CUBE_MAP_MATERIAL

@@ -43,4 +43,4 @@ class EMTool
 };
 
 
-#endif //EM_TOOL
+#endif // EM_TOOL

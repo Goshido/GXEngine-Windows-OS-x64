@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #include <GXPhysics/GXRectangleShape.h>
 
@@ -20,7 +20,7 @@ GXRectangleShape::GXRectangleShape ( GXRigidBody* body, GXFloat width, GXFloat d
 
 GXRectangleShape::~GXRectangleShape ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXFloat GXRectangleShape::GetWidth () const

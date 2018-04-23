@@ -1,10 +1,10 @@
-//version 1.6
+// version 1.6
 
 #ifndef GX_TYPES_WINDOWS
 #define GX_TYPES_WINDOWS
 
 
-#define WIN32_LEAN_AND_MEAN			//to correct include WinSock2.h
+#define WIN32_LEAN_AND_MEAN			// to correct include WinSock2.h
 
 
 #include <GXCommon/GXDisable3rdPartyWarnings.h>
@@ -47,4 +47,4 @@ typedef ptrdiff_t				GXPointer;
 typedef size_t					GXUPointer;
 
 
-#endif //GX_TYPES_WINDOWS
+#endif // GX_TYPES_WINDOWS

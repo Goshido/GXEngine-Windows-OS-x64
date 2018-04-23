@@ -43,14 +43,14 @@ class EMLightProbe
 		GXVoid SetEnvironmentMap ( GXTextureCubeMap &cubeMap );
 		GXVoid SetBoundLocal ( GXFloat xRange, GXFloat yRange, GXFloat zRange );
 
-		//Less step - more precisely convolution result.
-		//Returns total samples will be done.
+		// Less step - more precisely convolution result.
+		// Returns total samples will be done.
 		GXUInt SetDiffuseIrradianceConvolutionAngleStep ( GXFloat radians );
 
-		//This is 2D square texture
+		// This is 2D square texture
 		GXVoid SetDiffuseIrradianceResolution ( GXUShort resolution );
 
-		//This texture is square 2D texture.
+		// This texture is square 2D texture.
 		GXVoid SetBRDFIntegrationMapResolution ( GXUShort length );
 
 		GXVoid SetBRDFIntegrationMapSamplesPerPixel ( GXUShort samples );
@@ -68,4 +68,4 @@ class EMLightProbe
 };
 
 
-#endif //EM_LIGHT_PROBE
+#endif // EM_LIGHT_PROBE

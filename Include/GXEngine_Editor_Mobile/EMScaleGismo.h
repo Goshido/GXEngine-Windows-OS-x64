@@ -29,4 +29,4 @@ class EMScaleGismo : public GXTransform
 };
 
 
-#endif //EM_SCALE_GISMO
+#endif // EM_SCALE_GISMO

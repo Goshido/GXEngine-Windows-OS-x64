@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #include <GXCommon/Windows/GXThread.h>
 #include <GXCommon/GXLogger.h>

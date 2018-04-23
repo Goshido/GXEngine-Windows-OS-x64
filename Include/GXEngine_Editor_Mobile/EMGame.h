@@ -97,4 +97,4 @@ class EMGame : public GXGame
 };
 
 
-#endif //EM_MAIN
+#endif // EM_MAIN

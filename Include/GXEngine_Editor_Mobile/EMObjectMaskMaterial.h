@@ -19,4 +19,4 @@ class EMObjectMaskMaterial : public GXMaterial
 };
 
 
-#endif //EM_OBJECT_MASK_MATERIAL
+#endif // EM_OBJECT_MASK_MATERIAL

@@ -33,4 +33,4 @@ class EMCheckerGeneratorMaterial : public GXMaterial
 };
 
 
-#endif //EM_CHECKER_GENERATOR_MATERIAL
+#endif // EM_CHECKER_GENERATOR_MATERIAL

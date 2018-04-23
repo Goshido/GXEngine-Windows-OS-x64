@@ -1,4 +1,4 @@
-//version 1.5
+// version 1.5
 
 #ifndef GX_AVL_TREE
 #define GX_AVL_TREE
@@ -73,4 +73,4 @@ class GXAVLTree
 };
 
 
-#endif //GX_AVL_TREE
+#endif // GX_AVL_TREE

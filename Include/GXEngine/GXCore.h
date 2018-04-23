@@ -1,4 +1,4 @@
-//version 1.13
+// version 1.13
 
 #ifndef GX_CORE
 #define GX_CORE
@@ -27,4 +27,4 @@ class GXCore
 };
 
 
-#endif //GX_CORE
+#endif // GX_CORE

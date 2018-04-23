@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_CONTACT_GENERATOR
 #define GX_CONTACT_GENERATOR
@@ -14,4 +14,4 @@ class GXContactGenerator
 };
 
 
-#endif GX_CONTACT_GENERATOR
+#endif // GX_CONTACT_GENERATOR

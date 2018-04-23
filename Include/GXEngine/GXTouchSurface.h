@@ -1,4 +1,4 @@
-//version 1.4
+// version 1.4
 
 #ifndef GX_TOUCH_SURFACE
 #define GX_TOUCH_SURFACE
@@ -48,7 +48,7 @@ class GXTouchSurface
 		GXVoid DrawWidgets ();
 		GXVoid MoveWidgetToForeground ( GXWidget* widget );
 
-		GXVoid LockCursor ( GXWidget* widget );			//For draggable and resizable widgets
+		GXVoid LockCursor ( GXWidget* widget );			// For draggable and resizable widgets
 		GXWidget* GetLockedCursorWidget ();
 		GXVoid ReleaseCursor ();
 
@@ -70,4 +70,4 @@ class GXTouchSurface
 };
 
 
-#endif //GX_TOUCH_SURFACE
+#endif // GX_TOUCH_SURFACE

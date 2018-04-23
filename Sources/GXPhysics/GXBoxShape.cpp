@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #include <GXPhysics/GXBoxShape.h>
 #include <GXCommon/GXLogger.h>
@@ -23,7 +23,7 @@ GXBoxShape::GXBoxShape ( GXRigidBody* body, GXFloat width, GXFloat height, GXFlo
 
 GXBoxShape::~GXBoxShape ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid GXBoxShape::CalculateInertiaTensor ( GXFloat mass )

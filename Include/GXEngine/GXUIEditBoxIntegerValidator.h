@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_UI_EDIT_BOX_INTEGER_VALIDATOR
 #define GX_UI_EDIT_BOX_INTEGER_VALIDATOR
@@ -26,4 +26,4 @@ class GXUIEditBoxIntegerValidator : public GXTextValidator
 };
 
 
-#endif //GX_UI_EDIT_BOX_INTEGER_VALIDATOR
+#endif // GX_UI_EDIT_BOX_INTEGER_VALIDATOR

@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_ENGINE_DLL
 #define GX_ENGINE_DLL
@@ -10,4 +10,4 @@
 #define GXDLLEXPORT extern "C" __declspec ( dllexport )
 
 
-#endif //GX_ENGINE_DLL
+#endif // GX_ENGINE_DLL

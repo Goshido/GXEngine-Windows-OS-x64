@@ -654,7 +654,7 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 		break;
 
 		case eEMRenderTarget::Combine:
-			//NOTHING
+			// NOTHING
 		break;
 	}
 
@@ -1071,7 +1071,7 @@ GXVoid EMRenderer::LightUp ()
 			break;
 
 			default:
-				//NOTHING
+				// NOTHING
 			break;
 		}
 	}*/
@@ -1122,12 +1122,12 @@ GXVoid EMRenderer::LightUpByDirected ( EMDirectedLight* light )
 
 GXVoid EMRenderer::LightUpBySpot ( EMSpotlight* /*light*/ )
 {
-	//TODO
+	// TODO
 }
 
 GXVoid EMRenderer::LightUpByBulp ( EMBulp* /*light*/ )
 {
-	//TODO
+	// TODO
 }
 
 GXVoid* EMRenderer::SampleObject ()

@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #include <GXEngine/GXUIInput.h>
 #include <GXEngine/GXUIMessage.h>
@@ -28,7 +28,7 @@ GXWidget ( parent, isNeedRegister )
 
 GXUIInput::~GXUIInput ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid GXUIInput::OnMessage ( GXUInt message, const GXVoid* data )

@@ -36,4 +36,4 @@ class EMFluttershy : public GXTransform
 };
 
 
-#endif //EM_FLUTTERSHY
+#endif // EM_FLUTTERSHY

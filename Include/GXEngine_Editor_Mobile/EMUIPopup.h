@@ -28,4 +28,4 @@ class EMUIPopup : public EMUI
 };
 
 
-#endif //EM_UI_POPUP
+#endif // EM_UI_POPUP

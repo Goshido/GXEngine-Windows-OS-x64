@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #include <GXEngine/GXSoundProvider.h>
 #include <GXCommon/GXMemory.h>
@@ -16,7 +16,7 @@ GXSoundStreamer::GXSoundStreamer ( GXVoid* mappedFile, GXUPointer totalSize )
 
 GXSoundStreamer::~GXSoundStreamer ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXUInt GXSoundStreamer::Read ( GXVoid* out, GXUInt size )

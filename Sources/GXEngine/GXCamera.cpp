@@ -1,4 +1,4 @@
-//version 1.13
+// version 1.13
 
 #include <GXEngine/GXCamera.h>
 
@@ -29,7 +29,7 @@ GXCamera::GXCamera ()
 
 GXCamera::~GXCamera ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 const GXMat4& GXCamera::GetCurrentFrameViewProjectionMatrix () const

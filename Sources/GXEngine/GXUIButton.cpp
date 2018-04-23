@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #include <GXEngine/GXUIButton.h>
 #include <GXEngine/GXUIMessage.h>
@@ -18,7 +18,7 @@ GXWidget ( parent )
 
 GXUIButton::~GXUIButton ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid GXUIButton::OnMessage ( GXUInt message, const GXVoid* data )

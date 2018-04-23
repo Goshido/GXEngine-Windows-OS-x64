@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #include <GXPhysics/GXCollisionData.h>
 #include <GXCommon/GXMemory.h>

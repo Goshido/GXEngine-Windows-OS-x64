@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_PHG_STRUCTS
 #define GX_PHG_STRUCTS
@@ -14,4 +14,4 @@ struct GXPhysicsGeometryHeader
 };
 
 
-#endif //GX_PHG_STRUCTS
+#endif // GX_PHG_STRUCTS

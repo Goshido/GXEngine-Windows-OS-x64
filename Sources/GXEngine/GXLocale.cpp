@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #include <GXEngine/GXLocale.h>
 #include <GXCommon/GXAVLTree.h>
@@ -80,12 +80,12 @@ class GXStringTree : public GXAVLTree
 GXStringTree::GXStringTree ():
 GXAVLTree ( &Compare, GX_TRUE )
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXStringTree::~GXStringTree ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid GXStringTree::AddString ( const GXUTF8* key, const GXUTF8* string )

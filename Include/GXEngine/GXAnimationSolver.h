@@ -1,4 +1,4 @@
-//version 1.5
+// version 1.5
 
 #ifndef	GX_ANIMATION_SOLVER
 #define	GX_ANIMATION_SOLVER
@@ -22,4 +22,4 @@ class GXAnimationSolver
 };
 
 
-#endif //GX_ANIMATION_SOLVER
+#endif // GX_ANIMATION_SOLVER

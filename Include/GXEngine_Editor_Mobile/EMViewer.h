@@ -73,4 +73,4 @@ class EMViewer
 };
 
 
-#endif //EM_VIEWER
+#endif // EM_VIEWER

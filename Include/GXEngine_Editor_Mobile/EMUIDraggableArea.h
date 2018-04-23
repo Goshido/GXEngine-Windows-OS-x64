@@ -29,4 +29,4 @@ class EMUIDraggableArea : public EMUI
 };
 
 
-#endif //EM_UI_DRAGGABLE_AREA
+#endif // EM_UI_DRAGGABLE_AREA

@@ -1,4 +1,4 @@
-//version 1.10
+// version 1.10
 
 #ifndef GX_CAMERA_PERSPECTIVE
 #define GX_CAMERA_PERSPECTIVE
@@ -28,4 +28,4 @@ class GXCameraPerspective : public GXCamera
 };
 
 
-#endif //GX_CAMERA_PERSPECTIVE
+#endif // GX_CAMERA_PERSPECTIVE

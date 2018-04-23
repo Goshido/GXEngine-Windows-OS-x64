@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #ifndef GX_BKE_SAVER
 #define GX_BKE_SAVER
@@ -11,4 +11,4 @@
 GXVoid GXCALL GXExportBKE ( const GXWChar* fileName, const GXBakeInfo &info );
 
 
-#endif	//GX_BKE_SAVER
+#endif	// GX_BKE_SAVER

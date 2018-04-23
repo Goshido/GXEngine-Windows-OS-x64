@@ -42,4 +42,4 @@ class EMEnvironmentMapMaterial : public GXMaterial
 };
 
 
-#endif //EM_ENVIRONMENT_MAP_MATERIAL
+#endif // EM_ENVIRONMENT_MAP_MATERIAL

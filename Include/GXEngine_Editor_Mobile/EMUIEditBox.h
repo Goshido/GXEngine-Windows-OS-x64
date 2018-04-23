@@ -35,4 +35,4 @@ class EMUIEditBox : public EMUI
 };
 
 
-#endif //EM_UI_EDIT_BOX
+#endif // EM_UI_EDIT_BOX

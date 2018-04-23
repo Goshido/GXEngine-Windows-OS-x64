@@ -33,4 +33,4 @@ class EMEnvironment
 };
 
 
-#endif //EM_ENVIRONMENT
+#endif // EM_ENVIRONMENT

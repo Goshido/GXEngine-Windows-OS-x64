@@ -21,4 +21,4 @@ class EMDirectedLightActor : public EMActor
 };
 
 
-#endif //EM_DIRECTED_LIGHT_ACTOR
+#endif // EM_DIRECTED_LIGHT_ACTOR

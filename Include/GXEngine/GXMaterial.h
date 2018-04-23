@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_MATERIAL
 #define GX_MATERIAL
@@ -22,4 +22,4 @@ class GXMaterial
 };
 
 
-#endif //GX_MATERIAL
+#endif // GX_MATERIAL

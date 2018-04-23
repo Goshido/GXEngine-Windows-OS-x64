@@ -12,8 +12,8 @@
 #define EM_VIEWER_ZOOM_STEP				2.0f
 #define EM_VIEWER_MIN_DISTANCE			0.1f
 #define EM_VIEWER_MAX_DISTANCE			1.0e+30f
-#define EM_VIEWER_ROTATION_SPEED		45.0f		//45 degrees per centimeter
-#define EM_VIEWER_PAN_SPEED				0.2f		//0.2 unit per centimeter
+#define EM_VIEWER_ROTATION_SPEED		45.0f		// 45 degrees per centimeter
+#define EM_VIEWER_PAN_SPEED				0.2f		// 0.2 unit per centimeter
 #define EM_VIEWER_FOVY_DEGREES			60.0f
 
 #define EM_DEFAULT_DISTANCE				7.0f

@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_UI_STATIC_TEXT
 #define GX_UI_STATIC_TEXT
@@ -39,4 +39,4 @@ class GXUIStaticText : public GXWidget
 };
 
 
-#endif //GX_UI_STATIC_TEXT
+#endif // GX_UI_STATIC_TEXT

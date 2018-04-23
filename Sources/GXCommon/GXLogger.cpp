@@ -1,4 +1,4 @@
-//version 1.4
+// version 1.4
 
 #include <GXCommon/GXLogger.h>
 #include <GXCommon/GXMutex.h>

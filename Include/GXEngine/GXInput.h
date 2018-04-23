@@ -1,4 +1,4 @@
-//version 1.15
+// version 1.15
 
 #ifndef GX_INPUT
 #define GX_INPUT
@@ -200,4 +200,4 @@ class GXInput
 };
 
 
-#endif //GX_INPUT
+#endif // GX_INPUT

@@ -1,4 +1,4 @@
-//version 1.15
+// version 1.15
 
 #include <GXEngine/GXInput.h>
 #include <GXEngine/GXCore.h>
@@ -287,7 +287,7 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		return 0;
 
 		case WM_SIZE:
-			//core->NotifyResize ( LOWORD ( lParam ), HIWORD ( lParam ) );
+			// core->NotifyResize ( LOWORD ( lParam ), HIWORD ( lParam ) );
 		return 0;
 		
 		case WM_LBUTTONDOWN:
@@ -419,7 +419,7 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		return 0;
 
 		case WM_SETCURSOR:
-			//NOTHING
+			// NOTHING
 		return 0;
 
 		case WM_LBUTTONDBLCLK:

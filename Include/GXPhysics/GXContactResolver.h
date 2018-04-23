@@ -1,35 +1,41 @@
-//version 1.1
+// version 1.2
 
 #ifndef GX_CONTACT_RESOLVER
 #define GX_CONTACT_RESOLVER
 
 
 #include "GXContact.h"
+#include "GXPairBodyConstraintSolver.h"
+#include "GXSingleBodyConstraintSolver.h"
 
-//Basic physics concept from https://en.wikipedia.org/wiki/Collision_response
+
 class GXContactResolver
 {
 	private:
-		GXFloat		angularMoveLimit;
+		GXPairBodyConstraintSolver		pairBodyConstraintSolver;
+		GXSingleBodyConstraintSolver	singleBodyConstraintSolver;
+
+		GXFloat							baumgarteFactor;
 
 	public:
 		GXContactResolver ();
+		~GXContactResolver ();
+
+		// Baumgarte factor - is optimization factor which has no physics explanation.
+		// It is used to improve simulation stability.
+		// It is range [0.0f, 1.0f].
+		// Erin Catto proposed that you start increasing the value from 0.0f until your
+		// physics system starts to become unstable, and then use half that value.
+		// See http://allenchou.net/2013/12/game-physics-resolution-contact-constraints/
+		GXFloat GetBaumgarteFactor () const;
+		GXVoid SetBaumgarteFactor ( GXFloat factor );
 
 		GXVoid ResolveContacts ( GXContact* contactArray, GXUInt numContacts );
-		GXVoid SetAngularMoveLimit ( GXFloat limit );
 
 	private:
 		GXVoid ResolveSingleBodyContacts ( GXContact* contacts );
-		GXVoid ResolveDoubleBodyContacts ( GXContact* contacts );
-
-		GXVoid GetRigidBodyKinematicsWorld ( GXVec3 &linearVelocityWorld, GXVec3 &angularVelocityWorld, const GXRigidBody &rigidBody, const GXVec3 &impulseWorld, const GXVec3 &centerOfMassToContactPointWorld );
-		GXVoid GetContactVelocityWorld ( GXVec3 &contactVelocityWorld, const GXRigidBody &rigidBodyA, const GXVec3 &rigidBodyACenterOfMassToContactPointWorld, const GXRigidBody &rigidBodyB, const GXVec3 &rigidBodyBCenterOfMassToContactPointWorld );
-		GXVoid ResolvePenetrationWorld ( GXVec3 &deltaLocationWorld, GXVec3 &deltaRotationWorld, const GXRigidBody &rigidBody, const GXVec3 &centerOfMassToContactPointWorld, const GXVec3 &contactNormalWorld, GXFloat contactPenetration );
-
-		GXVoid CalculateContactVelocity ( GXVec3 &velocity, const GXRigidBody &body, const GXVec3 &point ) const;
-		GXFloat CalculateIdealImpulseMagnitude ( GXContact &contact ) const;
-		GXFloat CalculateFrictionImpulseMagnitude ( GXContact &contact ) const;
+		GXVoid ResolvePairBodyContacts ( GXContact* contacts );
 };
 
 
-#endif GX_CONTACT_RESOLVER
+#endif // GX_CONTACT_RESOLVER

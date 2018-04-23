@@ -48,4 +48,4 @@ class EMUISSAOSettings : public EMUI
 };
 
 
-#endif //EM_UI_SSAO_SETTINGS
+#endif // EM_UI_SSAO_SETTINGS

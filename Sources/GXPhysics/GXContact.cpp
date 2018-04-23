@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #include <GXPhysics/GXContact.h>
 #include <GXCommon/GXLogger.h>
@@ -40,8 +40,23 @@ GXRigidBody& GXContact::GetSecondRigidBody ()
 	return *bodies[ 1 ];
 }
 
+const GXVec3& GXContact::GetTangent () const
+{
+	return tangent;
+}
+
+const GXVec3& GXContact::GetBitangent () const
+{
+	return bitangent;
+}
+
 GXVoid GXContact::SetNormal ( const GXVec3 &contactNormal )
 {
+	GXMat3 tmp;
+	tmp.From ( contactNormal );
+
+	tmp.GetX ( tangent );
+	tmp.GetY ( bitangent );
 	normal = contactNormal;
 }
 

@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #ifndef GX_STRINGS
 #define GX_STRINGS
@@ -59,4 +59,4 @@ GXVoid GXCALL GXToEngineWcs ( GXWChar** dest, const GXMBChar* str );
 GXVoid GXCALL GXToSystemMbs ( GXMBChar** dest, const GXWChar* str );
 
 
-#endif //GX_STRINGS
+#endif // GX_STRINGS

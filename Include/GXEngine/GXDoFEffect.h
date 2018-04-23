@@ -1,4 +1,4 @@
-//version 1.7
+// version 1.7
 
 #ifndef GX_DOF_EFFECT
 #define GX_DOF_EFFECT
@@ -54,4 +54,4 @@ class GXDoFEffect : public GXMesh
 };
 
 
-#endif	//GX_DOF_EFFECT
+#endif // GX_DOF_EFFECT

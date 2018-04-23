@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_UNLIT_COLOR_MASK_MATERIAL
 #define GX_UNLIT_COLOR_MASK_MATERIAL
@@ -35,4 +35,4 @@ class GXUnlitColorMaskMaterial : public GXMaterial
 };
 
 
-#endif //GX_UNLIT_COLOR_MASK_MATERIAL
+#endif // GX_UNLIT_COLOR_MASK_MATERIAL

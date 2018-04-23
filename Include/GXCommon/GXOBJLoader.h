@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #ifndef GX_OBJLOADER
 #define GX_OBJLOADER
@@ -7,7 +7,7 @@
 #include "GXMath.h"
 
 
-//#define DEBUG_TO_LOG
+// #define DEBUG_TO_LOG
 
 
 struct GXOBJIndex
@@ -49,7 +49,7 @@ struct GXOBJPoint
 };
 
 
-GXInt GXCALL GXLoadOBJ ( const GXWChar* fileName, GXOBJPoint** points ); //retruns total vertices
+GXInt GXCALL GXLoadOBJ ( const GXWChar* fileName, GXOBJPoint** points ); // retruns total vertices
 
 
-#endif //GX_OBJLOADER
+#endif // GX_OBJLOADER

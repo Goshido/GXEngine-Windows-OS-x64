@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #include <GXEngine/GXUIPopup.h>
 #include <GXEngine/GXUIMessage.h>
@@ -27,7 +27,7 @@ GXWidget ( parent ), items ( sizeof ( GXUIPopupItem ) )
 
 GXUIPopup::~GXUIPopup ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )

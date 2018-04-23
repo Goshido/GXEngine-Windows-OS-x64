@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #ifndef GX_JSON_SAVER
 #define GX_JSON_SAVER
@@ -10,4 +10,4 @@
 GXVoid GXCALL GXExportJSON ( GXWChar* src_path_to_OBJ );
 
 
-#endif //GX_JSON_SAVER
+#endif // GX_JSON_SAVER

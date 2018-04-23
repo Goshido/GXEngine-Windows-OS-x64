@@ -25,4 +25,4 @@ class EMBRDFIntegratorMaterial : public GXMaterial
 };
 
 
-#endif //EM_BRDF_INTEGRATOR_MATERIAL
+#endif // EM_BRDF_INTEGRATOR_MATERIAL

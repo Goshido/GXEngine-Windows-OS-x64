@@ -1,4 +1,4 @@
-//version 1.3
+// version 1.3
 
 #ifndef	GX_ANIMATION_SOLVER_MOVEMENT
 #define	GX_ANIMATION_SOLVER_MOVEMENT
@@ -32,4 +32,4 @@ class GXAnimationSolverMovement : public GXAnimationSolver
 };
 
 
-#endif	//GX_ANIMATION_SOLVER_MOVEMENT
+#endif // GX_ANIMATION_SOLVER_MOVEMENT

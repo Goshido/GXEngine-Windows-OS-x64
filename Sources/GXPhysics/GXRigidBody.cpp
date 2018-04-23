@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #include <GXPhysics/GXRigidBody.h>
 #include <GXPhysics/GXShape.h>

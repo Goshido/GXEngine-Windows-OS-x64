@@ -5,10 +5,10 @@
 
 GXMaterial::GXMaterial ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXMaterial::~GXMaterial ()
 {
-	//NOTHING
+	// NOTHING
 }

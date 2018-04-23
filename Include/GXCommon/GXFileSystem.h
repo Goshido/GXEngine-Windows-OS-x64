@@ -1,4 +1,4 @@
-//version 1.8
+// version 1.8
 
 #ifndef GX_FILE_SYSTEM
 #define GX_FILE_SYSTEM
@@ -53,4 +53,4 @@ class GXWriteFileStream
 };
 
 
-#endif //GX_FILE_SYSTEM
+#endif // GX_FILE_SYSTEM

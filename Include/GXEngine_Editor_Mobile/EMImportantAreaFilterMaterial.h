@@ -26,4 +26,4 @@ class EMImportantAreaFilterMaterial : public GXMaterial
 };
 
 
-#endif //EM_IMPORTANT_AREA_FILTER_MATERIAL
+#endif // EM_IMPORTANT_AREA_FILTER_MATERIAL

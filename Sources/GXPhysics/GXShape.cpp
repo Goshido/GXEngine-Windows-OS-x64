@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #include <GXPhysics/GXShape.h>
 #include <GXPhysics/GXRigidBody.h>
@@ -6,7 +6,7 @@
 
 
 #define DEFAULT_STATIC_FRICTION		0.9f
-#define DEFAULT_DYNAMIC_FRICTION	0.8f
+#define DEFAULT_DYNAMIC_FRICTION	0.4f
 #define DEFAULT_RESTITUTION			0.5f
 
 
@@ -24,7 +24,7 @@ GXShape::GXShape ( eGXShapeType type, GXRigidBody* body )
 
 GXShape::~GXShape ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 eGXShapeType GXShape::GetType () const

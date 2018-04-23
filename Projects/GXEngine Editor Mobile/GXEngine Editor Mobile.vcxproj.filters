@@ -483,16 +483,22 @@
     <ClCompile Include="..\..\Sources\GXPhysics\GXRectangleShape.cpp">
       <Filter>Source Files\GXPhysics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXSparseMatrix.cpp">
-      <Filter>Source Files\GXPhysics</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXPhysics\GXConstraint.cpp">
       <Filter>Source Files\GXPhysics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXContactConstraint.cpp">
+    <ClCompile Include="..\..\Sources\GXPhysics\GXPairBodyConstraintSolver.cpp">
       <Filter>Source Files\GXPhysics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXPhysics\GXConstraintSolver.cpp">
+    <ClCompile Include="..\..\Sources\GXPhysics\GXSingleBodyConstraintSolver.cpp">
+      <Filter>Source Files\GXPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPhysics\GXContactFrictionlessConstraint.cpp">
+      <Filter>Source Files\GXPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPhysics\GXContactBitangentConstraint.cpp">
+      <Filter>Source Files\GXPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPhysics\GXContactTangentConstraint.cpp">
       <Filter>Source Files\GXPhysics</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1028,16 +1034,22 @@
     <ClInclude Include="..\..\Include\GXPhysics\GXRectangleShape.h">
       <Filter>Header Files\GXPhysics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXSparseMatrix.h">
-      <Filter>Header Files\GXPhysics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXPhysics\GXConstraint.h">
       <Filter>Header Files\GXPhysics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXContactConstraint.h">
+    <ClInclude Include="..\..\Include\GXPhysics\GXPairBodyConstraintSolver.h">
       <Filter>Header Files\GXPhysics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXPhysics\GXConstraintSolver.h">
+    <ClInclude Include="..\..\Include\GXPhysics\GXSingleBodyConstraintSolver.h">
+      <Filter>Header Files\GXPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPhysics\GXContactFrictionlessConstraint.h">
+      <Filter>Header Files\GXPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPhysics\GXContactTangentConstraint.h">
+      <Filter>Header Files\GXPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXPhysics\GXContactBitangentConstraint.h">
       <Filter>Header Files\GXPhysics</Filter>
     </ClInclude>
   </ItemGroup>

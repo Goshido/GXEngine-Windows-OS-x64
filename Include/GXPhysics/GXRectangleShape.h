@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_RECTANGLE_SHAPE
 #define GX_RECTANGLE_SHAPE
@@ -28,4 +28,4 @@ class GXRectangleShape : public GXShape
 };
 
 
-#endif //GX_RECTANGLE_SHAPE
+#endif // GX_RECTANGLE_SHAPE

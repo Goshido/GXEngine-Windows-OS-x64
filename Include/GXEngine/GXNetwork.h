@@ -1,4 +1,4 @@
-//verison 1.7
+// verison 1.7
 
 #ifndef GX_NETWORK
 #define GX_NETWORK
@@ -12,7 +12,7 @@
 
 
 #define GX_MAX_NETWORK_CLIENTS	64
-#define GX_SOCKET_BUFFER_SIZE	4194304		//4 Mb
+#define GX_SOCKET_BUFFER_SIZE	4194304		// 4 Mb
 
 
 typedef GXVoid ( GXCALL* PFNGXONSERVERPMESSAGETCPPROC ) ( GXUInt clientID, GXVoid* data, GXUInt size );
@@ -150,4 +150,4 @@ class GXNetClient
 };
 
 
-#endif //GX_NETWORK
+#endif // GX_NETWORK

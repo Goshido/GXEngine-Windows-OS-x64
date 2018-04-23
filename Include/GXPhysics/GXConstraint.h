@@ -1,22 +1,21 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_CONSTRAINT
 #define GX_CONSTRAINT
 
 
-#include "GXSparseMatrix.h"
 #include <GXCommon/GXMath.h>
 
 
 class GXConstraint
 {
 	protected:
-		GXSparseMatrixElement		jacobian[ 2 ];
-		GXFloat						bias;
-		GXVec2						lambdaRange;
+		GXVec6		jacobian[ 2 ];
+		GXFloat		bias;
+		GXVec2		lambdaRange;
 
 	public:
-		const GXSparseMatrixElement* GetJacobian () const;
+		const GXVec6* GetJacobian () const;
 		GXFloat GetBias () const;
 		const GXVec2& GetLambdaRange () const;
 
@@ -26,4 +25,4 @@ class GXConstraint
 };
 
 
-#endif //GX_CONSTRAINT
+#endif // GX_CONSTRAINT

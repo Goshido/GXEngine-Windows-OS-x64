@@ -1,4 +1,4 @@
-//version 1.13
+// version 1.13
 
 #include <GXEngine/GXCore.h>
 #include <GXEngine/GXInput.h>

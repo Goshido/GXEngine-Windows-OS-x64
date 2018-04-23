@@ -31,4 +31,4 @@ class EMUI
 GXVoid GXCALL EMDrawUI ();
 
 
-#endif //EM_UI
+#endif // EM_UI

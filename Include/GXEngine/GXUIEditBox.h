@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_UI_EDIT_BOX
 #define GX_UI_EDIT_BOX
@@ -25,8 +25,8 @@ class GXUIEditBox : public GXWidget
 		GXFloat								textRightOffset;
 
 		GXFont								font;
-		GXInt								cursor;			//index before symbol
-		GXInt								selection;		//index before symbol
+		GXInt								cursor;			// index before symbol
+		GXInt								selection;		// index before symbol
 		eGXUITextAlignment					alignment;
 
 		HCURSOR								editCursor;
@@ -93,4 +93,4 @@ class GXUIEditBox : public GXWidget
 };
 
 
-#endif //GX_UI_EDIT_BOX
+#endif // GX_UI_EDIT_BOX

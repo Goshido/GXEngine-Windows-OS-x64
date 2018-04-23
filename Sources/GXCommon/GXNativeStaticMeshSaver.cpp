@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #include <GXCommon/GXNativeStaticMeshSaver.h>
 #include <GXCommon/GXNativeStaticMeshStructs.h>
@@ -11,7 +11,7 @@ GXVoid GXCALL GXCompileNativeStaticMesh ( GXUByte** data, GXUInt &size, const GX
 	size += descriptor.numVertices * sizeof ( GXVec3 );
 	size += descriptor.numUVs * sizeof ( GXVec2 );
 	size += descriptor.numNormals * sizeof ( GXVec3 );
-	size += 2 * descriptor.numTBPairs * sizeof ( GXVec3 );	//Tangents and Bitangents
+	size += 2 * descriptor.numTBPairs * sizeof ( GXVec3 );	// Tangents and Bitangents
 	size += descriptor.numElements * sizeof ( GXUInt );
 
 	*data = (GXUByte*)malloc ( size );

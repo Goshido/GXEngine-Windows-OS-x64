@@ -1,4 +1,4 @@
-//version 1.5
+// version 1.5
 
 #include <GXEngine/GXAnimationSolver.h>
 
@@ -10,5 +10,5 @@ GXAnimationSolver::GXAnimationSolver ( GXUShort solverID )
 
 GXAnimationSolver::~GXAnimationSolver ()
 {
-	//NOTHING
+	// NOTHING
 }

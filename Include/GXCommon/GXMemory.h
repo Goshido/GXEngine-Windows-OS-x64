@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #ifndef GX_MEMORY
 #define GX_MEMORY

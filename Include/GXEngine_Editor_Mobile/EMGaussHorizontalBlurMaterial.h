@@ -28,4 +28,4 @@ class EMGaussHorizontalBlurMaterial : public GXMaterial
 };
 
 
-#endif //EM_GAUSS_HORIZONTAL_BLUR_MATERIAL
+#endif // EM_GAUSS_HORIZONTAL_BLUR_MATERIAL

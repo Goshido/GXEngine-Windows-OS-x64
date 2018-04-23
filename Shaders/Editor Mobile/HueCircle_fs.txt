@@ -65,7 +65,7 @@ void main ()
 		break;
 
 		default:
-			//Error color actualy
+			// Error color actualy
 			colorSlot = vec4 ( 0.0, 0.0, 0.0, 1.0 );
 		break;
 	}

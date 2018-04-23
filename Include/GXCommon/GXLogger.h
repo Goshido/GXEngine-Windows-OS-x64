@@ -1,4 +1,4 @@
-//version 1.4
+// version 1.4
 
 #ifndef GX_LOGGER
 #define GX_LOGGER
@@ -21,4 +21,4 @@ GXVoid GXCDECLCALL GXLogA ( const GXMBChar* format, ... );
 GXVoid GXCDECLCALL GXLogW ( const GXWChar* format, ... );
 
 
-#endif //GX_LOGGER
+#endif // GX_LOGGER

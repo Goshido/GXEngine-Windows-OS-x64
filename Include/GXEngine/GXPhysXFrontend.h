@@ -1,4 +1,4 @@
-//version 1.4
+// version 1.4
 
 #ifndef GX_PHYSX_FRONTEND
 #define GX_PHYSX_FRONTEND
@@ -11,4 +11,4 @@ GXPhysXAdapter* GXCALL GXGetPhysXInstance ();
 GXBool GXCALL GXDestroyPhysX ();
 
 
-#endif	//GX_PHYSX_FRONTEND
+#endif // GX_PHYSX_FRONTEND

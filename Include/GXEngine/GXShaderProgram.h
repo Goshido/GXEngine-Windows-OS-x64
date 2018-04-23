@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #ifndef GX_SHADER_PROGRAM
 #define GX_SHADER_PROGRAM
@@ -102,4 +102,4 @@ class GXShaderProgram
 };
 
 
-#endif //GX_SHADER_PROGRAM
+#endif // GX_SHADER_PROGRAM

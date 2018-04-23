@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_NATIVE_STATIC_MESH_STRUCTS
 #define GX_NATIVE_STATIC_MESH_STRUCTS
@@ -14,11 +14,11 @@ struct GXNativeStaticMeshHeader
 	GXUInt		numVertices;
 	GXUInt		numUVs;
 	GXUInt		numNormals;
-	GXUInt		numTBPairs;		//Tangent and Bitangent pairs
+	GXUInt		numTBPairs;		// Tangent and Bitangent pairs
 	GXUInt		numElements;
 
 	GXUInt		elementOffset;
 };
 
 
-#endif //GX_NATIVE_STATIC_MESH_STRUCTS
+#endif // GX_NATIVE_STATIC_MESH_STRUCTS

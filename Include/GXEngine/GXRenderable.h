@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_RENDERABLE
 #define GX_RENDERABLE
@@ -20,4 +20,4 @@ class GXRenderable
 };
 
 
-#endif //GX_RENDERABLE
+#endif // GX_RENDERABLE

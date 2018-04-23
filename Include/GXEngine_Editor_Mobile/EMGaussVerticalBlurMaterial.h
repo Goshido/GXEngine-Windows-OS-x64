@@ -28,4 +28,4 @@ class EMGaussVerticalBlurMaterial : public GXMaterial
 };
 
 
-#endif //EM_GAUSS_VERTICAL_BLUR_MATERIAL
+#endif // EM_GAUSS_VERTICAL_BLUR_MATERIAL

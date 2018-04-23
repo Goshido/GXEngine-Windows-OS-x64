@@ -34,7 +34,7 @@ EMGaussHorizontalBlurMaterial::EMGaussHorizontalBlurMaterial ( eEMGaussHorizonta
 		break;
 
 		default:
-			//NOTHING
+			// NOTHING
 		break;
 	}
 
@@ -75,7 +75,7 @@ GXVoid EMGaussHorizontalBlurMaterial::SetImageTexture ( GXTexture2D &texture )
 		break;
 
 		default:
-			//NOTHING
+			// NOTHING
 		break;
 	}
 

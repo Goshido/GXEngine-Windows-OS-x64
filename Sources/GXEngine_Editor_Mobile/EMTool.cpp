@@ -12,7 +12,7 @@ EMTool::EMTool ()
 
 EMTool::~EMTool ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid EMTool::Bind ()
@@ -27,27 +27,27 @@ GXVoid EMTool::SetActor ( EMActor* newActor )
 
 GXVoid EMTool::UnBind ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid EMTool::OnViewerTransformChanged ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid EMTool::OnDrawCommonPass ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid EMTool::OnDrawHudColorPass ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXVoid EMTool::OnDrawHudMaskPass ()
 {
-	//NOTHING
+	// NOTHING
 }
 
 GXBool EMTool::OnLeftMouseButtonDown ( GXFloat /*x*/, GXFloat /*y*/ )

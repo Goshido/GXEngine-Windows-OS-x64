@@ -1,4 +1,4 @@
-//version 1.0
+// version 1.0
 
 #ifndef GX_UI_LIST_BOX
 #define GX_UI_LIST_BOX
@@ -53,7 +53,7 @@ class GXUIListBox : public GXWidget
 		GXVoid* GetSelectedItem () const;
 		GXUInt GetTotalItems () const;
 		GXBool IsItemVisible ( GXUInt itemIndex ) const;
-		GXFloat GetItemLocalOffsetY ( GXUInt itemIndex ) const;	//From widget bottom edge
+		GXFloat GetItemLocalOffsetY ( GXUInt itemIndex ) const;	// From widget bottom edge
 
 		GXVoid Redraw ();
 
@@ -71,10 +71,10 @@ class GXUIListBox : public GXWidget
 	private:
 		GXUIListBoxItem* FindItem ( const GXVec2 &mousePosition );
 		GXUIListBoxItem* GetHighlightedItem () const;
-		GXBool ResetHighlight ( const GXVec2 &mousePosition );	//Return true if need render update
+		GXBool ResetHighlight ( const GXVec2 &mousePosition );	// Return true if need render update
 		GXBool IsAbleToScroll () const;
 		GXFloat GetTotalHeight () const;
 };
 
 
-#endif //GX_UI_LIST_BOX
+#endif // GX_UI_LIST_BOX

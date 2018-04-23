@@ -1,4 +1,4 @@
-//version 1.14
+// version 1.14
 
 #ifndef GX_RENDERER
 #define GX_RENDERER

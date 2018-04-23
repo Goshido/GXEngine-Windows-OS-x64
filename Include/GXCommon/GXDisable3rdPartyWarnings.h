@@ -1,5 +1,5 @@
-//version 1.0
-//No include guard allowed
+// version 1.0
+// No include guard allowed
 
 
 #ifdef _MSC_VER

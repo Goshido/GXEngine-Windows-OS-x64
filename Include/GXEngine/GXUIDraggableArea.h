@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.1
 
 #ifndef GX_UI_DRAGGABLE_AREA
 #define GX_UI_DRAGGABLE_AREA
@@ -85,4 +85,4 @@ class GXUIDragableArea : public GXWidget
 };
 
 
-#endif //GX_UI_DRAGGABLE_AREA
+#endif // GX_UI_DRAGGABLE_AREA

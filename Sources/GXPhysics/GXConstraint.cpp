@@ -1,9 +1,9 @@
-//version 1.0
+// version 1.0
 
 #include <GXPhysics/GXConstraint.h>
 
 
-const GXSparseMatrixElement* GXConstraint::GetJacobian () const
+const GXVec6* GXConstraint::GetJacobian () const
 {
 	return jacobian;
 }

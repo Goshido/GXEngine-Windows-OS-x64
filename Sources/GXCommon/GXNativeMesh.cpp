@@ -1,4 +1,4 @@
-//vesrion 1.0
+// vesrion 1.0
 
 #include <GXCommon/GXNativeMesh.h>
 #include <GXCommon/GXFileSystem.h>

@@ -71,4 +71,4 @@ class EMMoveTool : public EMTool
 };
 
 
-#endif //EM_MOVE_TOOL
+#endif // EM_MOVE_TOOL

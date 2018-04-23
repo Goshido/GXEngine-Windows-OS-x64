@@ -1,4 +1,4 @@
-//version 1.2
+// version 1.2
 
 #ifndef GX_TRANSFORM
 #define GX_TRANSFORM
@@ -57,4 +57,4 @@ class GXTransform
 };
 
 
-#endif //GX_TRANSFORM
+#endif // GX_TRANSFORM
