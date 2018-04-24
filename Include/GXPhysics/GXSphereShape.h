@@ -13,7 +13,7 @@ class GXSphereShape : public GXShape
 		GXFloat		radius;
 
 	public:
-		GXSphereShape ( GXRigidBody* body, GXFloat radius );
+		explicit GXSphereShape ( GXRigidBody* body, GXFloat radius );
 		~GXSphereShape () override;
 
 		GXFloat GetRadius () const;
@@ -23,6 +23,10 @@ class GXSphereShape : public GXShape
 
 	protected:
 		GXVoid UpdateBoundsWorld () override;
+
+	private:
+		GXSphereShape ( const GXSphereShape &other ) = delete;
+		GXSphereShape& operator = ( const GXSphereShape &other ) = delete;
 };
 
 

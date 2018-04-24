@@ -20,7 +20,7 @@ class GXBoxShape : public GXShape
 		GXFloat depth;
 
 	public:
-		GXBoxShape ( GXRigidBody* body, GXFloat width, GXFloat height, GXFloat depth );
+		explicit GXBoxShape ( GXRigidBody* body, GXFloat width, GXFloat height, GXFloat depth );
 		~GXBoxShape () override;
 
 		GXVoid CalculateInertiaTensor ( GXFloat mass ) override;
@@ -35,6 +35,9 @@ class GXBoxShape : public GXShape
 
 	private:
 		GXVoid GetRotatedVecticesWorld ( GXBoxShapeVertices &vertices ) const;
+
+		GXBoxShape ( const GXBoxShape &other ) = delete;
+		GXBoxShape& operator = ( const GXBoxShape &other ) = delete;
 };
 
 

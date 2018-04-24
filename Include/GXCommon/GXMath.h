@@ -1,4 +1,4 @@
-// version 1.46
+// version 1.47
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -24,8 +24,8 @@ struct GXVec2
 	GXFloat		data[ 2 ];
 
 	GXVec2 ();
-	explicit GXVec2 ( GXFloat x, GXFloat y );
 	GXVec2 ( const GXVec2 &other );
+	explicit GXVec2 ( GXFloat x, GXFloat y );
 
 	GXVoid SetX ( GXFloat x );
 	GXFloat GetX () const;
@@ -67,15 +67,15 @@ eGXLineRelationship GXCALL GXLineIntersection2D ( GXVec2 &intersectionPoint, con
 
 //-------------------------------------------------------------
 
-// By convention it is row-vertex.
+// By convention it is row-vector.
 struct GXVec3
 {
 	// Stores vector components in x, y, z order.
 	GXFloat		data[ 3 ];
 
 	GXVec3 ();
-	explicit GXVec3 ( GXFloat x, GXFloat y, GXFloat z );
 	GXVec3 ( const GXVec3 &other );
+	explicit GXVec3 ( GXFloat x, GXFloat y, GXFloat z );
 
 	GXVoid SetX ( GXFloat x );
 	GXFloat GetX () const;
@@ -130,23 +130,24 @@ struct GXEuler
 	GXFloat		rollRadians;
 
 	GXEuler ();
-	explicit GXEuler ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians );
 	GXEuler ( const GXEuler &other );
+	explicit GXEuler ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians );
 
 	GXEuler& operator = ( const GXEuler &other );
 };
 
 //-------------------------------------------------------------
 
-// By convention it is row-vertex.
+// By convention it is row-vector.
 struct GXVec4
 {
 	// Stores vector components in x, y, z, w order.
 	GXFloat		data[ 4 ];
 
 	GXVec4 ();
+	GXVec4 ( const GXVec4 &other );
 	explicit GXVec4 ( const GXVec3& vector, GXFloat w );
-	GXVec4 ( GXFloat x, GXFloat y, GXFloat z, GXFloat w );
+	explicit GXVec4 ( GXFloat x, GXFloat y, GXFloat z, GXFloat w );
 
 	GXVoid Init ( GXFloat x, GXFloat y, GXFloat z, GXFloat w );
 
@@ -181,6 +182,7 @@ struct GXVec6
 	GXFloat		data[ 6 ];
 
 	GXVec6 ();
+	GXVec6 ( const GXVec6 &other );
 	explicit GXVec6 ( GXFloat a1, GXFloat a2, GXFloat a3, GXFloat a4, GXFloat a5, GXFloat a6 );
 
 	GXVoid Init ( GXFloat a1, GXFloat a2, GXFloat a3, GXFloat a4, GXFloat a5, GXFloat a6 );
@@ -202,10 +204,10 @@ struct GXColorRGB
 	GXFloat		data[ 4 ];
 
 	GXColorRGB ();
+	GXColorRGB ( const GXColorRGB &other );
 	explicit GXColorRGB ( GXFloat red, GXFloat green, GXFloat blue, GXFloat alpha );
 	explicit GXColorRGB ( GXUByte red, GXUByte green, GXUByte blue, GXFloat alpha );
 	explicit GXColorRGB ( const GXColorHSV &color );
-	GXColorRGB ( const GXColorRGB &other );
 
 	GXVoid Init ( GXFloat red, GXFloat green, GXFloat blue, GXFloat alpha );
 
@@ -241,9 +243,9 @@ struct GXColorHSV
 	GXFloat		data[ 4 ];
 
 	GXColorHSV ();
+	GXColorHSV ( const GXColorHSV &other );
 	explicit GXColorHSV ( GXFloat hue, GXFloat saturation, GXFloat value, GXFloat alpha );
 	explicit GXColorHSV ( const GXColorRGB &color );
-	GXColorHSV ( const GXColorHSV &other );
 
 	// [0.0f 360.0f]
 	GXVoid SetHue ( GXFloat hue );
@@ -279,6 +281,7 @@ struct GXQuat
 	GXFloat		data[ 4 ];
 
 	GXQuat ();
+	GXQuat ( const GXQuat &other );
 	explicit GXQuat ( GXFloat r, GXFloat a, GXFloat b, GXFloat c );
 
 	// Result is valid if rotationMatrix is rotation matrix. Any scale will be ignored.
@@ -286,8 +289,6 @@ struct GXQuat
 
 	// Result is valid if rotationMatrix is rotation matrix. Any scale will be ignored.
 	explicit GXQuat ( const GXMat4 &rotationMatrix );
-
-	GXQuat ( const GXQuat &other );
 
 	GXVoid Init ( GXFloat r, GXFloat a, GXFloat b, GXFloat c );
 
@@ -348,8 +349,8 @@ struct GXMat3
 	};
 
 	GXMat3 ();
-	explicit GXMat3 ( const GXMat4 &matrix );
 	GXMat3 ( const GXMat3 &other );
+	explicit GXMat3 ( const GXMat4 &matrix );
 
 	GXVoid From ( const GXQuat &quaternion );
 	GXVoid From ( const GXMat4 &matrix );
@@ -453,7 +454,10 @@ struct GXMat4
 	GXVoid Multiply ( const GXMat4 &a, const GXMat4 &b );
 
 	// Multiply row-vector [1x4] by own matrix [4x4].
-	GXVoid Multiply ( GXVec4 &out, const GXVec4 &v ) const;
+	GXVoid MultiplyVectorMatrix ( GXVec4 &out, const GXVec4 &v ) const;
+
+	// Multiply own matrix [4x4] by column-vector [4x1].
+	GXVoid MultiplyMatrixVector ( GXVec4 &out, const GXVec4 &v ) const;
 
 	// Multiply row-vector [1x3] by own matrix sub matrix [3x3].
 	GXVoid MultiplyAsNormal ( GXVec3 &out, const GXVec3 &v ) const;
@@ -544,7 +548,7 @@ class GXProjectionClipPlanes
 
 	public:
 		GXProjectionClipPlanes ();
-		GXProjectionClipPlanes ( const GXMat4 &src );
+		explicit GXProjectionClipPlanes ( const GXMat4 &src );
 
 		// Normals will be directed inside view volume.
 		GXVoid From ( const GXMat4 &src );

@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_CONSTRAINT
 #define GX_CONSTRAINT
@@ -22,6 +22,10 @@ class GXConstraint
 	protected:
 		GXConstraint ();
 		virtual ~GXConstraint ();
+
+	private:
+		GXConstraint ( const GXConstraint &other ) = delete;
+		GXConstraint& operator = ( const GXConstraint &other ) = delete;
 };
 
 

@@ -501,6 +501,12 @@
     <ClCompile Include="..\..\Sources\GXPhysics\GXContactTangentConstraint.cpp">
       <Filter>Source Files\GXPhysics</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPhysics\GXForceGenerator.cpp">
+      <Filter>Source Files\GXPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXPhysics\GXContactGenerator.cpp">
+      <Filter>Source Files\GXPhysics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">

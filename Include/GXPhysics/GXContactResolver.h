@@ -17,6 +17,9 @@ class GXContactResolver
 
 		GXFloat							baumgarteFactor;
 
+		GXFloat							stationaryThreshold;
+		GXFloat							squareStationaryThreshold;
+
 	public:
 		GXContactResolver ();
 		~GXContactResolver ();
@@ -29,6 +32,12 @@ class GXContactResolver
 		// See http://allenchou.net/2013/12/game-physics-resolution-contact-constraints/
 		GXFloat GetBaumgarteFactor () const;
 		GXVoid SetBaumgarteFactor ( GXFloat factor );
+
+		// Stationary threshold is magnitude of relative contact point velocity projection onto tangent / bitangent plane.
+		// If this magnitude is less than stationary threshold contact point is considered to be stationary and will be
+		// used coefficient of static friction. Otherwise will be used coefficient of dynamic friction.
+		GXFloat GetStationaryThreshold () const;
+		GXVoid SetStationaryThreshold ( GXFloat threshold );
 
 		GXVoid ResolveContacts ( GXContact* contactArray, GXUInt numContacts );
 

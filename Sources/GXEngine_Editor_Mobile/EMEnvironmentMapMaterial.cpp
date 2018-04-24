@@ -80,7 +80,7 @@ GXVoid EMEnvironmentMapMaterial::Bind ( const GXTransform &transform )
 	
 	GXVec4 v ( lastFrameEnvironmentQuasiLocationWorld, 1.0f );
 	GXVec4 temp;
-	currentFrameViewProjectionMatrix.Multiply ( temp, v );
+	currentFrameViewProjectionMatrix.MultiplyVectorMatrix ( temp, v );
 
 	GXVec2 lastFrameEnvironmentQuasiLocationScreen ( temp.GetX (), temp.GetY () );
 	lastFrameEnvironmentQuasiLocationScreen.Multiply ( lastFrameEnvironmentQuasiLocationScreen, 1.0f / temp.GetW () );

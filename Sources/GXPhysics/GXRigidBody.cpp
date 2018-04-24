@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #include <GXPhysics/GXRigidBody.h>
 #include <GXPhysics/GXShape.h>
@@ -79,19 +79,19 @@ GXVoid GXRigidBody::CalculateCachedData ()
 	rotation.Normalize ();
 	transform.FromFast ( rotation, location );
 
-	GXMat3 alpha ( transform );
-	inverseTransform.Transponse ( alpha );
-
 	if ( OnTransformChanged )
 		OnTransformChanged ( handler, *this );
+
+	GXMat3 alpha ( transform );
+	inverseTransform.Transponse ( alpha );
 
 	GXMat3 betta;
 	betta.Multiply ( alpha, shape->GetInertiaTensor () );
 
-	GXMat3 transformedInertiaTensor;
-	transformedInertiaTensor.Multiply ( betta, inverseTransform );
+	GXMat3 inertiaTensorWorld;
+	inertiaTensorWorld.Multiply ( betta, inverseTransform );
 
-	inverseInertiaTensorWorld.Inverse ( transformedInertiaTensor );
+	inverseInertiaTensorWorld.Inverse ( inertiaTensorWorld );
 
 	shape->CalculateCacheData ();
 }
@@ -102,12 +102,6 @@ GXVoid GXRigidBody::ClearAccumulators ()
 
 	totalForce = zero;
 	totalTorque = zero;
-}
-
-GXVoid GXRigidBody::SetInertiaTensor ( const GXMat3 &inertiaTensor )
-{
-	inverseInertiaTensorLocal.Inverse ( inertiaTensor );
-	CalculateCachedData ();
 }
 
 const GXMat3& GXRigidBody::GetInverseInertiaTensorWorld () const
@@ -181,7 +175,7 @@ GXVoid GXRigidBody::AddLinearVelocity ( const GXVec3 &velocity )
 
 GXVoid GXRigidBody::SetAngularVelocity ( const GXVec3 &velocity )
 {
-	inverseTransform.MultiplyVectorMatrix ( angularVelocity, velocity );
+	angularVelocity = velocity;
 }
 
 const GXVec3& GXRigidBody::GetAngularVelocity () const
@@ -235,7 +229,7 @@ GXVoid GXRigidBody::SetShape ( GXShape &newShape )
 	shape = &newShape;
 	shape->CalculateInertiaTensor ( mass );
 	shape->CalculateCacheData ();
-	SetInertiaTensor ( shape->GetInertiaTensor () );
+	CalculateCachedData ();
 }
 
 GXShape& GXRigidBody::GetShape ()

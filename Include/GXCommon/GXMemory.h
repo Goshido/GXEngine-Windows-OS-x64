@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_MEMORY
 #define GX_MEMORY
@@ -28,35 +28,43 @@
 class GXCircleBuffer
 {
 	private:
-		GXUByte*	buffer;
-		GXUInt		size;
-		GXUInt		offset;
+		GXUPointer		size;
+		GXUPointer		offset;
+		GXUByte*		buffer;
 
 	public:
-		GXCircleBuffer ( GXUInt size );
+		explicit GXCircleBuffer ( GXUPointer size );
 		~GXCircleBuffer ();
 
-		GXVoid* Allocate ( GXUInt bytes );
+		GXVoid* Allocate ( GXUPointer bytes );
+
+	private:
+		GXCircleBuffer ( const GXCircleBuffer &other ) = delete;
+		GXCircleBuffer& operator = ( const GXCircleBuffer &other ) = delete;
 };
 
 class GXDynamicArray
 {
 	protected:
 		GXUByte*	data;
-		GXUInt		elementSize;
-		GXUInt		numElements;
+		GXUPointer	elementSize;
+		GXUPointer	numElements;
 
 	public:
-		explicit GXDynamicArray ( GXUInt elementSize );
+		explicit GXDynamicArray ( GXUPointer elementSize );
 		~GXDynamicArray ();
 
-		GXVoid SetValue ( GXUInt i, const GXVoid* element );
-		GXVoid* GetValue ( GXUInt i ) const;
+		GXVoid SetValue ( GXUPointer i, const GXVoid* element );
+		GXVoid* GetValue ( GXUPointer i ) const;
 		GXVoid* GetData () const;
-		GXUInt GetLength () const;
+		GXUPointer GetLength () const;
 
-		GXVoid Resize ( GXUInt totalElements );
+		GXVoid Resize ( GXUPointer totalElements );
+
+	private:
+		GXDynamicArray ( const GXDynamicArray &other ) = delete;
+		GXDynamicArray& operator = ( const GXDynamicArray &other ) = delete;
 };
 
 
-#endif //GX_MEMORY
+#endif // GX_MEMORY

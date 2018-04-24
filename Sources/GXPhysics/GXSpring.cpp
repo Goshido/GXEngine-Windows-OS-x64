@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #include <GXPhysics/GXSpring.h>
 
@@ -10,6 +10,11 @@ GXSpring::GXSpring ( const GXVec3 &connectionPointLocal, GXRigidBody &otherBody,
 	this->otherConnectionPointLocal = otherConnectionPointLocal;
 	this->hardness = hardness;
 	this->restLength = restLength;
+}
+
+GXSpring::~GXSpring ()
+{
+	// NOTHING
 }
 
 GXVoid GXSpring::UpdateForce ( GXRigidBody &body, GXFloat /*deltaTime*/ )

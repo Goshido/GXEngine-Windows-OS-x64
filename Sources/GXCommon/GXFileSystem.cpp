@@ -1,4 +1,4 @@
-// version 1.8
+// version 1.9
 
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXMemory.h>
@@ -222,13 +222,15 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 		FindClose ( handleFind );
 
 		GXWChar** files = (GXWChar**)fileNames.GetData ();
-		GXUInt total = fileNames.GetLength ();
-		for ( GXUInt i = 0; i < total; i++ )
+		GXUPointer total = fileNames.GetLength ();
+
+		for ( GXUPointer i = 0u; i < total; i++ )
 			free ( files[ i ] );
 
 		GXWChar** folders = (GXWChar**)folderNames.GetData ();
 		total = folderNames.GetLength ();
-		for ( GXUInt i = 0; i < total; i++ )
+
+		for ( GXUPointer i = 0u; i < total; i++ )
 			free ( folders[ i ] );
 
 		return GX_FALSE;
@@ -240,6 +242,7 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 
 	GXWChar* absolutePath = (GXWChar*)malloc ( BUFFER_SIZE_IN_SYMBOLS * sizeof ( GXWChar) );
 	GetFullPathNameW ( directory, BUFFER_SIZE_IN_SYMBOLS, absolutePath, nullptr );
+
 	for ( GXWChar* p = absolutePath; *p != L'\0'; p++ )
 	{
 		if ( *p == L'\\' )
@@ -248,7 +251,8 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 
 	directoryInfo.absolutePath = absolutePath;
 
-	directoryInfo.totalFolders = folderNames.GetLength ();
+	directoryInfo.totalFolders = static_cast<GXUInt> ( folderNames.GetLength () );
+
 	if ( directoryInfo.totalFolders > 0 )
 	{
 		size = directoryInfo.totalFolders * sizeof ( GXWChar* );
@@ -261,7 +265,8 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 		directoryInfo.folderNames = nullptr;
 	}
 
-	directoryInfo.totalFiles = fileNames.GetLength ();
+	directoryInfo.totalFiles = static_cast<GXUInt> ( fileNames.GetLength () );
+
 	if ( directoryInfo.totalFiles > 0 )
 	{
 		size = directoryInfo.totalFiles * sizeof ( GXWChar* );

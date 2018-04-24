@@ -94,6 +94,9 @@ class EMGame : public GXGame
 		static GXVoid GXCALL OnObject ( GXVoid* handler, GXVoid* object );
 		static GXVoid GXCALL OnViewerTransformChanged ( GXVoid* handler );
 		static GXVoid GXCALL OnOpenFile ( const GXWChar* filePath );
+
+		EMGame ( const EMGame &other ) = delete;
+		EMGame& operator = ( const EMGame &other ) = delete;
 };
 
 

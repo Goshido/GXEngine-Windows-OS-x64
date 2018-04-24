@@ -14,7 +14,7 @@ class GXRectangleShape : public GXShape
 		GXFloat		depth;
 
 	public:
-		GXRectangleShape ( GXRigidBody* body, GXFloat width, GXFloat depth );
+		explicit GXRectangleShape ( GXRigidBody* body, GXFloat width, GXFloat depth );
 		~GXRectangleShape () override;
 
 		GXFloat GetWidth () const;
@@ -25,6 +25,11 @@ class GXRectangleShape : public GXShape
 
 	protected:
 		GXVoid UpdateBoundsWorld () override;
+
+	private:
+		GXRectangleShape () = delete;
+		GXRectangleShape ( const GXRectangleShape &other ) = delete;
+		GXRectangleShape& operator = ( const GXRectangleShape &other ) = delete;
 };
 
 

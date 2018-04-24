@@ -91,9 +91,9 @@ GXVoid GXPhysicsEngine::RunSimulateLoop ( GXFloat deltaTime )
 }
 
 GXPhysicsEngine::GXPhysicsEngine ():
-world ( MAX_CONTACTS, WORLD_ITERATIONS )
+	world ( MAX_CONTACTS, WORLD_ITERATIONS ),
+	time ( 0.0f )
 {
-	time = 0.0f;
 	SetSleepTimeout ( DEFAULT_SLEEP_TIMEOUT );
 	SetMaximumLocationChangeSquaredDeviation ( DEFAULT_MAXIMUM_LOCATION_CHANGE_SQUARED_DEVIATION );
 	SetMaximumRotationChangeSquaredDeviation ( DEFAULT_MAXIMUM_ROTATION_CHANGE_SQUARED_DEVIATION );

@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_SPRING
 #define GX_SPRING
@@ -19,8 +19,15 @@ class GXSpring : public GXForceGenerator
 		GXFloat			restLength;
 
 	public:
-		GXSpring (const GXVec3 &connectionPointLocal, GXRigidBody &otherBody, const GXVec3 &otherConnectionPointLocal, GXFloat hardness, GXFloat restLength );
+		explicit GXSpring ( const GXVec3 &connectionPointLocal, GXRigidBody &otherBody, const GXVec3 &otherConnectionPointLocal, GXFloat hardness, GXFloat restLength );
+		~GXSpring () override;
+
 		GXVoid UpdateForce ( GXRigidBody &body, GXFloat deltaTime ) override;
+
+	private:
+		GXSpring () = delete;
+		GXSpring ( const GXSpring &other ) = delete;
+		GXSpring& operator = ( const GXSpring &other ) = delete;
 };
 
 

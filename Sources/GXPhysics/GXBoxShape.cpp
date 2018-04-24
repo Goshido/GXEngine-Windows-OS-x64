@@ -4,13 +4,13 @@
 #include <GXCommon/GXLogger.h>
 
 
-GXBoxShape::GXBoxShape ( GXRigidBody* body, GXFloat width, GXFloat height, GXFloat depth )
-: GXShape ( eGXShapeType::Box, body )
-{
-	this->width = width;
-	this->height = height;
-	this->depth = depth;
+GXBoxShape::GXBoxShape ( GXRigidBody* body, GXFloat width, GXFloat height, GXFloat depth ):
+	GXShape ( eGXShapeType::Box, body ),
+	width ( width ),
+	height ( height ),
+	depth ( depth )
 
+{
 	GXFloat halfWidth = 0.5f * width;
 	GXFloat halfHeight = 0.5f * height;
 	GXFloat halfDepth = 0.5f * depth;
@@ -102,7 +102,7 @@ GXVoid GXBoxShape::GetRotatedVecticesWorld ( GXBoxShapeVertices &vertices ) cons
 	v[ 6 ].Init ( w, h, d );
 	v[ 7 ].Init ( -w, h, d );
 
-	GXMat4 rotatationWorld = transformWorld;
+	GXMat4 rotatationWorld ( transformWorld );
 	static const GXVec3 origin ( 0.0f, 0.0f, 0.0f );
 	rotatationWorld.SetW ( origin );
 

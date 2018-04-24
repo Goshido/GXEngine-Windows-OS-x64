@@ -4,11 +4,11 @@
 #include <GXPhysics/GXContactFrictionlessConstraint.h>
 #include <GXPhysics/GXContactTangentConstraint.h>
 #include <GXPhysics/GXContactBitangentConstraint.h>
-#include <GXCommon/GXLogger.h>
 
 
-#define SOLVER_ITERATIONS			10u
-#define DEFAULT_BAUMGARTE_FACTOR	0.5f
+#define SOLVER_ITERATIONS				10u
+#define DEFAULT_BAUMGARTE_FACTOR		0.5f
+#define DEFAULT_STATIONARY_THRESHOLD	1.0e-4f
 
 
 GXContactResolver::GXContactResolver ():
@@ -16,7 +16,7 @@ GXContactResolver::GXContactResolver ():
 	singleBodyConstraintSolver ( SOLVER_ITERATIONS ),
 	baumgarteFactor ( DEFAULT_BAUMGARTE_FACTOR )
 {
-	// NOTHING
+	SetStationaryThreshold ( DEFAULT_STATIONARY_THRESHOLD );
 }
 
 GXContactResolver::~GXContactResolver ()
@@ -32,6 +32,17 @@ GXFloat GXContactResolver::GetBaumgarteFactor () const
 GXVoid GXContactResolver::SetBaumgarteFactor ( GXFloat factor )
 {
 	baumgarteFactor = factor;
+}
+
+GXFloat GXContactResolver::GetStationaryThreshold () const
+{
+	return stationaryThreshold;
+}
+
+GXVoid GXContactResolver::SetStationaryThreshold ( GXFloat threshold )
+{
+	stationaryThreshold = threshold;
+	squareStationaryThreshold = threshold * threshold;
 }
 
 GXVoid GXContactResolver::ResolveContacts ( GXContact* contactArray, GXUInt numContacts )
@@ -55,6 +66,7 @@ GXVoid GXContactResolver::ResolveContacts ( GXContact* contactArray, GXUInt numC
 GXVoid GXContactResolver::ResolvePairBodyContacts ( GXContact* contacts )
 {
 	GXUInt linkedContacts = contacts->GetLinkedContacts ();
+	GXFloat inverseLinkedContacts = 1.0f / static_cast<GXFloat> ( linkedContacts );
 
 	GXRigidBody& firstBody = contacts->GetFirstRigidBody ();
 	GXRigidBody& secondBody = contacts->GetSecondRigidBody ();
@@ -66,8 +78,9 @@ GXVoid GXContactResolver::ResolvePairBodyContacts ( GXContact* contacts )
 	for ( GXUInt i = 0u; i < linkedContacts; i++ )
 	{
 		pairBodyConstraintSolver.AddConstraint ( GXContactFrictionlessConstraint ( contacts[ i ], baumgarteFactor ) );
-		singleBodyConstraintSolver.AddConstraint ( GXContactTangentConstraint ( contacts[ i ], linkedContacts ) );
-		singleBodyConstraintSolver.AddConstraint ( GXContactBitangentConstraint ( contacts[ i ], linkedContacts ) );
+		pairBodyConstraintSolver.AddConstraint ( GXContactTangentConstraint ( contacts[ i ], inverseLinkedContacts, squareStationaryThreshold ) );
+		pairBodyConstraintSolver.AddConstraint ( GXContactBitangentConstraint ( contacts[ i ], inverseLinkedContacts, squareStationaryThreshold ) );
+		
 		averageNormal.Sum ( averageNormal, contacts[ i ].GetNormal () );
 		averageNormal.Normalize ();
 	}
@@ -89,6 +102,7 @@ GXVoid GXContactResolver::ResolvePairBodyContacts ( GXContact* contacts )
 GXVoid GXContactResolver::ResolveSingleBodyContacts ( GXContact* contacts )
 {
 	GXUInt linkedContacts = contacts->GetLinkedContacts ();
+	GXFloat inverseLinkedContacts = 1.0f / static_cast<GXFloat> ( linkedContacts );
 
 	GXRigidBody& firstBody = contacts->GetFirstRigidBody ();
 	GXRigidBody& secondBody = contacts->GetSecondRigidBody ();
@@ -100,8 +114,9 @@ GXVoid GXContactResolver::ResolveSingleBodyContacts ( GXContact* contacts )
 	for ( GXUInt i = 0u; i < linkedContacts; i++ )
 	{
 		singleBodyConstraintSolver.AddConstraint ( GXContactFrictionlessConstraint ( contacts[ i ], baumgarteFactor ) );
-		singleBodyConstraintSolver.AddConstraint ( GXContactTangentConstraint ( contacts[ i ], linkedContacts ) );
-		singleBodyConstraintSolver.AddConstraint ( GXContactBitangentConstraint ( contacts[ i ], linkedContacts ) );
+		singleBodyConstraintSolver.AddConstraint ( GXContactTangentConstraint ( contacts[ i ], inverseLinkedContacts, squareStationaryThreshold ) );
+		singleBodyConstraintSolver.AddConstraint ( GXContactBitangentConstraint ( contacts[ i ], inverseLinkedContacts, squareStationaryThreshold ) );
+		
 		averageNormal.Sum ( averageNormal, contacts[ i ].GetNormal () );
 		averageNormal.Normalize ();
 	}

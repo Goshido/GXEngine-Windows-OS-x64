@@ -11,8 +11,8 @@
 
 
 class EMUIColorPicker;
-typedef GXVoid ( GXCALL* PFNEMONHSVACOLORPROC ) ( GXVoid* handler, const GXColorHSV color );
-typedef GXVoid ( GXCALL* PFNEMONRGBACOLORPROC ) ( GXVoid* handler, const GXColorRGB color );
+typedef GXVoid ( GXCALL* PFNEMONHSVACOLORPROC ) ( GXVoid* handler, const GXColorHSV &color );
+typedef GXVoid ( GXCALL* PFNEMONRGBACOLORPROC ) ( GXVoid* handler, const GXColorRGB &color );
 typedef GXVoid ( GXCALL* PFNEMONRGBAUBYTECOLORPROC ) ( GXVoid* handler, GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
 
 

@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_LOCALE
 #define GX_LOCALE
@@ -7,10 +7,10 @@
 #include <GXCommon/GXMemory.h>
 
 
-enum class eGXLanguage : GXShort
+enum class eGXLanguage : GXUShort
 {
-	English,
-	Russian
+	English = 0,
+	Russian = 1
 };
 
 class GXLocale
@@ -22,6 +22,7 @@ class GXLocale
 		static GXLocale*	instance;
 
 	public:
+		static GXLocale& GXCALL GetInstance ();
 		~GXLocale ();
 
 		GXVoid LoadLanguage ( const GXWChar* fileName, eGXLanguage language );
@@ -31,10 +32,11 @@ class GXLocale
 	
 		const GXWChar* GetString ( const GXWChar* resName ) const;
 
-		static GXLocale& GXCALL GetInstance ();
-
 	private:
 		GXLocale ();
+
+		GXLocale ( const GXLocale &other ) = delete;
+		GXLocale& operator = ( const GXLocale &other ) = delete;
 };
 
 

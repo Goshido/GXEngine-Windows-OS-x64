@@ -100,7 +100,7 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 
 				case eGXDraggableAreaResizeMode::WidthLockLeft:
 				{
-					GXAABB bounds = boundsLocal;
+					GXAABB bounds ( boundsLocal );
 					bounds.max.data[ 0 ] += pos->data[ 0 ] - lastMousePosition.data[ 0 ];
 
 					if ( bounds.GetWidth () < minimumSize.GetX () )
@@ -128,7 +128,7 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 
 				case eGXDraggableAreaResizeMode::WidthLockRight:
 				{
-					GXAABB bounds = boundsLocal;
+					GXAABB bounds ( boundsLocal );
 					bounds.min.data[ 0 ] += pos->data[ 0 ] - lastMousePosition.data[ 0 ];
 
 					if ( bounds.GetWidth () < minimumSize.GetX () )
@@ -156,7 +156,7 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 
 				case eGXDraggableAreaResizeMode::HeightLockBottom:
 				{
-					GXAABB bounds = boundsLocal;
+					GXAABB bounds ( boundsLocal );
 					bounds.max.data[ 1 ] += pos->data[ 1 ] - lastMousePosition.data[ 1 ];
 
 					if ( bounds.GetHeight () < minimumSize.GetY () )
@@ -184,7 +184,7 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 
 				case eGXDraggableAreaResizeMode::HeightLockTop:
 				{
-					GXAABB bounds = boundsLocal;
+					GXAABB bounds ( boundsLocal );
 					bounds.min.data[ 1 ] += pos->data[ 1 ] - lastMousePosition.data[ 1 ];
 
 					if ( bounds.GetHeight () < minimumSize.GetY () )
@@ -215,7 +215,7 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 					GXVec2 delta;
 					delta.Substract ( *pos, lastMousePosition );
 
-					GXAABB bounds = boundsLocal;
+					GXAABB bounds ( boundsLocal );
 					bounds.max.data[ 0 ] += delta.data[ 0 ];
 					bounds.max.data[ 1 ] += delta.data[ 1 ];
 
@@ -260,7 +260,7 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 					GXVec2 delta;
 					delta.Substract ( *pos, lastMousePosition );
 
-					GXAABB bounds = boundsLocal;
+					GXAABB bounds ( boundsLocal );
 					bounds.min.data[ 0 ] += delta.data[ 0 ];
 					bounds.max.data[ 1 ] += delta.data[ 1 ];
 
@@ -305,7 +305,7 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 					GXVec2 delta;
 					delta.Substract ( *pos, lastMousePosition );
 
-					GXAABB bounds = boundsLocal;
+					GXAABB bounds ( boundsLocal );
 					bounds.max.data[ 0 ] += delta.data[ 0 ];
 					bounds.min.data[ 1 ] += delta.data[ 1 ];
 
@@ -350,7 +350,7 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 					GXVec2 delta;
 					delta.Substract ( *pos, lastMousePosition );
 
-					GXAABB bounds = boundsLocal;
+					GXAABB bounds ( boundsLocal );
 					bounds.min.data[ 0 ] += delta.data[ 0 ];
 					bounds.min.data[ 1 ] += delta.data[ 1 ];
 
@@ -408,7 +408,7 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 			GXAABB correctedBounds;
 			correctedBounds.AddVertex ( bounds->min );
 
-			GXVec3 maxPoint = bounds->max;
+			GXVec3 maxPoint ( bounds->max );
 			GXFloat length = bounds->GetWidth ();
 
 			if ( length < minimumSize.GetX () )

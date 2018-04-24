@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_RIGID_BODY
 #define GX_RIGID_BODY
@@ -25,7 +25,6 @@ class GXRigidBody
 
 		GXVec3							linearVelocity;
 		GXVec3							angularVelocity;
-		GXMat3							inverseInertiaTensorLocal;
 
 		GXVec3							totalForce;
 		GXVec3							totalTorque;
@@ -59,7 +58,6 @@ class GXRigidBody
 		GXVoid CalculateCachedData ();
 		GXVoid ClearAccumulators ();
 
-		GXVoid SetInertiaTensor ( const GXMat3 &inertiaTensor );
 		const GXMat3& GetInverseInertiaTensorWorld () const;
 
 		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );

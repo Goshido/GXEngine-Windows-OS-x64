@@ -303,7 +303,9 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXPhysics\GXCollisionDetector.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXConstraint.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXContactBitangentConstraint.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXContactGenerator.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXContactTangentConstraint.cpp" />
+    <ClCompile Include="..\..\Sources\GXPhysics\GXForceGenerator.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXSingleBodyConstraintSolver.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXContact.cpp" />
     <ClCompile Include="..\..\Sources\GXPhysics\GXContactFrictionlessConstraint.cpp" />

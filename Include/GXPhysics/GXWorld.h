@@ -47,6 +47,9 @@ class GXWorld
 	private:
 		GXRigidBodyRegistration* FindRigidBodyRegistration ( GXRigidBody &body );
 		GXForceGeneratorsRegistration* FindForceGeneratorRegistration ( GXRigidBody &body, GXForceGenerator &generator );
+
+		GXWorld ( const GXWorld &other ) = delete;
+		GXWorld& operator = ( const GXWorld &other ) = delete;
 };
 
 

@@ -1,13 +1,13 @@
-// version 1.0
+// version 1.1
 
 #include <GXPhysics/GXCollisionData.h>
 #include <GXCommon/GXMemory.h>
 
 
-GXCollisionData::GXCollisionData ( GXUInt maxContacts )
+GXCollisionData::GXCollisionData ( GXUInt maxContacts ):
+	maxContacts ( maxContacts )
 {
-	this->maxContacts = maxContacts;
-	contactArray = (GXContact*)malloc ( maxContacts * sizeof ( GXContact ) );
+	contactArray = static_cast<GXContact*> ( malloc ( maxContacts * sizeof ( GXContact ) ) );
 	Reset ();
 }
 

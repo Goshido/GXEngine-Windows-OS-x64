@@ -7,11 +7,11 @@
 #include <GXCommon/GXMath.h>
 
 
-enum class eGXShapeType
+enum class eGXShapeType : GXUByte
 {
-	Sphere,
-	Box,
-	Rectangle
+	Sphere = 0u,
+	Box = 1u,
+	Rectangle = 2u
 };
 
 class GXRigidBody;
@@ -32,7 +32,7 @@ class GXShape
 		GXAABB			boundsWorld;
 
 	public:
-		GXShape ( eGXShapeType type, GXRigidBody* body );
+		explicit GXShape ( eGXShapeType type, GXRigidBody* body );
 		virtual ~GXShape ();
 
 		eGXShapeType GetType () const;
@@ -58,6 +58,10 @@ class GXShape
 
 	protected:
 		virtual GXVoid UpdateBoundsWorld () = 0;
+
+	private:
+		GXShape ( const GXShape &other ) = delete;
+		GXShape& operator = ( const GXShape &other ) = delete;
 };
 
 

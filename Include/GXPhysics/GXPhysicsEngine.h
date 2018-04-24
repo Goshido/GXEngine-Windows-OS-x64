@@ -13,14 +13,14 @@ class GXPhysicsEngine
 		static GXPhysicsEngine*	instance;
 
 		GXWorld					world;
-		GXFloat					sleepTimeout;
-		GXFloat					maximumLocationChangeSquaredDeviation;
-		GXFloat					maximumRotationChangeSquaredDeviation;
+		GXFloat					time;
 
 		GXFloat					timeStep;
 		GXFloat					adjustedTimeStep;
-		GXFloat					time;
 		GXFloat					timeMultiplier;
+		GXFloat					sleepTimeout;
+		GXFloat					maximumLocationChangeSquaredDeviation;
+		GXFloat					maximumRotationChangeSquaredDeviation;
 
 	public:
 		~GXPhysicsEngine ();
@@ -63,6 +63,9 @@ class GXPhysicsEngine
 
 	private:
 		GXPhysicsEngine ();
+
+		GXPhysicsEngine ( const GXPhysicsEngine &other ) = delete;
+		GXPhysicsEngine& operator = ( const GXPhysicsEngine &other ) = delete;
 };
 
 

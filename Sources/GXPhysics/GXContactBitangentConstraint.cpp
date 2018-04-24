@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #include <GXPhysics/GXContactBitangentConstraint.h>
 
@@ -6,11 +6,8 @@
 #define CONSTRAINT_BIAS	0.0f
 
 
-GXContactBitangentConstraint::GXContactBitangentConstraint ( GXContact &contact, GXUInt linkedContacts )
+GXContactBitangentConstraint::GXContactBitangentConstraint ( GXContact &contact, GXFloat inverseLinkedContacts, GXFloat squareThreshold )
 {
-	// Based on
-	// http://allenchou.net/2013/12/game-physics-resolution-contact-constraints/
-
 	const GXVec3& contactPoint = contact.GetContactPoint ();
 	const GXRigidBody& firstBody = contact.GetFirstRigidBody ();
 	const GXRigidBody& secondBody = contact.GetSecondRigidBody ();
@@ -26,22 +23,43 @@ GXContactBitangentConstraint::GXContactBitangentConstraint ( GXContact &contact,
 	memcpy ( jacobian[ 0 ].data, &bitangent, sizeof ( GXVec3 ) );
 	memcpy ( jacobian[ 0 ].data + 3, &tmp, sizeof ( GXVec3 ) );
 
+	GXVec3 relativeVelocity ( firstBody.GetLinearVelocity () );
+	tmp.CrossProduct ( firstBody.GetAngularVelocity (), toPoint );
+	relativeVelocity.Sum ( relativeVelocity, tmp );
+
 	toPoint.Substract ( contactPoint, secondBody.GetLocation () );
 
-	GXVec3 reverseBitangent ( bitangent );
-	reverseBitangent.Reverse ();
+	GXVec3 reverseBitengent ( bitangent );
+	reverseBitengent.Reverse ();
 
-	tmp.CrossProduct ( toPoint, reverseBitangent );
+	tmp.CrossProduct ( toPoint, reverseBitengent );
 
-	memcpy ( jacobian[ 1 ].data, &reverseBitangent, sizeof ( GXVec3 ) );
+	memcpy ( jacobian[ 1 ].data, &reverseBitengent, sizeof ( GXVec3 ) );
 	memcpy ( jacobian[ 1 ].data + 3, &tmp, sizeof ( GXVec3 ) );
+
+	relativeVelocity.Substract ( relativeVelocity, secondBody.GetLinearVelocity () );
+	tmp.CrossProduct ( secondBody.GetAngularVelocity (), toPoint );
+	relativeVelocity.Substract ( relativeVelocity, tmp );
 
 	bias = CONSTRAINT_BIAS;
 
-	// TODO find solution
+	GXMat3 toContactSpace;
+	toContactSpace.SetX ( contact.GetTangent () );
+	toContactSpace.SetY ( bitangent );
+	toContactSpace.SetZ ( normal );
 
-	GXFloat alpha = fabsf ( contact.GetStaticFriction () * normal.DotProduct ( firstBody.GetTotalForce () ) ) / (GXFloat)linkedContacts;
-	lambdaRange.Init ( -alpha, alpha );
+	toContactSpace.MultiplyMatrixVector ( tmp, relativeVelocity );
+
+	GXVec2 planarVelocity ( tmp.data[ 0 ], tmp.data[ 1 ] );
+	GXFloat friction;
+
+	if ( planarVelocity.SquaredLength () < squareThreshold )
+		friction = contact.GetStaticFriction ();
+	else
+		friction = contact.GetDynamicFriction ();
+
+	GXFloat limit = fabsf ( friction * normal.DotProduct ( firstBody.GetTotalForce () ) * inverseLinkedContacts );
+	lambdaRange.Init ( -limit, limit );
 }
 
 GXContactBitangentConstraint::~GXContactBitangentConstraint ()

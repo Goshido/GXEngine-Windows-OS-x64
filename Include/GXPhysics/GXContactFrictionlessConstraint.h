@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_CONTACT_FRICTIONLESS_CONSTRAINT
 #define GX_CONTACT_FRICTIONLESS_CONSTRAINT
@@ -20,6 +20,10 @@ class GXContactFrictionlessConstraint : public GXConstraint
 		explicit GXContactFrictionlessConstraint ( GXContact &contact, GXFloat baumgarteFactor );
 
 		~GXContactFrictionlessConstraint () override;
+
+	private:
+		GXContactFrictionlessConstraint ( const GXContactFrictionlessConstraint &other ) = delete;
+		GXContactFrictionlessConstraint& operator = ( const GXContactFrictionlessConstraint &other ) = delete;
 };
 
 

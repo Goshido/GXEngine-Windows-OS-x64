@@ -74,6 +74,7 @@ GXVoid GXWorld::RegisterRigidBody ( GXRigidBody &body )
 GXVoid GXWorld::UnregisterRigidBody ( GXRigidBody &body )
 {
 	GXRigidBodyRegistration* reg = FindRigidBodyRegistration ( body );
+
 	if ( !reg )
 	{
 		GXLogW ( L"GXWorld::UnregisterRigidBody::Error - Can't find rigid body!" );
@@ -321,7 +322,7 @@ GXBool GXWorld::Raycast ( const GXVec3 &origin, const GXVec3 &direction, GXFloat
 
 			case eGXShapeType::Box:
 			{
-				const GXAABB boundsLocal = shape.GetBoundsLocal ();
+				const GXAABB boundsLocal ( shape.GetBoundsLocal () );
 
 				GXVec3 geometryLocal[ 8 ];
 				geometryLocal[ 0 ] = boundsLocal.min;
@@ -354,7 +355,7 @@ GXBool GXWorld::Raycast ( const GXVec3 &origin, const GXVec3 &direction, GXFloat
 				for ( GXUByte i = 0u; i < 8u; i++ )
 					shapeTransform.MultiplyAsPoint ( geometryWorld[ i ], geometryLocal[ i ] );
 
-				const GXUByte totalTriangles = (GXUByte)12u;
+				const GXUByte totalTriangles = 12u;
 				GXUByte offset = 0u;
 
 				for ( GXUByte i = 0u; i < totalTriangles; i++ )

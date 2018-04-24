@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #include <GXEngine/GXLocale.h>
 #include <GXCommon/GXAVLTree.h>
@@ -18,7 +18,7 @@ class GXStringNode : public GXAVLTreeNode
 
 	public:
 		GXStringNode ();
-		GXStringNode ( const GXUTF8* key, const GXUTF8* value );
+		explicit GXStringNode ( const GXUTF8* key, const GXUTF8* value );
 		~GXStringNode () override;
 
 		const GXWChar* GetValue () const;
@@ -98,13 +98,13 @@ const GXWChar* GXStringTree::GetString ( const GXWChar* key ) const
 {
 	GXStringNode finderNode;
 	GXStringNode::InitFinderNode ( finderNode, key );
-	GXStringNode* node = (GXStringNode*)Find ( finderNode );
+	const GXStringNode* node = static_cast<const GXStringNode*> ( Find ( finderNode ) );
 	GXStringNode::DestroyFinderNode ( finderNode );
 
 	if ( node )
 		return node->GetValue ();
 
-	return 0;
+	return nullptr;
 }
 
 GXInt GXCALL GXStringTree::Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b )
@@ -127,16 +127,24 @@ enum eGXParserState : GXUByte
 
 GXLocale* GXLocale::instance = nullptr;
 
+GXLocale& GXCALL GXLocale::GetInstance ()
+{
+	if ( !instance )
+		instance = new GXLocale ();
+
+	return *instance;
+}
+
 GXLocale::~GXLocale ()
 {
-	GXUInt len = storage.GetLength ();
-	if ( !len ) return;
+	GXUPointer len = storage.GetLength ();
 
-	for ( GXUInt i = 0; i < len; i++ )
-	{
-		GXStringTree* tree = *( (GXStringTree**)storage.GetValue ( i ) );
-		GXSafeDelete ( tree );
-	}
+	if ( len == 0u ) return;
+
+	GXStringTree** trees = static_cast<GXStringTree**> ( storage.GetData () );
+
+	for ( GXUPointer i = 0u; i < len; i++ )
+		GXSafeDelete ( trees[ i ] );
 
 	instance = nullptr;
 }
@@ -145,7 +153,7 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 {
 	GXUTF8* data;
 	GXUPointer size;
-	GXLoadFile ( fileName, (GXVoid**)&data, size, GX_TRUE );
+	GXLoadFile ( fileName, reinterpret_cast<GXVoid**> ( &data ), size, GX_TRUE );
 
 	GXStringTree* tree = nullptr;
 	GXVoid* tmp = storage.GetValue ( (GXUInt)language );
@@ -153,7 +161,7 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 	if ( !tmp )
 	{
 		tree = new GXStringTree ();
-		storage.SetValue ( (GXUInt)language, &tree );
+		storage.SetValue ( static_cast<GXUPointer> ( language ), &tree );
 	}
 	else
 	{
@@ -161,9 +169,9 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 	}
 
 	eGXParserState state = eGXParserState::Key;
-	GXUInt offset = 0;
+	GXUInt offset = 0u;
 	GXUTF8* key = data;
-	GXUTF8* string = 0;
+	GXUTF8* string = nullptr;
 
 	while ( offset < size )
 	{
@@ -172,7 +180,7 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 			data[ offset ] = 0;
 			if ( state == eGXParserState::Key )
 			{
-				string = data + offset + 1;
+				string = data + offset + 1u;
 				state = eGXParserState::String;
 			}
 			else
@@ -194,7 +202,7 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 
 				if ( offset >= size ) break;
 
-				key = data + offset + 1;
+				key = data + offset + 1u;
 				state = eGXParserState::Key;
 			}
 		}
@@ -207,8 +215,10 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 
 GXVoid GXLocale::SetLanguage ( eGXLanguage language )
 {
-	GXStringTree* tree = *( (GXStringTree**)storage.GetValue ( (GXUInt)language ) );
-	if ( !tree )
+	GXUPointer languageIndex = static_cast<GXUPointer> ( language );
+	GXStringTree** treePointer = static_cast<GXStringTree**> ( storage.GetValue ( languageIndex ) );
+
+	if ( *treePointer == nullptr )
 	{
 		GXLogW ( L"GXLocale::SetLanguage - Не могу установить язык (не загружен)\n" );
 		return;
@@ -224,21 +234,18 @@ eGXLanguage GXLocale::GetLanguage () const
 
 const GXWChar* GXLocale::GetString ( const GXWChar* resName ) const
 {
-	GXStringTree* tree = *( (GXStringTree**)storage.GetValue ( (GXUInt)currentLanguage ) );
+	GXUPointer languageIndex = static_cast<GXUPointer> ( currentLanguage );
+	GXStringTree** treePointer = static_cast<GXStringTree**> ( storage.GetValue ( languageIndex ) );
+	GXStringTree* tree = *treePointer;
+
 	if ( tree ) return tree->GetString ( resName );
+
 	return nullptr;
 }
 
-GXLocale& GXCALL GXLocale::GetInstance ()
-{
-	if ( !instance )
-		instance = new GXLocale ();
-
-	return *instance;
-}
-
 GXLocale::GXLocale ():
-storage ( sizeof ( GXStringTree* ) )
+	currentLanguage ( eGXLanguage::Russian ),
+	storage ( sizeof ( GXStringTree* ) )
 {
-	currentLanguage = eGXLanguage::Russian;
+	// NOTHING
 }

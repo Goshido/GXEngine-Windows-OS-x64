@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_GRAVITY
 #define GX_GRAVITY
@@ -13,8 +13,14 @@ class GXGravity : public GXForceGenerator
 		GXVec3		gravity;
 
 	public:
-		GXGravity ( const GXVec3 &gravity );
+		explicit GXGravity ( const GXVec3 &gravity );
+		~GXGravity () override;
+
 		GXVoid UpdateForce ( GXRigidBody &body, GXFloat deltaTime ) override;
+
+	private:
+		GXGravity ( const GXGravity &other ) = delete;
+		GXGravity& operator = ( const GXGravity &other ) = delete;
 };
 
 

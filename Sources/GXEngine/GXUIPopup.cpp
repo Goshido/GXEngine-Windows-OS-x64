@@ -56,7 +56,7 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 				item.boundsWorld.AddVertex ( boundsLocal.min.GetX (), boundsLocal.min.GetY () - itemHeight, boundsLocal.min.GetZ () );
 				item.boundsWorld.AddVertex ( boundsLocal.max.GetX (), boundsLocal.min.GetY (), boundsLocal.max.GetZ () );
 
-				GXAABB newBoundsLocal = boundsLocal;
+				GXAABB newBoundsLocal ( boundsLocal );
 				newBoundsLocal.min.data[ 1 ] -= itemHeight;
 				UpdateBoundsWorld ( newBoundsLocal );
 			}
@@ -80,7 +80,7 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 			{
 				GXUIPopupItem* itemStorage = (GXUIPopupItem*)items.GetData ();
 
-				GXAABB newBoundsLocal = boundsLocal;
+				GXAABB newBoundsLocal ( boundsLocal );
 				newBoundsLocal.min.SetY ( newBoundsLocal.max.GetY () );
 
 				for ( GXUInt i = 0; i < totalItems; i++ )

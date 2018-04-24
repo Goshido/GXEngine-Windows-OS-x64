@@ -58,16 +58,16 @@ GXVoid GXSingleBodyConstraintSolver::AddConstraint ( const GXConstraint& constra
 
 	GXUInt offset = constraints * ELEMENTS_PER_CONSTRAINT;
 
-	GXVec6* jacobianData = (GXVec6*)jacobian.GetData ();
+	GXVec6* jacobianData = static_cast<GXVec6*> ( jacobian.GetData () );
 	memcpy ( jacobianData + offset, constraint.GetJacobian (), ELEMENTS_PER_CONSTRAINT * sizeof ( GXVec6 ) );
 
-	GXFloat* biasData = (GXFloat*)bias.GetData ();
+	GXFloat* biasData = static_cast<GXFloat*> ( bias.GetData () );
 	biasData[ constraints ] = constraint.GetBias ();
 
-	GXVec2* lambdaRangeData = (GXVec2*)lambdaRange.GetData ();
+	GXVec2* lambdaRangeData = static_cast<GXVec2*> ( lambdaRange.GetData () );
 	lambdaRangeData[ constraints ] = constraint.GetLambdaRange ();
 
-	GXFloat* initialLambdaData = (GXFloat*)initialLambda.GetData ();
+	GXFloat* initialLambdaData = static_cast<GXFloat*> ( initialLambda.GetData () );
 	initialLambdaData[ constraints ] = DEFAULT_INITIAL_LAMBDA;
 
 	constraints++;
@@ -78,20 +78,20 @@ GXVoid GXSingleBodyConstraintSolver::End ()
 	UpdateB ();
 	UpdateEta ();
 
-	const GXFloat* initialLambdaData = (const GXFloat*)initialLambda.GetData ();
+	const GXFloat* initialLambdaData = static_cast<const GXFloat*> ( initialLambda.GetData () );
 	GXFloat* lambdaData = (GXFloat*)lambda.GetData ();
 	memcpy ( lambdaData, initialLambdaData, constraints * sizeof ( GXFloat ) );
 
 	UpdateA ();
 
 	GXFloat* dData = (GXFloat*)d.GetData ();
-	const GXVec6* bData = (const GXVec6*)b.GetData ();
+	const GXVec6* bData = static_cast<const GXVec6*> ( b.GetData () );
 
 	for ( GXUInt i = 0u; i < constraints; i++ )
 		dData[ i ] = bData[ i ].DotProduct ( GetJacobianElement ( i, 0 ) );
 
-	const GXFloat* etaData = (const GXFloat*)eta.GetData ();
-	const GXVec2* lambdaRangeData = (const GXVec2*)lambdaRange.GetData ();
+	const GXFloat* etaData = static_cast<const GXFloat*> ( eta.GetData () );
+	const GXVec2* lambdaRangeData = static_cast<const GXVec2*> ( lambdaRange.GetData () );
 
 	for ( GXUInt iteration = 0u; iteration < maximumIterations; iteration++ )
 	{
@@ -117,7 +117,7 @@ GXVoid GXSingleBodyConstraintSolver::End ()
 
 GXVoid GXSingleBodyConstraintSolver::UpdateB ()
 {
-	GXVec6* bData = (GXVec6*)b.GetData ();
+	GXVec6* bData = static_cast<GXVec6*> ( b.GetData () );
 
 	GXFloat firstInverseMass = firstBody->GetInverseMass ();
 	const GXMat3& firstInverseInertia = firstBody->GetInverseInertiaTensorWorld ();
@@ -167,8 +167,8 @@ GXVoid GXSingleBodyConstraintSolver::UpdateEta ()
 
 	alpha0.Sum ( alpha0, betta );
 
-	GXFloat* etaData = (GXFloat*)eta.GetData ();
-	const GXFloat* biasData = (GXFloat*)bias.GetData ();
+	GXFloat* etaData = static_cast<GXFloat*> ( eta.GetData () );
+	const GXFloat* biasData = static_cast<GXFloat*> ( bias.GetData () );
 
 	for ( GXUInt i = 0u; i < constraints; i++ )
 		etaData[ i ] = inverseDeltaTime * biasData[ i ] - ( alpha0.DotProduct ( GetJacobianElement ( i, 0 ) ) + alpha1.DotProduct ( GetJacobianElement ( i, 1 ) ) );
@@ -176,7 +176,7 @@ GXVoid GXSingleBodyConstraintSolver::UpdateEta ()
 
 GXVoid GXSingleBodyConstraintSolver::UpdateA ()
 {
-	const GXFloat* lambdaData = (const GXFloat*)lambda.GetData ();
+	const GXFloat* lambdaData = static_cast<const GXFloat*> ( lambda.GetData () );
 	const GXVec6* bData = (const GXVec6*)b.GetData ();
 
 	memset ( &a, 0, sizeof ( GXVec6 ) );
@@ -196,7 +196,7 @@ GXVoid GXSingleBodyConstraintSolver::UpdateA ()
 
 GXVoid GXSingleBodyConstraintSolver::UpdateBodyVelocity ()
 {
-	const GXFloat* lambdaData = (const GXFloat*)lambda.GetData ();
+	const GXFloat* lambdaData = static_cast<const GXFloat*> ( lambda.GetData () );
 	GXFloat firstInverseMass = firstBody->GetInverseMass ();
 	const GXMat3& firstInverseInertia = firstBody->GetInverseInertiaTensorWorld ();
 	GXFloat deltaTime = GXPhysicsEngine::GetInstance ().GetTimeStep ();
@@ -239,6 +239,6 @@ GXVoid GXSingleBodyConstraintSolver::UpdateBodyVelocity ()
 
 const GXVec6& GXSingleBodyConstraintSolver::GetJacobianElement ( GXUInt constraint, GXUByte bodyIndex ) const
 {
-	const GXVec6* elements = (const GXVec6*)jacobian.GetData ();
+	const GXVec6* elements = static_cast<const GXVec6*> ( jacobian.GetData () );
 	return elements[ constraint * ELEMENTS_PER_CONSTRAINT + (GXUInt)bodyIndex ];
 }

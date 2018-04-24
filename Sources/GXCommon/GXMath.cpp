@@ -1,4 +1,4 @@
-﻿// version 1.46
+﻿// version 1.47
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
@@ -36,15 +36,15 @@ GXVec2::GXVec2 ()
 	memset ( this, 0, sizeof ( GXVec2 ) );
 }
 
+GXVec2::GXVec2 ( const GXVec2 &other )
+{
+	memcpy ( this, &other, sizeof ( GXVec2 ) );
+}
+
 GXVec2::GXVec2 ( GXFloat x, GXFloat y )
 {
 	data[ 0 ] = x;
 	data[ 1 ] = y;
-}
-
-GXVec2::GXVec2 ( const GXVec2 &other )
-{
-	memcpy ( this, &other, sizeof ( GXVec2 ) );
 }
 
 GXVoid GXVec2::SetX ( GXFloat x )
@@ -164,7 +164,7 @@ eGXLineRelationship GXCALL GXLineIntersection2D ( GXVec2 &intersectionPoint, con
 
 	if ( omega == 0.0f )
 	{
-		GXVec2 gamma = a0.IsEqual ( b0 ) ? b1 : b0;
+		GXVec2 gamma ( a0.IsEqual ( b0 ) ? b1 : b0 );
 
 		GXVec2 zetta;
 		zetta.Substract ( gamma, a0 );
@@ -202,16 +202,16 @@ GXVec3::GXVec3 ()
 	memset ( data, 0, 3 * sizeof ( GXFloat ) );
 }
 
+GXVec3::GXVec3 ( const GXVec3 &other )
+{
+	memcpy ( this, &other, sizeof ( GXVec3 ) );
+}
+
 GXVec3::GXVec3 ( GXFloat x, GXFloat y, GXFloat z )
 {
 	SetX ( x );
 	SetY ( y );
 	SetZ ( z );
-}
-
-GXVec3::GXVec3 ( const GXVec3 &other )
-{
-	memcpy ( this, &other, sizeof ( GXVec3 ) );
 }
 
 GXVoid GXVec3::SetX ( GXFloat x )
@@ -343,7 +343,7 @@ GXVoid GXVec3::LinearInterpolation ( const GXVec3 &start, const GXVec3 &finish, 
 
 GXVoid GXVec3::Project ( const GXVec3 &vector, const GXVec3 &axis )
 {
-	GXVec3 normalVector = vector;
+	GXVec3 normalVector ( vector );
 	normalVector.Normalize ();
 	GXFloat factor = vector.Length () * axis.DotProduct ( normalVector );
 	Multiply ( axis, factor );
@@ -490,11 +490,17 @@ GXBool GXCALL GXRayTriangleIntersection3D ( GXFloat &outT, const GXVec3 &origin,
 
 //----------------------------------------------------------------------------
 
-GXEuler::GXEuler ()
+GXEuler::GXEuler ():
+	pitchRadians ( 0.0f ),
+	yawRadians ( 0.0f ),
+	rollRadians ( 0.0f )
 {
-	pitchRadians = 0.0f;
-	yawRadians = 0.0f;
-	rollRadians = 0.0f;
+	// NOTHING
+}
+
+GXEuler::GXEuler ( const GXEuler &other )
+{
+	memcpy ( this, &other, sizeof ( GXEuler ) );
 }
 
 GXEuler::GXEuler ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians )
@@ -502,11 +508,6 @@ GXEuler::GXEuler ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians
 	this->pitchRadians = pitchRadians;
 	this->yawRadians = yawRadians;
 	this->rollRadians = rollRadians;
-}
-
-GXEuler::GXEuler ( const GXEuler &other )
-{
-	memcpy ( this, &other, sizeof ( GXEuler ) );
 }
 
 GXEuler& GXEuler::operator = ( const GXEuler &other )
@@ -520,6 +521,11 @@ GXEuler& GXEuler::operator = ( const GXEuler &other )
 GXVec4::GXVec4 ()
 {
 	// NOTHING
+}
+
+GXVec4::GXVec4 ( const GXVec4 &other )
+{
+	memcpy ( this, &other, sizeof ( GXVec4 ) );
 }
 
 GXVec4::GXVec4 ( const GXVec3 &vector, GXFloat w )
@@ -633,6 +639,11 @@ GXVec6::GXVec6 ()
 	// NOTHING
 }
 
+GXVec6::GXVec6 ( const GXVec6 &other )
+{
+	memcpy ( this, &other, sizeof ( GXVec6 ) );
+}
+
 GXVec6::GXVec6 ( GXFloat a1, GXFloat a2, GXFloat a3, GXFloat a4, GXFloat a5, GXFloat a6 )
 {
 	data[ 0 ] = a1;
@@ -697,6 +708,11 @@ GXColorRGB::GXColorRGB ()
 	memset ( data, 0, 4 * sizeof ( GXFloat ) );
 }
 
+GXColorRGB::GXColorRGB ( const GXColorRGB &other )
+{
+	memcpy ( this, &other, sizeof ( GXColorRGB ) );
+}
+
 GXColorRGB::GXColorRGB ( GXFloat red, GXFloat green, GXFloat blue, GXFloat alpha )
 {
 	Init ( red, green, blue, alpha );
@@ -710,11 +726,6 @@ GXColorRGB::GXColorRGB ( GXUByte red, GXUByte green, GXUByte blue, GXFloat alpha
 GXColorRGB::GXColorRGB ( const GXColorHSV &color )
 {
 	From ( color );
-}
-
-GXColorRGB::GXColorRGB ( const GXColorRGB &other )
-{
-	memcpy ( this, &other, sizeof ( GXColorRGB ) );
 }
 
 GXVoid GXColorRGB::Init ( GXFloat red, GXFloat green, GXFloat blue, GXFloat alpha )
@@ -858,6 +869,11 @@ GXColorHSV::GXColorHSV ()
 	memset ( data, 0, 4 * sizeof ( GXFloat ) );
 }
 
+GXColorHSV::GXColorHSV ( const GXColorHSV &other )
+{
+	memcpy ( this, &other, sizeof ( GXColorHSV ) );
+}
+
 GXColorHSV::GXColorHSV ( GXFloat hue, GXFloat saturation, GXFloat value, GXFloat alpha )
 {
 	data[ 0 ] = hue;
@@ -869,11 +885,6 @@ GXColorHSV::GXColorHSV ( GXFloat hue, GXFloat saturation, GXFloat value, GXFloat
 GXColorHSV::GXColorHSV ( const GXColorRGB &color )
 {
 	From ( color );
-}
-
-GXColorHSV::GXColorHSV ( const GXColorHSV &other )
-{
-	memcpy ( this, &other, sizeof ( GXColorHSV ) );
 }
 
 GXVoid GXColorHSV::SetHue ( GXFloat hue )
@@ -959,6 +970,11 @@ GXQuat::GXQuat ()
 	memset ( data, 0, 4 * sizeof ( GXFloat ) );
 }
 
+GXQuat::GXQuat ( const GXQuat &other )
+{
+	memcpy ( this, &other, sizeof ( GXQuat ) );
+}
+
 GXQuat::GXQuat ( GXFloat r, GXFloat a, GXFloat b, GXFloat c )
 {
 	Init ( r, a, b, c );
@@ -972,11 +988,6 @@ GXQuat::GXQuat ( const GXMat3 &rotationMatrix )
 GXQuat::GXQuat ( const GXMat4 &rotationMatrix )
 {
 	From ( rotationMatrix );
-}
-
-GXQuat::GXQuat ( const GXQuat &other )
-{
-	memcpy ( this, &other, sizeof ( GXQuat ) );
 }
 
 GXVoid GXQuat::Init ( GXFloat r, GXFloat a, GXFloat b, GXFloat c )
@@ -2334,26 +2345,34 @@ GXVoid GXMat4::Multiply ( const GXMat4 &a, const GXMat4 &b )
 	m[ 3 ][ 3 ] = a.m[ 3 ][ 0 ] * b.m[ 0 ][ 3 ] + a.m[ 3 ][ 1 ] * b.m[ 1 ][ 3 ] + a.m[ 3 ][ 2 ] * b.m[ 2 ][ 3 ] + a.m[ 3 ][ 3 ] * b.m[ 3 ][ 3 ];
 }
 
-GXVoid GXMat4::Multiply ( GXVec4 &out, const GXVec4 &v ) const
+GXVoid GXMat4::MultiplyVectorMatrix ( GXVec4 &out, const GXVec4 &v ) const
 {
-	out.SetX ( v.data[ 0 ] * m[ 0 ][ 0 ] + v.data[ 1 ] * m[ 1 ][ 0 ] + v.data[ 2 ] * m[ 2 ][ 0 ] + v.data[ 3 ] * m[ 3 ][ 0 ] );
-	out.SetY ( v.data[ 0 ] * m[ 0 ][ 1 ] + v.data[ 1 ] * m[ 1 ][ 1 ] + v.data[ 2 ] * m[ 2 ][ 1 ] + v.data[ 3 ] * m[ 3 ][ 1 ] );
-	out.SetZ ( v.data[ 0 ] * m[ 0 ][ 2 ] + v.data[ 1 ] * m[ 1 ][ 2 ] + v.data[ 2 ] * m[ 2 ][ 2 ] + v.data[ 3 ] * m[ 3 ][ 2 ] );
-	out.SetW ( v.data[ 0 ] * m[ 0 ][ 3 ] + v.data[ 1 ] * m[ 1 ][ 3 ] + v.data[ 2 ] * m[ 2 ][ 3 ] + v.data[ 3 ] * m[ 3 ][ 3 ] );
+	out.data[ 0 ] = v.data[ 0 ] * m[ 0 ][ 0 ] + v.data[ 1 ] * m[ 1 ][ 0 ] + v.data[ 2 ] * m[ 2 ][ 0 ] + v.data[ 3 ] * m[ 3 ][ 0 ];
+	out.data[ 1 ] = v.data[ 0 ] * m[ 0 ][ 1 ] + v.data[ 1 ] * m[ 1 ][ 1 ] + v.data[ 2 ] * m[ 2 ][ 1 ] + v.data[ 3 ] * m[ 3 ][ 1 ];
+	out.data[ 2 ] = v.data[ 0 ] * m[ 0 ][ 2 ] + v.data[ 1 ] * m[ 1 ][ 2 ] + v.data[ 2 ] * m[ 2 ][ 2 ] + v.data[ 3 ] * m[ 3 ][ 2 ];
+	out.data[ 3 ] = v.data[ 0 ] * m[ 0 ][ 3 ] + v.data[ 1 ] * m[ 1 ][ 3 ] + v.data[ 2 ] * m[ 2 ][ 3 ] + v.data[ 3 ] * m[ 3 ][ 3 ];
+}
+
+GXVoid GXMat4::MultiplyMatrixVector ( GXVec4 &out, const GXVec4 &v ) const
+{
+	out.data[ 0 ] = m[ 0 ][ 0 ] * v.data[ 0 ] + m[ 0 ][ 1 ] * v.data[ 1 ] + m[ 0 ][ 2 ] * v.data[ 2 ] + m[ 0 ][ 3 ] * v.data[ 3 ];
+	out.data[ 1 ] = m[ 1 ][ 0 ] * v.data[ 0 ] + m[ 1 ][ 1 ] * v.data[ 1 ] + m[ 1 ][ 2 ] * v.data[ 2 ] + m[ 1 ][ 3 ] * v.data[ 3 ];
+	out.data[ 2 ] = m[ 2 ][ 0 ] * v.data[ 0 ] + m[ 2 ][ 1 ] * v.data[ 1 ] + m[ 2 ][ 2 ] * v.data[ 2 ] + m[ 2 ][ 3 ] * v.data[ 3 ];
+	out.data[ 3 ] = m[ 3 ][ 0 ] * v.data[ 0 ] + m[ 3 ][ 1 ] * v.data[ 1 ] + m[ 3 ][ 2 ] * v.data[ 2 ] + m[ 3 ][ 3 ] * v.data[ 3 ];
 }
 
 GXVoid GXMat4::MultiplyAsNormal ( GXVec3 &out, const GXVec3 &v ) const
 {
-	out.SetX ( v.data[ 0 ] * m[ 0 ][ 0 ] + v.data[ 1 ] * m[ 1 ][ 0 ] + v.data[ 2 ] * m[ 2 ][ 0 ] );
-	out.SetY ( v.data[ 0 ] * m[ 0 ][ 1 ] + v.data[ 1 ] * m[ 1 ][ 1 ] + v.data[ 2 ] * m[ 2 ][ 1 ] );
-	out.SetZ ( v.data[ 0 ] * m[ 0 ][ 2 ] + v.data[ 1 ] * m[ 1 ][ 2 ] + v.data[ 2 ] * m[ 2 ][ 2 ] );
+	out.data[ 0 ] = v.data[ 0 ] * m[ 0 ][ 0 ] + v.data[ 1 ] * m[ 1 ][ 0 ] + v.data[ 2 ] * m[ 2 ][ 0 ];
+	out.data[ 1 ] = v.data[ 0 ] * m[ 0 ][ 1 ] + v.data[ 1 ] * m[ 1 ][ 1 ] + v.data[ 2 ] * m[ 2 ][ 1 ];
+	out.data[ 2 ] = v.data[ 0 ] * m[ 0 ][ 2 ] + v.data[ 1 ] * m[ 1 ][ 2 ] + v.data[ 2 ] * m[ 2 ][ 2 ];
 }
 
 GXVoid GXMat4::MultiplyAsPoint ( GXVec3 &out, const GXVec3 &v ) const
 {
-	out.SetX ( v.data[ 0 ] * m[ 0 ][ 0 ] + v.data[ 1 ] * m[ 1 ][ 0 ] + v.data[ 2 ] * m[ 2 ][ 0 ] + m[ 3 ][ 0 ] );
-	out.SetY ( v.data[ 0 ] * m[ 0 ][ 1 ] + v.data[ 1 ] * m[ 1 ][ 1 ] + v.data[ 2 ] * m[ 2 ][ 1 ] + m[ 3 ][ 1 ] );
-	out.SetZ ( v.data[ 0 ] * m[ 0 ][ 2 ] + v.data[ 1 ] * m[ 1 ][ 2 ] + v.data[ 2 ] * m[ 2 ][ 2 ] + m[ 3 ][ 2 ] );
+	out.data[ 0 ] = v.data[ 0 ] * m[ 0 ][ 0 ] + v.data[ 1 ] * m[ 1 ][ 0 ] + v.data[ 2 ] * m[ 2 ][ 0 ] + m[ 3 ][ 0 ];
+	out.data[ 1 ] = v.data[ 0 ] * m[ 0 ][ 1 ] + v.data[ 1 ] * m[ 1 ][ 1 ] + v.data[ 2 ] * m[ 2 ][ 1 ] + m[ 3 ][ 1 ];
+	out.data[ 2 ] = v.data[ 0 ] * m[ 0 ][ 2 ] + v.data[ 1 ] * m[ 1 ][ 2 ] + v.data[ 2 ] * m[ 2 ][ 2 ] + m[ 3 ][ 2 ];
 }
 
 GXVoid GXMat4::GetPerspectiveParams ( GXFloat &fieldOfViewYRadiands, GXFloat &aspectRatio, GXFloat &zNear, GXFloat &zFar )
@@ -2914,7 +2933,7 @@ GXVoid GXCALL GXGetRayFromViewer ( GXVec3 &origin, GXVec3 &direction, GXUShort x
 	inverseViewProjectionMatrix.Inverse ( viewProjectionMatrix );
 
 	GXVec4 pointWorld;
-	inverseViewProjectionMatrix.Multiply ( pointWorld, pointCVV );
+	inverseViewProjectionMatrix.MultiplyVectorMatrix ( pointWorld, pointCVV );
 	GXFloat alpha = 1.0f / pointWorld.data[ 3 ];
 
 	pointWorld.data[ 0 ] *= alpha;

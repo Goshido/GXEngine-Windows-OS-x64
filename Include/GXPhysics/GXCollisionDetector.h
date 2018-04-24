@@ -1,4 +1,4 @@
-//version 1.2
+//version 1.3
 
 #ifndef GX_COLLISION_DETECTOR
 #define GX_COLLISION_DETECTOR
@@ -96,6 +96,9 @@ class GXCollisionDetector
 		GXVoid GetCentroid ( GXVec3 &centroid, const GXVec3* points, GXUInt totalPoints );
 		GXVoid UpdateDeviationAxes ();
 		GXVoid UpdateDebugData ( const GXVec2* planarIntersectionGeometry );
+
+		GXCollisionDetector ( const GXCollisionDetector &other ) = delete;
+		GXCollisionDetector& operator = ( const GXCollisionDetector &other ) = delete;
 };
 
 

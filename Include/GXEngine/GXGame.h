@@ -1,4 +1,4 @@
-// verison 1.0
+// verison 1.1
 
 #ifndef GX_GAME
 #define GX_GAME
@@ -17,6 +17,10 @@ class GXGame
 		virtual GXVoid OnResize ( GXInt width, GXInt height ) = 0;
 		virtual GXVoid OnFrame ( GXFloat deltaTime ) = 0;
 		virtual GXVoid OnDestroy () = 0;
+
+	private:
+		GXGame ( const GXGame &other ) = delete;
+		GXGame& operator = ( const GXGame &other ) = delete;
 };
 
 

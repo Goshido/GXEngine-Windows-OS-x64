@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #include <GXPhysics/GXContact.h>
 #include <GXCommon/GXLogger.h>

@@ -51,13 +51,13 @@ GXVoid GXRectangleShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &directio
 	vLocal[ 3 ].Init ( -w, 0.0f, d );
 
 	GXVec3 vWorld[ 4 ];
-	for ( GXUByte i = 0; i < 4; i++ )
+	for ( GXUByte i = 0u; i < 4u; i++ )
 		transformWorld.MultiplyAsPoint ( vWorld[ i ], vLocal[ i ] );
 
-	GXUByte index = 0;
+	GXUByte index = 0u;
 	GXFloat projection = -FLT_MAX;
 
-	for ( GXUByte i = 0; i < 8; i++ )
+	for ( GXUByte i = 0u; i < 8u; i++ )
 	{
 		GXFloat p = direction.DotProduct ( vWorld[ i ] );
 

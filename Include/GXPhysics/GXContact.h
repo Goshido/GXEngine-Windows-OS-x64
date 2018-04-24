@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_CONTACT
 #define GX_CONTACT
@@ -18,9 +18,11 @@ class GXContact
 		GXFloat			dynamicFriction;
 		GXFloat			restitution;
 		GXVec3			point;
+
 		GXVec3			tangent;
 		GXVec3			bitangent;
 		GXVec3			normal;
+
 		GXFloat			penetration;
 
 		GXUInt			gjkIterations;
@@ -78,6 +80,10 @@ class GXContact
 
 		GXVoid SetFaces ( GXUInt totalFaces );
 		GXUInt GetFaces () const;
+
+	private:
+		GXContact ( const GXContact &other ) = delete;
+		GXContact& operator = ( const GXContact &other ) = delete;
 };
 
 

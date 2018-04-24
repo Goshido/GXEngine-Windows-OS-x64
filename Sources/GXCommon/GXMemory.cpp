@@ -1,13 +1,13 @@
-// version 1.1
+// version 1.2
 
 #include <GXCommon/GXMemory.h>
 
 
-GXCircleBuffer::GXCircleBuffer ( GXUInt size )
+GXCircleBuffer::GXCircleBuffer ( GXUPointer size ):
+	size ( size ),
+	offset ( 0u )
 {
-	this->size = size;
-	offset = 0;
-	buffer = (GXUByte*)malloc ( size );
+	buffer = static_cast<GXUByte*> ( malloc ( size ) );
 }
 
 GXCircleBuffer::~GXCircleBuffer ()
@@ -15,9 +15,9 @@ GXCircleBuffer::~GXCircleBuffer ()
 	free ( buffer );
 }
 
-GXVoid* GXCircleBuffer::Allocate ( GXUInt bytes )
+GXVoid* GXCircleBuffer::Allocate ( GXUPointer bytes )
 {
-	if ( bytes == 0 ) return 0;
+	if ( bytes == 0 ) return nullptr;
 
 	if ( ( offset + bytes ) >= size )
 	{
@@ -33,11 +33,12 @@ GXVoid* GXCircleBuffer::Allocate ( GXUInt bytes )
 
 //------------------------------------------------------------------------------------------------
 
-GXDynamicArray::GXDynamicArray ( GXUInt elementSize )
+GXDynamicArray::GXDynamicArray ( GXUPointer elementSize ):
+	data ( nullptr ),
+	elementSize ( elementSize ),
+	numElements ( 0u )
 {
-	this->elementSize =  elementSize;
-	data = 0;
-	numElements = 0;
+	// NOTHING
 }
 
 GXDynamicArray::~GXDynamicArray ()
@@ -45,7 +46,7 @@ GXDynamicArray::~GXDynamicArray ()
 	GXSafeFree ( data );
 }
 
-GXVoid GXDynamicArray::SetValue ( GXUInt i, const GXVoid* element )
+GXVoid GXDynamicArray::SetValue ( GXUPointer i, const GXVoid* element )
 {
 	if ( i >= numElements )
 		Resize ( i + 1 );
@@ -53,7 +54,7 @@ GXVoid GXDynamicArray::SetValue ( GXUInt i, const GXVoid* element )
 	memcpy ( data + i * elementSize, element, elementSize );
 }
 
-GXVoid* GXDynamicArray::GetValue ( GXUInt i ) const
+GXVoid* GXDynamicArray::GetValue ( GXUPointer i ) const
 {
 	if ( i >= numElements ) return 0;
 
@@ -65,15 +66,15 @@ GXVoid* GXDynamicArray::GetData () const
 	return data;
 }
 
-GXUInt GXDynamicArray::GetLength () const
+GXUPointer GXDynamicArray::GetLength () const
 {
 	return numElements;
 }
 
-GXVoid GXDynamicArray::Resize ( GXUInt totalElements )
+GXVoid GXDynamicArray::Resize ( GXUPointer totalElements )
 {
 	GXUByte* old = data;
-	data = (GXUByte*)malloc ( totalElements * elementSize );
+	data = static_cast<GXUByte*> ( malloc ( totalElements * elementSize ) );
 
 	if ( !old )
 	{
@@ -81,7 +82,7 @@ GXVoid GXDynamicArray::Resize ( GXUInt totalElements )
 		return;
 	}
 
-	GXUInt copy = ( totalElements < numElements ) ? totalElements : numElements;
+	GXUPointer copy = ( totalElements < numElements ) ? totalElements : numElements;
 	memcpy ( data, old, copy * elementSize );
 	numElements = totalElements;
 

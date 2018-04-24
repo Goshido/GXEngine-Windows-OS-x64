@@ -4,10 +4,9 @@
 
 
 GXSphereShape::GXSphereShape ( GXRigidBody* body, GXFloat radius ):
-	GXShape ( eGXShapeType::Sphere, body )
+	GXShape ( eGXShapeType::Sphere, body ),
+	radius ( radius )
 {
-	this->radius = radius;
-
 	boundsLocal.AddVertex ( -radius, -radius, -radius );
 	boundsLocal.AddVertex ( radius, radius, radius );
 
@@ -35,7 +34,7 @@ GXVoid GXSphereShape::CalculateInertiaTensor ( GXFloat mass )
 
 GXVoid GXSphereShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const
 {
-	GXVec3 d = direction;
+	GXVec3 d ( direction );
 	d.Normalize ();
 	GXVec3 tmp;
 	transformWorld.GetW ( tmp );
@@ -50,7 +49,7 @@ GXVoid GXSphereShape::UpdateBoundsWorld ()
 	transformWorld.GetW ( center );
 
 	GXVec3 alpha;
-	alpha.Substract ( center, GXVec3 ( radius, radius, radius ) );	
+	alpha.Substract ( center, GXVec3 ( radius, radius, radius ) );
 	boundsWorld.AddVertex ( alpha );
 
 	alpha.Sum ( center, GXVec3 ( radius, radius, radius ) );
