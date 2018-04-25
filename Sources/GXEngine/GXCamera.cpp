@@ -1,36 +1,11 @@
-// version 1.13
+// version 1.14
 
 #include <GXEngine/GXCamera.h>
 
 
-#define DEFAULT_Z_NEAR		-1.0f
-#define DEFAULT_Z_FAR		1.0f
-
-
 GXCamera* GXCamera::activeCamera = nullptr;
 
-GXCamera::GXCamera ()
-{
-	zNear = DEFAULT_Z_NEAR;
-	zFar = DEFAULT_Z_FAR;
 
-	currentFrameModelMatrix.Identity ();
-	currentFrameViewMatrix.Identity ();
-	currentFrameProjectionMatrix.Identity ();
-	currentFrameInverseProjectionMatrix.Identity ();
-	currentFrameViewProjectionMatrix.Identity ();
-	currentFrameInverseViewProjectionMatrix.Identity ();
-	lastFrameModelMatrix.Identity ();
-	lastFrameViewMatrix.Identity ();
-	lastFrameViewProjectionMatrix.Identity ();
-
-	UpdateClipPlanes ();
-}
-
-GXCamera::~GXCamera ()
-{
-	// NOTHING
-}
 
 const GXMat4& GXCamera::GetCurrentFrameViewProjectionMatrix () const
 {
@@ -204,6 +179,28 @@ GXCamera* GXCALL GXCamera::GetActiveCamera ()
 GXVoid GXCALL GXCamera::SetActiveCamera ( GXCamera* camera )
 {
 	activeCamera = camera;
+}
+
+GXCamera::GXCamera ( GXFloat zNear, GXFloat zFar ) :
+	zNear ( zNear ),
+	zFar ( zFar )
+{
+	currentFrameModelMatrix.Identity ();
+	currentFrameViewMatrix.Identity ();
+	currentFrameProjectionMatrix.Identity ();
+	currentFrameInverseProjectionMatrix.Identity ();
+	currentFrameViewProjectionMatrix.Identity ();
+	currentFrameInverseViewProjectionMatrix.Identity ();
+	lastFrameModelMatrix.Identity ();
+	lastFrameViewMatrix.Identity ();
+	lastFrameViewProjectionMatrix.Identity ();
+
+	UpdateClipPlanes ();
+}
+
+GXCamera::~GXCamera ()
+{
+	// NOTHING
 }
 
 GXVoid GXCamera::UpdateClipPlanes ()

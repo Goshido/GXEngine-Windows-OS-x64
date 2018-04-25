@@ -1,4 +1,4 @@
-// version 1.13
+// version 1.14
 
 #ifndef GX_CORE
 #define GX_CORE
@@ -14,16 +14,18 @@ class GXCore
 		static GXCore*					instance;
 
 	public:
+		static GXCore& GXCALL GetInstance ();
 		~GXCore ();
 
 		GXVoid Start ( GXGame &game );
 		GXVoid Exit ();
 
-		static GXCore& GXCALL GetInstance ();
-
 	private:
 		GXCore ();
 		GXVoid CheckMemoryLeak ();
+
+		GXCore ( const GXCore &other ) = delete;
+		GXCore& operator = ( const GXCore &other ) = delete;
 };
 
 

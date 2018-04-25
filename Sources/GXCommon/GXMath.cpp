@@ -1,4 +1,4 @@
-﻿// version 1.47
+﻿// version 1.48
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
@@ -24,11 +24,11 @@
 #define FLOAT_EPSILON					1.0e-4f
 #define INVERSE_RAND_MAX				3.05185e-5f
 
-#define SOLUTION_ALPHA					0
-#define SOLUTION_BETTA					1
-#define SOLUTION_GAMMA					2
-#define SOLUTION_YOTTA					3
-#define UNKNOWN_SOLUTION				0xFF
+#define SOLUTION_ALPHA					0u
+#define SOLUTION_BETTA					1u
+#define SOLUTION_GAMMA					2u
+#define SOLUTION_YOTTA					3u
+#define UNKNOWN_SOLUTION				0xFFu
 
 
 GXVec2::GXVec2 ()
@@ -796,9 +796,9 @@ GXVoid GXColorRGB::From ( const GXColorHSV &color )
 
 	GXFloat value = color.GetValue ();
 
-	GXUByte selector = (GXUByte)( ( (GXInt)correctedHue / 60 ) % 6 );
+	GXUByte selector = static_cast<GXUByte> ( ( static_cast<GXInt> ( correctedHue ) / 60 ) % 6 );
 	GXFloat minValue = ( ( 100.0f - color.GetSaturation () ) * value ) * 0.01f;
-	GXFloat delta = ( value - minValue ) * ( ( (GXInt)correctedHue % 60 ) * HSVA_FACTOR );
+	GXFloat delta = ( value - minValue ) * ( ( static_cast<GXInt> ( correctedHue ) % 60 ) * HSVA_FACTOR );
 	GXFloat increment = minValue + delta;
 	GXFloat decrement = value - delta;
 
@@ -850,10 +850,10 @@ GXVoid GXColorRGB::From ( const GXColorHSV &color )
 
 GXVoid GXColorRGB::ConvertToUByte ( GXUByte &red, GXUByte &green, GXUByte &blue, GXUByte &alpha ) const
 {
-	red = (GXUByte)( data[ 0 ] * RGBA_TO_UBYTE_FACTOR + 0.5f );
-	green = (GXUByte)( data[ 1 ] * RGBA_TO_UBYTE_FACTOR + 0.5f );
-	blue = (GXUByte)( data[ 2 ] * RGBA_TO_UBYTE_FACTOR + 0.5f );
-	alpha = (GXUByte)( data[ 3 ] * RGBA_TO_UBYTE_FACTOR + 0.5f );
+	red = static_cast<GXUByte> ( data[ 0 ] * RGBA_TO_UBYTE_FACTOR + 0.5f );
+	green = static_cast<GXUByte> ( data[ 1 ] * RGBA_TO_UBYTE_FACTOR + 0.5f );
+	blue = static_cast<GXUByte> ( data[ 2 ] * RGBA_TO_UBYTE_FACTOR + 0.5f );
+	alpha = static_cast<GXUByte> ( data[ 3 ] * RGBA_TO_UBYTE_FACTOR + 0.5f );
 }
 
 GXColorRGB& GXColorRGB::operator = ( const GXColorRGB &other )
@@ -1119,7 +1119,7 @@ GXVoid GXQuat::FromFast ( const GXMat3 &pureRotationMatrix )
 	GXFloat solutionFactorGamma = -pureRotationMatrix.m[ 0 ][ 0 ] + pureRotationMatrix.m[ 1 ][ 1 ] - pureRotationMatrix.m[ 2 ][ 2 ] + 1.0f;
 	GXFloat solutionFactorYotta = -pureRotationMatrix.m[ 0 ][ 0 ] - pureRotationMatrix.m[ 1 ][ 1 ] + pureRotationMatrix.m[ 2 ][ 2 ] + 1.0f;
 
-	GXUByte solution = UNKNOWN_SOLUTION;
+	GXUByte solution = static_cast<GXUByte> ( UNKNOWN_SOLUTION );
 
 	if ( solutionFactorAlpha > solutionFactorBetta )
 	{
@@ -1127,40 +1127,40 @@ GXVoid GXQuat::FromFast ( const GXMat3 &pureRotationMatrix )
 		{
 			if ( solutionFactorAlpha > solutionFactorYotta )
 			{
-				solution = SOLUTION_ALPHA;
+				solution = static_cast<GXUByte> ( SOLUTION_ALPHA );
 			}
 			else
 			{
-				solution = SOLUTION_YOTTA;
+				solution = static_cast<GXUByte> ( SOLUTION_YOTTA );
 			}
 		}
 		else if ( solutionFactorGamma > solutionFactorYotta )
 		{
-			solution = SOLUTION_GAMMA;
+			solution = static_cast<GXUByte> ( SOLUTION_GAMMA );
 		}
 		else
 		{
-			solution = SOLUTION_YOTTA;
+			solution = static_cast<GXUByte> ( SOLUTION_YOTTA );
 		}
 	}
 	else if ( solutionFactorBetta > solutionFactorGamma )
 	{
 		if ( solutionFactorBetta > solutionFactorYotta )
 		{
-			solution = SOLUTION_BETTA;
+			solution = static_cast<GXUByte> ( SOLUTION_BETTA );
 		}
 		else
 		{
-			solution = SOLUTION_YOTTA;
+			solution = static_cast<GXUByte> ( SOLUTION_YOTTA );
 		}
 	}
 	else if ( solutionFactorGamma > solutionFactorYotta )
 	{
-		solution = SOLUTION_GAMMA;
+		solution = static_cast<GXUByte> ( SOLUTION_GAMMA );
 	}
 	else
 	{
-		solution = SOLUTION_YOTTA;
+		solution = static_cast<GXUByte> ( SOLUTION_YOTTA );
 	}
 
 	switch ( solution )
@@ -1229,7 +1229,7 @@ GXVoid GXQuat::FromFast ( const GXMat4 &pureRotationMatrix )
 	GXFloat solutionFactorGamma = -pureRotationMatrix.m[ 0 ][ 0 ] + pureRotationMatrix.m[ 1 ][ 1 ] - pureRotationMatrix.m[ 2 ][ 2 ] + 1.0f;
 	GXFloat solutionFactorYotta = -pureRotationMatrix.m[ 0 ][ 0 ] - pureRotationMatrix.m[ 1 ][ 1 ] + pureRotationMatrix.m[ 2 ][ 2 ] + 1.0f;
 
-	GXUByte solution = UNKNOWN_SOLUTION;
+	GXUByte solution = static_cast<GXUByte> ( UNKNOWN_SOLUTION );
 
 	if ( solutionFactorAlpha > solutionFactorBetta )
 	{
@@ -1237,40 +1237,40 @@ GXVoid GXQuat::FromFast ( const GXMat4 &pureRotationMatrix )
 		{
 			if ( solutionFactorAlpha > solutionFactorYotta )
 			{
-				solution = SOLUTION_ALPHA;
+				solution = static_cast<GXUByte> ( SOLUTION_ALPHA );
 			}
 			else
 			{
-				solution = SOLUTION_YOTTA;
+				solution = static_cast<GXUByte> ( SOLUTION_YOTTA );
 			}
 		}
 		else if ( solutionFactorGamma > solutionFactorYotta )
 		{
-			solution = SOLUTION_GAMMA;
+			solution = static_cast<GXUByte> ( SOLUTION_GAMMA );
 		}
 		else
 		{
-			solution = SOLUTION_YOTTA;
+			solution = static_cast<GXUByte> ( SOLUTION_YOTTA );
 		}
 	}
 	else if ( solutionFactorBetta > solutionFactorGamma )
 	{
 		if ( solutionFactorBetta > solutionFactorYotta )
 		{
-			solution = SOLUTION_BETTA;
+			solution = static_cast<GXUByte> ( SOLUTION_BETTA );
 		}
 		else
 		{
-			solution = SOLUTION_YOTTA;
+			solution = static_cast<GXUByte> ( SOLUTION_YOTTA );
 		}
 	}
 	else if ( solutionFactorGamma > solutionFactorYotta )
 	{
-		solution = SOLUTION_GAMMA;
+		solution = static_cast<GXUByte> ( SOLUTION_GAMMA );
 	}
 	else
 	{
-		solution = SOLUTION_YOTTA;
+		solution = static_cast<GXUByte> ( SOLUTION_YOTTA );
 	}
 
 	switch ( solution )
@@ -2734,15 +2734,15 @@ GXVoid GXProjectionClipPlanes::From ( const GXMat4 &src )
 
 GXBool GXProjectionClipPlanes::IsVisible ( const GXAABB &bounds )
 {
-	GXInt flags = (GXInt)PlaneTest ( bounds.min.data[ 0 ], bounds.min.data[ 1 ], bounds.min.data[ 2 ] );
-	flags &= (GXInt)PlaneTest ( bounds.min.data[ 0 ], bounds.max.data[ 1 ], bounds.min.data[ 2 ] );
-	flags &= (GXInt)PlaneTest ( bounds.max.data[ 0 ], bounds.max.data[ 1 ], bounds.min.data[ 2 ] );
-	flags &= (GXInt)PlaneTest ( bounds.max.data[ 0 ], bounds.min.data[ 1 ], bounds.min.data[ 2 ] );
+	GXInt flags = static_cast<GXInt> ( PlaneTest ( bounds.min.data[ 0 ], bounds.min.data[ 1 ], bounds.min.data[ 2 ] ) );
+	flags &= static_cast<GXInt> ( PlaneTest ( bounds.min.data[ 0 ], bounds.max.data[ 1 ], bounds.min.data[ 2 ] ) );
+	flags &= static_cast<GXInt> ( PlaneTest ( bounds.max.data[ 0 ], bounds.max.data[ 1 ], bounds.min.data[ 2 ] ) );
+	flags &= static_cast<GXInt> ( PlaneTest ( bounds.max.data[ 0 ], bounds.min.data[ 1 ], bounds.min.data[ 2 ] ) );
 
-	flags &= (GXInt)PlaneTest ( bounds.min.data[ 0 ], bounds.min.data[ 1 ], bounds.max.data[ 2 ] );
-	flags &= (GXInt)PlaneTest ( bounds.min.data[ 0 ], bounds.max.data[ 1 ], bounds.max.data[ 2 ] );
-	flags &= (GXInt)PlaneTest ( bounds.max.data[ 0 ], bounds.max.data[ 1 ], bounds.max.data[ 2 ] );
-	flags &= (GXInt)PlaneTest ( bounds.max.data[ 0 ], bounds.min.data[ 1 ], bounds.max.data[ 2 ] );
+	flags &= static_cast<GXInt> ( PlaneTest ( bounds.min.data[ 0 ], bounds.min.data[ 1 ], bounds.max.data[ 2 ] ) );
+	flags &= static_cast<GXInt> ( PlaneTest ( bounds.min.data[ 0 ], bounds.max.data[ 1 ], bounds.max.data[ 2 ] ) );
+	flags &= static_cast<GXInt> ( PlaneTest ( bounds.max.data[ 0 ], bounds.max.data[ 1 ], bounds.max.data[ 2 ] ) );
+	flags &= static_cast<GXInt> ( PlaneTest ( bounds.max.data[ 0 ], bounds.min.data[ 1 ], bounds.max.data[ 2 ] ) );
 
 	return ( flags > 0 ) ? GX_FALSE : GX_TRUE;
 }
@@ -2760,7 +2760,7 @@ GXUByte GXProjectionClipPlanes::PlaneTest ( GXFloat x, GXFloat y, GXFloat z )
 	for ( GXUByte i = 0; i < 6; i++ )
 	{
 		if ( planes[ i ].ClassifyVertex ( x, y, z ) == eGXPlaneClassifyVertex::Behind )
-			flags |= (GXUByte)( 1 << i );
+			flags |= static_cast<GXUByte> ( 1 << i );
 	}
 
 	return flags;
@@ -2785,12 +2785,12 @@ GXVoid GXCALL GXConvert3DSMaxToGXEngine ( GXVec3 &gx_out, GXFloat max_x, GXFloat
 
 GXVoid GXCALL GXRandomize ()
 {
-	srand ( (GXUInt)time ( 0 ) );
+	srand ( static_cast<GXUInt> ( time ( 0 ) ) );
 }
 
 GXFloat GXCALL GXRandomNormalize ()
 {
-	return (GXFloat)rand () * INVERSE_RAND_MAX;
+	return static_cast<GXFloat> ( rand () ) * INVERSE_RAND_MAX;
 }
 
 GXFloat GXCALL GXRandomBetween ( GXFloat from, GXFloat to )
@@ -2820,38 +2820,38 @@ GXVoid GXCALL GXGetTangentBitangent ( GXVec3 &outTangent, GXVec3 &outBitangent, 
 	{
 		case 0:
 		{
-			v0 = (const GXVec3*)vertices;
-			v1 = (const GXVec3*)( vertices + vertexStride );
-			v2 = (const GXVec3*)( vertices + 2 * vertexStride );
+			v0 = reinterpret_cast<const GXVec3*> ( vertices );
+			v1 = reinterpret_cast<const GXVec3*> ( vertices + vertexStride );
+			v2 = reinterpret_cast<const GXVec3*> ( vertices + 2 * vertexStride );
 
-			uv0 = (const GXVec2*)uvs;
-			uv1 = (const GXVec2*)( uvs + uvStride );
-			uv2 = (const GXVec2*)( uvs + 2 * uvStride );
+			uv0 = reinterpret_cast<const GXVec2*> ( uvs );
+			uv1 = reinterpret_cast<const GXVec2*> ( uvs + uvStride );
+			uv2 = reinterpret_cast<const GXVec2*> ( uvs + 2 * uvStride );
 		}
 		break;
 
 		case 1:
 		{
-			v0 = (const GXVec3*)( vertices + vertexStride );
-			v1 = (const GXVec3*)( vertices + 2 * vertexStride );
-			v2 = (const GXVec3*)vertices;
+			v0 = reinterpret_cast<const GXVec3*> ( vertices + vertexStride );
+			v1 = reinterpret_cast<const GXVec3*> ( vertices + 2 * vertexStride );
+			v2 = reinterpret_cast<const GXVec3*> ( vertices );
 
-			uv0 = (const GXVec2*)( uvs + uvStride );
-			uv1 = (const GXVec2*)( uvs + 2 * uvStride );
-			uv2 = (const GXVec2*)uvs;
+			uv0 = reinterpret_cast<const GXVec2*> ( uvs + uvStride );
+			uv1 = reinterpret_cast<const GXVec2*> ( uvs + 2 * uvStride );
+			uv2 = reinterpret_cast<const GXVec2*> ( uvs );
 		}
 		break;
 
 		case 2:
 		default:
 		{
-			v0 = (const GXVec3*)( vertices + 2 * vertexStride );
-			v1 = (const GXVec3*)vertices;
-			v2 = (const GXVec3*)( vertices + vertexStride );
+			v0 = reinterpret_cast<const GXVec3*> ( vertices + 2 * vertexStride );
+			v1 = reinterpret_cast<const GXVec3*> ( vertices );
+			v2 = reinterpret_cast<const GXVec3*> ( vertices + vertexStride );
 
-			uv0 = (const GXVec2*)( uvs + 2 * uvStride );
-			uv1 = (const GXVec2*)uvs;
-			uv2 = (const GXVec2*)( uvs + uvStride );
+			uv0 = reinterpret_cast<const GXVec2*> ( uvs + 2 * uvStride );
+			uv1 = reinterpret_cast<const GXVec2*> ( uvs );
+			uv2 = reinterpret_cast<const GXVec2*> ( uvs + uvStride );
 		}
 		break;
 	}

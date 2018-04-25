@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_UI_EDIT_BOX
 #define GX_UI_EDIT_BOX
@@ -29,17 +29,18 @@ class GXUIEditBox : public GXWidget
 		GXInt								selection;		// index before symbol
 		eGXUITextAlignment					alignment;
 
-		HCURSOR								editCursor;
-		HCURSOR								arrowCursor;
-		const HCURSOR*						currentCursor;
-
 		GXTextValidator*					validator;
 
 		PFNGXUIEDITBOXONFINISHEDITINGPROC	OnFinishEditing;
 		GXVoid*								handler;
 
+		HCURSOR								editCursor;
+		HCURSOR								arrowCursor;
+
+		const HCURSOR*						currentCursor;
+
 	public:
-		GXUIEditBox ( GXWidget* parent );
+		explicit GXUIEditBox ( GXWidget* parent );
 		~GXUIEditBox () override;
 
 		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
@@ -90,6 +91,10 @@ class GXUIEditBox : public GXWidget
 		static GXVoid GXCALL OnLeftArrow ( GXVoid* handler );
 		static GXVoid GXCALL OnRightArrow ( GXVoid* handler );
 		static GXVoid GXCALL OnType ( GXVoid* handler, GXWChar symbol );
+
+		GXUIEditBox () = delete;
+		GXUIEditBox ( const GXUIEditBox &other ) = delete;
+		GXUIEditBox& operator = ( const GXUIEditBox &other ) = delete;
 };
 
 

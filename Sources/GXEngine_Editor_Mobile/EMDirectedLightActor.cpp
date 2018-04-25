@@ -52,7 +52,7 @@ GXVoid EMDirectedLightActor::OnLoad ( const GXUByte* data )
 	light->SetAmbientIntensity ( lightSave->ambientIntensity );
 }
 
-GXUInt EMDirectedLightActor::OnRequeredSaveSize ()
+GXUPointer EMDirectedLightActor::OnRequeredSaveSize () const
 {
 	return sizeof ( EMDirectedLightActorSaveData );
 }

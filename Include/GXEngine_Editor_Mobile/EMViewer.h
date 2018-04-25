@@ -15,19 +15,21 @@ class EMViewer
 	private:
 		GXUIInput*							inputWidget;
 
+		GXVoid*								handler;
+		PFNEMONVIEWERTRANSFORMCHANGEDPROC	OnViewerTransformChanged;
+
 		GXFloat								pitch;
 		GXFloat								yaw;
 		GXFloat								distance;
 		GXVec3								origin;
+
+		EMActor*							target;
 
 		GXFloat								rotationSpeed;
 		GXFloat								panSpeed;
 		GXFloat								zoomSpeed;
 
 		GXCameraPerspective					camera;
-		EMActor*							target;
-		GXVoid*								handler;
-		PFNEMONVIEWERTRANSFORMCHANGEDPROC	OnViewerTransformChanged;
 
 		GXBool								isAltPressed;
 		GXBool								isMMBPressed;
@@ -70,6 +72,9 @@ class EMViewer
 
 		static GXVoid GXCALL OnKeyDownCallback ( GXVoid* handler, GXUIInput& input, GXInt keyCode );
 		static GXVoid GXCALL OnKeyUpCallback ( GXVoid* handler, GXUIInput& input, GXInt keyCode );
+
+		EMViewer ( const EMViewer &other ) = delete;
+		EMViewer& operator = ( const EMViewer &other ) = delete;
 };
 
 

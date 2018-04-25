@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_UI_POPUP
 #define GX_UI_POPUP
@@ -8,7 +8,7 @@
 #include <GXCommon/GXMemory.h>
 
 
-#define GX_UI_POPUP_INVALID_INDEX 0xFF
+#define GX_UI_POPUP_INVALID_INDEX 0xFFu
 
 
 typedef GXVoid ( GXCALL* PFNGXONUIPOPUPACTIONPROC ) ( GXVoid* handler );
@@ -43,6 +43,10 @@ class GXUIPopup : public GXWidget
 		GXFloat GetItemWidth () const;
 
 		GXVoid Show ( GXWidget* currentOwner );
+
+	private:
+		GXUIPopup ( const GXUIPopup &other ) = delete;
+		GXUIPopup& operator = ( const GXUIPopup &other ) = delete;
 };
 
 

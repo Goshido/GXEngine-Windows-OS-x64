@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_THREAD
 #define GX_THREAD
@@ -11,7 +11,7 @@ class GXThread;
 typedef GXUPointer ( GXTHREADCALL* PFNGXTHREADPROC ) ( GXVoid* arg, GXThread& thread );
 
 
-enum class eGXThreadState
+enum class eGXThreadState : GXUByte
 {
 	Waiting,
 	Started
@@ -34,6 +34,10 @@ class GXAbstractThread
 		virtual GXVoid Start () = 0;
 		virtual GXVoid Switch () = 0;
 		virtual GXVoid Join () = 0;
+
+	private:
+		GXAbstractThread ( const GXAbstractThread &other ) = delete;
+		GXAbstractThread& operator = ( const GXAbstractThread &other ) = delete;
 };
 
 

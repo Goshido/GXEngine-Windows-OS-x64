@@ -44,6 +44,9 @@ class GXContactResolver
 	private:
 		GXVoid ResolveSingleBodyContacts ( GXContact* contacts );
 		GXVoid ResolvePairBodyContacts ( GXContact* contacts );
+
+		GXContactResolver ( const GXContactResolver &other ) = delete;
+		GXContactResolver& operator = ( const GXContactResolver &other ) = delete;
 };
 
 

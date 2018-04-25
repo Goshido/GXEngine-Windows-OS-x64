@@ -1,10 +1,10 @@
-// version 1.1
+// version 1.2
 
 #include <GXCommon/GXCFGSaver.h>
 #include <GXCommon/GXFileSystem.h>
 
 
-GXVoid GXCALL GXExportCFG ( const GXEngineConfiguration &config_info )
+GXVoid GXCALL GXExportCFG ( const GXEngineConfiguration &config )
 {
-	GXWriteToFile ( L"../Config/GXEngine.cfg", (GXChar*)&config_info, sizeof ( GXEngineConfiguration) );
+	GXWriteToFile ( L"../Config/GXEngine.cfg", &config, sizeof ( GXEngineConfiguration) );
 }

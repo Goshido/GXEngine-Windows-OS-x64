@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #ifndef GX_CAMERA_ORHTOGRAPHIC
 #define GX_CAMERA_ORHTOGRAPHIC
@@ -22,6 +22,10 @@ class GXCameraOrthographic : public GXCamera
 		GXVoid SetZFar ( GXFloat newZFar ) override;
 
 		GXVoid SetProjection ( GXFloat newWidth, GXFloat newHeight, GXFloat newZNear, GXFloat newZFar );
+
+	private:
+		GXCameraOrthographic ( const GXCameraOrthographic &other ) = delete;
+		GXCameraOrthographic& operator = ( const GXCameraOrthographic &other ) = delete;
 };
 
 

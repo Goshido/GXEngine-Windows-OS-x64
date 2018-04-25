@@ -6,7 +6,7 @@
 #define GEOMETRY_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL	nullptr
 #define FRAGMENT_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL	L"Shaders/Editor Mobile/GaussVerticalBlurOneChannelFivePixelKernel_fs.txt"
 
-#define IMAGE_SLOT										0
+#define IMAGE_SLOT										0u
 
 
 EMGaussVerticalBlurMaterial::EMGaussVerticalBlurMaterial ( eEMGaussVerticalBlurKernelType kernelType )
@@ -27,7 +27,7 @@ EMGaussVerticalBlurMaterial::EMGaussVerticalBlurMaterial ( eEMGaussVerticalBlurK
 
 	switch ( kernelType )
 	{
-		case eEMGaussVerticalBlurKernelType::ONE_CHANNEL_FIVE_PIXEL_KERNEL:
+		case eEMGaussVerticalBlurKernelType::OneChannelFivePixel:
 			si.vs = VERTEX_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL;
 			si.gs = GEOMETRY_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL;
 			si.fs = FRAGMENT_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL;
@@ -51,14 +51,14 @@ GXVoid EMGaussVerticalBlurMaterial::Bind ( const GXTransform& /*transform*/ )
 	if ( !imageTexture ) return;
 
 	glUseProgram ( shaderProgram.GetProgram () );
-	imageTexture->Bind ( IMAGE_SLOT );
+	imageTexture->Bind ( static_cast<GXUByte> ( IMAGE_SLOT ) );
 }
 
 GXVoid EMGaussVerticalBlurMaterial::Unbind ()
 {
 	if ( !imageTexture ) return;
 
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 	imageTexture->Unbind ();
 }
 
@@ -66,12 +66,11 @@ GXVoid EMGaussVerticalBlurMaterial::SetImageTexture ( GXTexture2D &texture )
 {
 	switch ( kernelType )
 	{
-		case eEMGaussVerticalBlurKernelType::ONE_CHANNEL_FIVE_PIXEL_KERNEL:
-			if ( texture.GetChannelNumber () == 1 )
-			{
-				imageTexture = &texture;
-				return;
-			}
+		case eEMGaussVerticalBlurKernelType::OneChannelFivePixel:
+			if ( texture.GetChannelNumber () != 1u ) break;
+			
+			imageTexture = &texture;
+			return;
 		break;
 
 		default:

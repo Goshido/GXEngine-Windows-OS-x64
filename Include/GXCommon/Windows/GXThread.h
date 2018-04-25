@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_THREAD_WINDOWS
 #define GX_THREAD_WINDOWS
@@ -22,6 +22,9 @@ class GXThread : public GXAbstractThread
 
 	private:
 		static DWORD WINAPI RootThreadStarter ( LPVOID lpThreadParameter );
+
+		GXThread ( const GXThread &other ) = delete;
+		GXThread& operator = ( const GXThread &other ) = delete;
 };
 
 

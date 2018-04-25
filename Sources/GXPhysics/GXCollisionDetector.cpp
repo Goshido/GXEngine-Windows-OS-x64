@@ -1046,17 +1046,17 @@ GXUInt GXCollisionDetector::GetTotalPlanarIntersectionPoints () const
 
 GXUInt GXCollisionDetector::GetAllocatedSupportPoints () const
 {
-	return supportPoints.GetLength ();
+	return static_cast<GXUInt> ( supportPoints.GetLength () );
 }
 
 GXUInt GXCollisionDetector::GetAllocatedEdges () const
 {
-	return edges.GetLength ();
+	return static_cast<GXUInt> ( edges.GetLength () );
 }
 
 GXUInt GXCollisionDetector::GetAllocatedFaces () const
 {
-	return faces.GetLength ();
+	return static_cast<GXUInt> ( faces.GetLength () );
 }
 
 GXCollisionDetector::GXCollisionDetector ():

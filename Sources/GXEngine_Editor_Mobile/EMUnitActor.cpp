@@ -82,7 +82,7 @@ GXVoid EMUnitActor::OnSave ( GXUByte** data )
 	header->nameOffset = sizeof ( EMActorHeader );
 
 	GXUTF8* nameUTF8;
-	GXUInt nameSize = GXToUTF8 ( &nameUTF8, name );
+	GXUPointer nameSize = GXToUTF8 ( &nameUTF8, name );
 
 	memcpy ( data + sizeof ( EMActorHeader ), nameUTF8, nameSize );
 	free ( nameUTF8 );
@@ -102,9 +102,9 @@ GXVoid EMUnitActor::OnLoad ( const GXUByte* data )
 	memcpy ( &transform, &header->origin, sizeof ( GXMat4 ) );
 }
 
-GXUInt EMUnitActor::OnRequeredSaveSize ()
+GXUPointer EMUnitActor::OnRequeredSaveSize () const
 {
-	GXUInt total = sizeof ( EMActorHeader );
+	GXUPointer total = sizeof ( EMActorHeader );
 
 	GXUTF8* nameUTF8;
 	total += GXToUTF8 ( &nameUTF8, name );

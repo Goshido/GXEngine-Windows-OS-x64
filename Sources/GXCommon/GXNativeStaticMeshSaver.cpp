@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #include <GXCommon/GXNativeStaticMeshSaver.h>
 #include <GXCommon/GXNativeStaticMeshStructs.h>
@@ -14,9 +14,9 @@ GXVoid GXCALL GXCompileNativeStaticMesh ( GXUByte** data, GXUInt &size, const GX
 	size += 2 * descriptor.numTBPairs * sizeof ( GXVec3 );	// Tangents and Bitangents
 	size += descriptor.numElements * sizeof ( GXUInt );
 
-	*data = (GXUByte*)malloc ( size );
+	*data = static_cast<GXUByte*> ( malloc ( size ) );
 
-	GXNativeStaticMeshHeader* h = (GXNativeStaticMeshHeader*)(*data);
+	GXNativeStaticMeshHeader* h = reinterpret_cast<GXNativeStaticMeshHeader*> ( *data );
 	h->numVertices = descriptor.numVertices;
 	h->numNormals = descriptor.numNormals;
 	h->numTBPairs = descriptor.numTBPairs;
@@ -26,26 +26,27 @@ GXVoid GXCALL GXCompileNativeStaticMesh ( GXUByte** data, GXUInt &size, const GX
 	h->bounds.Empty ();
 
 	GXUInt offset = sizeof ( GXNativeStaticMeshHeader );
-	for ( GXUInt i = 0; i < descriptor.numVertices; i++ )
+
+	for ( GXUInt i = 0u; i < descriptor.numVertices; i++ )
 	{
 		h->bounds.AddVertex ( descriptor.vertices[ i ] );
 
 		memcpy ( *data + offset, descriptor.vertices + i, sizeof ( GXVec3 ) );
 		offset += sizeof ( GXVec3 );
 
-		if ( descriptor.numUVs > 0 )
+		if ( descriptor.numUVs > 0u )
 		{
 			memcpy ( *data + offset, descriptor.uvs + i, sizeof ( GXVec2 ) );
 			offset += sizeof ( GXVec2 );
 		}
 
-		if ( descriptor.numNormals > 0 )
+		if ( descriptor.numNormals > 0u )
 		{
 			memcpy ( *data + offset, descriptor.normals + i, sizeof ( GXVec3 ) );
 			offset += sizeof ( GXVec3 );
 		}
 
-		if ( descriptor.numTBPairs > 0 )
+		if ( descriptor.numTBPairs > 0u )
 		{
 			memcpy ( *data + offset, descriptor.tangents + i, sizeof ( GXVec3 ) );
 			offset += sizeof ( GXVec3 );

@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #include <GXCommon/GXOBJLoader.h>
 #include <GXCommon/GXFileSystem.h>
@@ -7,37 +7,37 @@
 #include <GXCommon/GXMemory.h>
 
 
-GXInt		gx_objloader_Index = 0;
-GXChar*		gx_objloader_ObjSource = nullptr;
-GXUPointer	gx_objloader_FileSize = 0;
-GXChar		gx_objloader_T[ 30 ] = { 0 };
+static GXInt		gx_objLoaderIndex = 0;
+static GXChar*		gx_objLoaderObjSource = nullptr;
+static GXUPointer	gx_objLoaderFileSize = 0u;
+static GXChar		gx_objLoaderWorkingArray[ 30 ] = { 0 };
 
-GXUInt		gx_objloader_TotalVertexes = 0;
-GXUInt		gx_objloader_TotalNormals = 0;
-GXUInt		gx_objloader_TotalUVs = 0;
-GXUInt		gx_objloader_TotalTriangles = 0;
+static GXUInt		gx_objLoaderTotalVertices = 0u;
+static GXUInt		gx_objLoaderTotalNormals = 0u;
+static GXUInt		gx_objLoaderTotalUVs = 0u;
+static GXUInt		gx_objLoaderTotalTriangles = 0u;
 
 
 #define SKIP_COMMENT()																												\
-	while ( gx_objloader_ObjSource[ gx_objloader_Index ] != '\n' && ( gx_objloader_Index < (GXInt)gx_objloader_FileSize - 1 ) )		\
-		gx_objloader_Index++;																										\
-	gx_objloader_Index++
+	while ( gx_objLoaderObjSource[ gx_objLoaderIndex ] != '\n' && ( gx_objLoaderIndex < (GXInt)gx_objLoaderFileSize - 1 ) )		\
+		gx_objLoaderIndex++;																										\
+	gx_objLoaderIndex++
 
 #define SKIP_GAPS()																													\
-	while ( gx_objloader_ObjSource[ gx_objloader_Index ] == ' ' && ( gx_objloader_Index < (GXInt)gx_objloader_FileSize - 1 ) )		\
-		gx_objloader_Index++
+	while ( gx_objLoaderObjSource[ gx_objLoaderIndex ] == ' ' && ( gx_objLoaderIndex < (GXInt)gx_objLoaderFileSize - 1 ) )		\
+		gx_objLoaderIndex++
 
 #define NEW_LINE_SOLVER()																																									\
-	while ( gx_objloader_ObjSource[ gx_objloader_Index ] != 'v' && gx_objloader_ObjSource[ gx_objloader_Index ] != 'f' && ( gx_objloader_Index < (GXInt)gx_objloader_FileSize - 1 ) )		\
+	while ( gx_objLoaderObjSource[ gx_objLoaderIndex ] != 'v' && gx_objLoaderObjSource[ gx_objLoaderIndex ] != 'f' && ( gx_objLoaderIndex < (GXInt)gx_objLoaderFileSize - 1 ) )		\
 	{																																														\
-		switch ( gx_objloader_ObjSource[ gx_objloader_Index ] )																																\
+		switch ( gx_objLoaderObjSource[ gx_objLoaderIndex ] )																																\
 		{																																													\
 			case '#':																																										\
 				SKIP_COMMENT ();																																							\
 			break;																																											\
 																																															\
 			case '\n':																																										\
-				gx_objloader_Index++;																																						\
+				gx_objLoaderIndex++;																																						\
 			break;																																											\
 																																															\
 			default:																																										\
@@ -51,75 +51,83 @@ GXUInt		gx_objloader_TotalTriangles = 0;
 template <class Pointer > 
 GXVoid OBJListDelete ( Pointer top )
 {
-	Pointer p = top;
-	while ( top != 0 )
+	while ( !top )
 	{
+		Pointer p = top;
 		top = top->next;
 		delete p;
 		p = top;
 	}
 }
 
-GXOBJVertex* GXCALL GXParseVertexes ()
+GXOBJVertex* GXCALL GXParseVertices ()
 {
 	#ifdef DEBUG_TO_LOG
-		GXLogA ( "GXParseVertexes::Info - Parsing Vertexes\n" );
+		GXLogA ( "GXParseVertices::Info - Parsing Vertexes\n" );
 	#endif
 
 	GXOBJVertex *vTop;
 	GXOBJVertex *vTek;
 	GXInt i = 0;
 
-	vTop = new GXOBJVertex;
+	vTop = new GXOBJVertex ();
 	vTek = vTop;
-	vTek->next = 0;
+	vTek->next = nullptr;
 
 	while ( GX_TRUE )
 	{
-		vTek->next = new GXOBJVertex;
+		vTek->next = new GXOBJVertex ();
 		vTek = vTek->next;
-		vTek->next = 0;
+		vTek->next = nullptr;
 
-		gx_objloader_TotalVertexes++;
+		gx_objLoaderTotalVertices++;
 
 		SKIP_GAPS ();
 		i = 0;
-		while ( gx_objloader_ObjSource[ gx_objloader_Index ] != ' ' )
+
+		while ( gx_objLoaderObjSource[ gx_objLoaderIndex ] != ' ' )
 		{ 
-			gx_objloader_T[ i ] = gx_objloader_ObjSource[ gx_objloader_Index ];  
-			gx_objloader_Index++; 
+			gx_objLoaderWorkingArray[ i ] = gx_objLoaderObjSource[ gx_objLoaderIndex ];  
+			gx_objLoaderIndex++; 
 			i++;
 		}
-		gx_objloader_T[ i ] = '\0';
-		vTek->position.SetX ( (GXFloat)atof ( gx_objloader_T ) );
+
+		gx_objLoaderWorkingArray[ i ] = '\0';
+		vTek->position.SetX ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
 
 		SKIP_GAPS ();
 		i = 0;
-		while ( gx_objloader_ObjSource[ gx_objloader_Index ] != ' ' )
+
+		while ( gx_objLoaderObjSource[ gx_objLoaderIndex ] != ' ' )
 		{
-			gx_objloader_T[ i ] = gx_objloader_ObjSource[ gx_objloader_Index ];  
-			gx_objloader_Index++; 
+			gx_objLoaderWorkingArray[ i ] = gx_objLoaderObjSource[ gx_objLoaderIndex ];  
+			gx_objLoaderIndex++; 
 			i++;
 		}
-		gx_objloader_T[ i ] = '\0';
-		vTek->position.SetY ( (GXFloat)atof ( gx_objloader_T ) );
+
+		gx_objLoaderWorkingArray[ i ] = '\0';
+		vTek->position.SetY ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
 
 		SKIP_GAPS ();
 		i = 0;
-		while ( gx_objloader_ObjSource[ gx_objloader_Index ] != '\n' && gx_objloader_ObjSource[ gx_objloader_Index ] != ' ' )
+
+		while ( gx_objLoaderObjSource[ gx_objLoaderIndex ] != '\n' && gx_objLoaderObjSource[ gx_objLoaderIndex ] != ' ' )
 		{
-			gx_objloader_T[ i ] = gx_objloader_ObjSource[ gx_objloader_Index ];  
-			gx_objloader_Index++; 
+			gx_objLoaderWorkingArray[ i ] = gx_objLoaderObjSource[ gx_objLoaderIndex ];  
+			gx_objLoaderIndex++; 
 			i++;
 		}
-		gx_objloader_T[ i ] = '\0';
-		vTek->position.SetZ ( (GXFloat)atof ( gx_objloader_T ) );
+
+		gx_objLoaderWorkingArray[ i ] = '\0';
+		vTek->position.SetZ ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
 
 		SKIP_COMMENT ();
 		SKIP_GAPS ();
 		NEW_LINE_SOLVER ();
-		gx_objloader_Index++;
-		if ( gx_objloader_ObjSource[ gx_objloader_Index ] != ' ' ) break;
+
+		gx_objLoaderIndex++;
+
+		if ( gx_objLoaderObjSource[ gx_objLoaderIndex ] != ' ' ) break;
 	}
 	
 	vTek = vTop; 
@@ -127,12 +135,11 @@ GXOBJVertex* GXCALL GXParseVertexes ()
 	delete vTek;
 
 	#ifdef DEBUG_TO_LOG
-		GXLogA ( "GXParseVertexes::Info - Done\n" );
+		GXLogA ( "GXParseVertices::Info - Done\n" );
 	#endif
 
 	return vTop;
 }
-
 
 GXOBJNormals* GXCALL GXParseNormals ()
 {
@@ -140,61 +147,70 @@ GXOBJNormals* GXCALL GXParseNormals ()
 		GXLogA ( "GXParseNormals::Info - Parsing Normals\n" );
 	#endif
 
-	GXOBJNormals* nTop = new GXOBJNormals;
+	GXOBJNormals* nTop = new GXOBJNormals ();
 	GXOBJNormals* nTek = nTop;
-	nTek->next = 0;
+	nTek->next = nullptr;
 	GXInt i = 0;
 
-	gx_objloader_Index++;
+	gx_objLoaderIndex++;
 
 	while ( GX_TRUE )
 	{
 		SKIP_GAPS ();
-		nTek->next = new GXOBJNormals;
+		nTek->next = new GXOBJNormals ();
 		nTek = nTek->next;
-		nTek->next = 0;
+		nTek->next = nullptr;
 
-		gx_objloader_TotalNormals++;
+		gx_objLoaderTotalNormals++;
 
 		i = 0;
-		while ( gx_objloader_ObjSource[ gx_objloader_Index ] != ' ')
+
+		while ( gx_objLoaderObjSource[ gx_objLoaderIndex ] != ' ')
 		{
-			gx_objloader_T[ i ] = gx_objloader_ObjSource[ gx_objloader_Index ];
-			gx_objloader_Index++;
+			gx_objLoaderWorkingArray[ i ] = gx_objLoaderObjSource[ gx_objLoaderIndex ];
+			gx_objLoaderIndex++;
 			i++;
 		}
-		gx_objloader_T[i] = '\0';
-		nTek->normal.SetX ( (GXFloat)atof ( gx_objloader_T ) );
+
+		gx_objLoaderWorkingArray[i] = '\0';
+		nTek->normal.SetX ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
 
 		SKIP_GAPS ();
 		i = 0;
-		while ( gx_objloader_ObjSource[ gx_objloader_Index ] != ' ')
+
+		while ( gx_objLoaderObjSource[ gx_objLoaderIndex ] != ' ')
 		{
-			gx_objloader_T[ i ] = gx_objloader_ObjSource[ gx_objloader_Index ];
-			gx_objloader_Index++;
+			gx_objLoaderWorkingArray[ i ] = gx_objLoaderObjSource[ gx_objLoaderIndex ];
+			gx_objLoaderIndex++;
 			i++;
 		}
-		gx_objloader_T[ i ] = '\0';
-		nTek->normal.SetY ( (GXFloat)atof ( gx_objloader_T ) );
+
+		gx_objLoaderWorkingArray[ i ] = '\0';
+		nTek->normal.SetY ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
 
 		SKIP_GAPS ();
 		i = 0;
-		while ( gx_objloader_ObjSource[ gx_objloader_Index ] != '\n' && gx_objloader_ObjSource[ gx_objloader_Index ] != ' ')
+
+		while ( gx_objLoaderObjSource[ gx_objLoaderIndex ] != '\n' && gx_objLoaderObjSource[ gx_objLoaderIndex ] != ' ')
 		{
-			gx_objloader_T[ i ] = gx_objloader_ObjSource[ gx_objloader_Index ];
-			gx_objloader_Index++;
+			gx_objLoaderWorkingArray[ i ] = gx_objLoaderObjSource[ gx_objLoaderIndex ];
+			gx_objLoaderIndex++;
 			i++;
 		}
-		gx_objloader_T[ i ] = '\0';
-		nTek->normal.SetZ ( (GXFloat)atof ( gx_objloader_T ) );
+
+		gx_objLoaderWorkingArray[ i ] = '\0';
+		nTek->normal.SetZ ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
 
 		SKIP_COMMENT ();
 		SKIP_GAPS ();
 		NEW_LINE_SOLVER ();
-		gx_objloader_Index++;
-		if ( gx_objloader_ObjSource[ gx_objloader_Index ] != 'n' ) break;
-		gx_objloader_Index++;
+
+		gx_objLoaderIndex++;
+
+		if ( gx_objLoaderObjSource[ gx_objLoaderIndex ] != 'n' ) break;
+		gx_objLoaderIndex++;
 	}
+
 	nTek = nTop; 
 	nTop = nTop->next; 
 	delete nTek;
@@ -212,49 +228,58 @@ GXOBJUV_s* GXCALL GXParseUVs ()
 		GXLogA ( "GXParseUVs::Info - Parsing UV_s\n" );
 	#endif
 
-	GXOBJUV_s* uvTop = new GXOBJUV_s;
+	GXOBJUV_s* uvTop = new GXOBJUV_s ();
 	GXOBJUV_s* uvTek = uvTop;
-	uvTek->next = 0;
+	uvTek->next = nullptr;
 	GXInt i = 0;
-	gx_objloader_Index++;
+	gx_objLoaderIndex++;
 
 	while ( GX_TRUE )
 	{
 		SKIP_GAPS ();
-		uvTek->next = new GXOBJUV_s;
-		uvTek = uvTek->next;
-		uvTek->next = 0;
 
-		gx_objloader_TotalUVs++;
+		uvTek->next = new GXOBJUV_s ();
+		uvTek = uvTek->next;
+		uvTek->next = nullptr;
+
+		gx_objLoaderTotalUVs++;
 
 		i = 0;
-		while ( gx_objloader_ObjSource[ gx_objloader_Index ] != ' ')
+
+		while ( gx_objLoaderObjSource[ gx_objLoaderIndex ] != ' ')
 		{
-			gx_objloader_T[ i ] = gx_objloader_ObjSource[ gx_objloader_Index ];
-			gx_objloader_Index++;
+			gx_objLoaderWorkingArray[ i ] = gx_objLoaderObjSource[ gx_objLoaderIndex ];
+			gx_objLoaderIndex++;
 			i++;
 		}
-		gx_objloader_T[ i ] = '\0';
-		uvTek->uv.SetX ( (GXFloat)atof ( gx_objloader_T ) );
+
+		gx_objLoaderWorkingArray[ i ] = '\0';
+		uvTek->uv.SetX ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
 
 		SKIP_GAPS ();
 		i = 0;
-		while ( gx_objloader_ObjSource[ gx_objloader_Index ] != '\n' && gx_objloader_ObjSource[ gx_objloader_Index ] != ' ' )
+
+		while ( gx_objLoaderObjSource[ gx_objLoaderIndex ] != '\n' && gx_objLoaderObjSource[ gx_objLoaderIndex ] != ' ' )
 		{
-			gx_objloader_T[ i ] = gx_objloader_ObjSource[ gx_objloader_Index ];
-			gx_objloader_Index++;
+			gx_objLoaderWorkingArray[ i ] = gx_objLoaderObjSource[ gx_objLoaderIndex ];
+			gx_objLoaderIndex++;
 			i++;
 		}
-		gx_objloader_T[ i ] = '\0';
-		uvTek->uv.SetY ( (GXFloat)atof ( gx_objloader_T ) );
+
+		gx_objLoaderWorkingArray[ i ] = '\0';
+		uvTek->uv.SetY ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
 
 		SKIP_COMMENT ();
 		SKIP_GAPS ();
 		NEW_LINE_SOLVER ();
-		gx_objloader_Index++;
-		if ( gx_objloader_ObjSource[ gx_objloader_Index ] != 't' ) break;
-		gx_objloader_Index++;
+
+		gx_objLoaderIndex++;
+
+		if ( gx_objLoaderObjSource[ gx_objLoaderIndex ] != 't' ) break;
+
+		gx_objLoaderIndex++;
 	}
+
 	uvTek = uvTop; 
 	uvTop = uvTop->next; 
 	delete uvTek;
@@ -272,63 +297,72 @@ GXOBJTriangle* GXCALL GXParseTriangles ()
 		GXLogA ( "GXParseTriangles::Info - Parsing Triangles\n" );
 	#endif
 
-	GXOBJTriangle* tgTop = new GXOBJTriangle;
+	GXOBJTriangle* tgTop = new GXOBJTriangle ();
 	GXOBJTriangle* tgTek = tgTop;
-	tgTek->next = 0;
+	tgTek->next = nullptr;
 	GXInt i = 0;
 
 	while ( GX_TRUE )
 	{
-		tgTek->next = new GXOBJTriangle;
+		tgTek->next = new GXOBJTriangle ();
 		tgTek = tgTek->next;
-		tgTek->next = 0;
+		tgTek->next = nullptr;
 		
-		gx_objloader_TotalTriangles++;
+		gx_objLoaderTotalTriangles++;
 
 		for ( GXInt j = 0; j < 3; j++ )
 		{
 			SKIP_GAPS ();
 			i = 0;
-			while ( gx_objloader_ObjSource [ gx_objloader_Index ] != '/')
+
+			while ( gx_objLoaderObjSource [ gx_objLoaderIndex ] != '/')
 			{
-				gx_objloader_T[ i ] = gx_objloader_ObjSource [ gx_objloader_Index ];
-				gx_objloader_Index++;
+				gx_objLoaderWorkingArray[ i ] = gx_objLoaderObjSource [ gx_objLoaderIndex ];
+				gx_objLoaderIndex++;
 				i++;
 			}
-			gx_objloader_T[ i ] = '\0';
-			tgTek->dat[ j ].v = atoi ( gx_objloader_T ); 
 
-			gx_objloader_Index++;
+			gx_objLoaderWorkingArray[ i ] = '\0';
+			tgTek->dat[ j ].v = atoi ( gx_objLoaderWorkingArray ); 
+
+			gx_objLoaderIndex++;
 			SKIP_GAPS ();
 			i = 0;
-			while ( gx_objloader_ObjSource [ gx_objloader_Index ] != '/')
+
+			while ( gx_objLoaderObjSource [ gx_objLoaderIndex ] != '/')
 			{
-				gx_objloader_T[ i ] = gx_objloader_ObjSource [ gx_objloader_Index ];
-				gx_objloader_Index++;
+				gx_objLoaderWorkingArray[ i ] = gx_objLoaderObjSource [ gx_objLoaderIndex ];
+				gx_objLoaderIndex++;
 				i++;
 			}
-			gx_objloader_T[ i ] = '\0';
-			tgTek->dat[ j ].vt = atoi ( gx_objloader_T );
 
-			gx_objloader_Index++;
+			gx_objLoaderWorkingArray[ i ] = '\0';
+			tgTek->dat[ j ].vt = atoi ( gx_objLoaderWorkingArray );
+
+			gx_objLoaderIndex++;
 			SKIP_GAPS ();
 			i = 0;
-			while ( gx_objloader_ObjSource [ gx_objloader_Index ] != '\n' && gx_objloader_ObjSource [ gx_objloader_Index ] != ' ' )
+
+			while ( gx_objLoaderObjSource [ gx_objLoaderIndex ] != '\n' && gx_objLoaderObjSource [ gx_objLoaderIndex ] != ' ' )
 			{
-				gx_objloader_T[ i ] = gx_objloader_ObjSource [ gx_objloader_Index ];
-				gx_objloader_Index++;
+				gx_objLoaderWorkingArray[ i ] = gx_objLoaderObjSource [ gx_objLoaderIndex ];
+				gx_objLoaderIndex++;
 				i++;
 			}
-			gx_objloader_T[ i ] = '\0';
-			tgTek->dat[ j ].vn = atoi ( gx_objloader_T );
+
+			gx_objLoaderWorkingArray[ i ] = '\0';
+			tgTek->dat[ j ].vn = atoi ( gx_objLoaderWorkingArray );
 		}
 
 		SKIP_COMMENT ();
 		SKIP_GAPS ();
 		NEW_LINE_SOLVER ();
-		if ( gx_objloader_Index > ( GXInt )gx_objloader_FileSize - 1 ) break;
-		gx_objloader_Index++;
+
+		if ( gx_objLoaderIndex > static_cast<GXInt> ( gx_objLoaderFileSize - 1u ) ) break;
+
+		gx_objLoaderIndex++;
 	}
+
 	tgTek = tgTop;
 	tgTop = tgTop->next;
 	delete tgTek;
@@ -342,7 +376,7 @@ GXOBJTriangle* GXCALL GXParseTriangles ()
 
 GXInt GXCALL GXLoadOBJ ( const GXWChar* fileName, GXOBJPoint** points )
 {
-	if ( !GXLoadFile ( fileName, (GXVoid**)&gx_objloader_ObjSource, gx_objloader_FileSize, GX_TRUE ) )
+	if ( !GXLoadFile ( fileName, reinterpret_cast<GXVoid**> ( &gx_objLoaderObjSource ), gx_objLoaderFileSize, GX_TRUE ) )
 	{
 		GXLogW ( L"GXLoadOBJ::Error - Не могу загрузить файл %s\n", fileName );
 		return 0;
@@ -350,25 +384,26 @@ GXInt GXCALL GXLoadOBJ ( const GXWChar* fileName, GXOBJPoint** points )
 
 	setlocale ( LC_ALL, "C" );
 
-	gx_objloader_TotalVertexes = 0;
-	gx_objloader_TotalNormals = 0;
-	gx_objloader_TotalUVs = 0;
-	gx_objloader_TotalTriangles = 0;
+	gx_objLoaderTotalVertices = 0u;
+	gx_objLoaderTotalNormals = 0u;
+	gx_objLoaderTotalUVs = 0u;
+	gx_objLoaderTotalTriangles = 0u;
 
-	GXOBJVertex *vTop = 0;
-	GXOBJNormals *nTop = 0;
-	GXOBJUV_s *uvTop = 0;
+	GXOBJVertex* vTop = nullptr;
+	GXOBJNormals* nTop = nullptr;
+	GXOBJUV_s* uvTop = nullptr;
 
-	GXOBJTriangle *tgTop = 0;
-	GXOBJTriangle *tgTek = 0;
+	GXOBJTriangle* tgTop = nullptr;
+	GXOBJTriangle* tgTek = nullptr;
 
-	gx_objloader_Index = 0;
+	gx_objLoaderIndex = 0;
 
 	NEW_LINE_SOLVER ();
-	gx_objloader_Index++;
-	vTop = GXParseVertexes ();
 
-	switch ( gx_objloader_ObjSource[ gx_objloader_Index ] )
+	gx_objLoaderIndex++;
+	vTop = GXParseVertices ();
+
+	switch ( gx_objLoaderObjSource[ gx_objLoaderIndex ] )
 	{
 		case 'n':
 			nTop = GXParseNormals ();
@@ -377,9 +412,13 @@ GXInt GXCALL GXLoadOBJ ( const GXWChar* fileName, GXOBJPoint** points )
 		case 't':
 			uvTop = GXParseUVs ();
 		break;
+
+		default:
+			// NOTHING
+		break;
 	}
 
-	switch ( gx_objloader_ObjSource[ gx_objloader_Index ] )
+	switch ( gx_objLoaderObjSource[ gx_objLoaderIndex ] )
 	{
 		case 'n':
 			nTop = GXParseNormals ();
@@ -388,42 +427,53 @@ GXInt GXCALL GXLoadOBJ ( const GXWChar* fileName, GXOBJPoint** points )
 		case 't':
 			uvTop = GXParseUVs ();
 		break;
+
+		default:
+			// NOTHING
+		break;
 	}
 
-	gx_objloader_Index++;
+	gx_objLoaderIndex++;
 	tgTop = GXParseTriangles ();
-	GXSafeFree ( gx_objloader_ObjSource );
+	GXSafeFree ( gx_objLoaderObjSource );
 
 	#ifdef DEBUG_TO_LOG
-		GXLogA ( "GXLoadOBJ::Info - Forming structure. %i vertexes, %i normals, %i uv_s, %i triangles\n", gx_objloader_TotalVertexes, gx_objloader_TotalNormals, gx_objloader_TotalUVs, gx_objloader_TotalTriangles );
+		GXLogA ( "GXLoadOBJ::Info - Forming structure. %i vertexes, %i normals, %i uv_s, %i triangles\n", gx_objLoaderTotalVertices, gx_objLoaderTotalNormals, gx_objLoaderTotalUVs, gx_objLoaderTotalTriangles );
 	#endif
 
-	GXVec3* vertexes = (GXVec3*)malloc ( gx_objloader_TotalVertexes * sizeof ( GXVec3 ) );
+	GXVec3* vertexes = static_cast<GXVec3*> ( malloc ( gx_objLoaderTotalVertices * sizeof ( GXVec3 ) ) );
 	GXOBJVertex* t = vTop;
-	for ( GXUInt i = 0; i < gx_objloader_TotalVertexes; i++, t = t->next )
+
+	for ( GXUInt i = 0u; i < gx_objLoaderTotalVertices; i++, t = t->next )
 		vertexes[ i ] = t->position;
+
 	OBJListDelete ( vTop );
 
-	GXVec3* normals = (GXVec3*)malloc ( gx_objloader_TotalNormals * sizeof ( GXVec3 ) );
+	GXVec3* normals = static_cast<GXVec3*> ( malloc ( gx_objLoaderTotalNormals * sizeof ( GXVec3 ) ) );
 	GXOBJNormals* n = nTop;
-	for ( GXUInt i = 0; i < gx_objloader_TotalNormals; i++, n = n->next )
+
+	for ( GXUInt i = 0u; i < gx_objLoaderTotalNormals; i++, n = n->next )
 		normals[ i ] = n->normal;
+
 	OBJListDelete ( nTop );
 
-	GXVec2* uv_s = (GXVec2*)malloc ( gx_objloader_TotalUVs * sizeof ( GXVec2 ) );
+	GXVec2* uv_s = static_cast<GXVec2*> ( malloc ( gx_objLoaderTotalUVs * sizeof ( GXVec2 ) ) );
 	GXOBJUV_s* u = uvTop;
-	for ( GXUInt i = 0; i < gx_objloader_TotalUVs; i++, u = u->next )
+
+	for ( GXUInt i = 0u; i < gx_objLoaderTotalUVs; i++, u = u->next )
 		uv_s[ i ] = u->uv;
+
 	OBJListDelete ( uvTop );
 
-	*points = (GXOBJPoint*)malloc ( 3 * gx_objloader_TotalTriangles * sizeof ( GXOBJPoint ) );
+	*points = static_cast<GXOBJPoint*> ( malloc ( 3 * gx_objLoaderTotalTriangles * sizeof ( GXOBJPoint ) ) );
 	GXOBJPoint* outPoints = *points;
 
 	tgTek = tgTop;
 	GXInt totalElements = 0;
+
 	while ( tgTek != 0 )
 	{
-		for ( GXUChar j = 0; j < 3; j++ )
+		for ( GXUChar j = 0u; j < 3u; j++ )
 		{
 			#ifdef DEBUG_TO_LOG
 			if ( ( totalElements % 100000 ) == 0 )
@@ -441,6 +491,7 @@ GXInt GXCALL GXLoadOBJ ( const GXWChar* fileName, GXOBJPoint** points )
 
 			totalElements++;
 		}
+
 		tgTek = tgTek->next;
 	}
 

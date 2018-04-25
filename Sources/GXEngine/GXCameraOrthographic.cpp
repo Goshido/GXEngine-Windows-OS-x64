@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #include <GXEngine/GXCameraOrthographic.h>
 
@@ -9,12 +9,11 @@
 #define DEFAULT_Z_FAR		1000.0f
 
 
-GXCameraOrthographic::GXCameraOrthographic ()
+GXCameraOrthographic::GXCameraOrthographic ():
+	GXCamera ( DEFAULT_Z_NEAR, DEFAULT_Z_FAR )
 {
 	width = DEFAULT_WIDTH;
 	height = DEFAULT_HEIGHT;
-	zNear = DEFAULT_Z_NEAR;
-	zFar = DEFAULT_Z_FAR;
 
 	currentFrameProjectionMatrix.Ortho ( width, height, zNear, zFar );
 	currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );
@@ -26,12 +25,11 @@ GXCameraOrthographic::GXCameraOrthographic ()
 	UpdateLastFrameMatrices ();
 }
 
-GXCameraOrthographic::GXCameraOrthographic ( GXFloat width, GXFloat height, GXFloat zNear, GXFloat zFar )
+GXCameraOrthographic::GXCameraOrthographic ( GXFloat width, GXFloat height, GXFloat zNear, GXFloat zFar ):
+	GXCamera ( zNear, zFar )
 {
 	this->width = width;
 	this->height = height;
-	this->zNear = zNear;
-	this->zFar = zFar;
 
 	currentFrameProjectionMatrix.Ortho ( width, height, zNear, zFar );
 	currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );

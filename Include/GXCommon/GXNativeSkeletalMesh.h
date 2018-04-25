@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_NATIVE_SKELETAL_MESH
 #define GX_NATIVE_SKELETAL_MESH
@@ -11,8 +11,8 @@
 #define GX_FLOATS_PER_BONE				7
 #define GX_MAXIMUM_BONES_PER_MESH		80
 
-#define GX_UNKNOWN_BONE_INDEX			0xFFFE
-#define GX_ROOT_BONE_PARENT_INDEX		0xFFFF
+#define GX_UNKNOWN_BONE_INDEX			0xFFFEu
+#define GX_ROOT_BONE_PARENT_INDEX		0xFFFFu
 
 
 #pragma pack ( push )

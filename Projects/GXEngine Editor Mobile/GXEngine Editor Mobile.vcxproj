@@ -364,19 +364,16 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXAnimationSolver.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXAnimationSolverMovement.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXAnimationSolverPlayer.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXArrayTextureOuter.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXCamera.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXCameraOrthographic.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXCameraPerspective.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXCore.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXDoFEffect.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXDrawable.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXEngineSettings.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXEquirectangularToCubeMapMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXFont.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXGame.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXHudSurface.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXIdealParticles.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXInput.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXJsonSaver.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXLocale.h" />
@@ -397,7 +394,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXOpenGL.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXParticleSystem.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXPhysXFrontend.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXRealParticles.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXRenderer.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXResource.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSamplerUtils.h" />

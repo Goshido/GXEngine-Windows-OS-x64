@@ -1,4 +1,4 @@
-// version 1.10
+// version 1.11
 
 #ifndef GX_CAMERA_PERSPECTIVE
 #define GX_CAMERA_PERSPECTIVE
@@ -25,6 +25,10 @@ class GXCameraPerspective : public GXCamera
 
 		GXFloat GetFieldOFViewYRadians () const;
 		GXFloat GetAspectRatio () const;
+
+	private:
+		GXCameraPerspective ( const GXCameraPerspective &other ) = delete;
+		GXCameraPerspective& operator = ( const GXCameraPerspective &other ) = delete;
 };
 
 

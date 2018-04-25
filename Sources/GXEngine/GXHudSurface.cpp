@@ -1,16 +1,15 @@
-// version 1.18
+// version 1.19
 
 #include <GXEngine/GXHudSurface.h>
 #include <GXEngine/GXSamplerUtils.h>
 #include <GXCommon/GXStrings.h>
 
 
-#define BYTES_PER_PIXEL 4
+#define BYTES_PER_PIXEL 4u
 #define TAB_FACTOR		4.0f
 #define Z_NEAR			0.0f
 #define Z_FAR			20.0f
 #define RENDER_Z		7.0f
-#define TEXTURE_SLOT	0
 
 
 class GXImageRenderable : public GXTransform, public GXRenderable
@@ -27,6 +26,10 @@ class GXImageRenderable : public GXTransform, public GXRenderable
 	protected:
 		GXVoid InitGraphicResources () override;
 		GXVoid TransformUpdated () override;
+
+	private:
+		GXImageRenderable ( const GXImageRenderable &other ) = delete;
+		GXImageRenderable& operator = ( const GXImageRenderable &other ) = delete;
 };
 
 GXImageRenderable::GXImageRenderable ()
@@ -72,6 +75,10 @@ class GXGlyphRenderable : public GXTransform, public GXRenderable
 	protected:
 		GXVoid InitGraphicResources () override;
 		GXVoid TransformUpdated () override;
+
+	private:
+		GXGlyphRenderable ( const GXGlyphRenderable &other ) = delete;
+		GXGlyphRenderable& operator = ( const GXGlyphRenderable &other ) = delete;
 };
 
 GXGlyphRenderable::GXGlyphRenderable ()
@@ -117,8 +124,8 @@ GXVoid GXGlyphRenderable::InitGraphicResources ()
 {
 	GLsizei stride = sizeof ( GXVec3 ) + sizeof ( GXVec2 );
 	mesh.SetTotalVertices ( 6 );
-	mesh.SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, stride, (const GLvoid*)0 );
-	mesh.SetBufferStream ( eGXMeshStreamIndex::UV, 2, GL_FLOAT, stride, ( const GLvoid* )sizeof ( GXVec3 ) );
+	mesh.SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, stride, static_cast<const GLvoid*> ( 0u ) );
+	mesh.SetBufferStream ( eGXMeshStreamIndex::UV, 2, GL_FLOAT, stride, reinterpret_cast<const GLvoid*> ( sizeof ( GXVec3 ) ) );
 	mesh.SetTopology ( GL_TRIANGLES );
 }
 
@@ -145,6 +152,10 @@ class GXLineRenderable : public GXTransform, public GXRenderable
 	protected:
 		GXVoid InitGraphicResources () override;
 		GXVoid TransformUpdated () override;
+
+	private:
+		GXLineRenderable ( const GXLineRenderable &other ) = delete;
+		GXLineRenderable& operator = ( const GXLineRenderable &other ) = delete;
 };
 
 GXLineRenderable::GXLineRenderable ()
@@ -174,7 +185,7 @@ GXVoid GXLineRenderable::UpdateGeometry ( const GXVec2 &start, const GXVec2 &end
 GXVoid GXLineRenderable::InitGraphicResources ()
 {
 	mesh.SetTotalVertices ( 2 );
-	mesh.SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, sizeof ( GXVec3 ), (const GLvoid*)0 );
+	mesh.SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, sizeof ( GXVec3 ), static_cast<const GLvoid*> ( 0u ) );
 	mesh.SetTopology ( GL_LINES );
 }
 
@@ -185,14 +196,16 @@ GXVoid GXLineRenderable::TransformUpdated ()
 
 //-----------------------------------------------------------------------------------------
 
-GXHudSurface::GXHudSurface ( GXUShort width, GXUShort height ) :
-canvasCamera ( (GXFloat)width, (GXFloat)height, Z_NEAR, Z_FAR )
+GXHudSurface::GXHudSurface ( GXUShort width, GXUShort height ):
+	width ( width ),
+	height ( height ),
+	canvasCamera ( static_cast<GXFloat> ( width ), static_cast<GXFloat> ( height ), Z_NEAR, Z_FAR ),
+	image ( new GXImageRenderable () ),
+	glyph ( new GXGlyphRenderable () ),
+	line ( new GXLineRenderable () )
 {
-	this->width = width;
-	this->height = height;
-
-	GXUInt size = (GXUInt)( ( width * height ) * BYTES_PER_PIXEL );
-	GXUByte* data = (GXUByte*)malloc ( size );
+	GXUPointer size = ( width * height ) * BYTES_PER_PIXEL;
+	GXUByte* data = static_cast<GXUByte*> ( malloc ( size ) );
 	memset ( data, 0, size );
 
 	canvasTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
@@ -213,14 +226,10 @@ canvasCamera ( (GXFloat)width, (GXFloat)height, Z_NEAR, Z_FAR )
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"GXHudSurface::GXHudSurfaceExt::Error - Что-то с fbo. Ошибка 0x%04x\n", status );
 
-	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
+	glBindFramebuffer ( GL_FRAMEBUFFER, 0u );
 
 	screenQuadMesh.LoadMesh ( L"Meshes/System/ScreenQuad.stm" );
 
-	image = new GXImageRenderable ();
-	glyph = new GXGlyphRenderable ();
-
-	line = new GXLineRenderable ();
 	line->SetLocation ( -0.5f * width, -0.5f * height, RENDER_Z );
 
 	unlitTexture2DMaterial.SetTextureScale ( 1.0f, 1.0f );
@@ -236,14 +245,14 @@ GXHudSurface::~GXHudSurface ()
 	delete glyph;
 	delete line;
 
-	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
+	glBindFramebuffer ( GL_FRAMEBUFFER, 0u );
 	glDeleteFramebuffers ( 1, &fbo );
 }
 
 GXVoid GXHudSurface::Reset ()
 {
-	GLuint oldFBO;
-	glGetIntegerv ( GL_FRAMEBUFFER_BINDING, (GLint*)&oldFBO );
+	GLint oldFBO;
+	glGetIntegerv ( GL_FRAMEBUFFER_BINDING, &oldFBO );
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
@@ -252,7 +261,7 @@ GXVoid GXHudSurface::Reset ()
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 	glClearBufferfv ( GL_COLOR, 0, clearDiffuseValue );
 
-	glBindFramebuffer ( GL_FRAMEBUFFER, oldFBO );
+	glBindFramebuffer ( GL_FRAMEBUFFER, static_cast<GLuint> ( oldFBO ) );
 }
 
 GXVoid GXHudSurface::AddImage ( const GXImageInfo &imageInfo )
@@ -267,7 +276,7 @@ GXVoid GXHudSurface::AddImage ( const GXImageInfo &imageInfo )
 	GLenum buffer = GL_COLOR_ATTACHMENT0;
 	glDrawBuffers ( 1, &buffer );
 
-	glViewport ( 0, 0, (GLsizei)width, (GLsizei)height );
+	glViewport ( 0, 0, static_cast<GLsizei> ( width ), static_cast<GLsizei> ( height ) );
 
 	image->SetScale ( imageInfo.insertWidth, imageInfo.insertHeight, 1.0f );
 	image->SetLocation ( imageInfo.insertX - width * 0.5f, imageInfo.insertY - height * 0.5f, RENDER_Z );
@@ -327,7 +336,7 @@ GXVoid GXHudSurface::AddLine ( const GXLineInfo &lineInfo )
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 
-	glViewport ( 0, 0, (GLsizei)width, (GLsizei)height );
+	glViewport ( 0, 0, static_cast<GLsizei> ( width ), static_cast<GLsizei> ( height ) );
 
 	line->UpdateGeometry ( lineInfo.startPoint, lineInfo.endPoint );
 
@@ -387,7 +396,7 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
 	glDisable ( GL_CULL_FACE );
 	glDisable ( GL_DEPTH_TEST );
 
-	glViewport ( 0, 0, (GLsizei)width, (GLsizei)height );
+	glViewport ( 0, 0, static_cast<GLsizei> ( width ), static_cast<GLsizei> ( height ) );
 
 	switch ( penInfo.overlayType )
 	{
@@ -423,7 +432,7 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
 
 	GXGlyphInfo info;
 
-	GXUInt prevSymbol = 0;
+	GXUInt prevSymbol = 0u;
 	GXFloat penX = penInfo.insertX;
 	GXFloat penY = penInfo.insertY;
 
@@ -431,7 +440,7 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
 
 	if ( bufferNumSymbols )
 	{
-		GXWChar* temp = (GXWChar*)malloc ( bufferNumSymbols * sizeof ( GXWChar ) );
+		GXWChar* temp = static_cast<GXWChar*> ( malloc ( bufferNumSymbols * sizeof ( GXWChar ) ) );
 
 		va_list ap;
 		va_start ( ap, format );
@@ -441,18 +450,18 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
 		text = temp;
 	}
 	else
-		text = (GXWChar*)format;
+		text = const_cast<GXWChar*> ( format );
 
 	GXUInt len = GXWcslen ( text );
 
-	for ( GXUInt i = 0; i < len; i++ )
+	for ( GXUInt i = 0u; i < len; i++ )
 	{
-		GXUInt symbol = (GXUInt)text[ i ];
+		GXUInt symbol = static_cast<GXUInt> ( text[ i ] );
 
 		switch ( symbol )
 		{
 			case ' ':
-				penX += (GXFloat)penInfo.font->GetSpaceAdvance ();
+				penX += static_cast<GXFloat> ( penInfo.font->GetSpaceAdvance () );
 				continue;
 			break;
 
@@ -471,8 +480,8 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
 
 		glyph->UpdateGeometry ( info.min, info.max );
 
-		if ( prevSymbol != 0 )
-			penX += (GXFloat)penInfo.font->GetKerning ( symbol, prevSymbol );
+		if ( prevSymbol != 0u )
+			penX += static_cast<GXFloat> ( penInfo.font->GetKerning ( symbol, prevSymbol ) );
 
 		GXFloat x = startX + penX;
 		GXFloat y = startY + penY + info.offsetY;
@@ -489,7 +498,7 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
 		glyph->Render ();
 		unlitColorMaskMaterial.Unbind ();
 
-		penX += (GXFloat)info.advance;
+		penX += static_cast<GXFloat> ( info.advance );
 	}
 
 	if ( bufferNumSymbols )

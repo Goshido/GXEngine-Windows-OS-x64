@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_NATIVE_STATIC_MESH_SAVER
 #define GX_NATIVE_STATIC_MESH_SAVER

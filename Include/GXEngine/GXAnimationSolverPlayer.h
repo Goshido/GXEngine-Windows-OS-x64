@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.7
 
 #ifndef GX_ANIMATION_SOLVER_PLAYER
 #define GX_ANIMATION_SOLVER_PLAYER
@@ -13,12 +13,13 @@ class GXAnimationSolverPlayer : public GXAnimationSolver
 	private:
 		GXBoneFinder*					finder;
 
-		GXFloat							speed;
 		GXFloat							animPos;
 		const GXAnimationInfo*			animationInfo;
-		GXFloat							deltaToPartFactor;
 		GXFloat							frameInterval;
 		GXFloat							frameInterpolationFactor;
+
+		GXFloat							speed;
+		GXFloat							deltaToPartFactor;
 		GXBool							isNormalize;
 
 	public:
@@ -33,6 +34,10 @@ class GXAnimationSolverPlayer : public GXAnimationSolver
 
 		GXVoid EnableNormalization ();
 		GXVoid DisableNormalization ();
+
+	private:
+		GXAnimationSolverPlayer ( const GXAnimationSolverPlayer &other ) = delete;
+		GXAnimationSolverPlayer& operator = ( const GXAnimationSolverPlayer &other ) = delete;
 };
 
 

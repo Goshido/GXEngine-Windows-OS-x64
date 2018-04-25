@@ -1,4 +1,4 @@
-// version 1.18
+// version 1.19
 
 #ifndef GX_HUD_SURFACE
 #define GX_HUD_SURFACE
@@ -63,6 +63,15 @@ class GXLineRenderable;
 class GXHudSurface : public GXTransform
 {
 	private:
+		GXUShort					width;
+		GXUShort					height;
+
+		GXCameraOrthographic		canvasCamera;
+
+		GXImageRenderable*			image;
+		GXGlyphRenderable*			glyph;
+		GXLineRenderable*			line;
+
 		GLuint						fbo;
 		GXTexture2D					canvasTexture;
 		GXOpenGLState				openGLState;
@@ -72,17 +81,6 @@ class GXHudSurface : public GXTransform
 		GXUnlitTexture2DMaterial	unlitTexture2DMaterial;
 
 		GXMeshGeometry				screenQuadMesh;
-
-		GXImageRenderable*			image;
-		GXGlyphRenderable*			glyph;
-		GXLineRenderable*			line;
-
-		GXCameraOrthographic		canvasCamera;
-
-		GXUShort					width;
-		GXUShort					height;
-
-		GXBool						enableSmooth;
 
 	public:
 		explicit GXHudSurface ( GXUShort width, GXUShort height );
@@ -101,6 +99,10 @@ class GXHudSurface : public GXTransform
 
 	protected:
 		GXVoid TransformUpdated () override;
+
+	private:
+		GXHudSurface ( const GXHudSurface &other ) = delete;
+		GXHudSurface& operator = ( const GXHudSurface &other ) = delete;
 };
 
 

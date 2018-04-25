@@ -23,10 +23,10 @@ enum class eEMActorType : GXUBigInt
 struct EMActorHeader
 {
 	GXUBigInt	type;
-	GXUInt		nameOffset;
+	GXUBigInt	nameOffset;
 	GXMat4		origin;
 	GXBool		isVisible;
-	GXUInt		size;
+	GXUBigInt	size;
 };
 
 class EMActor
@@ -52,7 +52,7 @@ class EMActor
 		virtual GXVoid OnUpdate ( GXFloat deltaTime );
 		virtual GXVoid OnSave ( GXUByte** data );
 		virtual GXVoid OnLoad ( const GXUByte* data );
-		virtual GXUInt OnRequeredSaveSize ();
+		virtual GXUPointer OnRequeredSaveSize () const;
 		virtual GXVoid OnTransformChanged ();
 
 		const GXWChar* GetName ();

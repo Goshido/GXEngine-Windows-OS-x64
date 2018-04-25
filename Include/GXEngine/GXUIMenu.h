@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_UI_MENU_EXT
 #define GX_UI_MENU_EXT
@@ -7,7 +7,7 @@
 #include "GXUIPopup.h"
 
 
-#define GX_UI_MENU_INVALID_INDEX 0xFF
+#define GX_UI_MENU_INVALID_INDEX 0xFFu
 
 
 class GXUIMenu : public GXWidget
@@ -32,6 +32,10 @@ class GXUIMenu : public GXWidget
 
 		GXUByte GetSelectedItemIndex () const;
 		GXUByte GetHighlightedItemIndex () const;
+
+	private:
+		GXUIMenu ( const GXUIMenu &other ) = delete;
+		GXUIMenu& operator = ( const GXUIMenu &other ) = delete;
 };
 
 

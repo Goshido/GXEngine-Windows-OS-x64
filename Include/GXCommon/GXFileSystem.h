@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #ifndef GX_FILE_SYSTEM
 #define GX_FILE_SYSTEM
@@ -44,12 +44,16 @@ class GXWriteFileStream
 		FILE* file;
 
 	public:
-		GXWriteFileStream ( const GXWChar* fileName );
+		explicit GXWriteFileStream ( const GXWChar* fileName );
 		~GXWriteFileStream ();
 
 		GXVoid Write ( const GXVoid* data, GXUPointer size );
 		GXVoid Flush ();
 		GXVoid Close ();
+
+	private:
+		GXWriteFileStream ( const GXWriteFileStream &other ) = delete;
+		GXWriteFileStream& operator = ( const GXWriteFileStream &other ) = delete;
 };
 
 

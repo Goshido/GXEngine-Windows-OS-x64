@@ -1,4 +1,4 @@
-// vesrion 1.5
+// vesrion 1.6
 
 
 #include <GXCommon/GXAVLTree.h>
@@ -8,13 +8,13 @@
 
 GXAVLTreeNode::GXAVLTreeNode ()
 {
-	left = right = 0;
-	height = 1;
+	left = right = nullptr;
+	height = 1u;
 }
 
 GXAVLTreeNode::~GXAVLTreeNode ()
 {
-	// PURE VIRTUAL
+	// NOTHING
 }
 
 //----------------------------------------------------------------------------------------------
@@ -180,7 +180,7 @@ GXUInt GXAVLTree::GetHeight ( GXAVLTreeNode* node ) const
 
 GXInt GXAVLTree::GetBalance ( GXAVLTreeNode* node )
 {
-	return (GXInt)GetHeight ( node->right ) - (GXInt)GetHeight ( node->left );
+	return static_cast<GXInt> ( GetHeight ( node->right ) ) - static_cast<GXInt> ( GetHeight ( node->left ) );
 }
 
 GXAVLTreeNode* GXAVLTree::LeftRotate ( GXAVLTreeNode* father )

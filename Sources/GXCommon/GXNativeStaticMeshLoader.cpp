@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #include <GXCommon/GXNativeStaticMeshLoader.h>
 #include <GXCommon/GXFileSystem.h>
@@ -8,8 +8,8 @@
 
 GXNativeStaticMeshInfo::GXNativeStaticMeshInfo ()
 {
-	vboData = 0;
-	eboData = 0;
+	vboData = nullptr;
+	eboData = nullptr;
 }
 
 GXVoid GXNativeStaticMeshInfo::Cleanup ()
@@ -22,16 +22,16 @@ GXVoid GXNativeStaticMeshInfo::Cleanup ()
 
 GXVoid GXCALL GXLoadNativeStaticMesh ( const GXWChar* fileName, GXNativeStaticMeshInfo &info )
 {
-	GXUBigInt size = 0;
+	GXUPointer size = 0u;
 	GXUByte* data = nullptr;
 
-	if ( !GXLoadFile ( fileName, (GXVoid**)&data, size, GX_TRUE ) )
+	if ( !GXLoadFile ( fileName, reinterpret_cast<GXVoid**> ( &data ), size, GX_TRUE ) )
 	{
-		GXLogA ( "GXLoadNativeStaticMesh::Error - Can't load file\n" );
+		GXLogW ( L"GXLoadNativeStaticMesh::Error - Can't load file %s\n", fileName );
 		return;
 	}
 
-	GXNativeStaticMeshHeader* h = (GXNativeStaticMeshHeader*)data;
+	const GXNativeStaticMeshHeader* h = reinterpret_cast<const GXNativeStaticMeshHeader*> ( data );
 
 	info.bounds = h->bounds;
 
@@ -41,14 +41,15 @@ GXVoid GXCALL GXLoadNativeStaticMesh ( const GXWChar* fileName, GXNativeStaticMe
 	info.numTBPairs = h->numTBPairs;
 
 	size = info.numVertices * sizeof ( GXVec3 ) + info.numUVs * sizeof ( GXVec2 ) + info.numNormals * sizeof ( GXVec3 ) + info.numTBPairs * 2 * sizeof ( GXVec3 );
-	info.vboData = (GXUByte*)malloc ( size );
+	info.vboData = static_cast<GXUByte*> ( malloc ( size ) );
 	memcpy ( info.vboData, data + sizeof ( GXNativeStaticMeshHeader ), size );
 
 	info.numElements = h->numElements;
-	if ( info.numElements > 0 )
+
+	if ( info.numElements > 0u )
 	{
 		size = info.numElements * sizeof ( GXUInt );
-		info.eboData = (GXUByte*)malloc ( size );
+		info.eboData = static_cast<GXUByte*> ( malloc ( size ) );
 		memcpy ( info.eboData, data + h->elementOffset, size );
 	}
 

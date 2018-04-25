@@ -1,11 +1,12 @@
-// version 1.0
+// version 1.1
 
 #include <GXEngine/GXUIPopup.h>
 #include <GXEngine/GXUIMessage.h>
 #include <GXEngine/GXUICommon.h>
 
 
-#define GX_DEFAULT_HEIGHT	0.5f
+#define DEFAULT_HEIGHT	0.5f
+
 
 struct GXUIPopupItem
 {
@@ -18,11 +19,13 @@ struct GXUIPopupItem
 //---------------------------------------------------------------------
 
 GXUIPopup::GXUIPopup ( GXWidget* parent ):
-GXWidget ( parent ), items ( sizeof ( GXUIPopupItem ) )
+	GXWidget ( parent ),
+	items ( sizeof ( GXUIPopupItem ) ),
+	selectedItemIndex ( static_cast<GXUByte> ( GX_UI_POPUP_INVALID_INDEX ) ),
+	itemHeight ( gx_ui_Scale * DEFAULT_HEIGHT ),
+	owner ( nullptr )
 {
-	selectedItemIndex = GX_UI_POPUP_INVALID_INDEX;
-	itemHeight = gx_ui_Scale * GX_DEFAULT_HEIGHT;
-	owner = nullptr;
+	// NOTHING
 }
 
 GXUIPopup::~GXUIPopup ()
@@ -36,15 +39,15 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 	{
 		case GX_MSG_POPUP_ADD_ITEM:
 		{
-			const GXUIPopupItem* pi = (const GXUIPopupItem*)data;
+			const GXUIPopupItem* pi = static_cast<const GXUIPopupItem*> ( data );
 
-			GXUInt totalItems = items.GetLength ();
+			GXUByte totalItems = static_cast<GXUByte> ( items.GetLength () );
 			GXUIPopupItem item;
 			item.handler = pi->handler;
 			item.action = pi->action;
 			item.isActive = GX_TRUE;
 
-			if ( totalItems == 0 )
+			if ( totalItems == 0u )
 			{
 				item.boundsWorld.AddVertex ( boundsLocal.min.GetX (), boundsLocal.max.GetY () - itemHeight, boundsLocal.min.GetZ () );
 				item.boundsWorld.AddVertex ( boundsLocal.max.GetX (), boundsLocal.max.GetY (), boundsLocal.max.GetZ () );
@@ -64,26 +67,26 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 			items.SetValue ( totalItems, &item );
 			totalItems++;
 
-			if ( totalItems != 0 && renderer )
+			if ( totalItems != 0u && renderer )
 				renderer->OnUpdate ();
 		}
 		break;
 
 		case GX_MSG_POPUP_SET_ITEM_HEIGHT:
 		{
-			const GXFloat* newItemHeight = (const GXFloat*)data;
+			const GXFloat* newItemHeight = static_cast<const GXFloat*> ( data );
 			itemHeight = *newItemHeight;
 
-			GXUInt totalItems = items.GetLength ();
+			GXUByte totalItems = static_cast<GXUByte> ( items.GetLength () );
 
-			if ( totalItems != 0 )
+			if ( totalItems != 0u )
 			{
 				GXUIPopupItem* itemStorage = (GXUIPopupItem*)items.GetData ();
 
 				GXAABB newBoundsLocal ( boundsLocal );
 				newBoundsLocal.min.SetY ( newBoundsLocal.max.GetY () );
 
-				for ( GXUInt i = 0; i < totalItems; i++ )
+				for ( GXUInt i = 0u; i < totalItems; i++ )
 				{
 					itemStorage[ i ].boundsWorld.Empty ();
 					itemStorage[ i ].boundsWorld.AddVertex ( newBoundsLocal.max.GetX (), newBoundsLocal.min.GetY (), newBoundsLocal.max.GetZ () );
@@ -94,17 +97,18 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 				UpdateBoundsWorld ( newBoundsLocal );
 			}
 
-			if ( totalItems != 0 && renderer )
+			if ( totalItems != 0u && renderer )
 				renderer->OnUpdate ();
 		}
 		break;
 
 		case GX_MSG_POPUP_ENABLE_ITEM:
 		{
-			const GXUByte* itemIndex = (const GXUByte*)data;
-			if ( (GXUInt)( *itemIndex ) >= items.GetLength () ) break;
+			const GXUByte* itemIndex = static_cast<const GXUByte*> ( data );
 
-			GXUIPopupItem* itemStorage = (GXUIPopupItem*)items.GetData ();
+			if ( static_cast<GXUPointer> ( *itemIndex ) >= items.GetLength () ) break;
+
+			GXUIPopupItem* itemStorage = static_cast<GXUIPopupItem*> ( items.GetData () );
 			if ( itemStorage[ *itemIndex ].isActive ) break;
 
 			itemStorage[ *itemIndex ].isActive = GX_TRUE;
@@ -116,10 +120,11 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 
 		case GX_MSG_POPUP_DISABLE_ITEM:
 		{
-			const GXUByte* itemIndex = (const GXUByte*)data;
-			if ( (GXUInt)( *itemIndex ) >= items.GetLength () ) break;
+			const GXUByte* itemIndex = static_cast<const GXUByte*> ( data );
 
-			GXUIPopupItem* itemStorage = (GXUIPopupItem*)items.GetData ();
+			if ( static_cast<GXUPointer> ( *itemIndex ) >= items.GetLength () ) break;
+
+			GXUIPopupItem* itemStorage = static_cast<GXUIPopupItem*> ( items.GetData () );
 			if ( !itemStorage[ *itemIndex ].isActive ) break;
 
 			itemStorage[ *itemIndex ].isActive = GX_FALSE;
@@ -131,7 +136,8 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 
 		case GX_MSG_POPUP_SHOW:
 		{
-			GXWidget** currentOwner = (GXWidget**)data;
+			GXVoid* pointer = const_cast<GXVoid*> ( data );
+			GXWidget** currentOwner = reinterpret_cast<GXWidget**> ( pointer );
 			owner = *currentOwner;
 			GXWidget::Show ();
 		}
@@ -141,7 +147,8 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 		{
 			if ( selectedItemIndex != GX_UI_POPUP_INVALID_INDEX )
 			{
-				GXUIPopupItem* itemStorage = (GXUIPopupItem*)items.GetData ();
+				GXUIPopupItem* itemStorage = static_cast<GXUIPopupItem*> ( items.GetData () );
+
 				if ( itemStorage[ selectedItemIndex ].action )
 					itemStorage[ selectedItemIndex ].action ( itemStorage[ selectedItemIndex ].handler );
 
@@ -152,6 +159,7 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 				}
 
 				selectedItemIndex = GX_UI_POPUP_INVALID_INDEX;
+
 				if ( renderer )
 					renderer->OnUpdate ();
 			}
@@ -162,19 +170,20 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 
 		case GX_MSG_MOUSE_MOVE:
 		{
-			const GXVec2* pos = (const GXVec2*)data;
-			GXUIPopupItem* itemStorage = (GXUIPopupItem*)items.GetData ();
-			GXUByte totalItems = (GXUByte)items.GetLength ();
+			const GXVec2* pos = static_cast<const GXVec2*> ( data );
+			GXUIPopupItem* itemStorage = static_cast<GXUIPopupItem*> ( items.GetData () );
+			GXUByte totalItems = static_cast<GXUByte> ( items.GetLength () );
 			
-			GXUByte mouseOverItem = 0;
+			GXUByte mouseOverItem = 0u;
 
 			for ( ; mouseOverItem < totalItems; mouseOverItem++ )
 				if ( itemStorage[ mouseOverItem ].boundsWorld.IsOverlaped ( pos->GetX (), pos->GetY (), 0.0f ) ) break;
 
-			if ( selectedItemIndex == GX_UI_POPUP_INVALID_INDEX && !itemStorage[ mouseOverItem ].isActive ) break;
+			if ( selectedItemIndex == static_cast<GXUByte> ( GX_UI_POPUP_INVALID_INDEX ) && !itemStorage[ mouseOverItem ].isActive ) break;
 			if ( selectedItemIndex == mouseOverItem && itemStorage[ mouseOverItem ].isActive ) break;
 
-			selectedItemIndex = itemStorage[ mouseOverItem ].isActive ? mouseOverItem : (GXUByte)GX_UI_POPUP_INVALID_INDEX;
+			selectedItemIndex = itemStorage[ mouseOverItem ].isActive ? mouseOverItem : static_cast<GXUByte> ( GX_UI_POPUP_INVALID_INDEX );
+
 			if ( renderer )
 				renderer->OnUpdate ();
 		}
@@ -182,9 +191,10 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 
 		case GX_MSG_MOUSE_LEAVE:
 		{
-			if ( selectedItemIndex != GX_UI_POPUP_INVALID_INDEX )
+			if ( selectedItemIndex != static_cast<GXUByte> ( GX_UI_POPUP_INVALID_INDEX ) )
 			{
-				selectedItemIndex = GX_UI_POPUP_INVALID_INDEX;
+				selectedItemIndex = static_cast<GXUByte> ( GX_UI_POPUP_INVALID_INDEX );
+
 				if ( renderer )
 					renderer->OnUpdate ();
 			}
@@ -201,14 +211,15 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 
 		case GX_MSG_RESIZE:
 		{
-			const GXAABB* newBoundsLocal = (const GXAABB*)data;
+			const GXAABB* newBoundsLocal = static_cast<const GXAABB*> ( data );
 			GXFloat newWidth = newBoundsLocal->GetWidth ();
 			GXVec2 newPosition ( newBoundsLocal->min.GetX (), newBoundsLocal->min.GetY () );
 
-			GXUInt totalItems = items.GetLength ();
+			GXUByte totalItems = static_cast<GXUByte> ( items.GetLength () );
 			GXFloat top = newPosition.GetY () + totalItems * itemHeight;
-			GXUIPopupItem* itemStorage = (GXUIPopupItem*)items.GetData ();
-			for ( GXUInt i = 0; i < totalItems; i++ )
+			GXUIPopupItem* itemStorage = static_cast<GXUIPopupItem*> ( items.GetData () );
+
+			for ( GXUInt i = 0u; i < totalItems; i++ )
 			{
 				itemStorage[ i ].boundsWorld.Empty ();
 				itemStorage[ i ].boundsWorld.AddVertex ( newPosition.GetX (), top - itemHeight, -1.0f );
@@ -224,7 +235,7 @@ GXVoid GXUIPopup::OnMessage ( GXUInt message, const GXVoid* data )
 		break;
 
 		case GX_MSG_HIDE:
-			selectedItemIndex = GX_UI_POPUP_INVALID_INDEX;
+			selectedItemIndex = static_cast<GXUByte> ( GX_UI_POPUP_INVALID_INDEX );
 			GXWidget::OnMessage ( message, data );
 		break;
 
@@ -244,7 +255,7 @@ GXVoid GXUIPopup::AddItem ( GXVoid* handler, PFNGXONUIPOPUPACTIONPROC action )
 
 GXUByte GXUIPopup::GetTotalItems () const
 {
-	return (GXUByte)items.GetLength ();
+	return static_cast<GXUByte> ( items.GetLength () );
 }
 
 GXVoid GXUIPopup::EnableItem ( GXUByte itemIndex )
@@ -261,7 +272,7 @@ GXBool GXUIPopup::IsItemActive ( GXUByte itemIndex ) const
 {
 	if ( (GXUInt)itemIndex >= items.GetLength () ) return GX_FALSE;
 
-	GXUIPopupItem* itemStorage = (GXUIPopupItem*)items.GetData ();
+	GXUIPopupItem* itemStorage = static_cast<GXUIPopupItem*> ( items.GetData () );
 	return itemStorage[ itemIndex ].isActive;
 }
 

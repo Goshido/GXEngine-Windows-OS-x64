@@ -25,6 +25,10 @@ class EMUIPopup : public EMUI
 		GXVoid SetLocation ( GXFloat x, GXFloat y );
 
 		GXVoid Show ( EMUI* owner );
+
+	private:
+		EMUIPopup ( const EMUIPopup & other ) = delete;
+		EMUIPopup& operator = ( const EMUIPopup & other ) = delete;
 };
 
 

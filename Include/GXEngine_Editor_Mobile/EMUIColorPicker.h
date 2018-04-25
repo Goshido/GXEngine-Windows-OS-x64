@@ -20,6 +20,14 @@ class EMUIColorPicker : public EMUI
 {
 	private:
 		EMUIDraggableArea*			mainPanel;
+
+		PFNEMONHSVACOLORPROC		OnHSVColor;
+		PFNEMONRGBACOLORPROC		OnRGBColor;
+		PFNEMONRGBAUBYTECOLORPROC	OnRGBUByteColor;
+		GXVoid*						handler;
+
+		GXWChar*					buffer;
+
 		EMUIStaticText*				caption;
 		EMUISeparator*				topSeparator;
 		GXUIInput*					hsvColorWidget;
@@ -46,13 +54,6 @@ class EMUIColorPicker : public EMUI
 		EMUIButton*					cancel;
 		EMUIButton*					pick;
 
-		PFNEMONHSVACOLORPROC		OnHSVColor;
-		PFNEMONRGBACOLORPROC		OnRGBColor;
-		PFNEMONRGBAUBYTECOLORPROC	OnRGBUByteColor;
-		GXVoid*						handler;
-
-		GXWChar*					buffer;
-
 		static EMUIColorPicker*		instance;
 
 	public:
@@ -76,6 +77,9 @@ class EMUIColorPicker : public EMUI
 		static GXVoid GXCALL OnLeftMouseButton ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
 		static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
 		static GXVoid GXCALL OnFinishEditing ( GXVoid* handler, GXUIEditBox& editBox );
+
+		EMUIColorPicker ( const EMUIColorPicker &other ) = delete;
+		EMUIColorPicker& operator = ( const EMUIColorPicker &other ) = delete;
 };
 
 

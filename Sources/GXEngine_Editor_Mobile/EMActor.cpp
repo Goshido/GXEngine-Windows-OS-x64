@@ -63,10 +63,10 @@ GXVoid EMActor::OnLoad ( const GXUByte* /*data*/ )
 	// NOTHING
 }
 
-GXUInt EMActor::OnRequeredSaveSize ()
+GXUPointer EMActor::OnRequeredSaveSize () const
 {
 	// NOTHING
-	return 0;
+	return 0u;
 }
 
 GXVoid EMActor::OnTransformChanged ()

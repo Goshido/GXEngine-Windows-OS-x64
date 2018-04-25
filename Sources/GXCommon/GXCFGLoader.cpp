@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #include <GXCommon/GXCFGLoader.h>
 #include <GXCommon/GXFileSystem.h>
@@ -6,7 +6,7 @@
 #include <GXCommon/GXLogger.h>
 
 
-GXVoid GXCALL GXLoadCFG ( GXEngineConfiguration &out_config_info )
+GXVoid GXCALL GXLoadCFG ( GXEngineConfiguration &out )
 {
 	GXVoid* buffer = nullptr;
 	GXUBigInt size = 0;
@@ -17,6 +17,6 @@ GXVoid GXCALL GXLoadCFG ( GXEngineConfiguration &out_config_info )
 		GXLogW ( L"GXLoadCFG::Error - Can't load file %s\n", L"../../Config/GXEngine.cfg\n" );
 	}
 
-	memcpy ( &out_config_info, buffer, size );
+	memcpy ( &out, buffer, size );
 	GXSafeFree ( buffer );
 }

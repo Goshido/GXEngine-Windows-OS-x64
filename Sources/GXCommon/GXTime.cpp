@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #include <GXCommon/GXTime.h>
 #include <GXCommon/GXDisable3rdPartyWarnings.h>
@@ -9,7 +9,7 @@
 
 GXDouble GXCALL GXGetProcessorTicks ()
 {
-	return (GXDouble)__rdtsc ();
+	return static_cast<GXDouble> ( __rdtsc () );
 }
 
 GXDouble GXCALL GXGetProcessorTicksPerSecond ()
@@ -28,18 +28,18 @@ GXDouble GXCALL GXGetProcessorTicksPerSecond ()
 			procSpeed = 0;
 			buflen = sizeof ( procSpeed );
 
-			ret = (DWORD)RegQueryValueExW ( hKey, L"~MHz", 0, 0, (LPBYTE)&procSpeed, &buflen );
+			ret = static_cast<DWORD> ( RegQueryValueExW ( hKey, L"~MHz", 0, 0, (LPBYTE)&procSpeed, &buflen ) );
 
 			if ( ret != ERROR_SUCCESS )
-				ret = (DWORD)RegQueryValueExW ( hKey, L"~Mhz", 0, 0, (LPBYTE)&procSpeed, &buflen );
+				ret = static_cast<DWORD> ( RegQueryValueExW ( hKey, L"~Mhz", 0, 0, (LPBYTE)&procSpeed, &buflen ) );
 
 			if ( ret != ERROR_SUCCESS )
-				ret = (DWORD)RegQueryValueExW ( hKey, L"~mhz", 0, 0, (LPBYTE)&procSpeed, &buflen );
+				ret = static_cast<DWORD> ( RegQueryValueExW ( hKey, L"~mhz", 0, 0, (LPBYTE)&procSpeed, &buflen ) );
 
 			RegCloseKey ( hKey );
 
 			if ( ret == ERROR_SUCCESS )
-				ticks = (GXDouble)procSpeed * 1000000.0;
+				ticks = static_cast<GXDouble> ( procSpeed * 1000000.0 );
 		}
 	}
 

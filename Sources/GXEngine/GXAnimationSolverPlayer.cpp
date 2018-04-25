@@ -1,9 +1,10 @@
-// version 1.5
+// version 1.7
 
 #include <GXEngine/GXAnimationSolverPlayer.h>
 #include <GXCommon/GXNativeSkeletalMesh.h>
 #include <GXCommon/GXAVLTree.h>
 #include <GXCommon/GXMemory.h>
+#include <GXCommon/GXStrings.h>
 #include <GXCommon/GXDisable3rdPartyWarnings.h>
 #include <new>
 #include <GXCommon/GXRestoreWarnings.h>
@@ -14,7 +15,7 @@
 #define DEFAULT_FRAME_INTERVAL				0.016f
 #define DEFAULT_FRAME_INTERPOLATION_FACTOR	0.0f
 
-#define INVALID_BONE_INDEX					0xFFFF
+#define INVALID_BONE_INDEX					0xFFFFu
 
 
 class GXBoneFinderNode : public GXAVLTreeNode
@@ -34,7 +35,7 @@ class GXBoneFinderNode : public GXAVLTreeNode
 GXBoneFinderNode::GXBoneFinderNode ()
 {
 	boneName = nullptr;
-	boneIndex = INVALID_BONE_INDEX;
+	boneIndex = static_cast<GXUShort> ( INVALID_BONE_INDEX );
 }
 
 GXBoneFinderNode::GXBoneFinderNode ( const GXUTF8* boneName, GXUShort boneIndex )
@@ -50,9 +51,9 @@ GXBoneFinderNode::~GXBoneFinderNode ()
 
 GXInt GXCALL GXBoneFinderNode::Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b )
 {
-	GXBoneFinderNode& aNode = (GXBoneFinderNode&)a;
-	GXBoneFinderNode& bNode = (GXBoneFinderNode&)b;
-	return strcmp ( aNode.boneName, bNode.boneName );
+	const GXBoneFinderNode& aNode = static_cast<const GXBoneFinderNode&> ( a );
+	const GXBoneFinderNode& bNode = static_cast<const GXBoneFinderNode&> ( b );
+	return GXUTF8cmp ( aNode.boneName, bNode.boneName );
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -60,20 +61,20 @@ GXInt GXCALL GXBoneFinderNode::Compare ( const GXAVLTreeNode &a, const GXAVLTree
 class GXBoneFinder : public GXAVLTree
 {
 	private:
-	GXBoneFinderNode*	cacheFriendlyNodes;
+		GXBoneFinderNode*	cacheFriendlyNodes;
 
 	public:
-	explicit GXBoneFinder ( const GXAnimationInfo &animInfo );
-	~GXBoneFinder () override;
+		explicit GXBoneFinder ( const GXAnimationInfo &animInfo );
+		~GXBoneFinder () override;
 
-	GXUShort FindBoneIndex ( const GXUTF8* boneName ) const;
+		GXUShort FindBoneIndex ( const GXUTF8* boneName ) const;
 };
 
 GXBoneFinder::GXBoneFinder ( const GXAnimationInfo &animInfo ) :
-	GXAVLTree ( &GXBoneFinderNode::Compare, GX_FALSE )
+	GXAVLTree ( &GXBoneFinderNode::Compare, GX_FALSE ),
+	cacheFriendlyNodes ( static_cast<GXBoneFinderNode*> ( malloc ( sizeof ( GXBoneFinderNode ) * animInfo.totalBones ) ) )
 {
-	cacheFriendlyNodes = (GXBoneFinderNode*)malloc ( sizeof ( GXBoneFinderNode ) * animInfo.totalBones );
-	for ( GXUShort i = 0; i < animInfo.totalBones; i++ )
+	for ( GXUShort i = 0u; i < animInfo.totalBones; i++ )
 	{
 		new ( cacheFriendlyNodes + i ) GXBoneFinderNode ( animInfo.boneNames + i * GX_BONE_NAME_SIZE, i );
 		Add ( *( cacheFriendlyNodes + i ) );
@@ -89,7 +90,7 @@ GXUShort GXBoneFinder::FindBoneIndex ( const GXUTF8* boneName ) const
 {
 	GXBoneFinderNode finderNode;
 	finderNode.boneName = boneName;
-	const GXBoneFinderNode* node = (const GXBoneFinderNode*)Find ( finderNode );
+	const GXBoneFinderNode* node = static_cast<const GXBoneFinderNode*> ( Find ( finderNode ) );
 
 	if ( !node )
 		return GX_UNKNOWN_BONE_INDEX;
@@ -99,14 +100,14 @@ GXUShort GXBoneFinder::FindBoneIndex ( const GXUTF8* boneName ) const
 
 //--------------------------------------------------------------------------------------------------
 
-GXAnimationSolverPlayer::GXAnimationSolverPlayer ( GXUShort solverID ) :
-	GXAnimationSolver ( solverID )
+GXAnimationSolverPlayer::GXAnimationSolverPlayer ( GXUShort solverID ):
+	GXAnimationSolver ( solverID ),
+	finder ( nullptr ),
+	animPos ( DEFAULT_ANIMATION_POSITION ),
+	animationInfo ( nullptr ),
+	frameInterval ( DEFAULT_FRAME_INTERVAL ),
+	frameInterpolationFactor ( DEFAULT_FRAME_INTERPOLATION_FACTOR )
 {
-	animPos = DEFAULT_ANIMATION_POSITION;
-	frameInterval = DEFAULT_FRAME_INTERVAL;
-	frameInterpolationFactor = DEFAULT_FRAME_INTERPOLATION_FACTOR;
-	finder = nullptr;
-
 	DisableNormalization ();
 	SetAnimationMultiplier ( DEFAULT_MULTIPLIER );
 }
@@ -124,7 +125,7 @@ GXBool GXAnimationSolverPlayer::GetBoneJoint ( GXBoneJoint &joint, const GXUTF8*
 
 	if ( boneIndex == GX_UNKNOWN_BONE_INDEX ) return GX_FALSE;
 
-	GXUInt doneFrame = (GXUInt)( animPos * animationInfo->totalFrames );
+	GXUInt doneFrame = static_cast<GXUInt> ( animPos * animationInfo->totalFrames );
 
 	if ( doneFrame >= animationInfo->totalFrames )
 		doneFrame = animationInfo->totalFrames - 1;

@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXMemory.h>
@@ -6,17 +6,17 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define BUFFER_SIZE_IN_SYMBOLS		1024
+#define BUFFER_SIZE_IN_SYMBOLS		1024u
 
 
 GXDirectoryInfo::GXDirectoryInfo ()
 {
 	absolutePath = nullptr;
 
-	totalFolders = 0;
+	totalFolders = 0u;
 	folderNames = nullptr;
 
-	totalFiles = 0;
+	totalFiles = 0u;
 	fileNames = nullptr;
 	fileSizes = nullptr;
 }
@@ -28,7 +28,7 @@ GXDirectoryInfo::~GXDirectoryInfo ()
 
 GXVoid GXDirectoryInfo::Clear ()
 {
-	GXWChar* p = (GXWChar*)absolutePath;
+	GXWChar* p = const_cast<GXWChar*> ( absolutePath );
 	GXSafeFree ( p );
 	absolutePath = nullptr;
 
@@ -38,19 +38,19 @@ GXVoid GXDirectoryInfo::Clear ()
 		GXSafeFree ( p );
 	}
 
-	totalFolders = 0;
+	totalFolders = 0u;
 	GXSafeFree ( folderNames );
 
-	for ( GXUInt i = 0; i < totalFiles; i++ )
+	for ( GXUInt i = 0u; i < totalFiles; i++ )
 	{
 		p = (GXWChar*)fileNames[ i ];
 		GXSafeFree ( p );
 	}
 
-	totalFiles = 0;
+	totalFiles = 0u;
 	GXSafeFree ( fileNames );
 
-	GXUBigInt* s = (GXUBigInt*)fileSizes;
+	GXUBigInt* s = const_cast<GXUBigInt*> ( fileSizes );
 	GXSafeFree ( s );
 	fileSizes = nullptr;
 }
@@ -60,10 +60,11 @@ GXVoid GXDirectoryInfo::Clear ()
 GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUPointer &size, GXBool notsilent )
 {
 	FILE* input = nullptr;
-	GXUPointer fileSize = 0;
-	GXUPointer readed = 0;
+	GXUPointer fileSize = 0u;
+	GXUPointer readed = 0u;
 
 	_wfopen_s ( &input, fileName, L"rb" );
+
 	if ( input == nullptr )
 	{
 		if ( notsilent )
@@ -73,7 +74,7 @@ GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUPointer 
 		}
 
 		*buffer = nullptr;
-		size = 0;
+		size = 0u;
 
 		return GX_FALSE;
 	}
@@ -82,20 +83,20 @@ GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUPointer 
 	fileSize = (GXUPointer)ftell ( input );
 	rewind ( input );
 
-	if ( fileSize == 0 )
+	if ( fileSize == 0u )
 	{
 		GXDebugBox ( L"GXLoadFile::Error - Файл пуст" );
 		GXLogW ( L"GXLoadFile::Error - Файл пуст\n", fileName );
 
 		fclose ( input );
 		*buffer = nullptr;
-		size = 0;
+		size = 0u;
 
 		return GX_FALSE;
 	}
 
-	*buffer = (GXVoid*)malloc ( fileSize );
-	readed = (GXUPointer)fread ( *buffer, 1, fileSize, input );
+	*buffer = malloc ( fileSize );
+	readed = static_cast<GXUPointer> ( fread ( *buffer, 1, fileSize, input ) );
 	fclose ( input );
 
 	if ( readed != fileSize )
@@ -105,7 +106,7 @@ GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUPointer 
 
 		free ( *buffer );
 		*buffer = nullptr;
-		size = 0;
+		size = 0u;
 
 		return GX_FALSE;
 	}
@@ -139,20 +140,15 @@ GXBool GXCALL GXDoesFileExist ( const GXWChar* fileName )
 
 	_wfopen_s ( &input, fileName, L"rb" );
 
-	if ( input == nullptr )
-	{
-		return GX_FALSE;
-	}
-	else
-	{
-		fclose ( input );
-		return GX_TRUE;
-	}
+	if ( input == nullptr ) return GX_FALSE;
+	
+	fclose ( input );
+	return GX_TRUE;
 }
 
 GXVoid GXCALL GXGetCurrentDirectory ( GXWChar** currentDirectory )
 {
-	GXWChar* buffer = (GXWChar*)malloc ( BUFFER_SIZE_IN_SYMBOLS * sizeof ( GXWChar ) );
+	GXWChar* buffer = static_cast<GXWChar*> ( malloc ( BUFFER_SIZE_IN_SYMBOLS * sizeof ( GXWChar ) ) );
 	GetCurrentDirectoryW ( BUFFER_SIZE_IN_SYMBOLS, buffer );
 
 	for ( GXWChar* p = buffer; *p != L'\0'; p++ )
@@ -181,8 +177,8 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 {
 	if ( !directory ) return GX_FALSE;
 
-	GXUInt size = ( GXWcslen ( directory ) + 3 ) * sizeof ( GXWChar );	// /, * and \0 symbols
-	GXWChar* listedDirectory = (GXWChar*)malloc ( size );
+	GXUPointer size = ( GXWcslen ( directory ) + 3 ) * sizeof ( GXWChar );	// /, * and \0 symbols
+	GXWChar* listedDirectory = static_cast<GXWChar*> ( malloc ( size ) );
 	wsprintfW ( listedDirectory, L"%s/*", directory );
 
 	WIN32_FIND_DATAW info;
@@ -211,7 +207,7 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 			GXWcsclone ( &fileName, info.cFileName );
 			fileNames.SetValue ( fileNames.GetLength (), &fileName );
 
-			GXUBigInt fileSize = (GXUBigInt)info.nFileSizeLow + ( (GXUBigInt)info.nFileSizeHigh << 32 );
+			GXUBigInt fileSize = static_cast<GXUBigInt> ( info.nFileSizeLow ) + ( static_cast<GXUBigInt> ( info.nFileSizeHigh ) << 32 );
 			fileSizes.SetValue ( fileSizes.GetLength (), &fileSize );
 		}
 	}
@@ -221,13 +217,13 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 	{
 		FindClose ( handleFind );
 
-		GXWChar** files = (GXWChar**)fileNames.GetData ();
+		GXWChar** files = reinterpret_cast<GXWChar**> ( fileNames.GetData () );
 		GXUPointer total = fileNames.GetLength ();
 
 		for ( GXUPointer i = 0u; i < total; i++ )
 			free ( files[ i ] );
 
-		GXWChar** folders = (GXWChar**)folderNames.GetData ();
+		GXWChar** folders = reinterpret_cast<GXWChar**> ( folderNames.GetData () );
 		total = folderNames.GetLength ();
 
 		for ( GXUPointer i = 0u; i < total; i++ )
@@ -256,9 +252,9 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 	if ( directoryInfo.totalFolders > 0 )
 	{
 		size = directoryInfo.totalFolders * sizeof ( GXWChar* );
-		GXWChar** f = (GXWChar**)malloc ( size );
+		GXWChar** f = reinterpret_cast<GXWChar**> ( malloc ( size ) );
 		memcpy ( f, folderNames.GetData (), size );
-		directoryInfo.folderNames = (const GXWChar**)f;
+		directoryInfo.folderNames = const_cast<const GXWChar**> ( f );
 	}
 	else
 	{
@@ -270,14 +266,14 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 	if ( directoryInfo.totalFiles > 0 )
 	{
 		size = directoryInfo.totalFiles * sizeof ( GXWChar* );
-		GXWChar** f = (GXWChar**)malloc ( size );
+		GXWChar** f = reinterpret_cast<GXWChar**> ( malloc ( size ) );
 		memcpy ( f, fileNames.GetData (), size );
-		directoryInfo.fileNames = (const GXWChar**)f;
+		directoryInfo.fileNames = const_cast<const GXWChar**> ( f );
 
 		size = directoryInfo.totalFiles * sizeof ( GXUBigInt );
-		GXUBigInt* s = (GXUBigInt*)malloc ( size );
+		GXUBigInt* s = static_cast<GXUBigInt*> ( malloc ( size ) );
 		memcpy ( s, fileSizes.GetData (), size );
-		directoryInfo.fileSizes = (const GXUBigInt*)s;
+		directoryInfo.fileSizes = const_cast<const GXUBigInt*> ( s );
 	}
 	else
 	{
@@ -296,7 +292,8 @@ GXVoid GXCALL GXGetFileDirectoryPath ( GXWChar** path, const GXWChar* fileName )
 		return;
 	}
 
-	GXInt symbols = (GXInt)GXWcslen ( fileName );
+	GXInt symbols = static_cast<GXInt> ( GXWcslen ( fileName ) );
+
 	if ( symbols == 0 )
 	{
 		*path = nullptr;
@@ -304,11 +301,9 @@ GXVoid GXCALL GXGetFileDirectoryPath ( GXWChar** path, const GXWChar* fileName )
 	}
 
 	GXInt i = symbols;
+
 	for ( ; i > 0; i-- )
-	{
-		if ( fileName[ i ] == L'\\' || fileName[ i ] == L'/' )
-			break;
-	}
+		if ( fileName[ i ] == L'\\' || fileName[ i ] == L'/' ) break;
 
 	if ( i < 0 )
 	{
@@ -317,8 +312,8 @@ GXVoid GXCALL GXGetFileDirectoryPath ( GXWChar** path, const GXWChar* fileName )
 	}
 
 
-	GXUInt size = ( i + 1 ) * sizeof ( GXWChar );
-	*path = (GXWChar*)malloc ( size );
+	GXUPointer size = ( i + 1 ) * sizeof ( GXWChar );
+	*path = static_cast<GXWChar*> ( malloc ( size ) );
 	memcpy ( *path, fileName, size - sizeof ( GXWChar ) );
 
 	( *path )[ i ] = 0;
@@ -332,7 +327,8 @@ GXVoid GXCALL GXGetBaseFileName ( GXWChar** baseFileName, const GXWChar* fileNam
 		return;
 	}
 
-	GXInt symbols = (GXInt)GXWcslen ( fileName );
+	GXInt symbols = static_cast<GXInt> ( GXWcslen ( fileName ) );
+
 	if ( symbols == 0 )
 	{
 		*baseFileName = nullptr;
@@ -340,11 +336,9 @@ GXVoid GXCALL GXGetBaseFileName ( GXWChar** baseFileName, const GXWChar* fileNam
 	}
 
 	GXInt i = symbols;
+
 	for ( ; i > 0; i-- )
-	{
-		if ( fileName[ i ] == L'.' )
-			break;
-	}
+		if ( fileName[ i ] == L'.' ) break;
 
 	if ( i <= 0 )
 	{
@@ -356,10 +350,7 @@ GXVoid GXCALL GXGetBaseFileName ( GXWChar** baseFileName, const GXWChar* fileNam
 	GXInt end = i;
 
 	for ( ; i >= 0; i-- )
-	{
-		if ( fileName[ i ] == L'\\' || fileName[ i ] == L'/' )
-			break;
-	}
+		if ( fileName[ i ] == L'\\' || fileName[ i ] == L'/' ) break;
 
 	i++;
 
@@ -368,8 +359,8 @@ GXVoid GXCALL GXGetBaseFileName ( GXWChar** baseFileName, const GXWChar* fileNam
 
 	GXInt start = i;
 	GXInt baseFileNameSymbols = end - start + 1;
-	GXUInt size = ( baseFileNameSymbols + 1 ) * sizeof ( GXWChar );
-	*baseFileName = (GXWChar*)malloc ( size );
+	GXUPointer size = ( baseFileNameSymbols + 1 ) * sizeof ( GXWChar );
+	*baseFileName = static_cast<GXWChar*> ( malloc ( size ) );
 	memcpy ( *baseFileName, fileName + start, size - sizeof ( GXWChar ) );
 
 	( *baseFileName )[ baseFileNameSymbols ] = 0;
@@ -383,13 +374,11 @@ GXVoid GXCALL GXGetFileExtension ( GXWChar** extension, const GXWChar* fileName 
 		return;
 	}
 
-	GXInt symbols = (GXInt)GXWcslen ( fileName );
+	GXInt symbols = static_cast<GXInt> ( GXWcslen ( fileName ) );
 	GXInt i = symbols - 1;
 
 	for ( ; i > 0; i-- )
-	{
 		if ( fileName[ i ] == L'.' ) break;
-	}
 
 	if ( i < 0 )
 	{
@@ -399,10 +388,10 @@ GXVoid GXCALL GXGetFileExtension ( GXWChar** extension, const GXWChar* fileName 
 
 	i++;
 
-	GXUInt extensionSymbols = (GXUInt)symbols - i + 1;
+	GXUInt extensionSymbols = static_cast<GXUInt> ( symbols ) - i + 1;
 	GXUInt size = extensionSymbols * sizeof ( GXWChar );
 
-	*extension = (GXWChar*)malloc ( size );
+	*extension = static_cast<GXWChar*> ( malloc ( size ) );
 	memcpy ( *extension, fileName + i, size );
 }
 
@@ -412,8 +401,9 @@ GXWriteFileStream::GXWriteFileStream ( const GXWChar* fileName )
 {
 	_wfopen_s ( &file, fileName, L"wb" );
 
-	if ( !file )
-		GXLogW ( L"GXWriteToFile::Error - Не могу создать файл %s\n", fileName );
+	if ( file ) return;
+
+	GXLogW ( L"GXWriteToFile::Error - Не могу создать файл %s\n", fileName );
 }
 
 GXWriteFileStream::~GXWriteFileStream ()

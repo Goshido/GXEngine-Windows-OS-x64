@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.6
 
 #ifndef GX_OBJLOADER
 #define GX_OBJLOADER

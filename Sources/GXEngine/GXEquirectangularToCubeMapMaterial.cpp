@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #include <GXEngine/GXEquirectangularToCubeMapMaterial.h>
 #include <GXEngine/GXCameraPerspective.h>
@@ -8,7 +8,7 @@
 #define GEOMETRY_SHADER					L"Shaders/System/CubeMapSplitter_gs.txt"
 #define FRAGMENT_SHADER					L"Shaders/System/EquirectangularToCubeMap_fs.txt"
 
-#define TEXTURE_SLOT					0
+#define TEXTURE_SLOT					0u
 
 #define SQUARE_ASPECT_RATIO				1.0f
 #define Z_NEAR							0.1f
@@ -19,7 +19,8 @@
 #define DISABLE_GAMMA_CORRECTION_VALUE	1.0f
 
 
-GXEquirectangularToCubeMapMaterial::GXEquirectangularToCubeMapMaterial ()
+GXEquirectangularToCubeMapMaterial::GXEquirectangularToCubeMapMaterial ():
+	equirectangularTexture ( nullptr )
 {
 	static const GLchar* samplerNames[ 1 ] = { "equirectangularSampler" };
 	static const GLuint samplerLocations[ 1 ] = { TEXTURE_SLOT };
@@ -58,7 +59,6 @@ GXEquirectangularToCubeMapMaterial::GXEquirectangularToCubeMapMaterial ()
 	camera.SetRotation ( 0.0f, GX_MATH_PI, 0.0f );
 	viewProjectionMatrices[ 5 ] = camera.GetCurrentFrameViewProjectionMatrix ();
 
-	equirectangularTexture = nullptr;
 	EnableGammaCorrection ();
 }
 
@@ -72,16 +72,16 @@ GXVoid GXEquirectangularToCubeMapMaterial::Bind ( const GXTransform& /*transform
 	if ( !equirectangularTexture ) return;
 
 	glUseProgram ( shaderProgram.GetProgram () );
-	glUniformMatrix4fv ( viewProjectionMatricesLocation, 6, GL_FALSE, (const GLfloat*)viewProjectionMatrices );
+	glUniformMatrix4fv ( viewProjectionMatricesLocation, 6, GL_FALSE, reinterpret_cast<const GLfloat*> ( viewProjectionMatrices ) );
 	glUniform1f ( gammaLocation, gamma );
-	equirectangularTexture->Bind ( TEXTURE_SLOT );
+	equirectangularTexture->Bind ( static_cast<GXUByte> ( TEXTURE_SLOT ) );
 }
 
 GXVoid GXEquirectangularToCubeMapMaterial::Unbind ()
 {
 	if ( !equirectangularTexture ) return;
 
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 	equirectangularTexture->Unbind ();
 }
 

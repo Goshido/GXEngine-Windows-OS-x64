@@ -1,4 +1,4 @@
-// version 1.10
+// version 1.11
 
 #include <GXEngine/GXCameraPerspective.h>
 
@@ -9,12 +9,11 @@
 #define DEFAULT_Z_FAR						1000.0f
 
 
-GXCameraPerspective::GXCameraPerspective ()
+GXCameraPerspective::GXCameraPerspective ():
+	GXCamera ( DEFAULT_Z_NEAR, DEFAULT_Z_FAR )
 {
 	fieldOfViewYRadians = GXDegToRad ( DEFAULT_FIELD_OF_VIEW_Y_DEGREES );
 	aspectRatio = DEFAULT_PROJECTION_ASPECT_RATIO;
-	zNear = DEFAULT_Z_NEAR;
-	zFar = DEFAULT_Z_FAR;
 
 	currentFrameProjectionMatrix.Perspective ( fieldOfViewYRadians, aspectRatio, zNear, zFar );
 	currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );
@@ -26,12 +25,11 @@ GXCameraPerspective::GXCameraPerspective ()
 	UpdateLastFrameMatrices ();
 }
 
-GXCameraPerspective::GXCameraPerspective ( GXFloat fieldOfViewYRadians, GXFloat aspectRatio, GXFloat zNear, GXFloat zFar )
+GXCameraPerspective::GXCameraPerspective ( GXFloat fieldOfViewYRadians, GXFloat aspectRatio, GXFloat zNear, GXFloat zFar ):
+	GXCamera ( zNear, zFar )
 {
 	this->fieldOfViewYRadians = fieldOfViewYRadians;
 	this->aspectRatio = aspectRatio;
-	this->zNear = zNear;
-	this->zFar = zFar;
 
 	currentFrameProjectionMatrix.Perspective ( fieldOfViewYRadians, aspectRatio, zNear, zFar );
 	currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );

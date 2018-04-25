@@ -635,9 +635,6 @@
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMViewer.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXDoFEffect.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXDrawable.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
@@ -648,9 +645,6 @@
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXHudSurface.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXIdealParticles.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXInput.h">
@@ -678,9 +672,6 @@
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXParticleSystem.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXRealParticles.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXRenderer.h">
@@ -711,9 +702,6 @@
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXTextureOuter.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXArrayTextureOuter.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXCamera.h">

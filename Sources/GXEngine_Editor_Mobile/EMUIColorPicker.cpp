@@ -10,15 +10,17 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define CAPTION_LABEL_COLOR_R						115
-#define CAPTION_LABEL_COLOR_G						185
-#define CAPTION_LABEL_COLOR_B						0
-#define CAPTION_LABEL_COLOR_A						255
+#define SCREEN_QUAD_MESH							L"Meshes/System/ScreenQuad.stm"
 
-#define PROPERTY_LABEL_COLOR_R						255
-#define PROPERTY_LABEL_COLOR_G						255
-#define PROPERTY_LABEL_COLOR_B						255
-#define PROPERTY_LABEL_COLOR_A						255
+#define CAPTION_LABEL_COLOR_R						115u
+#define CAPTION_LABEL_COLOR_G						185u
+#define CAPTION_LABEL_COLOR_B						0u
+#define CAPTION_LABEL_COLOR_A						255u
+
+#define PROPERTY_LABEL_COLOR_R						255u
+#define PROPERTY_LABEL_COLOR_G						255u
+#define PROPERTY_LABEL_COLOR_B						255u
+#define PROPERTY_LABEL_COLOR_A						255u
 
 #define DEFAULT_MAIN_PANEL_WIDTH					6.72f
 #define DEFAULT_MAIN_PANEL_HEIGHT					16.12f
@@ -101,7 +103,7 @@
 #define MINIMUM_ALPHA_VALUE							0
 #define MAXIMUM_ALPHA_VALUE							255
 
-#define MAX_BUFFER_SYMBOLS							128
+#define MAX_BUFFER_SYMBOLS							128u
 
 #define PIXEL_PERFECT_LOCATION_OFFSET_X				0.1f
 #define PIXEL_PERFECT_LOCATION_OFFSET_Y				0.1f
@@ -116,15 +118,15 @@
 #define CHECKER_ELEMENT_WIDTH						0.11f
 #define CHECKER_ELEMENT_HEIGHT						0.11f
 
-#define CHECKER_COLOR_ONE_R							0
-#define CHECKER_COLOR_ONE_G							0
-#define CHECKER_COLOR_ONE_B							0
-#define CHECKER_COLOR_ONE_A							255
+#define CHECKER_COLOR_ONE_R							0u
+#define CHECKER_COLOR_ONE_G							0u
+#define CHECKER_COLOR_ONE_B							0u
+#define CHECKER_COLOR_ONE_A							255u
 
-#define CHECKER_COLOR_TWO_R							255
-#define CHECKER_COLOR_TWO_G							255
-#define CHECKER_COLOR_TWO_B							255
-#define CHECKER_COLOR_TWO_A							255
+#define CHECKER_COLOR_TWO_R							255u
+#define CHECKER_COLOR_TWO_G							255u
+#define CHECKER_COLOR_TWO_B							255u
+#define CHECKER_COLOR_TWO_A							255u
 
 #define HUE_CIRCLE_INNER_RADIUS						2.49720f
 #define HUE_CIRCLE_OUTER_RADIUS						3.11479f
@@ -133,20 +135,20 @@
 #define COLOR_SELECTOR_PROJECTION_FAR				7.0f
 #define COLOR_SELECTOR_VISIBLE_Z					3.0f
 
-#define COLOR_SELECTOR_UNLIT_COLOR_R				255
-#define COLOR_SELECTOR_UNLIT_COLOR_G				255
-#define COLOR_SELECTOR_UNLIT_COLOR_B				255
-#define COLOR_SELECTOR_UNLIT_COLOR_A				255
+#define COLOR_SELECTOR_UNLIT_COLOR_R				255u
+#define COLOR_SELECTOR_UNLIT_COLOR_G				255u
+#define COLOR_SELECTOR_UNLIT_COLOR_B				255u
+#define COLOR_SELECTOR_UNLIT_COLOR_A				255u
 
 #define COLOR_SELECTOR_COMPOSITE_CLEAR_COLOR_R		0.0f
 #define COLOR_SELECTOR_COMPOSITE_CLEAR_COLOR_G		0.0f
 #define COLOR_SELECTOR_COMPOSITE_CLEAR_COLOR_B		0.0f
 #define COLOR_SELECTOR_COMPOSITE_CLEAR_COLOR_A		0.0f
 
-#define COLOR_SELECTOR_HUE_MARKER_COLOR_R			255
-#define COLOR_SELECTOR_HUE_MARKER_COLOR_G			255
-#define COLOR_SELECTOR_HUE_MARKER_COLOR_B			255
-#define COLOR_SELECTOR_HUE_MARKER_COLOR_A			255
+#define COLOR_SELECTOR_HUE_MARKER_COLOR_R			255u
+#define COLOR_SELECTOR_HUE_MARKER_COLOR_G			255u
+#define COLOR_SELECTOR_HUE_MARKER_COLOR_B			255u
+#define COLOR_SELECTOR_HUE_MARKER_COLOR_A			255u
 
 #define COLOR_SELECTOR_MSAA_FACTOR					4.0f
 #define COLOR_SELECTOR_SAMPLE_BORDER_SIDE			0.13426f
@@ -169,14 +171,15 @@
 class EMColorRenderer : public GXWidgetRenderer
 {
 	private:
-		GXHudSurface*				surface;
 		GXTexture2D					texture;
+		EMMesh						screenQuad;
+
+		GXHudSurface*				surface;
 		GXTexture2D					checkerTexture;
 		GXColorRGB					colorRGBA;
 		GXColorHSV					colorHSV;
 		EMCheckerGeneratorMaterial	checkerGeneratorMaterial;
 		GLuint						fbo;
-		EMMesh						screenQuad;
 		GXOpenGLState				openGLState;
 
 	public:
@@ -194,20 +197,25 @@ class EMColorRenderer : public GXWidgetRenderer
 
 	private:
 		GXVoid UpdateCheckerTexture ();
+
+		EMColorRenderer () = delete;
+		EMColorRenderer ( const EMColorRenderer &other ) = delete;
+		EMColorRenderer& operator = ( const EMColorRenderer &other ) = delete;
 };
 
-EMColorRenderer::EMColorRenderer ( GXUIInput* widget ) :
-GXWidgetRenderer ( widget ), screenQuad ( L"Meshes/System/ScreenQuad.stm" )
+EMColorRenderer::EMColorRenderer ( GXUIInput* widget ):
+	GXWidgetRenderer ( widget ),
+	screenQuad ( SCREEN_QUAD_MESH ),
+	texture ( GXTexture2D::LoadTexture ( TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE ) )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
-	surface = new GXHudSurface ( (GXUShort)boundsLocal.GetWidth (), (GXUShort)boundsLocal.GetHeight () );
-	texture = GXTexture2D::LoadTexture ( TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
+	surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 	
 	SetColor ( GXColorHSV ( DEFAULT_SAVED_COLOR_H, DEFAULT_SAVED_COLOR_S, DEFAULT_SAVED_COLOR_V, DEFAULT_SAVED_COLOR_A ) );
 
 	checkerGeneratorMaterial.SetColorOne ( CHECKER_COLOR_ONE_R, CHECKER_COLOR_ONE_G, CHECKER_COLOR_ONE_B, CHECKER_COLOR_ONE_A );
 	checkerGeneratorMaterial.SetColorTwo ( CHECKER_COLOR_TWO_R, CHECKER_COLOR_TWO_G, CHECKER_COLOR_TWO_B, CHECKER_COLOR_TWO_A );
-	checkerGeneratorMaterial.SetElementSize ( (GXUShort)( CHECKER_ELEMENT_WIDTH * gx_ui_Scale), (GXUShort)( CHECKER_ELEMENT_HEIGHT * gx_ui_Scale ) );
+	checkerGeneratorMaterial.SetElementSize ( static_cast<GXUShort> ( CHECKER_ELEMENT_WIDTH * gx_ui_Scale), static_cast<GXUShort> ( CHECKER_ELEMENT_HEIGHT * gx_ui_Scale ) );
 
 	glGenFramebuffers ( 1, &fbo );
 
@@ -240,7 +248,7 @@ GXVoid EMColorRenderer::OnRefresh ()
 
 	GXImageInfo ii;
 
-	ii.color.From ( 255, 255, 255, 255 );
+	ii.color.From ( 255u, 255u, 255u, 255u );
 	ii.insertX = 0.0f;
 	ii.insertY = 0.0f;
 	ii.insertWidth = w;
@@ -304,12 +312,13 @@ GXVoid EMColorRenderer::UpdateCheckerTexture ()
 	glDisable ( GL_DEPTH_TEST );
 	glDisable ( GL_CULL_FACE );
 
-	glViewport ( 0, 0, (GLsizei)checkerTexture.GetWidth (), (GLsizei)checkerTexture.GetHeight () );
+	glViewport ( 0, 0, static_cast<GLsizei> ( checkerTexture.GetWidth () ), static_cast<GLsizei> ( checkerTexture.GetHeight () ) );
 
 	GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers ( 1, buffers );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMColorRenderer::UpdateCheckerTexture::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
@@ -325,19 +334,25 @@ GXVoid EMColorRenderer::UpdateCheckerTexture ()
 class EMColorSelectorRenderer : public GXWidgetRenderer
 {
 	private:
+		EMMesh							screenQuad;
+
 		GXHudSurface*					surface;
 		GLuint							fbo;
-		EMMesh							screenQuad;
 		GXMeshGeometry					triangle;
+
 		EMHueCircleGeneratorMaterial	hueCircleGeneratorMaterial;
 		EMVertexColorMaterial			vertexColorMaterial;
 		GXUnlitTexture2DMaterial		unlitTexture2DMaterial;
+
 		GXTexture2D						hueTexture;
 		GXTexture2D						compositeTexture;
+
 		GXOpenGLState					openGLState;
 		GXCameraOrthographic			projectionCamera;
+
 		GXColorHSV						colorHSVA;
 		GXColorRGB						colorRGBA;
+
 		GXVec3							equilateralTriangleGeometryLocal[ 6 ];
 
 	public:
@@ -355,21 +370,27 @@ class EMColorSelectorRenderer : public GXWidgetRenderer
 	private:
 		GXVoid UpdateHueCircleTexture ();
 		GXVoid UpdateCompositeTexture ();
+
+		EMColorSelectorRenderer () = delete;
+		EMColorSelectorRenderer ( const EMColorSelectorRenderer &other ) = delete;
+		EMColorSelectorRenderer& operator = ( const EMColorSelectorRenderer &other ) = delete;
 };
 
-EMColorSelectorRenderer::EMColorSelectorRenderer ( GXUIInput* widget ) :
-GXWidgetRenderer ( widget ), screenQuad ( L"Meshes/System/ScreenQuad.stm" )
+EMColorSelectorRenderer::EMColorSelectorRenderer ( GXUIInput* widget ):
+	GXWidgetRenderer ( widget ),
+	screenQuad ( SCREEN_QUAD_MESH )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
-	surface = new GXHudSurface ( (GXUShort)boundsLocal.GetWidth (), (GXUShort)boundsLocal.GetHeight () );
+	surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 
 	glGenFramebuffers ( 1, &fbo );
 
 	triangle.SetTotalVertices ( 3 );
 	triangle.SetTopology ( GL_TRIANGLES );
+
 	GLsizei stride = sizeof ( GXVec3 ) + sizeof ( GXVec3 );
-	triangle.SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, stride, (const GLvoid*)0 );
-	triangle.SetBufferStream ( eGXMeshStreamIndex::Color, 3, GL_FLOAT, stride, (const GLvoid*)sizeof ( GXVec3 ) );
+	triangle.SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, stride, static_cast<const GLvoid*> ( 0u ) );
+	triangle.SetBufferStream ( eGXMeshStreamIndex::Color, 3, GL_FLOAT, stride, reinterpret_cast<const GLvoid*> ( sizeof ( GXVec3 ) ) );
 
 	equilateralTriangleGeometryLocal[ 0 ].Init ( EQUILATERAL_TRIANGLE_A_X, EQUILATERAL_TRIANGLE_A_Y, EQUILATERAL_TRIANGLE_A_Z );
 	equilateralTriangleGeometryLocal[ 2 ].Init ( EQUILATERAL_TRIANGLE_B_X, EQUILATERAL_TRIANGLE_B_Y, EQUILATERAL_TRIANGLE_B_Z );
@@ -408,13 +429,13 @@ GXVoid EMColorSelectorRenderer::SetColor ( const GXColorHSV &color )
 
 GXVoid EMColorSelectorRenderer::OnRefresh ()
 {
-	GXFloat w = (GXFloat)surface->GetWidth ();
-	GXFloat h = (GXFloat)surface->GetHeight ();
+	GXFloat w = static_cast<GXFloat> ( surface->GetWidth () );
+	GXFloat h = static_cast<GXFloat> ( surface->GetHeight () );
 
 	surface->Reset ();
 
 	GXImageInfo ii;
-	ii.color.From ( 255, 255, 255, 255 );
+	ii.color.From ( 255u, 255u, 255u, 255u );
 	ii.texture = &compositeTexture;
 	ii.overlayType = eGXImageOverlayType::SimpleReplace;
 
@@ -540,9 +561,9 @@ GXVoid EMColorSelectorRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width
 	GXUShort msaaSide;
 
 	if ( w >= h )
-		msaaSide = (GXUShort)( h * COLOR_SELECTOR_MSAA_FACTOR );
+		msaaSide = static_cast<GXUShort> ( h * COLOR_SELECTOR_MSAA_FACTOR );
 	else
-		msaaSide = (GXUShort)( w * COLOR_SELECTOR_MSAA_FACTOR );
+		msaaSide = static_cast<GXUShort> ( w * COLOR_SELECTOR_MSAA_FACTOR );
 
 	if ( compositeTexture.GetWidth () == msaaSide ) return;
 
@@ -572,16 +593,16 @@ GXVoid EMColorSelectorRenderer::UpdateHueCircleTexture ()
 	GXUShort msaaSide;
 
 	if ( w >= h )
-		msaaSide = (GXUShort)( h * COLOR_SELECTOR_MSAA_FACTOR );
+		msaaSide = static_cast<GXUShort> ( h * COLOR_SELECTOR_MSAA_FACTOR );
 	else
-		msaaSide = (GXUShort)( w * COLOR_SELECTOR_MSAA_FACTOR );
+		msaaSide = static_cast<GXUShort> ( w * COLOR_SELECTOR_MSAA_FACTOR );
 
 	hueTexture.InitResources ( msaaSide, msaaSide, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
 
 	compositeTexture.InitResources ( msaaSide, msaaSide, GL_RGBA8, GX_TRUE, GL_CLAMP_TO_EDGE );
 	hueCircleGeneratorMaterial.SetResolution ( msaaSide, msaaSide );
-	glViewport ( 0, 0, (GLsizei)msaaSide, (GLsizei)msaaSide );
-	projectionCamera.SetProjection ( (GXFloat)msaaSide, (GXFloat)msaaSide, COLOR_SELECTOR_PROJECTION_NEAR, COLOR_SELECTOR_PROJECTION_FAR );
+	glViewport ( 0, 0, static_cast<GLsizei> ( msaaSide ), static_cast<GLsizei> ( msaaSide ) );
+	projectionCamera.SetProjection ( static_cast<GXFloat> ( msaaSide ), static_cast<GXFloat> ( msaaSide ), COLOR_SELECTOR_PROJECTION_NEAR, COLOR_SELECTOR_PROJECTION_FAR );
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, hueTexture.GetTextureObject (), 0 );
@@ -596,6 +617,7 @@ GXVoid EMColorSelectorRenderer::UpdateHueCircleTexture ()
 	glDrawBuffers ( 1, buffers );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMColorSelectorRenderer::UpdateHueCircleTexture::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
@@ -633,9 +655,10 @@ GXVoid EMColorSelectorRenderer::UpdateCompositeTexture ()
 	GXUShort w = compositeTexture.GetWidth ();
 	GXUShort h = compositeTexture.GetHeight ();
 
-	glViewport ( 0, 0, (GLsizei)w, (GLsizei)h );
+	glViewport ( 0, 0, static_cast<GLsizei> ( w ), static_cast<GLsizei> ( h ) );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMColorSelectorRenderer::UpdateCompositeTexture::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
@@ -721,7 +744,7 @@ EMUIColorPicker::~EMUIColorPicker ()
 
 	delete middleSeparator;
 
-	for ( GXUByte i = 0; i < 16; i++ )
+	for ( GXUByte i = 0u; i < 16u; i++ )
 	{
 		delete savedColors[ i ]->GetRenderer ();
 		delete savedColors[ i ];
@@ -752,7 +775,7 @@ GXWidget* EMUIColorPicker::GetWidget () const
 
 GXVoid EMUIColorPicker::PickColor ( GXVoid* handlerObject, PFNEMONHSVACOLORPROC callback, const GXColorHSV &oldColorHSVAValue )
 {
-	EMColorRenderer* renderer = (EMColorRenderer*)oldColor->GetRenderer ();
+	EMColorRenderer* renderer = static_cast<EMColorRenderer*> ( oldColor->GetRenderer () );
 	renderer->SetColor ( oldColorHSVAValue );
 	oldColor->Refresh ();
 
@@ -767,7 +790,7 @@ GXVoid EMUIColorPicker::PickColor ( GXVoid* handlerObject, PFNEMONHSVACOLORPROC 
 GXVoid EMUIColorPicker::PickColor ( GXVoid* handlerObject, PFNEMONRGBACOLORPROC callback, const GXColorRGB &oldColorValue )
 {
 	GXColorHSV oldColorHSV ( oldColorValue );
-	EMColorRenderer* renderer = (EMColorRenderer*)oldColor->GetRenderer ();
+	EMColorRenderer* renderer = static_cast<EMColorRenderer*> ( oldColor->GetRenderer () );
 	renderer->SetColor ( oldColorHSV );
 	oldColor->Refresh ();
 
@@ -784,7 +807,7 @@ GXVoid EMUIColorPicker::PickColor ( GXVoid* handlerObject, PFNEMONRGBAUBYTECOLOR
 	GXColorHSV oldHSVA;
 	GXColorRGB oldRGBA ( oldRed, oldGreen, oldBlue, oldAlpha );
 	oldHSVA.From ( oldRGBA );
-	EMColorRenderer* renderer = (EMColorRenderer*)oldColor->GetRenderer ();
+	EMColorRenderer* renderer = static_cast<EMColorRenderer*> ( oldColor->GetRenderer () );
 	renderer->SetColor ( oldHSVA );
 	oldColor->Refresh ();
 
@@ -796,10 +819,15 @@ GXVoid EMUIColorPicker::PickColor ( GXVoid* handlerObject, PFNEMONRGBAUBYTECOLOR
 	mainPanel->Show ();
 }
 
-EMUIColorPicker::EMUIColorPicker () :
-EMUI ( nullptr )
+EMUIColorPicker::EMUIColorPicker ():
+	EMUI ( nullptr ),
+	mainPanel ( new EMUIDraggableArea ( nullptr ) ),
+	OnHSVColor ( nullptr ),
+	OnRGBColor ( nullptr ),
+	OnRGBUByteColor ( nullptr ),
+	handler ( nullptr ),
+	buffer ( static_cast<GXWChar*> ( malloc ( MAX_BUFFER_SYMBOLS * sizeof ( GXWChar ) ) ) )
 {
-	mainPanel = new EMUIDraggableArea ( nullptr );
 	caption = new EMUIStaticText ( mainPanel );
 	topSeparator = new EMUISeparator ( mainPanel );
 
@@ -815,7 +843,7 @@ EMUI ( nullptr )
 
 	addColor = new EMUIButton ( mainPanel );
 
-	for ( GXUByte i = 0; i < 16; i++ )
+	for ( GXUByte i = 0u; i < 16u; i++ )
 	{
 		GXUIInput* savedColor = new GXUIInput ( mainPanelWidget, GX_TRUE );
 		savedColor->SetRenderer ( new EMColorRenderer ( savedColor ) );
@@ -826,43 +854,50 @@ EMUI ( nullptr )
 
 	hLabel = new EMUIStaticText ( mainPanel );
 	h = new EMUIEditBox ( mainPanel );
-	GXUIEditBoxFloatValidator* floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_TEXT, *( (GXUIEditBox*)h->GetWidget () ), MINIMUM_HUE_VALUE, MAXIMUM_HUE_VALUE );
+	GXUIEditBox* editBox = static_cast<GXUIEditBox*> ( h->GetWidget () );
+	GXUIEditBoxFloatValidator* floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_TEXT, *editBox, MINIMUM_HUE_VALUE, MAXIMUM_HUE_VALUE );
 	h->SetValidator ( *floatValidator );
 	h->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
 	rLabel = new EMUIStaticText ( mainPanel );
 	r = new EMUIEditBox ( mainPanel );
-	GXUIEditBoxIntegerValidator* integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_TEXT, *( (GXUIEditBox*)r->GetWidget () ), MINIMUM_RED_VALUE, MAXIMUM_RED_VALUE );
+	editBox = static_cast<GXUIEditBox*> ( r->GetWidget () );
+	GXUIEditBoxIntegerValidator* integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_TEXT, *editBox, MINIMUM_RED_VALUE, MAXIMUM_RED_VALUE );
 	r->SetValidator ( *integerValidator );
 	r->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
 	sLabel = new EMUIStaticText ( mainPanel );
 	s = new EMUIEditBox ( mainPanel );
-	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_TEXT, *( (GXUIEditBox*)s->GetWidget () ), MINIMUM_SATURATION_VALUE, MAXIMUM_SATURATION_VALUE );
+	editBox = static_cast<GXUIEditBox*> ( s->GetWidget () );
+	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_TEXT, *editBox, MINIMUM_SATURATION_VALUE, MAXIMUM_SATURATION_VALUE );
 	s->SetValidator ( *floatValidator );
 	s->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
 	gLabel = new EMUIStaticText ( mainPanel );
 	g = new EMUIEditBox ( mainPanel );
-	integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_TEXT, *( (GXUIEditBox*)g->GetWidget () ), MINIMUM_GREEN_VALUE, MAXIMUM_GREEN_VALUE );
+	editBox = static_cast<GXUIEditBox*> ( g->GetWidget () );
+	integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_TEXT, *editBox, MINIMUM_GREEN_VALUE, MAXIMUM_GREEN_VALUE );
 	g->SetValidator ( *integerValidator );
 	g->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
 	vLabel = new EMUIStaticText ( mainPanel );
 	v = new EMUIEditBox ( mainPanel );
-	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_TEXT, *( (GXUIEditBox*)v->GetWidget () ), MINIMUM_VALUE, MAXIMUM_VALUE );
+	editBox = static_cast<GXUIEditBox*> ( v->GetWidget () );
+	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_TEXT, *editBox, MINIMUM_VALUE, MAXIMUM_VALUE );
 	v->SetValidator ( *floatValidator );
 	v->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
 	bLabel = new EMUIStaticText ( mainPanel );
 	b = new EMUIEditBox ( mainPanel );
-	integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_TEXT, *( (GXUIEditBox*)b->GetWidget () ), MINIMUM_BLUE_VALUE, MAXIMUM_BLUE_VALUE );
+	editBox = static_cast<GXUIEditBox*> ( b->GetWidget () );
+	integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_TEXT, *editBox, MINIMUM_BLUE_VALUE, MAXIMUM_BLUE_VALUE );
 	b->SetValidator ( *integerValidator );
 	b->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
 	transparencyLabel = new EMUIStaticText ( mainPanel );
 	transparency = new EMUIEditBox ( mainPanel );
-	integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_TEXT, *( (GXUIEditBox*)transparency->GetWidget () ), MINIMUM_ALPHA_VALUE, MAXIMUM_ALPHA_VALUE );
+	editBox = static_cast<GXUIEditBox*> ( transparency->GetWidget () );
+	integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_TEXT, *editBox, MINIMUM_ALPHA_VALUE, MAXIMUM_ALPHA_VALUE );
 	transparency->SetValidator ( *integerValidator );
 	transparency->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
@@ -879,7 +914,7 @@ EMUI ( nullptr )
 	oldColor->SetHandler ( this );
 	oldColor->SetOnLeftMouseButtonDownCallback ( &EMUIColorPicker::OnLeftMouseButton );
 
-	for ( GXUByte i = 0; i < 16; i++ )
+	for ( GXUByte i = 0u; i < 16u; i++ )
 	{
 		GXUIInput* input = savedColors[ i ];
 		input->SetHandler ( this );
@@ -887,35 +922,35 @@ EMUI ( nullptr )
 	}
 
 	caption->SetText ( locale.GetString ( L"Color picker->Color picker" ) );
-	caption->SetTextColor ( CAPTION_LABEL_COLOR_R, CAPTION_LABEL_COLOR_G, CAPTION_LABEL_COLOR_B, CAPTION_LABEL_COLOR_A );
+	caption->SetTextColor ( static_cast<GXUByte> ( CAPTION_LABEL_COLOR_R ), static_cast<GXUByte> ( CAPTION_LABEL_COLOR_G ), static_cast<GXUByte> ( CAPTION_LABEL_COLOR_B ), static_cast<GXUByte> ( CAPTION_LABEL_COLOR_A ) );
 	caption->SetAlingment ( eGXUITextAlignment::Center );
 
 	hLabel->SetText ( locale.GetString ( L"Color picker->H" ) );
-	hLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
+	hLabel->SetTextColor ( static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_R ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_G ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_B ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_A ) );
 	hLabel->SetAlingment ( eGXUITextAlignment::Left );
 
 	rLabel->SetText ( locale.GetString ( L"Color picker->R" ) );
-	rLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
+	rLabel->SetTextColor ( static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_R ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_G ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_B ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_A ) );
 	rLabel->SetAlingment ( eGXUITextAlignment::Left );
 
 	sLabel->SetText ( locale.GetString ( L"Color picker->S" ) );
-	sLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
+	sLabel->SetTextColor ( static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_R ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_G ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_B ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_A ) );
 	sLabel->SetAlingment ( eGXUITextAlignment::Left );
 
 	gLabel->SetText ( locale.GetString ( L"Color picker->G" ) );
-	gLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
+	gLabel->SetTextColor ( static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_R ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_G ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_B ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_A ) );
 	gLabel->SetAlingment ( eGXUITextAlignment::Left );
 
 	vLabel->SetText ( locale.GetString ( L"Color picker->V" ) );
-	vLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
+	vLabel->SetTextColor ( static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_R ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_G ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_B ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_A  ) );
 	vLabel->SetAlingment ( eGXUITextAlignment::Left );
 
 	bLabel->SetText ( locale.GetString ( L"Color picker->B" ) );
-	bLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
+	bLabel->SetTextColor ( static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_R ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_G ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_B ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_A ) );
 	bLabel->SetAlingment ( eGXUITextAlignment::Left );
 
 	transparencyLabel->SetText ( locale.GetString ( L"Color picker->Transparency" ) );
-	transparencyLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
+	transparencyLabel->SetTextColor ( static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_R ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_G ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_B ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_A ) );
 	transparencyLabel->SetAlingment ( eGXUITextAlignment::Left );
 
 	h->SetAlignment ( eGXUITextAlignment::Center );
@@ -936,28 +971,21 @@ EMUI ( nullptr )
 
 	mainPanel->SetOnResizeCallback ( this, &EMUIColorPicker::OnResize );
 
-	OnHSVColor = nullptr;
-	OnRGBColor = nullptr;
-	OnRGBUByteColor = nullptr;
-	handler = nullptr;
-
-	buffer = (GXWChar*)malloc ( MAX_BUFFER_SYMBOLS * sizeof ( GXWChar ) );
-
 	UpdateCurrentColor ( DEFAULT_CURRENT_COLOR_H, DEFAULT_CURRENT_COLOR_S, DEFAULT_CURRENT_COLOR_V, DEFAULT_CURRENT_COLOR_A );
-	EMColorRenderer* destinationRenderer = (EMColorRenderer*)oldColor->GetRenderer ();
-	EMColorRenderer* sourceRenderer = (EMColorRenderer*)currentColor->GetRenderer ();
+	EMColorRenderer* destinationRenderer = static_cast<EMColorRenderer*> ( oldColor->GetRenderer () );
+	EMColorRenderer* sourceRenderer = static_cast<EMColorRenderer*> ( currentColor->GetRenderer () );
 	destinationRenderer->SetColor ( sourceRenderer->GetColor () );
 
 	static const GXColorHSV defaultSavedColor ( DEFAULT_SAVED_COLOR_H, DEFAULT_SAVED_COLOR_S, DEFAULT_SAVED_COLOR_V, DEFAULT_SAVED_COLOR_A );
 
-	for ( GXUByte i = 0; i < 16; i++ )
+	for ( GXUByte i = 0u; i < 16u; i++ )
 	{
-		EMColorRenderer* renderer = (EMColorRenderer*)savedColors[ i ]->GetRenderer ();
+		EMColorRenderer* renderer = static_cast<EMColorRenderer*> ( savedColors[ i ]->GetRenderer () );
 		renderer->SetColor ( defaultSavedColor );
 	}
 
 	GXFloat height = DEFAULT_MAIN_PANEL_HEIGHT * gx_ui_Scale;
-	mainPanel->Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, (GXFloat)( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
+	mainPanel->Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
 	mainPanel->SetMinimumWidth ( MAIN_PANEL_MINIMUM_WIDTH * gx_ui_Scale );
 	mainPanel->SetMinimumHeight ( MAIN_PANEL_MINIMUM_HEIGHT * gx_ui_Scale );
 	mainPanel->Hide ();
@@ -967,11 +995,11 @@ GXVoid EMUIColorPicker::UpdateCurrentColor ( GXFloat hue, GXFloat saturation, GX
 {
 	GXColorHSV newColorHSV ( hue, saturation, value, alpha );
 
-	EMColorRenderer* currentColorRenderer = (EMColorRenderer*)currentColor->GetRenderer ();
+	EMColorRenderer* currentColorRenderer = static_cast<EMColorRenderer*> ( currentColor->GetRenderer () );
 	currentColorRenderer->SetColor ( newColorHSV );
 	currentColor->Refresh ();
 
-	EMColorSelectorRenderer* colorSelectorRenderer = (EMColorSelectorRenderer*)hsvColorWidget->GetRenderer ();
+	EMColorSelectorRenderer* colorSelectorRenderer = static_cast<EMColorSelectorRenderer*> ( hsvColorWidget->GetRenderer () );
 	colorSelectorRenderer->SetColor ( newColorHSV );
 	hsvColorWidget->Refresh ();
 
@@ -1032,11 +1060,11 @@ GXVoid EMUIColorPicker::UpdateCurrentColor ( GXUByte red, GXUByte green, GXUByte
 	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", newColorHSV.GetValue () );
 	this->v->SetText ( buffer );
 
-	EMColorRenderer* currentColorRenderer = (EMColorRenderer*)currentColor->GetRenderer ();
+	EMColorRenderer* currentColorRenderer = static_cast<EMColorRenderer*> ( currentColor->GetRenderer () );
 	currentColorRenderer->SetColor ( newColorHSV );
 	currentColor->Refresh ();
 
-	EMColorSelectorRenderer* colorSelectorRenderer = (EMColorSelectorRenderer*)hsvColorWidget->GetRenderer ();
+	EMColorSelectorRenderer* colorSelectorRenderer = static_cast<EMColorSelectorRenderer*> ( hsvColorWidget->GetRenderer () );
 	colorSelectorRenderer->SetColor ( newColorHSV );
 	hsvColorWidget->Refresh ();
 }
@@ -1045,7 +1073,7 @@ GXVoid EMUIColorPicker::UpdateCurrentColorWithCorrection ( GXUByte red, GXUByte 
 {
 	GXColorRGB newColorRGB ( red, green, blue, alpha );
 
-	EMColorRenderer* currentColorRenderer = (EMColorRenderer*)currentColor->GetRenderer ();
+	EMColorRenderer* currentColorRenderer = static_cast<EMColorRenderer*> ( currentColor->GetRenderer () );
 	GXFloat oldHue = currentColorRenderer->GetColor ().GetHue ();
 	GXColorHSV newColorHSV;
 	newColorHSV.From ( newColorRGB );
@@ -1083,7 +1111,7 @@ GXVoid EMUIColorPicker::UpdateCurrentColorWithCorrection ( GXUByte red, GXUByte 
 	currentColorRenderer->SetColor ( newColorHSV );
 	currentColor->Refresh ();
 
-	EMColorSelectorRenderer* colorSelectorRenderer = (EMColorSelectorRenderer*)hsvColorWidget->GetRenderer ();
+	EMColorSelectorRenderer* colorSelectorRenderer = static_cast<EMColorSelectorRenderer*> ( hsvColorWidget->GetRenderer () );
 	colorSelectorRenderer->SetColor ( newColorHSV );
 	hsvColorWidget->Refresh ();
 }
@@ -1098,14 +1126,14 @@ GXVoid GXCALL EMUIColorPicker::OnButton ( GXVoid* handler, GXUIButton& button, G
 	{
 		for ( GXByte i = 15; i > 0; i-- )
 		{
-			EMColorRenderer* destinationRenderer = (EMColorRenderer*)colorPicker->savedColors[ i ]->GetRenderer ();
-			EMColorRenderer* sourceRenderer = (EMColorRenderer*)colorPicker->savedColors[ i - 1 ]->GetRenderer ();
+			EMColorRenderer* destinationRenderer = static_cast<EMColorRenderer*> ( colorPicker->savedColors[ i ]->GetRenderer () );
+			EMColorRenderer* sourceRenderer = static_cast<EMColorRenderer*> ( colorPicker->savedColors[ i - 1 ]->GetRenderer () );
 			destinationRenderer->SetColor ( sourceRenderer->GetColor () );
 			colorPicker->savedColors[ i ]->Refresh ();
 		}
 
-		EMColorRenderer* newSavedColorRenderer = (EMColorRenderer*)colorPicker->savedColors[ 0 ]->GetRenderer ();
-		EMColorRenderer* currentColorRenderer = (EMColorRenderer*)colorPicker->currentColor->GetRenderer ();
+		EMColorRenderer* newSavedColorRenderer = static_cast<EMColorRenderer*> ( colorPicker->savedColors[ 0 ]->GetRenderer () );
+		EMColorRenderer* currentColorRenderer = static_cast<EMColorRenderer*> ( colorPicker->currentColor->GetRenderer () );
 		newSavedColorRenderer->SetColor ( currentColorRenderer->GetColor () );
 		colorPicker->savedColors[ 0 ]->Refresh ();
 
@@ -1115,13 +1143,13 @@ GXVoid GXCALL EMUIColorPicker::OnButton ( GXVoid* handler, GXUIButton& button, G
 	{
 		if ( colorPicker->OnHSVColor )
 		{
-			EMColorRenderer* currentColorRenderer = (EMColorRenderer*)colorPicker->currentColor->GetRenderer ();
+			EMColorRenderer* currentColorRenderer = static_cast<EMColorRenderer*> ( colorPicker->currentColor->GetRenderer () );
 			const GXColorHSV& currentColor = currentColorRenderer->GetColor ();
 			colorPicker->OnHSVColor ( colorPicker->handler, currentColor );
 		}
 		else if ( colorPicker->OnRGBColor )
 		{
-			EMColorRenderer* currentColorRenderer = (EMColorRenderer*)colorPicker->currentColor->GetRenderer ();
+			EMColorRenderer* currentColorRenderer = static_cast<EMColorRenderer*> ( colorPicker->currentColor->GetRenderer () );
 			const GXColorHSV& currentColor = currentColorRenderer->GetColor ();
 			colorPicker->OnRGBColor ( colorPicker->handler, GXColorRGB ( currentColor ) );
 		}
@@ -1147,7 +1175,7 @@ GXVoid GXCALL EMUIColorPicker::OnButton ( GXVoid* handler, GXUIButton& button, G
 
 GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y )
 {
-	EMUIColorPicker* colorPicker = (EMUIColorPicker*)handler;
+	EMUIColorPicker* colorPicker = static_cast<EMUIColorPicker*> ( handler );
 
 	if ( &input == colorPicker->hsvColorWidget )
 	{
@@ -1173,13 +1201,14 @@ GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput& i
 		if ( radius >= innerRadius && radius <= outerRadius )
 		{
 			GXFloat angleDegrees = GXRadToDeg ( angleRadians );
-			EMColorRenderer* currentColorRenderer = (EMColorRenderer*)colorPicker->currentColor->GetRenderer ();
+			EMColorRenderer* currentColorRenderer = static_cast<EMColorRenderer*> ( colorPicker->currentColor->GetRenderer () );
 			const GXColorHSV& color = currentColorRenderer->GetColor ();
 			colorPicker->UpdateCurrentColor ( angleDegrees, color.GetSaturation (), color.GetValue (), color.GetAlpha () );
+
 			return;
 		}
 
-		EMColorRenderer* currentColorRenderer = (EMColorRenderer*)colorPicker->currentColor->GetRenderer ();
+		EMColorRenderer* currentColorRenderer = static_cast<EMColorRenderer*> ( colorPicker->currentColor->GetRenderer () );
 		const GXColorHSV& currentColor = currentColorRenderer->GetColor ();
 
 		GXTransform transform;
@@ -1198,7 +1227,7 @@ GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput& i
 
 		static GXVec3 equitaleralTriangleWorld[ 3 ];
 
-		for ( GXUByte i = 0; i < 3; i++ )
+		for ( GXUByte i = 0u; i < 3u; i++ )
 			modelMatrix.MultiplyAsPoint ( equitaleralTriangleWorld[ i ], equilateralTriangleLocal[ i ] );
 
 		GXVec3 barycentricCoordinates;
@@ -1209,9 +1238,9 @@ GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput& i
 		GXColorHSV currentHueHSV ( currentColor.GetHue (), 100.0f, 100.0f, 100.0f );
 		GXColorRGB currentHueRGB ( currentHueHSV );
 
-		GXUByte selectedRed = (GXUByte)( 255.0f * ( barycentricCoordinates.GetY () * currentHueRGB.GetRed () + barycentricCoordinates.GetZ () ) );
-		GXUByte selectedGreen = (GXUByte)( 255.0f * ( barycentricCoordinates.GetY () * currentHueRGB.GetGreen () + barycentricCoordinates.GetZ () ) );
-		GXUByte selectedBlue = (GXUByte)( 255.0f * ( barycentricCoordinates.GetY () * currentHueRGB.GetBlue () + barycentricCoordinates.GetZ () ) );
+		GXUByte selectedRed = static_cast<GXUByte> ( 255.0f * ( barycentricCoordinates.GetY () * currentHueRGB.GetRed () + barycentricCoordinates.GetZ () ) );
+		GXUByte selectedGreen = static_cast<GXUByte> ( 255.0f * ( barycentricCoordinates.GetY () * currentHueRGB.GetGreen () + barycentricCoordinates.GetZ () ) );
+		GXUByte selectedBlue = static_cast<GXUByte> ( 255.0f * ( barycentricCoordinates.GetY () * currentHueRGB.GetBlue () + barycentricCoordinates.GetZ () ) );
 
 		colorPicker->UpdateCurrentColorWithCorrection ( selectedRed, selectedGreen, selectedBlue, (GXUByte)( currentColor.GetAlpha () * 2.55f ) );
 
@@ -1219,18 +1248,18 @@ GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput& i
 	}
 	else if ( &input == colorPicker->oldColor )
 	{
-		EMColorRenderer* oldColorRenderer = (EMColorRenderer*)colorPicker->oldColor->GetRenderer ();
+		EMColorRenderer* oldColorRenderer = static_cast<EMColorRenderer*> ( colorPicker->oldColor->GetRenderer () );
 		const GXColorHSV& oldColor = oldColorRenderer->GetColor ();
 
 		colorPicker->UpdateCurrentColor ( oldColor.GetHue (), oldColor.GetSaturation (), oldColor.GetValue (), oldColor.GetAlpha () );
 		return;
 	}
 
-	for ( GXUByte i = 0; i < 16; i++ )
+	for ( GXUByte i = 0u; i < 16u; i++ )
 	{
 		if ( &input != colorPicker->savedColors[ i ] ) continue;
 
-		EMColorRenderer* savedColorRenderer = (EMColorRenderer*)colorPicker->savedColors[ i ]->GetRenderer ();
+		EMColorRenderer* savedColorRenderer = static_cast<EMColorRenderer*> ( colorPicker->savedColors[ i ]->GetRenderer () );
 		const GXColorHSV& savedColor = savedColorRenderer->GetColor ();
 
 		colorPicker->UpdateCurrentColor ( savedColor.GetHue (), savedColor.GetSaturation (), savedColor.GetValue (), savedColor.GetAlpha () );
@@ -1240,7 +1269,7 @@ GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput& i
 
 GXVoid GXCALL EMUIColorPicker::OnResize ( GXVoid* handler, GXUIDragableArea& /*area*/, GXFloat width, GXFloat height )
 {
-	EMUIColorPicker* colorPicker = (EMUIColorPicker*)handler;
+	EMUIColorPicker* colorPicker = static_cast<EMUIColorPicker*> ( handler );
 
 	GXFloat margin = MARGIN * gx_ui_Scale;
 
@@ -1262,7 +1291,8 @@ GXVoid GXCALL EMUIColorPicker::OnResize ( GXVoid* handler, GXUIDragableArea& /*a
 	GXFloat savedColorWidth = SAVED_COLOR_WIDTH * gx_ui_Scale;
 	GXFloat savedColorHeight = SAVED_COLOR_HEIGHT * gx_ui_Scale;
 	GXFloat savedColorHorizontalStep = ( SAVED_COLOR_WIDTH + SAVED_COLOR_HORIZONTAL_SPACING ) * gx_ui_Scale;
-	for ( GXUByte i = 0; i < 8; i++ )
+
+	for ( GXUByte i = 0u; i < 8u; i++ )
 	{
 		colorPicker->savedColors[ i ]->Resize ( savedColorX, savedColorTopRowY, savedColorWidth, savedColorHeight );
 		colorPicker->savedColors[ i + 8 ]->Resize ( savedColorX, savedColorBottomRowY, savedColorWidth, savedColorHeight );
@@ -1320,8 +1350,8 @@ GXVoid GXCALL EMUIColorPicker::OnResize ( GXVoid* handler, GXUIDragableArea& /*a
 
 GXVoid GXCALL EMUIColorPicker::OnFinishEditing ( GXVoid* handler, GXUIEditBox& editBox )
 {
-	EMUIColorPicker* colorPicker = (EMUIColorPicker*)handler;
-	EMColorRenderer* currentColorRenderer = (EMColorRenderer*)colorPicker->currentColor->GetRenderer ();
+	EMUIColorPicker* colorPicker = static_cast<EMUIColorPicker*> ( handler );
+	EMColorRenderer* currentColorRenderer = static_cast<EMColorRenderer*> ( colorPicker->currentColor->GetRenderer () );
 	GXColorHSV newCurrentColor ( currentColorRenderer->GetColor () );
 
 	if ( &editBox == colorPicker->h->GetWidget () )

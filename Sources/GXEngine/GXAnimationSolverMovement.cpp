@@ -1,12 +1,13 @@
-// version 1.3
+// version 1.4
 
 #include <GXEngine/GXAnimationSolverMovement.h>
 
 
 GXAnimationSolverMovement::GXAnimationSolverMovement ( GXUShort solverID ):
-GXAnimationSolver ( solverID )
+	GXAnimationSolver ( solverID ),
+	state ( eGXAnimationSolverMovementState::Idle )
 {
-	state = eGXAnimationSolverMovementState::Idle;
+	// NOTHING
 }
 
 GXAnimationSolverMovement::~GXAnimationSolverMovement ()
@@ -16,17 +17,17 @@ GXAnimationSolverMovement::~GXAnimationSolverMovement ()
 
 GXBool GXAnimationSolverMovement::GetBoneJoint ( GXBoneJoint &joint, const GXUTF8* boneName )
 {
-	return animationStreams[ (GXUShort)state ]->GetBoneJoint ( joint, boneName );
+	return animationStreams[ static_cast<GXUShort> ( state ) ]->GetBoneJoint ( joint, boneName );
 }
 
 GXVoid GXAnimationSolverMovement::Update ( GXFloat delta )
 {
-	animationStreams[ (GXUShort)state ]->Update ( delta );
+	animationStreams[ static_cast<GXUShort> ( state ) ]->Update ( delta );
 }
 
 GXVoid GXAnimationSolverMovement::SetAnimationStream ( eGXAnimationSolverMovementState animationState, GXAnimationSolver* animationStream )
 {
-	animationStreams[ (GXUShort)animationState ] = animationStream;
+	animationStreams[ static_cast<GXUShort> ( animationState ) ] = animationStream;
 }
 
 GXVoid GXAnimationSolverMovement::SetState ( eGXAnimationSolverMovementState newState )

@@ -52,6 +52,9 @@ class GXPairBodyConstraintSolver
 
 		const GXVec6& GetJacobianElement ( GXUInt constraint, GXUByte bodyIndex ) const;
 		const GXVec6& GetBElement ( GXUByte bodyIndex, GXUInt constraint ) const;
+
+		GXPairBodyConstraintSolver ( const GXPairBodyConstraintSolver &other ) = delete;
+		GXPairBodyConstraintSolver& operator = ( const GXPairBodyConstraintSolver &other ) = delete;
 };
 
 

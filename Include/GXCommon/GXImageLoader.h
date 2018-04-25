@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_IMAGE_LOADER
 #define GX_IMAGE_LOADER
@@ -17,4 +17,4 @@ GXBool GXCALL GXLoadLDRImage ( const GXWChar* fileName, GXUInt &width, GXUInt &h
 GXBool GXCALL GXLoadHDRImage ( const GXWChar* fileName, GXUInt &width, GXUInt &height, GXUByte &numChannels, GXFloat** data );
 
 
-#endif / /GX_IMAGE_LOADER
+#endif // GX_IMAGE_LOADER

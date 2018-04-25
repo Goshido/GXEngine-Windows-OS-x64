@@ -6,9 +6,9 @@
 #include <GXEngine/GXTexture2D.h>
 
 
-enum class eEMGaussHorizontalBlurKernelType
+enum class eEMGaussHorizontalBlurKernelType : GXUShort
 {
-	ONE_CHANNEL_FIVE_PIXEL_KERNEL
+	OneChannelFivePixel
 };
 
 class EMGaussHorizontalBlurMaterial : public GXMaterial

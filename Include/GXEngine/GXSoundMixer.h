@@ -18,7 +18,6 @@ class GXSoundMixer
 		GXFloat						masterVolume;
 
 		static GXSoundChannel*		channels;
-
 		static GXSoundMixer*		instance;
 
 	public:
@@ -46,6 +45,9 @@ class GXSoundMixer
 		GXSoundMixer ();
 
 		static GXUPointer GXTHREADCALL Update ( GXVoid* args, GXThread &thread );
+
+		GXSoundMixer ( const GXSoundMixer &other ) = delete;
+		GXSoundMixer& operator = ( const GXSoundMixer &other ) = delete;
 };
 
 

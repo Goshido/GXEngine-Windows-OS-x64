@@ -1,4 +1,4 @@
-// version 1.13
+// version 1.14
 
 #ifndef GX_CAMERA
 #define GX_CAMERA
@@ -29,9 +29,6 @@ class GXCamera
 		GXProjectionClipPlanes	clipPlanesWorld;
 
 	public:
-		GXCamera ();
-		virtual ~GXCamera ();
-
 		const GXMat4& GetCurrentFrameViewProjectionMatrix () const;
 		const GXMat4& GetCurrentFrameInverseViewProjectionMatrix () const;
 		const GXMat4& GetCurrentFrameProjectionMatrix () const;
@@ -75,7 +72,15 @@ class GXCamera
 		static GXVoid GXCALL SetActiveCamera ( GXCamera* camera );
 
 	protected:
+		explicit GXCamera ( GXFloat zNear, GXFloat zFar );
+		virtual ~GXCamera ();
+
 		GXVoid UpdateClipPlanes ();
+
+	private:
+		GXCamera () = delete;
+		GXCamera ( const GXCamera &other ) = delete;
+		GXCamera& operator = ( const GXCamera &other ) = delete;
 };
 
 

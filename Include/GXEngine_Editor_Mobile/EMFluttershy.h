@@ -33,6 +33,10 @@ class EMFluttershy : public GXTransform
 
 	protected:
 		GXVoid TransformUpdated () override;
+
+	private:
+		EMFluttershy ( const EMFluttershy &other ) = delete;
+		EMFluttershy& operator = ( const EMFluttershy &other ) = delete;
 };
 
 

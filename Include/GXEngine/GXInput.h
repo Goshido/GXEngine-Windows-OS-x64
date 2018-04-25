@@ -66,7 +66,7 @@
 #define GX_INPUT_XBOX_BACK				13
 
 
-enum class eGXInputButtonState
+enum class eGXInputButtonState : GXUByte
 {
 	Down,
 	Up
@@ -87,7 +87,7 @@ typedef GXVoid ( GXCALL* PFNGXMOUSEWHEELPROC ) ( GXVoid* handler, GXInt steps );
 typedef GXVoid ( GXCALL* PFNGXSTICKPROC ) ( GXVoid* handler, GXFloat x, GXFloat y );
 typedef GXVoid ( GXCALL* PFNGXTRIGGERPROC ) ( GXVoid* handler, GXFloat value );
 
-enum class eGXInputDevice
+enum class eGXInputDevice : GXUByte
 {
 	Keyboard,
 	Mouse,

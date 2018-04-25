@@ -15,30 +15,30 @@
 #define FONT_SIZE							0.33f
 #define TEXT_OFFSET_X						0.2f
 
-#define BACKGROUND_COLOR_R					49
-#define BACKGROUND_COLOR_G					48
-#define BACKGROUND_COLOR_B					48
-#define BACKGROUND_COLOR_A					255
+#define BACKGROUND_COLOR_R					49u
+#define BACKGROUND_COLOR_G					48u
+#define BACKGROUND_COLOR_B					48u
+#define BACKGROUND_COLOR_A					255u
 
-#define BORDER_COLOR_R						128
-#define BORDER_COLOR_G						128
-#define BORDER_COLOR_B						128
-#define BORDER_COLOR_A						255
+#define BORDER_COLOR_R						128u
+#define BORDER_COLOR_G						128u
+#define BORDER_COLOR_B						128u
+#define BORDER_COLOR_A						255u
 
-#define ENABLE_ITEM_COLOR_R					115
-#define ENABLE_ITEM_COLOR_G					185
-#define ENABLE_ITEM_COLOR_B					0
-#define ENABLE_ITEM_COLOR_A					255
+#define ENABLE_ITEM_COLOR_R					115u
+#define ENABLE_ITEM_COLOR_G					185u
+#define ENABLE_ITEM_COLOR_B					0u
+#define ENABLE_ITEM_COLOR_A					255u
 
-#define DISABLE_ITEM_COLOR_R				136
-#define DISABLE_ITEM_COLOR_G				136
-#define DISABLE_ITEM_COLOR_B				136
-#define DISABLE_ITEM_COLOR_A				255
+#define DISABLE_ITEM_COLOR_R				136u
+#define DISABLE_ITEM_COLOR_G				136u
+#define DISABLE_ITEM_COLOR_B				136u
+#define DISABLE_ITEM_COLOR_A				255u
 
-#define HIGHTLIGHT_COLOR_R					255
-#define HIGHTLIGHT_COLOR_G					255
-#define HIGHTLIGHT_COLOR_B					255
-#define HIGHTLIGHT_COLOR_A					38
+#define HIGHTLIGHT_COLOR_R					255u
+#define HIGHTLIGHT_COLOR_G					255u
+#define HIGHTLIGHT_COLOR_B					255u
+#define HIGHTLIGHT_COLOR_A					38u
 
 #define DEFAULT_TEXTURE						L"Textures/System/Default_Diffuse.tga"
 
@@ -65,14 +65,20 @@ class EMUIPopupRenderer : public GXWidgetRenderer
 		GXVoid OnDraw () override;
 		GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
 		GXVoid OnMoved ( GXFloat x, GXFloat y ) override;
+
+	private:
+		EMUIPopupRenderer ( const EMUIPopupRenderer &other ) = delete;
+		EMUIPopupRenderer& operator = ( const EMUIPopupRenderer &other ) = delete;
 };
 
 EMUIPopupRenderer::EMUIPopupRenderer ( GXUIPopup* widget ):
-GXWidgetRenderer ( widget ), itemNames ( sizeof ( GXWChar* ) )
+	GXWidgetRenderer ( widget ),
+	font ( GXFont::GetFont ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) ) ),
+	surface ( new GXHudSurface ( static_cast<GXUShort> ( widget->GetItemWidth () ), static_cast<GXUShort> ( widget->GetItemHeight () ) ) ),
+	texture ( GXTexture2D::LoadTexture ( DEFAULT_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE ) ),
+	itemNames ( sizeof ( GXWChar* ) )
 {
-	font = GXFont::GetFont ( FONT, (GXUShort)( FONT_SIZE * gx_ui_Scale ) );
-	texture = GXTexture2D::LoadTexture ( DEFAULT_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
-	surface = new GXHudSurface ( (GXUShort)widget->GetItemWidth (), (GXUShort)widget->GetItemHeight () );
+	// NOTHING
 }
 
 EMUIPopupRenderer::~EMUIPopupRenderer ()
@@ -81,10 +87,10 @@ EMUIPopupRenderer::~EMUIPopupRenderer ()
 	delete surface;
 	GXTexture2D::RemoveTexture ( texture );
 
-	GXWChar** names = (GXWChar**)itemNames.GetData ();
-	GXUInt totalNames = itemNames.GetLength ();
+	GXWChar** names = reinterpret_cast<GXWChar**> ( itemNames.GetData () );
+	GXUByte totalNames = static_cast<GXUByte> ( itemNames.GetLength () );
 
-	for ( GXUInt i = 0; i < totalNames; i++ )
+	for ( GXUByte i = 0u; i < totalNames; i++ )
 		free ( names[ i ] );
 }
 
@@ -97,7 +103,7 @@ GXVoid EMUIPopupRenderer::AddItem ( const GXWChar* name )
 
 GXVoid EMUIPopupRenderer::OnRefresh ()
 {
-	GXUIPopup* popup = (GXUIPopup*)widget;
+	GXUIPopup* popup = static_cast<GXUIPopup*> ( widget );
 	GXUByte totalItems = popup->GetTotalItems ();
 	GXFloat itemHeight = popup->GetItemHeight ();
 	GXFloat itemWidth = floorf ( popup->GetItemWidth () );
@@ -106,7 +112,7 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
 	surface->Reset ();
 
 	GXImageInfo ii;
-	ii.color.From ( BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
+	ii.color.From ( static_cast<GXUByte> ( BACKGROUND_COLOR_R ), static_cast<GXUByte> ( BACKGROUND_COLOR_G ), static_cast<GXUByte> ( BACKGROUND_COLOR_B ), static_cast<GXUByte> ( BACKGROUND_COLOR_A ) );
 	ii.texture = &texture;
 	ii.overlayType = eGXImageOverlayType::SimpleReplace;
 	ii.insertX = 1.0f + 0.1f;
@@ -117,7 +123,7 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
 	surface->AddImage ( ii );
 
 	GXLineInfo li;
-	li.color.From ( BORDER_COLOR_R, BORDER_COLOR_G, BORDER_COLOR_B, BORDER_COLOR_A );
+	li.color.From ( static_cast<GXUByte> ( BORDER_COLOR_R ), static_cast<GXUByte> ( BORDER_COLOR_G ), static_cast<GXUByte> ( BORDER_COLOR_B ), static_cast<GXUByte> ( BORDER_COLOR_A ) );
 	li.thickness = 1.0f;
 	li.overlayType = eGXImageOverlayType::SimpleReplace;
 	li.startPoint.Init (1.0f + 0.1f, 0.1f );
@@ -141,9 +147,10 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
 	surface->AddLine ( li );
 
 	GXUByte hightlighted = popup->GetSelectedItemIndex ();
-	if ( hightlighted != GX_UI_POPUP_INVALID_INDEX )
+
+	if ( hightlighted != static_cast<GXUByte> ( GX_UI_POPUP_INVALID_INDEX ) )
 	{
-		ii.color.From ( HIGHTLIGHT_COLOR_R, HIGHTLIGHT_COLOR_G, HIGHTLIGHT_COLOR_B, HIGHTLIGHT_COLOR_A );
+		ii.color.From ( static_cast<GXUByte> ( HIGHTLIGHT_COLOR_R ), static_cast<GXUByte> ( HIGHTLIGHT_COLOR_G ), static_cast<GXUByte> ( HIGHTLIGHT_COLOR_B ), static_cast<GXUByte> ( HIGHTLIGHT_COLOR_A ) );
 		ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 		ii.insertX = 0.5f;
 		ii.insertY = totalHeight - 0.5f - ( 1.0f + (GXFloat)hightlighted ) * itemHeight;
@@ -153,7 +160,7 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
 		surface->AddImage ( ii );
 	}
 
-	const GXWChar** names = (const GXWChar**)itemNames.GetData ();
+	const GXWChar** names = reinterpret_cast<const GXWChar**> ( itemNames.GetData () );
 	GXPenInfo pi;
 	pi.font = &font;
 	pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
@@ -163,9 +170,9 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
 	for ( GXUByte i = 0; i < totalItems; i++ )
 	{
 		if ( popup->IsItemActive ( i ) )
-			pi.color.From ( ENABLE_ITEM_COLOR_R, ENABLE_ITEM_COLOR_G, ENABLE_ITEM_COLOR_B, ENABLE_ITEM_COLOR_A );
+			pi.color.From ( static_cast<GXUByte> ( ENABLE_ITEM_COLOR_R ), static_cast<GXUByte> ( ENABLE_ITEM_COLOR_G ), static_cast<GXUByte> ( ENABLE_ITEM_COLOR_B ), static_cast<GXUByte> ( ENABLE_ITEM_COLOR_A ) );
 		else
-			pi.color.From ( DISABLE_ITEM_COLOR_R, DISABLE_ITEM_COLOR_G, DISABLE_ITEM_COLOR_B, DISABLE_ITEM_COLOR_A );
+			pi.color.From ( static_cast<GXUByte> ( DISABLE_ITEM_COLOR_R ), static_cast<GXUByte> ( DISABLE_ITEM_COLOR_G ), static_cast<GXUByte> ( DISABLE_ITEM_COLOR_B ), static_cast<GXUByte> ( DISABLE_ITEM_COLOR_A ) );
 
 		surface->AddText ( pi, 0, names[ i ] );
 		pi.insertY -= itemHeight;
@@ -205,9 +212,9 @@ GXVoid EMUIPopupRenderer::OnMoved ( GXFloat x, GXFloat y )
 //-------------------------------------------------------
 
 EMUIPopup::EMUIPopup ( EMUI* parent ):
-EMUI ( parent )
+	EMUI ( parent ),
+	widget ( new GXUIPopup ( parent ? parent->GetWidget () : nullptr ) )
 {
-	widget = new GXUIPopup ( parent ? parent->GetWidget () : nullptr );
 	widget->SetRenderer ( new EMUIPopupRenderer ( widget ) );
 	widget->Resize ( BOTTOM_LEFT_X * gx_ui_Scale, BOTTOM_LEFT_Y * gx_ui_Scale, ITEM_WIDTH * gx_ui_Scale, ANY_HEIGHT * gx_ui_Scale );
 	widget->SetItemHeight ( ITEM_HEIGHT * gx_ui_Scale );
@@ -226,14 +233,14 @@ GXWidget* EMUIPopup::GetWidget () const
 
 GXVoid EMUIPopup::AddItem ( const GXWChar* name, GXVoid* handler, PFNGXONUIPOPUPACTIONPROC action )
 {
-	EMUIPopupRenderer* renderer = (EMUIPopupRenderer*)widget->GetRenderer ();
+	EMUIPopupRenderer* renderer = static_cast<EMUIPopupRenderer*> ( widget->GetRenderer () );
 	renderer->AddItem ( name );
 	widget->AddItem ( handler, action );
 }
 
 GXVoid EMUIPopup::EnableItem ( GXUByte itemIndex )
 {
-	GXUIPopup* popup = (GXUIPopup*)widget;
+	GXUIPopup* popup = static_cast<GXUIPopup*> ( widget );
 	popup->EnableItem ( itemIndex );
 }
 

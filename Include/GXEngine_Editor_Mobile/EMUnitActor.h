@@ -26,7 +26,7 @@ class EMUnitActor : public EMActor
 
 		GXVoid OnSave ( GXUByte** data ) override;
 		GXVoid OnLoad ( const GXUByte* data ) override;
-		GXUInt OnRequeredSaveSize () override;
+		GXUPointer OnRequeredSaveSize () const override;
 		GXVoid OnTransformChanged () override;
 };
 

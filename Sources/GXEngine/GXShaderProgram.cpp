@@ -204,19 +204,24 @@ struct GXChunk
 
 //-------------------------------------------------------------------------------
 
-struct GXSaveState
+class GXSaveState
 {
-	GXUByte*			content;
-	GXUBigInt			chunckOffset;
-	GXUBigInt			utf8StringOffset;
-	GXWriteFileStream	info;
+	public:
+		GXWriteFileStream	info;
+		GXUByte*			content;
+		GXUBigInt			chunckOffset;
+		GXUBigInt			utf8StringOffset;
 
-	GXSaveState ( const GXWChar* infoFile );
-	~GXSaveState ();
+		explicit GXSaveState ( const GXWChar* infoFile );
+		~GXSaveState ();
+
+	private:
+		GXSaveState ( const GXSaveState &other ) = delete;
+		GXSaveState& operator = ( const GXSaveState &other ) = delete;
 };
 
-GXSaveState::GXSaveState ( const GXWChar* infoFile ) :
-info ( infoFile )
+GXSaveState::GXSaveState ( const GXWChar* infoFile ):
+	info ( infoFile )
 {
 	// NOTHING
 }
@@ -346,8 +351,7 @@ GXVoid GXCALL GXPrecompiledShaderProgramFinder::GetDictionarySize ( const GXAVLT
 		free ( stringU );
 	}
 
-	GXUInt s = GXToUTF8 ( &stringU, item.binaryPath );
-	*size += s;
+	*size += GXToUTF8 ( &stringU, item.binaryPath );
 	free ( stringU );
 };
 
@@ -363,10 +367,10 @@ GXVoid GXCALL GXPrecompiledShaderProgramFinder::SaveDictionary ( const GXAVLTree
 	GXChunk* chunk = (GXChunk*)( state->content + state->chunckOffset );
 
 	GXUTF8* stringU = nullptr;
-	GXUInt size = 0;
+	GXUPointer size = 0u;
 
 	GXToUTF8 ( &stringU, locale.GetString ( L"GXShaderProgram->GXPrecompiledShaderProgramFinder::SaveDictionary->Vertex shader: " ) );
-	state->info.Write ( stringU, GXUTF8size ( stringU ) - 1 );
+	state->info.Write ( stringU, GXUTF8size ( stringU ) - 1u );
 	free ( stringU );
 
 	size = GXToUTF8 ( &stringU, item.vs );
@@ -374,13 +378,13 @@ GXVoid GXCALL GXPrecompiledShaderProgramFinder::SaveDictionary ( const GXAVLTree
 	chunk->vsOffset = state->utf8StringOffset;
 	state->utf8StringOffset += size;
 
-	state->info.Write ( stringU, size - 1 );
+	state->info.Write ( stringU, size - 1u );
 	free ( stringU );
 
 	state->info.Write ( newLineU, newLineSize );
 
 	GXToUTF8 ( &stringU, locale.GetString ( L"GXShaderProgram->GXPrecompiledShaderProgramFinder::SaveDictionary->Geometry Shader: " ) );
-	state->info.Write ( stringU, GXUTF8size ( stringU ) - 1 );
+	state->info.Write ( stringU, GXUTF8size ( stringU ) - 1u );
 	free ( stringU );
 
 	if ( item.gs )
@@ -390,7 +394,7 @@ GXVoid GXCALL GXPrecompiledShaderProgramFinder::SaveDictionary ( const GXAVLTree
 		chunk->gsOffset = state->utf8StringOffset;
 		state->utf8StringOffset += size;
 
-		state->info.Write ( stringU, size - 1 );
+		state->info.Write ( stringU, size - 1u );
 		free ( stringU );
 	}
 	else
@@ -398,14 +402,14 @@ GXVoid GXCALL GXPrecompiledShaderProgramFinder::SaveDictionary ( const GXAVLTree
 		chunk->gsOffset = NULL_STRING_OFFSET;
 
 		GXToUTF8 ( &stringU, locale.GetString ( L"GXShaderProgram->GXPrecompiledShaderProgramFinder::SaveDictionary->Not needed" ) );
-		state->info.Write ( stringU, GXUTF8size ( stringU ) - 1 );
+		state->info.Write ( stringU, GXUTF8size ( stringU ) - 1u );
 		free ( stringU );
 	}
 
 	state->info.Write ( newLineU, newLineSize );
 
 	GXToUTF8 ( &stringU, locale.GetString ( L"GXShaderProgram->GXPrecompiledShaderProgramFinder::SaveDictionary->Fragment Shader: " ) );
-	state->info.Write ( stringU, GXUTF8size ( stringU ) - 1 );
+	state->info.Write ( stringU, GXUTF8size ( stringU ) - 1u );
 	free ( stringU );
 
 	if ( item.fs )
@@ -415,7 +419,7 @@ GXVoid GXCALL GXPrecompiledShaderProgramFinder::SaveDictionary ( const GXAVLTree
 		chunk->fsOffset = state->utf8StringOffset;
 		state->utf8StringOffset += size;
 
-		state->info.Write ( stringU, size - 1 );
+		state->info.Write ( stringU, size - 1u );
 
 		free ( stringU );
 	}
@@ -424,14 +428,14 @@ GXVoid GXCALL GXPrecompiledShaderProgramFinder::SaveDictionary ( const GXAVLTree
 		chunk->fsOffset = NULL_STRING_OFFSET;
 
 		GXToUTF8 ( &stringU, locale.GetString ( L"GXShaderProgram->GXPrecompiledShaderProgramFinder::SaveDictionary->Not needed" ) );
-		state->info.Write ( stringU, GXUTF8size ( stringU ) - 1 );
+		state->info.Write ( stringU, GXUTF8size ( stringU ) - 1u );
 		free ( stringU );
 	}
 
 	state->info.Write ( newLineU, newLineSize );
 
 	GXToUTF8 ( &stringU, locale.GetString ( L"GXShaderProgram->GXPrecompiledShaderProgramFinder::SaveDictionary->Precompiled shader program: " ) );
-	state->info.Write ( stringU, GXUTF8size ( stringU ) - 1 );
+	state->info.Write ( stringU, GXUTF8size ( stringU ) - 1u );
 	free ( stringU );
 
 	size = GXToUTF8 ( &stringU, item.binaryPath );
@@ -439,7 +443,7 @@ GXVoid GXCALL GXPrecompiledShaderProgramFinder::SaveDictionary ( const GXAVLTree
 	chunk->binaryPathOffset = state->utf8StringOffset;
 	state->utf8StringOffset += size;
 
-	state->info.Write ( stringU, size - 1 );
+	state->info.Write ( stringU, size - 1u );
 
 	free ( stringU );
 
@@ -450,7 +454,7 @@ GXVoid GXCALL GXPrecompiledShaderProgramFinder::SaveDictionary ( const GXAVLTree
 	state->chunckOffset += sizeof ( GXChunk );
 
 	GXToUTF8 ( &stringU, locale.GetString ( L"GXShaderProgram->GXPrecompiledShaderProgramFinder::SaveDictionary->-------------------------------------" ) );
-	state->info.Write ( stringU, GXUTF8size ( stringU ) - 1 );
+	state->info.Write ( stringU, GXUTF8size ( stringU ) - 1u );
 	free ( stringU );
 
 	state->info.Write ( newLineU, newLineSize );

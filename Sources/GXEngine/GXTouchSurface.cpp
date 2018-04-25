@@ -26,6 +26,14 @@ struct GXMessage
 
 GXTouchSurface* GXTouchSurface::instance = nullptr;
 
+GXTouchSurface& GXCALL GXTouchSurface::GetInstance ()
+{
+	if ( !instance )
+		instance = new GXTouchSurface ();
+
+	return *instance;
+}
+
 GXTouchSurface::~GXTouchSurface ()
 {
 	delete gx_ui_MessageBuffer;
@@ -359,14 +367,6 @@ const GXVec2& GXTouchSurface::GetMousePosition ()
 GXVoid GXTouchSurface::SetDefaultWidget ( GXWidget* widget )
 {
 	defaultWidget = widget;
-}
-
-GXTouchSurface& GXCALL GXTouchSurface::GetInstance ()
-{
-	if ( !instance )
-		instance = new GXTouchSurface ();
-
-	return *instance;
 }
 
 GXTouchSurface::GXTouchSurface ()

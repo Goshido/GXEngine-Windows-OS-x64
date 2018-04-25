@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_EQUIRECTANGULAR_TO_CUBE_MAP_MATERIAL
 #define GX_EQUIRECTANGULAR_TO_CUBE_MAP_MATERIAL
@@ -29,6 +29,10 @@ class GXEquirectangularToCubeMapMaterial : public GXMaterial
 		GXVoid SetEquirectangularTexture ( GXTexture2D &texture );
 		GXVoid EnableGammaCorrection ();
 		GXVoid DisableGammaCorrection ();
+
+	private:
+		GXEquirectangularToCubeMapMaterial ( const GXEquirectangularToCubeMapMaterial &other ) = delete;
+		GXEquirectangularToCubeMapMaterial& operator = ( const GXEquirectangularToCubeMapMaterial &other ) = delete;
 };
 
 

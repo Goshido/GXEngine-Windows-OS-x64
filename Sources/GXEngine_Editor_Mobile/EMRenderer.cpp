@@ -28,13 +28,13 @@
 #define CVV_WIDTH										2.0f
 #define CVV_HEIGHT										2.0f
 
-#define DEFAULT_MAX_MOTION_BLUR_SAMPLES					15
+#define DEFAULT_MAX_MOTION_BLUR_SAMPLES					15u
 #define DEFAULT_MOTION_BLUR_DEPTH_LIMIT					0.1f
 #define DEFAULT_MOTION_BLUR_EXPLOSURE					0.03f
 
 #define DEFAULT_SSAO_MAX_CHECK_RADIUS					0.3f
-#define DEFAULT_SSAO_SAMPLES							32
-#define DEFAULT_SSAO_NOISE_TEXTURE_RESOLUTION			9
+#define DEFAULT_SSAO_SAMPLES							32u
+#define DEFAULT_SSAO_NOISE_TEXTURE_RESOLUTION			9u
 #define DEFAULT_SSAO_MAX_DISTANCE						1000.0f
 
 #define DEFAULT_TONE_MAPPER_GAMMA						2.2f
@@ -96,7 +96,7 @@ EMRenderer::~EMRenderer ()
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
 
-	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
+	glBindFramebuffer ( GL_FRAMEBUFFER, 0u );
 	glDeleteFramebuffers ( 1, &fbo );
 
 	delete &( EMUIToneMapperSettings::GetInstance () );
@@ -156,10 +156,10 @@ GXVoid EMRenderer::StartCommonPass ()
 	glViewport ( 0, 0, renderer.GetWidth (), renderer.GetHeight () );
 
 	glDepthMask ( GL_TRUE );
-	glStencilMask ( 0xFF );
+	glStencilMask ( 0xFFu );
 
 	glClearDepth ( 1.0f );
-	glClearStencil ( 0x00 );
+	glClearStencil ( 0x00u );
 
 	glEnable ( GL_CULL_FACE );
 	glEnable ( GL_DEPTH_TEST );
@@ -216,7 +216,7 @@ GXVoid EMRenderer::StartEnvironmentPass ()
 
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
 	glDepthMask ( GX_FALSE );
-	glStencilMask ( 0x00 );
+	glStencilMask ( 0x00u );
 
 	GXRenderer& renderer = GXRenderer::GetInstance ();
 	glViewport ( 0, 0, renderer.GetWidth (), renderer.GetHeight () );
@@ -228,6 +228,7 @@ GXVoid EMRenderer::StartEnvironmentPass ()
 	glDisable ( GL_DEPTH_TEST );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::StartEnvironmentPass::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 }
@@ -246,7 +247,7 @@ GXVoid EMRenderer::StartLightPass ()
 
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
 	glDepthMask ( GX_FALSE );
-	glStencilMask ( 0x00 );
+	glStencilMask ( 0x00u );
 
 	GXRenderer& renderer = GXRenderer::GetInstance ();
 	glViewport ( 0, 0, renderer.GetWidth (), renderer.GetHeight () );
@@ -260,6 +261,7 @@ GXVoid EMRenderer::StartLightPass ()
 	glBlendFunc ( GL_ONE, GL_ONE );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::StartLightPass::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
@@ -282,7 +284,7 @@ GXVoid EMRenderer::StartHudColorPass ()
 
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
 	glDepthMask ( GX_TRUE );
-	glStencilMask ( 0xFF );
+	glStencilMask ( 0xFFu );
 
 	glClear ( GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 
@@ -297,6 +299,7 @@ GXVoid EMRenderer::StartHudColorPass ()
 	glEnable ( GL_DEPTH_TEST );
 	
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::StartHudDepthDependentPass::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 }
@@ -315,7 +318,7 @@ GXVoid EMRenderer::StartHudMaskPass ()
 
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 	glDepthMask ( GX_TRUE );
-	glStencilMask ( 0xFF );
+	glStencilMask ( 0xFFu );
 
 	glDisable ( GL_BLEND );
 	glEnable ( GL_CULL_FACE );
@@ -328,6 +331,7 @@ GXVoid EMRenderer::StartHudMaskPass ()
 	glDrawBuffers ( 2, buffers );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::StartHudDepthDependentPass::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
@@ -336,15 +340,15 @@ GXVoid EMRenderer::StartHudMaskPass ()
 
 GXVoid EMRenderer::SetObjectMask ( GXVoid* object )
 {
-	GXUPointer obj = (GXUPointer)object;
-	objectMask[ 0 ] = (GXUByte)( ( obj & 0xFF00000000000000u ) >> 56 );
-	objectMask[ 1 ] = (GXUByte)( ( obj & 0x00FF000000000000u ) >> 48 );
-	objectMask[ 2 ] = (GXUByte)( ( obj & 0x0000FF0000000000u ) >> 40 );
-	objectMask[ 3 ] = (GXUByte)( ( obj & 0x000000FF00000000u ) >> 32 );
-	objectMask[ 4 ] = (GXUByte)( ( obj & 0x00000000FF000000u ) >> 24 );
-	objectMask[ 5 ] = (GXUByte)( ( obj & 0x0000000000FF0000u ) >> 16 );
-	objectMask[ 6 ] = (GXUByte)( ( obj & 0x000000000000FF00u ) >> 8 );
-	objectMask[ 7 ] = (GXUByte)( obj & 0x00000000000000FFu );
+	GXUPointer obj = reinterpret_cast<GXUPointer> ( object );
+	objectMask[ 0 ] = static_cast<GXUByte> ( ( obj & 0xFF00000000000000u ) >> 56 );
+	objectMask[ 1 ] = static_cast<GXUByte> ( ( obj & 0x00FF000000000000u ) >> 48 );
+	objectMask[ 2 ] = static_cast<GXUByte> ( ( obj & 0x0000FF0000000000u ) >> 40 );
+	objectMask[ 3 ] = static_cast<GXUByte> ( ( obj & 0x000000FF00000000u ) >> 32 );
+	objectMask[ 4 ] = static_cast<GXUByte> ( ( obj & 0x00000000FF000000u ) >> 24 );
+	objectMask[ 5 ] = static_cast<GXUByte> ( ( obj & 0x0000000000FF0000u ) >> 16 );
+	objectMask[ 6 ] = static_cast<GXUByte> ( ( obj & 0x000000000000FF00u ) >> 8 );
+	objectMask[ 7 ] = static_cast<GXUByte> ( obj & 0x00000000000000FFu );
 
 	glVertexAttrib4Nub ( EM_OBJECT_HI_INDEX, objectMask[ 0 ], objectMask[ 1 ], objectMask[ 2 ], objectMask[ 3 ] );
 	glVertexAttrib4Nub ( EM_OBJECT_LOW_INDEX, objectMask[ 4 ], objectMask[ 5 ], objectMask[ 6 ], objectMask[ 7 ] );
@@ -373,9 +377,10 @@ GXVoid EMRenderer::ApplySSAO ()
 	glDisable ( GL_DEPTH_TEST );
 	glDisable ( GL_CULL_FACE );
 
-	glViewport ( 0, 0, (GLsizei)ssaoOmegaTexture.GetWidth (), (GLsizei)ssaoOmegaTexture.GetHeight () );
+	glViewport ( 0, 0, static_cast<GLsizei> ( ssaoOmegaTexture.GetWidth () ), static_cast<GLsizei> ( ssaoOmegaTexture.GetHeight () ) );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::ApplySSAO::Error - Что-то не так с FBO на первом проходе (ошибка 0x%08x)\n", status );
 
@@ -434,15 +439,16 @@ GXVoid EMRenderer::ApplyMotionBlur ()
 
 	glColorMask ( GL_TRUE, GL_TRUE, GL_FALSE, GL_FALSE );
 	glDepthMask ( GL_FALSE );
-	glStencilMask ( 0x00 );
+	glStencilMask ( 0x00u );
 
 	glDisable ( GL_BLEND );
 	glDisable ( GL_DEPTH_TEST );
 	glDisable ( GL_CULL_FACE );
 
-	glViewport ( 0, 0, (GLsizei)velocityTileMaxTexture.GetWidth (), (GLsizei)velocityTileMaxTexture.GetHeight () );
+	glViewport ( 0, 0, static_cast<GLsizei> ( velocityTileMaxTexture.GetWidth () ), static_cast<GLsizei> ( velocityTileMaxTexture.GetHeight () ) );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::ApplyMotionBlur::Error - Что-то не так с FBO на первом проходе (ошибка 0x%08x)\n", status );
 
@@ -462,9 +468,10 @@ GXVoid EMRenderer::ApplyMotionBlur ()
 
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, omegaTexture.GetTextureObject (), 0 );
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
-	glViewport ( 0, 0, (GLsizei)omegaTexture.GetWidth (), (GLsizei)omegaTexture.GetHeight () );
+	glViewport ( 0, 0, static_cast<GLsizei> ( omegaTexture.GetWidth () ), static_cast<GLsizei> ( omegaTexture.GetHeight () ) );
 
 	status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::ApplyMotionBlur::Error - Что-то не так с FBO на третьем проходе (ошибка 0x%08x)\n", status );
 
@@ -496,11 +503,12 @@ GXVoid EMRenderer::ApplyToneMapping ( GXFloat deltaTime )
 	glDisable ( GL_DEPTH_TEST );
 	glDisable ( GL_CULL_FACE );
 
-	GLsizei width = (GLsizei)importantAreaTexture.GetWidth ();
-	GLsizei height = (GLsizei)importantAreaTexture.GetHeight ();
+	GLsizei width = static_cast<GLsizei> ( importantAreaTexture.GetWidth () );
+	GLsizei height = static_cast<GLsizei> ( importantAreaTexture.GetHeight () );
 	glViewport ( 0, 0, width, height );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::ApplyToneMapping::Error - Что-то не так с FBO на проходе фильтрации важных областей (ошибка 0x%08x)\n", status );
 
@@ -512,28 +520,31 @@ GXVoid EMRenderer::ApplyToneMapping ( GXFloat deltaTime )
 
 	GXUByte reducingSteps = importantAreaTexture.GetLevelOfDetailNumber ();
 
-	for ( GXUByte i = 1; i < reducingSteps; i++ )
+	for ( GXUByte i = 1u; i < reducingSteps; i++ )
 	{
-		width /= 2;
+		width /= 2u;
+
 		if ( width == 0 )
-			width = 1;
+			width = 1u;
 
-		height /= 2;
-		if ( height == 0 )
-			height = 1;
+		height /= 2u;
 
-		glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, importantAreaTexture.GetTextureObject (), (GLint)i );
+		if ( height == 0u )
+			height = 1u;
+
+		glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, importantAreaTexture.GetTextureObject (), static_cast<GLint> ( i ) );
 
 		glViewport ( 0, 0, width, height );
 
 		status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
 		if ( status != GL_FRAMEBUFFER_COMPLETE )
 		{
 			GXLogW ( L"EMRenderer::ApplyToneMapping::Error - Что-то не так с FBO на проходе редуцирования %hhu (ошибка 0x%08x)\n", i, status );
 			continue;
 		}
 
-		toneMapperLuminanceTripletReducerMaterial.SetLevelOfDetailToReduce ( (GXUByte)( i - 1 ) );
+		toneMapperLuminanceTripletReducerMaterial.SetLevelOfDetailToReduce ( static_cast<GXUByte> ( i - 1u ) );
 		toneMapperLuminanceTripletReducerMaterial.Bind ( nullTransform );
 		screenQuadMesh.Render ();
 		toneMapperLuminanceTripletReducerMaterial.Unbind ();
@@ -565,9 +576,10 @@ GXVoid EMRenderer::ApplyToneMapping ( GXFloat deltaTime )
 
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, yottaTexture.GetTextureObject (), 0 );
 
-	glViewport ( 0, 0, (GLsizei)yottaTexture.GetWidth (), (GLsizei)yottaTexture.GetHeight () );
+	glViewport ( 0, 0, static_cast<GLsizei> ( yottaTexture.GetWidth () ), static_cast<GLsizei> ( yottaTexture.GetHeight () ) );
 
 	status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::ApplyToneMapping::Error - Что-то не так с FBO на проходе тонирования (ошибка 0x%08x)\n", status );
 
@@ -589,7 +601,7 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 	glDepthMask ( GL_TRUE );
-	glStencilMask ( 0xFF );
+	glStencilMask ( 0xFFu );
 	glClearColor ( 0.0f, 0.0f, 0.0f, 1.0f );
 
 	glDrawBuffer ( GL_BACK );
@@ -600,7 +612,7 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 	glViewport ( 0, 0, renderer.GetWidth (), renderer.GetHeight () );
 
 	unlitMaterial.SetTexture ( yottaTexture );
-	unlitMaterial.SetColor ( 255, 255, 255, 255 );
+	unlitMaterial.SetColor ( 255u, 255u, 255u, 255u );
 	unlitMaterial.Bind ( screenQuadMesh );
 
 	screenQuadMesh.Render ();
@@ -662,7 +674,7 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
 	glBlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
 	unlitMaterial.SetTexture ( *texture );
-	unlitMaterial.SetColor ( 255, 255, 255, OVERLAY_TRANSPARENCY );
+	unlitMaterial.SetColor ( 255u, 255u, 255u, OVERLAY_TRANSPARENCY );
 	unlitMaterial.Bind ( screenQuadMesh );
 
 	screenQuadMesh.Render ();
@@ -847,27 +859,29 @@ GXTexture2D& EMRenderer::GetDepthTexture ()
 }
 
 EMRenderer::EMRenderer ():
-screenQuadMesh ( L"Meshes/System/ScreenQuad.stm" ), gaussHorizontalBlurMaterial ( eEMGaussHorizontalBlurKernelType::ONE_CHANNEL_FIVE_PIXEL_KERNEL ), gaussVerticalBlurMaterial ( eEMGaussVerticalBlurKernelType::ONE_CHANNEL_FIVE_PIXEL_KERNEL )
+	mouseX ( -1 ),
+	mouseY ( -1 ),
+	OnObject ( nullptr ),
+	handler ( nullptr ),
+	newMaxMotionBlurSamples ( static_cast<GXUByte> ( DEFAULT_MAX_MOTION_BLUR_SAMPLES ) ),
+	newMotionBlurDepthLimit ( DEFAULT_MOTION_BLUR_DEPTH_LIMIT ),
+	motionBlurExposure ( DEFAULT_MOTION_BLUR_EXPLOSURE ),
+	newMotionBlurExposure ( DEFAULT_MOTION_BLUR_EXPLOSURE ),
+	isMotionBlurSettingsChanged ( GX_FALSE ),
+	newSSAOCheckRadius ( DEFAULT_SSAO_MAX_CHECK_RADIUS ),
+	newSSAOSamples ( static_cast<GXUByte> ( DEFAULT_SSAO_SAMPLES ) ),
+	newSSAONoiseTextureResolution ( static_cast<GXUShort> ( DEFAULT_SSAO_NOISE_TEXTURE_RESOLUTION ) ),
+	newSSAOMaxDistance ( DEFAULT_SSAO_MAX_DISTANCE ),
+	isSSAOSettingsChanged ( GX_FALSE ),
+	screenQuadMesh ( L"Meshes/System/ScreenQuad.stm" ),
+	gaussHorizontalBlurMaterial ( eEMGaussHorizontalBlurKernelType::OneChannelFivePixel ),
+	gaussVerticalBlurMaterial ( eEMGaussVerticalBlurKernelType::OneChannelFivePixel )
 {
-	memset ( objectMask, 0, 8 * sizeof ( GXUByte ) );
-	mouseX = mouseY = -1;
-	OnObject = nullptr;
-	handler = nullptr;
-
-	newMaxMotionBlurSamples = DEFAULT_MAX_MOTION_BLUR_SAMPLES;
-	newMotionBlurDepthLimit = DEFAULT_MOTION_BLUR_DEPTH_LIMIT;
-	motionBlurExposure = newMotionBlurExposure = DEFAULT_MOTION_BLUR_EXPLOSURE;
-	isMotionBlurSettingsChanged = GX_FALSE;
-
-	newSSAOCheckRadius = DEFAULT_SSAO_MAX_CHECK_RADIUS;
-	newSSAOSamples = DEFAULT_SSAO_SAMPLES;
-	newSSAONoiseTextureResolution = DEFAULT_SSAO_NOISE_TEXTURE_RESOLUTION;
-	newSSAOMaxDistance = DEFAULT_SSAO_MAX_DISTANCE;
-	isSSAOSettingsChanged = GX_FALSE;
+	SetObjectMask ( nullptr );
 
 	GXRenderer& renderer = GXRenderer::GetInstance ();
-	GXUShort width = (GXUShort)renderer.GetWidth ();
-	GXUShort height = (GXUShort)renderer.GetHeight ();
+	GXUShort width = static_cast<GXUShort> ( renderer.GetWidth () );
+	GXUShort height = static_cast<GXUShort> ( renderer.GetHeight () );
 
 	velocityTileMaxMaterial.SetMaxBlurSamples ( newMaxMotionBlurSamples );
 	velocityTileMaxMaterial.SetScreenResolution ( width, height );
@@ -930,8 +944,6 @@ screenQuadMesh ( L"Meshes/System/ScreenQuad.stm" ), gaussHorizontalBlurMaterial 
 
 	importantAreaFilterMaterial.SetImageTexture ( omegaTexture );
 
-	SetObjectMask ( nullptr );
-
 	EMUIMotionBlurSettings::GetInstance ();
 	EMUISSAOSettings::GetInstance ();
 	EMUIToneMapperSettings::GetInstance ();
@@ -940,8 +952,8 @@ screenQuadMesh ( L"Meshes/System/ScreenQuad.stm" ), gaussHorizontalBlurMaterial 
 GXVoid EMRenderer::CreateFBO ()
 {
 	GXRenderer& renderer = GXRenderer::GetInstance ();
-	GXUShort width = (GXUShort)renderer.GetWidth ();
-	GXUShort height = (GXUShort)renderer.GetHeight ();
+	GXUShort width = static_cast<GXUShort> ( renderer.GetWidth () );
+	GXUShort height = static_cast<GXUShort> ( renderer.GetHeight () );
 
 	GXUShort importantAreaSide = height < width ? height : width;
 
@@ -959,9 +971,9 @@ GXVoid EMRenderer::CreateFBO ()
 	omegaTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE, GL_CLAMP_TO_EDGE );
 	yottaTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE, GL_CLAMP_TO_EDGE );
 
-	GXUShort maxSamples = (GXUShort)motionBlurMaterial.GetMaxBlurSamples ();
-	GXUShort w = (GXUShort)( width / maxSamples );
-	GXUShort h = (GXUShort)( height / maxSamples );
+	GXUShort maxSamples = static_cast<GXUShort> ( motionBlurMaterial.GetMaxBlurSamples () );
+	GXUShort w = static_cast<GXUShort> ( width / maxSamples );
+	GXUShort h = static_cast<GXUShort> ( height / maxSamples );
 	velocityTileMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
 	velocityNeighborMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
 
@@ -984,7 +996,7 @@ GXVoid EMRenderer::CreateFBO ()
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMRenderer::CreateFBO::Error - Что-то не так с FBO (ошибка 0x%08X)\n", (GXUInt)status );
 
-	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
+	glBindFramebuffer ( GL_FRAMEBUFFER, 0u );
 
 	glDrawBuffer ( GL_BACK );
 }
@@ -997,10 +1009,10 @@ GXVoid EMRenderer::UpdateMotionBlurSettings ()
 		velocityNeighborMaxTexture.FreeResources ();
 
 		GXRenderer& renderer = GXRenderer::GetInstance ();
-		GXUShort width = (GXUShort)renderer.GetWidth ();
-		GXUShort height = (GXUShort)renderer.GetHeight ();
-		GXUShort w = (GXUShort)( width / newMaxMotionBlurSamples );
-		GXUShort h = (GXUShort)( height / newMaxMotionBlurSamples );
+		GXUShort width = static_cast<GXUShort> ( renderer.GetWidth () );
+		GXUShort height = static_cast<GXUShort> ( renderer.GetHeight () );
+		GXUShort w = static_cast<GXUShort> ( width / newMaxMotionBlurSamples );
+		GXUShort h = static_cast<GXUShort> ( height / newMaxMotionBlurSamples );
 
 		velocityTileMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
 		velocityNeighborMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
@@ -1011,9 +1023,7 @@ GXVoid EMRenderer::UpdateMotionBlurSettings ()
 	}
 
 	if ( newMotionBlurDepthLimit != motionBlurMaterial.GetDepthLimit () )
-	{
 		motionBlurMaterial.SetDepthLimit ( newMotionBlurDepthLimit );
-	}
 
 	if ( newMotionBlurExposure != motionBlurExposure )
 		motionBlurExposure = newMotionBlurExposure;
@@ -1133,8 +1143,9 @@ GXVoid EMRenderer::LightUpByBulp ( EMBulp* /*light*/ )
 GXVoid* EMRenderer::SampleObject ()
 {
 	GXRenderer& renderer = GXRenderer::GetInstance ();
-	if ( mouseX < 0 || mouseX >= renderer.GetWidth () ) return 0;
-	if ( mouseY < 0 || mouseY >= renderer.GetHeight () ) return 0;
+
+	if ( mouseX < 0 || mouseX >= renderer.GetWidth () ) return nullptr;
+	if ( mouseY < 0 || mouseY >= renderer.GetHeight () ) return nullptr;
 
 	glBindFramebuffer ( GL_READ_FRAMEBUFFER, fbo );
 	glFramebufferTexture ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, objectTextures[ 0 ].GetTextureObject (), 0 );
@@ -1148,18 +1159,18 @@ GXVoid* EMRenderer::SampleObject ()
 	GXUByte objectLow[ 4 ];
 	glReadPixels ( mouseX, mouseY, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, objectLow );
 
-	glFramebufferTexture ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0 );
-	glBindFramebuffer ( GL_READ_FRAMEBUFFER, 0 );
+	glFramebufferTexture ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0u, 0 );
+	glBindFramebuffer ( GL_READ_FRAMEBUFFER, 0u );
 
 	GXUPointer object = 0;
-	object |= ( (GXUPointer)objectHi[ 0 ] ) << 56;
-	object |= ( (GXUPointer)objectHi[ 1 ] ) << 48;
-	object |= ( (GXUPointer)objectHi[ 2 ] ) << 40;
-	object |= ( (GXUPointer)objectHi[ 3 ] ) << 32;
-	object |= ( (GXUPointer)objectLow[ 0 ] ) << 24;
-	object |= ( (GXUPointer)objectLow[ 1 ] ) << 16;
-	object |= ( (GXUPointer)objectLow[ 2 ] ) << 8;
-	object |= (GXUPointer)objectLow[ 3 ];
+	object |= ( static_cast<GXUPointer> ( objectHi[ 0 ] ) ) << 56;
+	object |= ( static_cast<GXUPointer> ( objectHi[ 1 ] ) ) << 48;
+	object |= ( static_cast<GXUPointer> ( objectHi[ 2 ] ) ) << 40;
+	object |= ( static_cast<GXUPointer> ( objectHi[ 3 ] ) ) << 32;
+	object |= ( static_cast<GXUPointer> ( objectLow[ 0 ] ) ) << 24;
+	object |= ( static_cast<GXUPointer> ( objectLow[ 1 ] ) ) << 16;
+	object |= ( static_cast<GXUPointer> ( objectLow[ 2 ] ) ) << 8;
+	object |= static_cast<GXUPointer> ( objectLow[ 3 ] );
 
-	return (GXVoid*)object;
+	return reinterpret_cast<GXVoid*> ( object );
 }

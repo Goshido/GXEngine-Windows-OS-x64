@@ -51,6 +51,9 @@ class GXSingleBodyConstraintSolver
 		GXVoid UpdateBodyVelocity ();
 
 		const GXVec6& GetJacobianElement ( GXUInt constraint, GXUByte bodyIndex ) const;
+
+		GXSingleBodyConstraintSolver ( const GXSingleBodyConstraintSolver &other ) = delete;
+		GXSingleBodyConstraintSolver& operator = ( const GXSingleBodyConstraintSolver &other ) = delete;
 };
 
 

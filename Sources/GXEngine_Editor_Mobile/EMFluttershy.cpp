@@ -3,7 +3,7 @@
 #include <GXEngine/GXRenderer.h>
 
 
-#define SOLVER_ID					0
+#define SOLVER_ID					0u
 
 #define ROUGHNESS_SCALE				0.8f
 #define INDEX_OF_REFRACTION_SCALE	0.306f
@@ -11,9 +11,10 @@
 #define METALLIC_SCALE				0.0f
 
 
-EMFluttershy::EMFluttershy () :
+EMFluttershy::EMFluttershy ():
 // mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLVER_ID )
-mesh ( L"Meshes/Editor Mobile/pilot.skm", L"Meshes/Editor Mobile/pilot.skm" ), animationSolverPlayer ( SOLVER_ID )
+	mesh ( L"Meshes/Editor Mobile/pilot.skm", L"Meshes/Editor Mobile/pilot.skm" ),
+	animationSolverPlayer ( static_cast<GXUShort> ( SOLVER_ID ) )
 {
 	// GXLoadNativeAnimation ( animationInfo, L"Animations/Editor Mobile/pony animation.ani" );
 	// GXLoadNativeAnimation ( animationInfo, L"Animations/Editor Mobile/default.ani" );
@@ -59,7 +60,7 @@ GXVoid EMFluttershy::Render ( GXFloat deltaTime )
 
 	material.SetMaximumBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
 	material.SetExposure ( renderer.GetMotionBlurExposure () );
-	material.SetScreenResolution ( (GXUShort)coreRenderer.GetWidth (), (GXUShort)coreRenderer.GetHeight () );
+	material.SetScreenResolution ( static_cast<GXUShort> ( coreRenderer.GetWidth () ), static_cast<GXUShort> ( coreRenderer.GetHeight () ) );
 	material.SetDeltaTime ( deltaTime );
 	material.Bind ( mesh );
 	mesh.Render ();

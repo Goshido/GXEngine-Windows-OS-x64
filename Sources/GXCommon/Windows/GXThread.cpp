@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #include <GXCommon/Windows/GXThread.h>
 #include <GXCommon/GXLogger.h>
@@ -12,12 +12,11 @@ GXAbstractThread ( procedure, argument )
 
 GXThread::~GXThread ()
 {
-	if ( !thread == NULL && state == eGXThreadState::Started )
-	{
-		GXLogW ( L"GXThread::~GXThread::Warning - Поток завершён неверно\n" );
-		system ( "pause" );
-		CloseHandle ( thread );
-	}
+	if ( thread == NULL || state != eGXThreadState::Started ) return;
+
+	GXLogW ( L"GXThread::~GXThread::Warning - Поток завершён неверно\n" );
+	system ( "pause" );
+	CloseHandle ( thread );
 }
 
 GXVoid GXThread::Start ()
@@ -53,9 +52,9 @@ GXVoid GXThread::Join ()
 
 DWORD WINAPI GXThread::RootThreadStarter ( LPVOID lpThreadParameter )
 {
-	GXThread* thread = (GXThread*)lpThreadParameter;
+	GXThread* thread = reinterpret_cast<GXThread*> ( lpThreadParameter );
 	GXUPointer result = thread->Procedure ( thread->argument, *thread );
-	GXLogW ( L"GXThread::RootThreadStarter::Info - Поток %X завершился с кодом %X\n", (GXUPointer)lpThreadParameter, result );
+	GXLogW ( L"GXThread::RootThreadStarter::Info - Поток 0x%p завершился с кодом %X\n", lpThreadParameter, result );
 
 	return 0;
 }

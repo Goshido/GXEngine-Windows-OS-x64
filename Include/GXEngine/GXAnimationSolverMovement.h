@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef	GX_ANIMATION_SOLVER_MOVEMENT
 #define	GX_ANIMATION_SOLVER_MOVEMENT
@@ -29,6 +29,10 @@ class GXAnimationSolverMovement : public GXAnimationSolver
 
 		GXVoid SetAnimationStream ( eGXAnimationSolverMovementState animationState, GXAnimationSolver* animationStream );
 		GXVoid SetState ( eGXAnimationSolverMovementState newState );
+
+	private:
+		GXAnimationSolverMovement ( const GXAnimationSolverMovement &other ) = delete;
+		GXAnimationSolverMovement& operator = ( const GXAnimationSolverMovement &other ) = delete;
 };
 
 

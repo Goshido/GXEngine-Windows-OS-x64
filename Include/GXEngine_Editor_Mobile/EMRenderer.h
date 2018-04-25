@@ -22,7 +22,7 @@
 
 typedef GXVoid ( GXCALL* PFNEMRENDERERONOBJECTPROC ) ( GXVoid* handler, GXVoid* object );
 
-enum class eEMRenderTarget
+enum class eEMRenderTarget : GXUShort
 {
 	Albedo,
 	Normal,
@@ -39,6 +39,24 @@ enum class eEMRenderTarget
 class EMRenderer
 {
 	private:
+		GXInt											mouseX;
+		GXInt											mouseY;
+
+		PFNEMRENDERERONOBJECTPROC						OnObject;
+		GXVoid*											handler;
+
+		GXUByte											newMaxMotionBlurSamples;
+		GXFloat											newMotionBlurDepthLimit;
+		GXFloat											motionBlurExposure;
+		GXFloat											newMotionBlurExposure;
+		GXBool											isMotionBlurSettingsChanged;
+
+		GXFloat											newSSAOCheckRadius;
+		GXUByte											newSSAOSamples;
+		GXUShort										newSSAONoiseTextureResolution;
+		GXFloat											newSSAOMaxDistance;
+		GXBool											isSSAOSettingsChanged;
+
 		GXTexture2D										albedoTexture;
 		GXTexture2D										normalTexture;
 		GXTexture2D										emissionTexture;
@@ -75,23 +93,6 @@ class EMRenderer
 		GXUnlitTexture2DMaterial						unlitMaterial;
 
 		GXCameraOrthographic							outCamera;
-
-		GXInt											mouseX;
-		GXInt											mouseY;
-		PFNEMRENDERERONOBJECTPROC						OnObject;
-		GXVoid*											handler;
-
-		GXBool											isMotionBlurSettingsChanged;
-		GXUByte											newMaxMotionBlurSamples;
-		GXFloat											newMotionBlurDepthLimit;
-		GXFloat											motionBlurExposure;
-		GXFloat											newMotionBlurExposure;
-
-		GXBool											isSSAOSettingsChanged;
-		GXFloat											newSSAOCheckRadius;
-		GXUByte											newSSAOSamples;
-		GXUShort										newSSAONoiseTextureResolution;
-		GXFloat											newSSAOMaxDistance;
 
 		GXBool											isToneMapperSettingsChanged;
 		GXFloat											newToneMapperGamma;
@@ -177,6 +178,9 @@ class EMRenderer
 		GXVoid LightUpByBulp ( EMBulp* light );
 
 		GXVoid* SampleObject ();
+
+		EMRenderer ( const EMRenderer &other ) = delete;
+		EMRenderer& operator = ( const EMRenderer &other ) = delete;
 };
 
 

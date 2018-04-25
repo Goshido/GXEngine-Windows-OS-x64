@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_NATIVE_STATIC_MESH_LOADER
 #define GX_NATIVE_STATIC_MESH_LOADER

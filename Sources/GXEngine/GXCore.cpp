@@ -1,4 +1,4 @@
-// version 1.13
+// version 1.14
 
 #include <GXEngine/GXCore.h>
 #include <GXEngine/GXInput.h>
@@ -28,6 +28,14 @@
 GXBool	GXCore::loopFlag = GX_TRUE;
 GXCore*	GXCore::instance = nullptr;
 
+
+GXCore& GXCALL GXCore::GetInstance ()
+{
+	if ( !instance )
+		instance = new GXCore ();
+
+	return *instance;
+}
 
 GXCore::~GXCore ()
 {
@@ -77,14 +85,6 @@ GXVoid GXCore::Exit ()
 	loopFlag = GX_FALSE;
 }
 
-GXCore& GXCALL GXCore::GetInstance ()
-{
-	if ( !instance )
-		instance = new GXCore ();
-
-	return *instance;
-}
-
 GXCore::GXCore ()
 {
 	GXLogInit ();
@@ -97,9 +97,9 @@ GXCore::GXCore ()
 	gx_EngineSettings.rendererWidth = config.usRendererWidthResoluton;
 	gx_EngineSettings.rendererHeight = config.usRendererHeightResoluton;
 
-	gx_EngineSettings.potWidth = 1;
+	gx_EngineSettings.potWidth = 1u;
 	for ( ; gx_EngineSettings.potWidth < gx_EngineSettings.rendererWidth; gx_EngineSettings.potWidth <<= 1 );
-	gx_EngineSettings.potHeight = 1;
+	gx_EngineSettings.potHeight = 1u;
 	for ( ; gx_EngineSettings.potHeight < gx_EngineSettings.rendererHeight; gx_EngineSettings.potHeight <<=  1 );
 
 	gx_EngineSettings.windowed = config.bIsWindowedMode;
