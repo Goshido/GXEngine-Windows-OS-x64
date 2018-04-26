@@ -1,4 +1,4 @@
-// version 1.15
+// version 1.16
 
 #include <GXEngine/GXInput.h>
 #include <GXEngine/GXCore.h>
@@ -67,6 +67,14 @@ PFNXINPUTENABLEPROC		GXInput::XInputEnable = nullptr;
 GXInput*				GXInput::instance = nullptr;
 
 
+GXInput& GXCALL GXInput::GetInstance ()
+{
+	if ( !instance )
+		instance = new GXInput ();
+
+	return *instance;
+}
+
 GXInput::~GXInput ()
 {
 	DestroyXInputLibrary ();
@@ -86,7 +94,7 @@ GXVoid GXInput::Shutdown ()
 
 GXVoid GXInput::BindKeyCallback ( GXVoid* handler, PFNGXKEYPROC callback, GXInt vk_key, eGXInputButtonState eState )
 {
-	GXUShort i = ( eState == eGXInputButtonState::Down ) ? (GXUShort)( vk_key * 2 ) : (GXUShort)( ( vk_key * 2 ) + 1 );
+	GXUShort i = ( eState == eGXInputButtonState::Down ) ? static_cast<GXUShort> ( vk_key * 2 ) : static_cast<GXUShort> ( ( vk_key * 2 ) + 1 );
 
 	keysMask[ i ] = GX_FALSE;
 	KeysMapping[ i ] = callback;
@@ -95,7 +103,7 @@ GXVoid GXInput::BindKeyCallback ( GXVoid* handler, PFNGXKEYPROC callback, GXInt 
 
 GXVoid GXInput::UnbindKeyCallback ( GXInt vk_key, eGXInputButtonState eState  )
 {
-	GXUShort i = ( eState == eGXInputButtonState::Down ) ? (GXUShort)( vk_key * 2 ) : (GXUShort)( ( vk_key * 2 ) + 1 );
+	GXUShort i = ( eState == eGXInputButtonState::Down ) ? static_cast<GXUShort> ( vk_key * 2 ) : static_cast<GXUShort> ( ( vk_key * 2 ) + 1 );
 
 	keysMask[ i ] = GX_FALSE;
 	KeysMapping[ i ] = nullptr;
@@ -154,7 +162,7 @@ GXVoid GXInput::UnbindMouseWheelCallback ()
 
 GXVoid GXInput::BindGamepadKeyCallback ( GXVoid* handler, PFNGXKEYPROC callback, GXInt gamepad_key, eGXInputButtonState eState )
 {
-	GXUByte i = ( eState == eGXInputButtonState::Down ) ? (GXUByte)( gamepad_key * 2 ) : (GXUByte)( ( gamepad_key * 2 ) + 1 );
+	GXUByte i = ( eState == eGXInputButtonState::Down ) ? static_cast<GXUByte> ( gamepad_key * 2 ) : static_cast<GXUByte> ( ( gamepad_key * 2 ) + 1 );
 
 	gamepadKeysHandlers[ i ] = handler;
 	GamepadKeysMapping[ i ] = callback;
@@ -163,7 +171,7 @@ GXVoid GXInput::BindGamepadKeyCallback ( GXVoid* handler, PFNGXKEYPROC callback,
 
 GXVoid GXInput::UnbindGamepadKeyCallback ( GXInt gamepad_key, eGXInputButtonState eState )
 {
-	GXUByte i = ( eState == eGXInputButtonState::Down ) ? (GXUByte)( gamepad_key * 2 ) : (GXUByte)( ( gamepad_key * 2 ) + 1 );
+	GXUByte i = ( eState == eGXInputButtonState::Down ) ? static_cast<GXUByte> ( gamepad_key * 2 ) : static_cast<GXUByte> ( ( gamepad_key * 2 ) + 1 );
 
 	gamepadKeysHandlers[ i ] = nullptr;
 	GamepadKeysMapping[ i ] = nullptr;
@@ -218,14 +226,6 @@ GXVoid GXInput::UnbindRightStickCallback ()
 	DoRightStick = nullptr;
 }
 
-GXInput& GXCALL GXInput::GetInstance ()
-{
-	if ( !instance )
-		instance = new GXInput ();
-
-	return *instance;
-}
-
 LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
 	switch ( msg )
@@ -273,7 +273,8 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
 			GetKeyboardState ( inputKeys );
 			GXWChar buff[ 20 ];
-			if ( ToUnicode ( (UINT)wParam, (UINT)lParam, inputKeys, buff, 20, 0 ) )
+
+			if ( ToUnicode ( static_cast<UINT> ( wParam ), static_cast<UINT> ( lParam ), inputKeys, buff, 20, 0u ) )
 				OnType ( onTypeHandler, buff[ 0 ] );
 		}
 		return 0;
@@ -281,7 +282,7 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		case WM_KEYUP:
 		case WM_SYSKEYUP:
 		{
-			GXTouchSurface::GetInstance ().OnKeyUp ( (GXInt)wParam );
+			GXTouchSurface::GetInstance ().OnKeyUp ( static_cast<GXInt> ( wParam ) );
 			keysMask[ ( wParam << 1 ) + 1 ] = GX_TRUE;
 		}
 		return 0;
@@ -299,8 +300,8 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			}
 
 			GXVec2 pos;
-			pos.SetX ( (GXFloat)LOWORD ( lParam ) );
-			pos.SetY ( (GXFloat)( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) ) );
+			pos.SetX ( static_cast<GXFloat> ( LOWORD ( lParam ) ) );
+			pos.SetY ( static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) ) );
 
 			GXTouchSurface::GetInstance ().OnLeftMouseButtonDown ( pos );
 		}
@@ -315,8 +316,8 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			}
 
 			GXVec2 pos;
-			pos.SetX ( (GXFloat)LOWORD ( lParam ) );
-			pos.SetY ( (GXFloat)( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) ) );
+			pos.SetX ( static_cast<GXFloat> ( LOWORD ( lParam ) ) );
+			pos.SetY ( static_cast<GXFloat> ( ( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) ) ) );
 
 			GXTouchSurface::GetInstance ().OnRightMouseButtonDown ( pos );
 		}
@@ -326,13 +327,13 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		{
 			if ( DoMouseButton )
 			{
-				mouseflags.mmb = 1;
+				mouseflags.mmb = GX_TRUE;
 				DoMouseButton ( onMouseButtonHandler, mouseflags );
 			}
 
 			GXVec2 pos;
-			pos.SetX ( (GXFloat)LOWORD ( lParam ) );
-			pos.SetY ( (GXFloat)( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) ) );
+			pos.SetX ( static_cast<GXFloat> ( LOWORD ( lParam ) ) );
+			pos.SetY ( static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) ) );
 
 			GXTouchSurface::GetInstance ().OnMiddleMouseButtonDown ( pos );
 		}
@@ -342,13 +343,13 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		{
 			if ( DoMouseButton )
 			{
-				mouseflags.lmb = 0;
+				mouseflags.lmb = GX_TRUE;
 				DoMouseButton ( onMouseButtonHandler, mouseflags );
 			}
 
 			GXVec2 pos;
-			pos.SetX ( (GXFloat)LOWORD ( lParam ) );
-			pos.SetY ( (GXFloat)( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) ) );
+			pos.SetX ( static_cast<GXFloat> ( LOWORD ( lParam ) ) );
+			pos.SetY ( static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) ) );
 
 			GXTouchSurface::GetInstance ().OnLeftMouseButtonUp ( pos );
 		}
@@ -358,13 +359,13 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		{
 			if ( DoMouseButton )
 			{
-				mouseflags.rmb = 0;
+				mouseflags.rmb = GX_FALSE;
 				DoMouseButton ( onMouseButtonHandler, mouseflags );
 			}
 
 			GXVec2 pos;
-			pos.SetX ( (GXFloat)LOWORD ( lParam ) );
-			pos.SetY ( (GXFloat)( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) ) );
+			pos.SetX ( static_cast<GXFloat> ( LOWORD ( lParam ) ) );
+			pos.SetY ( static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) ) );
 
 			GXTouchSurface::GetInstance ().OnRightMouseButtonUp ( pos );
 		}
@@ -379,8 +380,8 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			}
 
 			GXVec2 pos;
-			pos.SetX ( (GXFloat)LOWORD ( lParam ) );
-			pos.SetY ( (GXFloat)( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) ) );
+			pos.SetX ( static_cast<GXFloat> ( LOWORD ( lParam ) ) );
+			pos.SetY ( static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) ) );
 
 			GXTouchSurface::GetInstance ().OnMiddleMouseButtonUp ( pos );
 		}
@@ -392,8 +393,8 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 				DoMouseMoving ( onMouseMoveHandler, LOWORD ( lParam ), HIWORD ( lParam ) );
 
 			GXVec2 pos;
-			pos.SetX ( (GXFloat)LOWORD ( lParam ) );
-			pos.SetY ( (GXFloat)( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) ) );
+			pos.SetX ( static_cast<GXFloat> ( LOWORD ( lParam ) ) );
+			pos.SetY ( static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () - HIWORD ( lParam ) ) );
 
 			GXTouchSurface::GetInstance ().OnMouseMove ( pos );
 		}
@@ -402,6 +403,7 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		case WM_MOUSEWHEEL:
 		{
 			GXInt steps = GET_WHEEL_DELTA_WPARAM ( wParam ) / WHEEL_DELTA;
+
 			if ( DoMouseWheel )
 				DoMouseWheel ( onMouseWheelHandler, steps );
 
@@ -411,10 +413,10 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			ScreenToClient ( hwnd, &posRaw );
 
 			GXVec2 pos;
-			pos.SetX ( (GXFloat)posRaw.x );
-			pos.SetY ( (GXFloat)( GXRenderer::GetInstance ().GetHeight () - posRaw.y ) );
+			pos.SetX ( static_cast<GXFloat> ( posRaw.x ) );
+			pos.SetY ( static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () - posRaw.y ) );
 
-			GXTouchSurface::GetInstance ().OnScroll ( pos, (GXFloat)steps );
+			GXTouchSurface::GetInstance ().OnScroll ( pos, static_cast<GXFloat> ( steps ) );
 		}
 		return 0;
 
@@ -425,8 +427,8 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		case WM_LBUTTONDBLCLK:
 		{
 			GXVec2 pos;
-			pos.SetX ( (GXFloat)GET_X_LPARAM ( lParam ) );
-			pos.SetY ( (GXFloat)( GXRenderer::GetInstance ().GetHeight () - GET_Y_LPARAM ( lParam ) ) );
+			pos.SetX ( static_cast<GXFloat> ( GET_X_LPARAM ( lParam ) ) );
+			pos.SetY ( static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () - GET_Y_LPARAM ( lParam ) ) );
 
 			GXTouchSurface::GetInstance ().OnDoubleClick ( pos );
 		}
@@ -464,6 +466,7 @@ GXInput::GXInput ()
 	DoMouseWheel = nullptr;
 
 	GXInt limit = GX_INPUT_TOTAL_GAMEPAD_KEYS * 2;
+
 	for ( GXInt i = 0; i < limit; i++ )
 	{
 		gamepadKeysHandlers[ i ] = nullptr;
@@ -496,7 +499,7 @@ GXUPointer GXTHREADCALL GXInput::InputLoop ( GXVoid* /*args*/, GXThread& /*threa
 		{
 			case eGXInputDevice::Keyboard:
 			{
-				for ( GXUShort i = 0; i < GX_INPUT_TOTAL_KEYBOARD_KEYS; i++ )
+				for ( GXUShort i = 0u; i < GX_INPUT_TOTAL_KEYBOARD_KEYS; i++ )
 				{
 					if ( keysMask[ i ] && KeysMapping[ i ] )
 					{
@@ -514,7 +517,7 @@ GXUPointer GXTHREADCALL GXInput::InputLoop ( GXVoid* /*args*/, GXThread& /*threa
 				// NOTHING
 			break;
 
-			case eGXInputDevice::xboxController:
+			case eGXInputDevice::XBOXController:
 			{
 				for ( GXInt i = 0;  i < GX_INPUT_TOTAL_GAMEPAD_KEYS * 2; i++ )
 				{
@@ -531,7 +534,7 @@ GXUPointer GXTHREADCALL GXInput::InputLoop ( GXVoid* /*args*/, GXThread& /*threa
 		Sleep ( GX_INPUT_THREAD_SLEEP );
 	}
 
-	return 0;
+	return 0u;
 }
 
 GXBool GXInput::IsGamepadConnected ( GXDword gamepadID )
@@ -550,7 +553,7 @@ GXVoid GXInput::TestGamepadButton ( GXDword buttonFlag, GXUChar buttonID )
 
 	if ( ( gamepadState[ currentGamepadState ].Gamepad.wButtons & buttonFlag ) && !( gamepadState[ oldGamepadState ].Gamepad.wButtons & buttonFlag ) )
 	{
-		activeInputDevice = eGXInputDevice::xboxController;
+		activeInputDevice = eGXInputDevice::XBOXController;
 		gamepadKeysMask[ buttonID << 1 ] = GX_TRUE;
 	}
 	else if ( !( gamepadState[ currentGamepadState ].Gamepad.wButtons & buttonFlag ) && ( gamepadState[ oldGamepadState ].Gamepad.wButtons & buttonFlag ) )
@@ -563,7 +566,7 @@ GXVoid GXInput::UpdateGamepad ()
 {
 	if ( XInputGetState ( 0, &gamepadState[ currentGamepadState ] ) == ERROR_DEVICE_NOT_CONNECTED ) return;
 	
-	if ( activeInputDevice == eGXInputDevice::xboxController )
+	if ( activeInputDevice == eGXInputDevice::XBOXController )
 	{
 		if ( DoLeftStick )
 			DoLeftStick ( onLeftStickHandler, gamepadState[ currentGamepadState ].Gamepad.sThumbLX * GX_INPUT_INV_STICK_VALUE, gamepadState[ currentGamepadState ].Gamepad.sThumbLY * GX_INPUT_INV_STICK_VALUE );
@@ -578,7 +581,8 @@ GXVoid GXInput::UpdateGamepad ()
 			DoRightTrigger ( onRightTriggerHandler, gamepadState[ currentGamepadState ].Gamepad.bRightTrigger * GX_INPUT_INV_TRIGGER_VALUE );
 	}
 
-	GXUByte oldGamepadState = ( currentGamepadState == 0 ) ? (GXUByte)1 : (GXUByte)0;
+	GXUByte oldGamepadState = ( currentGamepadState == 0u ) ? 1u : 0u;
+
 	if ( gamepadState[ currentGamepadState ].dwPacketNumber == gamepadState[ oldGamepadState ].dwPacketNumber ) return;
 
 	TestGamepadButton ( XINPUT_GAMEPAD_A, GX_INPUT_XBOX_A );
@@ -602,6 +606,7 @@ GXVoid GXInput::UpdateGamepad ()
 GXBool GXCALL GXInput::InitXInputLibrary ()
 {
 	gx_GXEngineDLLModuleHandle = LoadLibraryW ( L"GXEngine.dll" );
+
 	if ( !gx_GXEngineDLLModuleHandle )
 	{
 		GXLogW ( L"%i\n", GetLastError () );
@@ -609,7 +614,8 @@ GXBool GXCALL GXInput::InitXInputLibrary ()
 		return GX_FALSE;
 	}
 
-	PFNGXXINPUTINITPROC GXXInputInit = reinterpret_cast <PFNGXXINPUTINITPROC> ( reinterpret_cast <GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXXInputInit" ) ) );
+	PFNGXXINPUTINITPROC GXXInputInit = reinterpret_cast<PFNGXXINPUTINITPROC> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXXInputInit" ) ) );
+
 	if ( !GXXInputInit )
 	{
 		GXLogW ( L"GXInput::InitXInputLibrary::Error - Не удалось найти функцию GXXInputInit\n" );

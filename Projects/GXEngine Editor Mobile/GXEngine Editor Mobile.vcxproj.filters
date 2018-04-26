@@ -650,16 +650,7 @@
     <ClInclude Include="..\..\Include\GXEngine\GXInput.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXJsonSaver.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXLocale.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXMenu.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXMotionBlurEffect.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXNetwork.h">
@@ -669,9 +660,6 @@
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXOpenGL.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXParticleSystem.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXRenderer.h">

@@ -7,7 +7,7 @@
 
 
 #define CUBE_SCALE				7.77f
-#define INVALID_TEXTURE_OBJECT	0
+#define INVALID_TEXTURE_OBJECT	0u
 
 
 EMEnvironment* EMEnvironment::instance = nullptr;
@@ -66,7 +66,7 @@ GXVoid EMEnvironment::OnViewerLocationChanged ()
 }
 
 EMEnvironment::EMEnvironment () :
-cube ( L"Meshes/System/Unit Cube.stm" )
+	cube ( L"Meshes/System/Unit Cube.stm" )
 {
 	GXRenderer& renderer = GXRenderer::GetInstance ();
 

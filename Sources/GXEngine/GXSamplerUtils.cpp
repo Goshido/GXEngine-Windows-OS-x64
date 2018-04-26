@@ -1,13 +1,19 @@
-// version 1.0
+// version 1.2
 
 #include <GXEngine/GXSamplerUtils.h>
 
 
-GXGLSamplerInfo::GXGLSamplerInfo ()
+GXGLSamplerInfo::GXGLSamplerInfo ():
+	wrap ( GL_CLAMP_TO_EDGE ),
+	resampling ( eGXSamplerResampling::None ),
+	anisotropy ( 1.0f )
 {
-	wrap = GL_CLAMP_TO_EDGE;
-	resampling = eGXSamplerResampling::None;
-	anisotropy = 1.0f;
+	// NOTHING
+}
+
+GXGLSamplerInfo::~GXGLSamplerInfo ()
+{
+	// NOTHING
 }
 
 //----------------------------------------------------------------------------------

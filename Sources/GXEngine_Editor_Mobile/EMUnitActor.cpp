@@ -20,10 +20,13 @@
 #define SPECULAR_INTENSITY_SCALE	0.2f
 #define METALLIC_SCALE				1.0f
 
+#define CUBE_MESH					L"Meshes/System/Unit Cube.stm"
+
+//------------------------------------------------------------------------------
 
 EMUnitActor::EMUnitActor ( const GXWChar* name, const GXTransform &transform ):
-EMActor ( name, eEMActorType::UnitCube, transform ),
-mesh ( L"Meshes/System/Unit Cube.stm" )
+	EMActor ( name, eEMActorType::UnitCube, transform ),
+	mesh ( CUBE_MESH )
 {
 	OnTransformChanged ();
 
@@ -64,7 +67,7 @@ GXVoid EMUnitActor::OnDrawCommonPass ( GXFloat deltaTime )
 	commonPassMaterial.SetMaximumBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
 	commonPassMaterial.SetExposure ( renderer.GetMotionBlurExposure () );
 	commonPassMaterial.SetDeltaTime ( deltaTime );
-	commonPassMaterial.SetScreenResolution ( (GXUShort)coreRenderer.GetWidth (), (GXUShort)coreRenderer.GetHeight () );
+	commonPassMaterial.SetScreenResolution ( static_cast<GXUShort> ( coreRenderer.GetWidth () ), static_cast<GXUShort> ( coreRenderer.GetHeight () ) );
 	commonPassMaterial.Bind ( mesh );
 	mesh.Render ();
 	commonPassMaterial.Unbind ();
@@ -72,46 +75,21 @@ GXVoid EMUnitActor::OnDrawCommonPass ( GXFloat deltaTime )
 	mesh.UpdateLastFrameModelMatrix ();
 }
 
-GXVoid EMUnitActor::OnSave ( GXUByte** data )
+GXVoid EMUnitActor::OnSave ( GXUByte** /*data*/ )
 {
-	EMActorHeader* header = (EMActorHeader*)data;
-
-	header->type = (GXUBigInt)type;
-	memcpy ( &header->origin, &transform, sizeof ( GXMat4 ) );
-	header->isVisible = isVisible;
-	header->nameOffset = sizeof ( EMActorHeader );
-
-	GXUTF8* nameUTF8;
-	GXUPointer nameSize = GXToUTF8 ( &nameUTF8, name );
-
-	memcpy ( data + sizeof ( EMActorHeader ), nameUTF8, nameSize );
-	free ( nameUTF8 );
-
-	header->size = sizeof ( EMActorHeader ) + nameSize;
+	// TODO
 }
 
-GXVoid EMUnitActor::OnLoad ( const GXUByte* data )
+GXVoid EMUnitActor::OnLoad ( const GXUByte* /*data*/ )
 {
-	EMActorHeader* header = (EMActorHeader*)data;
-
-	isVisible = header->isVisible;
-
-	GXSafeFree ( name );
-	GXToWcs ( &name, (GXUTF8*)( data + header->nameOffset ) );
-
-	memcpy ( &transform, &header->origin, sizeof ( GXMat4 ) );
+	// TODO
 }
 
 GXUPointer EMUnitActor::OnRequeredSaveSize () const
 {
-	GXUPointer total = sizeof ( EMActorHeader );
+	// TODO
 
-	GXUTF8* nameUTF8;
-	total += GXToUTF8 ( &nameUTF8, name );
-
-	free ( nameUTF8 );
-
-	return total;
+	return 0u;
 }
 
 GXVoid EMUnitActor::OnTransformChanged ()

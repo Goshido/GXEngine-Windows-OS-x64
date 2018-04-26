@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #include <GXEngine/GXSoundEmitter.h>
 #include <GXCommon/GXMutex.h>
@@ -10,19 +10,22 @@ GXMutex* gx_sound_mixer_Mutex = 0;
 
 GXSoundEmitter::GXSoundEmitter ( GXSoundTrack* track, GXBool looped, GXBool streamed, GXBool isRelative )
 {
-	if ( !track ) GXDebugBox ( L"GXSoundEmitter::Error - track равен 0!" );
+	if ( !track )
+		GXDebugBox ( L"GXSoundEmitter::Error - track равен 0!" );
 
 	gx_sound_mixer_Mutex->Lock ();
 
-	forceUpdate = GX_FALSE;
+	top = nullptr;
+	next = prev = nullptr;
+
 	stopped = GX_TRUE;
 	finished = GX_FALSE;
 
-	source = 0;
-	streamBuffers[ 0 ] = streamBuffers[ 1 ] = 0;
+	forceUpdate = GX_FALSE;
 
-	top = 0;
-	next = prev = 0;
+	source = 0u;
+	streamBuffers[ 0 ] = streamBuffers[ 1 ] = 0u;
+
 
 	this->track = track;
 	this->looped = looped;
@@ -46,7 +49,7 @@ GXSoundEmitter::GXSoundEmitter ( GXSoundTrack* track, GXBool looped, GXBool stre
 		GXAlSourcei ( source, AL_LOOPING, this->looped ? AL_TRUE : AL_FALSE );
 
 		ALuint bfr = this->track->GetBuffer ();
-		GXAlSourcei ( source, AL_BUFFER, (ALint)bfr );
+		GXAlSourcei ( source, AL_BUFFER, static_cast<ALint> ( bfr ) );
 	}
 
 	ownVolume = 1.0f;
@@ -67,7 +70,7 @@ GXSoundEmitter::~GXSoundEmitter ()
 	if ( streamer )
 	{
 		GXAlSourceUnqueueBuffers ( source, 1, streamBuffers );
-		GXAlSourceUnqueueBuffers ( source, 1, streamBuffers + 1 );
+		GXAlSourceUnqueueBuffers ( source, 1, streamBuffers + 1u );
 		GXAlDeleteBuffers ( 2, streamBuffers );
 
 		delete streamer;
@@ -78,8 +81,11 @@ GXSoundEmitter::~GXSoundEmitter ()
 	if ( top )
 	{
 		if ( next ) next->prev = prev;
-		if ( prev ) prev->next = next;
-		else *top = next;
+
+		if ( prev )
+			prev->next = next;
+		else
+			*top = next;
 	}
 
 	gx_sound_mixer_Mutex->Release ();
@@ -197,7 +203,7 @@ GXVoid GXSoundEmitter::ChangeSoundTrack ( GXSoundTrack* trackObject, GXBool isTr
 		GXAlSourcei ( source, AL_LOOPING, looped ? AL_TRUE : AL_FALSE );
 
 		ALuint bfr = track->GetBuffer ();
-		GXAlSourcei ( source, AL_BUFFER, (ALint)bfr );
+		GXAlSourcei ( source, AL_BUFFER, static_cast<ALint> ( bfr ) );
 	}
 
 	GXAlSourcei ( source, AL_SOURCE_RELATIVE, isRelative ? AL_TRUE : AL_FALSE );
@@ -217,12 +223,14 @@ GXSoundTrack* GXSoundEmitter::GetSoundTrack ()
 GXVoid GXSoundEmitter::Play ()
 {
 	GXAlSourcePlay ( source );
-	if ( !stopped )
-	{
-		stopped = GX_FALSE;
-		if ( streamer ) 
-			Rewind ();
-	}
+
+	if ( stopped ) return;
+
+	stopped = GX_FALSE;
+
+	if ( !streamer ) return;
+
+	Rewind ();
 }
 
 GXVoid GXSoundEmitter::Stop ()
@@ -238,21 +246,22 @@ GXVoid GXSoundEmitter::Pause ()
 
 GXVoid GXSoundEmitter::Rewind ()
 {
-	if ( streamer )
+	if ( !streamer )
 	{
-		gx_sound_mixer_Mutex->Lock ();
-
-		GXAlSourceStop ( source );
-		streamer->Reset ();
-		forceUpdate = GX_TRUE;
-		Update ();
-		forceUpdate = GX_FALSE;
-		GXAlSourcePlay ( source );
-
-		gx_sound_mixer_Mutex->Release ();
-	}
-	else
 		GXAlSourceRewind ( source );
+		return;
+	}
+
+	gx_sound_mixer_Mutex->Lock ();
+
+	GXAlSourceStop ( source );
+	streamer->Reset ();
+	forceUpdate = GX_TRUE;
+	Update ();
+	forceUpdate = GX_FALSE;
+	GXAlSourcePlay ( source );
+
+	gx_sound_mixer_Mutex->Release ();
 }
 
 GXVoid GXSoundEmitter::Update ()

@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #include <GXEngine/GXSplashScreen.h>
 #include <GXEngine/GXResource.h>
@@ -9,12 +9,13 @@
 
 #define SPLASH_SCREEN_WINDOW_CLASS				L"GX_SPLASH_SCREEN_CLASS"
 #define SPLASH_SCREEN_IMAGE						L"../../Textures/System/GXEngine splash screen.png"
-#define BITS_PER_CHANNEL						8
-#define RGB_BYTES_PER_PIXEL						3
-#define BGRA_BYTES_PER_PIXEL					4
-#define NUMBER_PLANES							1
-#define ALPHA_FOR_RGB							255
+#define BITS_PER_CHANNEL						8u
+#define RGB_BYTES_PER_PIXEL						3u
+#define BGRA_BYTES_PER_PIXEL					4u
+#define NUMBER_PLANES							1u
+#define ALPHA_FOR_RGB							255u
 
+//---------------------------------------------------------------------------------------------------------------
 
 enum class eGXStatus : GXUByte
 {
@@ -40,7 +41,7 @@ GXSplashScreen& GXSplashScreen::GetInstance ()
 
 GXSplashScreen::~GXSplashScreen ()
 {
-	if ( hwnd == (HWND)INVALID_HANDLE_VALUE ) return;
+	if ( hwnd == static_cast<HWND> ( INVALID_HANDLE_VALUE ) ) return;
 
 	PostMessageW ( hwnd, WM_QUIT, 0, 0 );
 	thread->Join ();
@@ -60,45 +61,43 @@ GXVoid GXSplashScreen::Hide ()
 	intend = eGXSplashScreenState::Hidden;
 }
 
-GXSplashScreen::GXSplashScreen ()
+GXSplashScreen::GXSplashScreen ():
+	hwnd ( static_cast<HWND> ( INVALID_HANDLE_VALUE ) ),
+	bitmap ( static_cast<HBITMAP> ( INVALID_HANDLE_VALUE ) ),
+	bitmapWidth ( 0u ),
+	bitmapHeight ( 0u ),
+	pixels ( nullptr ),
+	state ( eGXSplashScreenState::Hidden ),
+	intend ( eGXSplashScreenState::Hidden )
 {
 	thread = new GXThread ( &GXSplashScreen::MessageLoop, this );
-
-	hwnd = (HWND)INVALID_HANDLE_VALUE;
-	bitmap = (HBITMAP)INVALID_HANDLE_VALUE;
-	bitmapWidth = 0;
-	bitmapHeight = 0;
-	pixels = nullptr;
-	state = eGXSplashScreenState::Hidden;
-	intend = eGXSplashScreenState::Hidden;
-
 	thread->Start ();
 }
 
 GXVoid GXSplashScreen::FillRGB ( GXUByte** destination, const GXUByte* source, GXUShort width, GXUShort height ) const
 {
-	GXUPointer lineSizeDst = (GXUPointer)( BGRA_BYTES_PER_PIXEL * width );
-	GXUPointer lineSizeSrc = (GXUPointer)( RGB_BYTES_PER_PIXEL * width );
+	GXUPointer lineSizeDst = static_cast<GXUPointer> ( BGRA_BYTES_PER_PIXEL * width );
+	GXUPointer lineSizeSrc = static_cast<GXUPointer> ( RGB_BYTES_PER_PIXEL * width );
 
-	GXUByte* dst = (GXUByte*)malloc ( lineSizeDst * height );
-	GXUPointer offsetDst = 0;
-	GXUPointer offsetSrc = ( height - 1 ) * lineSizeSrc;
+	GXUByte* dst = static_cast<GXUByte*> ( malloc ( lineSizeDst * height ) );
+	GXUPointer offsetDst = 0u;
+	GXUPointer offsetSrc = ( height - 1u ) * lineSizeSrc;
 
-	for ( GXUShort h = 0; h < height; h++ )
+	for ( GXUShort h = 0u; h < height; h++ )
 	{
-		for ( GXUShort w = 0; w < width; w++ )
+		for ( GXUShort w = 0u; w < width; w++ )
 		{
 			// BGRA model
-			dst[ offsetDst ] = source[ offsetSrc + 2 ];
-			dst[ offsetDst + 1 ] = source[ offsetSrc + 1 ];
-			dst[ offsetDst + 2 ] = source[ offsetSrc ];
-			dst[ offsetDst + 3 ] = ALPHA_FOR_RGB;
+			dst[ offsetDst ] = source[ offsetSrc + 2u ];
+			dst[ offsetDst + 1u ] = source[ offsetSrc + 1u ];
+			dst[ offsetDst + 2u ] = source[ offsetSrc ];
+			dst[ offsetDst + 3u ] = ALPHA_FOR_RGB;
 
 			offsetDst += BGRA_BYTES_PER_PIXEL;
 			offsetSrc += RGB_BYTES_PER_PIXEL;
 		}
 
-		offsetSrc -= 2 * lineSizeSrc;
+		offsetSrc -= 2u * lineSizeSrc;
 	}
 
 	*destination = dst;
@@ -106,26 +105,26 @@ GXVoid GXSplashScreen::FillRGB ( GXUByte** destination, const GXUByte* source, G
 
 GXVoid GXSplashScreen::FillARGB ( GXUByte** destination, const GXUByte* source, GXUShort width, GXUShort height ) const
 {
-	GXUPointer lineSize = (GXUPointer)( BGRA_BYTES_PER_PIXEL * width );
-	GXUByte* dst = (GXUByte*)malloc ( lineSize * height );
-	GXUPointer offsetDst = 0;
-	GXUPointer offsetSrc = ( height - 1 ) * lineSize;
+	GXUPointer lineSize = static_cast<GXUPointer> ( BGRA_BYTES_PER_PIXEL * width );
+	GXUByte* dst = static_cast<GXUByte*> ( malloc ( lineSize * height ) );
+	GXUPointer offsetDst = 0u;
+	GXUPointer offsetSrc = ( height - 1u ) * lineSize;
 
-	for ( GXUShort h = 0; h < height; h++ )
+	for ( GXUShort h = 0u; h < height; h++ )
 	{
-		for ( GXUShort w = 0; w < width; w++ )
+		for ( GXUShort w = 0u; w < width; w++ )
 		{
 			// BGRA model
-			dst[ offsetDst ] = source[ offsetSrc + 2 ];
-			dst[ offsetDst + 1 ] = source[ offsetSrc + 1 ];
-			dst[ offsetDst + 2 ] = source[ offsetSrc ];
-			dst[ offsetDst + 3 ] = source[ offsetSrc + 3 ];
+			dst[ offsetDst ] = source[ offsetSrc + 2u ];
+			dst[ offsetDst + 1u ] = source[ offsetSrc + 1u ];
+			dst[ offsetDst + 2u ] = source[ offsetSrc ];
+			dst[ offsetDst + 3u ] = source[ offsetSrc + 3u ];
 
 			offsetDst += BGRA_BYTES_PER_PIXEL;
 			offsetSrc += BGRA_BYTES_PER_PIXEL;
 		}
 
-		offsetSrc -= 2 * lineSize;
+		offsetSrc -= 2u * lineSize;
 	}
 
 	*destination = dst;
@@ -133,17 +132,17 @@ GXVoid GXSplashScreen::FillARGB ( GXUByte** destination, const GXUByte* source, 
 
 GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thread )
 {
-	GXSplashScreen* splashScreen = (GXSplashScreen*)arg;
-	splashScreen->hwnd = (HWND)INVALID_HANDLE_VALUE;
+	GXSplashScreen* splashScreen = static_cast<GXSplashScreen*> ( arg );
+	splashScreen->hwnd = static_cast<HWND> ( INVALID_HANDLE_VALUE );
 
 	eGXStatus status = eGXStatus::Success;
 
-	GXUByte numChannels = 0;
+	GXUByte numChannels = 0u;
 	GXUByte* data = nullptr;
 
 	GXBool loopFlag = GX_TRUE;
-	GXUInt w = 0;
-	GXUInt h = 0;
+	GXUInt w = 0u;
+	GXUInt h = 0u;
 
 	while ( loopFlag )
 	{
@@ -155,8 +154,8 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
 			continue;
 		}
 
-		splashScreen->bitmapWidth = (GXUShort)w;
-		splashScreen->bitmapHeight = (GXUShort)h;
+		splashScreen->bitmapWidth = static_cast<GXUShort> ( w );
+		splashScreen->bitmapHeight = static_cast<GXUShort> ( h );
 
 		splashScreen->pixels = nullptr;
 
@@ -194,7 +193,7 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
 
 		if ( !RegisterClassW ( &windowClass ) )
 		{
-			splashScreen->hwnd = (HWND)INVALID_HANDLE_VALUE;
+			splashScreen->hwnd = static_cast<HWND> ( INVALID_HANDLE_VALUE );
 			status = eGXStatus::CanNotRegisterClass;
 			loopFlag = GX_FALSE;
 
@@ -217,11 +216,11 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
 		DWORD dwStyle = WS_POPUP;
 
 		splashScreen->hwnd = CreateWindowExW ( dwExStyle, SPLASH_SCREEN_WINDOW_CLASS, nullptr, dwStyle, x, y, (int)splashScreen->bitmapWidth, (int)splashScreen->bitmapHeight, (HWND)0, (HMENU)NULL, hInst, nullptr );
-		SetWindowLongPtrW ( splashScreen->hwnd, GWLP_USERDATA, (LONG_PTR)splashScreen );
+		SetWindowLongPtrW ( splashScreen->hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR> ( splashScreen ) );
 
 		if ( !splashScreen->hwnd )
 		{
-			splashScreen->hwnd = (HWND)INVALID_HANDLE_VALUE;
+			splashScreen->hwnd = static_cast<HWND> ( INVALID_HANDLE_VALUE );
 			status = eGXStatus::CanNotCreateWindow;
 			loopFlag = GX_FALSE;
 
@@ -231,7 +230,7 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
 		while ( loopFlag )
 		{
 			MSG msg;
-			PeekMessageW ( &msg, splashScreen->hwnd, 0, 0, PM_REMOVE );
+			PeekMessageW ( &msg, splashScreen->hwnd, 0, 0u, PM_REMOVE );
 
 			TranslateMessage ( &msg );
 			DispatchMessageW ( &msg );
@@ -332,9 +331,9 @@ LRESULT CALLBACK GXSplashScreen::WindowProc ( HWND hwnd, UINT message, WPARAM wP
 
 			HDC splashScreenDC = BeginPaint ( hwnd, &paintStruct );
 			HDC bitmapDC = CreateCompatibleDC ( splashScreenDC );
-			HBITMAP oldBitmap = (HBITMAP)SelectObject ( bitmapDC, splashScreen->bitmap );
+			HBITMAP oldBitmap = static_cast<HBITMAP> ( SelectObject ( bitmapDC, splashScreen->bitmap ) );
 
-			if ( !BitBlt ( splashScreenDC, 0, 0, (int)splashScreen->bitmapWidth, (int)splashScreen->bitmapHeight, bitmapDC, 0, 0, SRCCOPY ) )
+			if ( !BitBlt ( splashScreenDC, 0, 0, static_cast<int> ( splashScreen->bitmapWidth ), static_cast<int> ( splashScreen->bitmapHeight ), bitmapDC, 0, 0, SRCCOPY ) )
 				GXLogW ( L"GXSplashScreen::WindowProc::Error - BitBlt не выполнилась.\n" );
 
 			SelectObject ( bitmapDC, oldBitmap );

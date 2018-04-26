@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #ifndef GX_OPENGL
 #define GX_OPENGL
@@ -116,6 +116,10 @@ class GXOpenGLState
 
 		GXVoid Save ();
 		GXVoid Restore ();
+
+	private:
+		GXOpenGLState ( const GXOpenGLState &other ) = delete;
+		GXOpenGLState& operator = ( const GXOpenGLState &other ) = delete;
 };
 
 

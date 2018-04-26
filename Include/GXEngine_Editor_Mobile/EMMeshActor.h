@@ -21,4 +21,9 @@ class EMMeshActor : public EMActor
 
 		GXVoid SetMesh ( const GXWChar* meshFile );
 		EMCookTorranceCommonPassMaterial& GetMaterial ();
+
+	private:
+		EMMeshActor () = delete;
+		EMMeshActor ( const EMMeshActor &other ) = delete;
+		EMMeshActor& operator = ( const EMMeshActor &other ) = delete;
 };

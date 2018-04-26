@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_SKINNING_MATERIAL
 #define GX_SKINNING_MATERIAL
@@ -22,6 +22,10 @@ class GXSkinningMaterial : public GXMaterial
 		GXVoid Unbind () override;
 
 		GXVoid SetSkeleton ( const GXSkeleton &skeleton );
+
+	private:
+		GXSkinningMaterial ( const GXSkinningMaterial &other ) = delete;
+		GXSkinningMaterial& operator = ( const GXSkinningMaterial &other ) = delete;
 };
 
 

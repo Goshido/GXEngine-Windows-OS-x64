@@ -10,14 +10,14 @@
 class EMMesh : public GXTransform, public GXRenderable
 {
 	private:
-		GXMeshGeometry	meshGeometry;
-		GXWChar*		meshFileName;
 		GXWChar*		skinFileName;
+		GXWChar*		meshFileName;
+		GXMeshGeometry	meshGeometry;
 		GXAABB			boundsWorld;
 
 	public:
-		EMMesh ( const GXWChar* meshFileName );
-		EMMesh ( const GXWChar* meshFileName, const GXWChar* skinFileName );
+		explicit EMMesh ( const GXWChar* meshFileName );
+		explicit EMMesh ( const GXWChar* meshFileName, const GXWChar* skinFileName );
 		~EMMesh () override;
 
 		GXVoid Render () override;
@@ -27,6 +27,11 @@ class EMMesh : public GXTransform, public GXRenderable
 	protected:
 		GXVoid InitGraphicResources () override;
 		GXVoid TransformUpdated () override;
+
+	private:
+		EMMesh () = delete;
+		EMMesh ( const EMMesh &other ) = delete;
+		EMMesh& operator = ( const EMMesh &other ) = delete;
 };
 
 

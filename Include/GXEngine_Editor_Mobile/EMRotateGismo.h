@@ -26,6 +26,10 @@ class EMRotateGismo : public GXTransform
 
 	protected:
 		GXVoid TransformUpdated () override;
+
+	private:
+		EMRotateGismo ( const EMRotateGismo &other ) = delete;
+		EMRotateGismo& operator = ( const EMRotateGismo &other ) = delete;
 };
 
 

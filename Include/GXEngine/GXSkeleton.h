@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_SKELETON
 #define GX_SKELETON
@@ -37,6 +37,9 @@ class GXSkeleton
 
 	private:
 		GXVoid CalculatePose ();
+
+		GXSkeleton ( const GXSkeleton &other ) = delete;
+		GXSkeleton& operator = ( const GXSkeleton &other ) = delete;
 };
 
 

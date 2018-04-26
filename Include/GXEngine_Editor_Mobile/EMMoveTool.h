@@ -12,17 +12,16 @@
 class EMMoveTool : public EMTool
 {
 	private:
-		GXVec3					startLocationWorld;
-		GXMat4					gismoRotation;
-		GXVec3					deltaWorld;
-		GXFloat					gismoScaleCorrector;
-		GXFloat					axisStartParameter;
 		GXUByte					mode;
 		GXUByte					activeAxis;
+		GXVec3					startLocationWorld;
+		GXVec3					deltaWorld;
 
 		GXBool					isLMBPressed;
 		GXUShort				mouseX;
 		GXUShort				mouseY;
+
+		GXFloat					gismoScaleCorrector;
 
 		EMMesh					xAxis;
 		EMMesh					xAxisMask;
@@ -34,6 +33,9 @@ class EMMoveTool : public EMTool
 
 		EMObjectMaskMaterial	objectMaskMaterial;
 		GXUnlitColorMaterial	unlitColorMaterial;
+
+		GXFloat					axisStartParameter;
+		GXMat4					gismoRotation;
 
 	public:
 		EMMoveTool ();
@@ -68,6 +70,9 @@ class EMMoveTool : public EMTool
 		GXFloat GetScaleCorrector ( const GXVec3 &axisLocationView, const GXVec3 &deltaView );
 
 		GXVoid UpdateMeshTransform ( EMMesh &mesh );
+
+		EMMoveTool ( const EMMoveTool &other ) = delete;
+		EMMoveTool& operator = ( const EMMoveTool &other ) = delete;
 };
 
 

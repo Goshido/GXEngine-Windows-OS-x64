@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_SAMPLER_UTILS
 #define GX_SAMPLER_UTILS
@@ -22,6 +22,7 @@ struct GXGLSamplerInfo
 	GXFloat						anisotropy;
 
 	GXGLSamplerInfo ();
+	~GXGLSamplerInfo ();
 };
 
 

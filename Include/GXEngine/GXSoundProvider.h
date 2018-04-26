@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_SOUND_PROVIDER
 #define GX_SOUND_PROVIDER
@@ -8,15 +8,15 @@
 #include <GXCommon/GXFileSystem.h>
 
 
-#define GX_SOUND_PROVIDER_BUFFER_SIZE	2097152		// 2 Mb
+#define GX_SOUND_PROVIDER_BUFFER_SIZE	2097152u		// 2 Mb
 
 class GXSoundStreamer
 {
 	protected:
-		GXChar*		mappedFile;
+		GXUByte*	mappedFile;
 		GXUPointer	totalSize;
 		GXLong		position;
-		GXChar		pcmData[ GX_SOUND_PROVIDER_BUFFER_SIZE ];
+		GXUByte		pcmData[ GX_SOUND_PROVIDER_BUFFER_SIZE ];
 
 	public:
 		explicit GXSoundStreamer ( GXVoid* mappedFile, GXUPointer totalSize );
@@ -30,6 +30,11 @@ class GXSoundStreamer
 
 		virtual GXBool FillBuffer ( ALuint buffer, GXBool isLooped ) = 0;
 		virtual GXVoid DecompressAll ( ALuint buffer ) = 0;
+
+	private:
+		GXSoundStreamer () = delete;
+		GXSoundStreamer ( const GXSoundStreamer &other ) = delete;
+		GXSoundStreamer& operator = ( const GXSoundStreamer &other ) = delete;
 };
 
 //-----------------------------------------------------------------------------------------------------
@@ -40,15 +45,17 @@ class GXSoundTrack
 		GXSoundTrack*		next;
 		GXSoundTrack*		prev;
 
+	protected:
+		GXUInt				numRef;
+		ALuint				readyBuffer;
+
+	public:
 		GXWChar*			trackFile;
 
 	protected:
-		GXUInt				numRef;
-
 		GXVoid*				mappedFile;
 		GXUBigInt			totalSize;
 
-		ALuint				readyBuffer;
 		
 	public:
 		explicit GXSoundTrack ( const GXWChar* trackFile );
@@ -61,6 +68,10 @@ class GXSoundTrack
 
 	protected:
 		virtual ~GXSoundTrack ();
+
+		GXSoundTrack () = delete;
+		GXSoundTrack ( const GXSoundTrack &other ) = delete;
+		GXSoundTrack& operator = ( const GXSoundTrack &other ) = delete;
 };
 
 

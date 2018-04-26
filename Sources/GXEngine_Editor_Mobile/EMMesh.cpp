@@ -5,19 +5,17 @@
 #include <GXCommon/GXMemory.h>
 
 
-EMMesh::EMMesh ( const GXWChar* meshFileName )
+EMMesh::EMMesh ( const GXWChar* meshFileName ):
+	skinFileName ( nullptr )
 {
 	GXWcsclone ( &this->meshFileName, meshFileName );
-	skinFileName = nullptr;
-
 	InitGraphicResources ();
 }
 
 EMMesh::EMMesh ( const GXWChar* meshFileName, const GXWChar* skinFileName )
 {
-	GXWcsclone ( &this->meshFileName, meshFileName );
 	GXWcsclone ( &this->skinFileName, skinFileName );
-
+	GXWcsclone ( &this->meshFileName, meshFileName );
 	InitGraphicResources ();
 }
 

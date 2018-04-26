@@ -10,7 +10,7 @@
 #define DEFAULT_BOUND_RANGE_Y									7.0f
 #define DEFAULT_BOUND_RANGE_Z									7.0f
 
-#define INVALID_TEXTURE_OBJECT									0
+#define INVALID_TEXTURE_OBJECT									0u
 
 #define DEFAULT_DIFFUSE_IRRADIANCE_CONVOLUTION_ANGLE_STEP		0.025f
 #define DEFAULT_DIFFUSE_IRRADIANCE_RESOLUTION					256
@@ -18,23 +18,23 @@
 #define DEFAULT_BRDF_INTEGRATION_MAP_RESOLUTION					1024
 #define DEFAULT_BRDF_INTEGRATION_MAP_SAMPLES_PER_PIXEL			8196
 
+#define CUBE_MESH												L"Meshes/System/Unit Cube.stm"
+#define SCREEN_QUAD_MESH										L"Meshes/System/ScreenQuad.stm"
+
+//----------------------------------------------------------------------------
 
 GXTexture2D EMLightProbe::brdfIntegrationMap;
 EMLightProbe* EMLightProbe::probes = nullptr;
 
-EMLightProbe::EMLightProbe ()
+EMLightProbe::EMLightProbe ():
+	prev ( nullptr ),
+	next ( probes ),
+	locationWorld ( DEFAULT_LOCATION_X, DEFAULT_LOCATION_Y, DEFAULT_LOCATION_Z )
 {
-	prev = nullptr;
-	next = probes;
-
 	if ( probes )
 		probes->prev = this;
 
 	probes = this;
-
-	locationWorld.Init ( DEFAULT_LOCATION_X, DEFAULT_LOCATION_Y, DEFAULT_LOCATION_Z );
-	
-	boundsWorld.Empty ();
 
 	GXFloat halfRangeX = 0.5f * DEFAULT_BOUND_RANGE_X;
 	GXFloat halfRangeY = 0.5f * DEFAULT_BOUND_RANGE_Y;
@@ -43,8 +43,8 @@ EMLightProbe::EMLightProbe ()
 	boundsWorld.AddVertex ( locationWorld.GetX () - halfRangeX, locationWorld.GetY () - halfRangeY, locationWorld.GetZ () - halfRangeZ );
 	boundsWorld.AddVertex ( locationWorld.GetX () + halfRangeX, locationWorld.GetY () + halfRangeY, locationWorld.GetZ () + halfRangeZ );
 
-	cube.LoadMesh ( L"Meshes/System/Unit Cube.stm" );
-	screenQuad.LoadMesh ( L"Meshes/System/ScreenQuad.stm" );
+	cube.LoadMesh ( CUBE_MESH );
+	screenQuad.LoadMesh ( SCREEN_QUAD_MESH );
 
 	if ( brdfIntegrationMap.GetTextureObject () == INVALID_TEXTURE_OBJECT )
 	{
@@ -156,30 +156,31 @@ GXVoid EMLightProbe::UpdateDiffuseIrradiance ()
 	glGenFramebuffers ( 1, &fbo );
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, diffuseIrradiance.GetTextureObject (), 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT7, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT7, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0u, 0 );
 
 	glDisable ( GL_DEPTH_TEST );
 	glDisable ( GL_CULL_FACE );
 	glDisable ( GL_BLEND );
 
 	glDepthMask ( GL_FALSE );
-	glStencilMask ( 0x00 );
+	glStencilMask ( 0x00u );
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
 
-	GLsizei length = (GLsizei)diffuseIrradiance.GetFaceLength ();
+	GLsizei length = static_cast<GLsizei> ( diffuseIrradiance.GetFaceLength () );
 	glViewport ( 0, 0, length, length );
 
 	static const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers ( 1, buffers );
 
 	GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMLightProbe::UpdateDiffuseIrradiance::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
@@ -189,7 +190,7 @@ GXVoid EMLightProbe::UpdateDiffuseIrradiance ()
 	cube.Render ();
 	diffuseIrradianceGeneratorMaterial.Unbind ();
 
-	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
+	glBindFramebuffer ( GL_FRAMEBUFFER, 0u );
 	glDeleteFramebuffers ( 1, &fbo );
 
 	state.Restore ();
@@ -205,24 +206,24 @@ GXVoid EMLightProbe::UpdatePrefilteredEnvironmentMap ()
 	GLuint fbo;
 	glGenFramebuffers ( 1, &fbo );
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT7, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT7, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0u, 0 );
 
 	glDisable ( GL_DEPTH_TEST );
 	glDisable ( GL_CULL_FACE );
 	glDisable ( GL_BLEND );
 
 	glDepthMask ( GL_FALSE );
-	glStencilMask ( 0x00 );
+	glStencilMask ( 0x00u );
 	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
 
-	glViewport ( 0, 0, (GLsizei)length, (GLsizei)length );
+	glViewport ( 0, 0, static_cast<GLsizei> ( length ), static_cast<GLsizei> ( length ) );
 
 	static const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers ( 1, buffers );
@@ -234,9 +235,10 @@ GXVoid EMLightProbe::UpdatePrefilteredEnvironmentMap ()
 
 	prefilteredEnvironmentMapGeneratorMaterial.SetEnvironmentMap ( environmentMap );
 
-	GXFloat roughnessStep = 1.0f / (GXFloat)( prefilteredEnvironmentMap.GetLevelOfDetailNumber () - 1 );
+	GXFloat roughnessStep = 1.0f / static_cast<GXFloat> ( prefilteredEnvironmentMap.GetLevelOfDetailNumber () - 1 );
 	GLint mipmapLevel = 0;
-	GLsizei currentResolution = (GLsizei)length;
+	GLsizei currentResolution = static_cast<GLsizei> ( length );
+
 	for ( GXFloat rougness = 0.0f; rougness < 1.0f; rougness += roughnessStep )
 	{
 		glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, prefilteredEnvironmentMap.GetTextureObject (), mipmapLevel );
@@ -244,6 +246,7 @@ GXVoid EMLightProbe::UpdatePrefilteredEnvironmentMap ()
 		glViewport ( 0, 0, currentResolution, currentResolution );
 
 		GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
 		if ( status != GL_FRAMEBUFFER_COMPLETE )
 		{
 			GXLogW ( L"EMLightProbe::UpdatePrefilteredEnvironmentMap::Error - Что-то не так на проходе генерации %i mipmap уровня FBO (ошибка 0x%08x)\n", mipmapLevel, status );
@@ -261,7 +264,7 @@ GXVoid EMLightProbe::UpdatePrefilteredEnvironmentMap ()
 		mipmapLevel++;
 	}
 
-	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
+	glBindFramebuffer ( GL_FRAMEBUFFER, 0u );
 	glDeleteFramebuffers ( 1, &fbo );
 
 	state.Restore ();
@@ -276,24 +279,24 @@ GXVoid EMLightProbe::UpdateBRDFIntegrationMap ()
 	glGenFramebuffers ( 1, &fbo );
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
 	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, brdfIntegrationMap.GetTextureObject (), 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT7, 0, 0 );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT7, 0u, 0 );
+	glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0u, 0 );
 
 	glDisable ( GL_DEPTH_TEST );
 	glDisable ( GL_CULL_FACE );
 	glDisable ( GL_BLEND );
 
 	glDepthMask ( GL_FALSE );
-	glStencilMask ( 0x00 );
+	glStencilMask ( 0x00u );
 	glColorMask ( GL_TRUE, GL_TRUE, GL_FALSE, GL_FALSE );
 
-	glViewport ( 0, 0, (GLsizei)brdfIntegrationMap.GetWidth (), (GLsizei)brdfIntegrationMap.GetHeight () );
+	glViewport ( 0, 0, static_cast<GLsizei> ( brdfIntegrationMap.GetWidth () ), static_cast<GLsizei> ( brdfIntegrationMap.GetHeight () ) );
 
 	static const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers ( 1, buffers );
@@ -307,7 +310,7 @@ GXVoid EMLightProbe::UpdateBRDFIntegrationMap ()
 	screenQuad.Render ();
 	diffuseIrradianceGeneratorMaterial.Unbind ();
 
-	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
+	glBindFramebuffer ( GL_FRAMEBUFFER, 0u );
 	glDeleteFramebuffers ( 1, &fbo );
 
 	state.Restore ();

@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #ifndef GX_SOUND_EMITTER
 #define GX_SOUND_EMITTER
@@ -60,6 +60,11 @@ class GXSoundEmitter
 		GXVoid Rewind ();
 
 		GXVoid Update ();
+
+	private:
+		GXSoundEmitter () = delete;
+		GXSoundEmitter ( const GXSoundEmitter &other ) = delete;
+		GXSoundEmitter& operator = ( const GXSoundEmitter &other ) = delete;
 };
 
 

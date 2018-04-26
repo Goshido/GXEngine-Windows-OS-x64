@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #include <GXEngine/GXShaderProgram.h>
 #include <GXEngine/GXLocale.h>
@@ -13,26 +13,27 @@
 #define PRECOMPILED_SHADER_PROGRAM_DIRECTORY		L"Shaders/Precompiled shader programs"
 #define PRECOMPILED_SHADER_PROGRAM_EXTENSION		L"spr"
 
-#define NULL_STRING_OFFSET							0
-#define STRING_BUFFER_SYMBOLS						260
+#define NULL_STRING_OFFSET							0u
+#define STRING_BUFFER_SYMBOLS						260u
 
-#define INVALID_SHADER								0
-#define SHADER_NOT_NEEDED							0
-#define INVALID_SHADER_PROGRAM						0
+#define INVALID_SHADER								0u
+#define SHADER_NOT_NEEDED							0u
+#define INVALID_SHADER_PROGRAM						0u
 
+//-------------------------------------------------------------------------------
 
 class GXShaderProgramEntry;
 static GXShaderProgramEntry* gx_ShaderProgramHead = nullptr;
 
 class GXShaderProgramEntry
 {
-	public:
-		GXShaderProgramEntry*	next;
-		GXShaderProgramEntry*	prev;
-
 	private:
 		GXShaderProgram*		program;
 		GXInt					refs;
+
+	public:
+		GXShaderProgramEntry*	prev;
+		GXShaderProgramEntry*	next;
 
 	public:
 		explicit GXShaderProgramEntry ( GXShaderProgram &program );
@@ -44,15 +45,17 @@ class GXShaderProgramEntry
 
 	private:
 		~GXShaderProgramEntry ();
+
+		GXShaderProgramEntry () = delete;
+		GXShaderProgramEntry ( const GXShaderProgramEntry &other ) = delete;
+		GXShaderProgramEntry& operator = ( const GXShaderProgramEntry &other ) = delete;
 };
 
-GXShaderProgramEntry::GXShaderProgramEntry ( GXShaderProgram &program )
+GXShaderProgramEntry::GXShaderProgramEntry ( GXShaderProgram &program ):
+	program ( &program ),
+	refs ( 1 ),
+	prev ( nullptr )
 {
-	this->program = &program;
-	refs = 1;
-
-	prev = nullptr;
-
 	if ( gx_ShaderProgramHead )
 		gx_ShaderProgramHead->prev = this;
 
@@ -73,8 +76,10 @@ GXVoid GXShaderProgramEntry::AddRef ()
 GXVoid GXShaderProgramEntry::Release ()
 {
 	refs--;
-	if ( refs <= 0 )
-		delete this;
+
+	if ( refs > 0 ) return;
+
+	delete this;
 }
 
 GXShaderProgramEntry::~GXShaderProgramEntry ()
@@ -86,23 +91,53 @@ GXShaderProgramEntry::~GXShaderProgramEntry ()
 	else
 		prev->next = next;
 
-	if ( next )
-		next->prev = prev;
+	if ( !next ) return;
+
+	next->prev = prev;
 }
 
 //-------------------------------------------------------------------------------
 
-GXPrecompiledShaderProgramNode::GXPrecompiledShaderProgramNode ()
+class GXPrecompiledShaderProgramFinder;
+class GXPrecompiledShaderProgramNode : public GXAVLTreeNode
 {
-	vs = nullptr;
-	gs = nullptr;
-	fs = nullptr;
-	binaryPath = nullptr;
-	binaryFormat = GL_INVALID_ENUM;
+	friend class GXPrecompiledShaderProgramFinder;
+
+	private:
+		GLenum		binaryFormat;
+		GXWChar*	binaryPath;
+		GXWChar*	vs;
+		GXWChar*	gs;
+		GXWChar*	fs;
+
+	private:
+		GXPrecompiledShaderProgramNode ();
+		explicit GXPrecompiledShaderProgramNode ( const GXUTF8* vs, const GXUTF8* fs, const GXUTF8* gs, const GXUTF8* binaryPath, GLenum binaryFormat );
+		explicit GXPrecompiledShaderProgramNode ( const GXWChar* vs, const GXWChar* fs, const GXWChar* gs, const GXWChar* binaryPath, GLenum binaryFormat );
+		~GXPrecompiledShaderProgramNode () override;
+
+		static GXInt GXCALL Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
+		static GXVoid GXCALL InitFinderNode ( GXPrecompiledShaderProgramNode& node, const GXWChar* vs, const GXWChar* fs, const GXWChar* gs );
+		static GXVoid GXCALL DestroyFinderNode ( GXPrecompiledShaderProgramNode& node );
+
+		GXPrecompiledShaderProgramNode ( const GXPrecompiledShaderProgramNode &other ) = delete;
+		GXPrecompiledShaderProgramNode& operator = ( const GXPrecompiledShaderProgramNode &other ) = delete;
+};
+
+GXPrecompiledShaderProgramNode::GXPrecompiledShaderProgramNode ():
+	binaryPath ( nullptr ),
+	binaryFormat ( GL_INVALID_ENUM ),
+	vs ( nullptr ),
+	gs ( nullptr ),
+	fs ( nullptr )
+{
+	// NOTHING
 }
 
-GXPrecompiledShaderProgramNode::GXPrecompiledShaderProgramNode ( const GXUTF8* vs, const GXUTF8* gs, const GXUTF8* fs, const GXUTF8* binaryPath, GLenum binaryFormat )
+GXPrecompiledShaderProgramNode::GXPrecompiledShaderProgramNode ( const GXUTF8* vs, const GXUTF8* gs, const GXUTF8* fs, const GXUTF8* binaryPath, GLenum binaryFormat ):
+	binaryFormat ( binaryFormat )
 {
+	GXToWcs ( &this->binaryPath, binaryPath );
 	GXToWcs ( &this->vs, vs );
 
 	if ( gs )
@@ -114,13 +149,12 @@ GXPrecompiledShaderProgramNode::GXPrecompiledShaderProgramNode ( const GXUTF8* v
 		GXToWcs ( &this->fs, fs );
 	else
 		this->fs = nullptr;
-	
-	GXToWcs ( &this->binaryPath, binaryPath );
-	this->binaryFormat = binaryFormat;
 }
 
-GXPrecompiledShaderProgramNode::GXPrecompiledShaderProgramNode ( const GXWChar* vs, const GXWChar* gs, const GXWChar* fs, const GXWChar* binaryPath, GLenum binaryFormat )
+GXPrecompiledShaderProgramNode::GXPrecompiledShaderProgramNode ( const GXWChar* vs, const GXWChar* gs, const GXWChar* fs, const GXWChar* binaryPath, GLenum binaryFormat ):
+	binaryFormat ( binaryFormat )
 {
+	GXWcsclone ( &this->binaryPath, binaryPath );
 	GXWcsclone ( &this->vs, vs );
 
 	if ( gs )
@@ -132,23 +166,20 @@ GXPrecompiledShaderProgramNode::GXPrecompiledShaderProgramNode ( const GXWChar* 
 		GXWcsclone ( &this->fs, fs );
 	else
 		this->fs = nullptr;
-
-	GXWcsclone ( &this->binaryPath, binaryPath );
-	this->binaryFormat = binaryFormat;
 }
 
 GXPrecompiledShaderProgramNode::~GXPrecompiledShaderProgramNode ()
 {
+	free ( binaryPath );
 	free ( vs );
 	GXSafeFree ( gs );
 	GXSafeFree ( fs );
-	free ( binaryPath );
 }
 
 GXInt GXCALL GXPrecompiledShaderProgramNode::Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b )
 {
-	GXPrecompiledShaderProgramNode& aNode = (GXPrecompiledShaderProgramNode&)a;
-	GXPrecompiledShaderProgramNode& bNode = (GXPrecompiledShaderProgramNode&)b;
+	const GXPrecompiledShaderProgramNode& aNode = static_cast<const GXPrecompiledShaderProgramNode&> ( a );
+	const GXPrecompiledShaderProgramNode& bNode = static_cast<const GXPrecompiledShaderProgramNode&> ( b );
 
 	GXInt compare = GXWcscmp ( aNode.fs, bNode.fs );
 
@@ -165,9 +196,9 @@ GXInt GXCALL GXPrecompiledShaderProgramNode::Compare ( const GXAVLTreeNode &a, c
 
 GXVoid GXCALL GXPrecompiledShaderProgramNode::InitFinderNode ( GXPrecompiledShaderProgramNode& node, const GXWChar* vs, const GXWChar* fs, const GXWChar* gs )
 {
-	node.vs = (GXWChar*)vs;
-	node.gs = (GXWChar*)gs;
-	node.fs = (GXWChar*)fs;
+	node.vs = const_cast<GXWChar*> ( vs );
+	node.gs = const_cast<GXWChar*> ( gs );
+	node.fs = const_cast<GXWChar*> ( fs );
 	node.binaryPath = nullptr;
 }
 
@@ -208,6 +239,7 @@ class GXSaveState
 {
 	public:
 		GXWriteFileStream	info;
+
 		GXUByte*			content;
 		GXUBigInt			chunckOffset;
 		GXUBigInt			utf8StringOffset;
@@ -216,6 +248,7 @@ class GXSaveState
 		~GXSaveState ();
 
 	private:
+		GXSaveState () = delete;
 		GXSaveState ( const GXSaveState &other ) = delete;
 		GXSaveState& operator = ( const GXSaveState &other ) = delete;
 };
@@ -233,30 +266,52 @@ GXSaveState::~GXSaveState ()
 
 //-------------------------------------------------------------------------------
 
-GXPrecompiledShaderProgramFinder::GXPrecompiledShaderProgramFinder () :
-GXAVLTree ( &GXPrecompiledShaderProgramNode::Compare, GX_TRUE )
+class GXPrecompiledShaderProgramFinder : public GXAVLTree
+{
+	friend class GXShaderProgram;
+
+	private:
+		GXUBigInt						counter;
+
+	private:
+		GXPrecompiledShaderProgramFinder ();
+		~GXPrecompiledShaderProgramFinder () override;
+
+		GXBool FindProgram ( const GXWChar** binaryPath, GLenum &binaryFormat, const GXWChar* vs, const GXWChar* gs, const GXWChar* fs ) const;
+		GXVoid AddProgram ( const GXWChar* vs, const GXWChar* gs, const GXWChar* fs, const GXWChar* binaryPath, GLenum binaryFormat );
+		GXUBigInt GetCounter ();
+
+		static GXVoid GXCALL GetDictionarySize ( const GXAVLTreeNode &node, GXVoid* args );
+		static GXVoid GXCALL SaveDictionary ( const GXAVLTreeNode &node, GXVoid* args );
+
+		GXPrecompiledShaderProgramFinder ( const GXPrecompiledShaderProgramFinder &other ) = delete;
+		GXPrecompiledShaderProgramFinder& operator = ( const GXPrecompiledShaderProgramFinder &other ) = delete;
+};
+
+GXPrecompiledShaderProgramFinder::GXPrecompiledShaderProgramFinder ():
+	GXAVLTree ( &GXPrecompiledShaderProgramNode::Compare, GX_TRUE )
 {
 	GXUByte* data = nullptr;
-	GXUBigInt size = 0;
+	GXUBigInt size = 0u;
 
-	if ( !GXLoadFile ( PRECOMPILED_SHADER_PROGRAM_DICTIONARY, (GXVoid**)&data, size, GX_FALSE ) )
+	if ( !GXLoadFile ( PRECOMPILED_SHADER_PROGRAM_DICTIONARY, reinterpret_cast<GXVoid**> ( &data ), size, GX_FALSE ) )
 	{
-		counter = 0;
+		counter = 0u;
 		return;
 	}
 
-	GXDictionaryHeader* header = (GXDictionaryHeader*)data;
-	GXChunk* chuncks = (GXChunk*)( data + header->chunkOffset );
+	GXDictionaryHeader* header = reinterpret_cast<GXDictionaryHeader*> ( data );
+	GXChunk* chuncks = reinterpret_cast<GXChunk*> ( data + header->chunkOffset );
 	counter = header->counter;
 
-	for ( GXUInt i = 0; i < header->totalPrecompiledPrograms; i++ )
+	for ( GXUInt i = 0u; i < header->totalPrecompiledPrograms; i++ )
 	{
 		const GXChunk& chunk = chuncks[ i ];
 
-		const GXUTF8* vs = chunk.vsOffset == NULL_STRING_OFFSET ? nullptr : (const GXUTF8*)( data + chunk.vsOffset );
-		const GXUTF8* gs = chunk.gsOffset == NULL_STRING_OFFSET ? nullptr : (const GXUTF8*)( data + chunk.gsOffset );
-		const GXUTF8* fs = chunk.fsOffset == NULL_STRING_OFFSET ? nullptr : (const GXUTF8*)( data + chunk.fsOffset );
-		const GXUTF8* binaryPath = (const GXUTF8*)( data + chunk.binaryPathOffset );
+		const GXUTF8* vs = chunk.vsOffset == NULL_STRING_OFFSET ? nullptr : reinterpret_cast<const GXUTF8*> ( data + chunk.vsOffset );
+		const GXUTF8* gs = chunk.gsOffset == NULL_STRING_OFFSET ? nullptr : reinterpret_cast<const GXUTF8*> ( data + chunk.gsOffset );
+		const GXUTF8* fs = chunk.fsOffset == NULL_STRING_OFFSET ? nullptr : reinterpret_cast<const GXUTF8*> ( data + chunk.fsOffset );
+		const GXUTF8* binaryPath = reinterpret_cast<const GXUTF8*> ( data + chunk.binaryPathOffset );
 
 		GXPrecompiledShaderProgramNode* node = new GXPrecompiledShaderProgramNode ( vs, gs, fs, binaryPath, chunk.binaryFormat );
 		Add ( *node );
@@ -274,7 +329,7 @@ GXBool GXPrecompiledShaderProgramFinder::FindProgram ( const GXWChar** binaryPat
 {
 	GXPrecompiledShaderProgramNode finderNode;
 	GXPrecompiledShaderProgramNode::InitFinderNode ( finderNode, vs, gs, fs );
-	GXPrecompiledShaderProgramNode* program = (GXPrecompiledShaderProgramNode*)Find ( finderNode );
+	const GXPrecompiledShaderProgramNode* program = static_cast<const GXPrecompiledShaderProgramNode*> ( Find ( finderNode ) );
 	GXPrecompiledShaderProgramNode::DestroyFinderNode ( finderNode );
 
 	if ( program )
@@ -296,13 +351,13 @@ GXVoid GXPrecompiledShaderProgramFinder::AddProgram ( const GXWChar* vs, const G
 	GXPrecompiledShaderProgramNode* node = new GXPrecompiledShaderProgramNode ( vs, gs, fs, binaryPath, binaryFormat );
 	Add ( *node );
 
-	GXUBigInt size = 0;
+	GXUBigInt size = 0u;
 	DoPostfix ( root, &GXPrecompiledShaderProgramFinder::GetDictionarySize, &size );
 
 	size += sizeof ( GXDictionaryHeader );
 
-	GXUByte* dictionary = (GXUByte*)malloc ( size );
-	GXDictionaryHeader* header = (GXDictionaryHeader*)dictionary;
+	GXUByte* dictionary = static_cast<GXUByte*> ( malloc ( size ) );
+	GXDictionaryHeader* header = reinterpret_cast<GXDictionaryHeader*> ( dictionary );
 	header->counter = counter;
 	header->totalPrecompiledPrograms = totalNodes;
 	header->chunkOffset = sizeof ( GXDictionaryHeader );
@@ -314,8 +369,8 @@ GXVoid GXPrecompiledShaderProgramFinder::AddProgram ( const GXWChar* vs, const G
 
 	DoPostfix ( root, &GXPrecompiledShaderProgramFinder::SaveDictionary, &state );
 
-	if ( !GXWriteToFile ( PRECOMPILED_SHADER_PROGRAM_DICTIONARY, (const GXVoid*)dictionary, (GXUInt)size ) )
-		GXLogW ( L"GXPrecompiledShaderProgramFinder::AddProgram::Error - Не могу сохранить файл словаря прекомпилированных шейдерных программ." );
+	if ( !GXWriteToFile ( PRECOMPILED_SHADER_PROGRAM_DICTIONARY, reinterpret_cast<const GXVoid*> ( dictionary ), static_cast<GXUInt> ( size ) ) )
+		GXLogW ( L"GXPrecompiledShaderProgramFinder::AddProgram::Error - Не могу сохранить файл словаря прекомпилированных шейдерных программ.\n" );
 
 	free ( dictionary );
 }
@@ -329,8 +384,8 @@ GXUBigInt GXPrecompiledShaderProgramFinder::GetCounter ()
 
 GXVoid GXCALL GXPrecompiledShaderProgramFinder::GetDictionarySize ( const GXAVLTreeNode &node, GXVoid* args )
 {
-	GXUBigInt* size = (GXUBigInt*)args;
-	const GXPrecompiledShaderProgramNode& item = (const GXPrecompiledShaderProgramNode&)node;
+	GXUBigInt* size = static_cast<GXUBigInt*> ( args );
+	const GXPrecompiledShaderProgramNode& item = static_cast<const GXPrecompiledShaderProgramNode&> ( node );
 	
 	*size += sizeof ( GXChunk );
 
@@ -362,9 +417,9 @@ GXVoid GXCALL GXPrecompiledShaderProgramFinder::SaveDictionary ( const GXAVLTree
 
 	GXLocale& locale = GXLocale::GetInstance ();
 
-	const GXPrecompiledShaderProgramNode& item = (const GXPrecompiledShaderProgramNode&)node;
-	GXSaveState* state = (GXSaveState*)args;
-	GXChunk* chunk = (GXChunk*)( state->content + state->chunckOffset );
+	const GXPrecompiledShaderProgramNode& item = static_cast<const GXPrecompiledShaderProgramNode&> ( node );
+	GXSaveState* state = static_cast<GXSaveState*> ( args );
+	GXChunk* chunk = reinterpret_cast<GXChunk*> ( state->content + state->chunckOffset );
 
 	GXUTF8* stringU = nullptr;
 	GXUPointer size = 0u;
@@ -466,21 +521,24 @@ GXVoid GXCALL GXPrecompiledShaderProgramFinder::SaveDictionary ( const GXAVLTree
 GXPrecompiledShaderProgramFinder* GXShaderProgram::precompiledShaderProgramFinder = nullptr;
 GXWChar* GXShaderProgram::stringBuffer = nullptr;
 
-GXShaderProgram::GXShaderProgram ()
+GXShaderProgram::GXShaderProgram ():
+	vs ( nullptr ),
+	gs ( nullptr ),
+	fs ( nullptr ),
+	program ( 0u )
 {
-	vs = gs = fs = nullptr;
-	program = 0;
+	// NOTHING
 }
 
 GXShaderProgram::~GXShaderProgram ()
 {
+	if ( program == 0u ) return;
+
 	free ( vs );
 	GXSafeFree ( gs );
 	GXSafeFree ( fs );
 
-	if ( program == 0 ) return;
-
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 	glDeleteProgram ( program );
 }
 
@@ -509,7 +567,7 @@ GXVoid GXShaderProgram::InitPrecompiledShaderProgramSubsystem ()
 {
 	if ( !glGetProgramBinary || !glProgramBinary || !glProgramParameteri ) return;
 
-	stringBuffer = (GXWChar*)malloc ( STRING_BUFFER_SYMBOLS * sizeof ( GXWChar ) );
+	stringBuffer = static_cast<GXWChar*> ( malloc ( STRING_BUFFER_SYMBOLS * sizeof ( GXWChar ) ) );
 	precompiledShaderProgramFinder = new GXPrecompiledShaderProgramFinder ();
 
 	if ( GXDoesDirectoryExist ( PRECOMPILED_SHADER_PROGRAM_DIRECTORY ) ) return;
@@ -557,11 +615,12 @@ GXVoid GXCALL GXShaderProgram::RemoveShaderProgram ( GXShaderProgram &program )
 
 GXUInt GXCALL GXShaderProgram::GetTotalLoadedShaderPrograms ( const GXWChar** lastVS, const GXWChar** lastGS, const GXWChar** lastFS )
 {
-	GXUInt total = 0;
+	GXUInt total = 0u;
+
 	for ( GXShaderProgramEntry* p = gx_ShaderProgramHead; p; p = p->next )
 		total++;
 
-	if ( total > 0 )
+	if ( total > 0u )
 	{
 		GXShaderProgram& program = gx_ShaderProgramHead->GetProgram ();
 		*lastVS = program.vs;
@@ -609,13 +668,13 @@ GXShaderProgram::GXShaderProgram ( const GXShaderProgramInfo &info )
 		if ( doesPrecompiledShaderProgramExist )
 		{
 			GXUByte* precompiledShaderProgram;
-			GXUPointer size = 0;
+			GXUPointer size = 0u;
 
-			if ( GXLoadFile ( binaryPath, (GXVoid**)&precompiledShaderProgram, size, GX_FALSE ) )
+			if ( GXLoadFile ( binaryPath, reinterpret_cast<GXVoid**> ( &precompiledShaderProgram ), size, GX_FALSE ) )
 			{
 				program = glCreateProgram ();
 
-				glProgramBinary ( program, binaryFormat, precompiledShaderProgram, (GLsizei)size );
+				glProgramBinary ( program, binaryFormat, precompiledShaderProgram, static_cast<GLsizei> ( size ) );
 
 				free ( precompiledShaderProgram );
 
@@ -627,10 +686,10 @@ GXShaderProgram::GXShaderProgram ( const GXShaderProgramInfo &info )
 					GXInt logSize = 0;
 					glGetShaderiv ( program, GL_INFO_LOG_LENGTH, &logSize );
 
-					GLchar* log = (GLchar*)malloc ( (GXUPointer)logSize );
+					GLchar* log = static_cast<GLchar*> ( malloc ( static_cast<GXUPointer> ( logSize ) ) );
 
 					GLsizei length;
-					glGetProgramInfoLog ( program, (GLsizei)logSize, &length, log );
+					glGetProgramInfoLog ( program, static_cast<GLsizei> ( logSize ), &length, log );
 
 					GXLogW ( L"GXShaderProgramStatus::Warning - Не могу использовать прекомпилированную шейдерную программу:\n%s\n%s\n%s\n[%s]\n\n", vs, gs, fs, binaryPath );
 					GXLogA ( "%s\n\n", log );
@@ -674,9 +733,9 @@ GXShaderProgram::GXShaderProgram ( const GXShaderProgramInfo &info )
 	glUseProgram ( program );
 
 	for ( GXInt i = 0; i < info.numSamplers; i++ )
-		glUniform1i ( GetUniform ( info.samplerNames[ i ] ), (GLint)info.samplerLocations[ i ] );
+		glUniform1i ( GetUniform ( info.samplerNames[ i ] ), static_cast<GLint> ( info.samplerLocations[ i ] ) );
 
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 }
 
 GXBool GXShaderProgram::operator == ( const GXShaderProgramInfo &other ) const
@@ -695,12 +754,12 @@ GXBool GXShaderProgram::operator == ( const GXShaderProgram &other ) const
 
 GLuint GXShaderProgram::GetShader ( GLenum type, const GXWChar* fileName )
 {
-	if ( !fileName ) return 0;
+	if ( !fileName ) return 0u;
 
 	GLuint shader = glCreateShader ( type );
 
 	GXChar* shaderSource = nullptr;
-	GXUPointer shaderSourceLength = 0;
+	GXUPointer shaderSourceLength = 0u;
 
 	static const GXWChar* vertexShaderLoadError = L"GXShaderProgram::GetShader::Error - Не могу загрузить вершинный шейдер %s\n";
 	static const GXWChar* geometryShaderLoadError = L"GXShaderProgram::GetShader::Error - Не могу загрузить геометрический шейдер %s\n";
@@ -723,14 +782,16 @@ GLuint GXShaderProgram::GetShader ( GLenum type, const GXWChar* fileName )
 		break;
 	}
 
-	if ( !GXLoadFile ( fileName, (GXVoid**)&shaderSource, shaderSourceLength, GX_TRUE ) )
+	if ( !GXLoadFile ( fileName, reinterpret_cast<GXVoid**> ( &shaderSource ), shaderSourceLength, GX_TRUE ) )
 	{
 		GXLogW ( loadError, fileName );
 		glDeleteShader ( shader );
-		return 0;
+		return 0u;
 	}
 
-	glShaderSource ( shader, 1, (const GLchar**)&shaderSource, (const GLint*)&shaderSourceLength );
+	GLint sourceSize = static_cast<GLint> ( shaderSourceLength );
+
+	glShaderSource ( shader, 1, static_cast<const GLchar* const*> ( &shaderSource ), &sourceSize );
 	glCompileShader ( shader );
 	GXSafeFree ( shaderSource );
 
@@ -743,7 +804,7 @@ GLuint GXShaderProgram::GetShader ( GLenum type, const GXWChar* fileName )
 		GXInt size = 0;
 		glGetShaderiv ( shader, GL_INFO_LOG_LENGTH, &size );
 
-		GLchar* log = (GLchar*)malloc ( (GXUPointer)size );
+		GLchar* log = static_cast<GLchar*> ( malloc ( static_cast<GXUPointer> ( size ) ) );
 		glGetShaderInfoLog ( shader, size, &size, log );
 
 		GXLogW ( L"GXShaderProgram::GetShader::Error - Шейдер %s\n", fileName );
@@ -752,7 +813,7 @@ GLuint GXShaderProgram::GetShader ( GLenum type, const GXWChar* fileName )
 		free ( log );
 
 		glDeleteShader ( shader );
-		return 0;
+		return 0u;
 	}
 
 	return shader;
@@ -769,6 +830,7 @@ GLuint GXShaderProgram::CompileShaderProgram ( const GXShaderProgramInfo &info )
 	if ( gs )
 	{
 		geometryShader = GetShader ( GL_GEOMETRY_SHADER, gs );
+
 		if ( geometryShader == INVALID_SHADER )
 		{
 			glDeleteProgram ( shaderProgram );
@@ -785,6 +847,7 @@ GLuint GXShaderProgram::CompileShaderProgram ( const GXShaderProgramInfo &info )
 	if ( fs )
 	{
 		fragmentShader = GetShader ( GL_FRAGMENT_SHADER, fs );
+
 		if ( fragmentShader == INVALID_SHADER )
 		{
 			glDeleteProgram ( shaderProgram );
@@ -824,7 +887,7 @@ GLuint GXShaderProgram::CompileShaderProgram ( const GXShaderProgramInfo &info )
 		GXInt size = 0;
 		glGetShaderiv ( shaderProgram, GL_INFO_LOG_LENGTH, &size );
 
-		GLchar* log = (GLchar*)malloc ( (GXUPointer)size );
+		GLchar* log = static_cast<GLchar*> ( malloc ( static_cast<GXUPointer> ( size ) ) );
 		glGetProgramInfoLog ( shaderProgram, size, &size, log );
 
 		GXLogW ( L"GXShaderProgram::CompileShaderProgram::Error - Не могу слинковать шейдерную программу %s + %s + %s\n", vs, gs, fs );
@@ -842,19 +905,19 @@ GLuint GXShaderProgram::CompileShaderProgram ( const GXShaderProgramInfo &info )
 
 GXVoid GXShaderProgram::SavePrecompiledShaderProgram ( GLuint shaderProgram, const GXShaderProgramInfo &info, const GXWChar* binaryPath )
 {
-	GLint value = (GLint)GL_TRUE;
+	GLint value = static_cast<GLint> ( GL_TRUE );
 	glProgramParameteri ( shaderProgram, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, value );
 
 	GLint precompiledShaderProgramSize = 0;
 	glGetProgramiv ( shaderProgram, GL_PROGRAM_BINARY_LENGTH, &precompiledShaderProgramSize );
 
-	GXUByte* precompiledShaderProgram = (GXUByte*)malloc ( (size_t)precompiledShaderProgramSize );
+	GXUByte* precompiledShaderProgram = static_cast<GXUByte*> ( malloc ( static_cast<GXUPointer> ( precompiledShaderProgramSize ) ) );
 
 	GLsizei length;
 	GLenum binaryFormat;
-	glGetProgramBinary ( shaderProgram, (GLsizei)precompiledShaderProgramSize, &length, &binaryFormat, precompiledShaderProgram );
+	glGetProgramBinary ( shaderProgram, static_cast<GLsizei> ( precompiledShaderProgramSize ), &length, &binaryFormat, precompiledShaderProgram );
 
-	GXWriteToFile ( binaryPath, precompiledShaderProgram, (GXUPointer)length );
+	GXWriteToFile ( binaryPath, precompiledShaderProgram, static_cast<GXUPointer> ( length ) );
 
 	precompiledShaderProgramFinder->AddProgram ( info.vs, info.gs, info.fs, binaryPath, binaryFormat );
 

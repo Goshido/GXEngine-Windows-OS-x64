@@ -1,4 +1,4 @@
-// version 1.14
+// version 1.15
 
 #ifndef GX_RENDERER
 #define GX_RENDERER
@@ -19,10 +19,15 @@ class GXRendererResolutions
 	public:
 		GXRendererResolutions ();
 		~GXRendererResolutions ();
+
 		GXVoid Cleanup ();
 
 		GXUShort GetTotalResolutions ();
-		GXVoid GetResolution ( GXUShort i, GXUShort &width, GXUShort &height );	
+		GXVoid GetResolution ( GXUShort i, GXUShort &width, GXUShort &height );
+
+	private:
+		GXRendererResolutions ( const GXRendererResolutions &other ) = delete;
+		GXRendererResolutions& operator = ( const GXRendererResolutions &other ) = delete;
 };
 
 class GXRenderer
@@ -58,6 +63,7 @@ class GXRenderer
 		static GXRenderer*	instance;
 
 	public:
+		static GXRenderer& GXCALL GetInstance ();
 		~GXRenderer ();
 
 		GXVoid Start ( GXGame &gameObject );
@@ -76,10 +82,10 @@ class GXRenderer
 
 		GXInt GetWidth () const;
 		GXInt GetHeight () const;
+
 		static GXBool GXCALL UpdateRendererSettings ();
 		static GXVoid GXCALL ReSizeScene ( GXInt frameWidth, GXInt frameHeight );
-
-		static GXRenderer& GXCALL GetInstance ();
+		static GXInt GXCDECLCALL GXResolutionCompare ( const GXVoid* a, const GXVoid* b );
 
 	private:
 		GXRenderer ();

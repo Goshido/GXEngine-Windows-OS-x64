@@ -1,4 +1,4 @@
-// verison 1.7
+// verison 1.8
 
 #ifndef GX_NETWORK
 #define GX_NETWORK
@@ -11,8 +11,8 @@
 #include <GXCommon/GXRestoreWarnings.h>
 
 
-#define GX_MAX_NETWORK_CLIENTS	64
-#define GX_SOCKET_BUFFER_SIZE	4194304		// 4 Mb
+#define GX_MAX_NETWORK_CLIENTS	64u
+#define GX_SOCKET_BUFFER_SIZE	4194304u	// 4 Mb
 
 
 typedef GXVoid ( GXCALL* PFNGXONSERVERPMESSAGETCPPROC ) ( GXUInt clientID, GXVoid* data, GXUInt size );
@@ -38,6 +38,10 @@ class GXNetConnectionTCP
 
 		GXVoid Init ( SOCKET socketObject, GXThread* threadObject );
 		GXVoid Destroy ();
+
+	private:
+		GXNetConnectionTCP ( const GXNetConnectionTCP &other ) = delete;
+		GXNetConnectionTCP& operator = ( const GXNetConnectionTCP &other ) = delete;
 };
 
 class GXNetServer
@@ -65,6 +69,7 @@ class GXNetServer
 		static GXNetServer*							instance;
 
 	public:
+		static GXNetServer& GXCALL GetInstance ();
 		~GXNetServer ();
 
 		GXBool CreateTCP ( GXUShort port );
@@ -88,8 +93,6 @@ class GXNetServer
 		GXVoid SetOnMessageFuncTCP ( PFNGXONSERVERPMESSAGETCPPROC callback );
 		GXVoid SetOnMessageFuncUDP ( PFNGXONSERVERPMESSAGEUDPPROC callback );
 
-		static GXNetServer& GXCALL GetInstance ();
-
 	private:
 		GXNetServer ();
 
@@ -101,18 +104,21 @@ class GXNetServer
 		static GXInt GetFreeClientTCP ();
 		static GXInt FindClientTCP ( SOCKET socket );
 		static GXBool GetClientIP ( sockaddr_in &address, GXUInt clientID );
+
+		GXNetServer ( const GXNetServer &other ) = delete;
+		GXNetServer& operator = ( const GXNetServer &other ) = delete;
 };
 
 class GXNetClient
 {
 	private:
+		sockaddr_in							serverAddressUDP;
+
 		static SOCKET						socketTCP;
 		static SOCKET						socketUDP;
 
 		static GXThread*					threadTCP;
 		static GXThread*					threadUDP;
-
-		sockaddr_in							serverAddressUDP;
 
 		static PFNGXONCLIENTMESSAGEPROC		OnMessageTCP;
 		static PFNGXONCLIENTMESSAGEPROC		OnMessageUDP;
@@ -123,6 +129,7 @@ class GXNetClient
 		static GXNetClient*					instance;
 
 	public:
+		static GXNetClient& GXCALL GetInstance ();
 		~GXNetClient ();
 
 		GXBool ConnectTCP ( const GXChar* url, GXUShort port );
@@ -140,13 +147,14 @@ class GXNetClient
 		GXVoid SetOnMessageTCPFunc ( PFNGXONCLIENTMESSAGEPROC onMessageFunc );
 		GXVoid SetOnMessageUDPFunc ( PFNGXONCLIENTMESSAGEPROC onMessageFunc );
 
-		static GXNetClient& GXCALL GetInstance ();
-
 	private:
 		GXNetClient ();
 
 		static GXUPointer GXTHREADCALL ReceiveTCP ( GXVoid* arg, GXThread &thread );
 		static GXUPointer GXTHREADCALL ReceiveUDP ( GXVoid* arg, GXThread &thread );
+
+		GXNetClient ( const GXNetClient &other ) = delete;
+		GXNetClient& operator = ( const GXNetClient &other ) = delete;
 };
 
 

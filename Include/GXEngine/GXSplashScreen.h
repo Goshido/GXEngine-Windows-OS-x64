@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #ifndef GX_SPLASH_SCREEN
 #define GX_SPLASH_SCREEN
@@ -17,7 +17,6 @@ enum class eGXSplashScreenState : GXUByte
 class GXSplashScreen
 {
 	private:
-		GXThread*				thread;
 		HWND					hwnd;
 		HBITMAP					bitmap;
 		GXUShort				bitmapWidth;
@@ -27,10 +26,11 @@ class GXSplashScreen
 		eGXSplashScreenState	state;
 		eGXSplashScreenState	intend;
 
+		GXThread*				thread;
 		static GXSplashScreen*	instance;
 
 	public:
-		static GXSplashScreen& GetInstance ();
+		static GXSplashScreen& GXCALL GetInstance ();
 		~GXSplashScreen ();
 
 		GXVoid Show ();
@@ -44,6 +44,9 @@ class GXSplashScreen
 
 		static GXUPointer GXTHREADCALL MessageLoop ( GXVoid* arg, GXThread &thread );
 		static LRESULT CALLBACK WindowProc ( HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam );
+
+		GXSplashScreen ( const GXSplashScreen &other ) = delete;
+		GXSplashScreen& operator = ( const GXSplashScreen &other ) = delete;
 };
 
 

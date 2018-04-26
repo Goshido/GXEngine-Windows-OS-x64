@@ -26,6 +26,10 @@ class EMScaleGismo : public GXTransform
 
 	protected:
 		GXVoid TransformUpdated () override;
+
+	private:
+		EMScaleGismo ( const EMScaleGismo &other ) = delete;
+		EMScaleGismo& operator = ( const EMScaleGismo &other ) = delete;
 };
 
 

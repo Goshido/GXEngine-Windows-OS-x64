@@ -1,14 +1,20 @@
-// version 1.1
+// version 1.2
 
 #include <GXEngine/GXSoundChannel.h>
 
 
-GXSoundChannel::GXSoundChannel ()
+#define DEFAULT_CHANNEL_VOLUME		1.0f
+
+//--------------------------------------------------------------------------
+
+GXSoundChannel::GXSoundChannel ():
+	top ( nullptr ),
+	next ( nullptr ),
+	prev ( nullptr ),
+	volume ( DEFAULT_CHANNEL_VOLUME ),
+	emitters ( nullptr )
 {
-	top = 0;
-	next = prev = 0;
-	volume = 1.0f;
-	emitters = 0;
+	// NOTHING
 }
 
 GXSoundChannel::~GXSoundChannel ()
@@ -16,11 +22,15 @@ GXSoundChannel::~GXSoundChannel ()
 	if ( top )
 	{
 		if ( next ) next->prev = prev;
-		if ( prev ) prev->next = next;
-		else *top = next;
+
+		if ( prev )
+			prev->next = next;
+		else
+			*top = next;
 	}
 
 	GXSoundEmitter* e = emitters;
+
 	while ( e )
 	{
 		GXSoundEmitter* nextEmitter = e->next;
@@ -39,7 +49,8 @@ GXVoid GXSoundChannel::SetVolume ( GXFloat volumeLevel )
 
 GXVoid GXSoundChannel::AddEmitter ( GXSoundEmitter* emitter )
 {
-	if ( !emitter ) GXDebugBox ( L"GXSoundChannel::AddEmitter::Error - добавление звукового эмиттера по нулевому указателю!" );
+	if ( !emitter )
+		GXDebugBox ( L"GXSoundChannel::AddEmitter::Error - добавление звукового эмиттера по нулевому указателю!" );
 
 	emitter->prev = 0;
 

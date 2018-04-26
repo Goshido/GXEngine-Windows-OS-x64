@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.2
 
 #include <GXEngine/GXSound.h>
 
@@ -7,47 +7,48 @@ extern HMODULE				gx_GXEngineDLLModuleHandle;
 
 //--------------------------------------------------------------------------
 
-PFNALLISTENERFV					GXAlListenerfv				= 0;
-PFNALLISTENER3F					GXAlListener3f				= 0;
-PFNALLISTENERF					GXAlListenerf				= 0;
+PFNALLISTENERFV					GXAlListenerfv				= nullptr;
+PFNALLISTENER3F					GXAlListener3f				= nullptr;
+PFNALLISTENERF					GXAlListenerf				= nullptr;
 
-PFNALGENBUFFERS					GXAlGenBuffers				= 0;
-PFNALDELETEBUFFERS				GXAlDeleteBuffers			= 0;
+PFNALGENBUFFERS					GXAlGenBuffers				= nullptr;
+PFNALDELETEBUFFERS				GXAlDeleteBuffers			= nullptr;
 
-PFNALBUFFERI					GXAlBufferi					= 0;
-PFNALBUFFERDATA					GXAlBufferData				= 0;
+PFNALBUFFERI					GXAlBufferi					= nullptr;
+PFNALBUFFERDATA					GXAlBufferData				= nullptr;
 
-PFNALGENSOURCES					GXAlGenSources				= 0;
-PFNALGETSOURCEI					GXAlGetSourcei				= 0;
-PFNALDELETESOURCES				GXAlDeleteSources			= 0;
+PFNALGENSOURCES					GXAlGenSources				= nullptr;
+PFNALGETSOURCEI					GXAlGetSourcei				= nullptr;
+PFNALDELETESOURCES				GXAlDeleteSources			= nullptr;
 
-PFNALSOURCEI					GXAlSourcei					= 0;
-PFNALSOURCEFV					GXAlSourcefv				= 0;
-PFNALSOURCE3F					GXAlSource3f				= 0;
-PFNALSOURCEF					GXAlSourcef					= 0;
-PFNALSOURCEQUEUEBUFFERS			GXAlSourceQueueBuffers		= 0;
-PFNALSOURCEUNQUEUEBUFFERS		GXAlSourceUnqueueBuffers	= 0;
+PFNALSOURCEI					GXAlSourcei					= nullptr;
+PFNALSOURCEFV					GXAlSourcefv				= nullptr;
+PFNALSOURCE3F					GXAlSource3f				= nullptr;
+PFNALSOURCEF					GXAlSourcef					= nullptr;
+PFNALSOURCEQUEUEBUFFERS			GXAlSourceQueueBuffers		= nullptr;
+PFNALSOURCEUNQUEUEBUFFERS		GXAlSourceUnqueueBuffers	= nullptr;
 
-PFNALSOURCEPLAY					GXAlSourcePlay				= 0;
-PFNALSOURCESTOP					GXAlSourceStop				= 0;
-PFNALSOURCEPAUSE				GXAlSourcePause				= 0;
-PFNALSOURCEREWIND				GXAlSourceRewind			= 0;
+PFNALSOURCEPLAY					GXAlSourcePlay				= nullptr;
+PFNALSOURCESTOP					GXAlSourceStop				= nullptr;
+PFNALSOURCEPAUSE				GXAlSourcePause				= nullptr;
+PFNALSOURCEREWIND				GXAlSourceRewind			= nullptr;
 
-PFNGXOPENALCHECKERROR			GXOpenALCheckError			= 0;
-PFNGXOPENALCHECKCONTEXTERROR	GXOpenALCheckContextError	= 0;
-PFNGXOPENALDESTROY				GXOpenALDestroy				= 0;	
+PFNGXOPENALCHECKERROR			GXOpenALCheckError			= nullptr;
+PFNGXOPENALCHECKCONTEXTERROR	GXOpenALCheckContextError	= nullptr;
+PFNGXOPENALDESTROY				GXOpenALDestroy				= nullptr;
 
 //--------------------------------------------------------------------------
 
-PFNOVOPENCALLBACKS				GXOvOpenCallbacks			= 0;
-PFNOVREAD						GXOvRead					= 0;
-PFNOVPCMSEEK					GXOvPcmSeek					= 0;
-PFNOVPCMTOTAL					GXOvPcmTotal				= 0;
-PFNOVCLEAR						GXOvClear					= 0;
+PFNOVOPENCALLBACKS				GXOvOpenCallbacks			= nullptr;
+PFNOVREAD						GXOvRead					= nullptr;
+PFNOVPCMSEEK					GXOvPcmSeek					= nullptr;
+PFNOVPCMTOTAL					GXOvPcmTotal				= nullptr;
+PFNOVCLEAR						GXOvClear					= nullptr;
 
 GXBool GXCALL GXSoundInit ()
 {
 	gx_GXEngineDLLModuleHandle = LoadLibraryW ( L"GXEngine.dll" );
+
 	if ( !gx_GXEngineDLLModuleHandle )
 	{
 		GXLogW ( L"GXPhysXUnit::Error - Не удалось загрузить GXEngine.dll\n" );
@@ -56,7 +57,8 @@ GXBool GXCALL GXSoundInit ()
 
 	PFNGXOGGVORBISINIT GXOGGVorbisInit;
 
-	GXOGGVorbisInit = reinterpret_cast <PFNGXOGGVORBISINIT> ( reinterpret_cast <GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXOGGVorbisInit" ) ) );
+	GXOGGVorbisInit = reinterpret_cast<PFNGXOGGVORBISINIT> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXOGGVorbisInit" ) ) );
+
 	if ( !GXOGGVorbisInit )
 	{
 		GXLogW ( L"GXSoundInit::Error - Не удалось найти функцию GXOGGVorbisInit\n" );
@@ -73,7 +75,8 @@ GXBool GXCALL GXSoundInit ()
 	GXOGGVorbisInit ( oggVorbisOut );
 
 	PFNGXOPENALINIT GXOpenALInit;
-	GXOpenALInit = reinterpret_cast <PFNGXOPENALINIT> ( reinterpret_cast <GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXOpenALInit" ) ) );
+	GXOpenALInit = reinterpret_cast<PFNGXOPENALINIT> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXOpenALInit" ) ) );
+
 	if ( !GXOpenALInit )
 	{
 		GXLogW ( L"GXSoundInit::Error - Не удалось найти функцию GXOpenALInit\n" );

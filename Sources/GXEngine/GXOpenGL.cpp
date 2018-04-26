@@ -1,10 +1,10 @@
-// version 1.9
+// version 1.10
 
 #include <GXEngine/GXOpenGL.h>
 #include <GXCommon/GXLogger.h>
 
 
-#define DEFAULT_OPENGL_FRAMEBUFFER 0
+#define DEFAULT_OPENGL_FRAMEBUFFER 0u
 
 #define OPENGL_GET_PROC(p,n)																		\
 {																									\
@@ -170,10 +170,11 @@ GXVoid GXCALL GXOpenGLInit ()
 
 GXVoid GXCALL GXCheckOpenGLError ()
 {
-	GLenum error;
+	GLenum error = glGetError ();
 
-	if ( ( error = glGetError () ) != GL_NO_ERROR )
-		GXLogA ( "GXCheckOpenGLError::Error 0x%08X\n", (GXUInt)error );
+	if ( error == GL_NO_ERROR ) return;
+
+	GXLogA ( "GXCheckOpenGLError::Error 0x%08X\n", static_cast<GXUInt> ( error ) );
 }
 
 //-----------------------------------------------------------------------------------------
@@ -190,7 +191,7 @@ GXOpenGLState::~GXOpenGLState ()
 
 GXVoid GXOpenGLState::Save ()
 {
-	glGetIntegerv ( GL_FRAMEBUFFER_BINDING, (GLint*)&fbo );
+	glGetIntegerv ( GL_FRAMEBUFFER_BINDING, reinterpret_cast<GLint*> ( &fbo ) );
 	glGetIntegerv ( GL_VIEWPORT, viewport );
 	glGetBooleanv ( GL_COLOR_WRITEMASK, colorMask );
 
@@ -206,7 +207,7 @@ GXVoid GXOpenGLState::Save ()
 	glGetIntegerv ( GL_MAX_DRAW_BUFFERS, &maxDrawBuffers );
 
 	for ( GLint i = 0; i < maxDrawBuffers; i++ )
-		glGetIntegerv ( (GLenum)( GL_DRAW_BUFFER0 + i ), (GLint*)( drawBuffers + i ) );
+		glGetIntegerv ( static_cast<GLenum> ( GL_DRAW_BUFFER0 + i ), reinterpret_cast<GLint*> ( drawBuffers + i ) );
 
 	GXCheckOpenGLError ();
 }
@@ -220,9 +221,9 @@ GXVoid GXOpenGLState::Restore ()
 
 	glDepthMask ( depthMask );
 	glClearDepth ( depthClearValue );
-	glDepthFunc ( (GLenum)depthFunction );
+	glDepthFunc ( static_cast<GLenum> ( depthFunction ) );
 
-	glCullFace ( (GLenum)cullFaceMode );
+	glCullFace ( static_cast<GLenum> ( cullFaceMode ) );
 
 	if ( depthTest )
 		glEnable ( GL_DEPTH_TEST );
@@ -239,7 +240,7 @@ GXVoid GXOpenGLState::Restore ()
 	else
 		glDisable ( GL_BLEND );
 
-	if ( fbo == (GLuint)DEFAULT_OPENGL_FRAMEBUFFER )
+	if ( fbo == DEFAULT_OPENGL_FRAMEBUFFER )
 	{
 		glDrawBuffer ( drawBuffers[ 0 ] );
 	}
@@ -247,7 +248,7 @@ GXVoid GXOpenGLState::Restore ()
 	{
 		GLint maxDrawBuffers = 0;
 		glGetIntegerv ( GL_MAX_DRAW_BUFFERS, &maxDrawBuffers );
-		glDrawBuffers ( (GLsizei)maxDrawBuffers, drawBuffers );
+		glDrawBuffers ( maxDrawBuffers, drawBuffers );
 	}
 
 	GXCheckOpenGLError ();

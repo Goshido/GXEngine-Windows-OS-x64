@@ -1,22 +1,21 @@
-// version 1.2
+// version 1.3
 
 #include <GXEngine/GXSkeleton.h>
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXLogger.h>
 
 
-GXSkeleton::GXSkeleton ()
+GXSkeleton::GXSkeleton ():
+	totalBones ( 0u ),
+	boneNames ( nullptr ),
+	parentBoneIndices ( nullptr ),
+	tempPoseLocal ( nullptr ),
+	tempPoseGlobal ( nullptr ),
+	referencePose ( nullptr ),
+	inverseBindTransform ( nullptr ),
+	skinTransform ( nullptr )
 {
-	totalBones = 0;
-
-	boneNames = nullptr;
-	parentBoneIndices = nullptr;
-
-	tempPoseLocal = nullptr;
-	tempPoseGlobal = nullptr;
-	referencePose = nullptr;
-	inverseBindTransform = nullptr;
-	skinTransform = nullptr;
+	// NOTHING
 }
 
 GXSkeleton::~GXSkeleton ()
@@ -39,25 +38,25 @@ GXVoid GXSkeleton::LoadFromSkm ( const GXWChar* fileName )
 	totalBones = skeletalMeshData.totalBones;
 
 	GXUPointer size = totalBones * GX_BONE_NAME_SIZE * sizeof ( GXUTF8 );
-	boneNames = (GXUTF8*)malloc ( size );
+	boneNames = static_cast<GXUTF8*> ( malloc ( size ) );
 	memcpy ( boneNames, skeletalMeshData.boneNames, size );
 
 	size = totalBones * sizeof ( GXShort );
-	parentBoneIndices = (GXShort*)malloc ( size );
+	parentBoneIndices = static_cast<GXShort*> ( malloc ( size ) );
 	memcpy ( parentBoneIndices, skeletalMeshData.parentBoneIndices, size );
 
 	size = totalBones * sizeof ( GXBoneJoint );
-	referencePose = (GXBoneJoint*)malloc ( size );
+	referencePose = static_cast<GXBoneJoint*> ( malloc ( size ) );
 	memcpy ( referencePose, skeletalMeshData.referencePose, size );
 
-	inverseBindTransform = (GXBoneJoint*)malloc ( size );
+	inverseBindTransform = static_cast<GXBoneJoint*> ( malloc ( size ) );
 	memcpy ( inverseBindTransform, skeletalMeshData.inverseBindTransform, size );
 
-	tempPoseLocal = (GXBoneJoint*)malloc ( size );
+	tempPoseLocal = static_cast<GXBoneJoint*> ( malloc ( size ) );
 	memcpy ( tempPoseLocal, referencePose, size );
 
-	tempPoseGlobal = (GXBoneJoint*)malloc ( size );
-	skinTransform = (GXBoneJoint*)malloc ( size );
+	tempPoseGlobal = static_cast<GXBoneJoint*> ( malloc ( size ) );
+	skinTransform = static_cast<GXBoneJoint*> ( malloc ( size ) );
 
 	CalculatePose ();
 
@@ -66,9 +65,9 @@ GXVoid GXSkeleton::LoadFromSkm ( const GXWChar* fileName )
 
 GXVoid GXSkeleton::UpdatePose ( GXAnimationSolver &solver, GXFloat /*deltaTime*/ )
 {
-	GXUInt boneNameOffset = 0;
+	GXUInt boneNameOffset = 0u;
 
-	for ( GXUShort i = 0; i < totalBones; i++ )
+	for ( GXUShort i = 0u; i < totalBones; i++ )
 	{
 		GXBoneJoint joint;
 
@@ -114,7 +113,7 @@ GXVoid GXSkeleton::CalculatePose ()
 	tempPoseGlobal[ 0 ].rotation.TransformFast ( buffer, inverseBindTransform[ 0 ].location );
 	skinTransform[ 0 ].location.Sum ( buffer, tempPoseGlobal[ 0 ].location );
 
-	for ( GXUShort i = 1; i < totalBones; i++ )
+	for ( GXUShort i = 1u; i < totalBones; i++ )
 	{
 		const GXBoneJoint& parentBoneTransformGlobal = tempPoseGlobal[ parentBoneIndices[ i ] ];
 		const GXBoneJoint& boneInverseBindTransform = inverseBindTransform[ i ];

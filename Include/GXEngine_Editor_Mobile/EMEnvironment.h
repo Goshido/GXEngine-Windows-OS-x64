@@ -11,6 +11,7 @@ class EMEnvironment
 {
 	private:
 		EMMesh						cube;
+
 		GXTextureCubeMap			environment;
 		EMEnvironmentMapMaterial	environmentMapMaterial;
 
@@ -30,6 +31,9 @@ class EMEnvironment
 
 	private:
 		EMEnvironment ();
+
+		EMEnvironment ( const EMEnvironment &other ) = delete;
+		EMEnvironment& operator = ( const EMEnvironment &other ) = delete;
 };
 
 

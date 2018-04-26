@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_NATIVE_SKELETAL_MESH
 #define GX_NATIVE_SKELETAL_MESH
@@ -7,9 +7,9 @@
 #include "GXMath.h"
 
 
-#define GX_BONE_NAME_SIZE				64
-#define GX_FLOATS_PER_BONE				7
-#define GX_MAXIMUM_BONES_PER_MESH		80
+#define GX_BONE_NAME_SIZE				64u
+#define GX_FLOATS_PER_BONE				7u
+#define GX_MAXIMUM_BONES_PER_MESH		80u
 
 #define GX_UNKNOWN_BONE_INDEX			0xFFFEu
 #define GX_ROOT_BONE_PARENT_INDEX		0xFFFFu

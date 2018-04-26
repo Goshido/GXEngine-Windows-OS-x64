@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_SOUND_CHANNEL
 #define GX_SOUND_CHANNEL
@@ -26,7 +26,11 @@ class GXSoundChannel
 		GXVoid AddEmitter ( GXSoundEmitter* emitter );
 
 		GXVoid Update ();
+
+	private:
+		GXSoundChannel ( const GXSoundChannel &other ) = delete;
+		GXSoundChannel& operator = ( const GXSoundChannel &other ) = delete;
 };
 
 
-#endif //GX_SOUND_CHANNEL
+#endif // GX_SOUND_CHANNEL

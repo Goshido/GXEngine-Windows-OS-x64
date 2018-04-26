@@ -1,17 +1,18 @@
-// version 1.6
+// version 1.7
 
 #include <GXEngine/GXSoundMixer.h>
 
 
+#define DEFAULT_MASTER_VOLUME	1.0f
 #define GX_SOUND_MIXER_DELAY	10
+
+//-------------------------------------------------------------------------------------
 
 extern GXMutex* gx_sound_mixer_Mutex;
 
-
 GXBool				GXSoundMixer::loopFlag = GX_TRUE;
-GXSoundChannel*		GXSoundMixer::channels = 0;
-
-GXSoundMixer* GXSoundMixer::instance = nullptr;
+GXSoundChannel*		GXSoundMixer::channels = nullptr;
+GXSoundMixer*		GXSoundMixer::instance = nullptr;
 
 GXSoundMixer::~GXSoundMixer ()
 {
@@ -76,11 +77,14 @@ GXVoid GXSoundMixer::SetListenerRotation ( GXFloat pitchRadians, GXFloat yawRadi
 
 GXVoid GXSoundMixer::AddChannel ( GXSoundChannel* channel )
 {
-	if ( !channel ) GXDebugBox ( L"GXSoundMixer::AddChannel::Error - попытка добавить звуковой канал по нулевому указателю!" );
+	if ( !channel )
+		GXDebugBox ( L"GXSoundMixer::AddChannel::Error - попытка добавить звуковой канал по нулевому указателю!" );
 
-	channel->prev = 0;
+	channel->prev = nullptr;
 	channel->next = channels;
+
 	if ( channel->next ) channel->next->prev = channel;
+
 	channels = channel;
 
 	channel->top = &channels;
@@ -113,17 +117,10 @@ GXSoundMixer& GXCALL GXSoundMixer::GetInstance ()
 	return *instance;
 }
 
-GXSoundMixer::GXSoundMixer () :
-thread ( &Update, nullptr )
+GXSoundMixer::GXSoundMixer ():
+	thread ( &Update, nullptr ),
+	masterVolume ( DEFAULT_MASTER_VOLUME )
 {
-	instance = this;
-
-	loopFlag = GX_TRUE;
-
-	masterVolume = 1.0f;
-
-	channels = nullptr;
-
 	gx_sound_mixer_Mutex = new GXMutex (); 
 }
 
@@ -141,5 +138,5 @@ GXUPointer GXTHREADCALL GXSoundMixer::Update ( GXVoid* /*args*/, GXThread& /*thr
 		Sleep ( GX_SOUND_MIXER_DELAY );
 	}
 
-	return 0;
+	return 0u;
 }

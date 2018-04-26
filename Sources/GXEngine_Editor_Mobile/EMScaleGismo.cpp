@@ -12,14 +12,16 @@
 #define TEXTURE_OFFSET_X	0.0f
 #define TEXTURE_OFFSET_Y	0.0f
 
-#define TEXTURE_SLOT	0
+#define TEXTURE_SLOT		0u
 
+#define SCALE_GISMO_MESH	L"Meshes/Editor Mobile/Scale Gismo.stm"
+
+//--------------------------------------------------------------------------------
 
 EMScaleGismo::EMScaleGismo () :
-mesh ( L"Meshes/Editor Mobile/Scale Gismo.stm" )
+	isVisible ( GX_TRUE ),
+	mesh ( SCALE_GISMO_MESH )
 {
-	isVisible = GX_TRUE;
-
 	texture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Gismo Texture.tex", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 
 	unlitMaterial.SetColor ( TEXTURE_COLOR_R, TEXTURE_COLOR_G, TEXTURE_COLOR_B, TEXTURE_COLOR_A );

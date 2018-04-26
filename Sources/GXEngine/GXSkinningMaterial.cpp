@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #include <GXEngine/GXSkinningMaterial.h>
 
@@ -8,10 +8,9 @@
 #define FRAGMENT_SHADER		nullptr
 
 
-GXSkinningMaterial::GXSkinningMaterial ()
+GXSkinningMaterial::GXSkinningMaterial ():
+	skeletonObject ( nullptr )
 {
-	skeletonObject = nullptr;
-	
 	static const GLchar* transformFeedbackOutputNames[ 5 ] = { "v_vertex", "v_uv", "v_normal", "v_tangent", "v_bitangent" };
 
 	GXShaderProgramInfo si;
@@ -40,14 +39,15 @@ GXVoid GXSkinningMaterial::Bind ( const GXTransform& /*transform*/ )
 
 	glUseProgram ( shaderProgram.GetProgram () );
 	
-	GLsizei floats = (GLsizei)( skeletonObject->GetTotalBones () * GX_FLOATS_PER_BONE );
-	glUniform1fv ( bonesLocation, floats, (const GLfloat*)skeletonObject->GetSkinTransform () );
+	GLsizei floats = static_cast<GLsizei> ( skeletonObject->GetTotalBones () * GX_FLOATS_PER_BONE );
+	glUniform1fv ( bonesLocation, floats, reinterpret_cast<const GLfloat*> ( skeletonObject->GetSkinTransform () ) );
 }
 
 GXVoid GXSkinningMaterial::Unbind ()
 {
 	if ( !skeletonObject ) return;
-	glUseProgram ( 0 );
+
+	glUseProgram ( 0u );
 }
 
 GXVoid GXSkinningMaterial::SetSkeleton ( const GXSkeleton &skeleton )

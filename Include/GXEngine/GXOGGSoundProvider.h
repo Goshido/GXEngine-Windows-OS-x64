@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_OGG_SOUND_PROVIDER
 #define GX_OGG_SOUND_PROVIDER
@@ -14,11 +14,16 @@ class GXOGGSoundStreamer : public GXSoundStreamer
 		OggVorbis_File		vorbisFile;
 
 	public:
-		GXOGGSoundStreamer ( GXVoid* mappedFile, GXUInt totalSize );
-		virtual ~GXOGGSoundStreamer ();
+		explicit GXOGGSoundStreamer ( GXVoid* mappedFile, GXUInt totalSize );
+		~GXOGGSoundStreamer () override;
 
-		virtual GXBool FillBuffer ( ALuint buffer, GXBool isLooped );
-		virtual GXVoid DecompressAll ( ALuint buffer );
+		GXBool FillBuffer ( ALuint buffer, GXBool isLooped ) override;
+		GXVoid DecompressAll ( ALuint buffer ) override;
+
+	private:
+		GXOGGSoundStreamer () = delete;
+		GXOGGSoundStreamer ( const GXOGGSoundStreamer &other ) = delete;
+		GXOGGSoundStreamer& operator = ( const GXOGGSoundStreamer &other ) = delete;
 };
 
 //----------------------------------------------------------------------------------------------------
@@ -26,13 +31,18 @@ class GXOGGSoundStreamer : public GXSoundStreamer
 class GXOGGSoundTrack : public GXSoundTrack
 {
 	public:
-		GXOGGSoundTrack ( const GXWChar* trackFile );
+		explicit GXOGGSoundTrack ( const GXWChar* trackFile );
 
-		virtual GXSoundStreamer* GetStreamer ();
-		virtual ALuint GetBuffer ();
+		GXSoundStreamer* GetStreamer () override;
+		ALuint GetBuffer () override;
 
 	protected:
-		virtual ~GXOGGSoundTrack ();
+		~GXOGGSoundTrack () override;
+
+	private:
+		GXOGGSoundTrack () = delete;
+		GXOGGSoundTrack ( const GXOGGSoundTrack &other ) = delete;
+		GXOGGSoundTrack& operator = ( const GXOGGSoundTrack &other ) = delete;
 };
 
 

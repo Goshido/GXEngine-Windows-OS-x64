@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #ifndef GX_SOUND_MIXER
 #define GX_SOUND_MIXER
@@ -12,11 +12,10 @@
 class GXSoundMixer
 {
 	private:
-		static GXBool				loopFlag;
 		GXThread					thread;
-
 		GXFloat						masterVolume;
 
+		static GXBool				loopFlag;
 		static GXSoundChannel*		channels;
 		static GXSoundMixer*		instance;
 

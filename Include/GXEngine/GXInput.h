@@ -1,4 +1,4 @@
-// version 1.15
+// version 1.16
 
 #ifndef GX_INPUT
 #define GX_INPUT
@@ -91,7 +91,7 @@ enum class eGXInputDevice : GXUByte
 {
 	Keyboard,
 	Mouse,
-	xboxController
+	XBOXController
 };
 
 class GXInput
@@ -147,6 +147,7 @@ class GXInput
 		static GXInput*					instance;
 
 	public:
+		static GXInput& GXCALL GetInstance ();
 		~GXInput ();
 
 		GXVoid Start ();
@@ -182,8 +183,6 @@ class GXInput
 		GXVoid BindRightStickCallback ( GXVoid* handler, PFNGXSTICKPROC callback );
 		GXVoid UnbindRightStickCallback ();
 
-		static GXInput& GXCALL GetInstance ();
-
 		static LRESULT CALLBACK InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam );
 
 	private:
@@ -197,6 +196,9 @@ class GXInput
 
 		static GXBool GXCALL InitXInputLibrary ();
 		static GXBool GXCALL DestroyXInputLibrary ();
+
+		GXInput ( const GXInput &other ) = delete;
+		GXInput& operator = ( const GXInput &other ) = delete;
 };
 
 

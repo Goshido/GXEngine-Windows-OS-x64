@@ -1,4 +1,4 @@
-// version 1.14
+// version 1.15
 
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXOpenGL.h>
@@ -20,11 +20,13 @@
 #define DEFAULT_STENCIL_BITS	8
 #define CLEAR_DEPTH_VALUE		1.0f
 
+//--------------------------------------------------------------------------------------------
 
-GXRendererResolutions::GXRendererResolutions ()
+GXRendererResolutions::GXRendererResolutions ():
+	total ( 0u ),
+	wxh ( nullptr )
 {
-	total = 0;
-	wxh = 0;
+	// NOTHING
 }
 
 GXRendererResolutions::~GXRendererResolutions ()
@@ -48,7 +50,6 @@ GXVoid GXRendererResolutions::GetResolution ( GXUShort i, GXUShort &width, GXUSh
 	height = wxh[ ( i << 1 ) + 1 ];
 }
 
-
 //--------------------------------------------------------------------------------------------
 
 GXGame*			GXRenderer::game = nullptr;
@@ -70,10 +71,10 @@ GXInt			GXRenderer::vsync;
 
 GXWChar*		GXRenderer::title = nullptr;
 
-GXUInt			GXRenderer::currentFPS = 0;
+GXUInt			GXRenderer::currentFPS = 0u;
 GXDouble		GXRenderer::accumulator = 0.0;
 GXDouble		GXRenderer::lastTime = 0.0;
-GXUShort		GXRenderer::fpsCounter = 0;
+GXUShort		GXRenderer::fpsCounter = 0u;
 GXDouble		GXRenderer::fpsTimer = 0.0;
 
 GXBool			GXRenderer::isRenderableObjectInited = GX_FALSE;
@@ -81,11 +82,19 @@ GXBool			GXRenderer::isRenderableObjectInited = GX_FALSE;
 GXRenderer*		GXRenderer::instance = nullptr;
 
 
+GXRenderer& GXCALL GXRenderer::GetInstance ()
+{
+	if ( !instance )
+		instance = new GXRenderer ();
+
+	return *instance;
+}
+
 GXRenderer::~GXRenderer ()
 {
 	if ( isFullScreen )
 	{
-		if ( ChangeDisplaySettingsW ( 0, 0 )  != DISP_CHANGE_SUCCESSFUL )
+		if ( ChangeDisplaySettingsW ( nullptr, 0 ) != DISP_CHANGE_SUCCESSFUL )
 		{
 			GXDebugBox ( L"Не удалось вернуть графические настройки по умолчанию" );
 			GXLogW ( L"GXRenderer::~GXRenderer::Error - Не удалось вернуть графические настройки по умолчанию\n" );
@@ -128,8 +137,8 @@ GXVoid GXRenderer::SetFullscreen ( GXBool enabled )
 		dm.dmSize = sizeof ( dm );
 		dm.dmFields = DM_PELSHEIGHT | DM_PELSWIDTH;
 
-		dm.dmPelsWidth = (DWORD)width;
-		dm.dmPelsHeight = (DWORD)height;
+		dm.dmPelsWidth = static_cast<DWORD> ( width );
+		dm.dmPelsHeight = static_cast<DWORD> ( height );
 
 		if ( ChangeDisplaySettingsW ( &dm, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL )
 			MessageBoxW ( 0, L"Не удалось поменять оконный режим", L"Проблемка", MB_ICONEXCLAMATION );
@@ -139,7 +148,7 @@ GXVoid GXRenderer::SetFullscreen ( GXBool enabled )
 	}
 	else
 	{
-		ChangeDisplaySettingsW ( 0, 0 );
+		ChangeDisplaySettingsW ( nullptr, 0 );
 
 		exStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
 		style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE | WS_CAPTION | WS_SYSMENU;
@@ -168,6 +177,7 @@ GXVoid GXRenderer::SetFullscreen ( GXBool enabled )
 GXVoid GXRenderer::SetVSync ( GXBool enabled )
 {
 	GXInt t = enabled ? 1 : 0;
+
 	if ( t == vsync ) return;
 
 	vsync = t;
@@ -190,8 +200,8 @@ GXVoid GXRenderer::SetResolution ( GXInt frameWidth, GXInt frameHeight )
 		dm.dmSize = sizeof ( dm );
 		dm.dmFields = DM_PELSHEIGHT | DM_PELSWIDTH;
 
-		dm.dmPelsWidth = (DWORD)width;
-		dm.dmPelsHeight = (DWORD)height;
+		dm.dmPelsWidth = static_cast<DWORD> ( width );
+		dm.dmPelsHeight = static_cast<DWORD> ( height );
 
 		if ( ChangeDisplaySettingsW ( &dm, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL )
 			MessageBoxW ( 0, L"Не удалось поменять оконный режим", L"Проблемка", MB_ICONEXCLAMATION );
@@ -218,21 +228,21 @@ GXVoid GXRenderer::SetWindowName ( const GXWChar* name )
 	GXSafeFree ( title );
 	GXWcsclone ( &title, name );
 
-	if ( hwnd == (HWND)INVALID_HANDLE_VALUE ) return;
+	if ( hwnd == static_cast<HWND> ( INVALID_HANDLE_VALUE ) ) return;
 
 	SetWindowTextW ( hwnd, title );
 }
 
 GXVoid GXRenderer::Show () const
 {
-	if ( hwnd == (HWND)INVALID_HANDLE_VALUE ) return;
+	if ( hwnd == static_cast<HWND> ( INVALID_HANDLE_VALUE ) ) return;
 
 	ShowWindow ( hwnd, SW_SHOW );
 }
 
 GXVoid GXRenderer::Hide () const
 {
-	if ( hwnd == (HWND)INVALID_HANDLE_VALUE ) return;
+	if ( hwnd == static_cast<HWND> ( INVALID_HANDLE_VALUE ) ) return;
 
 	ShowWindow ( hwnd, SW_HIDE );
 }
@@ -247,20 +257,6 @@ GXUInt GXRenderer::GetCurrentFPS () const
 	return currentFPS;
 }
 
-GXInt GXResolutionCompare ( const GXVoid* a, const GXVoid* b )
-{
-	const GXUShort* itemA = (GXUShort*)a;
-	const GXUShort* itemB = (GXUShort*)b;
-
-	GXUInt keyA = 10000u * itemA[ 0 ] + itemA[ 1 ];
-	GXUInt keyB = 10000u * itemB[ 0 ] + itemB[ 1 ];
-
-	if ( keyA < keyB ) return -1;
-	if ( keyA > keyB ) return 1;
-
-	return 0;
-}
-
 GXVoid GXRenderer::GetSupportedResolutions ( GXRendererResolutions &out ) const
 {
 	DEVMODEW dm;
@@ -270,18 +266,20 @@ GXVoid GXRenderer::GetSupportedResolutions ( GXRendererResolutions &out ) const
 	for ( rawTotal = 0; EnumDisplaySettingsW ( 0, rawTotal, &dm ); rawTotal++ );
 
 	GXRendererResolutions temp;
-	temp.wxh = (GXUShort*)malloc ( ( rawTotal << 1 ) * sizeof ( GXUShort ) );
+	temp.wxh = static_cast<GXUShort*> ( malloc ( ( rawTotal << 1 ) * sizeof ( GXUShort ) ) );
 
-	DWORD	lastWidth = 0;
-	DWORD	lastHeight = 0;
+	DWORD lastWidth = 0;
+	DWORD lastHeight = 0;
 
-	out.total = 0;
-	for ( GXUShort i = 0; i < rawTotal; i++ )
+	out.total = 0u;
+
+	for ( GXUShort i = 0u; i < rawTotal; i++ )
 	{
-		EnumDisplaySettingsW ( 0, i, &dm );
+		EnumDisplaySettingsW ( nullptr, i, &dm );
 
 		GXBool hit = GX_FALSE;
-		for ( GXUShort j = 0; j < out.total; j++ )
+
+		for ( GXUShort j = 0u; j < out.total; j++ )
 		{
 			if ( ( lastWidth == dm.dmPelsWidth && lastHeight == dm.dmPelsHeight ) || ( dm.dmPelsWidth == temp.wxh[ j << 1 ] && dm.dmPelsHeight == temp.wxh[ ( j << 1 ) + 1 ] ) )
 			{
@@ -295,19 +293,19 @@ GXVoid GXRenderer::GetSupportedResolutions ( GXRendererResolutions &out ) const
 		lastWidth = dm.dmPelsWidth;
 		lastHeight = dm.dmPelsHeight;
 
-		temp.wxh[ out.total << 1 ] = (GXUShort)lastWidth;
-		temp.wxh[ ( out.total << 1 ) + 1 ] = (GXUShort)lastHeight;
+		temp.wxh[ out.total << 1 ] = static_cast<GXUShort> ( lastWidth );
+		temp.wxh[ ( out.total << 1 ) + 1 ] = static_cast<GXUShort> ( lastHeight );
 
 		out.total++;
 	}
 
 	GXUInt size = ( out.total << 1 ) * sizeof ( GXUShort );
-	out.wxh = (GXUShort*)malloc ( size );
+	out.wxh = static_cast<GXUShort*> ( malloc ( size ) );
 	memcpy ( out.wxh, temp.wxh, size );
 
 	temp.Cleanup ();
 
-	qsort ( out.wxh, out.total, 2 * sizeof ( GXUShort ), &GXResolutionCompare );
+	qsort ( out.wxh, out.total, 2 * sizeof ( GXUShort ), &GXRenderer::GXResolutionCompare );
 }
 
 GXInt GXRenderer::GetWidth () const
@@ -337,18 +335,24 @@ GXVoid GXCALL GXRenderer::ReSizeScene ( GXInt frameWidth, GXInt frameHeight )
 	game->OnResize ( width, height );
 }
 
-GXRenderer& GXCALL GXRenderer::GetInstance ()
+GXInt GXRenderer::GXResolutionCompare ( const GXVoid* a, const GXVoid* b )
 {
-	if ( !instance )
-		instance = new GXRenderer ();
+	const GXUShort* itemA = static_cast<const GXUShort*> ( a );
+	const GXUShort* itemB = static_cast<const GXUShort*> ( b );
 
-	return *instance;
+	GXUInt keyA = 10000u * itemA[ 0 ] + itemA[ 1 ];
+	GXUInt keyB = 10000u * itemB[ 0 ] + itemB[ 1 ];
+
+	if ( keyA < keyB ) return -1;
+	if ( keyA > keyB ) return 1;
+
+	return 0;
 }
 
 GXRenderer::GXRenderer ()
 {
 	isRenderableObjectInited = GX_FALSE;
-	hinst = GetModuleHandle ( 0 );
+	hinst = GetModuleHandle ( nullptr );
 
 	isFullScreen = !gx_EngineSettings.windowed;
 
@@ -357,10 +361,10 @@ GXRenderer::GXRenderer ()
 
 	vsync = ( gx_EngineSettings.vSync ) ? 1 : 0;
 
-	currentFPS = 0;
+	currentFPS = 0u;
 	lastTime = GXGetProcessorTicks ();
 	accumulator = 0.0;
-	fpsCounter = 0;
+	fpsCounter = 0u;
 	fpsTimer = 0.0;
 
 	isSettingsChanged = GX_FALSE;
@@ -372,7 +376,7 @@ GXRenderer::GXRenderer ()
 
 GXUPointer GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* /*args*/, GXThread &threadObject )
 {
-	if ( !MakeWindow () ) return 0;
+	if ( !MakeWindow () ) return 0u;
 
 	MSG msg;
 	while ( loopFlag )
@@ -380,7 +384,7 @@ GXUPointer GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* /*args*/, GXThread &thr
 		if ( !isRenderableObjectInited )
 			InitRenderableObjects ();
 
-		while ( PeekMessage ( &msg, 0, 0, 0, PM_REMOVE ) ) 
+		while ( PeekMessage ( &msg, 0, 0u, 0u, PM_REMOVE ) ) 
 		{
 			TranslateMessage ( &msg );
 			DispatchMessage ( &msg );
@@ -405,7 +409,7 @@ GXUPointer GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* /*args*/, GXThread &thr
 	}
 
 	Destroy ();
-	return 0;
+	return 0u;
 }
 
 GXVoid GXCALL GXRenderer::InitOpenGL ()
@@ -503,18 +507,19 @@ GXVoid GXCALL GXRenderer::DrawScene ()
 	
 	accumulator += delta;
 	fpsTimer += delta;
+
 	if ( fpsTimer >= 1.0 )
 	{
 		currentFPS = fpsCounter;
 		fpsTimer = 0.0;
-		fpsCounter = 0;
+		fpsCounter = 0u;
 	}
 
 	if ( accumulator <= 0.001 ) return;
 
 	fpsCounter++;
 
-	GXFloat update = (GXFloat)accumulator;
+	GXFloat update = static_cast<GXFloat> ( accumulator );
 	accumulator = 0.0;
 	game->OnFrame ( update );
 }
@@ -527,7 +532,7 @@ GXVoid GXCALL GXRenderer::Destroy ()
 
 	if ( isFullScreen )
 	{
-		ChangeDisplaySettingsW ( 0, 0 );
+		ChangeDisplaySettingsW ( nullptr, 0 );
 		while ( ShowCursor ( TRUE ) <= 0 );
 	}
 
@@ -545,28 +550,28 @@ GXVoid GXCALL GXRenderer::Destroy ()
 			GXLogW ( L"GXRenderer::Destroy::Error - Удаление контекста редеринга провалено\n" );
 		}
 
-		hglRC = (HGLRC)INVALID_HANDLE_VALUE;
+		hglRC = static_cast<HGLRC> ( INVALID_HANDLE_VALUE );
 	}
 
 	if ( hDC && !DeleteDC ( hDC ) )
 	{
 		GXDebugBox ( L"Освобождение контекста устройства провалено" );
 		GXLogW ( L"GXRenderer::Destroy::Error - Освобождение контекста устройства провалено\n" );
-		hDC = (HDC)INVALID_HANDLE_VALUE;
+		hDC = static_cast<HDC> ( INVALID_HANDLE_VALUE );
 	}
 
 	if ( hwnd && !DestroyWindow ( hwnd ) )
 	{
 		GXDebugBox ( L"Освобождение HWND провалено" );
 		GXLogW ( L"GXRenderer::Destroy::Error - Освобождение HWND провалено\n" );
-		hwnd = (HWND)INVALID_HANDLE_VALUE;
+		hwnd = static_cast<HWND> ( INVALID_HANDLE_VALUE );
 	}
 
 	if ( !UnregisterClassW ( WINDOW_OPENGL_CLASS, hinst ) )
 	{
 		GXDebugBox ( L"Снятие регистрации класса окна провалено" );
 		GXLogW ( L"GXRenderer::Destroy::Error - Снятие регистрации класса окна провалено\n" );
-		hinst = (HINSTANCE)INVALID_HANDLE_VALUE;
+		hinst = static_cast<HINSTANCE> ( INVALID_HANDLE_VALUE );
 	}
 }
 
@@ -595,11 +600,13 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 	memset ( &dm, 0, sizeof ( dm ) );
 	dm.dmSize = sizeof ( dm );
 	dm.dmFields = DM_PELSHEIGHT | DM_PELSWIDTH | DM_BITSPERPEL;
+
 	if ( isFullScreen )
 	{
 		dm.dmBitsPerPel = DEFAULT_COLOR_BITS;
-		dm.dmPelsHeight = (DWORD)height;
-		dm.dmPelsWidth = (DWORD)width;
+		dm.dmPelsHeight = static_cast<DWORD> ( height );
+		dm.dmPelsWidth = static_cast<DWORD> ( width );
+
 		if ( ChangeDisplaySettingsW ( &dm, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL )
 		{
 			if ( MessageBoxW ( 0, L"Не удалось установить полноэкранный режим. Использовать обычный режим?", L"Проблемка", MB_YESNO | MB_ICONEXCLAMATION ) == IDYES )
@@ -616,7 +623,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 	}
 	else
 	{
-		if ( ChangeDisplaySettingsW ( 0, 0 ) != DISP_CHANGE_SUCCESSFUL )
+		if ( ChangeDisplaySettingsW ( nullptr, 0 ) != DISP_CHANGE_SUCCESSFUL )
 		{
 			GXDebugBox ( L"Не удалось вернуть графические настройки по умолчанию" );
 			GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось вернуть графические настройки по умолчанию\n" );
@@ -717,6 +724,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
 	wglMakeCurrent ( 0, 0 );
 	wglDeleteContext ( hglRC );
+
 	if ( !wglCreateContextAttribsARB )
 	{
 		GXDebugBox ( L"wglCreateContextAttribsARB провален" );
@@ -735,6 +743,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 	};
 
 	hglRC = wglCreateContextAttribsARB ( hDC, 0, attribs );
+
 	if ( !hglRC || !wglMakeCurrent ( hDC, hglRC ) )
 	{
 			GXDebugBox ( L"Создание контекста OpenGL версии 3.3 провалено" );

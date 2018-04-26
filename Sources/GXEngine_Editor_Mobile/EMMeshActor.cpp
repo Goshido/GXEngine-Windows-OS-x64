@@ -17,9 +17,10 @@
 #define DEFAULT_SPECULAR_INTENSITY				0.2f
 #define DEFAULT_METALLIC_SCALE					1.0f
 
+//-------------------------------------------------------------------------------
 
 EMMeshActor::EMMeshActor ( const GXWChar* name, const GXTransform& transform ):
-EMActor ( name, eEMActorType::Mesh, transform )
+	EMActor ( name, eEMActorType::Mesh, transform )
 {
 	albedo = GXTexture2D::LoadTexture ( DEFAULT_ALBEDO_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
 	normal = GXTexture2D::LoadTexture ( DEFAULT_NORMAL_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
@@ -58,7 +59,7 @@ GXVoid EMMeshActor::OnDrawCommonPass ( GXFloat deltaTime )
 	material.SetMaximumBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
 	material.SetExposure ( renderer.GetMotionBlurExposure () );
 	material.SetDeltaTime ( deltaTime );
-	material.SetScreenResolution ( (GXUShort)coreRenderer.GetWidth (), (GXUShort)coreRenderer.GetHeight () );
+	material.SetScreenResolution ( static_cast<GXUShort> ( coreRenderer.GetWidth () ), static_cast<GXUShort> ( coreRenderer.GetHeight () ) );
 	material.Bind ( transform );
 	mesh.Render ();
 	material.Unbind ();

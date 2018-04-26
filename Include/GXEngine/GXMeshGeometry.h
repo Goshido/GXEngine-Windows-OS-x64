@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_MESH_GEOMETRY
 #define GX_MESH_GEOMETRY
@@ -10,17 +10,20 @@
 #include <GXCommon/GXMath.h>
 
 
+class GXMeshGeometry;
 class GXMesh
 {
-	private:
-		GXMesh*					next;
-		GXMesh*					previous;
-		static GXMesh*			top;
+	friend class GXMeshGeometry;
 
+	private:
 		GXUInt					referenceCount;
+		GXMesh*					previous;
+		GLsizeiptr				vboSize;
+
+		static GXMesh*			top;
+		GXMesh*					next;
 
 		GXWChar*				meshFile;
-		GLsizeiptr				vboSize;
 		GLenum					vboUsage;
 
 	public:
@@ -28,12 +31,6 @@ class GXMesh
 		GLuint					meshVBO;
 
 	public:
-		// Creates procedure mesh.
-		GXMesh ();
-
-		// Creates static mesh.
-		explicit GXMesh ( const GXWChar* fileName );
-
 		GXVoid AddReference ();
 		GXVoid Release ();
 
@@ -51,30 +48,41 @@ class GXMesh
 		static GXUInt GXCALL GetTotalLoadedMeshes ( const GXWChar** lastMesh );
 
 	private:
+		// Creates procedure mesh.
+		GXMesh ();
+
+		// Creates static mesh.
+		explicit GXMesh ( const GXWChar* fileName );
+
 		~GXMesh ();
 
 		GXBool LoadFromOBJ ( const GXWChar* fileName );
 		GXBool LoadFromSTM ( const GXWChar* fileName );
 		GXBool LoadFromSKM ( const GXWChar* fileName );
 		GXBool LoadFromMESH ( const GXWChar* fileName );
+
+		GXMesh ( const GXMesh &other ) = delete;
+		GXMesh& operator = ( const GXMesh &other ) = delete;
 };
 
 class GXSkin
 {
-	private:
-		GXSkin*			next;
-		GXSkin*			previous;
-		static GXSkin*	top;
+	friend class GXMeshGeometry;
 
+	private:
 		GXUInt			referenceCount;
+		GXSkin*			previous;
+
+		static GXSkin*	top;
+		GXSkin*			next;
+
 		GXWChar*		skinFile;
 
 	public:
 		GLsizei			totalVertices;
 		GLuint			skinVBO;
 
-		explicit GXSkin ( const GXWChar* fileName );
-
+	public:
 		GXVoid AddReference ();
 		GXVoid Release ();
 
@@ -83,23 +91,27 @@ class GXSkin
 		static GXUInt GXCALL GetTotalLoadedSkins ( const GXWChar** lastSkin );
 
 	private:
+		explicit GXSkin ( const GXWChar* fileName );
 		~GXSkin ();
 
 		GXBool LoadFromSKM ( const GXWChar* fileName );
 		GXBool LoadFromSKIN ( const GXWChar* fileName );
+
+		GXSkin ( const GXSkin &other ) = delete;
+		GXSkin& operator = ( const GXSkin &other ) = delete;
 };
 
 enum class eGXMeshStreamIndex : GLuint
 {
-	CurrenVertex		= 0,
-	UV					= 1,
-	Normal				= 2,
-	Tangent				= 3,
-	Bitangent			= 4,
-	SkinningIndices		= 5,
-	SkinnngWeights		= 6,
-	LastFrameVertex		= 7,
-	Color				= 8
+	CurrenVertex		= 0u,
+	UV					= 1u,
+	Normal				= 2u,
+	Tangent				= 3u,
+	Bitangent			= 4u,
+	SkinningIndices		= 5u,
+	SkinningWeights		= 6u,
+	LastFrameVertex		= 7u,
+	Color				= 8u
 };
 
 class GXMeshGeometry
@@ -110,12 +122,13 @@ class GXMeshGeometry
 		GLenum					topology;
 
 		GXSkin*					skin;
-		GLuint					poseVAO[ 2 ];
-		GXMesh*					pose[ 2 ];
 		GXUByte					skinningSwitchIndex;
 		GXSkinningMaterial*		skinningMaterial;
 
 		GXAABB					boundsLocal;
+
+		GLuint					poseVAO[ 2 ];
+		GXMesh*					pose[ 2 ];
 
 	public:
 		GXMeshGeometry ();
@@ -142,6 +155,9 @@ class GXMeshGeometry
 
 	private:
 		GXVoid UpdateGraphicResources ();
+
+		GXMeshGeometry ( const GXMeshGeometry &other ) = delete;
+		GXMeshGeometry& operator = ( const GXMeshGeometry &other ) = delete;
 };
 
 

@@ -65,6 +65,9 @@ class EMLightProbe
 		GXVoid UpdateBRDFIntegrationMap ();
 
 		static EMLightProbe* GetProbes ();
+
+		EMLightProbe ( const EMLightProbe &other ) = delete;
+		EMLightProbe& operator = ( const EMLightProbe &other ) = delete;
 };
 
 

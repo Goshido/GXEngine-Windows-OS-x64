@@ -1,17 +1,19 @@
-// version 1.2
+// version 1.3
 
 #include <GXEngine/GXSoundProvider.h>
 #include <GXCommon/GXMemory.h>
+#include <GXCommon/GXStrings.h>
 
 
-GXSoundTrack*	gx_strgSoundTracks = 0;
+GXSoundTrack*	gx_strgSoundTracks = nullptr;
 
 
-GXSoundStreamer::GXSoundStreamer ( GXVoid* mappedFile, GXUPointer totalSize )
+GXSoundStreamer::GXSoundStreamer ( GXVoid* mappedFile, GXUPointer totalSize ):
+	mappedFile ( static_cast<GXUByte*> ( mappedFile ) ),
+	totalSize ( totalSize ),
+	position ( 0 )
 {
-	this->mappedFile = (GXChar*)mappedFile;
-	this->totalSize = totalSize;
-	position = 0;
+	// NOTHING
 }
 
 GXSoundStreamer::~GXSoundStreamer ()
@@ -21,11 +23,14 @@ GXSoundStreamer::~GXSoundStreamer ()
 
 GXUInt GXSoundStreamer::Read ( GXVoid* out, GXUInt size )
 {
-	GXUInt temp = (GXUInt)totalSize - position ;
-	if ( size > temp ) size = temp;
+	GXUInt temp = static_cast<GXUInt> ( totalSize - position );
+
+	if ( size > temp )
+		size = temp;
 	
 	memcpy ( out, mappedFile + position, size );
 	position += size;
+
 	return size;
 }
 
@@ -42,14 +47,14 @@ GXInt GXSoundStreamer::Seek ( GXInt offset, GXInt whence )
 		break;
 
 		case SEEK_END:
-			position = (GXLong)totalSize + offset;
+			position = static_cast<GXLong> ( totalSize ) + offset;
 		break;
 	}
 
 	if ( position < 0 ) 
 		position = 0;
-	else if ( position > (GXInt)totalSize ) 
-		position = (GXLong)totalSize;
+	else if ( position > static_cast<GXLong> ( totalSize ) ) 
+		position = static_cast<GXLong> ( totalSize );
 
 	return 0;
 }
@@ -66,26 +71,21 @@ GXVoid GXSoundStreamer::Reset ()
 
 //-----------------------------------------------------------------------------------------------------
 
-GXSoundTrack::GXSoundTrack ( const GXWChar* trackFile )
+GXSoundTrack::GXSoundTrack ( const GXWChar* trackFile ):
+	next ( gx_strgSoundTracks ),
+	prev ( nullptr ),
+	numRef ( 1u ),
+	readyBuffer ( 0u )
 {
-	numRef = 1;
-
-	GXUShort size;
-	size = (GXUShort)( sizeof ( GXWChar ) * ( wcslen ( trackFile ) + 1 ) );
-			
-	this->trackFile = (GXWChar*)malloc ( size );
-	memcpy ( this->trackFile, trackFile, size );
-
-	if ( !GXLoadFile ( this->trackFile, &mappedFile, totalSize, GX_TRUE ) )
-		GXDebugBox ( L"GXSoundTrack::Error - не удалось загрузить файл" );
-
-	readyBuffer = 0;
-
-	prev = 0;
-	next = gx_strgSoundTracks;
-
 	if ( next ) next->prev = this;
+
 	gx_strgSoundTracks = this;
+
+	GXWcsclone ( &this->trackFile, trackFile );
+
+	if ( GXLoadFile ( this->trackFile, &mappedFile, totalSize, GX_TRUE ) ) return;
+		
+	GXDebugBox ( L"GXSoundTrack::Error - не удалось загрузить файл" );
 }
 
 GXVoid GXSoundTrack::AddRef ()
@@ -95,15 +95,17 @@ GXVoid GXSoundTrack::AddRef ()
 
 GXVoid GXSoundTrack::Release ()
 {
-	if ( numRef == 0 )
+	if ( numRef < 1u )
 	{
 		GXDebugBox ( L"GXSoundTrack::Error - ѕопытка уменьшить количество ссылок, когда их нет" );
 		return;
 	}
 
 	numRef--;
-	if ( numRef == 0 )
-		delete this;
+
+	if ( numRef > 0u ) return;
+
+	delete this;
 }
 
 GXSoundTrack::~GXSoundTrack ()

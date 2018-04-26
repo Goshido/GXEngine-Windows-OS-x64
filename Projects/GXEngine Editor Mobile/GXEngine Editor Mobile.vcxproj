@@ -375,10 +375,8 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXGame.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXHudSurface.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXInput.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXJsonSaver.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXLocale.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMaterial.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXMenu.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXRenderable.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSkeleton.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSkinningMaterial.h" />
@@ -388,11 +386,9 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXTextValidator.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTransform.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMeshGeometry.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXMotionBlurEffect.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXNetwork.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXOGGSoundProvider.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXOpenGL.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXParticleSystem.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXPhysXFrontend.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXRenderer.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXResource.h" />

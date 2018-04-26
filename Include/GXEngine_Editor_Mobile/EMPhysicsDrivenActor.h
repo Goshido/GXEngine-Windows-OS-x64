@@ -12,6 +12,8 @@
 class EMPhysicsDrivenActor : public EMActor
 {
 	private:
+		EMWireframeMaterial*				wireframeMaterial;
+
 		GXRigidBody							rigidBody;
 		GXMeshGeometry						mesh;
 		GXTexture2D							albedo;
@@ -20,7 +22,6 @@ class EMPhysicsDrivenActor : public EMActor
 		GXTexture2D							parameter;
 		EMCookTorranceCommonPassMaterial	material;
 
-		EMWireframeMaterial*				wireframeMaterial;
 		GXMeshGeometry						unitSphereMesh;
 		GXMeshGeometry						unitCubeMesh;
 
@@ -42,6 +43,10 @@ class EMPhysicsDrivenActor : public EMActor
 
 	private:
 		static GXVoid GXCALL OnRigidBodyTransformChanged ( GXVoid* handler, const GXRigidBody &rigidBody );
+
+		EMPhysicsDrivenActor () = delete;
+		EMPhysicsDrivenActor ( const EMPhysicsDrivenActor &other ) = delete;
+		EMPhysicsDrivenActor& operator = ( const EMPhysicsDrivenActor &other ) = delete;
 };
 
 

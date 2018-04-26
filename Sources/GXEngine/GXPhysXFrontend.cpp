@@ -1,4 +1,4 @@
-﻿// version 1.4
+﻿// version 1.5
 
 #include <GXEngine/GXPhysXFrontend.h>
 
@@ -12,26 +12,28 @@ HMODULE gx_GXEngineDLLModuleHandle = GX_INVALID_MODULE;
 
 static GXPhysXAdapter* gx_PhysX = nullptr;
 
-
 GXPhysXAdapter* GXCALL GXGetPhysXInstance ()
 {
 	if ( gx_PhysX ) return gx_PhysX;
 
 	gx_GXEngineDLLModuleHandle = LoadLibraryW ( L"GXEngine.dll" );
+
 	if ( !gx_GXEngineDLLModuleHandle )
 	{
 		GXLogW ( L"GXPhysXInit::Error - Не удалось загрузить GXEngine.dll\n" );
 		return nullptr;
 	}
 
-	GXCreatePhysXInstance = reinterpret_cast <PFNGXPHYSXCREATE> ( reinterpret_cast <GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXPhysXCreate" ) ) );
+	GXCreatePhysXInstance = reinterpret_cast<PFNGXPHYSXCREATE> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXPhysXCreate" ) ) );
+
 	if ( !GXCreatePhysXInstance )
 	{
 		GXLogW ( L"GXPhysXInit::Error - Не удалось найти функцию GXPhysXCreate\n" );
 		return nullptr;
 	}
 
-	GXDestroyPhysXInstance = reinterpret_cast <PFNGXPHYSXDESTROY> ( reinterpret_cast <GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXPhysXDestroy" ) ) );
+	GXDestroyPhysXInstance = reinterpret_cast<PFNGXPHYSXDESTROY> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXPhysXDestroy" ) ) );
+
 	if ( !GXDestroyPhysXInstance )
 	{
 		GXLogW ( L"GXPhysXInit::Error - Не удалось найти функцию GXPhysXDestroy\n" );

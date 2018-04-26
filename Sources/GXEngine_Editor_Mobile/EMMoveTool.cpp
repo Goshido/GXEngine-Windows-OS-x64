@@ -5,65 +5,72 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define MOVE_TOOL_LOCAL_MODE			0
-#define MOVE_TOOL_WORLD_MODE			1
+#define DEFAULT_START_LOCATION_X		0.0f
+#define DEFAULT_START_LOCATION_Y		0.0f
+#define DEFAULT_START_LOCATION_Z		0.0f
 
-#define MOVE_TOOL_ACTIVE_AXIS_UNKNOWN	0xFF
-#define MOVE_TOOL_ACTIVE_AXIS_X			0
-#define MOVE_TOOL_ACTIVE_AXIS_Y			1
-#define MOVE_TOOL_ACTIVE_AXIS_Z			2
+#define DEFAULT_DELTA_X					0.0f
+#define DEFAULT_DELTA_Y					0.0f
+#define DEFAULT_DELTA_Z					0.0f
+
+#define MOVE_TOOL_LOCAL_MODE			0u
+#define MOVE_TOOL_WORLD_MODE			1u
+
+#define MOVE_TOOL_ACTIVE_AXIS_UNKNOWN	0xFFu
+#define MOVE_TOOL_ACTIVE_AXIS_X			0u
+#define MOVE_TOOL_ACTIVE_AXIS_Y			1u
+#define MOVE_TOOL_ACTIVE_AXIS_Z			2u
 #define MOVE_TOOL_GISMO_SIZE_FACTOR		0.1f
 
-#define X_AXIS_COLOR_R					255
-#define X_AXIS_COLOR_G					0
-#define X_AXIS_COLOR_B					0
-#define X_AXIS_COLOR_A					255
+#define X_AXIS_COLOR_R					255u
+#define X_AXIS_COLOR_G					0u
+#define X_AXIS_COLOR_B					0u
+#define X_AXIS_COLOR_A					255u
 
-#define Y_AXIS_COLOR_R					0
-#define Y_AXIS_COLOR_G					255
-#define Y_AXIS_COLOR_B					0
-#define Y_AXIS_COLOR_A					255
+#define Y_AXIS_COLOR_R					0u
+#define Y_AXIS_COLOR_G					255u
+#define Y_AXIS_COLOR_B					0u
+#define Y_AXIS_COLOR_A					255u
 
-#define Z_AXIS_COLOR_R					0
-#define Z_AXIS_COLOR_G					0
-#define Z_AXIS_COLOR_B					255
-#define Z_AXIS_COLOR_A					255
+#define Z_AXIS_COLOR_R					0u
+#define Z_AXIS_COLOR_G					0u
+#define Z_AXIS_COLOR_B					255u
+#define Z_AXIS_COLOR_A					255u
 
-#define CENTER_COLOR_R					255
-#define CENTER_COLOR_G					255
-#define CENTER_COLOR_B					255
-#define CENTER_COLOR_A					255
+#define CENTER_COLOR_R					255u
+#define CENTER_COLOR_G					255u
+#define CENTER_COLOR_B					255u
+#define CENTER_COLOR_A					255u
 
-#define SELECTED_AXIS_COLOR_R			255
-#define SELECTED_AXIS_COLOR_G			255
-#define SELECTED_AXIS_COLOR_B			255
-#define SELECTED_AXIS_COLOR_A			255
+#define SELECTED_AXIS_COLOR_R			255u
+#define SELECTED_AXIS_COLOR_G			255u
+#define SELECTED_AXIS_COLOR_B			255u
+#define SELECTED_AXIS_COLOR_A			255u
 
 #define CROSS_LINE_EPSILON				1.0e-5f
 
+//-----------------------------------------------------------------------------------------
 
 static EMMoveTool* em_mt_Me = nullptr;
 
-EMMoveTool::EMMoveTool () :
-xAxis ( L"Meshes/Editor Mobile/Move gismo X axis.stm" ),
-xAxisMask ( L"Meshes/Editor Mobile/Move gismo X axis mask.stm" ),
-yAxis ( L"Meshes/Editor Mobile/Move gismo Y axis.stm" ),
-yAxisMask ( L"Meshes/Editor Mobile/Move gismo Y axis mask.stm" ),
-zAxis ( L"Meshes/Editor Mobile/Move gismo Z axis.stm" ),
-zAxisMask ( L"Meshes/Editor Mobile/Move gismo z axis mask.stm" ),
-center ( L"Meshes/Editor Mobile/Move gismo center.stm" )
+EMMoveTool::EMMoveTool ():
+	mode ( MOVE_TOOL_LOCAL_MODE ),
+	activeAxis ( MOVE_TOOL_ACTIVE_AXIS_UNKNOWN ),
+	startLocationWorld ( DEFAULT_START_LOCATION_X, DEFAULT_START_LOCATION_Y, DEFAULT_START_LOCATION_Z ),
+	deltaWorld ( DEFAULT_DELTA_X, DEFAULT_DELTA_Y, DEFAULT_DELTA_Z ),
+	isLMBPressed ( GX_FALSE ),
+	mouseX ( 0xFFFFu ),
+	mouseY ( 0xFFFFu ),
+	gismoScaleCorrector ( 1.0f ),
+	xAxis ( L"Meshes/Editor Mobile/Move gismo X axis.stm" ),
+	xAxisMask ( L"Meshes/Editor Mobile/Move gismo X axis mask.stm" ),
+	yAxis ( L"Meshes/Editor Mobile/Move gismo Y axis.stm" ),
+	yAxisMask ( L"Meshes/Editor Mobile/Move gismo Y axis mask.stm" ),
+	zAxis ( L"Meshes/Editor Mobile/Move gismo Z axis.stm" ),
+	zAxisMask ( L"Meshes/Editor Mobile/Move gismo z axis mask.stm" ),
+	center ( L"Meshes/Editor Mobile/Move gismo center.stm" )
 {
-	mode = MOVE_TOOL_LOCAL_MODE;
-
-	memset ( &startLocationWorld, 0, sizeof ( GXVec3 ) );
-	memset ( &deltaWorld, 0, sizeof ( GXVec3 ) );
 	gismoRotation.Identity ();
-
-	activeAxis = MOVE_TOOL_ACTIVE_AXIS_UNKNOWN;
-	isLMBPressed = GX_FALSE;
-	mouseX = mouseY = 0xFFFF;
-	gismoScaleCorrector = 1.0f;
-
 	em_mt_Me = this;
 }
 
@@ -202,8 +209,8 @@ GXVoid EMMoveTool::OnDrawHudMaskPass ()
 
 GXBool EMMoveTool::OnMouseMove ( GXFloat x, GXFloat y )
 {
-	mouseX = (GXUShort)x;
-	mouseY = (GXUShort)y;
+	mouseX = static_cast<GXUShort> ( x );
+	mouseY = static_cast<GXUShort> ( y );
 
 	if ( isLMBPressed && activeAxis != MOVE_TOOL_ACTIVE_AXIS_UNKNOWN )
 	{
@@ -409,8 +416,8 @@ GXVoid EMMoveTool::GetRayPerspective ( GXVec3 &rayView )
 	const GXMat4& proj_mat = GXCamera::GetActiveCamera ()->GetCurrentFrameProjectionMatrix ();
 
 	GXVec2 mouseCVV;
-	mouseCVV.SetX ( ( mouseX / (GXFloat)renderer.GetWidth () ) * 2.0f - 1.0f );
-	mouseCVV.SetY ( ( mouseY / (GXFloat)renderer.GetHeight () ) * 2.0f - 1.0f );
+	mouseCVV.SetX ( ( mouseX / static_cast<GXFloat> ( renderer.GetWidth () ) ) * 2.0f - 1.0f );
+	mouseCVV.SetY ( ( mouseY / static_cast<GXFloat> ( renderer.GetHeight () ) * 2.0f - 1.0f ) );
 
 	proj_mat.GetRayPerspective ( rayView, mouseCVV );
 }

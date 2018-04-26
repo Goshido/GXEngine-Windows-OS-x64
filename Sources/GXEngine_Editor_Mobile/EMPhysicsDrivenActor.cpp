@@ -25,9 +25,11 @@
 #define SHAPE_COLOR_BLUE						0
 #define SHAPE_COLOR_ALPHA						77
 
+//------------------------------------------------------------------
 
 EMPhysicsDrivenActor::EMPhysicsDrivenActor ( const GXWChar* name, const GXTransform& transform ):
-EMActor ( name, eEMActorType::PhysicsDrivenActor, transform )
+	EMActor ( name, eEMActorType::PhysicsDrivenActor, transform ),
+	wireframeMaterial ( nullptr )
 {
 	rigidBody.SetLocation ( transform.GetLocation () );
 	rigidBody.SetRotaton ( GXQuat ( transform.GetRotation () ) );
@@ -49,9 +51,6 @@ EMActor ( name, eEMActorType::PhysicsDrivenActor, transform )
 	material.SetMetallicScale ( DEFAULT_METALLIC_SCALE );
 
 	GXPhysicsEngine::GetInstance ().GetWorld ().RegisterRigidBody ( rigidBody );
-
-	wireframeMaterial = nullptr;
-
 	rigidBody.SetOnTransformChangedCallback ( this, &EMPhysicsDrivenActor::OnRigidBodyTransformChanged );
 }
 
@@ -81,7 +80,7 @@ GXVoid EMPhysicsDrivenActor::OnDrawCommonPass ( GXFloat deltaTime )
 	material.SetMaximumBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
 	material.SetExposure ( renderer.GetMotionBlurExposure () );
 	material.SetDeltaTime ( deltaTime );
-	material.SetScreenResolution ( (GXUShort)coreRenderer.GetWidth (), (GXUShort)coreRenderer.GetHeight () );
+	material.SetScreenResolution ( static_cast<GXUShort> ( coreRenderer.GetWidth () ), static_cast<GXUShort> ( coreRenderer.GetHeight () ) );
 	material.Bind ( transform );
 	mesh.Render ();
 	material.Unbind ();
@@ -104,7 +103,7 @@ GXVoid EMPhysicsDrivenActor::OnDrawHudColorPass ()
 	{
 		case eGXShapeType::Box:
 		{
-			GXBoxShape& boxShape = (GXBoxShape&)shape;
+			GXBoxShape& boxShape = static_cast<GXBoxShape&> ( shape );
 			tr.SetScale ( boxShape.GetWidth (), boxShape.GetHeight (), boxShape.GetDepth () );
 
 			wireframeMaterial->Bind ( tr );
@@ -119,7 +118,7 @@ GXVoid EMPhysicsDrivenActor::OnDrawHudColorPass ()
 
 		case eGXShapeType::Sphere:
 		{
-			GXSphereShape& sphereShape = (GXSphereShape&)shape;
+			GXSphereShape& sphereShape = static_cast<GXSphereShape&> ( shape );
 			GXFloat s = 2.0f * sphereShape.GetRadius ();
 			tr.SetScale ( s, s, s );
 
@@ -175,7 +174,7 @@ GXVoid EMPhysicsDrivenActor::DisablePhysicsDebug ()
 
 GXVoid GXCALL EMPhysicsDrivenActor::OnRigidBodyTransformChanged ( GXVoid* handler, const GXRigidBody& rigidBody )
 {
-	EMPhysicsDrivenActor* physicsDrivenActor = (EMPhysicsDrivenActor*)handler;
+	EMPhysicsDrivenActor* physicsDrivenActor = static_cast<EMPhysicsDrivenActor*> ( handler );
 	physicsDrivenActor->transform.SetLocation ( rigidBody.GetLocation () );
 	physicsDrivenActor->transform.SetRotation ( rigidBody.GetRotation () );
 

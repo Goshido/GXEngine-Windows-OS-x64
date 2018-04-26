@@ -12,6 +12,7 @@ class EMUnitActor : public EMActor
 {
 	private:
 		EMMesh								mesh;
+
 		EMCookTorranceCommonPassMaterial	commonPassMaterial;
 		GXTexture2D							albedoTexture;
 		GXTexture2D							normalTexture;
@@ -28,6 +29,11 @@ class EMUnitActor : public EMActor
 		GXVoid OnLoad ( const GXUByte* data ) override;
 		GXUPointer OnRequeredSaveSize () const override;
 		GXVoid OnTransformChanged () override;
+
+	private:
+		EMUnitActor () = delete;
+		EMUnitActor ( const EMUnitActor &other ) = delete;
+		EMUnitActor& operator = ( const EMUnitActor &other ) = delete;
 };
 
 

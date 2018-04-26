@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXEngine/GXSoundStorage.h>
 #include <GXCommon/GXStrings.h>
@@ -20,8 +20,8 @@ GXSoundTrack* GXCALL GXGetSoundTrack ( const GXWChar* trackFile )
 
 GXUInt GXCALL GXGetTotalSoundStorageObjects ( GXWChar** lastSound )
 {
-	GXUInt objects = 0;
-	*lastSound = 0;
+	GXUInt objects = 0u;
+	*lastSound = nullptr;
 
 	for ( GXSoundTrack* p = gx_strgSoundTracks; p; p = p->next )
 	{
