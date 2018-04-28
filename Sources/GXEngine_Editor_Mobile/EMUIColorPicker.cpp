@@ -205,9 +205,9 @@ class EMColorRenderer : public GXWidgetRenderer
 
 EMColorRenderer::EMColorRenderer ( GXUIInput* widget ):
 	GXWidgetRenderer ( widget ),
-	screenQuad ( SCREEN_QUAD_MESH ),
-	texture ( GXTexture2D::LoadTexture ( TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE ) )
+	screenQuad ( SCREEN_QUAD_MESH )
 {
+	texture = GXTexture2D::LoadTexture ( TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 	surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 	

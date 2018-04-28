@@ -23,6 +23,9 @@ class EMImportantAreaFilterMaterial : public GXMaterial
 
 	private:
 		GXVoid GenerateRetinaFilterTexture ( GXUShort effectiveLength );
+
+		EMImportantAreaFilterMaterial ( const EMImportantAreaFilterMaterial &other ) = delete;
+		EMImportantAreaFilterMaterial& operator = ( const EMImportantAreaFilterMaterial &other ) = delete;
 };
 
 

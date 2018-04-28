@@ -32,12 +32,17 @@
 #define LST_OFFSET_BOTTOM				1.1f
 #define LST_OFFSET_TOP					1.3f
 
-#define PATH_BUFFER_SIZE				4096
+#define PATH_BUFFER_SIZE				4096u
 
+//--------------------------------------------------------------------------------------
 
 EMUIOpenFile::EMUIOpenFile ():
-EMUI ( nullptr )
+	EMUI ( nullptr ),
+	currentDirectory ( nullptr )
 {
+	GXGetCurrentDirectory ( &rootDirectory );
+	rootDirectoryPathOffset = GXWcslen ( rootDirectory );
+
 	mainPanel = new EMUIDraggableArea ( nullptr );
 	mainPanel->SetHeaderHeight ( PANEL_HEADER_HEIGHT * gx_ui_Scale );
 	mainPanel->SetOnResizeCallback ( this, &EMUIOpenFile::OnResize );
@@ -63,13 +68,9 @@ EMUI ( nullptr )
 	fileListBox->SetOnItemSelectedCallback ( this, &EMUIOpenFile::OnItemSelected );
 	fileListBox->SetOnItemDoubleClickedCallbak ( this, &EMUIOpenFile::OnItemDoubleClicked );
 
-	GXGetCurrentDirectory ( &rootDirectory );
-	rootDirectoryPathOffset = GXWcslen ( rootDirectory );
-	currentDirectory = nullptr;
 	UpdateDirectory ( rootDirectory );
 
 	mainPanel->Resize ( PANEL_LEFT_BOTTOM_X * gx_ui_Scale, PANEL_LEFT_BOTTOM_Y * gx_ui_Scale, PANEL_WIDTH * gx_ui_Scale, PANEL_HEIGHT * gx_ui_Scale );
-
 	mainPanel->Hide ();
 }
 
@@ -105,8 +106,8 @@ GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
 {
 	if ( currentDirectory )
 	{
-		GXUInt size = ( GXWcslen ( currentDirectory ) + GXWcslen ( folder ) + 2 ) * sizeof ( GXWChar );
-		GXWChar* newCurrentDirectory = (GXWChar*)malloc ( size );
+		GXUPointer size = ( GXWcslen ( currentDirectory ) + GXWcslen ( folder ) + 2 ) * sizeof ( GXWChar );
+		GXWChar* newCurrentDirectory = static_cast<GXWChar*> ( malloc ( size ) );
 		wsprintfW ( newCurrentDirectory, L"%s/%s", currentDirectory, folder );
 		free ( currentDirectory );
 		currentDirectory = newCurrentDirectory;
@@ -116,9 +117,9 @@ GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
 		GXWcsclone ( &currentDirectory, rootDirectory );
 	}
 
-	GXUInt totalItems = 0;
+	GXUInt totalItems = 0u;
 	EMUIFileListBoxItem* items = nullptr;
-	GXUInt itemIndex = 0;
+	GXUInt itemIndex = 0u;
 	GXDirectoryInfo directoryInfo;
 
 	if ( GXGetDirectoryInfo ( directoryInfo, currentDirectory ) )
@@ -134,11 +135,11 @@ GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
 
 			if ( totalItems == 0 ) return;
 
-			items = (EMUIFileListBoxItem*)malloc ( totalItems * sizeof ( EMUIFileListBoxItem ) );
+			items = static_cast<EMUIFileListBoxItem*> ( malloc ( totalItems * sizeof ( EMUIFileListBoxItem ) ) );
 			GXBool isRootNotExcluded = GX_TRUE;
 			GXBool isWorkingDirectoryNotExcluded = GX_TRUE;
 
-			for ( GXUInt i = 0; i < directoryInfo.totalFolders; i++ )
+			for ( GXUInt i = 0u; i < directoryInfo.totalFolders; i++ )
 			{
 				if ( isRootNotExcluded && GXWcscmp ( directoryInfo.folderNames[ i ], L".." ) == 0 )
 				{
@@ -152,8 +153,8 @@ GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
 					continue;
 				}
 
-				items[ itemIndex ].type = eEMUIFileListBoxItemType::Folder;
-				items[ itemIndex ].name = (GXWChar*)directoryInfo.folderNames[ i ];
+				items[ itemIndex ].SetType ( eEMUIFileListBoxItemType::Folder );
+				items[ itemIndex ].SetName ( directoryInfo.folderNames[ i ] );
 				itemIndex++;
 			}
 		}
@@ -161,12 +162,12 @@ GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
 		{
 			totalItems = directoryInfo.totalFiles + directoryInfo.totalFolders - 1; // Exclude . directory
 
-			if ( totalItems == 0 ) return;
+			if ( totalItems == 0u ) return;
 
-			items = (EMUIFileListBoxItem*)malloc ( totalItems * sizeof ( EMUIFileListBoxItem ) );
+			items = static_cast<EMUIFileListBoxItem*> ( malloc ( totalItems * sizeof ( EMUIFileListBoxItem ) ) );
 			GXBool isWorkingDirectoryNotExcluded = GX_TRUE;
 
-			for ( GXUInt i = 0; i < directoryInfo.totalFolders; i++ )
+			for ( GXUInt i = 0u; i < directoryInfo.totalFolders; i++ )
 			{
 				if ( isWorkingDirectoryNotExcluded && GXWcscmp ( directoryInfo.folderNames[ i ], L"." ) == 0 )
 				{
@@ -174,16 +175,16 @@ GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
 					continue;
 				}
 
-				items[ itemIndex ].type = eEMUIFileListBoxItemType::Folder;
-				items[ itemIndex ].name = (GXWChar*)directoryInfo.folderNames[ i ];
+				items[ itemIndex ].SetType ( eEMUIFileListBoxItemType::Folder );
+				items[ itemIndex ].SetName ( directoryInfo.folderNames[ i ] );
 				itemIndex++;
 			}
 		}
 
-		for ( GXUInt i = 0; i < directoryInfo.totalFiles; i++ )
+		for ( GXUInt i = 0u; i < directoryInfo.totalFiles; i++ )
 		{
-			items[ itemIndex ].type = eEMUIFileListBoxItemType::File;
-			items[ itemIndex ].name = (GXWChar*)directoryInfo.fileNames[ i ];
+			items[ itemIndex ].SetType ( eEMUIFileListBoxItemType::File );
+			items[ itemIndex ].SetName ( directoryInfo.fileNames[ i ] );
 			itemIndex++;
 		}
 
@@ -210,13 +211,13 @@ GXVoid GXCALL EMUIOpenFile::OnButton ( GXVoid* handler, GXUIButton& button, GXFl
 {
 	if ( state != eGXMouseButtonState::Up ) return;
 
-	EMUIOpenFile* main = (EMUIOpenFile*)handler;
+	EMUIOpenFile* main = static_cast<EMUIOpenFile*> ( handler );
 
 	if ( &button == main->okButton->GetWidget () )
 	{
-		EMUIFileListBoxItem* i = (EMUIFileListBoxItem*)main->fileListBox->GetSelectedItem ();
+		const EMUIFileListBoxItem* i = static_cast<const EMUIFileListBoxItem*> ( main->fileListBox->GetSelectedItem () );
 
-		if ( i && i->type == eEMUIFileListBoxItemType::File )
+		if ( i && i->GetType () == eEMUIFileListBoxItemType::File )
 			main->OnBrowseFile ( main->filePathStaticText->GetText () );
 
 		main->mainPanel->Hide ();
@@ -229,26 +230,26 @@ GXVoid GXCALL EMUIOpenFile::OnButton ( GXVoid* handler, GXUIButton& button, GXFl
 
 GXVoid GXCALL EMUIOpenFile::OnItemSelected ( GXVoid* handler, GXUIListBox& /*listBox*/, const GXVoid* item )
 {
-	EMUIOpenFile* main = (EMUIOpenFile*)handler;
-	const EMUIFileListBoxItem* element = (const EMUIFileListBoxItem*)item;
+	EMUIOpenFile* main = static_cast<EMUIOpenFile*> ( handler );
+	const EMUIFileListBoxItem* element = static_cast<const EMUIFileListBoxItem*> ( item );
 
-	switch ( element->type )
+	switch ( element->GetType () )
 	{
 		case eEMUIFileListBoxItemType::File:
 		{
 			if ( GXWcscmp ( main->currentDirectory, main->rootDirectory ) == 0 )
 			{
-				main->filePathStaticText->SetText ( element->name );
+				main->filePathStaticText->SetText ( element->GetName () );
 			}
 			else
 			{
 				GXUInt symbols = main->rootDirectoryPathOffset;
 				symbols += 1;									// '/' symbol
-				symbols += GXWcslen ( element->name );
+				symbols += GXWcslen ( element->GetName () );
 				symbols += 1;									// '\0' symbol
 
-				GXWChar* buf = (GXWChar*)malloc ( symbols * sizeof ( GXWChar ) );
-				wsprintfW ( buf, L"%s/%s", main->GetRelativePath (), element->name );
+				GXWChar* buf = static_cast<GXWChar*> ( malloc ( symbols * sizeof ( GXWChar ) ) );
+				wsprintfW ( buf, L"%s/%s", main->GetRelativePath (), element->GetName () );
 				main->filePathStaticText->SetText ( buf );
 				free ( buf );
 			}
@@ -267,24 +268,24 @@ GXVoid GXCALL EMUIOpenFile::OnItemSelected ( GXVoid* handler, GXUIListBox& /*lis
 
 GXVoid GXCALL EMUIOpenFile::OnItemDoubleClicked ( GXVoid* handler, GXUIListBox& /*listBox*/, const GXVoid* item )
 {
-	EMUIOpenFile* main = (EMUIOpenFile*)handler;
-	const EMUIFileListBoxItem* element = (const EMUIFileListBoxItem*)item;
+	EMUIOpenFile* main = static_cast<EMUIOpenFile*> ( handler );
+	const EMUIFileListBoxItem* element = static_cast<const EMUIFileListBoxItem*> ( item );
 
-	switch ( element->type )
+	switch ( element->GetType () )
 	{
 		case eEMUIFileListBoxItemType::File:
-			OnButton ( main, *( (GXUIButton*)main->okButton->GetWidget () ), 0.0f, 0.0f, eGXMouseButtonState::Up );
+			OnButton ( main, *( static_cast<GXUIButton*> ( main->okButton->GetWidget () ) ), 0.0f, 0.0f, eGXMouseButtonState::Up );
 		break;
 
 		case eEMUIFileListBoxItemType::Folder:
-			main->UpdateDirectory ( element->name );
+			main->UpdateDirectory ( element->GetName () );
 		break;
 	}
 }
 
 GXVoid GXCALL EMUIOpenFile::OnResize ( GXVoid* handler, GXUIDragableArea& /*area*/, GXFloat width, GXFloat height )
 {
-	EMUIOpenFile* main = (EMUIOpenFile*)handler;
+	EMUIOpenFile* main = static_cast<EMUIOpenFile*> ( handler );
 
 	main->cancelButton->Resize ( width - BTN_CANCEL_LEFT_BOTTOM_X * gx_ui_Scale, BTN_BOTTOM_Y * gx_ui_Scale, BTN_WIDTH * gx_ui_Scale, BTN_HEIGHT * gx_ui_Scale );
 	main->okButton->Resize ( width - BTN_OK_LEFT_BOTTOM_X * gx_ui_Scale, BTN_BOTTOM_Y * gx_ui_Scale, BTN_WIDTH * gx_ui_Scale, BTN_HEIGHT * gx_ui_Scale );

@@ -12,15 +12,16 @@
 class EMSSAOSharpMaterial : public GXMaterial
 {
 	private:
+		GXTexture2D		noiseTexture;
 		GXTexture2D*	depthTexture;
 		GXTexture2D*	normalTexture;
-		GXTexture2D		noiseTexture;
+
+		GXFloat			checkRadius;
+
+		GLint			checkRadiusLocation;
 
 		GXVec3			kernel[ EM_MAX_SSAO_SAMPLES ];
 		GLint			kernelLocation;
-
-		GXFloat			checkRadius;
-		GLint			checkRadiusLocation;
 
 		GXInt			samples;
 		GLint			samplesLocation;
@@ -58,6 +59,10 @@ class EMSSAOSharpMaterial : public GXMaterial
 
 		GXVoid SetMaximumDistance ( GXFloat meters );
 		GXFloat GetMaximumDistance () const;
+
+	private:
+		EMSSAOSharpMaterial ( const EMSSAOSharpMaterial &other ) = delete;
+		EMSSAOSharpMaterial& operator = ( const EMSSAOSharpMaterial &other ) = delete;
 };
 
 

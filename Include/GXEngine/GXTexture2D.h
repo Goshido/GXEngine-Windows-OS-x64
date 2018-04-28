@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_TEXTURE_2D
 #define GX_TEXTURE_2D
@@ -56,6 +56,9 @@ class GXTexture2D
 
 		GXBool operator == ( const GXTexture2DEntry &other ) const;
 		GXVoid operator = ( const GXTexture2D &other );
+
+	private:
+		GXTexture2D ( const GXTexture2D &other ) = delete;
 };
 
 

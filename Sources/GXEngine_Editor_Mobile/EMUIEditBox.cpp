@@ -4,38 +4,40 @@
 #include <GXEngine/GXUICommon.h>
 
 
-#define DEFAULT_BACKGROUND					L"Textures/System/Default_Diffuse.tga"
+#define BACKGROUND_COLOR_R					49u
+#define BACKGROUND_COLOR_G					48u
+#define BACKGROUND_COLOR_B					48u
+#define BACKGROUND_COLOR_A					255u
 
-#define BACKGROUND_COLOR_R					49
-#define BACKGROUND_COLOR_G					48
-#define BACKGROUND_COLOR_B					48
-#define BACKGROUND_COLOR_A					255
+#define BORDER_COLOR_R						128u
+#define BORDER_COLOR_G						128u
+#define BORDER_COLOR_B						128u
+#define BORDER_COLOR_A						255u
 
-#define BORDER_COLOR_R						128
-#define BORDER_COLOR_G						128
-#define BORDER_COLOR_B						128
-#define BORDER_COLOR_A						255
+#define FONT_COLOR_R						115u
+#define FONT_COLOR_G						185u
+#define FONT_COLOR_B						0u
+#define FONT_COLOR_A						255u
 
-#define FONT_COLOR_R						115
-#define FONT_COLOR_G						185
-#define FONT_COLOR_B						0
-#define FONT_COLOR_A						255
+#define SELECTION_COLOR_R					17u
+#define SELECTION_COLOR_G					24u
+#define SELECTION_COLOR_B					2u
+#define SELECTION_COLOR_A					255u
 
-#define SELECTION_COLOR_R					17
-#define SELECTION_COLOR_G					24
-#define SELECTION_COLOR_B					2
-#define SELECTION_COLOR_A					255
+#define CURSOR_COLOR_R						255u
+#define CURSOR_COLOR_G						255u
+#define CURSOR_COLOR_B						255u
+#define CURSOR_COLOR_A						255u
 
-#define CURSOR_COLOR_R						255
-#define CURSOR_COLOR_G						255
-#define CURSOR_COLOR_B						255
-#define CURSOR_COLOR_A						255
+#define PIXEL_PERFECT_LOCATION_OFFSET_X		0.25f
+#define PIXEL_PERFECT_LOCATION_OFFSET_Y		0.25f
 
 #define DEFAULT_WIDTH						4.5f
 #define DEFAULT_HEIGHT						0.6f
 #define DEFAULT_BOTTOM_LEFT_X				0.1f
 #define DEFAULT_BOTTOM_LEFT_Y				0.1f
 
+#define DEFAULT_BACKGROUND					L"Textures/System/Default_Diffuse.tga"
 #define DEFAULT_FONT						L"Fonts/trebuc.ttf"
 #define DEFAULT_FONT_SIZE					0.33f
 #define DEFAULT_ALIGNMENT					eGXUITextAlignment::Left
@@ -43,15 +45,13 @@
 #define DEFAULT_TEXT_LEFT_OFFSET			0.1f
 #define DEFAULT_TEXT_RIGHT_OFFSET			0.1f
 
-#define PIXEL_PERFECT_LOCATION_OFFSET_X		0.25f
-#define PIXEL_PERFECT_LOCATION_OFFSET_Y		0.25f
-
+//-------------------------------------------------------------------------
 
 class EMUIEditBoxRenderer : public GXWidgetRenderer
 {
 	private:
-		GXHudSurface*		surface;
 		GXTexture2D			background;
+		GXHudSurface*		surface;
 
 	public:
 		explicit EMUIEditBoxRenderer ( GXUIEditBox* widget );
@@ -62,14 +62,19 @@ class EMUIEditBoxRenderer : public GXWidgetRenderer
 		GXVoid OnDraw () override;
 		GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
 		GXVoid OnMoved ( GXFloat x, GXFloat y ) override;
+
+	private:
+		EMUIEditBoxRenderer () = delete;
+		EMUIEditBoxRenderer ( const EMUIEditBoxRenderer &other ) = delete;
+		EMUIEditBoxRenderer& operator = ( const EMUIEditBoxRenderer &other ) = delete;
 };
 
 EMUIEditBoxRenderer::EMUIEditBoxRenderer ( GXUIEditBox* widget ):
-GXWidgetRenderer ( widget )
+	GXWidgetRenderer ( widget )
 {
 	background = GXTexture2D::LoadTexture ( DEFAULT_BACKGROUND, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
-	surface = new GXHudSurface ( (GXUShort)boundsLocal.GetWidth (), (GXUShort)boundsLocal.GetHeight () );
+	surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
 EMUIEditBoxRenderer::~EMUIEditBoxRenderer ()
@@ -80,10 +85,10 @@ EMUIEditBoxRenderer::~EMUIEditBoxRenderer ()
 
 GXVoid EMUIEditBoxRenderer::OnRefresh ()
 {
-	GXUIEditBox* editBoxWidget = (GXUIEditBox*)widget;
+	GXUIEditBox* editBoxWidget = static_cast<GXUIEditBox*> ( widget );
 	GXFont* font = editBoxWidget->GetFont ();
-	GXFloat width = (GXFloat)surface->GetWidth ();
-	GXFloat height = (GXFloat)surface->GetHeight ();
+	GXFloat width = static_cast<GXFloat> ( surface->GetWidth () );
+	GXFloat height = static_cast<GXFloat> ( surface->GetHeight () );
 	const GXWChar* text = editBoxWidget->GetText ();
 
 	surface->Reset ();
@@ -129,22 +134,22 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
 
 			case eGXUITextAlignment::Right:
 			{
-				GXFloat w = (GXFloat)surface->GetWidth ();
-				GXFloat len = (GXFloat)font->GetTextLength ( 0, text );
+				GXFloat w = static_cast<GXFloat> ( surface->GetWidth () );
+				GXFloat len = static_cast<GXFloat> ( font->GetTextLength ( 0u, text ) );
 				pi.insertX = w - len - editBoxWidget->GetTextRightOffset ();
 			}
 			break;
 
 			case eGXUITextAlignment::Center:
 			{
-				GXFloat w = (GXFloat)surface->GetWidth ();
-				GXFloat len = (GXFloat)font->GetTextLength ( 0, text );
+				GXFloat w = static_cast<GXFloat> ( surface->GetWidth () );
+				GXFloat len = static_cast<GXFloat> ( font->GetTextLength ( 0u, text ) );
 				pi.insertX = ( w - len ) * 0.5f;
 			}
 			break;
 		}
 
-		surface->AddText ( pi, 0, text );
+		surface->AddText ( pi, 0u, text );
 	}
 
 	GXLineInfo li;
@@ -198,7 +203,7 @@ GXVoid EMUIEditBoxRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GX
 	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.GetZ () );
+	surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 
 GXVoid EMUIEditBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -208,18 +213,18 @@ GXVoid EMUIEditBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.GetZ () );
+	surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 
 //-------------------------------------------------------------------------
 
 EMUIEditBox::EMUIEditBox ( EMUI* parent ):
-EMUI ( parent )
+	EMUI ( parent ),
+	widget ( new GXUIEditBox ( parent ? parent->GetWidget () : nullptr ) )
 {
-	widget = new GXUIEditBox ( parent ? parent->GetWidget () : nullptr );
 	widget->SetRenderer ( new EMUIEditBoxRenderer ( widget ) );
 	widget->Resize ( DEFAULT_BOTTOM_LEFT_X * gx_ui_Scale, DEFAULT_BOTTOM_LEFT_Y * gx_ui_Scale, DEFAULT_WIDTH * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
-	widget->SetFont ( DEFAULT_FONT, (GXUShort)( DEFAULT_FONT_SIZE * gx_ui_Scale ) );
+	widget->SetFont ( DEFAULT_FONT, static_cast<GXUShort> ( DEFAULT_FONT_SIZE * gx_ui_Scale ) );
 	widget->SetAlignment ( DEFAULT_ALIGNMENT );
 	widget->SetTextLeftOffset ( DEFAULT_TEXT_LEFT_OFFSET * gx_ui_Scale );
 	widget->SetTextRightOffset ( DEFAULT_TEXT_RIGHT_OFFSET * gx_ui_Scale );

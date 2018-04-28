@@ -2,41 +2,41 @@
 #include <GXEngine/GXUICommon.h>
 
 
-#define ANY_WIDTH							1.0f
+#define DEFAULT_BOTTOM_LEFT_X				0.1f
+#define DEFAULT_BOTTOM_LEFT_Y				0.1f
+#define DEFAULT_TEXTURE						L"Textures/System/Default_Diffuse.tga"
 
 #define ITEM_HEIGHT							0.5f
-#define EM_DEFAULT_BOTTOM_LEFT_X			0.1f
-#define EM_DEFAULT_BOTTOM_LEFT_Y			0.1f
+#define ANY_WIDTH							1.0f
 
 #define FONT								L"Fonts/trebuc.ttf"
 #define FONT_SIZE							0.33f
 #define TEXT_EXTEND							0.5f
 
-#define BACKGROUND_COLOR_R					49
-#define BACKGROUND_COLOR_G					48
-#define BACKGROUND_COLOR_B					48
-#define BACKGROUND_COLOR_A					255
+#define BACKGROUND_COLOR_R					49u
+#define BACKGROUND_COLOR_G					48u
+#define BACKGROUND_COLOR_B					48u
+#define BACKGROUND_COLOR_A					255u
 
-#define SELECT_COLOR_R						115
-#define SELECT_COLOR_G						185
-#define SELECT_COLOR_B						0
-#define SELECT_COLOR_A						102
+#define SELECT_COLOR_R						115u
+#define SELECT_COLOR_G						185u
+#define SELECT_COLOR_B						0u
+#define SELECT_COLOR_A						102u
 
-#define HIGHLIGHT_COLOR_R					255
-#define HIGHLIGHT_COLOR_G					255
-#define HIGHLIGHT_COLOR_B					255
-#define HIGHLIGHT_COLOR_A					38
+#define HIGHLIGHT_COLOR_R					255u
+#define HIGHLIGHT_COLOR_G					255u
+#define HIGHLIGHT_COLOR_B					255u
+#define HIGHLIGHT_COLOR_A					38u
 
-#define FONT_COLOR_R						115
-#define FONT_COLOR_G						185
-#define FONT_COLOR_B						0
-#define FONT_COLOR_A						255
-
-#define DEFAULT_TEXTURE						L"Textures/System/Default_Diffuse.tga"
+#define FONT_COLOR_R						115u
+#define FONT_COLOR_G						185u
+#define FONT_COLOR_B						0u
+#define FONT_COLOR_A						255u
 
 #define PIXEL_PERFECT_LOCATION_OFFSET_X		0.25f
 #define PIXEL_PERFECT_LOCATION_OFFSET_Y		0.25f
 
+//---------------------------------------------------------
 
 class EMUIMenuRenderer : public GXWidgetRenderer
 {
@@ -56,14 +56,19 @@ class EMUIMenuRenderer : public GXWidgetRenderer
 		GXVoid OnDraw () override;
 		GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
 		GXVoid OnMoved ( GXFloat x, GXFloat y ) override;
+
+	private:
+		EMUIMenuRenderer () = delete;
+		EMUIMenuRenderer ( const EMUIMenuRenderer &other ) = delete;
+		EMUIMenuRenderer& operator = ( const EMUIMenuRenderer &other ) = delete;
 };
 
 EMUIMenuRenderer::EMUIMenuRenderer ( GXUIMenu* widget ):
-GXWidgetRenderer ( widget )
+	GXWidgetRenderer ( widget )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
-	surface = new GXHudSurface ( (GXUShort)boundsLocal.GetWidth (), (GXUShort)boundsLocal.GetHeight () );
-	font = GXFont::GetFont ( FONT, (GXUShort)( FONT_SIZE * gx_ui_Scale ) );
+	surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
+	font = GXFont::GetFont ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) );
 	texture = GXTexture2D::LoadTexture ( DEFAULT_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 }
 
@@ -81,10 +86,10 @@ GXFloat EMUIMenuRenderer::GetTextWidth ( const GXWChar* text ) const
 
 GXVoid EMUIMenuRenderer::OnRefresh ()
 {
-	const GXUIMenu* menu = (const GXUIMenu*)widget;
+	const GXUIMenu* menu = static_cast<const GXUIMenu*> ( widget );
 
-	GXFloat w = (GXFloat)surface->GetWidth ();
-	GXFloat h = (GXFloat)surface->GetHeight ();
+	GXFloat w = static_cast<GXFloat> ( surface->GetWidth () );
+	GXFloat h = static_cast<GXFloat> ( surface->GetHeight () );
 
 	GXUByte totalItems = menu->GetTotalItems ();
 
@@ -134,16 +139,16 @@ GXVoid EMUIMenuRenderer::OnRefresh ()
 	pi.font = &font;
 	pi.insertY = ( h - font.GetSize () ) * 0.7f;
 
-	for ( GXUByte i = 0; i < totalItems; i++ )
+	for ( GXUByte i = 0u; i < totalItems; i++ )
 	{
 		const GXWChar* itemName = menu->GetItemName ( i );
 		GXFloat itemOffset = menu->GetItemOffset ( i );
 		GXFloat itemWidth = menu->GetItemWidth ( i );
-		GXFloat textWidth = (GXFloat)font.GetTextLength ( 0, itemName );
+		GXFloat textWidth = static_cast<GXFloat> ( font.GetTextLength ( 0u, itemName ) );
 
 		pi.insertX = itemOffset + ( itemWidth - textWidth ) * 0.5f;
 
-		surface->AddText ( pi, 0, itemName );
+		surface->AddText ( pi, 0u, itemName );
 	}
 }
 
@@ -177,11 +182,11 @@ GXVoid EMUIMenuRenderer::OnMoved ( GXFloat x, GXFloat y )
 //---------------------------------------------------------
 
 EMUIMenu::EMUIMenu ( EMUI* parent ):
-EMUI ( parent )
+	EMUI ( parent ),
+	widget ( new GXUIMenu ( parent ? parent->GetWidget () : nullptr ) )
 {
-	widget = new GXUIMenu ( parent ? parent->GetWidget () : nullptr );
 	widget->SetRenderer ( new EMUIMenuRenderer ( widget ) );
-	widget->Resize ( EM_DEFAULT_BOTTOM_LEFT_X * gx_ui_Scale, EM_DEFAULT_BOTTOM_LEFT_Y * gx_ui_Scale, ANY_WIDTH, ITEM_HEIGHT * gx_ui_Scale );
+	widget->Resize ( DEFAULT_BOTTOM_LEFT_X * gx_ui_Scale, DEFAULT_BOTTOM_LEFT_Y * gx_ui_Scale, ANY_WIDTH, ITEM_HEIGHT * gx_ui_Scale );
 }
 
 EMUIMenu::~EMUIMenu ()
@@ -197,8 +202,8 @@ GXWidget* EMUIMenu::GetWidget () const
 
 GXVoid EMUIMenu::AddItem ( const GXWChar* name, EMUIPopup* popup )
 {
-	const EMUIMenuRenderer* renderer = (const EMUIMenuRenderer*)widget->GetRenderer ();
-	widget->AddItem ( name, renderer->GetTextWidth ( name ) + TEXT_EXTEND * gx_ui_Scale, popup ? (GXUIPopup*)popup->GetWidget () : nullptr );
+	const EMUIMenuRenderer* renderer = static_cast<const EMUIMenuRenderer*> ( widget->GetRenderer () );
+	widget->AddItem ( name, renderer->GetTextWidth ( name ) + TEXT_EXTEND * gx_ui_Scale, popup ? static_cast<GXUIPopup*> ( popup->GetWidget () ) : nullptr );
 }
 
 GXVoid EMUIMenu::SetLocation ( GXFloat leftBottomX, GXFloat leftBottomY )

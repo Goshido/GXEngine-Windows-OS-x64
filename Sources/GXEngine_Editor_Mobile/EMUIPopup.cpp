@@ -51,8 +51,8 @@ class EMUIPopupRenderer : public GXWidgetRenderer
 	private:
 		GXFont			font;
 		GXHudSurface*	surface;
-		GXTexture2D		texture;
 		GXDynamicArray	itemNames;
+		GXTexture2D		texture;
 
 	public:
 		explicit EMUIPopupRenderer ( GXUIPopup* widget );
@@ -75,10 +75,9 @@ EMUIPopupRenderer::EMUIPopupRenderer ( GXUIPopup* widget ):
 	GXWidgetRenderer ( widget ),
 	font ( GXFont::GetFont ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) ) ),
 	surface ( new GXHudSurface ( static_cast<GXUShort> ( widget->GetItemWidth () ), static_cast<GXUShort> ( widget->GetItemHeight () ) ) ),
-	texture ( GXTexture2D::LoadTexture ( DEFAULT_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE ) ),
 	itemNames ( sizeof ( GXWChar* ) )
 {
-	// NOTHING
+	texture = GXTexture2D::LoadTexture ( DEFAULT_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 }
 
 EMUIPopupRenderer::~EMUIPopupRenderer ()

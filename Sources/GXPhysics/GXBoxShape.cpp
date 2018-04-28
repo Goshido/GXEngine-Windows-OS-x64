@@ -9,7 +9,6 @@ GXBoxShape::GXBoxShape ( GXRigidBody* body, GXFloat width, GXFloat height, GXFlo
 	width ( width ),
 	height ( height ),
 	depth ( depth )
-
 {
 	GXFloat halfWidth = 0.5f * width;
 	GXFloat halfHeight = 0.5f * height;

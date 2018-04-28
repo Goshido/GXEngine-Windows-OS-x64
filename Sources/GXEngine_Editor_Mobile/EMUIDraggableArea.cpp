@@ -4,27 +4,28 @@
 #include <GXEngine/GXUICommon.h>
 
 
-#define BACKGROUND_TEXTURE	L"Textures/Editor Mobile/Default Diffuse.tex"
+#define BACKGROUND_TEXTURE					L"Textures/Editor Mobile/Default Diffuse.tex"
 
-#define BACKGROUND_COLOR_R	48
-#define BACKGROUND_COLOR_G	48
-#define BACKGROUND_COLOR_B	48
-#define BACKGROUND_COLOR_A	255
+#define BACKGROUND_COLOR_R					48u
+#define BACKGROUND_COLOR_G					48u
+#define BACKGROUND_COLOR_B					48u
+#define BACKGROUND_COLOR_A					255u
 
-#define FRAME_COLOR_R		128
-#define FRAME_COLOR_G		128
-#define FRAME_COLOR_B		128
-#define FRAME_COLOR_A		255
+#define FRAME_COLOR_R						128u
+#define FRAME_COLOR_G						128u
+#define FRAME_COLOR_B						128u
+#define FRAME_COLOR_A						255u
 
 #define PIXEL_PERFECT_LOCATION_OFFSET_X		0.25f
 #define PIXEL_PERFECT_LOCATION_OFFSET_Y		0.25f
 
+//---------------------------------------------------------------
 
 class EMUIDraggableAreaRenderer : public GXWidgetRenderer
 {
 	private:
-		GXHudSurface*		surface;
 		GXTexture2D			background;
+		GXHudSurface*		surface;
 
 	public:
 		explicit EMUIDraggableAreaRenderer ( GXUIDragableArea* draggableAreaWidget );
@@ -36,14 +37,19 @@ class EMUIDraggableAreaRenderer : public GXWidgetRenderer
 	protected:
 		GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
 		GXVoid OnMoved ( GXFloat x, GXFloat y ) override;
+
+	private:
+		EMUIDraggableAreaRenderer () = delete;
+		EMUIDraggableAreaRenderer ( const EMUIDraggableAreaRenderer &other ) = delete;
+		EMUIDraggableAreaRenderer& operator = ( const EMUIDraggableAreaRenderer &other ) = delete;
 };
 
 EMUIDraggableAreaRenderer::EMUIDraggableAreaRenderer ( GXUIDragableArea* draggableAreaWidget ):
-GXWidgetRenderer ( draggableAreaWidget )
+	GXWidgetRenderer ( draggableAreaWidget )
 {
 	background = GXTexture2D::LoadTexture ( BACKGROUND_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
-	surface = new GXHudSurface ( (GXUShort)boundsLocal.GetWidth (), (GXUShort)boundsLocal.GetHeight () );
+	surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
 EMUIDraggableAreaRenderer::~EMUIDraggableAreaRenderer ()
@@ -55,8 +61,8 @@ EMUIDraggableAreaRenderer::~EMUIDraggableAreaRenderer ()
 GXVoid EMUIDraggableAreaRenderer::OnRefresh ()
 {
 	surface->Reset ();
-	GXFloat w = (GXFloat)surface->GetWidth ();
-	GXFloat h = (GXFloat)surface->GetHeight ();
+	GXFloat w = static_cast<GXFloat> ( surface->GetWidth () );
+	GXFloat h = static_cast<GXFloat> ( surface->GetHeight () );
 
 	GXImageInfo ii;
 	ii.texture = &background;
@@ -109,7 +115,7 @@ GXVoid EMUIDraggableAreaRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort wid
 	surface->GetLocation ( location );
 	delete surface;
 	surface = new GXHudSurface ( width, height );
-	surface->SetLocation ( x, y, location.GetZ () );
+	surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 
 GXVoid EMUIDraggableAreaRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -119,15 +125,15 @@ GXVoid EMUIDraggableAreaRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.GetZ () );
+	surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 
 //---------------------------------------------------------------
 
 EMUIDraggableArea::EMUIDraggableArea ( EMUI* parent ):
-EMUI ( parent )
+	EMUI ( parent ),
+	widget ( new GXUIDragableArea ( parent ? parent->GetWidget () : nullptr ) )
 {
-	widget = new GXUIDragableArea ( parent ? parent->GetWidget () : nullptr );
 	widget->SetRenderer ( new EMUIDraggableAreaRenderer ( widget ) );
 }
 

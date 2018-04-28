@@ -12,13 +12,26 @@ enum class eEMUIFileListBoxItemType : GXUByte
 	File
 };
 
-struct EMUIFileListBoxItem
+class EMUIFileListBoxItem
 {
-	eEMUIFileListBoxItemType	type;
-	GXWChar*					name;
+	private:
+		eEMUIFileListBoxItemType	type;
+		GXWChar*					name;
 
-	explicit EMUIFileListBoxItem ( eEMUIFileListBoxItemType type, const GXWChar* name );
-	~EMUIFileListBoxItem ();
+	public:
+		explicit EMUIFileListBoxItem ( eEMUIFileListBoxItemType type, const GXWChar* name );
+		~EMUIFileListBoxItem ();
+
+		eEMUIFileListBoxItemType GetType () const;
+		GXVoid SetType ( eEMUIFileListBoxItemType newType );
+
+		const GXWChar* GetName () const;
+		GXVoid SetName ( const GXWChar* newName );
+
+	private:
+		EMUIFileListBoxItem () = delete;
+		EMUIFileListBoxItem ( const EMUIFileListBoxItem &other ) = delete;
+		EMUIFileListBoxItem& operator = ( const EMUIFileListBoxItem &other ) = delete;
 };
 
 class EMUIFileListBox : public EMUI
@@ -44,6 +57,10 @@ class EMUIFileListBox : public EMUI
 
 	private:
 		static GXVoid GXCALL ItemDestructor ( GXVoid* itemData );
+
+		EMUIFileListBox () = delete;
+		EMUIFileListBox ( const EMUIFileListBox &other ) = delete;
+		EMUIFileListBox& operator = ( const EMUIFileListBox &other ) = delete;
 };
 
 

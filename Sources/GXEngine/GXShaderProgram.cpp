@@ -732,7 +732,7 @@ GXShaderProgram::GXShaderProgram ( const GXShaderProgramInfo &info )
 
 	glUseProgram ( program );
 
-	for ( GXInt i = 0; i < info.numSamplers; i++ )
+	for ( GXUInt i = 0u; i < info.numSamplers; i++ )
 		glUniform1i ( GetUniform ( info.samplerNames[ i ] ), static_cast<GLint> ( info.samplerLocations[ i ] ) );
 
 	glUseProgram ( 0u );

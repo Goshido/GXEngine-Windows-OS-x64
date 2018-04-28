@@ -21,6 +21,11 @@ class EMUIMenu : public EMUI
 		GXVoid AddItem ( const GXWChar* name, EMUIPopup* popup );
 		GXVoid SetLocation ( GXFloat leftBottomX, GXFloat leftBottomY );
 		GXFloat GetHeight () const;
+
+	private:
+		EMUIMenu () = delete;
+		EMUIMenu ( const EMUIMenu &other ) = delete;
+		EMUIMenu& operator = ( const EMUIMenu &other ) = delete;
 };
 
 

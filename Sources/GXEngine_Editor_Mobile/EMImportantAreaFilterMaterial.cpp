@@ -6,10 +6,10 @@
 #define GEOMETRY_SHADER			nullptr
 #define FRAGMENT_SHADER			L"Shaders/Editor Mobile/ImportantAreaFilter_fs.txt"
 
-#define IMAGE_SLOT				0
-#define RETINA_FILTER_SLOT		1
+#define IMAGE_SLOT				0u
+#define RETINA_FILTER_SLOT		1u
 
-#define INVALID_TEXTURE_OBJECT	0
+#define INVALID_TEXTURE_OBJECT	0u
 #define MINIMUM_U				0.0
 #define MAXIMUM_U				1.0
 #define MINIMUM_V				0.0
@@ -17,9 +17,10 @@
 #define THREE_SIGMA_RULE_FACTOR	0.16666666666666666666666666666667
 #define DOUBLE_PI				6.283185307179586476925286766559
 
-GLint rrrLocation;
+//---------------------------------------------------------------------------------------------
 
-EMImportantAreaFilterMaterial::EMImportantAreaFilterMaterial ()
+EMImportantAreaFilterMaterial::EMImportantAreaFilterMaterial ():
+	imageTexture ( nullptr )
 {
 	static const GLchar* samplerNames[ 3 ] = { "imageSampler", "retinaFilterSampler" };
 	static const GLuint samplerLocations[ 3 ] = { IMAGE_SLOT, RETINA_FILTER_SLOT };
@@ -28,15 +29,13 @@ EMImportantAreaFilterMaterial::EMImportantAreaFilterMaterial ()
 	si.vs = VERTEX_SHADER;
 	si.gs = GEOMETRY_SHADER;
 	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 2;
+	si.numSamplers = 2u;
 	si.samplerNames = samplerNames;
 	si.samplerLocations = samplerLocations;
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
 	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
-
-	imageTexture = nullptr;
 }
 
 EMImportantAreaFilterMaterial::~EMImportantAreaFilterMaterial ()
@@ -61,7 +60,7 @@ GXVoid EMImportantAreaFilterMaterial::Unbind ()
 {
 	if ( !imageTexture ) return;
 
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 
 	imageTexture->Unbind ();
 	retinaFilterTexture.Unbind ();
@@ -83,7 +82,7 @@ GXVoid EMImportantAreaFilterMaterial::SetImageTexture ( GXTexture2D &texture )
 
 GXVoid EMImportantAreaFilterMaterial::GenerateRetinaFilterTexture ( GXUShort effectiveLength )
 {
-	GXDouble step = ( MAXIMUM_V - MINIMUM_V ) / ( (GXDouble)( effectiveLength ) - 1.0 );
+	GXDouble step = ( MAXIMUM_V - MINIMUM_V ) / static_cast<GXDouble> ( effectiveLength - 1u );
 
 	GXDouble differenceU = MAXIMUM_U - MINIMUM_U;
 	GXDouble differenceV = MAXIMUM_V - MINIMUM_V;
@@ -103,9 +102,9 @@ GXVoid EMImportantAreaFilterMaterial::GenerateRetinaFilterTexture ( GXUShort eff
 	GXDouble totalGaussSum = 0.0;
 	GXDouble v = MINIMUM_V;
 
-	GXUInt samples = (GXUInt)( effectiveLength * effectiveLength );
-	GXUInt sampleOffset = 0;
-	GXDouble* probabilityDensitySamples = (GXDouble*)malloc ( samples * sizeof ( GXDouble ) );
+	GXUInt samples = static_cast<GXUInt> ( effectiveLength * effectiveLength );
+	GXUPointer sampleOffset = 0u;
+	GXDouble* probabilityDensitySamples = static_cast<GXDouble*> ( malloc ( samples * sizeof ( GXDouble ) ) );
 
 	while ( v < limitV )
 	{
@@ -129,11 +128,11 @@ GXVoid EMImportantAreaFilterMaterial::GenerateRetinaFilterTexture ( GXUShort eff
 		v += step;
 	}
 
-	GXDouble hardwareReducingCompensationFactor = (GXDouble)samples / totalGaussSum;
-	GXFloat* retinaFilterSamples = (GXFloat*)malloc ( samples * sizeof ( GXFloat ) );
+	GXDouble hardwareReducingCompensationFactor = static_cast<GXDouble> ( samples ) / totalGaussSum;
+	GXFloat* retinaFilterSamples = static_cast<GXFloat*> ( malloc ( samples * sizeof ( GXFloat ) ) );
 
-	for ( sampleOffset = 0; sampleOffset < samples; sampleOffset++ )
-		retinaFilterSamples[ sampleOffset ] = (GXFloat)( hardwareReducingCompensationFactor * probabilityDensitySamples[ sampleOffset ] );
+	for ( sampleOffset = 0u; sampleOffset < samples; sampleOffset++ )
+		retinaFilterSamples[ sampleOffset ] = static_cast<GXFloat> ( hardwareReducingCompensationFactor * probabilityDensitySamples[ sampleOffset ] );
 
 	free ( probabilityDensitySamples );
 

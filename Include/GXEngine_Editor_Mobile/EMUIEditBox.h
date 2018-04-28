@@ -12,7 +12,7 @@ class EMUIEditBox : public EMUI
 		GXUIEditBox*	widget;
 
 	public:
-		EMUIEditBox ( EMUI* parent );
+		explicit EMUIEditBox ( EMUI* parent );
 		~EMUIEditBox () override;
 
 		GXWidget* GetWidget () const override;
@@ -32,6 +32,11 @@ class EMUIEditBox : public EMUI
 		GXTextValidator* GetValidator () const;
 
 		GXVoid SetOnFinishEditingCallback ( GXVoid* handler, PFNGXUIEDITBOXONFINISHEDITINGPROC callback );
+
+	private:
+		EMUIEditBox () = delete;
+		EMUIEditBox ( const EMUIEditBox &other ) = delete;
+		EMUIEditBox& operator = ( const EMUIEditBox &other ) = delete;
 };
 
 
