@@ -1,17 +1,17 @@
-// version 1.0
+// version 1.1
 
 #include <GXEngine/GXUIEditBoxIntegerValidator.h>
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXMemory.h>
 
 
-GXUIEditBoxIntegerValidator::GXUIEditBoxIntegerValidator ( const GXWChar* defaultValidText, GXUIEditBox& editBox, GXBigInt minimumValue, GXBigInt maximumValue ) :
-GXTextValidator ( defaultValidText ), widget ( editBox )
+GXUIEditBoxIntegerValidator::GXUIEditBoxIntegerValidator ( const GXWChar* defaultValidText, GXUIEditBox& editBox, GXBigInt minimumValue, GXBigInt maximumValue ):
+	GXTextValidator ( defaultValidText ),
+	editBox ( editBox ),
+	minimumValue ( minimumValue ),
+	maximumValue ( maximumValue )
 {
-	this->minimumValue = minimumValue;
-	this->maximumValue = maximumValue;
-
-	Validate ( widget.GetText () );
+	Validate ( this->editBox.GetText () );
 }
 
 GXUIEditBoxIntegerValidator::~GXUIEditBoxIntegerValidator ()
@@ -23,20 +23,22 @@ GXBool GXUIEditBoxIntegerValidator::Validate ( const GXWChar* text )
 {
 	if ( !text )
 	{
-		widget.SetText ( oldValidText );
+		editBox.SetText ( oldValidText );
 		return GX_FALSE;
 	}
 
-	GXUInt i = 0;
+	GXUInt i = 0u;
+
 	if ( text[ i ] == L'-' )
 		i++;
 
 	GXUInt symbols = GXWcslen ( text );
+
 	for ( ; i < symbols; i++ )
 	{
-		if ( !isdigit ( (int)text[ i ] ) )
+		if ( !isdigit ( static_cast<int> ( text[ i ] ) ) )
 		{
-			widget.SetText ( oldValidText );
+			editBox.SetText ( oldValidText );
 			return GX_FALSE;
 		}
 	}
@@ -46,7 +48,7 @@ GXBool GXUIEditBoxIntegerValidator::Validate ( const GXWChar* text )
 
 	if ( currentValue < minimumValue || currentValue > maximumValue )
 	{
-		widget.SetText ( oldValidText );
+		editBox.SetText ( oldValidText );
 		return GX_FALSE;
 	}
 

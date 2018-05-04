@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #include <GXEngine/GXUIEditBox.h>
 #include <GXEngine/GXUIMessage.h>
@@ -28,8 +28,9 @@
 #define GX_LEFT_ARROW						0x001C
 #define GX_RIGHT_ARROW						0x001D
 
-#define GX_TEXT_GROW_FACTOR					16
+#define GX_TEXT_GROW_FACTOR					16u
 
+//---------------------------------------------------------------------------------------------------------------------
 
 struct GXUIEditBoxFontInfo
 {
@@ -37,7 +38,7 @@ struct GXUIEditBoxFontInfo
 	GXUShort		size;
 };
 
-//------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXUIEditBox::GXUIEditBox ( GXWidget* parent ):
 	GXWidget ( parent ),
@@ -615,7 +616,8 @@ GXVoid GXUIEditBox::ReleaseInput ()
 
 GXVoid GXUIEditBox::UpdateCursor ( GXInt newCursor )
 {
-	GXInt c = GXClampi ( newCursor, 0, (GXInt)textSymbols );
+	GXInt c = GXClampi ( newCursor, 0, static_cast<GXInt> ( textSymbols ) );
+
 	if ( GetKeyState ( VK_SHIFT ) & GX_UI_KEYSTATE_MASK )
 	{
 		if ( c != cursor )
@@ -625,16 +627,16 @@ GXVoid GXUIEditBox::UpdateCursor ( GXInt newCursor )
 			if ( renderer )
 				renderer->OnUpdate ();
 		}
-	}
-	else
-	{
-		if ( c != cursor || c != selection )
-		{
-			cursor = selection = c;
 
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
+		return;
+	}
+
+	if ( c != cursor || c != selection )
+	{
+		cursor = selection = c;
+
+		if ( renderer )
+			renderer->OnUpdate ();
 	}
 }
 

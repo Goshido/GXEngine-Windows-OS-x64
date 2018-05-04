@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.2
 
 #ifndef GX_TEXTURE_CUBE_MAP
 #define GX_TEXTURE_CUBE_MAP
@@ -58,6 +58,8 @@ class GXTextureCubeMap
 
 	private:
 		static GXVoid GXCALL ProjectFaces ( GLuint fbo, GLuint textureObject, GXTexture2D &equirectangularTexture, GXBool isApplyGammaCorrection );
+
+		GXTextureCubeMap ( const GXTextureCubeMap &other ) = delete;
 };
 
 

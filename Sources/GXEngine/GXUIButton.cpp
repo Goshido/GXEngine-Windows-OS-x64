@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #include <GXEngine/GXUIButton.h>
 #include <GXEngine/GXUIMessage.h>
@@ -6,14 +6,14 @@
 
 
 GXUIButton::GXUIButton ( GXWidget* parent ):
-GXWidget ( parent )
+	GXWidget ( parent ),
+	OnLeftMouseButton ( nullptr ),
+	handler ( nullptr ),
+	isPressed ( GX_FALSE ),
+	isDisabled ( GX_FALSE ),
+	isHighlighted ( GX_FALSE )
 {
-	OnLeftMouseButton = nullptr;
-	handler = nullptr;
-
-	isPressed = GX_FALSE;
-	isDisabled = GX_FALSE;
-	isHighlighted = GX_FALSE;
+	// NOTHING
 }
 
 GXUIButton::~GXUIButton ()
@@ -36,7 +36,7 @@ GXVoid GXUIButton::OnMessage ( GXUInt message, const GXVoid* data )
 
 			if ( OnLeftMouseButton )
 			{
-				const GXVec2* position = (const GXVec2*)data;
+				const GXVec2* position = static_cast<const GXVec2*> ( data );
 				OnLeftMouseButton ( handler, *this, position->GetX (), position->GetY (), eGXMouseButtonState::Down );
 			}
 		}
@@ -53,7 +53,7 @@ GXVoid GXUIButton::OnMessage ( GXUInt message, const GXVoid* data )
 
 			if ( !OnLeftMouseButton ) return;
 
-			const GXVec2* position = (const GXVec2*)data;
+			const GXVec2* position = static_cast<const GXVec2*> ( data );
 			OnLeftMouseButton ( handler, *this, position->GetX (), position->GetY (), eGXMouseButtonState::Up );
 		}
 		break;

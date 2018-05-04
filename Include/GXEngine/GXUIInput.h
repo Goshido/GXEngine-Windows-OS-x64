@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_UI_INPUT
 #define GX_UI_INPUT
@@ -61,6 +61,11 @@ class GXUIInput : public GXWidget
 		GXVoid SetOnKeyUpCallback ( PFNGXUIINPUTNONKEYPROC callback );
 
 		GXVoid SetHandler ( GXVoid* handlerObject );
+
+	private:
+		GXUIInput () = delete;
+		GXUIInput ( const GXUIInput &other ) = delete;
+		GXUIInput& operator = ( const GXUIInput &other ) = delete;
 };
 
 

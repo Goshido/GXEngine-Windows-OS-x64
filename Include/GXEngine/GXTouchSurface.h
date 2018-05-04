@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_TOUCH_SURFACE
 #define GX_TOUCH_SURFACE
@@ -61,11 +61,14 @@ class GXTouchSurface
 		GXVoid SetDefaultWidget ( GXWidget* widget );
 
 	private:
-		explicit GXTouchSurface ();
+		GXTouchSurface ();
 
 		GXVoid DeleteWidgets ();
 		GXWidget* FindWidget ( const GXVec2 &position );
 		GXVoid DrawWidgets ( GXWidget* widget );
+
+		GXTouchSurface ( const GXTouchSurface &other ) = delete;
+		GXTouchSurface& operator = ( const GXTouchSurface &other ) = delete;
 };
 
 

@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #include <GXEngine/GXUIDraggableArea.h>
 #include <GXEngine/GXUICommon.h>
@@ -13,25 +13,25 @@
 
 #define TOLERANCE_FACTOR			0.25f
 
+//---------------------------------------------------------------------------------------------------------------------
 
 GXUIDragableArea::GXUIDragableArea ( GXWidget* parent ):
-GXWidget ( parent )
+	GXWidget ( parent ),
+	headerHeight ( DEFAULT_HEADER_HEIGHT * gx_ui_Scale ),
+	borderThickness ( DEFAULT_BORDER_THICKNESS * gx_ui_Scale ),
+	minimumSize ( DEFAULT_MINIMUM_WIDTH * gx_ui_Scale, DEFAULT_MINIMUM_HEIGHT * gx_ui_Scale ),
+	standartArrow ( LoadCursorW ( 0, IDC_ARROW ) ),
+	verticalArrow ( LoadCursorW ( 0, IDC_SIZENS ) ),
+	horizontalArrow ( LoadCursorW ( 0, IDC_SIZEWE ) ),
+	crossArrow ( LoadCursorW ( 0, IDC_SIZEALL ) ),
+	northwestSoutheastArrow ( LoadCursorW ( 0, IDC_SIZENWSE ) ),
+	northeastSouthwestArrow ( LoadCursorW ( 0, IDC_SIZENESW ) ),
+	lastMousePosition ( 0.0f, 0.0f ),
+	resizeMode ( eGXDraggableAreaResizeMode::None ),
+	OnResize ( nullptr ),
+	handler ( nullptr )
 {
-	headerHeight = DEFAULT_HEADER_HEIGHT * gx_ui_Scale;
-	borderThickness = DEFAULT_BORDER_THICKNESS * gx_ui_Scale;
-	minimumSize.Init ( DEFAULT_MINIMUM_WIDTH * gx_ui_Scale, DEFAULT_MINIMUM_HEIGHT * gx_ui_Scale );
 	isDraggable = GX_TRUE;
-	memset ( &lastMousePosition, 0, sizeof ( GXVec2 ) );
-	OnResize = nullptr;
-	handler = nullptr;
-	resizeMode = eGXDraggableAreaResizeMode::None;
-
-	standartArrow = LoadCursorW ( 0, IDC_ARROW );
-	verticalArrow = LoadCursorW ( 0, IDC_SIZENS );
-	horizontalArrow = LoadCursorW ( 0, IDC_SIZEWE );
-	crossArrow = LoadCursorW ( 0, IDC_SIZEALL );
-	northwestSoutheastArrow = LoadCursorW ( 0, IDC_SIZENWSE );
-	northeastSouthwestArrow = LoadCursorW ( 0, IDC_SIZENESW );
 	currentCursor = &standartArrow;
 }
 
@@ -46,13 +46,14 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 	{
 		case GX_MSG_LMBDOWN:
 		{
-			const GXVec2* pos = (const GXVec2*)data;
+			const GXVec2* pos = static_cast<const GXVec2*> ( data );
 
 			resizeMode = GetResizeMode ( *pos );
 			memcpy ( &lastMousePosition, pos, sizeof ( GXVec2 ) );
-				
-			if ( resizeMode != eGXDraggableAreaResizeMode::None )
-				GXTouchSurface::GetInstance ().LockCursor ( this );
+
+			if ( resizeMode == eGXDraggableAreaResizeMode::None ) break;
+
+			GXTouchSurface::GetInstance ().LockCursor ( this );
 		}
 		break;
 
@@ -62,8 +63,9 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 
 			GXTouchSurface& touchSurface = GXTouchSurface::GetInstance ();
 
-			if ( touchSurface.GetLockedCursorWidget () == this )
-				touchSurface.ReleaseCursor ();
+			if ( touchSurface.GetLockedCursorWidget () != this ) break;
+
+			touchSurface.ReleaseCursor ();
 		}
 		break;
 
@@ -76,14 +78,14 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 
 		case GX_MSG_MOUSE_OVER:
 		{
-			const GXVec2* pos = (const GXVec2*)data;
+			const GXVec2* pos = static_cast<const GXVec2*> ( data );
 			UpdateCursor ( *pos );
 		}
 		break;
 
 		case GX_MSG_MOUSE_MOVE:
 		{
-			const GXVec2* pos = (const GXVec2*)data;
+			const GXVec2* pos = static_cast<const GXVec2*> ( data );
 
 			switch ( resizeMode )
 			{
@@ -434,7 +436,7 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 		
 		case GX_MSG_DRAGGABLE_AREA_SET_HEADER_HEIGHT:
 		{
-			const GXFloat* height = (const GXFloat*)data;
+			const GXFloat* height = static_cast<const GXFloat*> ( data );
 			headerHeight = *height;
 
 			UpdateAreas ();
@@ -446,7 +448,7 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 
 		case GX_MSG_DRAGGABLE_AREA_SET_BORDER_THICKNESS:
 		{
-			const GXFloat* thickness = (const GXFloat*)data;
+			const GXFloat* thickness = static_cast<const GXFloat*> ( data );
 			borderThickness = *thickness;
 
 			UpdateAreas ();
@@ -458,7 +460,7 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 
 		case GX_MSG_DRAGGABLE_AREA_SET_MINIMUM_WIDTH:
 		{
-			const GXFloat* width = (const GXFloat*)data;
+			const GXFloat* width = static_cast<const GXFloat*> ( data );
 			minimumSize.SetX ( *width );
 
 			if ( boundsLocal.GetWidth () >= minimumSize.GetX () ) break;
@@ -469,7 +471,7 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 
 		case GX_MSG_DRAGGABLE_AREA_SET_MINIMUM_HEIGHT:
 		{
-			const GXFloat* height = (const GXFloat*)data;
+			const GXFloat* height = static_cast<const GXFloat*> ( data );
 			minimumSize.SetY ( *height );
 
 			if ( boundsLocal.GetHeight () >= minimumSize.GetY () ) break;
@@ -480,7 +482,7 @@ GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
 
 		case GX_MSG_DRAG:
 		{
-			const GXVec2* delta = (const GXVec2*)data;
+			const GXVec2* delta = static_cast<const GXVec2*> ( data );
 
 			GXAABB newBounds;
 			newBounds.AddVertex ( boundsLocal.min.GetX () + delta->GetX (), boundsLocal.min.GetY () + delta->GetY (), boundsLocal.min.GetZ () );

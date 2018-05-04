@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #include <GXEngine/GXUIEditBoxFloatValidator.h>
 #include <GXCommon/GXMemory.h>
@@ -15,14 +15,15 @@ enum eParserState : GXUByte
 	InvalidFloatNumber
 };
 
+//---------------------------------------------------------------------------------------------------------------------
 
-GXUIEditBoxFloatValidator::GXUIEditBoxFloatValidator ( const GXWChar* defaultValidText, GXUIEditBox& editBox, GXFloat minimumValue, GXFloat maximumValue ) :
-GXTextValidator ( defaultValidText ), widget ( editBox )
+GXUIEditBoxFloatValidator::GXUIEditBoxFloatValidator ( const GXWChar* defaultValidText, GXUIEditBox& editBox, GXFloat minimumValue, GXFloat maximumValue ):
+	GXTextValidator ( defaultValidText ),
+	editBox ( editBox ),
+	minimumValue ( minimumValue ),
+	maximumValue ( maximumValue )
 {
-	this->minimumValue = minimumValue;
-	this->maximumValue = maximumValue;
-
-	Validate ( widget.GetText () );
+	Validate ( this->editBox.GetText () );
 }
 
 GXUIEditBoxFloatValidator::~GXUIEditBoxFloatValidator ()
@@ -34,13 +35,13 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
 {
 	if ( !text )
 	{
-		widget.SetText ( oldValidText );
+		editBox.SetText ( oldValidText );
 		return GX_FALSE;
 	}
 
 	eParserState state = eParserState::LeadSign;
 	GXUInt symbols = GXWcslen ( text );
-	GXUInt i = 0;
+	GXUInt i = 0u;
 
 	while ( i < symbols )
 	{
@@ -53,7 +54,7 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
 					state = eParserState::IntegerPart;
 					i++;
 				}
-				else if ( isdigit ( (int)text[ i ] ) )
+				else if ( isdigit ( static_cast<int> ( text[ i ] ) ) )
 				{
 					state = eParserState::IntegerPart;
 				}
@@ -66,7 +67,7 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
 
 			case eParserState::IntegerPart:
 			{
-				if ( isdigit ( (int)text[ i ] ) )
+				if ( isdigit ( static_cast<int> ( text[ i ] ) ) )
 				{
 					i++;
 				}
@@ -84,7 +85,7 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
 
 			case eParserState::FractionalPart:
 			{
-				if ( isdigit ( (int)text[ i ] ) )
+				if ( isdigit ( static_cast<int> ( text[ i ] ) ) )
 				{
 					i++;
 				}
@@ -116,7 +117,7 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
 
 			case eParserState::ExponentValue:
 			{
-				if ( isdigit ( (int)text[ i ] ) )
+				if ( isdigit ( static_cast<int> ( text[ i ] ) ) )
 				{
 					i++;
 				}
@@ -129,7 +130,7 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
 				
 			case eParserState::InvalidFloatNumber:
 			default:
-				widget.SetText ( oldValidText );
+				editBox.SetText ( oldValidText );
 			return GX_FALSE;
 		}
 	}
@@ -139,7 +140,7 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
 
 	if ( currentValue < minimumValue || currentValue > maximumValue )
 	{
-		widget.SetText ( oldValidText );
+		editBox.SetText ( oldValidText );
 		return GX_FALSE;
 	}
 

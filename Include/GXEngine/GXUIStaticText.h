@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_UI_STATIC_TEXT
 #define GX_UI_STATIC_TEXT
@@ -23,7 +23,7 @@ class GXUIStaticText : public GXWidget
 		eGXUITextAlignment		alignment;
 
 	public:
-		GXUIStaticText ( GXWidget* parent );
+		explicit GXUIStaticText ( GXWidget* parent );
 		~GXUIStaticText () override;
 
 		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
@@ -36,6 +36,10 @@ class GXUIStaticText : public GXWidget
 		const GXColorRGB& GetTextColor () const;
 		eGXUITextAlignment GetAlignment () const;
 		
+	private:
+		GXUIStaticText () = delete;
+		GXUIStaticText ( const GXUIStaticText &other ) = delete;
+		GXUIStaticText& operator = ( const GXUIStaticText &other ) = delete;
 };
 
 

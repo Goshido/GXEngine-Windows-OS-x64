@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_TEXT_VALIDATOR
 #define GX_TEXT_VALIDATOR
@@ -17,6 +17,11 @@ class GXTextValidator
 		virtual ~GXTextValidator ();
 
 		virtual GXBool Validate ( const GXWChar* text ) = 0;
+
+	private:
+		GXTextValidator () = delete;
+		GXTextValidator ( const GXTextValidator &other ) = delete;
+		GXTextValidator& operator = ( const GXTextValidator &other ) = delete;
 };
 
 

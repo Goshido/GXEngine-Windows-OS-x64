@@ -1,29 +1,27 @@
-// version 1.1
+// version 1.2
 
 #include <GXEngine/GXUIInput.h>
 #include <GXEngine/GXUIMessage.h>
 
 
 GXUIInput::GXUIInput ( GXWidget* parent, GXBool isNeedRegister ):
-GXWidget ( parent, isNeedRegister )
+	GXWidget ( parent, isNeedRegister ),
+	OnLMBDown ( nullptr ),
+	OnLMBUp ( nullptr ),
+	OnMMBDown ( nullptr ),
+	OnMMBUp ( nullptr ),
+	OnRMBDown ( nullptr ),
+	OnRMBUp ( nullptr ),
+	OnDoubleClick ( nullptr ),
+	OnMouseMove ( nullptr ),
+	OnMouseScroll ( nullptr ),
+	OnMouseOver ( nullptr ),
+	OnMouseLeave ( nullptr ),
+	OnKeyDown ( nullptr ),
+	OnKeyUp ( nullptr ),
+	handler ( nullptr )
 {
-	OnLMBDown = nullptr;
-	OnLMBUp = nullptr;
-	OnMMBDown = nullptr;
-	OnMMBUp = nullptr;
-	OnRMBDown = nullptr;
-	OnRMBUp = nullptr;
-
-	OnDoubleClick = nullptr;
-	OnMouseMove = nullptr;
-	OnMouseScroll = nullptr;
-	OnMouseOver = nullptr;
-	OnMouseLeave = nullptr;
-
-	OnKeyDown = nullptr;
-	OnKeyUp = nullptr;
-
-	handler = nullptr;
+	// NOTHING
 }
 
 GXUIInput::~GXUIInput ()
@@ -39,7 +37,7 @@ GXVoid GXUIInput::OnMessage ( GXUInt message, const GXVoid* data )
 		{
 			if ( !OnLMBDown ) break;
 
-			const GXVec2* v = (const GXVec2*)data;
+			const GXVec2* v = static_cast<const GXVec2*> ( data );
 			OnLMBDown ( handler, *this, v->GetX (), v->GetY () );
 		}
 		break;
@@ -48,7 +46,7 @@ GXVoid GXUIInput::OnMessage ( GXUInt message, const GXVoid* data )
 		{
 			if ( !OnLMBUp ) break;
 
-			const GXVec2* v = (const GXVec2*)data;
+			const GXVec2* v = static_cast<const GXVec2*> ( data );
 			OnLMBUp ( handler, *this, v->GetX (), v->GetY () );
 		}
 		break;
@@ -57,7 +55,7 @@ GXVoid GXUIInput::OnMessage ( GXUInt message, const GXVoid* data )
 		{
 			if ( !OnMMBDown ) break;
 
-			const GXVec2* v = (const GXVec2*)data;
+			const GXVec2* v = static_cast<const GXVec2*> ( data );
 			OnMMBDown ( handler, *this, v->GetX (), v->GetY () );
 		}
 		break;
@@ -66,7 +64,7 @@ GXVoid GXUIInput::OnMessage ( GXUInt message, const GXVoid* data )
 		{
 			if ( !OnMMBUp ) break;
 
-			const GXVec2* v = (const GXVec2*)data;
+			const GXVec2* v = static_cast<const GXVec2*> ( data );
 			OnMMBUp ( handler, *this, v->GetX (), v->GetY () );
 		}
 		break;
@@ -75,7 +73,7 @@ GXVoid GXUIInput::OnMessage ( GXUInt message, const GXVoid* data )
 		{
 			if ( !OnRMBDown ) break;
 
-			const GXVec2* v = (const GXVec2*)data;
+			const GXVec2* v = static_cast<const GXVec2*> ( data );
 			OnRMBDown ( handler, *this, v->GetX (), v->GetY () );
 		}
 		break;
@@ -84,7 +82,7 @@ GXVoid GXUIInput::OnMessage ( GXUInt message, const GXVoid* data )
 		{
 			if ( !OnRMBUp ) break;
 
-			const GXVec2* v = (const GXVec2*)data;
+			const GXVec2* v = static_cast<const GXVec2*> ( data );
 			OnRMBUp ( handler, *this, v->GetX (), v->GetY () );
 		}
 		break;
@@ -93,7 +91,7 @@ GXVoid GXUIInput::OnMessage ( GXUInt message, const GXVoid* data )
 		{
 			if ( !OnMouseScroll ) break;
 
-			const GXVec3* v = (const GXVec3*)data;
+			const GXVec3* v = static_cast<const GXVec3*> ( data );
 			OnMouseScroll ( handler, *this, v->GetX (), v->GetY (), v->GetZ () );
 		}
 		break;
@@ -102,7 +100,7 @@ GXVoid GXUIInput::OnMessage ( GXUInt message, const GXVoid* data )
 		{
 			if ( !OnMouseMove ) break;
 
-			const GXVec2* v = (const GXVec2*)data;
+			const GXVec2* v = static_cast<const GXVec2*> ( data );
 			OnMouseMove ( handler, *this, v->GetX (), v->GetY () );
 		}
 
@@ -110,7 +108,7 @@ GXVoid GXUIInput::OnMessage ( GXUInt message, const GXVoid* data )
 		{
 			if ( !OnMouseOver ) break;
 
-			const GXVec2* v = (const GXVec2*)data;
+			const GXVec2* v = static_cast<const GXVec2*> ( data );
 			OnMouseOver ( handler, *this, v->GetX (), v->GetY () );
 		}
 
@@ -118,7 +116,7 @@ GXVoid GXUIInput::OnMessage ( GXUInt message, const GXVoid* data )
 		{
 			if ( !OnMouseLeave ) break;
 
-			const GXVec2* v = (const GXVec2*)data;
+			const GXVec2* v = static_cast<const GXVec2*> ( data );
 			OnMouseLeave ( handler, *this, v->GetX (), v->GetY () );
 		}
 
@@ -126,7 +124,7 @@ GXVoid GXUIInput::OnMessage ( GXUInt message, const GXVoid* data )
 		{
 			if ( !OnDoubleClick ) break;
 
-			const GXVec2* v = (const GXVec2*)data;
+			const GXVec2* v = static_cast<const GXVec2*> ( data );
 			OnDoubleClick ( handler, *this, v->GetX (), v->GetY () );
 		}
 		break;
@@ -135,7 +133,7 @@ GXVoid GXUIInput::OnMessage ( GXUInt message, const GXVoid* data )
 		{
 			if ( !OnKeyDown ) break;
 
-			const GXInt* keyCode = (const GXInt*)data;
+			const GXInt* keyCode = static_cast<const GXInt*> ( data );
 			OnKeyDown ( handler, *this, *keyCode );
 		}
 		break;
@@ -144,7 +142,7 @@ GXVoid GXUIInput::OnMessage ( GXUInt message, const GXVoid* data )
 		{
 			if ( !OnKeyUp ) break;
 
-			const GXInt* keyCode = (const GXInt*)data;
+			const GXInt* keyCode = static_cast<const GXInt*> ( data );
 			OnKeyUp ( handler, *this, *keyCode );
 		}
 		break;

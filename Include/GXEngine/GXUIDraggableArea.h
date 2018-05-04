@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_UI_DRAGGABLE_AREA
 #define GX_UI_DRAGGABLE_AREA
@@ -32,6 +32,18 @@ class GXUIDragableArea : public GXWidget
 
 		GXVec2							minimumSize;
 
+		HCURSOR							standartArrow;
+		HCURSOR							verticalArrow;
+		HCURSOR							horizontalArrow;
+		HCURSOR							crossArrow;
+		HCURSOR							northwestSoutheastArrow;
+		HCURSOR							northeastSouthwestArrow;
+
+		GXVec2							lastMousePosition;
+		eGXDraggableAreaResizeMode		resizeMode;
+		PFNGXUIDRAGABLEAREAONRESIZEPROC	OnResize;
+		GXVoid*							handler;
+
 		GXAABB							headerArea;
 		GXAABB							clientArea;
 
@@ -45,18 +57,7 @@ class GXUIDragableArea : public GXWidget
 		GXAABB							cornerBottomLeft;
 		GXAABB							cornerBottomRight;
 
-		HCURSOR							standartArrow;
-		HCURSOR							verticalArrow;
-		HCURSOR							horizontalArrow;
-		HCURSOR							crossArrow;
-		HCURSOR							northwestSoutheastArrow;
-		HCURSOR							northeastSouthwestArrow;
 		const HCURSOR*					currentCursor;
-
-		GXVec2							lastMousePosition;
-		eGXDraggableAreaResizeMode		resizeMode;
-		PFNGXUIDRAGABLEAREAONRESIZEPROC	OnResize;
-		GXVoid*							handler;
 
 	public:
 		explicit GXUIDragableArea ( GXWidget* parent );
@@ -82,6 +83,10 @@ class GXUIDragableArea : public GXWidget
 		eGXDraggableAreaResizeMode GetResizeMode ( const GXVec2 &mousePosition ) const;
 		GXVoid UpdateAreas ();
 		GXVoid UpdateCursor ( const GXVec2 &mousePosition );
+
+		GXUIDragableArea () = delete;
+		GXUIDragableArea ( const GXUIDragableArea &other ) = delete;
+		GXUIDragableArea& operator = ( const GXUIDragableArea &other ) = delete;
 };
 
 

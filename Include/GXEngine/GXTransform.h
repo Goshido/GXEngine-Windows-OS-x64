@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_TRANSFORM
 #define GX_TRANSFORM
@@ -21,6 +21,7 @@ class GXTransform
 
 	public:
 		GXTransform ();
+		GXTransform ( const GXTransform &other );
 		virtual ~GXTransform ();
 
 		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
@@ -51,6 +52,8 @@ class GXTransform
 		GXVoid UpdateLastFrameModelMatrix ();
 
 		static const GXTransform& GetNullTransform ();
+
+		GXTransform& operator = ( const GXTransform &other );
 
 	protected:
 		virtual GXVoid TransformUpdated ();

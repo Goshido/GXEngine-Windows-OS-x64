@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_UI_EDIT_BOX_INTEGER_VALIDATOR
 #define GX_UI_EDIT_BOX_INTEGER_VALIDATOR
@@ -11,7 +11,7 @@
 class GXUIEditBoxIntegerValidator : public GXTextValidator
 {
 	private:
-		GXUIEditBox&	widget;
+		GXUIEditBox&	editBox;
 
 		GXBigInt		minimumValue;
 		GXBigInt		maximumValue;
@@ -22,7 +22,10 @@ class GXUIEditBoxIntegerValidator : public GXTextValidator
 
 		GXBool Validate ( const GXWChar* text ) override;
 
-		GXVoid operator = ( const GXUIEditBoxIntegerValidator &other ) = delete;
+	private:
+		GXUIEditBoxIntegerValidator () = delete;
+		GXUIEditBoxIntegerValidator ( const GXUIEditBoxIntegerValidator &other ) = delete;
+		GXUIEditBoxIntegerValidator& operator = ( const GXUIEditBoxIntegerValidator &other ) = delete;
 };
 
 

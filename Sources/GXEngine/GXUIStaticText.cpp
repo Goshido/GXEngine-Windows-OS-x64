@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #include <GXEngine/GXUIStaticText.h>
 #include <GXEngine/GXUICommon.h>
@@ -6,20 +6,22 @@
 #include <GXCommon/GXStrings.h>
 
 
-#define GX_UI_DEFAULT_ALIGNMENT		eGXUITextAlignment::Left
+#define DEFAULT_UI_ALIGNMENT		eGXUITextAlignment::Left
 
-#define DEFAULT_TEXT_COLOR_R		115
-#define DEFAULT_TEXT_COLOR_G		185
-#define DEFAULT_TEXT_COLOR_B		0
-#define DEFAULT_TEXT_COLOR_A		255
+#define DEFAULT_TEXT_COLOR_R		115u
+#define DEFAULT_TEXT_COLOR_G		185u
+#define DEFAULT_TEXT_COLOR_B		0u
+#define DEFAULT_TEXT_COLOR_A		255u
 
+//---------------------------------------------------------------------------------------------------------------------
 
 GXUIStaticText::GXUIStaticText ( GXWidget* parent ):
-GXWidget ( parent )
+	GXWidget ( parent ),
+	text ( nullptr ),
+	textColor ( static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_R ), static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_G ), static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_B ), static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_A ) ),
+	alignment ( DEFAULT_UI_ALIGNMENT )
 {
-	text = nullptr;
-	alignment = GX_UI_DEFAULT_ALIGNMENT;
-	textColor.From ( DEFAULT_TEXT_COLOR_R, DEFAULT_TEXT_COLOR_G, DEFAULT_TEXT_COLOR_B, DEFAULT_TEXT_COLOR_A );
+	// NOTHING
 }
 
 GXUIStaticText::~GXUIStaticText ()
@@ -33,7 +35,7 @@ GXVoid GXUIStaticText::OnMessage ( GXUInt message, const GXVoid* data )
 	{
 		case GX_MSG_SET_TEXT:
 			GXSafeFree ( text );
-			GXWcsclone ( &text, (const GXWChar*)data );
+			GXWcsclone ( &text, static_cast<const GXWChar*> ( data ) );
 
 			if ( renderer )
 				renderer->OnUpdate ();
@@ -55,7 +57,7 @@ GXVoid GXUIStaticText::OnMessage ( GXUInt message, const GXVoid* data )
 
 		case GX_MSG_SET_TEXT_ALIGNMENT:
 		{
-			const eGXUITextAlignment* newAlignment = (const eGXUITextAlignment*)data;
+			const eGXUITextAlignment* newAlignment = static_cast<const eGXUITextAlignment*> ( data );
 			alignment = *newAlignment;
 
 			if ( renderer )
@@ -74,7 +76,7 @@ GXVoid GXUIStaticText::SetText ( const GXWChar* newText )
 	if ( newText )
 		GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_SET_TEXT, newText, ( GXWcslen ( newText ) + 1 ) * sizeof ( GXWChar ) );
 	else
-		GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_CLEAR_TEXT, 0, 0 );
+		GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_CLEAR_TEXT, nullptr, 0u );
 }
 
 GXVoid GXUIStaticText::SetTextColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )

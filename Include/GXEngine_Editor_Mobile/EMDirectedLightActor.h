@@ -12,12 +12,17 @@ class EMDirectedLightActor : public EMActor
 		EMDirectedLight*	light;
 
 	public:
-		EMDirectedLightActor ( const GXWChar* name, const GXTransform &transform );
+		explicit EMDirectedLightActor ( const GXWChar* name, const GXTransform &transform );
 		~EMDirectedLightActor () override;
 		
 		GXVoid OnSave ( GXUByte** data ) override;
 		GXVoid OnLoad ( const GXUByte* data ) override;
 		GXUPointer OnRequeredSaveSize () const override;
+
+	private:
+		EMDirectedLightActor () = delete;
+		EMDirectedLightActor ( const EMDirectedLightActor &other ) = delete;
+		EMDirectedLightActor& operator = ( const EMDirectedLightActor &other ) = delete;
 };
 
 

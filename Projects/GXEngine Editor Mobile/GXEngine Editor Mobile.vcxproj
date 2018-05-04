@@ -401,7 +401,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXSoundProvider.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSoundStorage.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTextureDuplicator.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXTextureOuter.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTexture2D.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTouchSurface.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIButton.h" />

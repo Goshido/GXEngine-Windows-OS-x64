@@ -10,7 +10,7 @@ class EMActor;
 extern EMActor* em_Actors;
 
 
-enum class eEMActorType : GXUBigInt
+enum class eEMActorType : GXUInt
 {
 	Abstact = 0,
 	DirectedLight = 1,
@@ -19,10 +19,9 @@ enum class eEMActorType : GXUBigInt
 	PhysicsDrivenActor = 4
 };
 
-
 struct EMActorHeader
 {
-	GXUBigInt	type;
+	GXUInt		type;
 	GXUBigInt	nameOffset;
 	GXMat4		origin;
 	GXBool		isVisible;
@@ -36,10 +35,10 @@ class EMActor
 		EMActor*		prev;
 
 	protected:
-		GXWChar*		name;
 		eEMActorType	type;
 		GXTransform		transform;
 		GXBool			isVisible;
+		GXWChar*		name;
 
 	public:
 		explicit EMActor ( const GXWChar* name, eEMActorType type, const GXTransform &transform );
@@ -59,10 +58,15 @@ class EMActor
 		eEMActorType GetType ();
 
 		const GXTransform& GetTransform ();
-		GXVoid SetTransform ( const GXTransform &transform );
+		GXVoid SetTransform ( const GXTransform &newTransform );
 
 		GXVoid Show ();
 		GXVoid Hide ();
+
+	private:
+		EMActor () = delete;
+		EMActor ( const EMActor &other ) = delete;
+		EMActor& operator = ( const EMActor &other ) = delete;
 };
 
 

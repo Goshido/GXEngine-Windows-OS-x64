@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_TEXUTE_2D_GAMMA_CORRECTOR_MATERIAL
 #define GX_TEXUTE_2D_GAMMA_CORRECTOR_MATERIAL
@@ -22,6 +22,10 @@ class GXTexture2DGammaCorrectorMaterial : public GXMaterial
 		GXVoid Unbind () override;
 
 		GXVoid SetsRGBTexture ( GXTexture2D &texture );
+
+	private:
+		GXTexture2DGammaCorrectorMaterial ( const GXTexture2DGammaCorrectorMaterial &other ) = delete;
+		GXTexture2DGammaCorrectorMaterial& operator = ( const GXTexture2DGammaCorrectorMaterial &other ) = delete;
 };
 
 

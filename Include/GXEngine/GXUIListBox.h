@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_UI_LIST_BOX
 #define GX_UI_LIST_BOX
@@ -40,7 +40,7 @@ class GXUIListBox : public GXWidget
 		GXFloat									viewportSize;
 
 	public:
-		GXUIListBox ( GXWidget* parent, PFNGXUILISTBOXITEMDESTRUCTORPROC itemDestructor );
+		explicit GXUIListBox ( GXWidget* parent, PFNGXUILISTBOXITEMDESTRUCTORPROC itemDestructor );
 		~GXUIListBox () override;
 
 		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
@@ -74,6 +74,10 @@ class GXUIListBox : public GXWidget
 		GXBool ResetHighlight ( const GXVec2 &mousePosition );	// Return true if need render update
 		GXBool IsAbleToScroll () const;
 		GXFloat GetTotalHeight () const;
+
+		GXUIListBox () = delete;
+		GXUIListBox ( const GXUIListBox &other ) = delete;
+		GXUIListBox& operator = ( const GXUIListBox &other ) = delete;
 };
 
 

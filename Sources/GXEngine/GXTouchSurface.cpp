@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.5
 
 #include <GXEngine/GXTouchSurface.h>
 #include <GXEngine/GXUIMessage.h>
@@ -7,13 +7,14 @@
 #include <GXCommon/GXLogger.h>
 
 
+#define GX_UI_MESSAGE_BUFFER_SIZE		1048576u	// 1 Mb
+
+//---------------------------------------------------------------------------------------------------------------------
+
 GXFloat				gx_ui_Scale = 1.0f;
 
 GXMutex*			gx_ui_Mutex = nullptr;
 GXCircleBuffer*		gx_ui_MessageBuffer = nullptr;
-
-#define GX_UI_MESSAGE_BUFFER_SIZE		1048576		// 1 Mb
-
 
 struct GXMessage
 {
@@ -23,6 +24,8 @@ struct GXMessage
 	GXVoid*			data;
 	GXUInt			size;
 };
+
+//---------------------------------------------------------------------------------------------------------------------
 
 GXTouchSurface* GXTouchSurface::instance = nullptr;
 
@@ -49,17 +52,16 @@ GXVoid GXTouchSurface::OnLeftMouseButtonDown ( const GXVec2 &position )
 	if ( lockedWidget )
 	{
 		SendMessage ( lockedWidget, GX_MSG_LMBDOWN, &position, sizeof ( GXVec2 ) );
-		SendMessage ( lockedWidget, GX_MSG_FOREGROUND, nullptr, 0 );
+		SendMessage ( lockedWidget, GX_MSG_FOREGROUND, nullptr, 0u );
+		return;
 	}
-	else
-	{
-		GXWidget* target = FindWidget ( position );
-		if ( target )
-		{
-			SendMessage ( target, GX_MSG_LMBDOWN, &position, sizeof ( GXVec2 ) );
-			SendMessage ( target, GX_MSG_FOREGROUND, nullptr, 0 );
-		}
-	}
+
+	GXWidget* target = FindWidget ( position );
+
+	if ( !target ) return;
+
+	SendMessage ( target, GX_MSG_LMBDOWN, &position, sizeof ( GXVec2 ) );
+	SendMessage ( target, GX_MSG_FOREGROUND, nullptr, 0u );
 }
 
 GXVoid GXTouchSurface::OnLeftMouseButtonUp ( const GXVec2 &position )
@@ -69,13 +71,14 @@ GXVoid GXTouchSurface::OnLeftMouseButtonUp ( const GXVec2 &position )
 	if ( lockedWidget )
 	{
 		SendMessage ( lockedWidget, GX_MSG_LMBUP, &position, sizeof ( GXVec2 ) );
+		return;
 	}
-	else
-	{
-		GXWidget* target = FindWidget ( position );
-		if ( target )
-			SendMessage ( target, GX_MSG_LMBUP, &position, sizeof ( GXVec2 ) );
-	}
+
+	GXWidget* target = FindWidget ( position );
+
+	if ( !target ) return;
+
+	SendMessage ( target, GX_MSG_LMBUP, &position, sizeof ( GXVec2 ) );
 }
 
 GXVoid GXTouchSurface::OnMiddleMouseButtonDown ( const GXVec2 &position )
@@ -85,13 +88,14 @@ GXVoid GXTouchSurface::OnMiddleMouseButtonDown ( const GXVec2 &position )
 	if ( lockedWidget )
 	{
 		SendMessage ( lockedWidget, GX_MSG_MMBDOWN, &position, sizeof ( GXVec2 ) );
+		return;
 	}
-	else
-	{
-		GXWidget* target = FindWidget ( position );
-		if ( target )
-			SendMessage ( target, GX_MSG_MMBDOWN, &position, sizeof ( GXVec2 ) );
-	}
+
+	GXWidget* target = FindWidget ( position );
+
+	if ( !target ) return;
+
+	SendMessage ( target, GX_MSG_MMBDOWN, &position, sizeof ( GXVec2 ) );
 }
 
 GXVoid GXTouchSurface::OnMiddleMouseButtonUp ( const GXVec2 &position )
@@ -101,13 +105,14 @@ GXVoid GXTouchSurface::OnMiddleMouseButtonUp ( const GXVec2 &position )
 	if ( lockedWidget )
 	{
 		SendMessage ( lockedWidget, GX_MSG_MMBUP, &position, sizeof ( GXVec2 ) );
+		return;
 	}
-	else
-	{
-		GXWidget* target = FindWidget ( position );
-		if ( target )
-			SendMessage ( target, GX_MSG_MMBUP, &position, sizeof ( GXVec2 ) );
-	}
+
+	GXWidget* target = FindWidget ( position );
+
+	if ( !target ) return;
+
+	SendMessage ( target, GX_MSG_MMBUP, &position, sizeof ( GXVec2 ) );
 }
 
 GXVoid GXTouchSurface::OnRightMouseButtonDown ( const GXVec2 &position )
@@ -117,13 +122,14 @@ GXVoid GXTouchSurface::OnRightMouseButtonDown ( const GXVec2 &position )
 	if ( lockedWidget )
 	{
 		SendMessage ( lockedWidget, GX_MSG_RMBDOWN, &position, sizeof ( GXVec2 ) );
+		return;
 	}
-	else
-	{
-		GXWidget* target = FindWidget ( position );
-		if ( target )
-			SendMessage ( target, GX_MSG_RMBDOWN, &position, sizeof ( GXVec2 ) );
-	}
+
+	GXWidget* target = FindWidget ( position );
+
+	if ( !target ) return;
+
+	SendMessage ( target, GX_MSG_RMBDOWN, &position, sizeof ( GXVec2 ) );
 }
 
 GXVoid GXTouchSurface::OnRightMouseButtonUp ( const GXVec2 &position )
@@ -133,13 +139,14 @@ GXVoid GXTouchSurface::OnRightMouseButtonUp ( const GXVec2 &position )
 	if ( lockedWidget )
 	{
 		SendMessage ( lockedWidget, GX_MSG_RMBUP, &position, sizeof ( GXVec2 ) );
+		return;
 	}
-	else
-	{
-		GXWidget* target = FindWidget ( position );
-		if ( target )
-			SendMessage ( target, GX_MSG_RMBUP, &position, sizeof ( GXVec2 ) );
-	}
+	
+	GXWidget* target = FindWidget ( position );
+
+	if ( !target ) return;
+
+	SendMessage ( target, GX_MSG_RMBUP, &position, sizeof ( GXVec2 ) );
 }
 
 GXVoid GXTouchSurface::OnDoubleClick ( const GXVec2 &position )
@@ -149,17 +156,16 @@ GXVoid GXTouchSurface::OnDoubleClick ( const GXVec2 &position )
 	if ( lockedWidget )
 	{
 		SendMessage ( lockedWidget, GX_MSG_DOUBLE_CLICK, &position, sizeof ( GXVec2 ) );
-		SendMessage ( lockedWidget, GX_MSG_FOREGROUND, nullptr, 0 );
+		SendMessage ( lockedWidget, GX_MSG_FOREGROUND, nullptr, 0u );
+		return;
 	}
-	else
-	{
-		GXWidget* target = FindWidget ( position );
-		if ( target )
-		{
-			SendMessage ( target, GX_MSG_DOUBLE_CLICK, &position, sizeof ( GXVec2 ) );
-			SendMessage ( target, GX_MSG_FOREGROUND, nullptr, 0 );
-		}
-	}
+	
+	GXWidget* target = FindWidget ( position );
+
+	if ( !target ) return;
+
+	SendMessage ( target, GX_MSG_DOUBLE_CLICK, &position, sizeof ( GXVec2 ) );
+	SendMessage ( target, GX_MSG_FOREGROUND, nullptr, 0u );
 }
 
 GXVoid GXTouchSurface::OnScroll ( const GXVec2 &position, GXFloat scroll )
@@ -170,16 +176,15 @@ GXVoid GXTouchSurface::OnScroll ( const GXVec2 &position, GXFloat scroll )
 	{
 		GXVec3 data ( position.GetX (), position.GetY (), scroll );
 		SendMessage ( lockedWidget, GX_MSG_SCROLL, &data, sizeof ( GXVec3 ) );
+		return;
 	}
-	else
-	{
-		GXWidget* target = FindWidget ( position );
-		if ( target )
-		{
-			GXVec3 data ( position.GetX (), position.GetY (), scroll );
-			SendMessage ( target, GX_MSG_SCROLL, &data, sizeof ( GXVec3 ) );
-		}
-	}
+	
+	GXWidget* target = FindWidget ( position );
+
+	if ( !target ) return;
+
+	GXVec3 data ( position.GetX (), position.GetY (), scroll );
+	SendMessage ( target, GX_MSG_SCROLL, &data, sizeof ( GXVec3 ) );
 }
 
 GXVoid GXTouchSurface::OnMouseMove ( const GXVec2 &position )
@@ -260,19 +265,23 @@ GXVoid GXTouchSurface::OnKeyUp ( GXInt keyCode )
 
 GXVoid GXTouchSurface::SendMessage ( GXWidget* widget, GXUInt message, const GXVoid* data, GXUInt size )
 {
-	GXMessage* msg = (GXMessage*)gx_ui_MessageBuffer->Allocate ( sizeof ( GXMessage ) );
+	GXMessage* msg = static_cast<GXMessage*> ( gx_ui_MessageBuffer->Allocate ( sizeof ( GXMessage ) ) );
 	msg->next = nullptr;
 	msg->widget = widget;
 	msg->message = message;
 	msg->data = gx_ui_MessageBuffer->Allocate ( size );
+
 	if ( size )
 		memcpy ( msg->data, data, size );
+
 	msg->size = size;
 
 	gx_ui_Mutex->Lock ();
 
 	if ( !messages )
+	{
 		messages = lastMessage = msg;
+	}
 	else
 	{
 		lastMessage->next = msg;
@@ -392,6 +401,7 @@ GXWidget* GXTouchSurface::FindWidget ( const GXVec2 &position )
 
 	GXWidgetIterator iterator;
 	GXWidget* p = iterator.Init ( widgetHead );
+
 	while ( p )
 	{
 		if ( p->IsVisible () && p->GetBoundsWorld ().IsOverlaped ( v ) )
@@ -417,6 +427,7 @@ GXVoid GXTouchSurface::DrawWidgets ( GXWidget* widget )
 	{
 		if ( p->isVisible )
 			p->OnDraw ();
+
 		p = iterator.GetPrevious ();
 	}
 }

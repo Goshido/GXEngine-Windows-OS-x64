@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #include <GXEngine/GXTexture2DGammaCorrectorMaterial.h>
 
@@ -7,12 +7,14 @@
 #define GEOMETRY_SHADER			nullptr
 #define FRAGMENT_SHADER			L"Shaders/System/Texture2DGammaCorrector_fs.txt"
 
-#define TEXTURE_SLOT			0
+#define TEXTURE_SLOT			0u
 
 #define GAMMA					2.2f
 
+//---------------------------------------------------------------------------------------------------------------------
 
-GXTexture2DGammaCorrectorMaterial::GXTexture2DGammaCorrectorMaterial ()
+GXTexture2DGammaCorrectorMaterial::GXTexture2DGammaCorrectorMaterial ():
+	sRGBTexture ( nullptr )
 {
 	static const GLchar* samplerNames[ 1 ] = { "sRGBSampler" };
 	static const GLuint samplerLocations[ 1 ] = { TEXTURE_SLOT };
@@ -21,7 +23,7 @@ GXTexture2DGammaCorrectorMaterial::GXTexture2DGammaCorrectorMaterial ()
 	si.vs = VERTEX_SHADER;
 	si.gs = GEOMETRY_SHADER;
 	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 1;
+	si.numSamplers = 1u;
 	si.samplerNames = samplerNames;
 	si.samplerLocations = samplerLocations;
 	si.numTransformFeedbackOutputs = 0;
@@ -29,7 +31,6 @@ GXTexture2DGammaCorrectorMaterial::GXTexture2DGammaCorrectorMaterial ()
 
 	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
 	gammaLocation = shaderProgram.GetUniform ( "gamma" );
-	sRGBTexture = nullptr;
 }
 
 GXTexture2DGammaCorrectorMaterial::~GXTexture2DGammaCorrectorMaterial ()
@@ -51,7 +52,7 @@ GXVoid GXTexture2DGammaCorrectorMaterial::Unbind ()
 {
 	if ( !sRGBTexture ) return;
 
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 	sRGBTexture->Unbind ();
 }
 

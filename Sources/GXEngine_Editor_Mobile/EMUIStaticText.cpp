@@ -10,6 +10,7 @@
 #define PIXEL_PERFECT_LOCATION_OFFSET_X		0.25f
 #define PIXEL_PERFECT_LOCATION_OFFSET_Y		0.25f
 
+//---------------------------------------------------------------------------------------------------------------------
 
 class EMUIStaticTextRenderer : public GXWidgetRenderer
 {
@@ -18,7 +19,7 @@ class EMUIStaticTextRenderer : public GXWidgetRenderer
 		GXFont				font;
 
 	public:
-		EMUIStaticTextRenderer ( GXUIStaticText* staticTextWidget );
+		explicit EMUIStaticTextRenderer ( GXUIStaticText* staticTextWidget );
 		~EMUIStaticTextRenderer () override;
 
 		GXVoid OnRefresh () override;
@@ -27,14 +28,19 @@ class EMUIStaticTextRenderer : public GXWidgetRenderer
 	protected:
 		GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
 		GXVoid OnMoved ( GXFloat x, GXFloat y ) override;
+
+	private:
+		EMUIStaticTextRenderer () = delete;
+		EMUIStaticTextRenderer ( const EMUIStaticTextRenderer &other ) = delete;
+		EMUIStaticTextRenderer& operator = ( const EMUIStaticTextRenderer &other ) = delete;
 };
 
 EMUIStaticTextRenderer::EMUIStaticTextRenderer ( GXUIStaticText* staticTextWidget ):
-GXWidgetRenderer ( staticTextWidget )
+	GXWidgetRenderer ( staticTextWidget )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
-	surface = new GXHudSurface ( (GXUShort)boundsLocal.GetWidth (), (GXUShort)boundsLocal.GetHeight () );
-	font = GXFont::GetFont ( FONT, (GXUShort)( FONT_SIZE * gx_ui_Scale ) );
+	surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
+	font = GXFont::GetFont ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) );
 }
 
 EMUIStaticTextRenderer::~EMUIStaticTextRenderer ()
@@ -45,10 +51,10 @@ EMUIStaticTextRenderer::~EMUIStaticTextRenderer ()
 
 GXVoid EMUIStaticTextRenderer::OnRefresh ()
 {
-	GXUIStaticText* staticText = (GXUIStaticText*)widget;
+	GXUIStaticText* staticText = static_cast<GXUIStaticText*> ( widget );
 
 	surface->Reset ();
-	GXFloat h = (GXFloat)surface->GetHeight ();
+	GXFloat h = static_cast<GXFloat> ( surface->GetHeight () );
 	const GXWChar* text = staticText->GetText ();
 
 	if ( !text ) return;
@@ -67,25 +73,25 @@ GXVoid EMUIStaticTextRenderer::OnRefresh ()
 
 		case eGXUITextAlignment::Right:
 		{
-			GXFloat w = (GXFloat)surface->GetWidth ();
-			GXFloat len = (GXFloat)font.GetTextLength ( 0, staticText->GetText () );
+			GXFloat w = static_cast<GXFloat> ( surface->GetWidth () );
+			GXFloat len = static_cast<GXFloat> ( font.GetTextLength ( 0u, staticText->GetText () ) );
 			pi.insertX = w - len;
 		}
 		break;
 
 		case eGXUITextAlignment::Center:
 		{
-			GXFloat w = (GXFloat)surface->GetWidth ();
-			GXFloat len = (GXFloat)font.GetTextLength ( 0, staticText->GetText () );
+			GXFloat w = static_cast<GXFloat> ( surface->GetWidth () );
+			GXFloat len = static_cast<GXFloat> ( font.GetTextLength ( 0u, staticText->GetText () ) );
 			pi.insertX = ( w - len ) * 0.5f;
 		}
 		break;
 	}
 
-	surface->AddText ( pi, 0, staticText->GetText () );
+	surface->AddText ( pi, 0u, staticText->GetText () );
 }
 
-GXVoid EMUIStaticTextRenderer::OnDraw ()
+	GXVoid EMUIStaticTextRenderer::OnDraw ()
 {
 	glDisable ( GL_DEPTH_TEST );
 	surface->Render ();
@@ -101,7 +107,7 @@ GXVoid EMUIStaticTextRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width,
 	surface->GetLocation ( location );
 	delete surface;
 	surface = new GXHudSurface ( width, height );
-	surface->SetLocation ( x, y, location.GetZ () );
+	surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 
 GXVoid EMUIStaticTextRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -111,15 +117,15 @@ GXVoid EMUIStaticTextRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.GetZ () );
+	surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 
 //------------------------------------------------------------------------------
 
 EMUIStaticText::EMUIStaticText ( EMUI* parent ) :
-EMUI ( parent )
+	EMUI ( parent ),
+	widget ( new GXUIStaticText ( parent ? parent->GetWidget () : nullptr ) )
 {
-	widget = new GXUIStaticText ( parent ? parent->GetWidget () : nullptr );
 	widget->SetRenderer ( new EMUIStaticTextRenderer ( widget ) );
 }
 

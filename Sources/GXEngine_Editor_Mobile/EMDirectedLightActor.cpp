@@ -4,23 +4,16 @@
 #include <GXCommon/GXRestoreWarnings.h>
 
 
-struct EMDirectedLightActorSaveData
-{
-	GXUByte		baseColor[ 3 ];
-	GXFloat		baseIntensity;
+#define DEFAULT_LIGHT_INTENSITY		5.0f
 
-	GXUByte		ambientBaseColor[ 3 ];
-	GXFloat		ambientIntensity;
-};
-
-//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 EMDirectedLightActor::EMDirectedLightActor ( const GXWChar* name, const GXTransform &transform ):
-EMActor ( name, eEMActorType::DirectedLight, transform )
+	EMActor ( name, eEMActorType::DirectedLight, transform ),
+	light ( new EMDirectedLight () )
 {
-	light = new EMDirectedLight ();
 	light->SetRotation ( transform.GetRotation () );
-	light->SetIntensity ( 5.0f );
+	light->SetIntensity ( DEFAULT_LIGHT_INTENSITY );
 }
 
 EMDirectedLightActor::~EMDirectedLightActor ()
@@ -28,31 +21,18 @@ EMDirectedLightActor::~EMDirectedLightActor ()
 	delete light;
 }
 
-GXVoid EMDirectedLightActor::OnSave ( GXUByte** data )
+GXVoid EMDirectedLightActor::OnSave ( GXUByte** /*data*/ )
 {
-	EMDirectedLightActorSaveData* save = (EMDirectedLightActorSaveData*)malloc ( sizeof ( EMDirectedLightActorSaveData ) );
-	
-	light->GetBaseColor ( save->baseColor[ 0 ], save->baseColor[ 1 ], save->baseColor[ 2 ] );
-	save->baseIntensity = light->GetIntensity ();
-
-	light->GetAmbientBaseColor ( save->ambientBaseColor[ 0 ], save->ambientBaseColor[ 1 ], save->ambientBaseColor[ 2 ] );
-	save->ambientIntensity = light->GetAmbientIntensity ();
-
-	*data = (GXUByte*)save;
+	// TODO
 }
 
-GXVoid EMDirectedLightActor::OnLoad ( const GXUByte* data )
+GXVoid EMDirectedLightActor::OnLoad ( const GXUByte* /*data*/ )
 {
-	EMDirectedLightActorSaveData* lightSave = (EMDirectedLightActorSaveData*)data;
-
-	light->SetBaseColor ( lightSave->baseColor[ 0 ], lightSave->baseColor[ 1 ], lightSave->baseColor[ 2 ] );
-	light->SetIntensity ( lightSave->baseIntensity );
-
-	light->SetAmbientBaseColor ( lightSave->ambientBaseColor[ 0 ], lightSave->ambientBaseColor[ 1 ], lightSave->ambientBaseColor[ 2 ] );
-	light->SetAmbientIntensity ( lightSave->ambientIntensity );
+	// TODO
 }
 
 GXUPointer EMDirectedLightActor::OnRequeredSaveSize () const
 {
-	return sizeof ( EMDirectedLightActorSaveData );
+	// TODO
+	return 0u;
 }

@@ -9,14 +9,15 @@
 #define DEFAULT_BOTTOM_X					0.1f
 #define DEFAULT_BOTTOM_Y					0.1f
 
-#define COLOR_R								128
-#define COLOR_G								128
-#define COLOR_B								128
-#define COLOR_A								255
+#define COLOR_R								128u
+#define COLOR_G								128u
+#define COLOR_B								128u
+#define COLOR_A								255u
 
 #define PIXEL_PERFECT_LOCATION_OFFSET_X		0.25f
 #define PIXEL_PERFECT_LOCATION_OFFSET_Y		0.25f
 
+//---------------------------------------------------------------------------------------------------------------------
 
 class EMUISeparatorRenderer : public GXWidgetRenderer
 {
@@ -24,7 +25,7 @@ class EMUISeparatorRenderer : public GXWidgetRenderer
 		GXHudSurface*	surface;
 
 	public:
-		EMUISeparatorRenderer ( GXWidget* widget );
+		explicit EMUISeparatorRenderer ( GXWidget* widget );
 		~EMUISeparatorRenderer () override;
 
 		GXVoid OnRefresh () override;
@@ -33,13 +34,18 @@ class EMUISeparatorRenderer : public GXWidgetRenderer
 	protected:
 		GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
 		GXVoid OnMoved ( GXFloat x, GXFloat y ) override;
+
+	private:
+		EMUISeparatorRenderer () = delete;
+		EMUISeparatorRenderer ( const EMUISeparatorRenderer &other ) = delete;
+		EMUISeparatorRenderer& operator = ( const EMUISeparatorRenderer &other ) = delete;
 };
 
 EMUISeparatorRenderer::EMUISeparatorRenderer ( GXWidget* widget ):
-GXWidgetRenderer ( widget )
+	GXWidgetRenderer ( widget )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
-	surface = new GXHudSurface ( (GXUShort)boundsLocal.GetWidth (), (GXUShort)boundsLocal.GetHeight () );
+	surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
 EMUISeparatorRenderer::~EMUISeparatorRenderer ()
@@ -57,7 +63,7 @@ GXVoid EMUISeparatorRenderer::OnRefresh ()
 	li.overlayType = eGXImageOverlayType::SimpleReplace;
 	li.thickness = 1.0f;
 	li.startPoint.Init ( 0.0f, y );
-	li.endPoint.Init ( (GXFloat)surface->GetWidth (), y );
+	li.endPoint.Init ( static_cast<GXFloat> ( surface->GetWidth () ), y );
 
 	surface->AddLine ( li );
 }
@@ -78,7 +84,7 @@ GXVoid EMUISeparatorRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, 
 	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.GetZ () );
+	surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 
 GXVoid EMUISeparatorRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -88,15 +94,15 @@ GXVoid EMUISeparatorRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.GetZ () );
+	surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 
-//-------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 EMUISeparator::EMUISeparator ( EMUI* parent ):
-EMUI ( parent )
+	EMUI ( parent ),
+	widget ( new GXWidget ( parent ? parent->GetWidget () : nullptr ) )
 {
-	widget = new GXWidget ( parent ? parent->GetWidget () : nullptr );
 	widget->Resize ( DEFAULT_BOTTOM_X * gx_ui_Scale, DEFAULT_BOTTOM_Y * gx_ui_Scale, DEFAULT_WIDHT * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
 	widget->SetRenderer ( new EMUISeparatorRenderer ( widget ) );
 }

@@ -1,11 +1,11 @@
-// version 1.1
+// version 1.3
 
 #include <GXEngine/GXTransform.h>
 #include <GXEngine/GXCamera.h>
 #include <GXCommon/GXMemory.h>
 
 
-GXTransform	GXTransform::nullTransform;
+GXTransform GXTransform::nullTransform;
 
 GXTransform::GXTransform ()
 {
@@ -14,6 +14,11 @@ GXTransform::GXTransform ()
 	currentFrameRotationMatrix.Identity ();
 	currentFrameModelMatrix.Identity ();
 	lastFrameModelMatrix.Identity ();
+}
+
+GXTransform::GXTransform ( const GXTransform &other )
+{
+	memcpy ( this, &other, sizeof ( GXTransform ) );
 }
 
 GXTransform::~GXTransform ()
@@ -214,6 +219,12 @@ GXVoid GXTransform::UpdateLastFrameModelMatrix ()
 const GXTransform& GXTransform::GetNullTransform ()
 {
 	return nullTransform;
+}
+
+GXTransform& GXTransform::operator = ( const GXTransform &other )
+{
+	memcpy ( this, &other, sizeof ( GXTransform ) );
+	return *this;
 }
 
 GXVoid GXTransform::TransformUpdated ()

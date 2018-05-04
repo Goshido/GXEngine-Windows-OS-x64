@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_UI_EDIT_BOX_FLOAT_VALIDATOR
 #define GX_UI_EDIT_BOX_FLOAT_VALIDATOR
@@ -11,7 +11,7 @@
 class GXUIEditBoxFloatValidator : public GXTextValidator
 {
 	private:
-		GXUIEditBox&	widget;
+		GXUIEditBox&	editBox;
 
 		GXFloat			minimumValue;
 		GXFloat			maximumValue;
@@ -22,7 +22,10 @@ class GXUIEditBoxFloatValidator : public GXTextValidator
 
 		GXBool Validate ( const GXWChar* text ) override;
 
-		GXVoid operator = ( const GXUIEditBoxFloatValidator &other ) = delete;
+	private:
+		GXUIEditBoxFloatValidator () = delete;
+		GXUIEditBoxFloatValidator ( const GXUIEditBoxFloatValidator &other ) = delete;
+		GXUIEditBoxFloatValidator& operator = ( const GXUIEditBoxFloatValidator &other ) = delete;
 };
 
 

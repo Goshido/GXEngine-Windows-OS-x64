@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_UI_BUTTON
 #define GX_UI_BUTTON
@@ -23,7 +23,7 @@ class GXUIButton : public GXWidget
 		GXBool						isDisabled;
 
 	public:
-		GXUIButton ( GXWidget* parent );
+		explicit GXUIButton ( GXWidget* parent );
 		~GXUIButton () override;
 
 		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
@@ -37,6 +37,11 @@ class GXUIButton : public GXWidget
 		GXBool IsPressed () const;
 		GXBool IsHighlighted () const;
 		GXBool IsDisabled () const;
+
+	private:
+		GXUIButton () = delete;
+		GXUIButton ( const GXUIButton &other ) = delete;
+		GXUIButton& operator = ( const GXUIButton &other ) = delete;
 };
 
 

@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_WIDGET
 #define GX_WIDGET
@@ -59,6 +59,10 @@ class GXWidget
 		GXVoid AddChild ( GXWidget* child );
 		GXVoid RemoveChild ( GXWidget* child );
 		GXBool DoesChildExist ( GXWidget* child ) const;
+
+		GXWidget () = delete;
+		GXWidget ( const GXWidget &other ) = delete;
+		GXWidget& operator = ( const GXWidget &other ) = delete;
 };
 
 class GXWidgetIterator
@@ -76,17 +80,21 @@ class GXWidgetIterator
 		GXWidget* GetPrevious ();
 		GXWidget* GetParent ();
 		GXWidget* GetChilds ();
+
+	private:
+		GXWidgetIterator ( const GXWidgetIterator &other ) = delete;
+		GXWidgetIterator& operator = ( const GXWidgetIterator &other ) = delete;
 };
 
 class GXWidgetRenderer
 {
 	friend class GXWidget;
 
-	private:
-		GXAABB		oldBounds;
-
 	protected:
 		GXWidget*	widget;
+
+	private:
+		GXAABB		oldBounds;
 
 	public:
 		explicit GXWidgetRenderer ( GXWidget* widget );
@@ -103,6 +111,10 @@ class GXWidgetRenderer
 	private:
 		GXBool IsResized ();
 		GXBool IsMoved ();
+
+		GXWidgetRenderer () = delete;
+		GXWidgetRenderer ( const GXWidgetRenderer &other ) = delete;
+		GXWidgetRenderer& operator = ( const GXWidgetRenderer &other ) = delete;
 };
 
 #endif // GX_WIDGET
