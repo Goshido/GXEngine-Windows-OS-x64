@@ -2,11 +2,7 @@
 #include <GXEngine/GXCameraPerspective.h>
 
 
-#define VERTEX_SHADER			L"Shaders/System/VertexPass_vs.txt"
-#define GEOMETRY_SHADER			L"Shaders/System/CubeMapSplitter_gs.txt"
-#define FRAGMENT_SHADER			L"Shaders/Editor Mobile/DiffuseIrradianceGenerator_fs.txt"
-
-#define TEXTURE_SLOT			0
+#define TEXTURE_SLOT			0u
 #define DEFAULT_ANGLE_STEP		0.025f
 
 #define SQUARE_ASPECT_RATIO		1.0f
@@ -14,11 +10,16 @@
 #define Z_FAR					777.777f
 #define PROJECTION_FOV_Y		GX_MATH_HALF_PI
 
+#define VERTEX_SHADER			L"Shaders/System/VertexPass_vs.txt"
+#define GEOMETRY_SHADER			L"Shaders/System/CubeMapSplitter_gs.txt"
+#define FRAGMENT_SHADER			L"Shaders/Editor Mobile/DiffuseIrradianceGenerator_fs.txt"
 
-EMDiffuseIrradianceGeneratorMaterial::EMDiffuseIrradianceGeneratorMaterial ()
+//---------------------------------------------------------------------------------------------------------------------
+
+EMDiffuseIrradianceGeneratorMaterial::EMDiffuseIrradianceGeneratorMaterial ():
+	environmentMap ( nullptr ),
+	angleStep ( DEFAULT_ANGLE_STEP )
 {
-	environmentMap = nullptr;
-
 	static const GLchar* samplerNames[ 1 ] = { "environmentSampler" };
 	static const GLuint samplerLocations[ 1 ] = { TEXTURE_SLOT };
 
@@ -36,8 +37,6 @@ EMDiffuseIrradianceGeneratorMaterial::EMDiffuseIrradianceGeneratorMaterial ()
 
 	viewProjectionMatricesLocation = shaderProgram.GetUniform ( "viewProjectionMatrices" );
 	angleStepLocation = shaderProgram.GetUniform ( "angleStep" );
-
-	SetAngleStep ( DEFAULT_ANGLE_STEP );
 
 	GXCameraPerspective camera ( PROJECTION_FOV_Y, SQUARE_ASPECT_RATIO, Z_NEAR, Z_FAR );
 	camera.SetRotation ( 0.0f, GX_MATH_HALF_PI, 0.0f );
@@ -80,7 +79,7 @@ GXVoid EMDiffuseIrradianceGeneratorMaterial::Unbind ()
 {
 	if ( !environmentMap ) return;
 
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 	environmentMap->Unbind ();
 }
 

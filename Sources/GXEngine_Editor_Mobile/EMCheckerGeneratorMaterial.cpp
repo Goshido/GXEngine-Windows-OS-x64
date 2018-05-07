@@ -5,27 +5,32 @@
 #define GEOMETRY_SHADER		nullptr
 #define FRAGMENT_SHADER		L"Shaders/Editor Mobile/Checker_fs.txt"
 
-#define DEFAULT_COLOR_ONE_R		0
-#define DEFAULT_COLOR_ONE_G		0
-#define DEFAULT_COLOR_ONE_B		0
-#define DEFAULT_COLOR_ONE_A		255
+#define DEFAULT_COLOR_ONE_R		0u
+#define DEFAULT_COLOR_ONE_G		0u
+#define DEFAULT_COLOR_ONE_B		0u
+#define DEFAULT_COLOR_ONE_A		255u
 
-#define DEFAULT_COLOR_TWO_R		255
-#define DEFAULT_COLOR_TWO_G		255
-#define DEFAULT_COLOR_TWO_B		255
-#define DEFAULT_COLOR_TWO_A		255
+#define DEFAULT_COLOR_TWO_R		255u
+#define DEFAULT_COLOR_TWO_G		255u
+#define DEFAULT_COLOR_TWO_B		255u
+#define DEFAULT_COLOR_TWO_A		255u
 
-#define DEFAULT_ELEMENT_WIDTH	4
-#define DEFAULT_ELEMENT_HEIGHT	4
+#define DEFAULT_ELEMENT_WIDTH	4u
+#define DEFAULT_ELEMENT_HEIGHT	4u
 
+//---------------------------------------------------------------------------------------------------------------------
 
-EMCheckerGeneratorMaterial::EMCheckerGeneratorMaterial ()
+EMCheckerGeneratorMaterial::EMCheckerGeneratorMaterial ():
+	colorOne ( static_cast<GXUByte> ( DEFAULT_COLOR_ONE_R ), static_cast<GXUByte> ( DEFAULT_COLOR_ONE_G ), static_cast<GXUByte> ( DEFAULT_COLOR_ONE_G ), static_cast<GXUByte> ( DEFAULT_COLOR_ONE_A ) ),
+	colorTwo ( static_cast<GXUByte> ( DEFAULT_COLOR_TWO_R ), static_cast<GXUByte> ( DEFAULT_COLOR_TWO_G ), static_cast<GXUByte> ( DEFAULT_COLOR_TWO_B ), static_cast<GXUByte> ( DEFAULT_COLOR_TWO_A ) ),
+	elementSize ( static_cast<GXFloat> ( DEFAULT_ELEMENT_WIDTH ), static_cast<GXFloat> ( DEFAULT_ELEMENT_HEIGHT ) ),
+	doubleElementSize ( DEFAULT_ELEMENT_WIDTH * 2.0f, DEFAULT_ELEMENT_HEIGHT * 2.0f )
 {
 	GXShaderProgramInfo si;
 	si.vs = VERTEX_SHADER;
 	si.gs = GEOMETRY_SHADER;
 	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 0;
+	si.numSamplers = 0u;
 	si.samplerNames = nullptr;
 	si.samplerLocations = nullptr;
 	si.numTransformFeedbackOutputs = 0;
@@ -37,11 +42,6 @@ EMCheckerGeneratorMaterial::EMCheckerGeneratorMaterial ()
 	colorTwoLocation = shaderProgram.GetUniform ( "colorTwo" );
 	elementSizeLocation = shaderProgram.GetUniform ( "elementSize" );
 	doubleElementSizeLocation = shaderProgram.GetUniform ( "doubleElementSize" );
-
-	SetColorOne ( DEFAULT_COLOR_ONE_R, DEFAULT_COLOR_ONE_G, DEFAULT_COLOR_ONE_G, DEFAULT_COLOR_ONE_A );
-	SetColorTwo ( DEFAULT_COLOR_TWO_R, DEFAULT_COLOR_TWO_G, DEFAULT_COLOR_TWO_B, DEFAULT_COLOR_TWO_A );
-
-	SetElementSize ( DEFAULT_ELEMENT_WIDTH, DEFAULT_ELEMENT_HEIGHT );
 }
 
 EMCheckerGeneratorMaterial::~EMCheckerGeneratorMaterial ()
@@ -61,7 +61,7 @@ GXVoid EMCheckerGeneratorMaterial::Bind ( const GXTransform& /*transform*/ )
 
 GXVoid EMCheckerGeneratorMaterial::Unbind ()
 {
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 }
 
 GXVoid EMCheckerGeneratorMaterial::SetColorOne ( GXUChar red, GXUChar green, GXUChar blue, GXUChar alpha )

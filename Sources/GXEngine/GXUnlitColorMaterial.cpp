@@ -1,27 +1,29 @@
-// version 1.0
+// version 1.1
 
 #include <GXEngine/GXUnlitColorMaterial.h>
 #include <GXEngine/GXCamera.h>
 
 
-#define DEFAULT_RED			115
-#define DEFAULT_GREEN		185
-#define DEFAULT_BLUE		0
-#define DEFAULT_ALPHA		255
+#define DEFAULT_RED			115u
+#define DEFAULT_GREEN		185u
+#define DEFAULT_BLUE		0u
+#define DEFAULT_ALPHA		255u
 
 #define VERTEX_SHADER		L"Shaders/System/Line_vs.txt"
 #define GEOMETRY_SHADER		nullptr
 #define FRAGMENT_SHADER		L"Shaders/System/Line_fs.txt"
 
+//---------------------------------------------------------------------------------------------------------------------
 
-GXUnlitColorMaterial::GXUnlitColorMaterial ()
+GXUnlitColorMaterial::GXUnlitColorMaterial ():
+	color ( static_cast<GXUByte> ( DEFAULT_RED ), static_cast<GXUByte> ( DEFAULT_GREEN ), static_cast<GXUByte> ( DEFAULT_BLUE ), static_cast<GXUByte> ( DEFAULT_ALPHA ) )
 {
 	GXShaderProgramInfo si;
 
 	si.vs = VERTEX_SHADER;
 	si.gs = GEOMETRY_SHADER;
 	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 0;
+	si.numSamplers = 0u;
 	si.samplerNames = nullptr;
 	si.samplerLocations = nullptr;
 	si.numTransformFeedbackOutputs = 0;
@@ -31,8 +33,6 @@ GXUnlitColorMaterial::GXUnlitColorMaterial ()
 
 	mod_view_proj_matLocation = shaderProgram.GetUniform ( "mod_view_proj_mat" );
 	colorLocation = shaderProgram.GetUniform ( "color" );
-
-	SetColor ( DEFAULT_RED, DEFAULT_GREEN, DEFAULT_BLUE, DEFAULT_ALPHA );
 }
 
 GXUnlitColorMaterial::~GXUnlitColorMaterial ()
@@ -53,7 +53,7 @@ GXVoid GXUnlitColorMaterial::Bind ( const GXTransform &transform )
 
 GXVoid GXUnlitColorMaterial::Unbind ()
 {
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 }
 
 GXVoid GXUnlitColorMaterial::SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )

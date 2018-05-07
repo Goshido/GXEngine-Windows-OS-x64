@@ -3,27 +3,31 @@
 #include <GXEngine/GXCamera.h>
 
 
-#define VERTEX_SHADER						L"Shaders/Editor Mobile/EnvironmentMap_vs.txt"
-#define GEOMETRY_SHADER						nullptr
-#define FRAGMENT_SHADER						L"Shaders/Editor Mobile/EnvironmentMap_fs.txt"
+#define ENVIRONMENT_SLOT					0u
+#define DEPTH_SLOT							1u
 
-#define ENVIRONMENT_SLOT					0
-#define DEPTH_SLOT							1
-
-#define DEFAULT_SCREEN_WIDTH				1280
-#define DEFAULT_SCREEN_HEIGHT				720
+#define DEFAULT_SCREEN_WIDTH				1280.0f
+#define DEFAULT_SCREEN_HEIGHT				720.0f
 #define DEFAULT_DELTA_TIME					1.0f
 #define DEFAULT_ENVIRONMENT_QUASI_DISTANCE	77.7f
 
 #define ZERO_VELOCITY_BLUR_X				0.0f
 #define ZERO_VELOCITY_BLUR_Y				0.0f
 
+#define VERTEX_SHADER						L"Shaders/Editor Mobile/EnvironmentMap_vs.txt"
+#define GEOMETRY_SHADER						nullptr
+#define FRAGMENT_SHADER						L"Shaders/Editor Mobile/EnvironmentMap_fs.txt"
 
-EMEnvironmentMapMaterial::EMEnvironmentMapMaterial ()
+//---------------------------------------------------------------------------------------------------------------------
+
+EMEnvironmentMapMaterial::EMEnvironmentMapMaterial ():
+	environmentTexture ( nullptr ),
+	depthTexture ( nullptr ),
+	screenResolution ( DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT ),
+	inverseScreenResolution ( 1.0f / DEFAULT_SCREEN_WIDTH, 1.0f / DEFAULT_SCREEN_HEIGHT ),
+	inverseDeltaTime ( 1.0f / DEFAULT_DELTA_TIME ),
+	environmentQuasiDistance ( DEFAULT_ENVIRONMENT_QUASI_DISTANCE )
 {
-	environmentTexture = nullptr;
-	depthTexture = nullptr;
-
 	static const GLchar* samplerNames[ 2 ] = { "environmentSampler", "depthSampler" };
 	static const GLuint samplerLocations[ 2 ] = { ENVIRONMENT_SLOT, DEPTH_SLOT };
 
@@ -31,7 +35,7 @@ EMEnvironmentMapMaterial::EMEnvironmentMapMaterial ()
 	si.vs = VERTEX_SHADER;
 	si.gs = GEOMETRY_SHADER;
 	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 2;
+	si.numSamplers = 2u;
 	si.samplerNames = samplerNames;
 	si.samplerLocations = samplerLocations;
 	si.numTransformFeedbackOutputs = 0;
@@ -42,10 +46,6 @@ EMEnvironmentMapMaterial::EMEnvironmentMapMaterial ()
 	modelViewProjectionMatrixLocation = shaderProgram.GetUniform ( "modelViewProjectionMatrix" );
 	inverseScreenResolutionLocation = shaderProgram.GetUniform ( "inverseScreenResolution" );
 	velocityBlurLocation = shaderProgram.GetUniform ( "velocityBlur" );
-
-	SetScreenResolution ( DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT );
-	SetDeltaTime ( DEFAULT_DELTA_TIME );
-	SetEnvironmentQuasiDistance ( DEFAULT_ENVIRONMENT_QUASI_DISTANCE );
 }
 
 EMEnvironmentMapMaterial::~EMEnvironmentMapMaterial ()
@@ -109,7 +109,7 @@ GXVoid EMEnvironmentMapMaterial::Bind ( const GXTransform &transform )
 	}
 	else
 	{
-		GXFloat maximumMotionBlurSamples = (GXFloat)renderer.GetMaximumMotionBlurSamples ();
+		GXFloat maximumMotionBlurSamples = static_cast<GXFloat> ( renderer.GetMaximumMotionBlurSamples () );
 		GXFloat halfSpreadVelocityMagnitudeImage = GXMinf ( halfSpreadVelocityImage.Length (), maximumMotionBlurSamples );
 
 		velocityBlur = velocityImage;
@@ -129,7 +129,7 @@ GXVoid EMEnvironmentMapMaterial::Unbind ()
 {
 	if ( !environmentTexture || !depthTexture ) return;
 
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 	environmentTexture->Unbind ();
 	depthTexture->Unbind ();
 }
@@ -146,7 +146,7 @@ GXVoid EMEnvironmentMapMaterial::SetDepthTexture ( GXTexture2D &texture )
 
 GXVoid EMEnvironmentMapMaterial::SetScreenResolution ( GXUShort width, GXUShort height )
 {
-	screenResolution.Init ( (GXFloat)width, (GXFloat)height );
+	screenResolution.Init ( static_cast<GXFloat> ( width ), static_cast<GXFloat> ( height ) );
 	inverseScreenResolution.Init ( 1.0f / screenResolution.data[ 0 ], 1.0f / screenResolution.data[ 1 ] );
 }
 

@@ -10,12 +10,12 @@ class EMDiffuseIrradianceGeneratorMaterial : public GXMaterial
 {
 	private:
 		GXTextureCubeMap*		environmentMap;
+		GXFloat					angleStep;
 
 		GXMat4					viewProjectionMatrices[ 6 ];
-		GLint					viewProjectionMatricesLocation;
 
-		GXFloat					angleStep;
 		GLint					angleStepLocation;
+		GLint					viewProjectionMatricesLocation;
 
 	public:
 		EMDiffuseIrradianceGeneratorMaterial ();
@@ -29,6 +29,10 @@ class EMDiffuseIrradianceGeneratorMaterial : public GXMaterial
 		// Less step - more precisely convolution result.
 		// Returns total samples will be done.
 		GXUInt SetAngleStep ( GXFloat radians );
+
+	private:
+		EMDiffuseIrradianceGeneratorMaterial ( const EMDiffuseIrradianceGeneratorMaterial &other ) = delete;
+		EMDiffuseIrradianceGeneratorMaterial& operator = ( const EMDiffuseIrradianceGeneratorMaterial &other ) = delete;
 };
 
 

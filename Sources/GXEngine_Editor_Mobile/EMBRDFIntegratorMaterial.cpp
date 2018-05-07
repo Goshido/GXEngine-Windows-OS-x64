@@ -7,14 +7,17 @@
 
 #define DEFAULT_SAMPLES_PER_PIXEL	1024
 
+//---------------------------------------------------------------------------------------------------------------------
 
-EMBRDFIntegratorMaterial::EMBRDFIntegratorMaterial ()
+EMBRDFIntegratorMaterial::EMBRDFIntegratorMaterial ():
+	samples ( DEFAULT_SAMPLES_PER_PIXEL ),
+	inverseSamples ( 1.0f / static_cast<GXFloat> ( DEFAULT_SAMPLES_PER_PIXEL ) )
 {
 	GXShaderProgramInfo si;
 	si.vs = VERTEX_SHADER;
 	si.gs = GEOMETRY_SHADER;
 	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 0;
+	si.numSamplers = 0u;
 	si.samplerNames = nullptr;
 	si.samplerLocations = nullptr;
 	si.numTransformFeedbackOutputs = 0;
@@ -24,8 +27,6 @@ EMBRDFIntegratorMaterial::EMBRDFIntegratorMaterial ()
 
 	samplesLocation = shaderProgram.GetUniform ( "samples" );
 	inverseSamplesLocation = shaderProgram.GetUniform ( "inverseSamples" );
-
-	SetSamplesPerPixel ( DEFAULT_SAMPLES_PER_PIXEL );
 }
 
 EMBRDFIntegratorMaterial::~EMBRDFIntegratorMaterial ()
@@ -42,11 +43,11 @@ GXVoid EMBRDFIntegratorMaterial::Bind ( const GXTransform& /*transform*/ )
 
 GXVoid EMBRDFIntegratorMaterial::Unbind ()
 {
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 }
 
 GXVoid EMBRDFIntegratorMaterial::SetSamplesPerPixel ( GXUShort samplesPerPixel )
 {
-	samples = (GXInt)samplesPerPixel;
-	inverseSamples = 1.0f / (GXFloat)samplesPerPixel;
+	samples = static_cast<GXInt> ( samplesPerPixel );
+	inverseSamples = 1.0f / static_cast<GXFloat> ( samplesPerPixel );
 }

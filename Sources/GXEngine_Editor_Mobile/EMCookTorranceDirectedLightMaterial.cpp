@@ -6,37 +6,44 @@
 #define DEFAULT_LIGHT_DIRECTION_VIEW_Y		-1.0f
 #define DEFAULT_LIGHT_DIRECTION_VIEW_Z		0.0f
 
-#define DEFAULT_HUE_R						255
-#define DEFAULT_HUE_G						255
-#define DEFAULT_HUE_B						255
+#define DEFAULT_HUE_R						1.0f
+#define DEFAULT_HUE_G						1.0f
+#define DEFAULT_HUE_B						1.0f
+#define DEFAULT_HUE_A						1.0f
 
-#define DEFAULT_INTENCITY					0.9f
+#define DEFAULT_INTENSITY					0.9f
 
 #define DEFAULT_AMBIENT_COLOR_R				0.1f
 #define DEFAULT_AMBIENT_COLOR_B				0.1f
 #define DEFAULT_AMBIENT_COLOR_G				0.1f
+#define DEFAULT_AMBIENT_COLOR_A				1.0f
 
-#define ALBEDO_SLOT							0
-#define NORMAL_SLOT							1
-#define EMISSION_SLOT						2
-#define PARAMETER_SLOT						3
-#define DEPTH_SLOT							4
+#define ALBEDO_SLOT							0u
+#define NORMAL_SLOT							1u
+#define EMISSION_SLOT						2u
+#define PARAMETER_SLOT						3u
+#define DEPTH_SLOT							4u
 
-#define ANY_ALPHA							255
+#define ANY_ALPHA							255u
 
 #define VERTEX_SHADER						L"Shaders/System/ScreenQuad_vs.txt"
 #define GEOMETRY_SHADER						nullptr
 #define FRAGMENT_SHADER						L"Shaders/Editor Mobile/CookTorranceDirectedLight_fs.txt"
 
+//---------------------------------------------------------------------------------------------------------------------
 
-EMCookTorranceDirectedLightMaterial::EMCookTorranceDirectedLightMaterial ()
+EMCookTorranceDirectedLightMaterial::EMCookTorranceDirectedLightMaterial ():
+	albedoTexture ( nullptr ),
+	normalTexture ( nullptr ),
+	emissionTexture ( nullptr ),
+	parameterTexture ( nullptr ),
+	depthTexture ( nullptr ),
+	hue ( DEFAULT_HUE_R, DEFAULT_HUE_G, DEFAULT_HUE_B, DEFAULT_HUE_A ),
+	intensity ( DEFAULT_INTENSITY ),
+	hdrColor ( DEFAULT_HUE_R * DEFAULT_INTENSITY, DEFAULT_HUE_G * DEFAULT_INTENSITY, DEFAULT_HUE_B * DEFAULT_INTENSITY, DEFAULT_HUE_A ),
+	ambientColor ( DEFAULT_AMBIENT_COLOR_R, DEFAULT_AMBIENT_COLOR_B, DEFAULT_AMBIENT_COLOR_G, DEFAULT_AMBIENT_COLOR_A ),
+	toLightDirectionView ( -DEFAULT_LIGHT_DIRECTION_VIEW_X, -DEFAULT_LIGHT_DIRECTION_VIEW_Y, -DEFAULT_LIGHT_DIRECTION_VIEW_Z )
 {
-	albedoTexture = nullptr;
-	normalTexture = nullptr;
-	emissionTexture = nullptr;
-	parameterTexture = nullptr;
-	depthTexture = nullptr;
-
 	static const GLchar* samplerNames[ 5 ] = { "albedoSampler", "normalSampler", "emissionSampler", "parameterSampler", "depthSampler" };
 	static const GLuint samplerLocations[ 5 ] = { ALBEDO_SLOT, NORMAL_SLOT, EMISSION_SLOT, PARAMETER_SLOT, DEPTH_SLOT };
 
@@ -44,7 +51,7 @@ EMCookTorranceDirectedLightMaterial::EMCookTorranceDirectedLightMaterial ()
 	si.vs = VERTEX_SHADER;
 	si.gs = GEOMETRY_SHADER;
 	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 5;
+	si.numSamplers = 5u;
 	si.samplerNames = samplerNames;
 	si.samplerLocations = samplerLocations;
 	si.numTransformFeedbackOutputs = 0;
@@ -58,15 +65,6 @@ EMCookTorranceDirectedLightMaterial::EMCookTorranceDirectedLightMaterial ()
 	ambientColorLocation = shaderProgram.GetUniform ( "ambientColor" );
 	toLightDirectionViewLocation = shaderProgram.GetUniform ( "toLightDirectionView" );
 	inverseProjectionMatrixLocation = shaderProgram.GetUniform ( "inverseProjectionMatrix" );
-
-	GXVec3 defaultLightDirectionView ( DEFAULT_LIGHT_DIRECTION_VIEW_X, DEFAULT_LIGHT_DIRECTION_VIEW_Y, DEFAULT_LIGHT_DIRECTION_VIEW_Z );
-	SetLightDirectionView ( defaultLightDirectionView );
-
-	intensity = DEFAULT_INTENCITY;
-	SetHue ( DEFAULT_HUE_R, DEFAULT_HUE_G, DEFAULT_HUE_B );
-
-	GXColorRGB defaultAmbientColor ( DEFAULT_AMBIENT_COLOR_R, DEFAULT_AMBIENT_COLOR_G, DEFAULT_AMBIENT_COLOR_B, ANY_ALPHA );
-	SetAmbientColor ( defaultAmbientColor );
 }
 
 EMCookTorranceDirectedLightMaterial::~EMCookTorranceDirectedLightMaterial ()
@@ -100,7 +98,7 @@ GXVoid EMCookTorranceDirectedLightMaterial::Unbind ()
 {
 	if ( !albedoTexture || !normalTexture || !emissionTexture || !parameterTexture || !depthTexture ) return;
 
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 
 	albedoTexture->Unbind ();
 	normalTexture->Unbind ();
@@ -143,17 +141,17 @@ GXVoid EMCookTorranceDirectedLightMaterial::SetLightDirectionView ( const GXVec3
 GXVoid EMCookTorranceDirectedLightMaterial::SetHue ( GXUByte red, GXUByte green, GXUByte blue )
 {
 	hue.From ( red, green, blue, ANY_ALPHA );
-	hdrColor.SetRed ( hue.GetRed () * intensity );
-	hdrColor.SetGreen ( hue.GetGreen () * intensity );
-	hdrColor.SetBlue ( hue.GetBlue () * intensity );
+	hdrColor.data[ 0 ] = hue.data[ 0 ] * intensity;
+	hdrColor.data[ 1 ] = hue.data[ 1 ] * intensity;
+	hdrColor.data[ 2 ] = hue.data[ 2 ] * intensity;
 }
 
 GXVoid EMCookTorranceDirectedLightMaterial::SetIntencity ( GXFloat intencity )
 {
 	this->intensity = intencity;
-	hdrColor.SetRed ( hue.GetRed () * intensity );
-	hdrColor.SetGreen ( hue.GetGreen () * intensity );
-	hdrColor.SetBlue ( hue.GetBlue () * intensity );
+	hdrColor.data[ 0 ] = hue.data[ 0 ] * intensity;
+	hdrColor.data[ 1 ] = hue.data[ 1 ] * intensity;
+	hdrColor.data[ 2 ] = hue.data[ 2 ] * intensity;
 }
 
 GXVoid EMCookTorranceDirectedLightMaterial::SetAmbientColor ( const GXColorRGB &color )

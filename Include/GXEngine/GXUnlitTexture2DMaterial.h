@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_UNLIT_TEXTURE2D_MATERIAL
 #define GX_UNLIT_TEXTURE2D_MATERIAL
@@ -11,13 +11,13 @@
 class GXUnlitTexture2DMaterial : public GXMaterial
 {
 	private:
-		GLint			mod_view_proj_matLocation;
-		GLint			uvScaleOffsetLocation;
-		GLint			colorLocation;
-
 		GXTexture2D*	texture;
 		GXColorRGB		color;
 		GXVec4			uvScaleOffset;
+
+		GLint			mod_view_proj_matLocation;
+		GLint			uvScaleOffsetLocation;
+		GLint			colorLocation;
 
 	public:
 		GXUnlitTexture2DMaterial ();
@@ -32,6 +32,10 @@ class GXUnlitTexture2DMaterial : public GXMaterial
 
 		GXVoid SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
 		GXVoid SetColor ( const GXColorRGB &newColor );
+
+	private:
+		GXUnlitTexture2DMaterial ( const GXUnlitTexture2DMaterial &other ) = delete;
+		GXUnlitTexture2DMaterial& operator = ( const GXUnlitTexture2DMaterial &other ) = delete;
 };
 
 

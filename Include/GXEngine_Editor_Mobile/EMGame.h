@@ -37,8 +37,6 @@ class EMGame : public GXGame
 		EMUIPopup*				effectsPopup;
 
 		GXHudSurface*			physicsInfo;
-		GXFont					physicsInfoFont;
-		GXTexture2D				physicsInfoBackgroundTexture;
 		GXMeshGeometry*			physicsContactPointMesh;
 		GXUnlitColorMaterial*	physicsContactPointMaterial;
 
@@ -70,6 +68,9 @@ class EMGame : public GXGame
 		EMLightProbe*			lightProbe;
 
 		GXUIInput*				uiInput;
+
+		GXFont					physicsInfoFont;
+		GXTexture2D				physicsInfoBackgroundTexture;
 
 		static GXBool			isContact;
 		static GXMat4			contactNormalTransform;

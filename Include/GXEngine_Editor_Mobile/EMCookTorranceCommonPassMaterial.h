@@ -20,46 +20,45 @@ class EMCookTorranceCommonPassMaterial : public GXMaterial
 		// alpha - metallic. Remapping rule: 1.0f if value > 129, 0.0f otherwise
 		GXTexture2D*		parameterTexture;
 
-		GXVec4				albedoTextureScaleOffset;
-		GLint				albedoTextureScaleOffsetLocation;
-
 		GXColorRGB			albedoColor;
-		GLint				albedoColorLocation;
+		GXVec4				albedoTextureScaleOffset;
 
 		GXVec4				normalTextureScaleOffset;
-		GLint				normalTextureScaleOffsetLocation;
-
-		GXVec4				emissionTextureScaleOffset;
-		GLint				emissionTextureScaleOffsetLocation;
 
 		GXColorRGB			emissionColor;
 		GXFloat				emissionColorScale;
 		GXColorRGB			emissionScaledColor;
-		GLint				emissionScaledColorLocation;
-
-		GXVec4				parameterTextureScaleOffset;
-		GLint				parameterTextureScaleOffsetLocation;
+		GXVec4				emissionTextureScaleOffset;
 
 		// x - roughness scale
 		// y - index of refraction scale
 		// z - specular intencity scale
 		// w - metallic scale
 		GXVec4				parameterScale;
-		GLint				parameterScaleLocation;
+		GXVec4				parameterTextureScaleOffset;
 
 		GXFloat				inverseDeltaTime;
-		GLint				inverseDeltaTimeLocation;
-
 		GXFloat				exposure;
-		GLint				exposureLocation;
-
 		GXVec2				screenResolution;
+		GXFloat				maximumBlurSamples;
+		GXFloat				inverseMaximumBlurSamples;
+
+		GLint				albedoTextureScaleOffsetLocation;
+		GLint				albedoColorLocation;
+
+		GLint				normalTextureScaleOffsetLocation;
+
+		GLint				emissionTextureScaleOffsetLocation;
+		GLint				emissionScaledColorLocation;
+
+		GLint				parameterTextureScaleOffsetLocation;
+		GLint				parameterScaleLocation;
+
+		GLint				inverseDeltaTimeLocation;
+		GLint				exposureLocation;
 		GLint				screenResolutionLocation;
 
-		GXFloat				maximumBlurSamples;
 		GLint				maximumBlurSamplesLocation;
-
-		GXFloat				inverseMaximumBlurSamples;
 		GLint				inverseMaximumBlurSamplesLocation;
 
 		GLint				currentFrameModelViewProjectionMatrixLocation;
@@ -119,6 +118,10 @@ class EMCookTorranceCommonPassMaterial : public GXMaterial
 		GXVoid SetExposure ( GXFloat seconds );
 		GXVoid SetScreenResolution ( GXUShort width, GXUShort height );
 		GXVoid SetMaximumBlurSamples ( GXUByte samples );
+
+	private:
+		EMCookTorranceCommonPassMaterial ( const EMCookTorranceCommonPassMaterial &other ) = delete;
+		EMCookTorranceCommonPassMaterial& operator = ( const EMCookTorranceCommonPassMaterial &other ) = delete;
 };
 
 

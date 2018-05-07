@@ -2,7 +2,7 @@
 #include <GXEngine/GXCamera.h>
 
 
-#define ALBEDO_SLOT							0
+#define ALBEDO_SLOT							0u
 
 #define DEFAULT_ALBEDO_TEXTURE_SCALE_U		1.0f
 #define DEFAULT_ALBEDO_TEXTURE_SCALE_V		1.0f
@@ -10,12 +10,12 @@
 #define DEFAULT_ALBEDO_TEXTURE_OFFSET_U		0.0f
 #define DEFAULT_ALBEDO_TEXTURE_OFFSET_V		0.0f
 
-#define DEFAULT_ALBEDO_COLOR_R				255
-#define DEFAULT_ALBEDO_COLOR_G				255
-#define DEFAULT_ALBEDO_COLOR_B				255
-#define DEFAULT_ALBEDO_COLOR_A				255
+#define DEFAULT_ALBEDO_COLOR_R				255u
+#define DEFAULT_ALBEDO_COLOR_G				255u
+#define DEFAULT_ALBEDO_COLOR_B				255u
+#define DEFAULT_ALBEDO_COLOR_A				255u
 
-#define NORMAL_SLOT							1
+#define NORMAL_SLOT							1u
 
 #define DEFAULT_NORMAL_TEXTURE_SCALE_U		1.0f
 #define DEFAULT_NORMAL_TEXTURE_SCALE_V		1.0f
@@ -23,7 +23,7 @@
 #define DEFAULT_NORMAL_TEXTURE_OFFSET_U		0.0f
 #define DEFAULT_NORMAL_TEXTURE_OFFSET_V		0.0f
 
-#define EMISSION_SLOT						2
+#define EMISSION_SLOT						2u
 
 #define DEFAULT_EMISSION_TEXTURE_SCALE_U	1.0f
 #define DEFAULT_EMISSION_TEXTURE_SCALE_V	1.0f
@@ -31,13 +31,13 @@
 #define DEFAULT_EMISSION_TEXTURE_OFFSET_U	0.0f
 #define DEFAULT_EMISSION_TEXTURE_OFFSET_V	0.0f
 
-#define DEFAULT_EMISSION_COLOR_R			255
-#define DEFAULT_EMISSION_COLOR_G			255
-#define DEFAULT_EMISSION_COLOR_B			255
+#define DEFAULT_EMISSION_COLOR_R			255u
+#define DEFAULT_EMISSION_COLOR_G			255u
+#define DEFAULT_EMISSION_COLOR_B			255u
 
 #define DEFAULT_EMISSION_SCALE				1.0f
 
-#define PARAMETER_SLOT						3
+#define PARAMETER_SLOT						3u
 
 #define DEFAULT_PARAMETER_TEXTURE_SCALE_U	1.0f
 #define DEFAULT_PARAMETER_TEXTURE_SCALE_V	1.0f
@@ -53,25 +53,39 @@
 #define DEFAULT_DELTA_TIME					0.1667f
 #define DEFAULT_EXPLOSURE					0.01667f
 
-#define DEFAULT_SCREEN_RESOLUTION_WIDTH		1280
-#define DEFAULT_SCREEN_RESOLUTION_HEIGHT	720
+#define DEFAULT_SCREEN_RESOLUTION_WIDTH		1280.0f
+#define DEFAULT_SCREEN_RESOLUTION_HEIGHT	720.0f
 
-#define DEFAULT_MAXIMUM_BLUR_SAMPLES		15
+#define DEFAULT_MAXIMUM_BLUR_SAMPLES		15u
 
-#define ANY_ALPHA							255
+#define ANY_ALPHA							255u
+#define UBYTE_COLOR_TO_FLOAT				0.0039215f
 
 #define VERTEX_SHADER			L"Shaders/Editor Mobile/CookTorranceCommonPass_vs.txt"
 #define GEOMETRY_SHADER			nullptr
 #define FRAGMENT_SHADER			L"Shaders/Editor Mobile/CookTorranceCommonPass_fs.txt"
 
+//---------------------------------------------------------------------------------------------------------------------
 
-EMCookTorranceCommonPassMaterial::EMCookTorranceCommonPassMaterial ()
+EMCookTorranceCommonPassMaterial::EMCookTorranceCommonPassMaterial ():
+	albedoTexture ( nullptr ),
+	normalTexture ( nullptr ),
+	emissionTexture ( nullptr ),
+	parameterTexture ( nullptr ),
+	albedoColor ( static_cast<GXUByte> ( DEFAULT_ALBEDO_COLOR_R ), static_cast<GXUByte> ( DEFAULT_ALBEDO_COLOR_G ), static_cast<GXUByte> ( DEFAULT_ALBEDO_COLOR_B ), static_cast<GXUByte> ( DEFAULT_ALBEDO_COLOR_A ) ),
+	albedoTextureScaleOffset ( DEFAULT_ALBEDO_TEXTURE_SCALE_U, DEFAULT_ALBEDO_TEXTURE_SCALE_V, DEFAULT_ALBEDO_TEXTURE_OFFSET_U, DEFAULT_ALBEDO_TEXTURE_OFFSET_V ),
+	normalTextureScaleOffset ( DEFAULT_NORMAL_TEXTURE_SCALE_U, DEFAULT_NORMAL_TEXTURE_SCALE_V, DEFAULT_NORMAL_TEXTURE_OFFSET_U, DEFAULT_NORMAL_TEXTURE_OFFSET_V ),
+	emissionColor ( static_cast<GXUByte> ( DEFAULT_EMISSION_COLOR_R ), static_cast<GXUByte> ( DEFAULT_EMISSION_COLOR_G ), static_cast<GXUByte> ( DEFAULT_EMISSION_COLOR_B ), static_cast<GXUByte> ( ANY_ALPHA ) ),
+	emissionColorScale ( DEFAULT_EMISSION_SCALE ),
+	emissionScaledColor ( DEFAULT_EMISSION_SCALE * DEFAULT_EMISSION_COLOR_R * UBYTE_COLOR_TO_FLOAT, DEFAULT_EMISSION_SCALE * DEFAULT_EMISSION_COLOR_G * UBYTE_COLOR_TO_FLOAT, DEFAULT_EMISSION_SCALE * DEFAULT_EMISSION_COLOR_B * UBYTE_COLOR_TO_FLOAT, ANY_ALPHA ),
+	emissionTextureScaleOffset ( DEFAULT_EMISSION_TEXTURE_SCALE_U, DEFAULT_EMISSION_TEXTURE_SCALE_V, DEFAULT_EMISSION_TEXTURE_OFFSET_U, DEFAULT_EMISSION_TEXTURE_OFFSET_V ),
+	parameterScale ( DEFAULT_ROUGHNESS_SCALE, DEFAULT_INDEX_OF_REFRACTION_SCALE, DEFAULT_SPECULAR_INTECITY_SCALE, DEFAULT_METALLIC_SCALE ),
+	parameterTextureScaleOffset ( DEFAULT_PARAMETER_TEXTURE_SCALE_U, DEFAULT_PARAMETER_TEXTURE_SCALE_V, DEFAULT_PARAMETER_TEXTURE_OFFSET_U, DEFAULT_PARAMETER_TEXTURE_OFFSET_V ),
+	inverseDeltaTime ( 1.0f / DEFAULT_DELTA_TIME ),
+	exposure ( DEFAULT_EXPLOSURE ),
+	screenResolution ( DEFAULT_SCREEN_RESOLUTION_WIDTH, DEFAULT_SCREEN_RESOLUTION_HEIGHT ),
+	inverseMaximumBlurSamples ( 1.0f / static_cast<GXFloat> ( DEFAULT_MAXIMUM_BLUR_SAMPLES ) )
 {
-	albedoTexture = nullptr;
-	normalTexture = nullptr;
-	emissionTexture = nullptr;
-	parameterTexture = nullptr;
-
 	static const GLchar* samplerNames[ 4 ] = { "albedoSampler", "normalSampler", "emissionSampler", "parameterSampler" };
 	static const GLuint samplerLocations[ 4 ] = { ALBEDO_SLOT, NORMAL_SLOT, EMISSION_SLOT, PARAMETER_SLOT };
 
@@ -79,7 +93,7 @@ EMCookTorranceCommonPassMaterial::EMCookTorranceCommonPassMaterial ()
 	si.vs = VERTEX_SHADER;
 	si.gs = GEOMETRY_SHADER;
 	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 4;
+	si.numSamplers = 4u;
 	si.samplerNames = samplerNames;
 	si.samplerLocations = samplerLocations;
 	si.numTransformFeedbackOutputs = 0;
@@ -102,30 +116,6 @@ EMCookTorranceCommonPassMaterial::EMCookTorranceCommonPassMaterial ()
 	currentFrameModelViewProjectionMatrixLocation = shaderProgram.GetUniform ( "currentFrameModelViewProjectionMatrix" );
 	currentFrameRotationViewMatrixLocation = shaderProgram.GetUniform ( "currentFrameRotationViewMatrix" );
 	lastFrameModelViewProjectionMatrixLocation = shaderProgram.GetUniform ( "lastFrameModelViewProjectionMatrix" );
-
-	SetAlbedoTextureScale ( DEFAULT_ALBEDO_TEXTURE_SCALE_U, DEFAULT_ALBEDO_TEXTURE_SCALE_V );
-	SetAlbedoTextureOffset ( DEFAULT_ALBEDO_TEXTURE_OFFSET_U, DEFAULT_ALBEDO_TEXTURE_OFFSET_V );
-	SetAlbedoColor ( DEFAULT_ALBEDO_COLOR_R, DEFAULT_ALBEDO_COLOR_G, DEFAULT_ALBEDO_COLOR_B, DEFAULT_ALBEDO_COLOR_A );
-
-	SetNormalTextureScale ( DEFAULT_NORMAL_TEXTURE_SCALE_U, DEFAULT_NORMAL_TEXTURE_SCALE_V );
-	SetNormalTextureOffset ( DEFAULT_NORMAL_TEXTURE_OFFSET_U, DEFAULT_NORMAL_TEXTURE_OFFSET_V );
-
-	SetEmissionTextureScale ( DEFAULT_EMISSION_TEXTURE_SCALE_U, DEFAULT_EMISSION_TEXTURE_SCALE_V );
-	SetEmissionTextureOffset ( DEFAULT_EMISSION_TEXTURE_OFFSET_U, DEFAULT_EMISSION_TEXTURE_OFFSET_V );
-	emissionColorScale = DEFAULT_EMISSION_SCALE;
-	SetEmissionColor ( DEFAULT_EMISSION_COLOR_R, DEFAULT_EMISSION_COLOR_G, DEFAULT_EMISSION_COLOR_B );
-
-	SetParameterTextureScale ( DEFAULT_PARAMETER_TEXTURE_SCALE_U, DEFAULT_PARAMETER_TEXTURE_SCALE_V );
-	SetParameterTextureOffset ( DEFAULT_PARAMETER_TEXTURE_OFFSET_U, DEFAULT_PARAMETER_TEXTURE_OFFSET_V );
-	SetRoughnessScale ( DEFAULT_ROUGHNESS_SCALE );
-	SetIndexOfRefractionScale ( DEFAULT_INDEX_OF_REFRACTION_SCALE );
-	SetSpecularIntensityScale ( DEFAULT_SPECULAR_INTECITY_SCALE );
-	SetMetallicScale ( DEFAULT_METALLIC_SCALE );
-
-	SetDeltaTime ( DEFAULT_DELTA_TIME );
-	SetExposure ( DEFAULT_EXPLOSURE );
-	SetScreenResolution ( DEFAULT_SCREEN_RESOLUTION_WIDTH, DEFAULT_SCREEN_RESOLUTION_HEIGHT );
-	SetMaximumBlurSamples ( DEFAULT_MAXIMUM_BLUR_SAMPLES );
 }
 
 EMCookTorranceCommonPassMaterial::~EMCookTorranceCommonPassMaterial ()
@@ -206,7 +196,7 @@ GXVoid EMCookTorranceCommonPassMaterial::Unbind ()
 {
 	if ( !albedoTexture || !normalTexture || !emissionTexture || !parameterTexture ) return;
 
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 
 	albedoTexture->Unbind ();
 	normalTexture->Unbind ();
@@ -431,11 +421,11 @@ GXVoid EMCookTorranceCommonPassMaterial::SetExposure ( GXFloat seconds )
 
 GXVoid EMCookTorranceCommonPassMaterial::SetScreenResolution ( GXUShort width, GXUShort height )
 {
-	screenResolution.Init ( (GXFloat)width, (GXFloat)height );
+	screenResolution.Init ( static_cast<GXFloat> ( width ), static_cast<GXFloat> ( height ) );
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::SetMaximumBlurSamples ( GXUByte samples )
 {
-	maximumBlurSamples = (GXFloat)samples;
+	maximumBlurSamples = static_cast<GXFloat> ( samples );
 	inverseMaximumBlurSamples = 1.0f / maximumBlurSamples;
 }

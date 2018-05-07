@@ -10,6 +10,7 @@
 #define SPECULAR_INTENSITY_SCALE	0.1f
 #define METALLIC_SCALE				0.0f
 
+//---------------------------------------------------------------------------------------------------------------------
 
 EMFluttershy::EMFluttershy ():
 // mesh ( L"3D Models/Editor Mobile/Fluttershy.skm" ), animationSolverPlayer ( SOLVER_ID )

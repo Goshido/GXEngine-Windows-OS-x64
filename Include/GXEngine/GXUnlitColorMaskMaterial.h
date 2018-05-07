@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_UNLIT_COLOR_MASK_MATERIAL
 #define GX_UNLIT_COLOR_MASK_MATERIAL
@@ -11,13 +11,13 @@
 class GXUnlitColorMaskMaterial : public GXMaterial
 {
 	private:
-		GLint			mod_view_proj_matLocation;
-		GLint			uvScaleOffsetLocation;
-		GLint			colorLocation;
-
 		GXTexture2D*	mask;
 		GXVec4			uvScaleOffset;
 		GXColorRGB		color;
+
+		GLint			mod_view_proj_matLocation;
+		GLint			uvScaleOffsetLocation;
+		GLint			colorLocation;
 
 	public:
 		GXUnlitColorMaskMaterial ();
@@ -32,6 +32,10 @@ class GXUnlitColorMaskMaterial : public GXMaterial
 
 		GXVoid SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
 		GXVoid SetColor ( const GXColorRGB &newColor );
+
+	private:
+		GXUnlitColorMaskMaterial ( const GXUnlitColorMaskMaterial &other ) = delete;
+		GXUnlitColorMaskMaterial& operator = ( const GXUnlitColorMaskMaterial &other ) = delete;
 };
 
 

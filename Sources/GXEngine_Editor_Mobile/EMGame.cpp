@@ -21,57 +21,45 @@
 #define ENVIRONMENT_QUASI_DISTANCE		7.77f
 #define FLUTTERSHY_SCALE				2.0e-2f
 
+//---------------------------------------------------------------------------------------------------------------------
 
 GXBool EMGame::isContact;
 GXMat4 EMGame::contactNormalTransform;
 
 
 EMGame::EMGame ():
-gravity ( GXVec3 ( 0.0f, -9.81f, 0.0f ) )
+	hudCamera ( nullptr ),
+	openFile ( nullptr ),
+	menu ( nullptr ),
+	filePopup ( nullptr ),
+	createPopup ( nullptr ),
+	toolsPopup ( nullptr ),
+	utilityPopup ( nullptr ),
+	effectsPopup ( nullptr ),
+	physicsInfo ( nullptr ),
+	physicsContactPointMesh ( nullptr ),
+	physicsContactPointMaterial ( nullptr ),
+	gravity ( GXVec3 ( 0.0f, -9.81f, 0.0f ) ),
+	directedLight ( nullptr ),
+	unitActor ( nullptr ),
+	colliderOne ( nullptr ),
+	colliderTwo ( nullptr ),
+	kinematicPlane ( nullptr ),
+	plasticSphere ( nullptr ),
+	goldSphere ( nullptr ),
+	silverSphere ( nullptr ),
+	moveTool ( nullptr ),
+	fluttershy ( nullptr ),
+	contactLocationMesh ( nullptr ),
+	contactLocationMaterial ( nullptr ),
+	contactNormalMesh ( nullptr ),
+	contactNormalMaterial ( nullptr ),
+	environmentMap ( nullptr ),
+	lightProbeSourceTexture ( nullptr ),
+	lightProbe ( nullptr ),
+	uiInput ( nullptr )
 {
-	hudCamera = nullptr;
-
-	menu = nullptr;
-
-	openFile = nullptr;
-
-	filePopup = nullptr;
-	createPopup = nullptr;
-	toolsPopup = nullptr;
-	utilityPopup = nullptr;
-	effectsPopup = nullptr;
-
-	physicsInfo = nullptr;
-	physicsContactPointMaterial = nullptr;
-
-	directedLight = nullptr;
-
-	unitActor = nullptr;
-	colliderOne = nullptr;
-	colliderTwo = nullptr;
-	kinematicPlane = nullptr;
-	plasticSphere = nullptr;
-	goldSphere = nullptr;
-	silverSphere = nullptr;
-
-	moveTool = nullptr;
-
-	fluttershy = nullptr;
-
-	contactLocationMesh = nullptr;
-	contactLocationMaterial = nullptr;
-
-	contactNormalMesh = nullptr;
-	contactNormalMaterial = nullptr;
-
-	isContact = GX_FALSE;
-
-	environmentMap = nullptr;
-	lightProbeSourceTexture = nullptr;
-
-	lightProbe = nullptr;
-
-	uiInput = nullptr;
+	// NOTHING
 }
 
 EMGame::~EMGame ()
@@ -176,7 +164,7 @@ GXVoid EMGame::OnInit ()
 	colliderOne->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 0.0f, -5.0f ) );
 	colliderOne->SetMesh ( L"Meshes/System/Unit Cube.stm" );
 	EMCookTorranceCommonPassMaterial& colliderOneMaterial = colliderOne->GetMaterial ();
-	colliderOneMaterial.SetAlbedoColor ( 253, 180, 17, 255 );
+	colliderOneMaterial.SetAlbedoColor ( 253u, 180u, 17u, 255u );
 	colliderOneMaterial.SetRoughnessScale ( 0.25f );
 	colliderOneMaterial.SetIndexOfRefractionScale ( 0.094f );
 	colliderOneMaterial.SetSpecularIntensityScale ( 0.998f );

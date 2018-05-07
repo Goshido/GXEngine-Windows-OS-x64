@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_MATERIAL
 #define GX_MATERIAL
@@ -19,6 +19,10 @@ class GXMaterial
 
 		virtual GXVoid Bind ( const GXTransform &transform ) = 0;
 		virtual GXVoid Unbind () = 0;
+
+	private:
+		GXMaterial ( const GXMaterial &other ) = delete;
+		GXMaterial& operator = ( const GXMaterial &other ) = delete;
 };
 
 

@@ -9,6 +9,7 @@
 #define CUBE_SCALE				7.77f
 #define INVALID_TEXTURE_OBJECT	0u
 
+//---------------------------------------------------------------------------------------------------------------------
 
 EMEnvironment* EMEnvironment::instance = nullptr;
 

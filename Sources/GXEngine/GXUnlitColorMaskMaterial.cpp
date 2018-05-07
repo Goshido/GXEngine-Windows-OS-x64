@@ -1,13 +1,13 @@
-// version 1.0
+// version 1.1
 
 #include <GXEngine/GXUnlitColorMaskMaterial.h>
 #include <GXEngine/GXCamera.h>
 
 
-#define DEFAULT_COLOR_RED		115
-#define DEFAULT_COLOR_GREEN		185
-#define DEFAULT_COLOR_BLUE		0
-#define DEFAULT_COLOR_ALPHA		255
+#define DEFAULT_COLOR_RED		115u
+#define DEFAULT_COLOR_GREEN		185u
+#define DEFAULT_COLOR_BLUE		0u
+#define DEFAULT_COLOR_ALPHA		255u
 
 #define DEFAULT_MASK_SCALE_X	1.0f
 #define DEFAULT_MASK_SCALE_Y	1.0f
@@ -18,10 +18,14 @@
 #define GEOMETRY_SHADER			nullptr
 #define FRAGMENT_SHADER			L"Shaders/System/ColorMask_fs.txt"
 
-#define MASK_SLOT				0
+#define MASK_SLOT				0u
 
+//---------------------------------------------------------------------------------------------------------------------
 
-GXUnlitColorMaskMaterial::GXUnlitColorMaskMaterial ()
+GXUnlitColorMaskMaterial::GXUnlitColorMaskMaterial ():
+	mask ( nullptr ),
+	uvScaleOffset ( DEFAULT_MASK_SCALE_X, DEFAULT_MASK_SCALE_Y, DEFAULT_MASK_OFFSET_X, DEFAULT_MASK_OFFSET_Y ),
+	color ( static_cast<GXUByte> ( DEFAULT_COLOR_RED ), static_cast<GXUByte> ( DEFAULT_COLOR_GREEN ), static_cast<GXUByte> ( DEFAULT_COLOR_BLUE ), static_cast<GXUByte> ( DEFAULT_COLOR_ALPHA ) )
 {
 	static const GLchar* samplerNames[ 1 ] = { "maskSampler" };
 	static const GLuint samplerLocations[ 1 ] = { MASK_SLOT };
@@ -30,7 +34,7 @@ GXUnlitColorMaskMaterial::GXUnlitColorMaskMaterial ()
 	si.vs = VERTEX_SHADER;
 	si.gs = GEOMETRY_SHADER;
 	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 1;
+	si.numSamplers = 1u;
 	si.samplerNames = samplerNames;
 	si.samplerLocations = samplerLocations;
 	si.numTransformFeedbackOutputs = 0;
@@ -41,12 +45,6 @@ GXUnlitColorMaskMaterial::GXUnlitColorMaskMaterial ()
 	mod_view_proj_matLocation = shaderProgram.GetUniform ( "mod_view_proj_mat" );
 	uvScaleOffsetLocation = shaderProgram.GetUniform ( "uvScaleOffset" );
 	colorLocation = shaderProgram.GetUniform ( "color" );
-
-	mask = nullptr;
-	SetMaskScale ( DEFAULT_MASK_SCALE_X, DEFAULT_MASK_SCALE_Y );
-	SetMaskOffset ( DEFAULT_MASK_OFFSET_X, DEFAULT_MASK_OFFSET_Y );
-
-	SetColor ( DEFAULT_COLOR_RED, DEFAULT_COLOR_GREEN, DEFAULT_COLOR_BLUE, DEFAULT_COLOR_ALPHA );
 }
 
 GXUnlitColorMaskMaterial::~GXUnlitColorMaskMaterial ()
@@ -75,7 +73,7 @@ GXVoid GXUnlitColorMaskMaterial::Unbind ()
 	if ( !mask ) return;
 
 	mask->Unbind ();
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 }
 
 GXVoid GXUnlitColorMaskMaterial::SetMaskTexture ( GXTexture2D &texture )

@@ -1,13 +1,13 @@
-// version 1.0
+// version 1.1
 
 #include <GXEngine/GXUnlitTexture2DMaterial.h>
 #include <GXEngine/GXCamera.h>
 
 
-#define DEFAULT_COLOR_RED		255
-#define DEFAULT_COLOR_GREEN		255
-#define DEFAULT_COLOR_BLUE		255
-#define DEFAULT_COLOR_ALPHA		255
+#define DEFAULT_COLOR_RED		255u
+#define DEFAULT_COLOR_GREEN		255u
+#define DEFAULT_COLOR_BLUE		255u
+#define DEFAULT_COLOR_ALPHA		255u
 
 #define DEFAULT_UV_SCALE_X		1.0f
 #define DEFAULT_UV_SCALE_Y		1.0f
@@ -18,10 +18,14 @@
 #define GEOMETRY_SHADER			nullptr
 #define FRAGMENT_SHADER			L"Shaders/System/UnlitTexture2D_fs.txt"
 
-#define TEXTURE_SLOT			0
+#define TEXTURE_SLOT			0u
 
+//---------------------------------------------------------------------------------------------------------------------
 
-GXUnlitTexture2DMaterial::GXUnlitTexture2DMaterial ()
+GXUnlitTexture2DMaterial::GXUnlitTexture2DMaterial ():
+	texture ( nullptr ),
+	color ( static_cast<GXUByte> ( DEFAULT_COLOR_RED ), static_cast<GXUByte> ( DEFAULT_COLOR_GREEN ), static_cast<GXUByte> ( DEFAULT_COLOR_BLUE ), static_cast<GXUByte> ( DEFAULT_COLOR_ALPHA ) ),
+	uvScaleOffset ( DEFAULT_UV_SCALE_X, DEFAULT_UV_SCALE_Y, DEFAULT_UV_OFFSET_X, DEFAULT_UV_OFFSET_Y )
 {
 	static const GLchar* samplerNames[ 1 ] = { "textureSampler" };
 	static const GLuint samplerLocations[ 1 ] = { TEXTURE_SLOT };
@@ -30,7 +34,7 @@ GXUnlitTexture2DMaterial::GXUnlitTexture2DMaterial ()
 	si.vs = VERTEX_SHADER;
 	si.gs = GEOMETRY_SHADER;
 	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 1;
+	si.numSamplers = 1u;
 	si.samplerNames = samplerNames;
 	si.samplerLocations = samplerLocations;
 	si.numTransformFeedbackOutputs = 0;
@@ -42,12 +46,6 @@ GXUnlitTexture2DMaterial::GXUnlitTexture2DMaterial ()
 	uvScaleOffsetLocation = shaderProgram.GetUniform ( "uvScaleOffset" );
 	colorLocation = shaderProgram.GetUniform  ( "color" );
 
-	texture = nullptr;
-
-	SetTextureScale ( DEFAULT_UV_SCALE_X, DEFAULT_UV_SCALE_Y );
-	SetTextureOffset ( DEFAULT_UV_OFFSET_X, DEFAULT_UV_OFFSET_Y );
-
-	SetColor ( DEFAULT_COLOR_RED, DEFAULT_COLOR_GREEN, DEFAULT_COLOR_BLUE, DEFAULT_COLOR_ALPHA );
 }
 
 GXUnlitTexture2DMaterial::~GXUnlitTexture2DMaterial ()
@@ -75,7 +73,7 @@ GXVoid GXUnlitTexture2DMaterial::Unbind ()
 	if ( !texture ) return;
 
 	texture->Unbind ();
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 }
 
 GXVoid GXUnlitTexture2DMaterial::SetTexture ( GXTexture2D &textureObject )

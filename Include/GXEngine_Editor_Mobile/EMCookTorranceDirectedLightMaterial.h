@@ -16,20 +16,16 @@ class EMCookTorranceDirectedLightMaterial : public GXMaterial
 		GXTexture2D*	depthTexture;
 
 		GXColorRGB		hue;
-		GLint			hueLocation;
-
 		GXFloat			intensity;
-		GXInt			intensityLocation;
-
 		GXColorRGB		hdrColor;
-		GLint			hdrColorLocation;
-
 		GXColorRGB		ambientColor;
-		GLint			ambientColorLocation;
-
 		GXVec3			toLightDirectionView;
-		GLint			toLightDirectionViewLocation;
 
+		GLint			hueLocation;
+		GLint			intensityLocation;
+		GLint			hdrColorLocation;
+		GLint			ambientColorLocation;
+		GLint			toLightDirectionViewLocation;
 		GLint			inverseProjectionMatrixLocation;
 
 	public:
@@ -49,6 +45,10 @@ class EMCookTorranceDirectedLightMaterial : public GXMaterial
 		GXVoid SetHue ( GXUByte red, GXUByte green, GXUByte blue );
 		GXVoid SetIntencity ( GXFloat intencity );
 		GXVoid SetAmbientColor ( const GXColorRGB &color );
+
+	private:
+		EMCookTorranceDirectedLightMaterial ( const EMCookTorranceDirectedLightMaterial &other ) = delete;
+		EMCookTorranceDirectedLightMaterial& operator = ( const EMCookTorranceDirectedLightMaterial &other ) = delete;
 };
 
 

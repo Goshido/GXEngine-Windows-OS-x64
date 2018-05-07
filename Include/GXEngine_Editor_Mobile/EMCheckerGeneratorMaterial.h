@@ -9,15 +9,13 @@ class EMCheckerGeneratorMaterial : public GXMaterial
 {
 	private:
 		GXColorRGB	colorOne;
-		GLint		colorOneLocation;
-
 		GXColorRGB	colorTwo;
-		GLint		colorTwoLocation;
-
 		GXVec2		elementSize;
-		GLint		elementSizeLocation;
-
 		GXVec2		doubleElementSize;
+
+		GLint		colorOneLocation;
+		GLint		colorTwoLocation;
+		GLint		elementSizeLocation;
 		GLint		doubleElementSizeLocation;
 
 	public:
@@ -30,6 +28,10 @@ class EMCheckerGeneratorMaterial : public GXMaterial
 		GXVoid SetColorOne ( GXUChar red, GXUChar green, GXUChar blue, GXUChar alpha );
 		GXVoid SetColorTwo ( GXUChar red, GXUChar green, GXUChar blue, GXUChar alpha );
 		GXVoid SetElementSize ( GXUShort width, GXUShort height );
+
+	private:
+		EMCheckerGeneratorMaterial ( const EMCheckerGeneratorMaterial &other ) = delete;
+		EMCheckerGeneratorMaterial& operator = ( const EMCheckerGeneratorMaterial &other ) = delete;
 };
 
 

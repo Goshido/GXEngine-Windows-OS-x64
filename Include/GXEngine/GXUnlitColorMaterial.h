@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_UNLIT_COLOR_MATERIAL
 #define GX_UNLIT_COLOR_MATERIAL
@@ -10,10 +10,10 @@
 class GXUnlitColorMaterial : public GXMaterial
 {
 	private:
+		GXColorRGB	color;
+
 		GLint		mod_view_proj_matLocation;
 		GLint		colorLocation;
-
-		GXColorRGB	color;
 
 	public:
 		GXUnlitColorMaterial ();
@@ -24,6 +24,10 @@ class GXUnlitColorMaterial : public GXMaterial
 
 		GXVoid SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
 		GXVoid SetColor ( const GXColorRGB &newColor );
+
+	private:
+		GXUnlitColorMaterial ( const GXUnlitColorMaterial &other ) = delete;
+		GXUnlitColorMaterial& operator = ( const GXUnlitColorMaterial &other ) = delete;
 };
 
 
