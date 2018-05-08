@@ -1,13 +1,16 @@
-// version 1.10
+// version 1.11
 
 #ifndef GX_FILE_SYSTEM
 #define GX_FILE_SYSTEM
 
 
 #include "GXTypes.h"
-#include "GXDisable3rdPartyWarnings.h"
+
+GX_DISABLE_COMMON_WARNINGS
+
 #include <iostream>
-#include "GXRestoreWarnings.h"
+
+GX_RESTORE_WARNING_STATE
 
 
 struct GXDirectoryInfo

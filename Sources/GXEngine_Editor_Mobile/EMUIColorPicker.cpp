@@ -167,6 +167,7 @@
 
 #define ALPHA_RGBA_TO_ALPHA_HSVA					0.392156f
 
+//---------------------------------------------------------------------------------------------------------------------
 
 class EMColorRenderer : public GXWidgetRenderer
 {
@@ -281,7 +282,7 @@ GXVoid EMColorRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUSho
 	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.GetZ () );
+	surface->SetLocation ( x, y, location.data[ 2 ] );
 
 	UpdateCheckerTexture ();
 }
@@ -293,7 +294,7 @@ GXVoid EMColorRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.GetZ () );
+	surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 
 GXVoid EMColorRenderer::UpdateCheckerTexture ()
@@ -329,7 +330,7 @@ GXVoid EMColorRenderer::UpdateCheckerTexture ()
 	openGLState.Restore ();
 }
 
-//----------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 class EMColorSelectorRenderer : public GXWidgetRenderer
 {
@@ -694,7 +695,7 @@ GXVoid EMColorSelectorRenderer::UpdateCompositeTexture ()
 	compositeTexture.UpdateMipmaps ();
 }
 
-//----------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 EMUIColorPicker* EMUIColorPicker::instance = nullptr;
 

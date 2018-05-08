@@ -16,6 +16,10 @@ class EMObjectMaskMaterial : public GXMaterial
 
 		GXVoid Bind ( const GXTransform &transform ) override;
 		GXVoid Unbind () override;
+
+	private:
+		EMObjectMaskMaterial ( const EMObjectMaskMaterial &other ) = delete;
+		EMObjectMaskMaterial& operator = ( const EMObjectMaskMaterial &other ) = delete;
 };
 
 

@@ -7,12 +7,11 @@
 static EMUI* em_UIElements = nullptr;
 
 
-EMUI::EMUI ( EMUI* parent )
+EMUI::EMUI ( EMUI* parent ):
+	next ( em_UIElements ),
+	prev ( nullptr ),
+	parent ( parent )
 {
-	this->parent = parent;
-	prev = nullptr;
-	next = em_UIElements;
-
 	if ( em_UIElements )
 		em_UIElements->prev = this;
 
@@ -27,11 +26,6 @@ EMUI::~EMUI ()
 		prev->next = next;
 	else
 		em_UIElements = next;
-}
-
-GXWidget* EMUI::GetWidget () const
-{
-	return nullptr;
 }
 
 GXVoid EMUI::ToForeground ()

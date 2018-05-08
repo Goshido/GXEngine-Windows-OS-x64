@@ -20,12 +20,12 @@
 #define DEFAULT_SPECULAR_INTENSITY				0.2f
 #define DEFAULT_METALLIC_SCALE					1.0f
 
-#define SHAPE_COLOR_RED							115
-#define SHAPE_COLOR_GREEN						255
-#define SHAPE_COLOR_BLUE						0
-#define SHAPE_COLOR_ALPHA						77
+#define SHAPE_COLOR_RED							115u
+#define SHAPE_COLOR_GREEN						255u
+#define SHAPE_COLOR_BLUE						0u
+#define SHAPE_COLOR_ALPHA						77u
 
-//------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 EMPhysicsDrivenActor::EMPhysicsDrivenActor ( const GXWChar* name, const GXTransform& transform ):
 	EMActor ( name, eEMActorType::PhysicsDrivenActor, transform ),
@@ -136,7 +136,7 @@ GXVoid EMPhysicsDrivenActor::OnDrawHudColorPass ()
 
 GXVoid EMPhysicsDrivenActor::OnTransformChanged ()
 {
-	// rigidBody.SetLocation ( transform.GetLocation () );
+	// NOTHING
 }
 
 GXVoid EMPhysicsDrivenActor::SetMesh ( const GXWChar* meshFile )

@@ -1,14 +1,17 @@
-// version 1.5
+// version 1.6
 
 #ifndef GX_LOGGER
 #define GX_LOGGER
 
 
 #include "GXTypes.h"
-#include "GXDisable3rdPartyWarnings.h"
+
+GX_DISABLE_COMMON_WARNINGS
+
 #include <locale.h>
 #include <iostream>
-#include "GXRestoreWarnings.h"
+
+GX_RESTORE_WARNING_STATE
 
 
 #define GXDebugBox(x) MessageBoxW ( 0, x, L"Дебаг-окно", MB_ICONEXCLAMATION )

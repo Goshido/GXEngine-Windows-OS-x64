@@ -9,12 +9,11 @@ class EMHueCircleGeneratorMaterial : public GXMaterial
 {
 	private:
 		GXFloat		innerRadius;
-		GLint		innerRadiusLocation;
-
 		GXFloat		outerRadius;
-		GLint		outerRadiusLocation;
-
 		GXVec2		halfResolution;
+
+		GLint		innerRadiusLocation;
+		GLint		outerRadiusLocation;
 		GLint		halfResolutionLocation;
 
 	public:
@@ -28,6 +27,10 @@ class EMHueCircleGeneratorMaterial : public GXMaterial
 		GXVoid SetOuterRadius ( GXFloat radius );
 
 		GXVoid SetResolution ( GXUShort width, GXUShort height );
+
+	private:
+		EMHueCircleGeneratorMaterial ( const EMHueCircleGeneratorMaterial &other ) = delete;
+		EMHueCircleGeneratorMaterial& operator = ( const EMHueCircleGeneratorMaterial &other ) = delete;
 };
 
 

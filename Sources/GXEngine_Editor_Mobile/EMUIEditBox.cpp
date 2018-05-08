@@ -45,7 +45,7 @@
 #define DEFAULT_TEXT_LEFT_OFFSET			0.1f
 #define DEFAULT_TEXT_RIGHT_OFFSET			0.1f
 
-//-------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 class EMUIEditBoxRenderer : public GXWidgetRenderer
 {
@@ -216,7 +216,7 @@ GXVoid EMUIEditBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
 	surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 
-//-------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 EMUIEditBox::EMUIEditBox ( EMUI* parent ):
 	EMUI ( parent ),

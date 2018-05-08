@@ -5,9 +5,10 @@
 
 EMTool* EMTool::activeTool = nullptr;
 
-EMTool::EMTool ()
+EMTool::EMTool ():
+	actor ( nullptr )
 {
-	actor = nullptr;
+	// NOTHING
 }
 
 EMTool::~EMTool ()

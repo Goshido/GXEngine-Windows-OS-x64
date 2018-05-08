@@ -1,4 +1,4 @@
-// verison 1.8
+// verison 1.9
 
 #ifndef GX_NETWORK
 #define GX_NETWORK
@@ -6,9 +6,12 @@
 
 #include <GXCommon/GXLogger.h>
 #include <GXCommon/GXThread.h>
-#include <GXCommon/GXDisable3rdPartyWarnings.h>
+
+GX_DISABLE_COMMON_WARNINGS
+
 #include <WinSock2.h>
-#include <GXCommon/GXRestoreWarnings.h>
+
+GX_RESTORE_WARNING_STATE
 
 
 #define GX_MAX_NETWORK_CLIENTS	64u

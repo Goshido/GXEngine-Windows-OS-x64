@@ -10,8 +10,8 @@ class EMVelocityNeighborMaxMaterial : public GXMaterial
 {
 	private:
 		GXTexture2D*	velocityTileMaxTexture;
-
 		GXVec2			inverseVelocityTileMaxTextureResolution;
+
 		GLint			inverseVelocityTileMaxTextureResolutionLocation;
 
 	public:
@@ -23,6 +23,10 @@ class EMVelocityNeighborMaxMaterial : public GXMaterial
 
 		GXVoid SetVelocityTileMaxTexture ( GXTexture2D &texture );
 		GXVoid SetVelocityTileMaxTextureResolution ( GXUShort width, GXUShort height );
+
+	private:
+		EMVelocityNeighborMaxMaterial ( const EMVelocityNeighborMaxMaterial &other ) = delete;
+		EMVelocityNeighborMaxMaterial& operator = ( const EMVelocityNeighborMaxMaterial &other ) = delete;
 };
 
 

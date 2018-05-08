@@ -911,7 +911,8 @@ GXBool GXTexture2D::operator == ( const GXTexture2DEntry &other ) const
 	return GX_TRUE;
 }
 
-GXVoid GXTexture2D::operator = ( const GXTexture2D &other )
+GXTexture2D& GXTexture2D::operator = ( const GXTexture2D &other )
 {
 	memcpy ( this, &other, sizeof ( GXTexture2D ) );
+	return *this;
 }

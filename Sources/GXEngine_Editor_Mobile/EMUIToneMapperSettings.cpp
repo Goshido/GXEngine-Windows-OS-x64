@@ -5,17 +5,17 @@
 #include <GXEngine/GXRenderer.h>
 
 
-#define CAPTION_LABEL_COLOR_R				115
-#define CAPTION_LABEL_COLOR_G				185
-#define CAPTION_LABEL_COLOR_B				0
-#define CAPTION_LABEL_COLOR_A				255
+#define CAPTION_LABEL_COLOR_R				115u
+#define CAPTION_LABEL_COLOR_G				185u
+#define CAPTION_LABEL_COLOR_B				0u
+#define CAPTION_LABEL_COLOR_A				255u
 
-#define PROPERTY_LABEL_COLOR_R				255
-#define PROPERTY_LABEL_COLOR_G				255
-#define PROPERTY_LABEL_COLOR_B				255
-#define PROPERTY_LABEL_COLOR_A				255
+#define PROPERTY_LABEL_COLOR_R				255u
+#define PROPERTY_LABEL_COLOR_G				255u
+#define PROPERTY_LABEL_COLOR_B				255u
+#define PROPERTY_LABEL_COLOR_A				255u
 
-#define MAX_BUFFER_SYMBOLS					16
+#define MAX_BUFFER_SYMBOLS					16u
 
 #define DEFAULT_MAIN_PANEL_WIDTH			6.8f
 #define DEFAULT_MAIN_PANEL_HEIGHT			7.4f
@@ -63,6 +63,7 @@
 #define MINIMUM_WHITE_INTENSITY				0.0f
 #define MAXIMUM_WHITE_INTENSITY				77777.777f
 
+//---------------------------------------------------------------------------------------------------------------------
 
 EMUIToneMapperSettings* EMUIToneMapperSettings::instance = nullptr;
 
@@ -121,31 +122,35 @@ GXVoid EMUIToneMapperSettings::Hide ()
 	mainPanel->Hide ();
 }
 
-EMUIToneMapperSettings::EMUIToneMapperSettings () :
-EMUI ( nullptr )
+EMUIToneMapperSettings::EMUIToneMapperSettings ():
+	EMUI ( nullptr ),
+	mainPanel ( new EMUIDraggableArea ( nullptr ) )
 {
-	mainPanel = new EMUIDraggableArea ( nullptr );
 	caption = new EMUIStaticText ( mainPanel );
 	topSeparator = new EMUISeparator ( mainPanel );
 
 	gammaLabel = new EMUIStaticText ( mainPanel );
 	gamma = new EMUIEditBox ( mainPanel );
-	GXUIEditBoxFloatValidator* floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *( (GXUIEditBox*)gamma->GetWidget () ), MINIMUM_GAMMA, MAXIMUM_GAMMA );
+	GXUIEditBox* editBox = static_cast<GXUIEditBox*> ( gamma->GetWidget () );
+	GXUIEditBoxFloatValidator* floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_GAMMA, MAXIMUM_GAMMA );
 	gamma->SetValidator ( *floatValidator );
 
 	sensitivityLabel = new EMUIStaticText ( mainPanel );
 	sensitivity = new EMUIEditBox ( mainPanel );
-	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *( (GXUIEditBox*)sensitivity->GetWidget () ), MINIMUM_SENSITIVITY, MAXIMUM_SENSITIVITY );
+	editBox = static_cast<GXUIEditBox*> ( sensitivity->GetWidget () );
+	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_SENSITIVITY, MAXIMUM_SENSITIVITY );
 	sensitivity->SetValidator ( *floatValidator );
 
 	eyeAdaptationSpeedLabel = new EMUIStaticText ( mainPanel );
 	eyeAdaptationSpeed = new EMUIEditBox ( mainPanel );
-	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *( (GXUIEditBox*)eyeAdaptationSpeed->GetWidget () ), MINIMUM_ADOPTATION_SPEED, MAXIMUM_ADOPTATION_SPEED );
+	editBox = static_cast<GXUIEditBox*> ( eyeAdaptationSpeed->GetWidget () );
+	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_ADOPTATION_SPEED, MAXIMUM_ADOPTATION_SPEED );
 	eyeAdaptationSpeed->SetValidator ( *floatValidator );
 
 	whiteIntensityLabel = new EMUIStaticText ( mainPanel );
 	whiteIntensity = new EMUIEditBox ( mainPanel );
-	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *( (GXUIEditBox*)whiteIntensity->GetWidget () ), MINIMUM_WHITE_INTENSITY, MAXIMUM_WHITE_INTENSITY );
+	editBox = static_cast<GXUIEditBox*> ( whiteIntensity->GetWidget () );
+	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_WHITE_INTENSITY, MAXIMUM_WHITE_INTENSITY );
 	whiteIntensity->SetValidator ( *floatValidator );
 
 	bottomSeparator = new EMUISeparator ( mainPanel );
@@ -188,7 +193,7 @@ EMUI ( nullptr )
 	mainPanel->SetOnResizeCallback ( this, &EMUIToneMapperSettings::OnResize );
 
 	GXFloat height = DEFAULT_MAIN_PANEL_HEIGHT * gx_ui_Scale;
-	mainPanel->Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, (GXFloat)( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
+	mainPanel->Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
 	mainPanel->SetMinimumWidth ( MAIN_PANEL_MINIMUM_WIDTH * gx_ui_Scale );
 	mainPanel->SetMinimumHeight ( MAIN_PANEL_MINIMUM_HEIGHT * gx_ui_Scale );
 	mainPanel->Hide ();
@@ -216,7 +221,7 @@ GXVoid GXCALL EMUIToneMapperSettings::OnButton ( GXVoid* handler, GXUIButton& bu
 {
 	if ( state != eGXMouseButtonState::Up ) return;
 
-	EMUIToneMapperSettings* settings = (EMUIToneMapperSettings*)handler;
+	EMUIToneMapperSettings* settings = static_cast<EMUIToneMapperSettings*> ( handler );
 
 	if ( &button == settings->cancel->GetWidget () )
 	{
@@ -272,7 +277,7 @@ GXVoid GXCALL EMUIToneMapperSettings::OnButton ( GXVoid* handler, GXUIButton& bu
 
 GXVoid GXCALL EMUIToneMapperSettings::OnResize ( GXVoid* handler, GXUIDragableArea& /*area*/, GXFloat width, GXFloat height )
 {
-	EMUIToneMapperSettings* settings = (EMUIToneMapperSettings*)handler;
+	EMUIToneMapperSettings* settings = static_cast<EMUIToneMapperSettings*> ( handler );
 
 	GXFloat margin = MARGIN * gx_ui_Scale;
 

@@ -43,6 +43,9 @@ class EMUIMotionBlurSettings : public EMUI
 
 		static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state );
 		static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
+
+		EMUIMotionBlurSettings ( const EMUIMotionBlurSettings &other ) = delete;
+		EMUIMotionBlurSettings& operator = ( const EMUIMotionBlurSettings &other ) = delete;
 };
 
 

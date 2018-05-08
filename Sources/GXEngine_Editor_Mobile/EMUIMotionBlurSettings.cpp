@@ -6,17 +6,17 @@
 #include <GXEngine/GXRenderer.h>
 
 
-#define CAPTION_LABEL_COLOR_R				115
-#define CAPTION_LABEL_COLOR_G				185
-#define CAPTION_LABEL_COLOR_B				0
-#define CAPTION_LABEL_COLOR_A				255
+#define CAPTION_LABEL_COLOR_R				115u
+#define CAPTION_LABEL_COLOR_G				185u
+#define CAPTION_LABEL_COLOR_B				0u
+#define CAPTION_LABEL_COLOR_A				255u
 
-#define PROPERTY_LABEL_COLOR_R				255
-#define PROPERTY_LABEL_COLOR_G				255
-#define PROPERTY_LABEL_COLOR_B				255
-#define PROPERTY_LABEL_COLOR_A				255
+#define PROPERTY_LABEL_COLOR_R				255u
+#define PROPERTY_LABEL_COLOR_G				255u
+#define PROPERTY_LABEL_COLOR_B				255u
+#define PROPERTY_LABEL_COLOR_A				255u
 
-#define MAX_BUFFER_SYMBOLS					16
+#define MAX_BUFFER_SYMBOLS					16u
 
 #define DEFAULT_MAIN_PANEL_WIDTH			8.1f
 #define DEFAULT_MAIN_PANEL_HEIGHT			6.4f
@@ -62,6 +62,7 @@
 #define DEFAULT_FLOAT_VALIDATOR_STRING		L"3.0"
 #define DEFAULT_INTEGER_VALIDATOR_STRING	L"7"
 
+//---------------------------------------------------------------------------------------------------------------------
 
 EMUIMotionBlurSettings* EMUIMotionBlurSettings::instance = nullptr;
 
@@ -116,26 +117,29 @@ GXVoid EMUIMotionBlurSettings::Hide ()
 	mainPanel->Hide ();
 }
 
-EMUIMotionBlurSettings::EMUIMotionBlurSettings () :
-EMUI ( nullptr )
+EMUIMotionBlurSettings::EMUIMotionBlurSettings ():
+	EMUI ( nullptr ),
+	mainPanel ( new EMUIDraggableArea ( nullptr ) )
 {
-	mainPanel = new EMUIDraggableArea ( nullptr );
 	caption = new EMUIStaticText ( mainPanel );
 	topSeparator = new EMUISeparator ( mainPanel );
 
 	maxSamplesLabel = new EMUIStaticText ( mainPanel );
 	maxSamples = new EMUIEditBox ( mainPanel );
-	GXUIEditBoxIntegerValidator* integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_STRING, *( (GXUIEditBox*)maxSamples->GetWidget () ), MINIMUM_SAMPLES, MAXIMUM_SAMPLES );
+	GXUIEditBox* editBox = static_cast<GXUIEditBox*> ( maxSamples->GetWidget () );
+	GXUIEditBoxIntegerValidator* integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_STRING, *editBox, MINIMUM_SAMPLES, MAXIMUM_SAMPLES );
 	maxSamples->SetValidator ( *integerValidator );
 
 	depthLimitLabel = new EMUIStaticText ( mainPanel );
 	depthLimit = new EMUIEditBox ( mainPanel );
-	GXUIEditBoxFloatValidator* floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *( (GXUIEditBox*)depthLimit->GetWidget () ), MINIMUM_DEPTH_LIMIT, MAXIMUM_DEPTH_LIMIT );
+	editBox = static_cast<GXUIEditBox*> ( depthLimit->GetWidget () );
+	GXUIEditBoxFloatValidator* floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_DEPTH_LIMIT, MAXIMUM_DEPTH_LIMIT );
 	depthLimit->SetValidator ( *floatValidator );
 
 	exposureLabel = new EMUIStaticText ( mainPanel );
 	exposure = new EMUIEditBox ( mainPanel );
-	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *( (GXUIEditBox*)exposure->GetWidget () ), MINIMUM_EXPOSURE, MAXIMUM_EXPOSURE );
+	editBox = static_cast<GXUIEditBox*> ( exposure->GetWidget () );
+	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_EXPOSURE, MAXIMUM_EXPOSURE );
 	exposure->SetValidator ( *floatValidator );
 
 	bottomSeparator = new EMUISeparator ( mainPanel );
@@ -173,7 +177,7 @@ EMUI ( nullptr )
 	mainPanel->SetOnResizeCallback ( this, &EMUIMotionBlurSettings::OnResize );
 
 	GXFloat height = DEFAULT_MAIN_PANEL_HEIGHT * gx_ui_Scale;
-	mainPanel->Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, (GXFloat)( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
+	mainPanel->Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
 	mainPanel->SetMinimumWidth ( MAIN_PANEL_MINIMUM_WIDTH * gx_ui_Scale );
 	mainPanel->SetMinimumHeight ( MAIN_PANEL_MINIMUM_HEIGHT * gx_ui_Scale );
 	mainPanel->Hide ();
@@ -243,7 +247,7 @@ GXVoid GXCALL EMUIMotionBlurSettings::OnButton ( GXVoid* handler, GXUIButton& bu
 
 GXVoid GXCALL EMUIMotionBlurSettings::OnResize ( GXVoid* handler, GXUIDragableArea& /*area*/, GXFloat width, GXFloat height )
 {
-	EMUIMotionBlurSettings* settings = (EMUIMotionBlurSettings*)handler;
+	EMUIMotionBlurSettings* settings = static_cast<EMUIMotionBlurSettings*> ( handler );
 
 	GXFloat margin = MARGIN * gx_ui_Scale;
 

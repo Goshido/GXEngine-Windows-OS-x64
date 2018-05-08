@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #include <GXCommon/GXImageLoader.h>
 #include <GXCommon/GXLogger.h>
@@ -19,9 +19,11 @@
 #define STBI_ONLY_HDR
 
 
-#include <GXCommon/GXDisable3rdPartyWarnings.h>
+GX_DISABLE_COMMON_WARNINGS
+
 #include <STB/stb_image.h>
-#include <GXCommon/GXRestoreWarnings.h>
+
+GX_RESTORE_WARNING_STATE 
 
 
 GXBool GXCALL GXLoadLDRImage ( const GXWChar* fileName, GXUInt &width, GXUInt &height, GXUByte &numChannels, GXUByte** data )

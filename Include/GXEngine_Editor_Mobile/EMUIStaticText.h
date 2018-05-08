@@ -27,6 +27,11 @@ class EMUIStaticText : public EMUI
 		eGXUITextAlignment GetAlignment () const;
 
 		GXVoid Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height );
+
+	private:
+		EMUIStaticText () = delete;
+		EMUIStaticText ( const EMUIStaticText &other ) = delete;
+		EMUIStaticText& operator = ( const EMUIStaticText &other ) = delete;
 };
 
 

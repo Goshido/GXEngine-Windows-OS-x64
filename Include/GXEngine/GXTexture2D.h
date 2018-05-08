@@ -55,7 +55,7 @@ class GXTexture2D
 		GXVoid FreeResources ();
 
 		GXBool operator == ( const GXTexture2DEntry &other ) const;
-		GXVoid operator = ( const GXTexture2D &other );
+		GXTexture2D& operator = ( const GXTexture2D &other );
 
 	private:
 		GXTexture2D ( const GXTexture2D &other ) = delete;

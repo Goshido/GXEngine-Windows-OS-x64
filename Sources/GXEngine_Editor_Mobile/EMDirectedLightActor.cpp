@@ -1,7 +1,10 @@
 #include <GXEngine_Editor_Mobile/EMDirectedLightActor.h>
-#include <GXCommon/GXDisable3rdPartyWarnings.h>
+
+GX_DISABLE_COMMON_WARNINGS
+
 #include <cstdlib>
-#include <GXCommon/GXRestoreWarnings.h>
+
+GX_RESTORE_WARNING_STATE
 
 
 #define DEFAULT_LIGHT_INTENSITY		5.0f

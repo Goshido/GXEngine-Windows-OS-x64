@@ -1,24 +1,28 @@
 #include <GXEngine_Editor_Mobile/EMHueCircleGeneratorMaterial.h>
 
 
+#define DEFAULT_INNER_RADIUS		35.0f
+#define DEFAULT_OUTER_RADIUS		50.0f
+
+#define DEFAULT_RESOLUTION_WIDTH	1280.0f
+#define DEFAULT_RESOLUTION_HEIGHT	720.0f
+
 #define VERTEX_SHADER				L"Shaders/System/ScreenQuad_vs.txt"
 #define GEOMETRY_SHADER				nullptr
 #define FRAGMENT_SHADER				L"Shaders/Editor Mobile/HueCircle_fs.txt"
 
-#define DEFAULT_INNER_RADIUS		35.0f
-#define DEFAULT_OUTER_RADIUS		50.0f
+//---------------------------------------------------------------------------------------------------------------------
 
-#define DEFAULT_RESOLUTION_WIDTH	1280
-#define DEFAULT_RESOLUTION_HEIGHT	720
-
-
-EMHueCircleGeneratorMaterial::EMHueCircleGeneratorMaterial ()
+EMHueCircleGeneratorMaterial::EMHueCircleGeneratorMaterial ():
+	innerRadius ( DEFAULT_INNER_RADIUS ),
+	outerRadius ( DEFAULT_OUTER_RADIUS ),
+	halfResolution ( DEFAULT_RESOLUTION_WIDTH * 0.5f, DEFAULT_RESOLUTION_HEIGHT * 0.5f )
 {
 	GXShaderProgramInfo si;
 	si.vs = VERTEX_SHADER;
 	si.gs = GEOMETRY_SHADER;
 	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 0;
+	si.numSamplers = 0u;
 	si.samplerNames = nullptr;
 	si.samplerLocations = nullptr;
 	si.numTransformFeedbackOutputs = 0;
@@ -29,10 +33,6 @@ EMHueCircleGeneratorMaterial::EMHueCircleGeneratorMaterial ()
 	innerRadiusLocation = shaderProgram.GetUniform ( "innerRadius" );
 	outerRadiusLocation = shaderProgram.GetUniform ( "outerRadius" );
 	halfResolutionLocation = shaderProgram.GetUniform ( "halfResolution" );
-
-	SetInnerRadius ( DEFAULT_INNER_RADIUS );
-	SetOuterRadius ( DEFAULT_OUTER_RADIUS );
-	SetResolution ( DEFAULT_RESOLUTION_WIDTH, DEFAULT_RESOLUTION_HEIGHT );
 }
 
 EMHueCircleGeneratorMaterial::~EMHueCircleGeneratorMaterial ()
@@ -66,5 +66,6 @@ GXVoid EMHueCircleGeneratorMaterial::SetOuterRadius ( GXFloat radius )
 
 GXVoid EMHueCircleGeneratorMaterial::SetResolution ( GXUShort width, GXUShort height )
 {
-	halfResolution.Init ( width * 0.5f, height * 0.5f );
+	halfResolution.data[ 0 ] = width * 0.5f;
+	halfResolution.data[ 1 ] = height * 0.5f;
 }

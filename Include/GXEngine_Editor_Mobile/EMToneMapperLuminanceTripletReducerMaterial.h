@@ -10,8 +10,8 @@ class EMToneMapperLuminanceTripletReducerMaterial : public GXMaterial
 {
 	private:
 		GXTexture2D*		luminanceTripletTexture;
-
 		GXFloat				levelOfDetail;
+
 		GLint				levelOfDetailLocation;
 
 	public:
@@ -23,6 +23,10 @@ class EMToneMapperLuminanceTripletReducerMaterial : public GXMaterial
 
 		GXVoid SetLuminanceTripletTexture ( GXTexture2D &texture );
 		GXVoid SetLevelOfDetailToReduce ( GXUByte newLevelOfDetail );
+
+	private:
+		EMToneMapperLuminanceTripletReducerMaterial ( const EMToneMapperLuminanceTripletReducerMaterial &other ) = delete;
+		EMToneMapperLuminanceTripletReducerMaterial& operator = ( const EMToneMapperLuminanceTripletReducerMaterial &other ) = delete;
 };
 
 

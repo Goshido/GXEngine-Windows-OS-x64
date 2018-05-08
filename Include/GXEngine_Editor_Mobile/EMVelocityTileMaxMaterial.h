@@ -12,9 +12,9 @@ class EMVelocityTileMaxMaterial : public GXMaterial
 		GXTexture2D*	velocityBlurTexture;
 
 		GXInt			maxBlurSamples;
-		GLint			maxBlurSamplesLocation;
-
 		GXVec2			inverseScreenResolution;
+
+		GLint			maxBlurSamplesLocation;
 		GLint			inverseScreenResolutionLocation;
 
 	public:
@@ -27,6 +27,10 @@ class EMVelocityTileMaxMaterial : public GXMaterial
 		GXVoid SetVelocityBlurTexture ( GXTexture2D &texture );
 		GXVoid SetMaxBlurSamples ( GXUByte maxSamples );
 		GXVoid SetScreenResolution ( GXUShort width, GXUShort height );
+
+	private:
+		EMVelocityTileMaxMaterial ( const EMVelocityTileMaxMaterial &other ) = delete;
+		EMVelocityTileMaxMaterial& operator = ( const EMVelocityTileMaxMaterial &other ) = delete;
 };
 
 

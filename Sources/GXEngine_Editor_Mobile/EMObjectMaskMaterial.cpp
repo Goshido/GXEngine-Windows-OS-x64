@@ -6,6 +6,7 @@
 #define GEOMETRY_SHADER		nullptr
 #define FRAGMENT_SHADER		L"Shaders/Editor Mobile/Mask_fs.txt"
 
+//---------------------------------------------------------------------------------------------------------------------
 
 EMObjectMaskMaterial::EMObjectMaskMaterial ()
 {
@@ -13,7 +14,7 @@ EMObjectMaskMaterial::EMObjectMaskMaterial ()
 	si.vs = VERTEX_SHADER;
 	si.gs = GEOMETRY_SHADER;
 	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 0;
+	si.numSamplers = 0u;
 	si.samplerNames = nullptr;
 	si.samplerLocations = nullptr;
 	si.numTransformFeedbackOutputs = 0;
@@ -40,5 +41,5 @@ GXVoid EMObjectMaskMaterial::Bind ( const GXTransform &transform )
 
 GXVoid EMObjectMaskMaterial::Unbind ()
 {
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 }

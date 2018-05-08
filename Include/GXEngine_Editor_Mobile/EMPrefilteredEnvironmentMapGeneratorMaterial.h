@@ -10,17 +10,16 @@ class EMPrefilteredEnvironmentMapGeneratorMaterial : public GXMaterial
 {
 	private:
 		GXTextureCubeMap*		environmentMap;
+		GXFloat					roughness;
+
+		GXInt					totalSamples;
+		GXFloat					inverseTotalSamples;
 
 		GXMat4					viewProjectionMatrices[ 6 ];
+
 		GLint					viewProjectionMatricesLocation;
-
-		GXFloat					roughness;
 		GLint					roughnessLocation;
-
-		GXUInt					totalSamples;
 		GLint					totalSamplesLocation;
-
-		GXFloat					inverseTotalSamples;
 		GLint					inverseTotalSamplesLocation;
 
 	public:
@@ -36,6 +35,10 @@ class EMPrefilteredEnvironmentMapGeneratorMaterial : public GXMaterial
 		GXVoid SetRoughness ( GXFloat newRoughness );
 
 		GXVoid SetTotalSamples ( GXUShort samples );
+
+	private:
+		EMPrefilteredEnvironmentMapGeneratorMaterial ( const EMPrefilteredEnvironmentMapGeneratorMaterial &other ) = delete;
+		EMPrefilteredEnvironmentMapGeneratorMaterial& operator = ( const EMPrefilteredEnvironmentMapGeneratorMaterial &other ) = delete;
 };
 
 

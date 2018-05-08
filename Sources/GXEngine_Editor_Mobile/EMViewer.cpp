@@ -4,10 +4,10 @@
 #include <GXEngine/GXUICommon.h>
 
 
-#define EM_VIEWER_ZOOM_MODE				0
-#define EM_VIEWER_ROTATE_MODE			1
-#define EM_VIEWER_PAN_MODE				2
-#define EM_VIEWER_NOTHING_MODE			0xFF
+#define EM_VIEWER_ZOOM_MODE				0u
+#define EM_VIEWER_ROTATE_MODE			1u
+#define EM_VIEWER_PAN_MODE				2u
+#define EM_VIEWER_NOTHING_MODE			0xFFu
 
 #define EM_VIEWER_ZOOM_STEP				2.0f
 #define EM_VIEWER_MIN_DISTANCE			0.1f

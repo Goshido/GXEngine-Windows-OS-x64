@@ -2,23 +2,25 @@
 #include <GXEngine/GXCamera.h>
 
 
+#define DEFAULT_COLOR_RED		115u
+#define DEFAULT_COLOR_GREEN		185u
+#define DEFAULT_COLOR_BLUE		0u
+#define DEFAULT_COLOR_ALPHA		255u
+
 #define VERTEX_SHADER		L"Shaders/Editor Mobile/VertexOnly_vs.txt"
 #define GEOMETRY_SHADER		L"Shaders/System/TriangleToLines_gs.txt"
 #define FRAGMENT_SHADER		L"Shaders/Editor Mobile/Color_fs.txt"
 
-#define DEFAULT_COLOR_RED		115
-#define DEFAULT_COLOR_GREEN		185
-#define DEFAULT_COLOR_BLUE		0
-#define DEFAULT_COLOR_ALPHA		255
+//---------------------------------------------------------------------------------------------------------------------
 
-
-EMWireframeMaterial::EMWireframeMaterial ()
+EMWireframeMaterial::EMWireframeMaterial ():
+	color(static_cast<GXUByte> ( DEFAULT_COLOR_RED ), static_cast<GXUByte> ( DEFAULT_COLOR_GREEN ), static_cast<GXUByte> ( DEFAULT_COLOR_BLUE ), static_cast<GXUByte> ( DEFAULT_COLOR_ALPHA ) )
 {
 	GXShaderProgramInfo si;
 	si.vs = VERTEX_SHADER;
 	si.gs = GEOMETRY_SHADER;
 	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 0;
+	si.numSamplers = 0u;
 	si.samplerNames = nullptr;
 	si.samplerLocations = nullptr;
 	si.numTransformFeedbackOutputs = 0;
@@ -28,8 +30,6 @@ EMWireframeMaterial::EMWireframeMaterial ()
 
 	currentFrameModelViewProjectionMatrixLocation = shaderProgram.GetUniform ( "currentFrameModelViewProjectionMatrix" );
 	colorLocation = shaderProgram.GetUniform ( "color" );
-
-	SetColor ( DEFAULT_COLOR_RED, DEFAULT_COLOR_GREEN, DEFAULT_COLOR_BLUE, DEFAULT_COLOR_ALPHA );
 }
 
 EMWireframeMaterial::~EMWireframeMaterial ()
@@ -50,7 +50,7 @@ GXVoid EMWireframeMaterial::Bind ( const GXTransform &transform )
 
 GXVoid EMWireframeMaterial::Unbind ()
 {
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 }
 
 GXVoid EMWireframeMaterial::SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )

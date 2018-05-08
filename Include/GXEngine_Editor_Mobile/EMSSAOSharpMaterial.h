@@ -6,7 +6,7 @@
 #include <GXEngine/GXTexture2D.h>
 
 
-#define EM_MAX_SSAO_SAMPLES	64
+#define EM_MAX_SSAO_SAMPLES		64u
 
 
 class EMSSAOSharpMaterial : public GXMaterial
@@ -16,25 +16,21 @@ class EMSSAOSharpMaterial : public GXMaterial
 		GXTexture2D*	depthTexture;
 		GXTexture2D*	normalTexture;
 
+		GXFloat			maxDistance;
 		GXFloat			checkRadius;
 
-		GLint			checkRadiusLocation;
-
-		GXVec3			kernel[ EM_MAX_SSAO_SAMPLES ];
-		GLint			kernelLocation;
-
 		GXInt			samples;
-		GLint			samplesLocation;
-
 		GXFloat			inverseSamples;
-		GLint			inverseSamplesLocation;
 
 		GXVec2			noiseScale;
+		GXVec3			kernel[ EM_MAX_SSAO_SAMPLES ];
+
+		GLint			checkRadiusLocation;
+		GLint			kernelLocation;
+		GLint			samplesLocation;
+		GLint			inverseSamplesLocation;
 		GLint			noiseScaleLocation;
-
-		GXFloat			maxDistance;
 		GLint			maxDistanceLocation;
-
 		GLint			projectionMatrixLocation;
 		GLint			inverseProjectionMatrixLocation;
 

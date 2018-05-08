@@ -1,12 +1,16 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_OGG_VORBIS
 #define GX_OGG_VORBIS
 
 
-#include <GXCommon/GXDisable3rdPartyWarnings.h>
+#include <GXCommon/GXWarning.h>
+
+GX_DISABLE_COMMON_WARNINGS
+
 #include <vorbis/vorbisfile.h>
-#include <GXCommon/GXRestoreWarnings.h>
+
+GX_RESTORE_WARNING_STATE
 
 
 typedef int ( *PFNOVOPENCALLBACKS ) ( void *datasource, OggVorbis_File *vf, const char *initial, long ibytes, ov_callbacks callbacks );

@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #ifndef GX_TYPES_WINDOWS
 #define GX_TYPES_WINDOWS
@@ -7,10 +7,14 @@
 #define WIN32_LEAN_AND_MEAN			// to correct include WinSock2.h
 
 
-#include <GXCommon/GXDisable3rdPartyWarnings.h>
+#include "GXWarning.h"
+
+GX_DISABLE_COMMON_WARNINGS
+
 #include <Windows.h>
 #include <cstdint>
-#include <GXCommon/GXRestoreWarnings.h>
+
+GX_RESTORE_WARNING_STATE
 
 
 #define	GXCALL			WINAPI

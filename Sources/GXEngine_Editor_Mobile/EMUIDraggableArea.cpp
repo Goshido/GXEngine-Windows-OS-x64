@@ -19,7 +19,7 @@
 #define PIXEL_PERFECT_LOCATION_OFFSET_X		0.25f
 #define PIXEL_PERFECT_LOCATION_OFFSET_Y		0.25f
 
-//---------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 class EMUIDraggableAreaRenderer : public GXWidgetRenderer
 {
@@ -128,7 +128,7 @@ GXVoid EMUIDraggableAreaRenderer::OnMoved ( GXFloat x, GXFloat y )
 	surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 
-//---------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 EMUIDraggableArea::EMUIDraggableArea ( EMUI* parent ):
 	EMUI ( parent ),

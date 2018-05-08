@@ -1,13 +1,16 @@
-// version 1.7
+// version 1.8
 
 #include <GXEngine/GXAnimationSolverPlayer.h>
 #include <GXCommon/GXNativeSkeletalMesh.h>
 #include <GXCommon/GXAVLTree.h>
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXStrings.h>
-#include <GXCommon/GXDisable3rdPartyWarnings.h>
+
+GX_DISABLE_COMMON_WARNINGS
+
 #include <new>
-#include <GXCommon/GXRestoreWarnings.h>
+
+GX_RESTORE_WARNING_STATE
 
 
 #define DEFAULT_MULTIPLIER					1.0f

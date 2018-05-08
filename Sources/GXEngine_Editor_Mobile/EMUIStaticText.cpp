@@ -67,7 +67,7 @@ GXVoid EMUIStaticTextRenderer::OnRefresh ()
 
 	switch ( staticText->GetAlignment () )
 	{
-	case eGXUITextAlignment::Left:
+		case eGXUITextAlignment::Left:
 			pi.insertX = 0.0f;
 		break;
 

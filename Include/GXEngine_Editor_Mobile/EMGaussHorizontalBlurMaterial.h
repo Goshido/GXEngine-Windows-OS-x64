@@ -14,8 +14,8 @@ enum class eEMGaussHorizontalBlurKernelType : GXUShort
 class EMGaussHorizontalBlurMaterial : public GXMaterial
 {
 	private:
-		GXTexture2D*						imageTexture;
 		eEMGaussHorizontalBlurKernelType	kernelType;
+		GXTexture2D*						imageTexture;
 
 	public:
 		EMGaussHorizontalBlurMaterial ( eEMGaussHorizontalBlurKernelType kernelType );
@@ -25,6 +25,11 @@ class EMGaussHorizontalBlurMaterial : public GXMaterial
 		GXVoid Unbind () override;
 
 		GXVoid SetImageTexture ( GXTexture2D &texture );
+
+	private:
+		EMGaussHorizontalBlurMaterial () = delete;
+		EMGaussHorizontalBlurMaterial ( const EMGaussHorizontalBlurMaterial &other ) = delete;
+		EMGaussHorizontalBlurMaterial& operator = ( const EMGaussHorizontalBlurMaterial &other ) = delete;
 };
 
 

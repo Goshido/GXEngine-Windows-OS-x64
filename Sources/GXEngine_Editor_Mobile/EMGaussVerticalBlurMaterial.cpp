@@ -8,22 +8,23 @@
 
 #define IMAGE_SLOT										0u
 
+//---------------------------------------------------------------------------------------------------------------------
 
-EMGaussVerticalBlurMaterial::EMGaussVerticalBlurMaterial ( eEMGaussVerticalBlurKernelType kernelType )
+EMGaussVerticalBlurMaterial::EMGaussVerticalBlurMaterial ( eEMGaussVerticalBlurKernelType kernelType ):
+	kernelType ( kernelType ),
+	imageTexture ( nullptr )
 {
-	imageTexture = nullptr;
 
 	static const GLchar* samplerNames[ 1 ] = { "imageSampler" };
 	static const GLuint samplerLocations[ 1 ] = { IMAGE_SLOT };
 
 	GXShaderProgramInfo si;
-	si.numSamplers = 1;
+	si.numSamplers = 1u;
 	si.samplerNames = samplerNames;
 	si.samplerLocations = samplerLocations;
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	this->kernelType = kernelType;
 
 	switch ( kernelType )
 	{

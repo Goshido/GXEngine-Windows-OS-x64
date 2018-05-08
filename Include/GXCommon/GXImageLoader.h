@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_IMAGE_LOADER
 #define GX_IMAGE_LOADER

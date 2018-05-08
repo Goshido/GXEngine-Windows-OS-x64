@@ -13,6 +13,7 @@ class EMUISSAOSettings : public EMUI
 {
 	private:
 		EMUIDraggableArea*			mainPanel;
+
 		EMUIStaticText*				caption;
 		EMUISeparator*				topSeparator;
 		EMUIStaticText*				checkRadiusLabel;
@@ -45,6 +46,9 @@ class EMUISSAOSettings : public EMUI
 
 		static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state );
 		static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
+
+		EMUISSAOSettings ( const EMUISSAOSettings &other ) = delete;
+		EMUISSAOSettings& operator = ( const EMUISSAOSettings &other ) = delete;
 };
 
 

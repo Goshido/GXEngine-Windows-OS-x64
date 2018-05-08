@@ -9,21 +9,19 @@
 class EMMotionBlurMaterial : public GXMaterial
 {
 	private:
-		GXTexture2D*			velocityNeighborMaxTexture;
-		GXTexture2D*			velocityTexture;
-		GXTexture2D*			depthTexture;
-		GXTexture2D*			imageTexture;
+		GXTexture2D*		velocityNeighborMaxTexture;
+		GXTexture2D*		velocityTexture;
+		GXTexture2D*		depthTexture;
+		GXTexture2D*		imageTexture;
 
 		GXFloat				depthLimit;
 		GXFloat				inverseDepthLimit;
-		GLint				inverseDepthLimitLocation;
-
 		GXFloat				maxBlurSamples;
-		GLint				maxBlurSamplesLocation;
-
 		GXVec2				inverseScreenResolution;
-		GLint				inverseScreenResolutionLocation;
 
+		GLint				inverseDepthLimitLocation;
+		GLint				maxBlurSamplesLocation;
+		GLint				inverseScreenResolutionLocation;
 		GLint				inverseProjectionMatrixLocation;
 
 	public:
@@ -45,6 +43,10 @@ class EMMotionBlurMaterial : public GXMaterial
 		GXUByte GetMaxBlurSamples () const;
 
 		GXVoid SetScreenResolution ( GXUShort width, GXUShort height );
+
+	private:
+		EMMotionBlurMaterial ( const EMMotionBlurMaterial &other ) = delete;
+		EMMotionBlurMaterial& operator = ( const EMMotionBlurMaterial &other ) = delete;
 };
 
 

@@ -8,9 +8,10 @@
 class EMUIFPSCounter
 {
 	private:
+		GXUInt					lastFPS;
+
 		GXFont					font;
 		GXHudSurface*			surface;
-		GXUInt					lastFPS;
 		GXWChar					fpsBuffer[ 16 ];
 
 		static EMUIFPSCounter*	instance;
@@ -23,6 +24,9 @@ class EMUIFPSCounter
 
 	private:
 		EMUIFPSCounter ();
+
+		EMUIFPSCounter ( const EMUIFPSCounter &other ) = delete;
+		EMUIFPSCounter& operator = ( const EMUIFPSCounter &other ) = delete;
 };
 
 

@@ -16,6 +16,10 @@ class EMVertexColorMaterial : public GXMaterial
 
 		GXVoid Bind ( const GXTransform &transform ) override;
 		GXVoid Unbind () override;
+
+	private:
+		EMVertexColorMaterial ( const EMVertexColorMaterial &other ) = delete;
+		EMVertexColorMaterial& operator = ( const EMVertexColorMaterial &other ) = delete;
 };
 
 

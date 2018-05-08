@@ -2,21 +2,30 @@
 #include <GXEngine/GXCamera.h>
 
 
+#define DIFFUSE_IRRADIANCE_SLOT						0u
+#define PREFILTERED_ENVIRONMENT_MAP_SLOT			1u
+#define BRDF_INTEGRATION_MAP_SLOT					2u
+#define ALBEDO_SLOT									3u
+#define NORMAL_SLOT									4u
+#define EMISSION_SLOT								5u
+#define PARAMETER_SLOT								6u
+#define DEPTH_SLOT									7u
+
 #define VERTEX_SHADER								L"Shaders/System/ScreenQuad_vs.txt"
 #define GEOMETRY_SHADER								nullptr
 #define FRAGMENT_SHADER								L"Shaders/Editor Mobile/LightProbe_fs.txt"
 
-#define DIFFUSE_IRRADIANCE_SLOT						0
-#define PREFILTERED_ENVIRONMENT_MAP_SLOT			1
-#define BRDF_INTEGRATION_MAP_SLOT					2
-#define ALBEDO_SLOT									3
-#define NORMAL_SLOT									4
-#define EMISSION_SLOT								5
-#define PARAMETER_SLOT								6
-#define DEPTH_SLOT									7
+//---------------------------------------------------------------------------------------------------------------------
 
-
-EMLightProbeMaterial::EMLightProbeMaterial ()
+EMLightProbeMaterial::EMLightProbeMaterial ():
+	diffuseIrradianceTexture ( nullptr ),
+	prefilteredEnvironmentMapTexture ( nullptr ),
+	brdfIntegrationMapTexture ( nullptr ),
+	albedoTexture ( nullptr ),
+	normalTexture ( nullptr ),
+	emissionTexture ( nullptr ),
+	parameterTexture ( nullptr ),
+	depthTexture ( nullptr )
 {
 	static const GLchar* samplerNames[ 8 ] = { "diffuseIrradianceSampler", "prefilteredEnvironmentMapSampler", "brdfIntegrationMapSampler", "albedoSampler", "normalSampler", "emissionSampler", "parameterSampler", "depthSampler" };
 	static const GLuint sampleLocations[ 8 ] = { DIFFUSE_IRRADIANCE_SLOT, PREFILTERED_ENVIRONMENT_MAP_SLOT, BRDF_INTEGRATION_MAP_SLOT, ALBEDO_SLOT, NORMAL_SLOT, EMISSION_SLOT, PARAMETER_SLOT, DEPTH_SLOT };
@@ -25,7 +34,7 @@ EMLightProbeMaterial::EMLightProbeMaterial ()
 	si.vs = VERTEX_SHADER;
 	si.gs = GEOMETRY_SHADER;
 	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 8;
+	si.numSamplers = 8u;
 	si.samplerNames = samplerNames;
 	si.samplerLocations = sampleLocations;
 	si.numTransformFeedbackOutputs = 0;
@@ -37,15 +46,6 @@ EMLightProbeMaterial::EMLightProbeMaterial ()
 	prefilteredEnvironmentMapLODsLocation = shaderProgram.GetUniform ( "prefilteredEnvironmentMapLODs" );
 	inverseViewMatrixLocation = shaderProgram.GetUniform ( "inverseViewMatrix" );
 	inverseViewProjectionMatrixLocation = shaderProgram.GetUniform ( "inverseViewProjectionMatrix" );
-
-	diffuseIrradianceTexture = nullptr;
-	prefilteredEnvironmentMapTexture = nullptr;
-	brdfIntegrationMapTexture = nullptr;
-	albedoTexture = nullptr;
-	normalTexture = nullptr;
-	emissionTexture = nullptr;
-	parameterTexture = nullptr;
-	depthTexture = nullptr;
 }
 
 EMLightProbeMaterial::~EMLightProbeMaterial ()
@@ -66,7 +66,7 @@ GXVoid EMLightProbeMaterial::Bind ( const GXTransform& /*transform*/ )
 	GXVec3 viewerLocationWorld;
 	viewerModelMatrix.GetW ( viewerLocationWorld );
 	glUniform3fv ( viewerLocationWorldLocation, 1, viewerLocationWorld.data );
-	glUniform1f ( prefilteredEnvironmentMapLODsLocation, (GXFloat)prefilteredEnvironmentMapTexture->GetLevelOfDetailNumber () );
+	glUniform1f ( prefilteredEnvironmentMapLODsLocation, static_cast<GXFloat> ( prefilteredEnvironmentMapTexture->GetLevelOfDetailNumber () ) );
 
 	GXMat3 inverseViewMatrix ( viewerModelMatrix );
 	glUniformMatrix3fv ( inverseViewMatrixLocation, 1, GL_FALSE, inverseViewMatrix.data );
@@ -87,7 +87,7 @@ GXVoid EMLightProbeMaterial::Unbind ()
 	if ( !diffuseIrradianceTexture || !prefilteredEnvironmentMapTexture || !brdfIntegrationMapTexture || !albedoTexture || !normalTexture || !emissionTexture || !parameterTexture || !depthTexture )
 		return;
 
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 
 	diffuseIrradianceTexture->Unbind ();
 	prefilteredEnvironmentMapTexture->Unbind ();

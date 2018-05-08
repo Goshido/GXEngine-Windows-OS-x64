@@ -983,23 +983,8 @@
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMWireframeMaterial.h">
       <Filter>Header Files\GXEngine Editor Mobile</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\GXCommon\GXDisableWarning.h">
-      <Filter>Header Files\GXCommon</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\GXCommon\GXRestoreWarnings.h">
       <Filter>Header Files\GXCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXCommon\GXDisable3rdPartyWarnings.h">
-      <Filter>Header Files\GXCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXCommon\Windows\GXDisable3rdPartyWarnings.h">
-      <Filter>Header Files\GXCommon\Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXCommon\Windows\GXDisableWarning.h">
-      <Filter>Header Files\GXCommon\Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXCommon\Windows\GXRestoreWarnings.h">
-      <Filter>Header Files\GXCommon\Windows</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXAnimationSolver.h">
       <Filter>Header Files\GXEngine</Filter>
@@ -1030,6 +1015,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\GXPhysics\GXContactBitangentConstraint.h">
       <Filter>Header Files\GXPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\Windows\GXWarning.h">
+      <Filter>Header Files\GXCommon\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXWarning.h">
+      <Filter>Header Files\GXCommon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

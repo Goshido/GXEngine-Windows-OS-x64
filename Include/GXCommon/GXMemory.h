@@ -1,14 +1,17 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_MEMORY
 #define GX_MEMORY
 
 
 #include <GXCommon/GXTypes.h>
-#include "GXDisable3rdPartyWarnings.h"
+
+GX_DISABLE_COMMON_WARNINGS
+
 #include <cstdlib>
 #include <cstring>
-#include "GXRestoreWarnings.h"
+
+GX_RESTORE_WARNING_STATE
 
 
 #define GXSafeDelete(ptr)		\

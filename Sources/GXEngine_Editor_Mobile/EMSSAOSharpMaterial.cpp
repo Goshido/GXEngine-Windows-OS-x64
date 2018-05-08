@@ -4,13 +4,9 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define VERTEX_SHADER						L"Shaders/System/ScreenQuad_vs.txt"
-#define GEOMETRY_SHADER						nullptr
-#define FRAGMENT_SHADER						L"Shaders/Editor Mobile/SSAOSharp_fs.txt"
-
 #define DEFAULT_MAX_CHECK_RADIUS			0.1f
 #define DEFAULT_SAMPLES						64
-#define DEFAULT_NOISE_TEXTURE_RESOLUTION	2048
+#define DEFAULT_NOISE_TEXTURE_RESOLUTION	128u
 #define DEFAULT_MAX_DISTANCE				1000.0f
 
 #define MINIMUM_KERNEL_SCALE				0.01f
@@ -21,11 +17,16 @@
 #define NORMAL_SLOT							1u
 #define NOISE_SLOT							2u
 
+#define VERTEX_SHADER						L"Shaders/System/ScreenQuad_vs.txt"
+#define GEOMETRY_SHADER						nullptr
+#define FRAGMENT_SHADER						L"Shaders/Editor Mobile/SSAOSharp_fs.txt"
+
 //------------------------------------------------------------------------------------
 
 EMSSAOSharpMaterial::EMSSAOSharpMaterial ():
 	depthTexture ( nullptr ),
 	normalTexture ( nullptr ),
+	maxDistance ( DEFAULT_MAX_DISTANCE ),
 	checkRadius ( DEFAULT_MAX_CHECK_RADIUS )
 {
 	static const GLchar* samplerNames[ 3 ] = { "depthSampler", "normalSampler", "noiseSampler" };
@@ -54,7 +55,6 @@ EMSSAOSharpMaterial::EMSSAOSharpMaterial ():
 
 	SetSampleNumber ( DEFAULT_SAMPLES );
 	SetNoiseTextureResolution ( DEFAULT_NOISE_TEXTURE_RESOLUTION );
-	SetMaximumDistance ( DEFAULT_MAX_DISTANCE );
 }
 
 EMSSAOSharpMaterial::~EMSSAOSharpMaterial ()

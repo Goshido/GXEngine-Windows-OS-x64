@@ -4,27 +4,31 @@
 
 
 #define DEFAULT_DEPTH_LIMIT				1.0f
-#define DEFAULT_MAX_BLUR_SAMPLES		15
-#define DEFAULT_SCREEN_WIDTH			1280
-#define DEFAULT_SCREEN_HEIGHT			720
+#define DEFAULT_MAX_BLUR_SAMPLES		15u
+#define DEFAULT_SCREEN_WIDTH			1280u
+#define DEFAULT_SCREEN_HEIGHT			720u
 
-#define VELOCITY_NEIGHBOR_MAX_SLOT		0
-#define VELOCITY_SLOT					1
-#define DEPTH_SLOT						2
-#define IMAGE_SLOT						3
+#define VELOCITY_NEIGHBOR_MAX_SLOT		0u
+#define VELOCITY_SLOT					1u
+#define DEPTH_SLOT						2u
+#define IMAGE_SLOT						3u
 
 #define VERTEX_SHADER					L"Shaders/System/ScreenQuad_vs.txt"
 #define GEOMETRY_SHADER					nullptr
 #define FRAGMENT_SHADER					L"Shaders/Editor Mobile/MotionBlur_fs.txt"
 
+//---------------------------------------------------------------------------------------------------------------------
 
-EMMotionBlurMaterial::EMMotionBlurMaterial ()
+EMMotionBlurMaterial::EMMotionBlurMaterial ():
+	velocityNeighborMaxTexture ( nullptr ),
+	velocityTexture ( nullptr ),
+	depthTexture ( nullptr ),
+	imageTexture ( nullptr ),
+	depthLimit ( DEFAULT_DEPTH_LIMIT ),
+	inverseDepthLimit ( 1.0f / DEFAULT_DEPTH_LIMIT ),
+	maxBlurSamples ( static_cast<GXFloat> ( DEFAULT_MAX_BLUR_SAMPLES ) ),
+	inverseScreenResolution ( 1.0f / static_cast<GXFloat> ( DEFAULT_SCREEN_WIDTH ), 1.0f / static_cast<GXFloat> ( DEFAULT_SCREEN_WIDTH ) )
 {
-	velocityNeighborMaxTexture = nullptr;
-	velocityTexture = nullptr;
-	depthTexture = nullptr;
-	imageTexture = nullptr;
-
 	static const GLchar* samplerNames[ 4 ] = { "velocityNeighborMaxSampler", "velocitySampler", "depthSampler", "imageSampler" };
 	static const GLuint samplerLocations[ 4 ] = { VELOCITY_NEIGHBOR_MAX_SLOT, VELOCITY_SLOT, DEPTH_SLOT, IMAGE_SLOT };
 
@@ -32,7 +36,7 @@ EMMotionBlurMaterial::EMMotionBlurMaterial ()
 	si.vs = VERTEX_SHADER;
 	si.gs = GEOMETRY_SHADER;
 	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 4;
+	si.numSamplers = 4u;
 	si.samplerNames = samplerNames;
 	si.samplerLocations = samplerLocations;
 	si.numTransformFeedbackOutputs = 0;
@@ -44,10 +48,6 @@ EMMotionBlurMaterial::EMMotionBlurMaterial ()
 	maxBlurSamplesLocation = shaderProgram.GetUniform ( "maxBlurSamples" );
 	inverseScreenResolutionLocation = shaderProgram.GetUniform ( "inverseScreenResolution" );
 	inverseProjectionMatrixLocation = shaderProgram.GetUniform ( "inverseProjectionMatrix" );
-
-	SetDepthLimit ( DEFAULT_DEPTH_LIMIT );
-	SetMaxBlurSamples ( DEFAULT_MAX_BLUR_SAMPLES );
-	SetScreenResolution ( DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT );
 }
 
 EMMotionBlurMaterial::~EMMotionBlurMaterial ()
@@ -78,7 +78,7 @@ GXVoid EMMotionBlurMaterial::Unbind ()
 {
 	if ( !velocityNeighborMaxTexture || !velocityTexture || !depthTexture || !imageTexture ) return;
 
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 
 	velocityNeighborMaxTexture->Unbind ();
 	velocityTexture->Unbind ();
@@ -125,13 +125,13 @@ GXFloat EMMotionBlurMaterial::GetDepthLimit () const
 
 GXVoid EMMotionBlurMaterial::SetMaxBlurSamples ( GXUByte samples )
 {
-	if ( samples == 0 )
+	if ( samples == 0u )
 	{
 		GXLogW ( L"EMMotionBlurMaterial::SetMaxBlurSamples::Error - Указано нулевое максимальное количество выборок!\n" );
 		return;
 	}
 
-	maxBlurSamples = (GXFloat)samples;
+	maxBlurSamples = static_cast<GXFloat> ( samples );
 }
 
 GXUByte EMMotionBlurMaterial::GetMaxBlurSamples () const
@@ -141,5 +141,6 @@ GXUByte EMMotionBlurMaterial::GetMaxBlurSamples () const
 
 GXVoid EMMotionBlurMaterial::SetScreenResolution ( GXUShort width, GXUShort height )
 {
-	inverseScreenResolution.Init ( 1.0f / (GXFloat)width, 1.0f / (GXFloat)height );
+	inverseScreenResolution.data[ 0 ] = 1.0f / static_cast<GXFloat> ( width );
+	inverseScreenResolution.data[ 1 ] = 1.0f / static_cast<GXFloat> ( height );
 }

@@ -39,6 +39,10 @@ class EMLightProbeMaterial : public GXMaterial
 		GXVoid SetEmissionTexture ( GXTexture2D &texture );
 		GXVoid SetParameterTexture ( GXTexture2D &texture );
 		GXVoid SetDepthTexture ( GXTexture2D &texture );
+
+	private:
+		EMLightProbeMaterial ( const EMLightProbeMaterial &other ) = delete;
+		EMLightProbeMaterial& operator = ( const EMLightProbeMaterial &other ) = delete;
 };
 
 

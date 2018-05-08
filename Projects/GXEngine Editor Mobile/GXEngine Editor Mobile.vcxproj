@@ -104,7 +104,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>EnableAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WINSOCK_DEPRECATED_NO_WARNINGS;WINAPI_PARTITION_SYSTEM=0;_WIN32_WINNT_WINTHRESHOLD=0;NTDDI_WIN7SP1=0;TARGET_OS_MAC=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
@@ -328,8 +328,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXCommon\GXCFGLoader.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXCFGSaver.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXCFGStruct.h" />
-    <ClInclude Include="..\..\Include\GXCommon\GXDisable3rdPartyWarnings.h" />
-    <ClInclude Include="..\..\Include\GXCommon\GXDisableWarning.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXFileSystem.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXImageLoader.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXLogger.h" />
@@ -349,10 +347,9 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXCommon\GXThread.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXTime.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXTypes.h" />
-    <ClInclude Include="..\..\Include\GXCommon\Windows\GXDisable3rdPartyWarnings.h" />
-    <ClInclude Include="..\..\Include\GXCommon\Windows\GXDisableWarning.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXWarning.h" />
+    <ClInclude Include="..\..\Include\GXCommon\Windows\GXWarning.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXMutex.h" />
-    <ClInclude Include="..\..\Include\GXCommon\Windows\GXRestoreWarnings.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXThread.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXTypes.h" />
     <ClInclude Include="..\..\Include\GXEngineDLL\GXEngineAPI.h" />

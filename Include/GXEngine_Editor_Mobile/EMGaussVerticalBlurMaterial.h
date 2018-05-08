@@ -14,8 +14,8 @@ enum class eEMGaussVerticalBlurKernelType : GXUShort
 class EMGaussVerticalBlurMaterial : public GXMaterial
 {
 	private:
-		GXTexture2D*						imageTexture;
 		eEMGaussVerticalBlurKernelType		kernelType;
+		GXTexture2D*						imageTexture;
 
 	public:
 		EMGaussVerticalBlurMaterial ( eEMGaussVerticalBlurKernelType kernelType );
@@ -25,6 +25,11 @@ class EMGaussVerticalBlurMaterial : public GXMaterial
 		GXVoid Unbind () override;
 
 		GXVoid SetImageTexture ( GXTexture2D &texture );
+
+	private:
+		EMGaussVerticalBlurMaterial () = delete;
+		EMGaussVerticalBlurMaterial ( const EMGaussVerticalBlurMaterial &other ) = delete;
+		EMGaussVerticalBlurMaterial& operator = ( const EMGaussVerticalBlurMaterial &other ) = delete;
 };
 
 

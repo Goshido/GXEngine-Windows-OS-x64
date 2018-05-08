@@ -1,13 +1,16 @@
-//version 1.11
+//version 1.12
 
 #ifndef GX_PHYSX
 #define GX_PHYSX
 
 
 #include <GXCommon/GXMath.h>
-#include <GXCommon/GXDisable3rdPartyWarnings.h>
+
+GX_DISABLE_COMMON_WARNINGS
+
 #include <PhysX/PxPhysicsAPI.h>
-#include <GXCommon/GXRestoreWarnings.h>
+
+GX_RESTORE_WARNING_STATE
 
 
 #define GX_PHYSICS_GRAVITY_FACTOR		-9.81f

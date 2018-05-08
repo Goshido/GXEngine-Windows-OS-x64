@@ -8,9 +8,9 @@
 class EMWireframeMaterial : public GXMaterial
 {
 	private:
-		GLint		currentFrameModelViewProjectionMatrixLocation;
-
 		GXColorRGB	color;
+
+		GLint		currentFrameModelViewProjectionMatrixLocation;
 		GLint		colorLocation;
 
 	public:
@@ -21,6 +21,10 @@ class EMWireframeMaterial : public GXMaterial
 		GXVoid Unbind () override;
 
 		GXVoid SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
+
+	private:
+		EMWireframeMaterial ( const EMWireframeMaterial &other ) = delete;
+		EMWireframeMaterial& operator = ( const EMWireframeMaterial &other ) = delete;
 };
 
 

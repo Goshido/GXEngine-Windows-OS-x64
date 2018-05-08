@@ -1,12 +1,15 @@
-// version 1.5
+// version 1.6
 
 #include <GXCommon/GXLogger.h>
 #include <GXCommon/GXMutex.h>
 #include <GXCommon/GXMemory.h>
-#include <GXCommon/GXDisable3rdPartyWarnings.h>
+
+GX_DISABLE_COMMON_WARNINGS
+
 #include <cstdio>
 #include <stdarg.h>
-#include <GXCommon/GXRestoreWarnings.h>
+
+GX_RESTORE_WARNING_STATE
 
 
 enum class GXConsoleLocale : GXUByte

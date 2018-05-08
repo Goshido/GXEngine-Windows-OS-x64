@@ -15,17 +15,17 @@
 #define START_MAIN_PANEL_LEFT_X_OFFSET		1.5f
 #define START_MAIN_PANEL_TOP_Y_OFFSET		1.5f
 
-#define CAPTION_LABEL_COLOR_R				115
-#define CAPTION_LABEL_COLOR_G				185
-#define CAPTION_LABEL_COLOR_B				0
-#define CAPTION_LABEL_COLOR_A				255
+#define CAPTION_LABEL_COLOR_R				115u
+#define CAPTION_LABEL_COLOR_G				185u
+#define CAPTION_LABEL_COLOR_B				0u
+#define CAPTION_LABEL_COLOR_A				255u
 
-#define PROPERTY_LABEL_COLOR_R				255
-#define PROPERTY_LABEL_COLOR_G				255
-#define PROPERTY_LABEL_COLOR_B				255
-#define PROPERTY_LABEL_COLOR_A				255
+#define PROPERTY_LABEL_COLOR_R				255u
+#define PROPERTY_LABEL_COLOR_G				255u
+#define PROPERTY_LABEL_COLOR_B				255u
+#define PROPERTY_LABEL_COLOR_A				255u
 
-#define MAX_BUFFER_SYMBOLS					16
+#define MAX_BUFFER_SYMBOLS					16u
 
 #define MARGIN								0.24166f
 
@@ -56,18 +56,18 @@
 #define MINIMUM_CHECK_RADIUS				0.01f
 #define MAXIMUM_CHECK_RADIUS				77777.7f
 
-#define MINIMUM_SAMPLES						4
-#define MAXIMUM_SAMPLES						64
+#define MINIMUM_SAMPLES						4u
+#define MAXIMUM_SAMPLES						64u
 
-#define MINIMUM_NOISE_TEXTURE_RESOLUTION	2
-#define MAXIMUM_NOISE_TEXTURE_RESOLUTION	4096
+#define MINIMUM_NOISE_TEXTURE_RESOLUTION	2u
+#define MAXIMUM_NOISE_TEXTURE_RESOLUTION	4096u
 
 #define MINIMUM_DISTANCE					0.3f
 #define MAXIMUM_DISTANCE					77777.7f
 
+//---------------------------------------------------------------------------------------------------------------------
 
 EMUISSAOSettings* EMUISSAOSettings::instance = nullptr;
-
 
 EMUISSAOSettings& EMUISSAOSettings::GetInstance ()
 {
@@ -124,31 +124,35 @@ GXVoid EMUISSAOSettings::Hide ()
 	mainPanel->Hide ();
 }
 
-EMUISSAOSettings::EMUISSAOSettings () :
-EMUI ( nullptr )
+EMUISSAOSettings::EMUISSAOSettings ():
+	EMUI ( nullptr ),
+	mainPanel ( new EMUIDraggableArea ( nullptr ) )
 {
-	mainPanel = new EMUIDraggableArea ( nullptr );
 	caption = new EMUIStaticText ( mainPanel );
 	topSeparator = new EMUISeparator ( mainPanel );
 
 	checkRadiusLabel = new EMUIStaticText ( mainPanel );
 	checkRadius = new EMUIEditBox ( mainPanel );
-	GXUIEditBoxFloatValidator* floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *( (GXUIEditBox*)checkRadius->GetWidget () ), MINIMUM_CHECK_RADIUS, MAXIMUM_CHECK_RADIUS );
+	GXUIEditBox* editBox = static_cast<GXUIEditBox*> ( checkRadius->GetWidget () );
+	GXUIEditBoxFloatValidator* floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_CHECK_RADIUS, MAXIMUM_CHECK_RADIUS );
 	checkRadius->SetValidator ( *floatValidator );
 
 	samplesLabel = new EMUIStaticText ( mainPanel );
 	samples = new EMUIEditBox ( mainPanel );
-	GXUIEditBoxIntegerValidator* integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_STRING, *( (GXUIEditBox*)samples->GetWidget () ), MINIMUM_SAMPLES, MAXIMUM_SAMPLES );
+	editBox = static_cast<GXUIEditBox*> ( samples->GetWidget () );
+	GXUIEditBoxIntegerValidator* integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_STRING, *editBox, MINIMUM_SAMPLES, MAXIMUM_SAMPLES );
 	samples->SetValidator ( *integerValidator );
 
 	noiseTextureResolutionLabel = new EMUIStaticText ( mainPanel );
 	noiseTextureResolution = new EMUIEditBox ( mainPanel );
-	integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_STRING, *( (GXUIEditBox*)noiseTextureResolution->GetWidget () ), MINIMUM_NOISE_TEXTURE_RESOLUTION, MAXIMUM_NOISE_TEXTURE_RESOLUTION );
+	editBox = static_cast<GXUIEditBox*> ( noiseTextureResolution->GetWidget () );
+	integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_STRING, *editBox, MINIMUM_NOISE_TEXTURE_RESOLUTION, MAXIMUM_NOISE_TEXTURE_RESOLUTION );
 	noiseTextureResolution->SetValidator ( *integerValidator );
 
 	maxDistanceLabel = new EMUIStaticText ( mainPanel );
 	maxDistance = new EMUIEditBox ( mainPanel );
-	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *( (GXUIEditBox*)maxDistance->GetWidget () ), MINIMUM_DISTANCE, MAXIMUM_DISTANCE );
+	editBox = static_cast<GXUIEditBox*> ( maxDistance->GetWidget () );
+	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_DISTANCE, MAXIMUM_DISTANCE );
 	maxDistance->SetValidator ( *floatValidator );
 
 	bottomSeparator = new EMUISeparator ( mainPanel );
@@ -191,7 +195,7 @@ EMUI ( nullptr )
 	mainPanel->SetOnResizeCallback ( this, &EMUISSAOSettings::OnResize );
 
 	GXFloat height = DEFAULT_MAIN_PANEL_HEIGHT * gx_ui_Scale;
-	mainPanel->Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, (GXFloat)( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
+	mainPanel->Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
 	mainPanel->SetMinimumWidth ( MAIN_PANEL_MINIMUM_WIDTH * gx_ui_Scale );
 	mainPanel->SetMinimumHeight ( MAIN_PANEL_MINIMUM_HEIGHT * gx_ui_Scale );
 	mainPanel->Hide ();
@@ -219,7 +223,7 @@ GXVoid GXCALL EMUISSAOSettings::OnButton ( GXVoid* handler, GXUIButton& button, 
 {
 	if ( state != eGXMouseButtonState::Up ) return;
 
-	EMUISSAOSettings* settings = (EMUISSAOSettings*)handler;
+	EMUISSAOSettings* settings = static_cast<EMUISSAOSettings*> ( handler );
 
 	if ( &button == settings->cancel->GetWidget () )
 	{
@@ -275,7 +279,7 @@ GXVoid GXCALL EMUISSAOSettings::OnButton ( GXVoid* handler, GXUIButton& button, 
 
 GXVoid GXCALL EMUISSAOSettings::OnResize ( GXVoid* handler, GXUIDragableArea& /*area*/, GXFloat width, GXFloat height )
 {
-	EMUISSAOSettings* settings = (EMUISSAOSettings*)handler;
+	EMUISSAOSettings* settings = static_cast<EMUISSAOSettings*> ( handler );
 
 	GXFloat margin = MARGIN * gx_ui_Scale;
 

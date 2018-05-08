@@ -34,7 +34,7 @@
 
 #define PATH_BUFFER_SIZE				4096u
 
-//--------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 EMUIOpenFile::EMUIOpenFile ():
 	EMUI ( nullptr ),
@@ -133,7 +133,7 @@ GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
 		{
 			totalItems = directoryInfo.totalFiles + directoryInfo.totalFolders - 2; // Exclude . and .. directories
 
-			if ( totalItems == 0 ) return;
+			if ( totalItems == 0u ) return;
 
 			items = static_cast<EMUIFileListBoxItem*> ( malloc ( totalItems * sizeof ( EMUIFileListBoxItem ) ) );
 			GXBool isRootNotExcluded = GX_TRUE;
@@ -244,9 +244,9 @@ GXVoid GXCALL EMUIOpenFile::OnItemSelected ( GXVoid* handler, GXUIListBox& /*lis
 			else
 			{
 				GXUInt symbols = main->rootDirectoryPathOffset;
-				symbols += 1;									// '/' symbol
+				symbols += 1u;									// '/' symbol
 				symbols += GXWcslen ( element->GetName () );
-				symbols += 1;									// '\0' symbol
+				symbols += 1u;									// '\0' symbol
 
 				GXWChar* buf = static_cast<GXWChar*> ( malloc ( symbols * sizeof ( GXWChar ) ) );
 				wsprintfW ( buf, L"%s/%s", main->GetRelativePath (), element->GetName () );

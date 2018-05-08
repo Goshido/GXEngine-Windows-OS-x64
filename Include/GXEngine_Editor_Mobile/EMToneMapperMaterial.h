@@ -13,16 +13,15 @@ class EMToneMapperMaterial : public GXMaterial
 
 		GXFloat				gamma;
 		GXFloat				inverseGamma;
-		GLint				inverseGammaLocation;
-
-		GXFloat				prescaleFactor;
-		GLint				prescaleFactorLocation;
+		GXFloat				eyeSensitivity;
 
 		GXFloat				absoluteWhiteIntensity;
 		GXFloat				inverseAbsoluteWhiteSquareIntensity;
-		GLint				inverseAbsoluteWhiteSquareIntensityLocation;
+		GXFloat				prescaleFactor;
 
-		GXFloat				eyeSensitivity;
+		GLint				inverseGammaLocation;
+		GLint				prescaleFactorLocation;
+		GLint				inverseAbsoluteWhiteSquareIntensityLocation;
 
 	public:
 		EMToneMapperMaterial ();
@@ -43,6 +42,10 @@ class EMToneMapperMaterial : public GXMaterial
 
 		GXVoid SetAbsoluteWhiteIntensity ( GXFloat intensity );
 		GXFloat GetAbsoluteWhiteIntensity () const;
+
+	private:
+		EMToneMapperMaterial ( const EMToneMapperMaterial &other ) = delete;
+		EMToneMapperMaterial& operator = ( const EMToneMapperMaterial &other ) = delete;
 };
 
 

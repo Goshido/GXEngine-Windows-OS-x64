@@ -6,6 +6,7 @@
 #define GEOMETRY_SHADER		nullptr
 #define FRAGMENT_SHADER		L"Shaders/Editor Mobile/VertexColor_fs.txt"
 
+//---------------------------------------------------------------------------------------------------------------------
 
 EMVertexColorMaterial::EMVertexColorMaterial ()
 {
@@ -13,7 +14,7 @@ EMVertexColorMaterial::EMVertexColorMaterial ()
 	si.vs = VERTEX_SHADER;
 	si.gs = GEOMETRY_SHADER;
 	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 0;
+	si.numSamplers = 0u;
 	si.samplerNames = nullptr;
 	si.samplerLocations = nullptr;
 	si.numTransformFeedbackOutputs = 0;
@@ -41,5 +42,5 @@ GXVoid EMVertexColorMaterial::Bind ( const GXTransform &transform )
 
 GXVoid EMVertexColorMaterial::Unbind ()
 {
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 }

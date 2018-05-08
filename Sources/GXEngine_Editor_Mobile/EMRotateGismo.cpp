@@ -18,7 +18,7 @@
 #define ROTATE_GISMO_MESH		L"Meshes/Editor Mobile/Rotate Gismo.stm"
 #define ROTATE_GISMO_TEXTURE	L"Textures/Editor Mobile/Gismo Texture.tex"
 
-//--------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 EMRotateGismo::EMRotateGismo ():
 	isVisible ( GX_TRUE ),

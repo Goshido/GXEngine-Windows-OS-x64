@@ -13,6 +13,7 @@ class EMUIToneMapperSettings : public EMUI
 {
 	private:
 		EMUIDraggableArea*				mainPanel;
+
 		EMUIStaticText*					caption;
 		EMUISeparator*					topSeparator;
 		EMUIStaticText*					gammaLabel;
@@ -45,6 +46,9 @@ class EMUIToneMapperSettings : public EMUI
 
 		static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state );
 		static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
+
+		EMUIToneMapperSettings ( const EMUIToneMapperSettings &other ) = delete;
+		EMUIToneMapperSettings& operator = ( const EMUIToneMapperSettings &other ) = delete;
 };
 
 

@@ -40,6 +40,10 @@ class EMTool
 
 		static EMTool* GXCALL GetActiveTool ();
 		static GXVoid GXCALL SetActiveTool ( EMTool* tool );
+
+	private:
+		EMTool ( const EMTool &other ) = delete;
+		EMTool& operator = ( const EMTool &other ) = delete;
 };
 
 

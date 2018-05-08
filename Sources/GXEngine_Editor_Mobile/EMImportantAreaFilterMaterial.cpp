@@ -2,10 +2,6 @@
 #include <GXCommon/GXMemory.h>
 
 
-#define VERTEX_SHADER			L"Shaders/System/ScreenQuad_vs.txt"
-#define GEOMETRY_SHADER			nullptr
-#define FRAGMENT_SHADER			L"Shaders/Editor Mobile/ImportantAreaFilter_fs.txt"
-
 #define IMAGE_SLOT				0u
 #define RETINA_FILTER_SLOT		1u
 
@@ -16,6 +12,10 @@
 #define MAXIMUM_V				1.0
 #define THREE_SIGMA_RULE_FACTOR	0.16666666666666666666666666666667
 #define DOUBLE_PI				6.283185307179586476925286766559
+
+#define VERTEX_SHADER			L"Shaders/System/ScreenQuad_vs.txt"
+#define GEOMETRY_SHADER			nullptr
+#define FRAGMENT_SHADER			L"Shaders/Editor Mobile/ImportantAreaFilter_fs.txt"
 
 //---------------------------------------------------------------------------------------------
 

@@ -36,7 +36,7 @@
 #define PIXEL_PERFECT_LOCATION_OFFSET_X		0.25f
 #define PIXEL_PERFECT_LOCATION_OFFSET_Y		0.25f
 
-//---------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 class EMUIMenuRenderer : public GXWidgetRenderer
 {
@@ -166,7 +166,7 @@ GXVoid EMUIMenuRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUSh
 	surface = new GXHudSurface ( width, height );
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.GetZ () );
+	surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 
 GXVoid EMUIMenuRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -176,10 +176,10 @@ GXVoid EMUIMenuRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.GetZ () );
+	surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 
-//---------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 EMUIMenu::EMUIMenu ( EMUI* parent ):
 	EMUI ( parent ),

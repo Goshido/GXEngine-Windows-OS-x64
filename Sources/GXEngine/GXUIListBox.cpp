@@ -1,12 +1,15 @@
-// version 1.1
+// version 1.2
 
 #include <GXEngine/GXUIListBox.h>
 #include <GXEngine/GXUICommon.h>
 #include <GXEngine/GXUIMessage.h>
 #include <GXEngine_Editor_Mobile/EMUIFileListBox.h>		// TODO fix this!!
-#include <GXCommon/GXDisable3rdPartyWarnings.h>
+
+GX_DISABLE_COMMON_WARNINGS
+
 #include <float.h>
-#include <GXCommon/GXRestoreWarnings.h>
+
+GX_RESTORE_WARNING_STATE
 
 
 #define GX_UI_DEFAULT_ITEM_HEIGHT		0.55f

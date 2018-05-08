@@ -21,6 +21,10 @@ class EMSSAOApplyMaterial : public GXMaterial
 
 		GXVoid SetSSAOTexture ( GXTexture2D &texture );
 		GXVoid SetImageTexture ( GXTexture2D &texture );
+
+	private:
+		EMSSAOApplyMaterial ( const EMSSAOApplyMaterial &other ) = delete;
+		EMSSAOApplyMaterial& operator = ( const EMSSAOApplyMaterial &other ) = delete;
 };
 
 

@@ -1,13 +1,16 @@
-﻿// version 1.48
+﻿// version 1.49
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
-#include <GXCommon/GXDisable3rdPartyWarnings.h>
+
+GX_DISABLE_COMMON_WARNINGS
+
 #include <stdlib.h>
 #include <cwchar>
 #include <cstring>
 #include <time.h>
-#include <GXCommon/GXRestoreWarnings.h>
+
+GX_RESTORE_WARNING_STATE
 
 
 #define COLOR_TO_FLOAT_FACTOR			0.00392157f

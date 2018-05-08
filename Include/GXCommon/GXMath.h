@@ -1,15 +1,19 @@
-// version 1.48
+// version 1.49
 
 #ifndef GX_MATH
 #define GX_MATH
 
 
 #include "GXTypes.h"
-#include "GXDisable3rdPartyWarnings.h"
+#include "GXWarning.h"
+
+GX_DISABLE_COMMON_WARNINGS
+
 #include <math.h>
 #include <limits.h>
 #include <float.h>
-#include "GXRestoreWarnings.h"
+
+GX_RESTORE_WARNING_STATE
 
 
 #define GX_MATH_HALF_PI		1.5707963f

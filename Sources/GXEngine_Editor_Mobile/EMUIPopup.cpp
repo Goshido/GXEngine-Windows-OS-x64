@@ -45,6 +45,7 @@
 #define PIXEL_PERFECT_LOCATION_OFFSET_X		0.25f
 #define PIXEL_PERFECT_LOCATION_OFFSET_Y		0.25f
 
+//---------------------------------------------------------------------------------------------------------------------
 
 class EMUIPopupRenderer : public GXWidgetRenderer
 {
@@ -67,6 +68,7 @@ class EMUIPopupRenderer : public GXWidgetRenderer
 		GXVoid OnMoved ( GXFloat x, GXFloat y ) override;
 
 	private:
+		EMUIPopupRenderer () = delete;
 		EMUIPopupRenderer ( const EMUIPopupRenderer &other ) = delete;
 		EMUIPopupRenderer& operator = ( const EMUIPopupRenderer &other ) = delete;
 };
@@ -195,7 +197,7 @@ GXVoid EMUIPopupRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUS
 
 	delete surface;
 	surface = new GXHudSurface ( width, height );
-	surface->SetLocation ( x, y, location.GetZ () );
+	surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 
 GXVoid EMUIPopupRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -205,7 +207,7 @@ GXVoid EMUIPopupRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 	GXVec3 location;
 	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.GetZ () );
+	surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 
 //-------------------------------------------------------

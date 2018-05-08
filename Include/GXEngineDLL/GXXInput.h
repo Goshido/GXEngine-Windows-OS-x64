@@ -1,12 +1,16 @@
-// version 1.0
+// version 1.2
 
 #ifndef GX_XINPUT
 #define GX_XINPUT
 
 
-#include <GXCommon/GXDisable3rdPartyWarnings.h>
+#include <GXCommon/GXWarning.h>
+
+GX_DISABLE_COMMON_WARNINGS
+
 #include <XInput/XInput.h>
-#include <GXCommon/GXRestoreWarnings.h>
+
+GX_RESTORE_WARNING_STATE
 
 
 typedef DWORD ( WINAPI* PFNXINPUTGETSTATEPROC ) ( DWORD dwUserIndex, XINPUT_STATE* pState );

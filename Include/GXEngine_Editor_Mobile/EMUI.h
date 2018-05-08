@@ -23,9 +23,14 @@ class EMUI
 		explicit EMUI ( EMUI* parent );
 		virtual ~EMUI ();
 
-		virtual GXWidget* GetWidget () const;
+		virtual GXWidget* GetWidget () const = 0;
 
 		GXVoid ToForeground ();
+
+	private:
+		EMUI () = delete;
+		EMUI ( const EMUI &other ) = delete;
+		EMUI& operator = ( const EMUI &other ) = delete;
 };
 
 GXVoid GXCALL EMDrawUI ();

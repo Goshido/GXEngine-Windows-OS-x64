@@ -2,20 +2,22 @@
 
 
 #define DEFAULT_MAX_BLUR_SAMPLES			15
-#define DEFAULT_SCREEN_RESOLUTION_WIDTH		1280
-#define DEFAULT_SCREEN_RESOLUTION_HEIGHT	720
+#define DEFAULT_SCREEN_RESOLUTION_WIDTH		1280u
+#define DEFAULT_SCREEN_RESOLUTION_HEIGHT	720u
 
-#define VELOCITY_BLUR_SLOT					0
+#define VELOCITY_BLUR_SLOT					0u
 
 #define VERTEX_SHADER						L"Shaders/System/ScreenQuad_vs.txt"
 #define GEOMETRY_SHADER						nullptr
 #define FRAGMENT_SHADER						L"Shaders/Editor Mobile/VelocityTileMax_fs.txt"
 
+//---------------------------------------------------------------------------------------------------------------------
 
-EMVelocityTileMaxMaterial::EMVelocityTileMaxMaterial ()
+EMVelocityTileMaxMaterial::EMVelocityTileMaxMaterial ():
+	velocityBlurTexture ( nullptr ),
+	maxBlurSamples ( DEFAULT_MAX_BLUR_SAMPLES ),
+	inverseScreenResolution ( 1.0f / static_cast<GXFloat> ( DEFAULT_SCREEN_RESOLUTION_WIDTH ), 1.0f / static_cast<GXFloat> ( DEFAULT_SCREEN_RESOLUTION_HEIGHT ) )
 {
-	velocityBlurTexture = nullptr;
-
 	static const GLchar* samplerNames[ 1 ] = { "velocityBlurSampler" };
 	static const GLuint samplerLocations[ 1 ] = { VELOCITY_BLUR_SLOT };
 
@@ -23,7 +25,7 @@ EMVelocityTileMaxMaterial::EMVelocityTileMaxMaterial ()
 	si.vs = VERTEX_SHADER;
 	si.gs = GEOMETRY_SHADER;
 	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 1;
+	si.numSamplers = 1u;
 	si.samplerNames = samplerNames;
 	si.samplerLocations = samplerLocations;
 	si.numTransformFeedbackOutputs = 0;
@@ -33,9 +35,6 @@ EMVelocityTileMaxMaterial::EMVelocityTileMaxMaterial ()
 
 	maxBlurSamplesLocation = shaderProgram.GetUniform ( "maxBlurSamples" );
 	inverseScreenResolutionLocation = shaderProgram.GetUniform ( "inverseScreenResolution" );
-
-	SetMaxBlurSamples ( DEFAULT_MAX_BLUR_SAMPLES );
-	SetScreenResolution ( DEFAULT_SCREEN_RESOLUTION_WIDTH, DEFAULT_SCREEN_RESOLUTION_HEIGHT );
 }
 
 EMVelocityTileMaxMaterial::~EMVelocityTileMaxMaterial ()
@@ -57,7 +56,7 @@ GXVoid EMVelocityTileMaxMaterial::Unbind ()
 {
 	if ( !velocityBlurTexture ) return;
 	
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 	velocityBlurTexture->Unbind ();
 }
 
@@ -68,10 +67,11 @@ GXVoid EMVelocityTileMaxMaterial::SetVelocityBlurTexture ( GXTexture2D &texture 
 
 GXVoid EMVelocityTileMaxMaterial::SetMaxBlurSamples ( GXUByte maxSamples )
 {
-	maxBlurSamples = (GXInt)maxSamples;
+	maxBlurSamples = static_cast<GXInt> ( maxSamples );
 }
 
 GXVoid EMVelocityTileMaxMaterial::SetScreenResolution ( GXUShort width, GXUShort height )
 {
-	inverseScreenResolution.Init ( 1.0f / (GXFloat)width, 1.0f / (GXFloat)height );
+	inverseScreenResolution.data[ 0 ] = 1.0f / static_cast<GXFloat> ( width );
+	inverseScreenResolution.data[ 1 ] = 1.0f / static_cast<GXFloat> ( height );
 }

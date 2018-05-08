@@ -22,7 +22,7 @@
 
 #define CUBE_MESH					L"Meshes/System/Unit Cube.stm"
 
-//------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 EMUnitActor::EMUnitActor ( const GXWChar* name, const GXTransform &transform ):
 	EMActor ( name, eEMActorType::UnitCube, transform ),

@@ -49,7 +49,7 @@
 #define PIXEL_PERFECT_LOCATION_OFFSET_X		0.25f
 #define PIXEL_PERFECT_LOCATION_OFFSET_Y		0.25f
 
-//---------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 EMUIFileListBoxItem::EMUIFileListBoxItem ( eEMUIFileListBoxItemType type, const GXWChar* name ):
 	type ( type )
@@ -278,7 +278,7 @@ GXVoid EMUIFileListBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
 	surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 
-//---------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 EMUIFileListBox::EMUIFileListBox ( EMUI* parent ):
 	EMUI ( parent ),
