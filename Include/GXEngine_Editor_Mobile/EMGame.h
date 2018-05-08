@@ -69,7 +69,7 @@ class EMGame : public GXGame
 
 		GXUIInput*				uiInput;
 
-		GXFont					physicsInfoFont;
+		GXFont*					physicsInfoFont;
 		GXTexture2D				physicsInfoBackgroundTexture;
 
 		static GXBool			isContact;

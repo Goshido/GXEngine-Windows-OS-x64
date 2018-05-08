@@ -41,7 +41,7 @@ EMEnvironmentMapMaterial::EMEnvironmentMapMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	modelViewProjectionMatrixLocation = shaderProgram.GetUniform ( "modelViewProjectionMatrix" );
 	inverseScreenResolutionLocation = shaderProgram.GetUniform ( "inverseScreenResolution" );
@@ -50,7 +50,7 @@ EMEnvironmentMapMaterial::EMEnvironmentMapMaterial ():
 
 EMEnvironmentMapMaterial::~EMEnvironmentMapMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMEnvironmentMapMaterial::Bind ( const GXTransform &transform )

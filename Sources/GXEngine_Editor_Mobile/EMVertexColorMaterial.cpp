@@ -20,14 +20,14 @@ EMVertexColorMaterial::EMVertexColorMaterial ()
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	currentFrameModelViewProjectionMatrixLocation = shaderProgram.GetUniform ( "currentFrameModelViewProjectionMatrix" );
 }
 
 EMVertexColorMaterial::~EMVertexColorMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMVertexColorMaterial::Bind ( const GXTransform &transform )

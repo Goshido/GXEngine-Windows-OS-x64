@@ -20,14 +20,14 @@ EMObjectMaskMaterial::EMObjectMaskMaterial ()
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	mod_view_proj_matLocation = shaderProgram.GetUniform ( "mod_view_proj_mat" );
 }
 
 EMObjectMaskMaterial::~EMObjectMaskMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMObjectMaskMaterial::Bind ( const GXTransform &transform )

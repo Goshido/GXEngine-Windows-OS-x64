@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.5
 
 #ifndef GX_SHADER_PROGRAM
 #define GX_SHADER_PROGRAM
@@ -6,8 +6,6 @@
 
 #include "GXOpenGL.h"
 #include <GXCommon/GXAVLTree.h>
-
-
 
 
 struct GXShaderProgramInfo 
@@ -24,44 +22,30 @@ struct GXShaderProgramInfo
 	GLsizei				numTransformFeedbackOutputs;
 };
 
-class GXPrecompiledShaderProgramFinder;
+// Class handles lazy loading reference counting shader program resource creation.
+
+class GXShaderProgramEntry;
 class GXShaderProgram
 {
 	private:
-		GXWChar*									vs;
-		GXWChar*									gs;
-		GXWChar*									fs;
-
-		GLuint										program;
-
-		static GXPrecompiledShaderProgramFinder*	precompiledShaderProgramFinder;
-		static GXWChar*								stringBuffer;
+		GXShaderProgramEntry*		shaderProgramEntry;
 
 	public:
 		GXShaderProgram ();
 		~GXShaderProgram ();
 
+		GXVoid Init ( const GXShaderProgramInfo &info );
+
 		GLuint GetProgram () const;
 		GLint GetUniform ( const GLchar* name ) const;
 
-		static GXVoid InitPrecompiledShaderProgramSubsystem ();
-		static GXVoid DestroyPrecompiledShaderProgramSubsystem ();
-
-		static GXShaderProgram& GXCALL GetShaderProgram ( const GXShaderProgramInfo &info );
-		static GXVoid GXCALL RemoveShaderProgram ( GXShaderProgram &program );
+		static GXVoid GXCALL InitPrecompiledShaderProgramSubsystem ();
+		static GXVoid GXCALL DestroyPrecompiledShaderProgramSubsystem ();
 		static GXUInt GXCALL GetTotalLoadedShaderPrograms ( const GXWChar** lastVS, const GXWChar** lastGS, const GXWChar** lastFS );
 
-		GXVoid operator = ( const GXShaderProgram &shadepProgram );
-
 	private:
-		explicit GXShaderProgram ( const GXShaderProgramInfo &info );
-
-		GXBool operator == ( const GXShaderProgramInfo &other ) const;
-		GXBool operator == ( const GXShaderProgram &other ) const;
-
-		GLuint GetShader ( GLenum type, const GXWChar* fileName );
-		GLuint CompileShaderProgram ( const GXShaderProgramInfo &info );
-		GXVoid SavePrecompiledShaderProgram ( GLuint shaderProgram, const GXShaderProgramInfo &info, const GXWChar* binaryPath );
+		GXShaderProgram ( const GXShaderProgram &other ) = delete;
+		GXShaderProgram& operator = ( const GXShaderProgram &other ) = delete;
 };
 
 

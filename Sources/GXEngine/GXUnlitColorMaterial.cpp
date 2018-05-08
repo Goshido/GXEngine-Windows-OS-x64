@@ -29,7 +29,7 @@ GXUnlitColorMaterial::GXUnlitColorMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	mod_view_proj_matLocation = shaderProgram.GetUniform ( "mod_view_proj_mat" );
 	colorLocation = shaderProgram.GetUniform ( "color" );
@@ -37,7 +37,7 @@ GXUnlitColorMaterial::GXUnlitColorMaterial ():
 
 GXUnlitColorMaterial::~GXUnlitColorMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid GXUnlitColorMaterial::Bind ( const GXTransform &transform )

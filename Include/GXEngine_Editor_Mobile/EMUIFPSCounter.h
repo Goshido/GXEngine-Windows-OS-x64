@@ -9,8 +9,8 @@ class EMUIFPSCounter
 {
 	private:
 		GXUInt					lastFPS;
-
 		GXFont					font;
+
 		GXHudSurface*			surface;
 		GXWChar					fpsBuffer[ 16 ];
 

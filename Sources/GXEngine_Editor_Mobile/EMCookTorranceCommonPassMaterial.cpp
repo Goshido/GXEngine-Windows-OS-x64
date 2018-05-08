@@ -99,7 +99,7 @@ EMCookTorranceCommonPassMaterial::EMCookTorranceCommonPassMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	albedoTextureScaleOffsetLocation = shaderProgram.GetUniform ( "albedoTextureScaleOffset" );
 	albedoColorLocation = shaderProgram.GetUniform ( "albedoColor" );
@@ -120,7 +120,7 @@ EMCookTorranceCommonPassMaterial::EMCookTorranceCommonPassMaterial ():
 
 EMCookTorranceCommonPassMaterial::~EMCookTorranceCommonPassMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMCookTorranceCommonPassMaterial::Bind ( const GXTransform &transform )

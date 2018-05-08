@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #ifndef GX_TOUCH_SURFACE
 #define GX_TOUCH_SURFACE
@@ -43,7 +43,7 @@ class GXTouchSurface
 		GXVoid OnKeyDown ( GXInt keyCode );
 		GXVoid OnKeyUp ( GXInt keyCode );
 
-		GXVoid SendMessage ( GXWidget* widget, GXUInt message, const GXVoid* data, GXUInt size );
+		GXVoid SendMessage ( GXWidget* widget, eGXUIMessage message, const GXVoid* data, GXUInt size );
 		GXVoid ExecuteMessages ();
 
 		GXVoid DrawWidgets ();

@@ -43,7 +43,7 @@ EMToneMapperMaterial::EMToneMapperMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	inverseGammaLocation = shaderProgram.GetUniform ( "inverseGamma" );
 	prescaleFactorLocation = shaderProgram.GetUniform ( "prescaleFactor" );
@@ -55,7 +55,7 @@ EMToneMapperMaterial::EMToneMapperMaterial ():
 
 EMToneMapperMaterial::~EMToneMapperMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMToneMapperMaterial::Bind ( const GXTransform& /*transform*/ )

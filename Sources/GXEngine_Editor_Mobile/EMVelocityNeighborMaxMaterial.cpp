@@ -28,14 +28,14 @@ EMVelocityNeighborMaxMaterial::EMVelocityNeighborMaxMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	inverseVelocityTileMaxTextureResolutionLocation = shaderProgram.GetUniform ( "inverseVelocityTileMaxTextureResolution" );
 }
 
 EMVelocityNeighborMaxMaterial::~EMVelocityNeighborMaxMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMVelocityNeighborMaxMaterial::Bind ( const GXTransform& /*transform*/ )

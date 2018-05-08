@@ -35,15 +35,14 @@ EMImportantAreaFilterMaterial::EMImportantAreaFilterMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 }
 
 EMImportantAreaFilterMaterial::~EMImportantAreaFilterMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	if ( retinaFilterTexture.GetTextureObject () == INVALID_TEXTURE_OBJECT ) return;
 
-	if ( retinaFilterTexture.GetTextureObject () != INVALID_TEXTURE_OBJECT )
-		retinaFilterTexture.FreeResources ();
+	retinaFilterTexture.FreeResources ();
 }
 
 GXVoid EMImportantAreaFilterMaterial::Bind ( const GXTransform& /*transform*/ )

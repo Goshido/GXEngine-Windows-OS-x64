@@ -57,7 +57,7 @@ EMCookTorranceDirectedLightMaterial::EMCookTorranceDirectedLightMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	hueLocation = shaderProgram.GetUniform ( "hue" );
 	intensityLocation = shaderProgram.GetUniform ( "intensity" );
@@ -69,7 +69,7 @@ EMCookTorranceDirectedLightMaterial::EMCookTorranceDirectedLightMaterial ():
 
 EMCookTorranceDirectedLightMaterial::~EMCookTorranceDirectedLightMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMCookTorranceDirectedLightMaterial::Bind ( const GXTransform& /*transform*/ )

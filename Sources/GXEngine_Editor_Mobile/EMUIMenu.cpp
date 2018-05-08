@@ -41,8 +41,8 @@
 class EMUIMenuRenderer : public GXWidgetRenderer
 {
 	private:
-		GXHudSurface*		surface;
 		GXFont				font;
+		GXHudSurface*		surface;
 		GXTexture2D			texture;
 
 	public:
@@ -64,18 +64,17 @@ class EMUIMenuRenderer : public GXWidgetRenderer
 };
 
 EMUIMenuRenderer::EMUIMenuRenderer ( GXUIMenu* widget ):
-	GXWidgetRenderer ( widget )
+	GXWidgetRenderer ( widget ),
+	font ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 	surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
-	font = GXFont::GetFont ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) );
 	texture = GXTexture2D::LoadTexture ( DEFAULT_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 }
 
 EMUIMenuRenderer::~EMUIMenuRenderer ()
 {
 	delete surface;
-	GXFont::RemoveFont ( font );
 	GXTexture2D::RemoveTexture ( texture );
 }
 

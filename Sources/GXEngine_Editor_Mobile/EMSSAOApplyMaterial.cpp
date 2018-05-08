@@ -27,12 +27,12 @@ EMSSAOApplyMaterial::EMSSAOApplyMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 }
 
 EMSSAOApplyMaterial::~EMSSAOApplyMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMSSAOApplyMaterial::Bind ( const GXTransform& /*transform*/ )

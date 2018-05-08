@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #include <GXEngine/GXUIListBox.h>
 #include <GXEngine/GXUICommon.h>
@@ -52,103 +52,131 @@ GXUIListBox::~GXUIListBox ()
 	}
 }
 
-GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
+GXVoid GXUIListBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
 {
-	switch ( message )
+	if ( message == eGXUIMessage::MouseOver || message == eGXUIMessage::MouseMove )
 	{
-		case GX_MSG_MOUSE_OVER:
-		case GX_MSG_MOUSE_MOVE:
+		const GXVec2* pos = static_cast<const GXVec2*> ( data );
+
+		GXBool isNeedRenderUpdate = ResetHighlight ( *pos );
+
+		if ( isNeedRenderUpdate && renderer )
+			renderer->OnUpdate ();
+
+		return;
+	}
+
+	if ( message == eGXUIMessage::MouseLeave )
+	{
+		for ( GXUIListBoxItem* p = itemHead; p; p = p->next )
 		{
-			const GXVec2* pos = static_cast<const GXVec2*> ( data );
-
-			GXBool isNeedRenderUpdate = ResetHighlight ( *pos );
-
-			if ( isNeedRenderUpdate && renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		case GX_MSG_MOUSE_LEAVE:
-		{
-			for ( GXUIListBoxItem* p = itemHead; p; p = p->next )
+			if ( p->isHighlighted )
 			{
-				if ( p->isHighlighted )
-				{
-					p->isHighlighted = GX_FALSE;
-
-					if ( renderer )
-						renderer->OnUpdate ();
-
-					break;
-				}
-			}
-		}
-		break;
-
-		case GX_MSG_SCROLL:
-		{
-			const GXVec3* scroll = static_cast<const GXVec3*> ( data );
-
-			if ( IsAbleToScroll () )
-			{
-				GXFloat step = 1.0f / static_cast<GXFloat> ( totalItems );
-				GXFloat offset = GXClampf ( viewportOffset - scroll->GetZ () * step, 0.0f, 1.0f - viewportSize );
-
-				viewportOffset = offset;
-
-				GXVec2 pos ( scroll->GetX (), scroll->GetZ () );
-				OnMessage ( GX_MSG_MOUSE_MOVE, &pos );
-			}
-		}
-		break;
-
-		case GX_MSG_LMBDOWN:
-		{
-			GXUIListBoxItem* item = GetHighlightedItem ();
-			GXUIListBoxItem* selected = nullptr;
-
-			for ( selected = itemHead; selected; selected = selected->next )
-			{
-				if ( selected->isSelected )
-					break;
-			}
-
-			if ( selected != item )
-			{
-				if ( selected )
-					selected->isSelected = GX_FALSE;
-
-				if ( item )
-					item->isSelected = GX_TRUE;
-
-				if ( OnItemSelected )
-					OnItemSelected ( itemSelectedHandler, *this, item->data );
+				p->isHighlighted = GX_FALSE;
 
 				if ( renderer )
 					renderer->OnUpdate ();
+
+				break;
 			}
 		}
-		break;
 
-		case GX_MSG_DOUBLE_CLICK:
+		return;
+	}
+
+	if ( message == eGXUIMessage::Scroll )
+	{
+		const GXVec3* scroll = static_cast<const GXVec3*> ( data );
+
+		if ( !IsAbleToScroll () ) return;
+
+		GXFloat step = 1.0f / static_cast<GXFloat> ( totalItems );
+		GXFloat offset = GXClampf ( viewportOffset - scroll->GetZ () * step, 0.0f, 1.0f - viewportSize );
+
+		viewportOffset = offset;
+
+		GXVec2 pos ( scroll->GetX (), scroll->GetZ () );
+		OnMessage ( eGXUIMessage::MouseMove, &pos );
+
+		return;
+	}
+
+	if ( message == eGXUIMessage::LMBDown )
+	{
+		GXUIListBoxItem* item = GetHighlightedItem ();
+		GXUIListBoxItem* selected = nullptr;
+
+		for ( selected = itemHead; selected; selected = selected->next )
 		{
-			GXUIListBoxItem* item = GetHighlightedItem ();
-
-			if ( item )
-			{
-				if ( OnItemDoubleClicked )
-					OnItemDoubleClicked ( itemDoubleClickedHandler, *this, item->data );
-			}
+			if ( selected->isSelected )
+				break;
 		}
-		break;
 
-		case GX_MSG_LIST_BOX_ADD_ITEM:
+		if ( selected == item ) return;
+		
+		if ( selected )
+			selected->isSelected = GX_FALSE;
+
+		if ( item )
+			item->isSelected = GX_TRUE;
+
+		if ( OnItemSelected )
+			OnItemSelected ( itemSelectedHandler, *this, item->data );
+
+		if ( renderer )
+			renderer->OnUpdate ();
+		
+		return;
+	}
+
+	if ( message == eGXUIMessage::DoubleClick )
+	{
+		GXUIListBoxItem* item = GetHighlightedItem ();
+
+		if ( !item ) return;
+		if ( !OnItemDoubleClicked ) return;
+
+		OnItemDoubleClicked ( itemDoubleClickedHandler, *this, item->data );
+		return;
+	}
+
+	if ( message == eGXUIMessage::ListBoxAddItem )
+	{
+		GXVoid* pointer = const_cast<GXVoid*> ( data );
+		GXVoid** itemData = reinterpret_cast<GXVoid**> ( pointer );
+
+		GXUIListBoxItem* item = new GXUIListBoxItem ();
+		item->data = *itemData;
+		item->isSelected = item->isHighlighted = GX_FALSE;
+
+		item->next = nullptr;
+		item->prev = itemTail;
+
+		if ( itemTail )
+			itemTail->next = item;
+		else
+			itemHead = item;
+
+		itemTail = item;
+
+		totalItems++;
+		viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
+
+		if ( renderer )
+			renderer->OnUpdate ();
+
+		return;
+	}
+
+	if ( message == eGXUIMessage::ListBoxAddItems )
+	{
+		GXVoid* pointer = const_cast<GXVoid*> ( data );
+		GXUIListBoxRawItem** list = reinterpret_cast<GXUIListBoxRawItem**> ( pointer );
+
+		for ( GXUIListBoxRawItem* p = *list; p; p = p->next )
 		{
-			GXVoid* pointer = const_cast<GXVoid*> ( data );
-			GXVoid** itemData = reinterpret_cast<GXVoid**> ( pointer );
-
 			GXUIListBoxItem* item = new GXUIListBoxItem ();
-			item->data = *itemData;
+			item->data = p->data;
 			item->isSelected = item->isHighlighted = GX_FALSE;
 
 			item->next = nullptr;
@@ -162,147 +190,122 @@ GXVoid GXUIListBox::OnMessage ( GXUInt message, const GXVoid* data )
 			itemTail = item;
 
 			totalItems++;
-			viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
-
-			if ( renderer )
-				renderer->OnUpdate ();
 		}
-		break;
 
-		case GX_MSG_LIST_BOX_ADD_ITEMS:
-		{
-			GXVoid* pointer = const_cast<GXVoid*> ( data );
-			GXUIListBoxRawItem** list = reinterpret_cast<GXUIListBoxRawItem**> ( pointer );
+		viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
 
-			for ( GXUIListBoxRawItem* p = *list; p; p = p->next )
-			{
-				GXUIListBoxItem* item = new GXUIListBoxItem ();
-				item->data = p->data;
-				item->isSelected = item->isHighlighted = GX_FALSE;
+		if ( renderer )
+			renderer->OnUpdate ();
 
-				item->next = nullptr;
-				item->prev = itemTail;
-
-				if ( itemTail )
-					itemTail->next = item;
-				else
-					itemHead = item;
-
-				itemTail = item;
-
-				totalItems++;
-			}
-
-			viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
-
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		case GX_MSG_LIST_BOX_REMOVE_ALL_ITEMS:
-		{
-			while ( itemHead )
-			{
-				GXUIListBoxItem* p = itemHead;
-				itemHead = itemHead->next;
-				DestroyItem ( p->data );
-				delete p;
-			}
-
-			itemTail = nullptr;
-			totalItems = 0;
-
-			viewportOffset = 0.0f;
-			viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
-
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		case GX_MSG_LIST_BOX_REMOVE_ITEM:
-		{
-			const GXUInt* itemIndex = static_cast<const GXUInt*> ( data );
-
-			GXUIListBoxItem* p = itemHead;
-
-			for ( GXUInt i = 0; i < *itemIndex; i++ )
-				p = p->next;
-
-			if ( p->next )
-				p->next->prev = p->prev;
-			else
-				itemTail = p->prev;
-
-			if ( p->prev )
-				p->prev->next = p->next;
-			else
-				itemHead = p->next;
-
-			DestroyItem ( p->data );
-			totalItems--;
-
-			delete p;
-
-			viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
-
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		case GX_MSG_LIST_BOX_SET_VIEWPORT_OFFSET:
-		{
-			const GXFloat* offset = static_cast<const GXFloat*> ( data );
-			viewportOffset = *offset;
-
-			viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
-
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		case GX_MSG_LIST_BOX_SET_ITEM_HEIGHT:
-		{
-			const GXFloat* height = static_cast<const GXFloat*> ( data );
-			itemHeight = *height;
-
-			viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
-
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		case GX_MSG_RESIZE:
-		{
-			const GXAABB* newBoundsLocal = static_cast<const GXAABB*> ( data );
-			UpdateBoundsWorld ( *newBoundsLocal );
-			viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
-
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		case GX_MSG_REDRAW:
-		{
-			const GXVec2& position = GXTouchSurface::GetInstance ().GetMousePosition ();
-			OnMessage ( GX_MSG_MOUSE_MOVE, &position );
-		}
-		break;
-
-		default:
-			GXWidget::OnMessage ( message, data );
-		break;
+		return;
 	}
+
+	if ( message == eGXUIMessage::ListBoxRemoveAllItems )
+	{
+		while ( itemHead )
+		{
+			GXUIListBoxItem* p = itemHead;
+			itemHead = itemHead->next;
+			DestroyItem ( p->data );
+			delete p;
+		}
+
+		itemTail = nullptr;
+		totalItems = 0;
+
+		viewportOffset = 0.0f;
+		viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
+
+		if ( renderer )
+			renderer->OnUpdate ();
+
+		return;
+	}
+
+	if ( message == eGXUIMessage::ListBoxRemoveItem )
+	{
+		const GXUInt* itemIndex = static_cast<const GXUInt*> ( data );
+
+		GXUIListBoxItem* p = itemHead;
+
+		for ( GXUInt i = 0; i < *itemIndex; i++ )
+			p = p->next;
+
+		if ( p->next )
+			p->next->prev = p->prev;
+		else
+			itemTail = p->prev;
+
+		if ( p->prev )
+			p->prev->next = p->next;
+		else
+			itemHead = p->next;
+
+		DestroyItem ( p->data );
+		totalItems--;
+
+		delete p;
+
+		viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
+
+		if ( renderer )
+			renderer->OnUpdate ();
+
+		return;
+	}
+
+	if ( message == eGXUIMessage::ListBoxSetViewportOffset )
+	{
+		const GXFloat* offset = static_cast<const GXFloat*> ( data );
+		viewportOffset = *offset;
+
+		viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
+
+		if ( renderer )
+			renderer->OnUpdate ();
+
+		return;
+	}
+
+	if ( message == eGXUIMessage::ListBoxSetItemHeight )
+	{
+		const GXFloat* height = static_cast<const GXFloat*> ( data );
+		itemHeight = *height;
+
+		viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
+
+		if ( renderer )
+			renderer->OnUpdate ();
+
+		return;
+	}
+
+	if ( message == eGXUIMessage::Resize )
+	{
+		const GXAABB* newBoundsLocal = static_cast<const GXAABB*> ( data );
+		UpdateBoundsWorld ( *newBoundsLocal );
+		viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
+
+		if ( renderer )
+			renderer->OnUpdate ();
+
+		return;
+	}
+
+	if ( message == eGXUIMessage::Redraw )
+	{
+		const GXVec2& position = GXTouchSurface::GetInstance ().GetMousePosition ();
+		OnMessage ( eGXUIMessage::MouseMove, &position );
+
+		return;
+	}
+
+	GXWidget::OnMessage ( message, data );
 }
 
 GXVoid GXUIListBox::AddItem ( GXVoid* itemData )
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_LIST_BOX_ADD_ITEM, &itemData, sizeof ( GXVoid* ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::ListBoxAddItem, &itemData, sizeof ( GXVoid* ) );
 }
 
 GXVoid GXUIListBox::AddItems ( GXVoid** itemData, GXUInt items )
@@ -324,19 +327,19 @@ GXVoid GXUIListBox::AddItems ( GXVoid** itemData, GXUInt items )
 	p->data = itemData[ limit ];
 	p->next = nullptr;
 
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_LIST_BOX_ADD_ITEMS, &list, sizeof ( GXUIListBoxRawItem* ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::ListBoxAddItems, &list, sizeof ( GXUIListBoxRawItem* ) );
 }
 
 GXVoid GXUIListBox::RemoveItem ( GXUInt itemIndex )
 {
 	if ( itemIndex >= totalItems ) return;
 
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_LIST_BOX_REMOVE_ITEM, &itemIndex, sizeof ( GXUInt ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::ListBoxRemoveItem, &itemIndex, sizeof ( GXUInt ) );
 }
 
 GXVoid GXUIListBox::RemoveAllItems ()
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_LIST_BOX_REMOVE_ALL_ITEMS, nullptr, 0 );
+	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::ListBoxRemoveAllItems, nullptr, 0 );
 }
 
 GXVoid* GXUIListBox::GetSelectedItem () const
@@ -399,7 +402,7 @@ GXFloat GXUIListBox::GetItemLocalOffsetY ( GXUInt itemIndex ) const
 
 GXVoid GXUIListBox::Redraw ()
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_REDRAW, 0, 0 );
+	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::Redraw, 0, 0 );
 }
 
 GXVoid GXUIListBox::SetOnItemSelectedCallback ( GXVoid* handler, PFNGXUILISTBOXONITEMSELECTEDPROC callback )
@@ -421,7 +424,7 @@ GXFloat GXUIListBox::GetViewportSize () const
 
 GXVoid GXUIListBox::SetViewportOffset ( GXFloat offset )
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_LIST_BOX_SET_VIEWPORT_OFFSET, &offset, sizeof ( GXFloat ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::ListBoxSetViewportOffset, &offset, sizeof ( GXFloat ) );
 }
 
 GXVoid GXUIListBox::SetViewportOffsetImmediately ( GXFloat offset )
@@ -436,7 +439,7 @@ GXVoid GXUIListBox::SetViewportOffsetImmediately ( GXFloat offset )
 
 GXVoid GXUIListBox::SetItemHeight ( GXFloat height )
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_LIST_BOX_SET_ITEM_HEIGHT, &height, sizeof ( GXFloat ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::ListBoxSetItemHeight, &height, sizeof ( GXFloat ) );
 }
 
 GXFloat GXUIListBox::GetItemHeight () const
@@ -469,8 +472,9 @@ GXUIListBoxItem* GXUIListBox::GetHighlightedItem () const
 {
 	for ( GXUIListBoxItem* p = itemHead; p; p = p->next )
 	{
-		if ( p->isHighlighted )
-			return p;
+		if ( !p->isHighlighted ) continue;
+
+		return p;
 	}
 
 	return nullptr;

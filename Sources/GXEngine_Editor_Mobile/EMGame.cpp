@@ -57,7 +57,8 @@ EMGame::EMGame ():
 	environmentMap ( nullptr ),
 	lightProbeSourceTexture ( nullptr ),
 	lightProbe ( nullptr ),
-	uiInput ( nullptr )
+	uiInput ( nullptr ),
+	physicsInfoFont ( nullptr )
 {
 	// NOTHING
 }
@@ -135,7 +136,7 @@ GXVoid EMGame::OnInit ()
 	GXFloat physicsInfoWidth = 10.0f * gx_ui_Scale;
 	GXFloat physicsInfoHeight = 5.0f * gx_ui_Scale;
 	physicsInfo = new GXHudSurface ( static_cast<GXUShort> ( physicsInfoWidth ), static_cast<GXUShort> ( physicsInfoHeight ) );
-	physicsInfoFont = GXFont::GetFont ( L"Fonts/trebuc.ttf", static_cast<GXUShort> ( 0.4f * gx_ui_Scale ) );
+	physicsInfoFont = new GXFont ( L"Fonts/trebuc.ttf", static_cast<GXUShort> ( 0.4f * gx_ui_Scale ) );
 	physicsInfo->SetLocation ( 0.5f * ( physicsInfoWidth - w ), 0.5f * ( physicsInfoHeight - h ), 7.0f );
 
 	physicsInfoBackgroundTexture = GXTexture2D::LoadTexture ( L"Textures/System/Default_Diffuse.tga", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
@@ -422,14 +423,14 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 	GXPenInfo pi;
 	pi.color.From ( 115u, 185u, 0u, 255u );
-	pi.font = &physicsInfoFont;
+	pi.font = physicsInfoFont;
 	pi.insertX = 0.5f * gx_ui_Scale;
 	pi.insertY = 0.5f * gx_ui_Scale;
 	pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
 	physicsInfo->AddText ( pi, 64, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Contacts: %i" ), collisionData.GetTotalContacts () );
 
-	GXFloat offset = static_cast<GXFloat> ( physicsInfoFont.GetSize () );
+	GXFloat offset = static_cast<GXFloat> ( physicsInfoFont->GetSize () );
 	pi.insertY += offset;
 	physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Allocated support points: %i" ), collisionDetector.GetAllocatedSupportPoints () );
 
@@ -536,7 +537,7 @@ GXVoid EMGame::OnDestroy ()
 	GXSafeDelete ( physicsContactPointMaterial );
 	GXSafeDelete ( physicsContactPointMesh );
 	GXTexture2D::RemoveTexture ( physicsInfoBackgroundTexture );
-	GXFont::RemoveFont ( physicsInfoFont );
+	delete physicsInfoFont;
 	GXSafeDelete ( physicsInfo );
 
 	GXSafeDelete ( effectsPopup );

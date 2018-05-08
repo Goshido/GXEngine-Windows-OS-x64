@@ -15,8 +15,8 @@
 class EMUIStaticTextRenderer : public GXWidgetRenderer
 {
 	private:
-		GXHudSurface*		surface;
 		GXFont				font;
+		GXHudSurface*		surface;
 
 	public:
 		explicit EMUIStaticTextRenderer ( GXUIStaticText* staticTextWidget );
@@ -36,17 +36,16 @@ class EMUIStaticTextRenderer : public GXWidgetRenderer
 };
 
 EMUIStaticTextRenderer::EMUIStaticTextRenderer ( GXUIStaticText* staticTextWidget ):
-	GXWidgetRenderer ( staticTextWidget )
+	GXWidgetRenderer ( staticTextWidget ),
+	font ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
 	surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
-	font = GXFont::GetFont ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) );
 }
 
 EMUIStaticTextRenderer::~EMUIStaticTextRenderer ()
 {
 	delete surface;
-	GXFont::RemoveFont ( font );
 }
 
 GXVoid EMUIStaticTextRenderer::OnRefresh ()

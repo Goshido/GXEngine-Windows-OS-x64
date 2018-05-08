@@ -39,12 +39,12 @@ EMGaussVerticalBlurMaterial::EMGaussVerticalBlurMaterial ( eEMGaussVerticalBlurK
 		break;
 	}
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 }
 
 EMGaussVerticalBlurMaterial::~EMGaussVerticalBlurMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMGaussVerticalBlurMaterial::Bind ( const GXTransform& /*transform*/ )

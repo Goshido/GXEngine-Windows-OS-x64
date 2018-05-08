@@ -111,9 +111,9 @@ class EMUIFileListBoxRenderer : public GXWidgetRenderer
 };
 
 EMUIFileListBoxRenderer::EMUIFileListBoxRenderer ( GXUIListBox* widget ) :
-	GXWidgetRenderer ( widget )
+	GXWidgetRenderer ( widget ),
+	font ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) )
 {
-	font = GXFont::GetFont ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) );
 
 	rectangle = GXTexture2D::LoadTexture ( RECTANGLE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 	fileIcon = GXTexture2D::LoadTexture ( FILE_ICON, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
@@ -126,8 +126,6 @@ EMUIFileListBoxRenderer::EMUIFileListBoxRenderer ( GXUIListBox* widget ) :
 EMUIFileListBoxRenderer::~EMUIFileListBoxRenderer ()
 {
 	delete surface;
-	GXFont::RemoveFont ( font );
-
 	GXTexture2D::RemoveTexture ( rectangle );
 	GXTexture2D::RemoveTexture ( folderIcon );
 	GXTexture2D::RemoveTexture ( fileIcon );

@@ -23,7 +23,7 @@ EMBRDFIntegratorMaterial::EMBRDFIntegratorMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	samplesLocation = shaderProgram.GetUniform ( "samples" );
 	inverseSamplesLocation = shaderProgram.GetUniform ( "inverseSamples" );
@@ -31,7 +31,7 @@ EMBRDFIntegratorMaterial::EMBRDFIntegratorMaterial ():
 
 EMBRDFIntegratorMaterial::~EMBRDFIntegratorMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMBRDFIntegratorMaterial::Bind ( const GXTransform& /*transform*/ )

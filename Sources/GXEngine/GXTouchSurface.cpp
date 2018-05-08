@@ -1,7 +1,6 @@
-// version 1.5
+// version 1.6
 
 #include <GXEngine/GXTouchSurface.h>
-#include <GXEngine/GXUIMessage.h>
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXMutex.h>
 #include <GXCommon/GXLogger.h>
@@ -20,7 +19,7 @@ struct GXMessage
 {
 	GXMessage*		next;
 	GXWidget*		widget;
-	GXUInt			message;
+	eGXUIMessage	message;
 	GXVoid*			data;
 	GXUInt			size;
 };
@@ -51,8 +50,8 @@ GXVoid GXTouchSurface::OnLeftMouseButtonDown ( const GXVec2 &position )
 
 	if ( lockedWidget )
 	{
-		SendMessage ( lockedWidget, GX_MSG_LMBDOWN, &position, sizeof ( GXVec2 ) );
-		SendMessage ( lockedWidget, GX_MSG_FOREGROUND, nullptr, 0u );
+		SendMessage ( lockedWidget, eGXUIMessage::LMBDown, &position, sizeof ( GXVec2 ) );
+		SendMessage ( lockedWidget, eGXUIMessage::Foreground, nullptr, 0u );
 		return;
 	}
 
@@ -60,8 +59,8 @@ GXVoid GXTouchSurface::OnLeftMouseButtonDown ( const GXVec2 &position )
 
 	if ( !target ) return;
 
-	SendMessage ( target, GX_MSG_LMBDOWN, &position, sizeof ( GXVec2 ) );
-	SendMessage ( target, GX_MSG_FOREGROUND, nullptr, 0u );
+	SendMessage ( target, eGXUIMessage::LMBDown, &position, sizeof ( GXVec2 ) );
+	SendMessage ( target, eGXUIMessage::Foreground, nullptr, 0u );
 }
 
 GXVoid GXTouchSurface::OnLeftMouseButtonUp ( const GXVec2 &position )
@@ -70,7 +69,7 @@ GXVoid GXTouchSurface::OnLeftMouseButtonUp ( const GXVec2 &position )
 
 	if ( lockedWidget )
 	{
-		SendMessage ( lockedWidget, GX_MSG_LMBUP, &position, sizeof ( GXVec2 ) );
+		SendMessage ( lockedWidget, eGXUIMessage::LMBUp, &position, sizeof ( GXVec2 ) );
 		return;
 	}
 
@@ -78,7 +77,7 @@ GXVoid GXTouchSurface::OnLeftMouseButtonUp ( const GXVec2 &position )
 
 	if ( !target ) return;
 
-	SendMessage ( target, GX_MSG_LMBUP, &position, sizeof ( GXVec2 ) );
+	SendMessage ( target, eGXUIMessage::LMBUp, &position, sizeof ( GXVec2 ) );
 }
 
 GXVoid GXTouchSurface::OnMiddleMouseButtonDown ( const GXVec2 &position )
@@ -87,7 +86,7 @@ GXVoid GXTouchSurface::OnMiddleMouseButtonDown ( const GXVec2 &position )
 
 	if ( lockedWidget )
 	{
-		SendMessage ( lockedWidget, GX_MSG_MMBDOWN, &position, sizeof ( GXVec2 ) );
+		SendMessage ( lockedWidget, eGXUIMessage::MMBDown, &position, sizeof ( GXVec2 ) );
 		return;
 	}
 
@@ -95,7 +94,7 @@ GXVoid GXTouchSurface::OnMiddleMouseButtonDown ( const GXVec2 &position )
 
 	if ( !target ) return;
 
-	SendMessage ( target, GX_MSG_MMBDOWN, &position, sizeof ( GXVec2 ) );
+	SendMessage ( target, eGXUIMessage::MMBDown, &position, sizeof ( GXVec2 ) );
 }
 
 GXVoid GXTouchSurface::OnMiddleMouseButtonUp ( const GXVec2 &position )
@@ -104,7 +103,7 @@ GXVoid GXTouchSurface::OnMiddleMouseButtonUp ( const GXVec2 &position )
 
 	if ( lockedWidget )
 	{
-		SendMessage ( lockedWidget, GX_MSG_MMBUP, &position, sizeof ( GXVec2 ) );
+		SendMessage ( lockedWidget, eGXUIMessage::MMBUp, &position, sizeof ( GXVec2 ) );
 		return;
 	}
 
@@ -112,7 +111,7 @@ GXVoid GXTouchSurface::OnMiddleMouseButtonUp ( const GXVec2 &position )
 
 	if ( !target ) return;
 
-	SendMessage ( target, GX_MSG_MMBUP, &position, sizeof ( GXVec2 ) );
+	SendMessage ( target, eGXUIMessage::MMBUp, &position, sizeof ( GXVec2 ) );
 }
 
 GXVoid GXTouchSurface::OnRightMouseButtonDown ( const GXVec2 &position )
@@ -121,7 +120,7 @@ GXVoid GXTouchSurface::OnRightMouseButtonDown ( const GXVec2 &position )
 
 	if ( lockedWidget )
 	{
-		SendMessage ( lockedWidget, GX_MSG_RMBDOWN, &position, sizeof ( GXVec2 ) );
+		SendMessage ( lockedWidget, eGXUIMessage::RMBDown, &position, sizeof ( GXVec2 ) );
 		return;
 	}
 
@@ -129,7 +128,7 @@ GXVoid GXTouchSurface::OnRightMouseButtonDown ( const GXVec2 &position )
 
 	if ( !target ) return;
 
-	SendMessage ( target, GX_MSG_RMBDOWN, &position, sizeof ( GXVec2 ) );
+	SendMessage ( target, eGXUIMessage::RMBDown, &position, sizeof ( GXVec2 ) );
 }
 
 GXVoid GXTouchSurface::OnRightMouseButtonUp ( const GXVec2 &position )
@@ -138,7 +137,7 @@ GXVoid GXTouchSurface::OnRightMouseButtonUp ( const GXVec2 &position )
 
 	if ( lockedWidget )
 	{
-		SendMessage ( lockedWidget, GX_MSG_RMBUP, &position, sizeof ( GXVec2 ) );
+		SendMessage ( lockedWidget, eGXUIMessage::RMBUp, &position, sizeof ( GXVec2 ) );
 		return;
 	}
 	
@@ -146,7 +145,7 @@ GXVoid GXTouchSurface::OnRightMouseButtonUp ( const GXVec2 &position )
 
 	if ( !target ) return;
 
-	SendMessage ( target, GX_MSG_RMBUP, &position, sizeof ( GXVec2 ) );
+	SendMessage ( target, eGXUIMessage::RMBUp, &position, sizeof ( GXVec2 ) );
 }
 
 GXVoid GXTouchSurface::OnDoubleClick ( const GXVec2 &position )
@@ -155,8 +154,8 @@ GXVoid GXTouchSurface::OnDoubleClick ( const GXVec2 &position )
 
 	if ( lockedWidget )
 	{
-		SendMessage ( lockedWidget, GX_MSG_DOUBLE_CLICK, &position, sizeof ( GXVec2 ) );
-		SendMessage ( lockedWidget, GX_MSG_FOREGROUND, nullptr, 0u );
+		SendMessage ( lockedWidget, eGXUIMessage::DoubleClick, &position, sizeof ( GXVec2 ) );
+		SendMessage ( lockedWidget, eGXUIMessage::Foreground, nullptr, 0u );
 		return;
 	}
 	
@@ -164,8 +163,8 @@ GXVoid GXTouchSurface::OnDoubleClick ( const GXVec2 &position )
 
 	if ( !target ) return;
 
-	SendMessage ( target, GX_MSG_DOUBLE_CLICK, &position, sizeof ( GXVec2 ) );
-	SendMessage ( target, GX_MSG_FOREGROUND, nullptr, 0u );
+	SendMessage ( target, eGXUIMessage::DoubleClick, &position, sizeof ( GXVec2 ) );
+	SendMessage ( target, eGXUIMessage::Foreground, nullptr, 0u );
 }
 
 GXVoid GXTouchSurface::OnScroll ( const GXVec2 &position, GXFloat scroll )
@@ -175,7 +174,7 @@ GXVoid GXTouchSurface::OnScroll ( const GXVec2 &position, GXFloat scroll )
 	if ( lockedWidget )
 	{
 		GXVec3 data ( position.GetX (), position.GetY (), scroll );
-		SendMessage ( lockedWidget, GX_MSG_SCROLL, &data, sizeof ( GXVec3 ) );
+		SendMessage ( lockedWidget, eGXUIMessage::Scroll, &data, sizeof ( GXVec3 ) );
 		return;
 	}
 	
@@ -184,7 +183,7 @@ GXVoid GXTouchSurface::OnScroll ( const GXVec2 &position, GXFloat scroll )
 	if ( !target ) return;
 
 	GXVec3 data ( position.GetX (), position.GetY (), scroll );
-	SendMessage ( target, GX_MSG_SCROLL, &data, sizeof ( GXVec3 ) );
+	SendMessage ( target, eGXUIMessage::Scroll, &data, sizeof ( GXVec3 ) );
 }
 
 GXVoid GXTouchSurface::OnMouseMove ( const GXVec2 &position )
@@ -193,7 +192,7 @@ GXVoid GXTouchSurface::OnMouseMove ( const GXVec2 &position )
 
 	if ( lockedWidget )
 	{
-		SendMessage ( lockedWidget, GX_MSG_MOUSE_MOVE, &position, sizeof ( GXVec2 ) );
+		SendMessage ( lockedWidget, eGXUIMessage::MouseMove, &position, sizeof ( GXVec2 ) );
 		return;
 	}
 
@@ -202,24 +201,24 @@ GXVoid GXTouchSurface::OnMouseMove ( const GXVec2 &position )
 	if ( target != mouseOverWidget )
 	{
 		if ( mouseOverWidget )
-			SendMessage ( mouseOverWidget, GX_MSG_MOUSE_LEAVE, &position, sizeof ( GXVec2 ) );
+			SendMessage ( mouseOverWidget, eGXUIMessage::MouseLeave, &position, sizeof ( GXVec2 ) );
 
 		mouseOverWidget = target;
 
 		if ( target )
-			SendMessage ( target, GX_MSG_MOUSE_OVER, &position, sizeof ( GXVec2 ) );
+			SendMessage ( target, eGXUIMessage::MouseOver, &position, sizeof ( GXVec2 ) );
 	}
 
 	if ( !target ) return;
 
-	SendMessage ( target, GX_MSG_MOUSE_MOVE, &position, sizeof ( GXVec2 ) );
+	SendMessage ( target, eGXUIMessage::MouseMove, &position, sizeof ( GXVec2 ) );
 }
 
 GXVoid GXTouchSurface::OnKeyDown ( GXInt keyCode )
 {
 	if ( lockedWidget )
 	{
-		SendMessage ( lockedWidget, GX_MSG_KEY_DOWN, &keyCode, sizeof ( GXInt ) );
+		SendMessage ( lockedWidget, eGXUIMessage::KeyDown, &keyCode, sizeof ( GXInt ) );
 		return;
 	}
 
@@ -228,22 +227,22 @@ GXVoid GXTouchSurface::OnKeyDown ( GXInt keyCode )
 	if ( target != mouseOverWidget )
 	{
 		if ( mouseOverWidget )
-			SendMessage ( mouseOverWidget, GX_MSG_MOUSE_LEAVE, &mousePosition, sizeof ( GXVec2 ) );
+			SendMessage ( mouseOverWidget, eGXUIMessage::MouseLeave, &mousePosition, sizeof ( GXVec2 ) );
 
 		mouseOverWidget = target;
 
 		if ( target )
-			SendMessage ( target, GX_MSG_MOUSE_OVER, &mousePosition, sizeof ( GXVec2 ) );
+			SendMessage ( target, eGXUIMessage::MouseOver, &mousePosition, sizeof ( GXVec2 ) );
 	}
 
-	SendMessage ( target, GX_MSG_KEY_DOWN, &keyCode, sizeof ( GXInt ) );
+	SendMessage ( target, eGXUIMessage::KeyDown, &keyCode, sizeof ( GXInt ) );
 }
 
 GXVoid GXTouchSurface::OnKeyUp ( GXInt keyCode )
 {
 	if ( lockedWidget )
 	{
-		SendMessage ( lockedWidget, GX_MSG_KEY_UP, &keyCode, sizeof ( GXInt ) );
+		SendMessage ( lockedWidget, eGXUIMessage::KeyUp, &keyCode, sizeof ( GXInt ) );
 		return;
 	}
 
@@ -252,18 +251,18 @@ GXVoid GXTouchSurface::OnKeyUp ( GXInt keyCode )
 	if ( target != mouseOverWidget )
 	{
 		if ( mouseOverWidget )
-			SendMessage ( mouseOverWidget, GX_MSG_MOUSE_LEAVE, &mousePosition, sizeof ( GXVec2 ) );
+			SendMessage ( mouseOverWidget, eGXUIMessage::MouseLeave, &mousePosition, sizeof ( GXVec2 ) );
 
 		mouseOverWidget = target;
 
 		if ( target )
-			SendMessage ( target, GX_MSG_MOUSE_OVER, &mousePosition, sizeof ( GXVec2 ) );
+			SendMessage ( target, eGXUIMessage::MouseOver, &mousePosition, sizeof ( GXVec2 ) );
 	}
 
-	SendMessage ( target, GX_MSG_KEY_UP, &keyCode, sizeof ( GXInt ) );
+	SendMessage ( target, eGXUIMessage::KeyUp, &keyCode, sizeof ( GXInt ) );
 }
 
-GXVoid GXTouchSurface::SendMessage ( GXWidget* widget, GXUInt message, const GXVoid* data, GXUInt size )
+GXVoid GXTouchSurface::SendMessage ( GXWidget* widget, eGXUIMessage message, const GXVoid* data, GXUInt size )
 {
 	GXMessage* msg = static_cast<GXMessage*> ( gx_ui_MessageBuffer->Allocate ( sizeof ( GXMessage ) ) );
 	msg->next = nullptr;

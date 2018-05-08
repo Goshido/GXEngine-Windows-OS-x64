@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_UI_INPUT
 #define GX_UI_INPUT
@@ -42,7 +42,7 @@ class GXUIInput : public GXWidget
 		explicit GXUIInput ( GXWidget* parent, GXBool isNeedRegister );
 		~GXUIInput () override;
 
-		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
+		GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
 
 		GXVoid SetOnLeftMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
 		GXVoid SetOnLeftMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );

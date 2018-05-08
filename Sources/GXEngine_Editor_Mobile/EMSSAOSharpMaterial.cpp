@@ -42,7 +42,7 @@ EMSSAOSharpMaterial::EMSSAOSharpMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	kernelLocation = shaderProgram.GetUniform ( "kernel" );
 	checkRadiusLocation = shaderProgram.GetUniform ( "checkRadius" );
@@ -59,7 +59,6 @@ EMSSAOSharpMaterial::EMSSAOSharpMaterial ():
 
 EMSSAOSharpMaterial::~EMSSAOSharpMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
 	noiseTexture.FreeResources ();
 }
 

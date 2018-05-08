@@ -1,8 +1,7 @@
-// version 1.4
+// version 1.6
 
 #include <GXEngine/GXWidget.h>
 #include <GXEngine/GXRenderer.h>
-#include <GXEngine/GXUIMessage.h>
 #include <GXEngine/GXUICommon.h>
 #include <GXCommon/GXLogger.h>
 
@@ -53,169 +52,166 @@ GXWidget::~GXWidget ()
 	gx_ui_Mutex->Release ();
 }
 
-GXVoid GXWidget::OnMessage ( GXUInt message, const GXVoid* data )
+GXVoid GXWidget::OnMessage ( eGXUIMessage message, const GXVoid* data )
 {
-	switch ( message )
+	if ( message == eGXUIMessage::LMBDown )
 	{
-		case GX_MSG_LMBDOWN:
-		{
-			const GXVec2* pos = static_cast<const GXVec2*> ( data );
-			GXWidget* dest = FindWidget ( *pos );
+		const GXVec2* pos = static_cast<const GXVec2*> ( data );
+		GXWidget* dest = FindWidget ( *pos );
 
-			if ( dest == this ) break;
+		if ( dest == this ) return;
 			
-			dest->OnMessage ( GX_MSG_LMBDOWN, data );
-		}
-		break;
+		dest->OnMessage ( eGXUIMessage::LMBDown, data );
+		return;
+	}
 
-		case GX_MSG_LMBUP:
+	if ( message == eGXUIMessage::LMBUp )
+	{
+		const GXVec2* pos = static_cast<const GXVec2*> ( data );
+		GXWidget* dest = FindWidget ( *pos );
+
+		if ( dest == this ) return;
+
+		dest->OnMessage ( eGXUIMessage::LMBUp, data );
+		return;
+	}
+
+	if ( message == eGXUIMessage::MMBDown )
+	{
+		const GXVec2* pos = static_cast<const GXVec2*> ( data );
+		GXWidget* dest = FindWidget ( *pos );
+
+		if ( dest == this ) return;
+
+		dest->OnMessage ( eGXUIMessage::MMBDown, data );
+		return;
+	}
+
+	if ( message == eGXUIMessage::MMBUp )
+	{
+		const GXVec2* pos = static_cast<const GXVec2*> ( data );
+		GXWidget* dest = FindWidget ( *pos );
+
+		if ( dest == this ) return;
+
+		dest->OnMessage ( eGXUIMessage::MMBUp, data );
+		return;
+	}
+
+	if ( message == eGXUIMessage::RMBDown )
+	{
+		const GXVec2* pos = static_cast<const GXVec2*> ( data );
+		GXWidget* dest = FindWidget ( *pos );
+
+		if ( dest == this ) return;
+
+		dest->OnMessage ( eGXUIMessage::RMBDown, data );
+		return;
+	}
+
+	if ( message == eGXUIMessage::RMBUp )
+	{
+		const GXVec2* pos = static_cast<const GXVec2*> ( data );
+		GXWidget* dest = FindWidget ( *pos );
+
+		if ( dest == this ) return;
+
+		dest->OnMessage ( eGXUIMessage::RMBUp, data );
+		return;
+	}
+
+	if ( message == eGXUIMessage::Scroll )
+	{
+		const GXVec3* scrollData = static_cast<const GXVec3*> ( data );
+		GXVec2 mousePosition ( scrollData->GetX (), scrollData->GetY () );
+		GXWidget* dest = FindWidget ( mousePosition );
+
+		if ( dest == this ) return;
+
+		dest->OnMessage ( eGXUIMessage::Scroll, data );
+		return;
+	}
+
+	if ( message == eGXUIMessage::MouseMove )
+	{
+		const GXVec2* pos = static_cast<const GXVec2*> ( data );
+		GXWidget* dest = FindWidget ( *pos );
+
+		if ( dest == this ) return;
+
+		dest->OnMessage ( eGXUIMessage::MouseMove, data );
+		return;
+	}
+
+	if ( message == eGXUIMessage::MouseOver )
+	{
+		const GXVec2* pos = static_cast<const GXVec2*> ( data );
+		GXWidget* dest = FindWidget ( *pos );
+
+		if ( dest == this ) return;
+
+		dest->OnMessage ( eGXUIMessage::MouseOver, data );
+		return;
+	}
+
+	if ( message == eGXUIMessage::MouseLeave )
+	{
+		const GXVec2* pos = static_cast<const GXVec2*> ( data );
+		GXWidget* dest = FindWidget ( *pos );
+
+		if ( dest == this ) return;
+
+		dest->OnMessage ( eGXUIMessage::MouseLeave, data );
+		return;
+	}
+
+	if ( message == eGXUIMessage::Resize )
+	{
+		const GXAABB* newBoundsLocal = static_cast<const GXAABB*> ( data );
+		UpdateBoundsWorld ( *newBoundsLocal );
+
+		if ( renderer )
+			renderer->OnUpdate ();
+
+		return;
+	}
+
+	if ( message == eGXUIMessage::Show )
+	{
+		isVisible = GX_TRUE;
+		return;
+	}
+
+	if ( message == eGXUIMessage::Hide )
+	{
+		isVisible = GX_FALSE;
+		return;
+	}
+
+	if ( message == eGXUIMessage::Foreground )
+	{
+		if ( !parent )
 		{
-			const GXVec2* pos = static_cast<const GXVec2*> ( data );
-			GXWidget* dest = FindWidget ( *pos );
-
-			if ( dest == this ) break;
-
-			dest->OnMessage ( GX_MSG_LMBUP, data );
+			GXTouchSurface::GetInstance ().MoveWidgetToForeground ( this );
+			return;
 		}
-		break;
 
-		case GX_MSG_MMBDOWN:
-		{
-			const GXVec2* pos = static_cast<const GXVec2*> ( data );
-			GXWidget* dest = FindWidget ( *pos );
+		GXWidgetIterator iterator;
+		GXWidget* p = iterator.Init ( this );
 
-			if ( dest == this ) break;
+		while ( p->parent )
+			p = iterator.GetParent ();
 
-			dest->OnMessage ( GX_MSG_MMBDOWN, data );
-		}
-		break;
+		p->OnMessage ( eGXUIMessage::Foreground, data );
+		return;
+	}
 
-		case GX_MSG_MMBUP:
-		{
-			const GXVec2* pos = static_cast<const GXVec2*> ( data );
-			GXWidget* dest = FindWidget ( *pos );
+	if ( message == eGXUIMessage::Redraw )
+	{
+		if ( renderer )
+			renderer->OnUpdate ();
 
-			if ( dest == this ) break;
-
-			dest->OnMessage ( GX_MSG_MMBUP, data );
-		}
-		break;
-
-		case GX_MSG_RMBDOWN:
-		{
-			const GXVec2* pos = static_cast<const GXVec2*> ( data );
-			GXWidget* dest = FindWidget ( *pos );
-
-			if ( dest == this ) break;
-
-			dest->OnMessage ( GX_MSG_RMBDOWN, data );
-		}
-		break;
-
-		case GX_MSG_RMBUP:
-		{
-			const GXVec2* pos = static_cast<const GXVec2*> ( data );
-			GXWidget* dest = FindWidget ( *pos );
-
-			if ( dest == this ) break;
-
-			dest->OnMessage ( GX_MSG_RMBUP, data );
-		}
-		break;
-
-		case GX_MSG_SCROLL:
-		{
-			const GXVec3* scrollData = static_cast<const GXVec3*> ( data );
-			GXVec2 mousePosition ( scrollData->GetX (), scrollData->GetY () );
-			GXWidget* dest = FindWidget ( mousePosition );
-
-			if ( dest == this ) break;
-
-			dest->OnMessage ( GX_MSG_SCROLL, data );
-		}
-		break;
-
-		case GX_MSG_MOUSE_MOVE:
-		{
-			const GXVec2* pos = static_cast<const GXVec2*> ( data );
-			GXWidget* dest = FindWidget ( *pos );
-
-			if ( dest == this ) break;
-
-			dest->OnMessage ( GX_MSG_MOUSE_MOVE, data );
-		}
-		break;
-
-		case GX_MSG_MOUSE_OVER:
-		{
-			const GXVec2* pos = static_cast<const GXVec2*> ( data );
-			GXWidget* dest = FindWidget ( *pos );
-
-			if ( dest == this ) break;
-
-			dest->OnMessage ( GX_MSG_MOUSE_OVER, data );
-		}
-		break;
-
-		case GX_MSG_MOUSE_LEAVE:
-		{
-			const GXVec2* pos = static_cast<const GXVec2*> ( data );
-			GXWidget* dest = FindWidget ( *pos );
-
-			if ( dest == this ) break;
-
-			dest->OnMessage ( GX_MSG_MOUSE_LEAVE, data );
-		}
-		break;
-
-		case GX_MSG_RESIZE:
-		{
-			const GXAABB* newBoundsLocal = static_cast<const GXAABB*> ( data );
-			UpdateBoundsWorld ( *newBoundsLocal );
-
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		case GX_MSG_SHOW:
-			isVisible = GX_TRUE;
-		break;
-
-		case GX_MSG_HIDE:
-			isVisible = GX_FALSE;
-		break;
-
-		case GX_MSG_FOREGROUND:
-		{
-			if ( parent )
-			{
-				GXWidgetIterator iterator;
-				GXWidget* p = iterator.Init ( this );
-
-				while ( p->parent )
-					p = iterator.GetParent ();
-
-				p->OnMessage ( GX_MSG_FOREGROUND, data );
-				
-			}
-			else
-			{
-				GXTouchSurface::GetInstance ().MoveWidgetToForeground ( this );
-			}
-		}
-		break;
-
-		case GX_MSG_REDRAW:
-		{
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		default:
-			// NOTHING
-		break;
+		return;
 	}
 }
 
@@ -225,7 +221,7 @@ GXVoid GXWidget::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat widt
 	newBounds.AddVertex ( bottomLeftX, bottomLeftY, -1.0f );
 	newBounds.AddVertex ( bottomLeftX + width, bottomLeftY + height, 1.0f );
 
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_RESIZE, &newBounds, sizeof ( GXAABB ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::Resize, &newBounds, sizeof ( GXAABB ) );
 }
 
 const GXAABB& GXWidget::GetBoundsWorld () const
@@ -240,22 +236,22 @@ const GXAABB& GXWidget::GetBoundsLocal () const
 
 GXVoid GXWidget::Show ()
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_SHOW, nullptr, 0 );
+	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::Show, nullptr, 0 );
 }
 
 GXVoid GXWidget::Refresh ()
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_REDRAW, nullptr, 0 );
+	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::Redraw, nullptr, 0 );
 }
 
 GXVoid GXWidget::Hide ()
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_HIDE, nullptr, 0 );
+	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::Hide, nullptr, 0 );
 }
 
 GXVoid GXWidget::ToForeground ()
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_FOREGROUND, nullptr, 0 );
+	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::Foreground, nullptr, 0 );
 }
 
 GXBool GXWidget::IsVisible () const

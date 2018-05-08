@@ -1,10 +1,11 @@
-// version 1.4
+// version 1.6
 
 #ifndef GX_WIDGET
 #define GX_WIDGET
 
 
 #include <GXCommon/GXMath.h>
+#include <GXEngine/GXUIMessage.h>
 
 
 class GXWidgetRenderer;
@@ -34,7 +35,7 @@ class GXWidget
 		explicit GXWidget ( GXWidget* parent, GXBool isNeedRegister = GX_TRUE );
 		virtual ~GXWidget ();
 
-		virtual GXVoid OnMessage ( GXUInt message, const GXVoid* data );
+		virtual GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data );
 
 		GXVoid Resize ( GXFloat x, GXFloat y, GXFloat width, GXFloat height );
 		const GXAABB& GetBoundsWorld () const;

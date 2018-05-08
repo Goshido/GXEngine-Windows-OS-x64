@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.4
 
 #ifndef GX_UI_EDIT_BOX
 #define GX_UI_EDIT_BOX
@@ -24,7 +24,7 @@ class GXUIEditBox : public GXWidget
 		GXFloat								textLeftOffset;
 		GXFloat								textRightOffset;
 
-		GXFont								font;
+		GXFont*								font;
 		GXInt								cursor;			// index before symbol
 		GXInt								selection;		// index before symbol
 		eGXUITextAlignment					alignment;
@@ -43,7 +43,7 @@ class GXUIEditBox : public GXWidget
 		explicit GXUIEditBox ( GXWidget* parent );
 		~GXUIEditBox () override;
 
-		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
+		GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
 
 		GXFloat GetCursorOffset () const;
 		GXFloat GetSelectionBeginOffset () const;

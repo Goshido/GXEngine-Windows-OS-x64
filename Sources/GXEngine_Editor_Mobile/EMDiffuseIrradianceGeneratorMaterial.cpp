@@ -33,7 +33,7 @@ EMDiffuseIrradianceGeneratorMaterial::EMDiffuseIrradianceGeneratorMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	viewProjectionMatricesLocation = shaderProgram.GetUniform ( "viewProjectionMatrices" );
 	angleStepLocation = shaderProgram.GetUniform ( "angleStep" );
@@ -60,7 +60,7 @@ EMDiffuseIrradianceGeneratorMaterial::EMDiffuseIrradianceGeneratorMaterial ():
 
 EMDiffuseIrradianceGeneratorMaterial::~EMDiffuseIrradianceGeneratorMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMDiffuseIrradianceGeneratorMaterial::Bind ( const GXTransform& /*transform*/ )

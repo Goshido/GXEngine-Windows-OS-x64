@@ -84,9 +84,6 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXCommon\GXTime.cpp">
-      <Filter>Source Files\GXCommon</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXSoundProvider.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
@@ -506,6 +503,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXPhysics\GXContactGenerator.cpp">
       <Filter>Source Files\GXPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXTime.cpp">
+      <Filter>Source Files\GXCommon\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

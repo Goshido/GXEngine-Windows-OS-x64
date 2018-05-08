@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_UI_MENU_EXT
 #define GX_UI_MENU_EXT
@@ -21,7 +21,7 @@ class GXUIMenu : public GXWidget
 		explicit GXUIMenu ( GXWidget* parent );
 		~GXUIMenu () override;
 
-		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
+		GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
 
 		GXVoid AddItem ( const GXWChar* name, GXFloat itemWidth, GXUIPopup* popup );
 

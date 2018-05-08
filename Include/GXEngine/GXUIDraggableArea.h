@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_UI_DRAGGABLE_AREA
 #define GX_UI_DRAGGABLE_AREA
@@ -63,7 +63,7 @@ class GXUIDragableArea : public GXWidget
 		explicit GXUIDragableArea ( GXWidget* parent );
 		~GXUIDragableArea () override;
 
-		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
+		GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
 
 		GXVoid SetMinimumWidth ( GXFloat width );
 		GXFloat GetMinimumWidth () const;

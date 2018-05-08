@@ -31,7 +31,7 @@ EMVelocityTileMaxMaterial::EMVelocityTileMaxMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	maxBlurSamplesLocation = shaderProgram.GetUniform ( "maxBlurSamples" );
 	inverseScreenResolutionLocation = shaderProgram.GetUniform ( "inverseScreenResolution" );
@@ -39,7 +39,7 @@ EMVelocityTileMaxMaterial::EMVelocityTileMaxMaterial ():
 
 EMVelocityTileMaxMaterial::~EMVelocityTileMaxMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMVelocityTileMaxMaterial::Bind ( const GXTransform& /*transform*/ )

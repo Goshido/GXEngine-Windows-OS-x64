@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_UI_POPUP
 #define GX_UI_POPUP
@@ -26,7 +26,7 @@ class GXUIPopup : public GXWidget
 		explicit GXUIPopup ( GXWidget* parent );
 		~GXUIPopup () override;
 
-		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
+		GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
 
 		GXVoid AddItem ( GXVoid* handler, PFNGXONUIPOPUPACTIONPROC action );
 		GXUByte GetTotalItems () const;

@@ -37,12 +37,12 @@ EMGaussHorizontalBlurMaterial::EMGaussHorizontalBlurMaterial ( eEMGaussHorizonta
 		break;
 	}
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 }
 
 EMGaussHorizontalBlurMaterial::~EMGaussHorizontalBlurMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMGaussHorizontalBlurMaterial::Bind ( const GXTransform& /*transform*/ )

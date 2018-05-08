@@ -40,7 +40,7 @@ EMLightProbeMaterial::EMLightProbeMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	viewerLocationWorldLocation = shaderProgram.GetUniform ( "viewerLocationWorld" );
 	prefilteredEnvironmentMapLODsLocation = shaderProgram.GetUniform ( "prefilteredEnvironmentMapLODs" );
@@ -50,7 +50,7 @@ EMLightProbeMaterial::EMLightProbeMaterial ():
 
 EMLightProbeMaterial::~EMLightProbeMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMLightProbeMaterial::Bind ( const GXTransform& /*transform*/ )

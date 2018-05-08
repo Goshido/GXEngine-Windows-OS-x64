@@ -30,8 +30,6 @@ EMUIFPSCounter& EMUIFPSCounter::GetInstance ()
 EMUIFPSCounter::~EMUIFPSCounter ()
 {
 	delete surface;
-	GXFont::RemoveFont ( font );
-
 	instance = nullptr;
 }
 
@@ -59,14 +57,12 @@ void EMUIFPSCounter::Render ()
 }
 
 EMUIFPSCounter::EMUIFPSCounter ():
-	lastFPS ( DEFAULT_LAST_FPS )
+	lastFPS ( DEFAULT_LAST_FPS ),
+	font ( FONT, static_cast<GXUShort> ( gx_ui_Scale * FONT_SIZE ) )
 {
-	GXUShort fontSize = static_cast<GXUShort> ( gx_ui_Scale * FONT_SIZE );
-
-	font = GXFont::GetFont ( FONT, fontSize );
 	GXUInt requeredSize = font.GetTextLength ( 0u, L"99999999999" );
 
-	surface = new GXHudSurface ( static_cast<GXUShort> ( requeredSize ), fontSize );
+	surface = new GXHudSurface ( static_cast<GXUShort> ( requeredSize ), font.GetSize () );
 
 	GXRenderer& renderer = GXRenderer::GetInstance ();
 	GXVec3 location;

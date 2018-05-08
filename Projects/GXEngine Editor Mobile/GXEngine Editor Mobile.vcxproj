@@ -186,9 +186,9 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXCommon\GXOBJLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractThread.cpp" />
-    <ClCompile Include="..\..\Sources\GXCommon\GXTime.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXThread.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXTime.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimationSolver.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimationSolverMovement.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimationSolverPlayer.cpp" />

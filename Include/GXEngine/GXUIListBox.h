@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_UI_LIST_BOX
 #define GX_UI_LIST_BOX
@@ -43,7 +43,7 @@ class GXUIListBox : public GXWidget
 		explicit GXUIListBox ( GXWidget* parent, PFNGXUILISTBOXITEMDESTRUCTORPROC itemDestructor );
 		~GXUIListBox () override;
 
-		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
+		GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
 
 		GXVoid AddItem ( GXVoid* itemData );
 		GXVoid AddItems ( GXVoid** itemData, GXUInt items );

@@ -29,13 +29,13 @@ GXTexture2DGammaCorrectorMaterial::GXTexture2DGammaCorrectorMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 	gammaLocation = shaderProgram.GetUniform ( "gamma" );
 }
 
 GXTexture2DGammaCorrectorMaterial::~GXTexture2DGammaCorrectorMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid GXTexture2DGammaCorrectorMaterial::Bind ( const GXTransform& /*transform*/ )

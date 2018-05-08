@@ -42,7 +42,7 @@ EMMotionBlurMaterial::EMMotionBlurMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	inverseDepthLimitLocation = shaderProgram.GetUniform ( "inverseDepthLimit" );
 	maxBlurSamplesLocation = shaderProgram.GetUniform ( "maxBlurSamples" );
@@ -52,7 +52,7 @@ EMMotionBlurMaterial::EMMotionBlurMaterial ():
 
 EMMotionBlurMaterial::~EMMotionBlurMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMMotionBlurMaterial::Bind ( const GXTransform& /*transform*/ )

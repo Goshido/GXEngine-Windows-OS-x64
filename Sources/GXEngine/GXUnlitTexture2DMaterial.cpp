@@ -40,17 +40,16 @@ GXUnlitTexture2DMaterial::GXUnlitTexture2DMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	mod_view_proj_matLocation = shaderProgram.GetUniform ( "mod_view_proj_mat" );
 	uvScaleOffsetLocation = shaderProgram.GetUniform ( "uvScaleOffset" );
 	colorLocation = shaderProgram.GetUniform  ( "color" );
-
 }
 
 GXUnlitTexture2DMaterial::~GXUnlitTexture2DMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid GXUnlitTexture2DMaterial::Bind ( const GXTransform &transfrom )

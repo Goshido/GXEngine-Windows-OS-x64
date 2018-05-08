@@ -26,7 +26,7 @@ EMWireframeMaterial::EMWireframeMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	currentFrameModelViewProjectionMatrixLocation = shaderProgram.GetUniform ( "currentFrameModelViewProjectionMatrix" );
 	colorLocation = shaderProgram.GetUniform ( "color" );
@@ -34,7 +34,7 @@ EMWireframeMaterial::EMWireframeMaterial ():
 
 EMWireframeMaterial::~EMWireframeMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMWireframeMaterial::Bind ( const GXTransform &transform )

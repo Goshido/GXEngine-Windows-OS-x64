@@ -37,7 +37,7 @@ EMPrefilteredEnvironmentMapGeneratorMaterial::EMPrefilteredEnvironmentMapGenerat
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	viewProjectionMatricesLocation = shaderProgram.GetUniform ( "viewProjectionMatrices" );
 	roughnessLocation = shaderProgram.GetUniform ( "roughness" );
@@ -66,7 +66,7 @@ EMPrefilteredEnvironmentMapGeneratorMaterial::EMPrefilteredEnvironmentMapGenerat
 
 EMPrefilteredEnvironmentMapGeneratorMaterial::~EMPrefilteredEnvironmentMapGeneratorMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMPrefilteredEnvironmentMapGeneratorMaterial::Bind ( const GXTransform& /*transform*/ )

@@ -28,7 +28,7 @@ EMHueCircleGeneratorMaterial::EMHueCircleGeneratorMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	innerRadiusLocation = shaderProgram.GetUniform ( "innerRadius" );
 	outerRadiusLocation = shaderProgram.GetUniform ( "outerRadius" );
@@ -37,7 +37,7 @@ EMHueCircleGeneratorMaterial::EMHueCircleGeneratorMaterial ():
 
 EMHueCircleGeneratorMaterial::~EMHueCircleGeneratorMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMHueCircleGeneratorMaterial::Bind ( const GXTransform& /*transform*/ )

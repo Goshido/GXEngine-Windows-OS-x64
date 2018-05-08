@@ -36,7 +36,7 @@ EMCheckerGeneratorMaterial::EMCheckerGeneratorMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	colorOneLocation = shaderProgram.GetUniform ( "colorOne" );
 	colorTwoLocation = shaderProgram.GetUniform ( "colorTwo" );
@@ -46,7 +46,7 @@ EMCheckerGeneratorMaterial::EMCheckerGeneratorMaterial ():
 
 EMCheckerGeneratorMaterial::~EMCheckerGeneratorMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid EMCheckerGeneratorMaterial::Bind ( const GXTransform& /*transform*/ )

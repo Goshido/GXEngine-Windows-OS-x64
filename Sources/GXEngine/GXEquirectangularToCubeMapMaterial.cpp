@@ -35,7 +35,7 @@ GXEquirectangularToCubeMapMaterial::GXEquirectangularToCubeMapMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	viewProjectionMatricesLocation = shaderProgram.GetUniform ( "viewProjectionMatrices" );
 	gammaLocation = shaderProgram.GetUniform ( "gamma" );
@@ -64,7 +64,7 @@ GXEquirectangularToCubeMapMaterial::GXEquirectangularToCubeMapMaterial ():
 
 GXEquirectangularToCubeMapMaterial::~GXEquirectangularToCubeMapMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid GXEquirectangularToCubeMapMaterial::Bind ( const GXTransform& /*transform*/ )

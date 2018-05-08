@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_UI_STATIC_TEXT
 #define GX_UI_STATIC_TEXT
@@ -14,7 +14,6 @@ enum eGXUITextAlignment : GXUByte
 	Center
 };
 
-
 class GXUIStaticText : public GXWidget
 {
 	private:
@@ -26,7 +25,7 @@ class GXUIStaticText : public GXWidget
 		explicit GXUIStaticText ( GXWidget* parent );
 		~GXUIStaticText () override;
 
-		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
+		GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
 
 		GXVoid SetText ( const GXWChar* newText );
 		GXVoid SetTextColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );

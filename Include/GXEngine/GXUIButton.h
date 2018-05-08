@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_UI_BUTTON
 #define GX_UI_BUTTON
@@ -26,7 +26,7 @@ class GXUIButton : public GXWidget
 		explicit GXUIButton ( GXWidget* parent );
 		~GXUIButton () override;
 
-		GXVoid OnMessage ( GXUInt message, const GXVoid* data ) override;
+		GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
 
 		GXVoid SetOnLeftMouseButtonCallback ( GXVoid* handlerObject, PFNGXONMOUSEBUTTONPROC callback );
 

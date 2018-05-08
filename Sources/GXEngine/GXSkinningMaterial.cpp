@@ -23,14 +23,14 @@ GXSkinningMaterial::GXSkinningMaterial ():
 	si.numTransformFeedbackOutputs = 5;
 	si.transformFeedbackOutputNames = transformFeedbackOutputNames;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	bonesLocation = shaderProgram.GetUniform ( "bones" );
 }
 
 GXSkinningMaterial::~GXSkinningMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid GXSkinningMaterial::Bind ( const GXTransform& /*transform*/ )

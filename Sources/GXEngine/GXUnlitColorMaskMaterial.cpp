@@ -40,7 +40,7 @@ GXUnlitColorMaskMaterial::GXUnlitColorMaskMaterial ():
 	si.numTransformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
-	shaderProgram = GXShaderProgram::GetShaderProgram ( si );
+	shaderProgram.Init ( si );
 
 	mod_view_proj_matLocation = shaderProgram.GetUniform ( "mod_view_proj_mat" );
 	uvScaleOffsetLocation = shaderProgram.GetUniform ( "uvScaleOffset" );
@@ -49,7 +49,7 @@ GXUnlitColorMaskMaterial::GXUnlitColorMaskMaterial ():
 
 GXUnlitColorMaskMaterial::~GXUnlitColorMaskMaterial ()
 {
-	GXShaderProgram::RemoveShaderProgram ( shaderProgram );
+	// NOTHING
 }
 
 GXVoid GXUnlitColorMaskMaterial::Bind ( const GXTransform &transform )

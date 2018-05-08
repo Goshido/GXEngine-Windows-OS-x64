@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #include <GXEngine/GXUIDraggableArea.h>
 #include <GXEngine/GXUICommon.h>
@@ -40,490 +40,491 @@ GXUIDragableArea::~GXUIDragableArea ()
 	// NOTHING
 }
 
-GXVoid GXUIDragableArea::OnMessage ( GXUInt message, const GXVoid* data )
+GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
 {
-	switch ( message )
+	if ( message == eGXUIMessage::LMBDown )
 	{
-		case GX_MSG_LMBDOWN:
+		const GXVec2* pos = static_cast<const GXVec2*> ( data );
+
+		resizeMode = GetResizeMode ( *pos );
+		memcpy ( &lastMousePosition, pos, sizeof ( GXVec2 ) );
+
+		if ( resizeMode == eGXDraggableAreaResizeMode::None ) return;
+
+		GXTouchSurface::GetInstance ().LockCursor ( this );
+		return;
+	}
+
+	if ( message == eGXUIMessage::LMBUp )
+	{
+		resizeMode = eGXDraggableAreaResizeMode::None;
+
+		GXTouchSurface& touchSurface = GXTouchSurface::GetInstance ();
+
+		if ( touchSurface.GetLockedCursorWidget () != this ) return;
+
+		touchSurface.ReleaseCursor ();
+		return;
+	}
+
+	if ( message == eGXUIMessage::MouseLeave )
+	{
+		SetCursor ( standartArrow );
+		currentCursor = &standartArrow;
+		return;
+	}
+
+	if ( message == eGXUIMessage::MouseOver )
+	{
+		const GXVec2* pos = static_cast<const GXVec2*> ( data );
+		UpdateCursor ( *pos );
+		return;
+	}
+
+	if ( message == eGXUIMessage::MouseMove )
+	{
+		const GXVec2* pos = static_cast<const GXVec2*> ( data );
+
+		switch ( resizeMode )
 		{
-			const GXVec2* pos = static_cast<const GXVec2*> ( data );
-
-			resizeMode = GetResizeMode ( *pos );
-			memcpy ( &lastMousePosition, pos, sizeof ( GXVec2 ) );
-
-			if ( resizeMode == eGXDraggableAreaResizeMode::None ) break;
-
-			GXTouchSurface::GetInstance ().LockCursor ( this );
-		}
-		break;
-
-		case GX_MSG_LMBUP:
-		{
-			resizeMode = eGXDraggableAreaResizeMode::None;
-
-			GXTouchSurface& touchSurface = GXTouchSurface::GetInstance ();
-
-			if ( touchSurface.GetLockedCursorWidget () != this ) break;
-
-			touchSurface.ReleaseCursor ();
-		}
-		break;
-
-		case GX_MSG_MOUSE_LEAVE:
-		{
-			SetCursor ( standartArrow );
-			currentCursor = &standartArrow;
-		}
-		break;
-
-		case GX_MSG_MOUSE_OVER:
-		{
-			const GXVec2* pos = static_cast<const GXVec2*> ( data );
-			UpdateCursor ( *pos );
-		}
-		break;
-
-		case GX_MSG_MOUSE_MOVE:
-		{
-			const GXVec2* pos = static_cast<const GXVec2*> ( data );
-
-			switch ( resizeMode )
+			case eGXDraggableAreaResizeMode::Dragging:
 			{
-				case eGXDraggableAreaResizeMode::Dragging:
-				{
-					GXVec2 delta;
-					delta.Substract ( *pos, lastMousePosition );
+				GXVec2 delta;
+				delta.Substract ( *pos, lastMousePosition );
 
-					OnMessage ( GX_MSG_DRAG, &delta );
+				OnMessage ( eGXUIMessage::Drag, &delta );
 
-					memcpy ( &lastMousePosition, pos, sizeof ( GXVec2 ) );
-				}
-				break;
-
-				case eGXDraggableAreaResizeMode::WidthLockLeft:
-				{
-					GXAABB bounds ( boundsLocal );
-					bounds.max.data[ 0 ] += pos->data[ 0 ] - lastMousePosition.data[ 0 ];
-
-					if ( bounds.GetWidth () < minimumSize.GetX () )
-					{
-						if ( fabs ( boundsLocal.GetWidth () - minimumSize.GetX () ) < TOLERANCE_FACTOR ) break;
-
-						bounds.max.SetX ( bounds.min.GetX () + minimumSize.GetX () );
-						lastMousePosition.SetX ( boundsWorld.min.GetX () + minimumSize.GetX () );
-					}
-					else
-					{
-						lastMousePosition.SetX ( pos->GetX () );
-					}
-
-					UpdateBoundsWorld ( bounds );
-					UpdateAreas ();
-
-					if ( renderer )
-						renderer->OnUpdate ();
-
-					if ( OnResize )
-						OnResize ( handler, *this, boundsLocal.GetWidth (), boundsLocal.GetHeight () );
-				}
-				break;
-
-				case eGXDraggableAreaResizeMode::WidthLockRight:
-				{
-					GXAABB bounds ( boundsLocal );
-					bounds.min.data[ 0 ] += pos->data[ 0 ] - lastMousePosition.data[ 0 ];
-
-					if ( bounds.GetWidth () < minimumSize.GetX () )
-					{
-						if ( fabs ( boundsLocal.GetWidth () - minimumSize.GetX () ) < TOLERANCE_FACTOR ) break;
-
-						bounds.min.SetX ( bounds.max.GetX () - minimumSize.GetX () );
-						lastMousePosition.SetX ( boundsWorld.max.GetX () - minimumSize.GetX () );
-					}
-					else
-					{
-						lastMousePosition.SetX ( pos->GetX () );
-					}
-
-					UpdateBoundsWorld ( bounds );
-					UpdateAreas ();
-
-					GXVec2 dragDelta ( 0.0f, 0.0f );
-					OnMessage ( GX_MSG_DRAG, &dragDelta );
-
-					if ( OnResize )
-						OnResize ( handler, *this, boundsLocal.GetWidth (), boundsLocal.GetHeight () );
-				}
-				break;
-
-				case eGXDraggableAreaResizeMode::HeightLockBottom:
-				{
-					GXAABB bounds ( boundsLocal );
-					bounds.max.data[ 1 ] += pos->data[ 1 ] - lastMousePosition.data[ 1 ];
-
-					if ( bounds.GetHeight () < minimumSize.GetY () )
-					{
-						if ( fabs ( boundsLocal .GetHeight ()- minimumSize.GetY () ) < TOLERANCE_FACTOR ) break;
-
-						bounds.max.SetY ( bounds.min.GetY () + minimumSize.GetY () );
-						lastMousePosition.SetY ( boundsWorld.min.GetY () + minimumSize.GetY () );
-					}
-					else
-					{
-						lastMousePosition.SetY ( pos->GetY () );
-					}
-
-					UpdateBoundsWorld ( bounds );
-					UpdateAreas ();
-
-					if ( renderer )
-						renderer->OnUpdate ();
-
-					if ( OnResize )
-						OnResize ( handler, *this, boundsLocal.GetWidth (), boundsLocal.GetHeight () );
-				}
-				break;
-
-				case eGXDraggableAreaResizeMode::HeightLockTop:
-				{
-					GXAABB bounds ( boundsLocal );
-					bounds.min.data[ 1 ] += pos->data[ 1 ] - lastMousePosition.data[ 1 ];
-
-					if ( bounds.GetHeight () < minimumSize.GetY () )
-					{
-						if ( fabs ( boundsLocal.GetHeight () - minimumSize.GetY () ) < TOLERANCE_FACTOR ) break;
-
-						bounds.min.SetY ( bounds.max.GetY () - minimumSize.GetY () );
-						lastMousePosition.SetY ( boundsWorld.max.GetY () - minimumSize.GetY () );
-					}
-					else
-					{
-						lastMousePosition.SetY ( pos->GetY () );
-					}
-
-					UpdateBoundsWorld ( bounds );
-					UpdateAreas ();
-
-					GXVec2 dragDelta ( 0.0f, 0.0f );
-					OnMessage ( GX_MSG_DRAG, &dragDelta );
-
-					if ( OnResize )
-						OnResize ( handler, *this, boundsLocal.GetWidth (), boundsLocal.GetHeight () );
-				}
-				break;
-
-				case eGXDraggableAreaResizeMode::WidthAndHeightLockBottomLeft:
-				{
-					GXVec2 delta;
-					delta.Substract ( *pos, lastMousePosition );
-
-					GXAABB bounds ( boundsLocal );
-					bounds.max.data[ 0 ] += delta.data[ 0 ];
-					bounds.max.data[ 1 ] += delta.data[ 1 ];
-
-					GXFloat width = bounds.GetWidth ();
-					GXFloat heigth = bounds.GetHeight ();
-
-					if ( width < minimumSize.GetX () && heigth < minimumSize.GetY () ) break;
-
-					if ( width < minimumSize.GetX () )
-					{
-						bounds.max.SetX ( boundsLocal.min.GetX () + minimumSize.GetX () );
-						lastMousePosition.SetX ( boundsWorld.min.GetX () + minimumSize.GetX () );
-					}
-					else
-					{
-						lastMousePosition.SetX ( pos->GetX () );
-					}
-
-					if ( heigth < minimumSize.GetY () )
-					{
-						bounds.max.SetY ( boundsLocal.min.GetY () + minimumSize.GetY () );
-						lastMousePosition.SetY ( boundsWorld.min.GetY () + minimumSize.GetY () );
-					}
-					else
-					{
-						lastMousePosition.SetY ( pos->GetY () );
-					}
-
-					UpdateBoundsWorld ( bounds );
-					UpdateAreas ();
-
-					if ( renderer )
-						renderer->OnUpdate ();
-
-					if ( OnResize )
-						OnResize ( handler, *this, boundsLocal.GetWidth (), boundsLocal.GetHeight () );
-				}
-				break;
-
-				case eGXDraggableAreaResizeMode::WidthAndHeightLockBottomRight:
-				{
-					GXVec2 delta;
-					delta.Substract ( *pos, lastMousePosition );
-
-					GXAABB bounds ( boundsLocal );
-					bounds.min.data[ 0 ] += delta.data[ 0 ];
-					bounds.max.data[ 1 ] += delta.data[ 1 ];
-
-					GXFloat width = bounds.GetWidth ();
-					GXFloat heigth = bounds.GetHeight ();
-
-					if ( width < minimumSize.GetX () && heigth < minimumSize.GetY () ) break;
-
-					if ( width < minimumSize.GetX () )
-					{
-						bounds.min.SetX ( boundsLocal.max.GetX () - minimumSize.GetX () );
-						lastMousePosition.SetX ( boundsWorld.max.GetX () - minimumSize.GetX () );
-					}
-					else
-					{
-						lastMousePosition.SetX ( pos->GetX () );
-					}
-
-					if ( heigth < minimumSize.GetY () )
-					{
-						bounds.max.SetY ( boundsLocal.min.GetY () + minimumSize.GetY () );
-						lastMousePosition.SetY ( boundsWorld.min.GetY () + minimumSize.GetY () );
-					}
-					else
-					{
-						lastMousePosition.SetY ( pos->GetY () );
-					}
-
-					UpdateBoundsWorld ( bounds );
-					UpdateAreas ();
-
-					GXVec2 dragDelta ( 0.0f, 0.0f );
-					OnMessage ( GX_MSG_DRAG, &dragDelta );
-
-					if ( OnResize )
-						OnResize ( handler, *this, boundsLocal.GetWidth (), boundsLocal.GetHeight () );
-				}
-				break;
-
-				case eGXDraggableAreaResizeMode::WidthAndHeightLockTopLeft:
-				{
-					GXVec2 delta;
-					delta.Substract ( *pos, lastMousePosition );
-
-					GXAABB bounds ( boundsLocal );
-					bounds.max.data[ 0 ] += delta.data[ 0 ];
-					bounds.min.data[ 1 ] += delta.data[ 1 ];
-
-					GXFloat width = bounds.GetWidth ();
-					GXFloat heigth = bounds.GetHeight ();
-
-					if ( width < minimumSize.GetX () && heigth < minimumSize.GetY () ) break;
-
-					if ( width < minimumSize.GetX () )
-					{
-						bounds.max.SetX ( boundsLocal.min.GetX () + minimumSize.GetX () );
-						lastMousePosition.SetX ( boundsWorld.min.GetX () + minimumSize.GetX () );
-					}
-					else
-					{
-						lastMousePosition.SetX ( pos->GetX () );
-					}
-
-					if ( heigth < minimumSize.GetY () )
-					{
-						bounds.min.SetY ( boundsLocal.max.GetY () - minimumSize.GetY () );
-						lastMousePosition.SetY ( boundsWorld.max.GetY () - minimumSize.GetY () );
-					}
-					else
-					{
-						lastMousePosition.SetY ( pos->GetY () );
-					}
-
-					UpdateBoundsWorld ( bounds );
-					UpdateAreas ();
-
-					GXVec2 dragDelta ( 0.0f, 0.0f );
-					OnMessage ( GX_MSG_DRAG, &dragDelta );
-
-					if ( OnResize )
-						OnResize ( handler, *this, boundsLocal.GetWidth (), boundsLocal.GetHeight () );
-				}
-				break;
-
-				case eGXDraggableAreaResizeMode::WidthAndHeightLockTopRight:
-				{
-					GXVec2 delta;
-					delta.Substract ( *pos, lastMousePosition );
-
-					GXAABB bounds ( boundsLocal );
-					bounds.min.data[ 0 ] += delta.data[ 0 ];
-					bounds.min.data[ 1 ] += delta.data[ 1 ];
-
-					GXFloat width = bounds.GetWidth ();
-					GXFloat heigth = bounds.GetHeight ();
-
-					if ( width < minimumSize.GetX () && heigth < minimumSize.GetY () ) break;
-
-					if ( width < minimumSize.GetX () )
-					{
-						bounds.min.SetX ( boundsLocal.max.GetX () - minimumSize.GetX () );
-						lastMousePosition.SetX ( boundsWorld.max.GetX () - minimumSize.GetX () );
-					}
-					else
-					{
-						lastMousePosition.SetX ( pos->GetX () );
-					}
-
-					if ( heigth < minimumSize.GetY () )
-					{
-						bounds.min.SetY ( boundsLocal.max.GetY () - minimumSize.GetY () );
-						lastMousePosition.SetY ( boundsWorld.max.GetY () - minimumSize.GetY () );
-					}
-					else
-					{
-						lastMousePosition.SetY ( pos->GetY () );
-					}
-
-					UpdateBoundsWorld ( bounds );
-					UpdateAreas ();
-
-					GXVec2 dragDelta ( 0.0f, 0.0f );
-					OnMessage ( GX_MSG_DRAG, &dragDelta );
-
-					if ( OnResize )
-						OnResize ( handler, *this, boundsLocal.GetWidth (), boundsLocal.GetHeight () );
-				}
-				break;
-
-				case eGXDraggableAreaResizeMode::None:
-					UpdateCursor ( *pos );
-				break;
-
-				default:
-					// NOTHING
-				break;
+				memcpy ( &lastMousePosition, pos, sizeof ( GXVec2 ) );
 			}
-		}
-		break;
+			break;
 
-		case GX_MSG_RESIZE:
-		{
-			const GXAABB* bounds = (const GXAABB*)data;
-
-			GXAABB correctedBounds;
-			correctedBounds.AddVertex ( bounds->min );
-
-			GXVec3 maxPoint ( bounds->max );
-			GXFloat length = bounds->GetWidth ();
-
-			if ( length < minimumSize.GetX () )
-				maxPoint.SetX ( bounds->min.GetX () + length );
-
-			length = bounds->GetHeight ();
-
-			if ( length < minimumSize.GetY () )
-				maxPoint.SetY ( bounds->min.GetY () + length );
-
-			correctedBounds.AddVertex ( maxPoint );
-
-			UpdateBoundsWorld ( correctedBounds );
-			UpdateAreas ();
-
-			GXVec2 dragDelta ( 0.0f, 0.0f );
-			OnMessage ( GX_MSG_DRAG, &dragDelta );
-
-			if ( OnResize )
-				OnResize ( handler, *this, boundsLocal.GetWidth (), boundsLocal.GetHeight () );
-		}
-		break;
-		
-		case GX_MSG_DRAGGABLE_AREA_SET_HEADER_HEIGHT:
-		{
-			const GXFloat* height = static_cast<const GXFloat*> ( data );
-			headerHeight = *height;
-
-			UpdateAreas ();
-
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		case GX_MSG_DRAGGABLE_AREA_SET_BORDER_THICKNESS:
-		{
-			const GXFloat* thickness = static_cast<const GXFloat*> ( data );
-			borderThickness = *thickness;
-
-			UpdateAreas ();
-
-			if ( renderer )
-				renderer->OnUpdate ();
-		}
-		break;
-
-		case GX_MSG_DRAGGABLE_AREA_SET_MINIMUM_WIDTH:
-		{
-			const GXFloat* width = static_cast<const GXFloat*> ( data );
-			minimumSize.SetX ( *width );
-
-			if ( boundsLocal.GetWidth () >= minimumSize.GetX () ) break;
-
-			Resize ( boundsLocal.min.GetX (), boundsLocal.min.GetY (), minimumSize.GetX (), boundsLocal.GetHeight () );
-		}
-		break;
-
-		case GX_MSG_DRAGGABLE_AREA_SET_MINIMUM_HEIGHT:
-		{
-			const GXFloat* height = static_cast<const GXFloat*> ( data );
-			minimumSize.SetY ( *height );
-
-			if ( boundsLocal.GetHeight () >= minimumSize.GetY () ) break;
-
-			Resize ( boundsLocal.min.GetX (), boundsLocal.min.GetY (), boundsLocal.GetWidth (), minimumSize.GetY () );
-		}
-		break;
-
-		case GX_MSG_DRAG:
-		{
-			const GXVec2* delta = static_cast<const GXVec2*> ( data );
-
-			GXAABB newBounds;
-			newBounds.AddVertex ( boundsLocal.min.GetX () + delta->GetX (), boundsLocal.min.GetY () + delta->GetY (), boundsLocal.min.GetZ () );
-			newBounds.AddVertex ( boundsLocal.max.GetX () + delta->GetX (), boundsLocal.max.GetY () + delta->GetY (), boundsLocal.max.GetZ () );
-
-			UpdateBoundsWorld ( newBounds );
-			UpdateAreas ();
-
-			if ( renderer )
-				renderer->OnUpdate ();
-
-			GXWidgetIterator iterator;
-			GXWidget* p = iterator.Init ( childs );
-
-			while ( p )
+			case eGXDraggableAreaResizeMode::WidthLockLeft:
 			{
-				if ( p->IsDraggable () )
+				GXAABB bounds ( boundsLocal );
+				bounds.max.data[ 0 ] += pos->data[ 0 ] - lastMousePosition.data[ 0 ];
+
+				if ( bounds.GetWidth () < minimumSize.GetX () )
 				{
-					p->OnMessage ( GX_MSG_DRAG, data );
+					if ( fabs ( boundsLocal.GetWidth () - minimumSize.GetX () ) < TOLERANCE_FACTOR ) break;
+
+					bounds.max.SetX ( bounds.min.GetX () + minimumSize.GetX () );
+					lastMousePosition.SetX ( boundsWorld.min.GetX () + minimumSize.GetX () );
 				}
 				else
 				{
-					const GXAABB& bounds = p->GetBoundsLocal ();
-					memcpy ( &newBounds, &bounds, sizeof ( GXAABB ) );
-					p->OnMessage ( GX_MSG_RESIZE, &newBounds );
+					lastMousePosition.SetX ( pos->GetX () );
 				}
 
-				p = iterator.GetNext ();
-			}
-		}
-		break;
+				UpdateBoundsWorld ( bounds );
+				UpdateAreas ();
 
-		default:
-			GXWidget::OnMessage ( message, data );
-		break;
+				if ( renderer )
+					renderer->OnUpdate ();
+
+				if ( OnResize )
+					OnResize ( handler, *this, boundsLocal.GetWidth (), boundsLocal.GetHeight () );
+			}
+			break;
+
+			case eGXDraggableAreaResizeMode::WidthLockRight:
+			{
+				GXAABB bounds ( boundsLocal );
+				bounds.min.data[ 0 ] += pos->data[ 0 ] - lastMousePosition.data[ 0 ];
+
+				if ( bounds.GetWidth () < minimumSize.GetX () )
+				{
+					if ( fabs ( boundsLocal.GetWidth () - minimumSize.GetX () ) < TOLERANCE_FACTOR ) break;
+
+					bounds.min.SetX ( bounds.max.GetX () - minimumSize.GetX () );
+					lastMousePosition.SetX ( boundsWorld.max.GetX () - minimumSize.GetX () );
+				}
+				else
+				{
+					lastMousePosition.SetX ( pos->GetX () );
+				}
+
+				UpdateBoundsWorld ( bounds );
+				UpdateAreas ();
+
+				GXVec2 dragDelta ( 0.0f, 0.0f );
+				OnMessage ( eGXUIMessage::Drag, &dragDelta );
+
+				if ( OnResize )
+					OnResize ( handler, *this, boundsLocal.GetWidth (), boundsLocal.GetHeight () );
+			}
+			break;
+
+			case eGXDraggableAreaResizeMode::HeightLockBottom:
+			{
+				GXAABB bounds ( boundsLocal );
+				bounds.max.data[ 1 ] += pos->data[ 1 ] - lastMousePosition.data[ 1 ];
+
+				if ( bounds.GetHeight () < minimumSize.GetY () )
+				{
+					if ( fabs ( boundsLocal .GetHeight ()- minimumSize.GetY () ) < TOLERANCE_FACTOR ) break;
+
+					bounds.max.SetY ( bounds.min.GetY () + minimumSize.GetY () );
+					lastMousePosition.SetY ( boundsWorld.min.GetY () + minimumSize.GetY () );
+				}
+				else
+				{
+					lastMousePosition.SetY ( pos->GetY () );
+				}
+
+				UpdateBoundsWorld ( bounds );
+				UpdateAreas ();
+
+				if ( renderer )
+					renderer->OnUpdate ();
+
+				if ( OnResize )
+					OnResize ( handler, *this, boundsLocal.GetWidth (), boundsLocal.GetHeight () );
+			}
+			break;
+
+			case eGXDraggableAreaResizeMode::HeightLockTop:
+			{
+				GXAABB bounds ( boundsLocal );
+				bounds.min.data[ 1 ] += pos->data[ 1 ] - lastMousePosition.data[ 1 ];
+
+				if ( bounds.GetHeight () < minimumSize.GetY () )
+				{
+					if ( fabs ( boundsLocal.GetHeight () - minimumSize.GetY () ) < TOLERANCE_FACTOR ) break;
+
+					bounds.min.SetY ( bounds.max.GetY () - minimumSize.GetY () );
+					lastMousePosition.SetY ( boundsWorld.max.GetY () - minimumSize.GetY () );
+				}
+				else
+				{
+					lastMousePosition.SetY ( pos->GetY () );
+				}
+
+				UpdateBoundsWorld ( bounds );
+				UpdateAreas ();
+
+				GXVec2 dragDelta ( 0.0f, 0.0f );
+				OnMessage ( eGXUIMessage::Drag, &dragDelta );
+
+				if ( OnResize )
+					OnResize ( handler, *this, boundsLocal.GetWidth (), boundsLocal.GetHeight () );
+			}
+			break;
+
+			case eGXDraggableAreaResizeMode::WidthAndHeightLockBottomLeft:
+			{
+				GXVec2 delta;
+				delta.Substract ( *pos, lastMousePosition );
+
+				GXAABB bounds ( boundsLocal );
+				bounds.max.data[ 0 ] += delta.data[ 0 ];
+				bounds.max.data[ 1 ] += delta.data[ 1 ];
+
+				GXFloat width = bounds.GetWidth ();
+				GXFloat heigth = bounds.GetHeight ();
+
+				if ( width < minimumSize.GetX () && heigth < minimumSize.GetY () ) break;
+
+				if ( width < minimumSize.GetX () )
+				{
+					bounds.max.SetX ( boundsLocal.min.GetX () + minimumSize.GetX () );
+					lastMousePosition.SetX ( boundsWorld.min.GetX () + minimumSize.GetX () );
+				}
+				else
+				{
+					lastMousePosition.SetX ( pos->GetX () );
+				}
+
+				if ( heigth < minimumSize.GetY () )
+				{
+					bounds.max.SetY ( boundsLocal.min.GetY () + minimumSize.GetY () );
+					lastMousePosition.SetY ( boundsWorld.min.GetY () + minimumSize.GetY () );
+				}
+				else
+				{
+					lastMousePosition.SetY ( pos->GetY () );
+				}
+
+				UpdateBoundsWorld ( bounds );
+				UpdateAreas ();
+
+				if ( renderer )
+					renderer->OnUpdate ();
+
+				if ( OnResize )
+					OnResize ( handler, *this, boundsLocal.GetWidth (), boundsLocal.GetHeight () );
+			}
+			break;
+
+			case eGXDraggableAreaResizeMode::WidthAndHeightLockBottomRight:
+			{
+				GXVec2 delta;
+				delta.Substract ( *pos, lastMousePosition );
+
+				GXAABB bounds ( boundsLocal );
+				bounds.min.data[ 0 ] += delta.data[ 0 ];
+				bounds.max.data[ 1 ] += delta.data[ 1 ];
+
+				GXFloat width = bounds.GetWidth ();
+				GXFloat heigth = bounds.GetHeight ();
+
+				if ( width < minimumSize.GetX () && heigth < minimumSize.GetY () ) break;
+
+				if ( width < minimumSize.GetX () )
+				{
+					bounds.min.SetX ( boundsLocal.max.GetX () - minimumSize.GetX () );
+					lastMousePosition.SetX ( boundsWorld.max.GetX () - minimumSize.GetX () );
+				}
+				else
+				{
+					lastMousePosition.SetX ( pos->GetX () );
+				}
+
+				if ( heigth < minimumSize.GetY () )
+				{
+					bounds.max.SetY ( boundsLocal.min.GetY () + minimumSize.GetY () );
+					lastMousePosition.SetY ( boundsWorld.min.GetY () + minimumSize.GetY () );
+				}
+				else
+				{
+					lastMousePosition.SetY ( pos->GetY () );
+				}
+
+				UpdateBoundsWorld ( bounds );
+				UpdateAreas ();
+
+				GXVec2 dragDelta ( 0.0f, 0.0f );
+				OnMessage ( eGXUIMessage::Drag, &dragDelta );
+
+				if ( OnResize )
+					OnResize ( handler, *this, boundsLocal.GetWidth (), boundsLocal.GetHeight () );
+			}
+			break;
+
+			case eGXDraggableAreaResizeMode::WidthAndHeightLockTopLeft:
+			{
+				GXVec2 delta;
+				delta.Substract ( *pos, lastMousePosition );
+
+				GXAABB bounds ( boundsLocal );
+				bounds.max.data[ 0 ] += delta.data[ 0 ];
+				bounds.min.data[ 1 ] += delta.data[ 1 ];
+
+				GXFloat width = bounds.GetWidth ();
+				GXFloat heigth = bounds.GetHeight ();
+
+				if ( width < minimumSize.GetX () && heigth < minimumSize.GetY () ) break;
+
+				if ( width < minimumSize.GetX () )
+				{
+					bounds.max.SetX ( boundsLocal.min.GetX () + minimumSize.GetX () );
+					lastMousePosition.SetX ( boundsWorld.min.GetX () + minimumSize.GetX () );
+				}
+				else
+				{
+					lastMousePosition.SetX ( pos->GetX () );
+				}
+
+				if ( heigth < minimumSize.GetY () )
+				{
+					bounds.min.SetY ( boundsLocal.max.GetY () - minimumSize.GetY () );
+					lastMousePosition.SetY ( boundsWorld.max.GetY () - minimumSize.GetY () );
+				}
+				else
+				{
+					lastMousePosition.SetY ( pos->GetY () );
+				}
+
+				UpdateBoundsWorld ( bounds );
+				UpdateAreas ();
+
+				GXVec2 dragDelta ( 0.0f, 0.0f );
+				OnMessage ( eGXUIMessage::Drag, &dragDelta );
+
+				if ( OnResize )
+					OnResize ( handler, *this, boundsLocal.GetWidth (), boundsLocal.GetHeight () );
+			}
+			break;
+
+			case eGXDraggableAreaResizeMode::WidthAndHeightLockTopRight:
+			{
+				GXVec2 delta;
+				delta.Substract ( *pos, lastMousePosition );
+
+				GXAABB bounds ( boundsLocal );
+				bounds.min.data[ 0 ] += delta.data[ 0 ];
+				bounds.min.data[ 1 ] += delta.data[ 1 ];
+
+				GXFloat width = bounds.GetWidth ();
+				GXFloat heigth = bounds.GetHeight ();
+
+				if ( width < minimumSize.GetX () && heigth < minimumSize.GetY () ) break;
+
+				if ( width < minimumSize.GetX () )
+				{
+					bounds.min.SetX ( boundsLocal.max.GetX () - minimumSize.GetX () );
+					lastMousePosition.SetX ( boundsWorld.max.GetX () - minimumSize.GetX () );
+				}
+				else
+				{
+					lastMousePosition.SetX ( pos->GetX () );
+				}
+
+				if ( heigth < minimumSize.GetY () )
+				{
+					bounds.min.SetY ( boundsLocal.max.GetY () - minimumSize.GetY () );
+					lastMousePosition.SetY ( boundsWorld.max.GetY () - minimumSize.GetY () );
+				}
+				else
+				{
+					lastMousePosition.SetY ( pos->GetY () );
+				}
+
+				UpdateBoundsWorld ( bounds );
+				UpdateAreas ();
+
+				GXVec2 dragDelta ( 0.0f, 0.0f );
+				OnMessage ( eGXUIMessage::Drag, &dragDelta );
+
+				if ( OnResize )
+					OnResize ( handler, *this, boundsLocal.GetWidth (), boundsLocal.GetHeight () );
+			}
+			break;
+
+			case eGXDraggableAreaResizeMode::None:
+				UpdateCursor ( *pos );
+			break;
+
+			default:
+				// NOTHING
+			break;
+		}
+
+		return;
 	}
+
+	if ( message == eGXUIMessage::Resize )
+	{
+		const GXAABB* bounds = static_cast<const GXAABB*> ( data );
+
+		GXAABB correctedBounds;
+		correctedBounds.AddVertex ( bounds->min );
+
+		GXVec3 maxPoint ( bounds->max );
+		GXFloat length = bounds->GetWidth ();
+
+		if ( length < minimumSize.GetX () )
+			maxPoint.SetX ( bounds->min.GetX () + length );
+
+		length = bounds->GetHeight ();
+
+		if ( length < minimumSize.GetY () )
+			maxPoint.SetY ( bounds->min.GetY () + length );
+
+		correctedBounds.AddVertex ( maxPoint );
+
+		UpdateBoundsWorld ( correctedBounds );
+		UpdateAreas ();
+
+		GXVec2 dragDelta ( 0.0f, 0.0f );
+		OnMessage ( eGXUIMessage::Drag, &dragDelta );
+
+		if ( OnResize )
+			OnResize ( handler, *this, boundsLocal.GetWidth (), boundsLocal.GetHeight () );
+
+		return;
+	}
+		
+	if ( message == eGXUIMessage::DraggableAreaSetHeaderHeght )
+	{
+		const GXFloat* height = static_cast<const GXFloat*> ( data );
+		headerHeight = *height;
+
+		UpdateAreas ();
+
+		if ( renderer )
+			renderer->OnUpdate ();
+
+		return;
+	}
+
+	if ( message == eGXUIMessage::DraggableAreaSetBorderThickness )
+	{
+		const GXFloat* thickness = static_cast<const GXFloat*> ( data );
+		borderThickness = *thickness;
+
+		UpdateAreas ();
+
+		if ( renderer )
+			renderer->OnUpdate ();
+
+		return;
+	}
+
+	if ( message == eGXUIMessage::DraggableAreaSetMinimumWidth )
+	{
+		const GXFloat* width = static_cast<const GXFloat*> ( data );
+		minimumSize.SetX ( *width );
+
+		if ( boundsLocal.GetWidth () >= minimumSize.GetX () ) return;
+
+		Resize ( boundsLocal.min.GetX (), boundsLocal.min.GetY (), minimumSize.GetX (), boundsLocal.GetHeight () );
+
+		return;
+	}
+
+	if ( message == eGXUIMessage::DraggableAreaSetMinimumHeight )
+	{
+		const GXFloat* height = static_cast<const GXFloat*> ( data );
+		minimumSize.SetY ( *height );
+
+		if ( boundsLocal.GetHeight () >= minimumSize.GetY () ) return;
+
+		Resize ( boundsLocal.min.GetX (), boundsLocal.min.GetY (), boundsLocal.GetWidth (), minimumSize.GetY () );
+		return;
+	}
+
+	if ( message == eGXUIMessage::Drag )
+	{
+		const GXVec2* delta = static_cast<const GXVec2*> ( data );
+
+		GXAABB newBounds;
+		newBounds.AddVertex ( boundsLocal.min.GetX () + delta->GetX (), boundsLocal.min.GetY () + delta->GetY (), boundsLocal.min.GetZ () );
+		newBounds.AddVertex ( boundsLocal.max.GetX () + delta->GetX (), boundsLocal.max.GetY () + delta->GetY (), boundsLocal.max.GetZ () );
+
+		UpdateBoundsWorld ( newBounds );
+		UpdateAreas ();
+
+		if ( renderer )
+			renderer->OnUpdate ();
+
+		GXWidgetIterator iterator;
+		GXWidget* p = iterator.Init ( childs );
+
+		while ( p )
+		{
+			if ( p->IsDraggable () )
+			{
+				p->OnMessage ( eGXUIMessage::Drag, data );
+			}
+			else
+			{
+				const GXAABB& bounds = p->GetBoundsLocal ();
+				memcpy ( &newBounds, &bounds, sizeof ( GXAABB ) );
+				p->OnMessage ( eGXUIMessage::Resize, &newBounds );
+			}
+
+			p = iterator.GetNext ();
+		}
+
+		return;
+	}
+
+	GXWidget::OnMessage ( message, data );
 }
 
 GXVoid GXUIDragableArea::SetMinimumWidth ( GXFloat width )
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_DRAGGABLE_AREA_SET_MINIMUM_WIDTH, &width, sizeof ( GXFloat ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::DraggableAreaSetMinimumWidth, &width, sizeof ( GXFloat ) );
 }
 
 GXFloat GXUIDragableArea::GetMinimumWidth () const
@@ -533,7 +534,7 @@ GXFloat GXUIDragableArea::GetMinimumWidth () const
 
 GXVoid GXUIDragableArea::SetMinimumHeight ( GXFloat height )
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_DRAGGABLE_AREA_SET_MINIMUM_HEIGHT, &height, sizeof ( GXFloat ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::DraggableAreaSetMinimumHeight, &height, sizeof ( GXFloat ) );
 }
 
 GXFloat GXUIDragableArea::GetMinimumHeight () const
@@ -543,7 +544,7 @@ GXFloat GXUIDragableArea::GetMinimumHeight () const
 
 GXVoid GXUIDragableArea::SetHeaderHeight ( GXFloat height )
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_DRAGGABLE_AREA_SET_HEADER_HEIGHT, &height, sizeof ( GXFloat ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::DraggableAreaSetHeaderHeght, &height, sizeof ( GXFloat ) );
 }
 
 GXFloat GXUIDragableArea::GetHeaderHeight () const
@@ -553,7 +554,7 @@ GXFloat GXUIDragableArea::GetHeaderHeight () const
 
 GXVoid GXUIDragableArea::SetBorderThickness ( GXFloat thickness )
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, GX_MSG_DRAGGABLE_AREA_SET_BORDER_THICKNESS, &thickness, sizeof ( GXFloat ) );
+	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::DraggableAreaSetBorderThickness, &thickness, sizeof ( GXFloat ) );
 }
 
 GXFloat GXUIDragableArea::GetBorderThickness () const

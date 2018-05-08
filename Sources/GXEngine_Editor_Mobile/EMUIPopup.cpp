@@ -75,7 +75,7 @@ class EMUIPopupRenderer : public GXWidgetRenderer
 
 EMUIPopupRenderer::EMUIPopupRenderer ( GXUIPopup* widget ):
 	GXWidgetRenderer ( widget ),
-	font ( GXFont::GetFont ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) ) ),
+	font ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) ),
 	surface ( new GXHudSurface ( static_cast<GXUShort> ( widget->GetItemWidth () ), static_cast<GXUShort> ( widget->GetItemHeight () ) ) ),
 	itemNames ( sizeof ( GXWChar* ) )
 {
@@ -84,7 +84,6 @@ EMUIPopupRenderer::EMUIPopupRenderer ( GXUIPopup* widget ):
 
 EMUIPopupRenderer::~EMUIPopupRenderer ()
 {
-	GXFont::RemoveFont ( font );
 	delete surface;
 	GXTexture2D::RemoveTexture ( texture );
 
