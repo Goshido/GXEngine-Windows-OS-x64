@@ -27,10 +27,10 @@ EMFluttershy::EMFluttershy ():
 	// animationSolverPlayer.EnableNormalization ();
 
 	// albedoTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Fluttershy_Diffuse.tga", GX_TRUE, GL_REPEAT, GX_FALSE );
-	albedoTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/soldier.png", GX_TRUE, GL_REPEAT, GX_FALSE );
-	normalTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE, GL_REPEAT, GX_FALSE );
-	emissionTexture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE, GL_REPEAT, GX_FALSE );
-	parameterTexture = GXTexture2D::LoadTexture ( L"Textures/System/Default_Diffuse.tga", GX_FALSE, GL_REPEAT, GX_FALSE );
+	albedoTexture.LoadImage ( L"Textures/Editor Mobile/soldier.png", GX_TRUE, GL_REPEAT, GX_FALSE );
+	normalTexture.LoadImage ( L"Textures/Editor Mobile/Default Normals.tex", GX_FALSE, GL_REPEAT, GX_FALSE );
+	emissionTexture.LoadImage ( L"Textures/Editor Mobile/Default Emission.tex", GX_FALSE, GL_REPEAT, GX_FALSE );
+	parameterTexture.LoadImage ( L"Textures/System/Default_Diffuse.tga", GX_FALSE, GL_REPEAT, GX_FALSE );
 
 	material.SetAlbedoTexture ( albedoTexture );
 	material.SetNormalTexture ( normalTexture );
@@ -46,11 +46,6 @@ EMFluttershy::EMFluttershy ():
 EMFluttershy::~EMFluttershy ()
 {
 	animationInfo.Cleanup ();
-
-	GXTexture2D::RemoveTexture ( albedoTexture );
-	GXTexture2D::RemoveTexture ( normalTexture );
-	GXTexture2D::RemoveTexture ( emissionTexture );
-	GXTexture2D::RemoveTexture ( parameterTexture );
 }
 
 GXVoid EMFluttershy::Render ( GXFloat deltaTime )

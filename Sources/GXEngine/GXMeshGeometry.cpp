@@ -15,6 +15,61 @@
 #define CACHE_DIRECTORY_NAME	L"Cache"
 #define CACHE_FILE_EXTENSION	L"cache"
 
+//---------------------------------------------------------------------------------------------------------------------
+
+class GXMesh
+{
+	friend class GXMeshGeometry;
+
+	private:
+		GXUInt					referenceCount;
+		GXMesh*					previous;
+		GLsizeiptr				vboSize;
+
+		static GXMesh*			top;
+		GXMesh*					next;
+
+		GXWChar*				meshFile;
+		GLenum					vboUsage;
+
+	public:
+		GLsizei					totalVertices;
+		GLuint					meshVBO;
+
+	public:
+		GXVoid AddReference ();
+		GXVoid Release ();
+
+		// Method return nullptr if mesh is procedure mesh.
+		// Method returns valid zero terminated string if mesh is not procedure mesh.
+		const GXWChar* GetMeshFileName () const;
+
+		// Method automatically converts static mesh to procedure mesh if needed.
+		GXVoid FillVBO ( const GXVoid* data, GLsizeiptr size, GLenum usage );
+
+		// Method returns valid pointer if mesh was found.
+		// Method returns nullptr if mesh was not found.
+		static GXMesh* GXCALL Find ( const GXWChar* fileName );
+
+		static GXUInt GXCALL GetTotalLoadedMeshes ( const GXWChar** lastMesh );
+
+	private:
+		// Creates procedure mesh.
+		GXMesh ();
+
+		// Creates static mesh.
+		explicit GXMesh ( const GXWChar* fileName );
+
+		~GXMesh ();
+
+		GXBool LoadFromOBJ ( const GXWChar* fileName );
+		GXBool LoadFromSTM ( const GXWChar* fileName );
+		GXBool LoadFromSKM ( const GXWChar* fileName );
+		GXBool LoadFromMESH ( const GXWChar* fileName );
+
+		GXMesh ( const GXMesh &other ) = delete;
+		GXMesh& operator = ( const GXMesh &other ) = delete;
+};
 
 GXMesh* GXMesh::top = nullptr;
 
@@ -141,7 +196,8 @@ GXMesh::~GXMesh ()
 
 	if ( top == this )
 		top = top->next;
-	else
+
+	if ( previous )
 		previous->next = next;
 
 	if ( next )
@@ -361,7 +417,43 @@ GXBool GXMesh::LoadFromMESH ( const GXWChar* fileName )
 	return GX_TRUE;
 }
 
-//----------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
+
+class GXSkin
+{
+	friend class GXMeshGeometry;
+
+	private:
+		GXUInt			referenceCount;
+		GXSkin*			previous;
+
+		static GXSkin*	top;
+		GXSkin*			next;
+
+		GXWChar*		skinFile;
+
+		public:
+		GLsizei			totalVertices;
+		GLuint			skinVBO;
+
+		public:
+		GXVoid AddReference ();
+		GXVoid Release ();
+
+		// Method returns valid pointer or nullptr.
+		static GXSkin* GXCALL Find ( const GXWChar* fileName );
+		static GXUInt GXCALL GetTotalLoadedSkins ( const GXWChar** lastSkin );
+
+	private:
+		explicit GXSkin ( const GXWChar* fileName );
+		~GXSkin ();
+
+		GXBool LoadFromSKM ( const GXWChar* fileName );
+		GXBool LoadFromSKIN ( const GXWChar* fileName );
+
+		GXSkin ( const GXSkin &other ) = delete;
+		GXSkin& operator = ( const GXSkin &other ) = delete;
+};
 
 GXSkin* GXSkin::top = nullptr;
 
@@ -503,7 +595,7 @@ GXBool GXSkin::LoadFromSKIN ( const GXWChar* fileName )
 	return GX_TRUE;
 }
 
-//----------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXMeshGeometry::GXMeshGeometry ():
 	mesh ( nullptr ),
@@ -714,6 +806,16 @@ GXBool GXMeshGeometry::LoadSkin ( const GXWChar* fileName )
 	UpdateGraphicResources ();
 
 	return GX_TRUE;
+}
+
+GXUInt GXCALL GXMeshGeometry::GetTotalLoadedMeshes ( const GXWChar** lastMesh )
+{
+	return GXMesh::GetTotalLoadedMeshes ( lastMesh );
+}
+
+GXUInt GXCALL GXMeshGeometry::GetTotalLoadedSkins ( const GXWChar** lastSkin )
+{
+	return GXSkin::GetTotalLoadedSkins ( lastSkin );
 }
 
 GXVoid GXMeshGeometry::UpdateGraphicResources ()

@@ -139,7 +139,7 @@ GXVoid EMGame::OnInit ()
 	physicsInfoFont = new GXFont ( L"Fonts/trebuc.ttf", static_cast<GXUShort> ( 0.4f * gx_ui_Scale ) );
 	physicsInfo->SetLocation ( 0.5f * ( physicsInfoWidth - w ), 0.5f * ( physicsInfoHeight - h ), 7.0f );
 
-	physicsInfoBackgroundTexture = GXTexture2D::LoadTexture ( L"Textures/System/Default_Diffuse.tga", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
+	physicsInfoBackgroundTexture.LoadImage ( L"Textures/System/Default_Diffuse.tga", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 
 	physicsContactPointMesh = new GXMeshGeometry ();
 	physicsContactPointMesh->LoadMesh ( L"Meshes/System/Unit Sphere.obj" );
@@ -216,8 +216,8 @@ GXVoid EMGame::OnInit ()
 	kinematicPlaneMaterial.SetMetallicScale ( 0.0f );
 	kinematicPlaneMaterial.SetIndexOfRefractionScale ( 0.292f );
 	GXTexture2D* texture = kinematicPlaneMaterial.GetAlbedoTexture ();
-	GXTexture2D::RemoveTexture ( *texture );
-	*texture = GXTexture2D::LoadTexture ( L"Textures/System/GXEngine Logo 4k.png", GX_TRUE, GL_REPEAT, GX_TRUE );
+	texture->FreeResources ();
+	texture->LoadImage ( L"Textures/System/GXEngine Logo 4k.png", GX_TRUE, GL_REPEAT, GX_TRUE );
 	kinematicPlane->EnablePhysicsDebug ();
 
 	transform.SetLocation ( -2.0f, 0.0f, 0.0f );
@@ -289,11 +289,11 @@ GXVoid EMGame::OnInit ()
 	contactNormalMaterial->SetColor ( 0u, 0u, 255u, 255u );
 
 	environmentMap = new GXTextureCubeMap ();
-	*environmentMap = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default LDR environment map.jpg", GX_FALSE, GX_TRUE );
-	// *environmentMap = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default HDR environment map.hdr", GX_TRUE, GX_FALSE );
+	environmentMap->LoadEquirectangularImage ( L"Textures/Editor Mobile/Default LDR environment map.jpg", GX_FALSE, GX_TRUE );
+	//environmentMap->LoadEquirectangularImage ( L"Textures/Editor Mobile/Default HDR environment map.hdr", GX_TRUE, GX_FALSE );
 
 	lightProbeSourceTexture = new GXTextureCubeMap ();
-	*lightProbeSourceTexture = GXTextureCubeMap::LoadEquirectangularTexture ( L"Textures/Editor Mobile/Default HDR environment map.hdr", GX_TRUE, GX_FALSE );
+	lightProbeSourceTexture->LoadEquirectangularImage ( L"Textures/Editor Mobile/Default HDR environment map.hdr", GX_TRUE, GX_FALSE );
 
 	lightProbe = new EMLightProbe ();
 	lightProbe->SetEnvironmentMap ( *lightProbeSourceTexture );
@@ -502,11 +502,8 @@ GXVoid EMGame::OnDestroy ()
 
 	GXSafeDelete ( lightProbe );
 
-	GXTextureCubeMap::RemoveTexture ( *lightProbeSourceTexture );
-	GXSafeDelete ( lightProbeSourceTexture );
-
-	GXTextureCubeMap::RemoveTexture ( *environmentMap );
-	GXSafeDelete ( environmentMap );
+	delete lightProbeSourceTexture;
+	delete environmentMap;
 
 	GXSafeDelete ( contactNormalMaterial );
 	GXSafeDelete ( contactNormalMesh );
@@ -536,7 +533,7 @@ GXVoid EMGame::OnDestroy ()
 
 	GXSafeDelete ( physicsContactPointMaterial );
 	GXSafeDelete ( physicsContactPointMesh );
-	GXTexture2D::RemoveTexture ( physicsInfoBackgroundTexture );
+	physicsInfoBackgroundTexture.FreeResources ();
 	delete physicsInfoFont;
 	GXSafeDelete ( physicsInfo );
 

@@ -10,97 +10,6 @@
 #include <GXCommon/GXMath.h>
 
 
-class GXMeshGeometry;
-class GXMesh
-{
-	friend class GXMeshGeometry;
-
-	private:
-		GXUInt					referenceCount;
-		GXMesh*					previous;
-		GLsizeiptr				vboSize;
-
-		static GXMesh*			top;
-		GXMesh*					next;
-
-		GXWChar*				meshFile;
-		GLenum					vboUsage;
-
-	public:
-		GLsizei					totalVertices;
-		GLuint					meshVBO;
-
-	public:
-		GXVoid AddReference ();
-		GXVoid Release ();
-
-		// Method return nullptr if mesh is procedure mesh.
-		// Method returns valid zero terminated string if mesh is not procedure mesh.
-		const GXWChar* GetMeshFileName () const;
-
-		// Method automatically converts static mesh to procedure mesh if needed.
-		GXVoid FillVBO ( const GXVoid* data, GLsizeiptr size, GLenum usage );
-
-		// Method returns valid pointer if mesh was found.
-		// Method returns nullptr if mesh was not found.
-		static GXMesh* GXCALL Find ( const GXWChar* fileName );
-
-		static GXUInt GXCALL GetTotalLoadedMeshes ( const GXWChar** lastMesh );
-
-	private:
-		// Creates procedure mesh.
-		GXMesh ();
-
-		// Creates static mesh.
-		explicit GXMesh ( const GXWChar* fileName );
-
-		~GXMesh ();
-
-		GXBool LoadFromOBJ ( const GXWChar* fileName );
-		GXBool LoadFromSTM ( const GXWChar* fileName );
-		GXBool LoadFromSKM ( const GXWChar* fileName );
-		GXBool LoadFromMESH ( const GXWChar* fileName );
-
-		GXMesh ( const GXMesh &other ) = delete;
-		GXMesh& operator = ( const GXMesh &other ) = delete;
-};
-
-class GXSkin
-{
-	friend class GXMeshGeometry;
-
-	private:
-		GXUInt			referenceCount;
-		GXSkin*			previous;
-
-		static GXSkin*	top;
-		GXSkin*			next;
-
-		GXWChar*		skinFile;
-
-	public:
-		GLsizei			totalVertices;
-		GLuint			skinVBO;
-
-	public:
-		GXVoid AddReference ();
-		GXVoid Release ();
-
-		// Method returns valid pointer or nullptr.
-		static GXSkin* GXCALL Find ( const GXWChar* fileName );
-		static GXUInt GXCALL GetTotalLoadedSkins ( const GXWChar** lastSkin );
-
-	private:
-		explicit GXSkin ( const GXWChar* fileName );
-		~GXSkin ();
-
-		GXBool LoadFromSKM ( const GXWChar* fileName );
-		GXBool LoadFromSKIN ( const GXWChar* fileName );
-
-		GXSkin ( const GXSkin &other ) = delete;
-		GXSkin& operator = ( const GXSkin &other ) = delete;
-};
-
 enum class eGXMeshStreamIndex : GLuint
 {
 	CurrenVertex		= 0u,
@@ -114,6 +23,8 @@ enum class eGXMeshStreamIndex : GLuint
 	Color				= 8u
 };
 
+class GXMesh;
+class GXSkin;
 class GXMeshGeometry
 {
 	private:
@@ -152,6 +63,9 @@ class GXMeshGeometry
 
 		// Unloads previous skin if it exists.
 		GXBool LoadSkin ( const GXWChar* fileName );
+
+		static GXUInt GXCALL GetTotalLoadedMeshes ( const GXWChar** lastMesh );
+		static GXUInt GXCALL GetTotalLoadedSkins ( const GXWChar** lastSkin );
 
 	private:
 		GXVoid UpdateGraphicResources ();

@@ -14,13 +14,13 @@ GXSkinningMaterial::GXSkinningMaterial ():
 	static const GLchar* transformFeedbackOutputNames[ 5 ] = { "v_vertex", "v_uv", "v_normal", "v_tangent", "v_bitangent" };
 
 	GXShaderProgramInfo si;
-	si.vs = VERTEX_SHADER;
-	si.gs = GEOMETRY_SHADER;
-	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 0;
+	si.vertexShader = VERTEX_SHADER;
+	si.geometryShader = GEOMETRY_SHADER;
+	si.fragmentShader = FRAGMENT_SHADER;
+	si.samplers = 0;
 	si.samplerNames = nullptr;
 	si.samplerLocations = nullptr;
-	si.numTransformFeedbackOutputs = 5;
+	si.transformFeedbackOutputs = 5;
 	si.transformFeedbackOutputNames = transformFeedbackOutputNames;
 
 	shaderProgram.Init ( si );

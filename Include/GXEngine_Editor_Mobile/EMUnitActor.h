@@ -13,11 +13,12 @@ class EMUnitActor : public EMActor
 	private:
 		EMMesh								mesh;
 
-		EMCookTorranceCommonPassMaterial	commonPassMaterial;
 		GXTexture2D							albedoTexture;
 		GXTexture2D							normalTexture;
 		GXTexture2D							emissionTexture;
 		GXTexture2D							parameterTexture;
+
+		EMCookTorranceCommonPassMaterial	commonPassMaterial;
 
 	public:
 		explicit EMUnitActor ( const GXWChar* name, const GXTransform &transform );

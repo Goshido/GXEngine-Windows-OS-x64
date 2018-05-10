@@ -112,13 +112,11 @@ class EMUIFileListBoxRenderer : public GXWidgetRenderer
 
 EMUIFileListBoxRenderer::EMUIFileListBoxRenderer ( GXUIListBox* widget ) :
 	GXWidgetRenderer ( widget ),
-	font ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) )
+	font ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) ),
+	rectangle ( RECTANGLE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE ),
+	fileIcon ( FILE_ICON, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE ),
+	folderIcon ( FOLDER_ICON, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE )
 {
-
-	rectangle = GXTexture2D::LoadTexture ( RECTANGLE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
-	fileIcon = GXTexture2D::LoadTexture ( FILE_ICON, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
-	folderIcon = GXTexture2D::LoadTexture ( FOLDER_ICON, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
-
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
 	surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
@@ -126,9 +124,6 @@ EMUIFileListBoxRenderer::EMUIFileListBoxRenderer ( GXUIListBox* widget ) :
 EMUIFileListBoxRenderer::~EMUIFileListBoxRenderer ()
 {
 	delete surface;
-	GXTexture2D::RemoveTexture ( rectangle );
-	GXTexture2D::RemoveTexture ( folderIcon );
-	GXTexture2D::RemoveTexture ( fileIcon );
 }
 
 GXVoid EMUIFileListBoxRenderer::OnRefresh ()

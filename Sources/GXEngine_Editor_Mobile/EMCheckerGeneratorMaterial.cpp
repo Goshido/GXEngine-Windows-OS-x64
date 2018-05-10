@@ -27,13 +27,13 @@ EMCheckerGeneratorMaterial::EMCheckerGeneratorMaterial ():
 	doubleElementSize ( DEFAULT_ELEMENT_WIDTH * 2.0f, DEFAULT_ELEMENT_HEIGHT * 2.0f )
 {
 	GXShaderProgramInfo si;
-	si.vs = VERTEX_SHADER;
-	si.gs = GEOMETRY_SHADER;
-	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 0u;
+	si.vertexShader = VERTEX_SHADER;
+	si.geometryShader = GEOMETRY_SHADER;
+	si.fragmentShader = FRAGMENT_SHADER;
+	si.samplers = 0u;
 	si.samplerNames = nullptr;
 	si.samplerLocations = nullptr;
-	si.numTransformFeedbackOutputs = 0;
+	si.transformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
 	shaderProgram.Init ( si );

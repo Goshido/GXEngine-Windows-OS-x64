@@ -19,19 +19,19 @@ EMGaussVerticalBlurMaterial::EMGaussVerticalBlurMaterial ( eEMGaussVerticalBlurK
 	static const GLuint samplerLocations[ 1 ] = { IMAGE_SLOT };
 
 	GXShaderProgramInfo si;
-	si.numSamplers = 1u;
+	si.samplers = 1u;
 	si.samplerNames = samplerNames;
 	si.samplerLocations = samplerLocations;
-	si.numTransformFeedbackOutputs = 0;
+	si.transformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
 
 	switch ( kernelType )
 	{
 		case eEMGaussVerticalBlurKernelType::OneChannelFivePixel:
-			si.vs = VERTEX_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL;
-			si.gs = GEOMETRY_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL;
-			si.fs = FRAGMENT_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL;
+			si.vertexShader = VERTEX_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL;
+			si.geometryShader = GEOMETRY_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL;
+			si.fragmentShader = FRAGMENT_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL;
 		break;
 
 		default:

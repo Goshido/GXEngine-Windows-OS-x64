@@ -20,10 +20,9 @@
 
 EMScaleGismo::EMScaleGismo () :
 	isVisible ( GX_TRUE ),
-	mesh ( SCALE_GISMO_MESH )
+	mesh ( SCALE_GISMO_MESH ),
+	texture ( L"Textures/Editor Mobile/Gismo Texture.tex", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE )
 {
-	texture = GXTexture2D::LoadTexture ( L"Textures/Editor Mobile/Gismo Texture.tex", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
-
 	unlitMaterial.SetColor ( TEXTURE_COLOR_R, TEXTURE_COLOR_G, TEXTURE_COLOR_B, TEXTURE_COLOR_A );
 	unlitMaterial.SetTexture ( texture );
 	unlitMaterial.SetTextureScale ( TEXTURE_SCALE_X, TEXTURE_SCALE_Y );
@@ -32,7 +31,7 @@ EMScaleGismo::EMScaleGismo () :
 
 EMScaleGismo::~EMScaleGismo ()
 {
-	GXTexture2D::RemoveTexture ( texture );
+	// NOTHING
 }
 
 GXVoid EMScaleGismo::Hide ()

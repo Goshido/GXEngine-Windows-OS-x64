@@ -22,10 +22,10 @@
 EMMeshActor::EMMeshActor ( const GXWChar* name, const GXTransform& transform ):
 	EMActor ( name, eEMActorType::Mesh, transform )
 {
-	albedo = GXTexture2D::LoadTexture ( DEFAULT_ALBEDO_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
-	normal = GXTexture2D::LoadTexture ( DEFAULT_NORMAL_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
-	emission = GXTexture2D::LoadTexture ( DEFAULT_EMISSION_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
-	parameter = GXTexture2D::LoadTexture ( DEFAULT_PARAMETER_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
+	albedo.LoadImage ( DEFAULT_ALBEDO_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
+	normal.LoadImage ( DEFAULT_NORMAL_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
+	emission.LoadImage ( DEFAULT_EMISSION_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
+	parameter.LoadImage ( DEFAULT_PARAMETER_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
 
 	material.SetAlbedoTexture ( albedo );
 	material.SetNormalTexture ( normal );
@@ -41,10 +41,7 @@ EMMeshActor::EMMeshActor ( const GXWChar* name, const GXTransform& transform ):
 
 EMMeshActor::~EMMeshActor ()
 {
-	GXTexture2D::RemoveTexture ( albedo );
-	GXTexture2D::RemoveTexture ( normal );
-	GXTexture2D::RemoveTexture ( emission );
-	GXTexture2D::RemoveTexture ( parameter );
+	// NOTHING
 }
 
 GXVoid EMMeshActor::OnDrawCommonPass ( GXFloat deltaTime )

@@ -11,8 +11,8 @@ class EMEnvironment
 {
 	private:
 		EMMesh						cube;
+		GXTextureCubeMap*			environment;
 
-		GXTextureCubeMap			environment;
 		EMEnvironmentMapMaterial	environmentMapMaterial;
 
 		static EMEnvironment*		instance;

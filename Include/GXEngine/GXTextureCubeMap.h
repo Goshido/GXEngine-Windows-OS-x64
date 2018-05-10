@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_TEXTURE_CUBE_MAP
 #define GX_TEXTURE_CUBE_MAP
@@ -14,35 +14,40 @@ class GXTextureCubeMapEntry;
 class GXTextureCubeMap
 {
 	private:
-		GXUShort			faceLength;
-		GXUByte				numChannels;
-		GXUByte				lods;
-
-		GLint				internalFormat;
-		GLint				unpackAlignment;
-		GLenum				format;
-		GLenum				type;
-
-		GXUByte				textureUnit;
-		GLuint				textureObject;
-
-		GXBool				isGenerateMipmap;
-		GLuint				sampler;
+		GXTextureCubeMapEntry*	textureCubeMapEntry;
+		GXUByte					textureUnit;
 
 	public:
+		// Creates uninitiated texture resource.
 		GXTextureCubeMap ();
-		explicit GXTextureCubeMap ( GXUShort length, GLint internalFormat, GXBool isGenerateMipmap );
+
+		// Creates program texture resource.
+		explicit GXTextureCubeMap ( GXUShort faceLength, GLint internalFormat, GXBool isGenerateMipmap );
+		
+		// Creates reference counting texture resource.
+		explicit GXTextureCubeMap ( const GXWChar* equirectangularImage, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection );
+		
 		~GXTextureCubeMap ();
 
 		GXUShort GetFaceLength () const;
 		GXUByte GetChannelNumber () const;
 		GXUByte GetLevelOfDetailNumber () const;
 
-		static GXTextureCubeMap& GXCALL LoadEquirectangularTexture ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection );
-		static GXVoid GXCALL RemoveTexture ( GXTextureCubeMap& texture );
-		static GXUInt GetTotalLoadedTextures ( const GXWChar** lastTexture );
+		// Existing texture resource will be released.
+		// Supported image formats:
+		// - 24, 34 bit TGA without RLE compression
+		// - JPEG
+		// - PNG
+		// - HDR
+		GXVoid LoadEquirectangularImage ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection );
 
+		// If object holds reference counting resource then method releases that resource and makes new
+		// texture resource with specified pixel data. Face length, internal format and generate mipmap intend
+		// will be same as old reference counting resource.
+		// If object holds program texture then method will update pixel data only.
 		GXVoid FillWholePixelData ( const GXVoid* data, GLenum target );
+
+		// This method will do nothing if texture resource is created without generate mipmap intend.
 		GXVoid UpdateMipmaps ();
 
 		GXVoid Bind ( GXUByte unit );
@@ -50,16 +55,15 @@ class GXTextureCubeMap
 
 		GLuint GetTextureObject () const;
 
-		GXVoid InitResources ( GXUShort textureFaceLength, GLint textureInternalFormat, GXBool isGenerateMipmapPolicy );
+		GXBool IsInited () const;
+		GXVoid InitResources ( GXUShort faceLength, GLint internalFormat, GXBool isGenerateMipmap );
 		GXVoid FreeResources ();
 
-		GXBool operator == ( const GXTextureCubeMapEntry &other ) const;
-		GXVoid operator = ( const GXTextureCubeMap &other );
+		static GXUInt GXCALL GetTotalLoadedTextures ( const GXWChar** lastTexture );
 
 	private:
-		static GXVoid GXCALL ProjectFaces ( GLuint fbo, GLuint textureObject, GXTexture2D &equirectangularTexture, GXBool isApplyGammaCorrection );
-
 		GXTextureCubeMap ( const GXTextureCubeMap &other ) = delete;
+		GXTextureCubeMap& operator = ( const GXTextureCubeMap &other ) = delete;
 };
 
 

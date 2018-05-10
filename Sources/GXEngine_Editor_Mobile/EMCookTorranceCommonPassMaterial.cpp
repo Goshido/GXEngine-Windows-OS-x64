@@ -90,13 +90,13 @@ EMCookTorranceCommonPassMaterial::EMCookTorranceCommonPassMaterial ():
 	static const GLuint samplerLocations[ 4 ] = { ALBEDO_SLOT, NORMAL_SLOT, EMISSION_SLOT, PARAMETER_SLOT };
 
 	GXShaderProgramInfo si;
-	si.vs = VERTEX_SHADER;
-	si.gs = GEOMETRY_SHADER;
-	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 4u;
+	si.vertexShader = VERTEX_SHADER;
+	si.geometryShader = GEOMETRY_SHADER;
+	si.fragmentShader = FRAGMENT_SHADER;
+	si.samplers = 4u;
 	si.samplerNames = samplerNames;
 	si.samplerLocations = samplerLocations;
-	si.numTransformFeedbackOutputs = 0;
+	si.transformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
 	shaderProgram.Init ( si );

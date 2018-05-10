@@ -5,7 +5,6 @@
 #define IMAGE_SLOT				0u
 #define RETINA_FILTER_SLOT		1u
 
-#define INVALID_TEXTURE_OBJECT	0u
 #define MINIMUM_U				0.0
 #define MAXIMUM_U				1.0
 #define MINIMUM_V				0.0
@@ -26,13 +25,13 @@ EMImportantAreaFilterMaterial::EMImportantAreaFilterMaterial ():
 	static const GLuint samplerLocations[ 3 ] = { IMAGE_SLOT, RETINA_FILTER_SLOT };
 
 	GXShaderProgramInfo si;
-	si.vs = VERTEX_SHADER;
-	si.gs = GEOMETRY_SHADER;
-	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 2u;
+	si.vertexShader = VERTEX_SHADER;
+	si.geometryShader = GEOMETRY_SHADER;
+	si.fragmentShader = FRAGMENT_SHADER;
+	si.samplers = 2u;
 	si.samplerNames = samplerNames;
 	si.samplerLocations = samplerLocations;
-	si.numTransformFeedbackOutputs = 0;
+	si.transformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
 	shaderProgram.Init ( si );
@@ -40,8 +39,6 @@ EMImportantAreaFilterMaterial::EMImportantAreaFilterMaterial ():
 
 EMImportantAreaFilterMaterial::~EMImportantAreaFilterMaterial ()
 {
-	if ( retinaFilterTexture.GetTextureObject () == INVALID_TEXTURE_OBJECT ) return;
-
 	retinaFilterTexture.FreeResources ();
 }
 
@@ -74,7 +71,7 @@ GXVoid EMImportantAreaFilterMaterial::SetImageTexture ( GXTexture2D &texture )
 
 	GXUShort effectiveLength = height < width ? height : width;
 
-	if ( effectiveLength == retinaFilterTexture.GetHeight () ) return;
+	if ( retinaFilterTexture.IsInited () && effectiveLength == retinaFilterTexture.GetHeight () ) return;
 
 	GenerateRetinaFilterTexture ( effectiveLength );
 }
@@ -135,7 +132,7 @@ GXVoid EMImportantAreaFilterMaterial::GenerateRetinaFilterTexture ( GXUShort eff
 
 	free ( probabilityDensitySamples );
 
-	if ( retinaFilterTexture.GetTextureObject () != INVALID_TEXTURE_OBJECT )
+	if ( retinaFilterTexture.IsInited () )
 		retinaFilterTexture.FreeResources ();
 
 	retinaFilterTexture.InitResources ( effectiveLength, effectiveLength, GL_R32F, GX_FALSE, GL_CLAMP_TO_EDGE );

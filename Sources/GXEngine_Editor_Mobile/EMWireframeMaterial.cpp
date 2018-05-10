@@ -7,23 +7,23 @@
 #define DEFAULT_COLOR_BLUE		0u
 #define DEFAULT_COLOR_ALPHA		255u
 
-#define VERTEX_SHADER		L"Shaders/Editor Mobile/VertexOnly_vs.txt"
-#define GEOMETRY_SHADER		L"Shaders/System/TriangleToLines_gs.txt"
-#define FRAGMENT_SHADER		L"Shaders/Editor Mobile/Color_fs.txt"
+#define VERTEX_SHADER			L"Shaders/Editor Mobile/VertexOnly_vs.txt"
+#define GEOMETRY_SHADER			L"Shaders/System/TriangleToLines_gs.txt"
+#define FRAGMENT_SHADER			L"Shaders/Editor Mobile/Color_fs.txt"
 
 //---------------------------------------------------------------------------------------------------------------------
 
 EMWireframeMaterial::EMWireframeMaterial ():
-	color(static_cast<GXUByte> ( DEFAULT_COLOR_RED ), static_cast<GXUByte> ( DEFAULT_COLOR_GREEN ), static_cast<GXUByte> ( DEFAULT_COLOR_BLUE ), static_cast<GXUByte> ( DEFAULT_COLOR_ALPHA ) )
+	color ( static_cast<GXUByte> ( DEFAULT_COLOR_RED ), static_cast<GXUByte> ( DEFAULT_COLOR_GREEN ), static_cast<GXUByte> ( DEFAULT_COLOR_BLUE ), static_cast<GXUByte> ( DEFAULT_COLOR_ALPHA ) )
 {
 	GXShaderProgramInfo si;
-	si.vs = VERTEX_SHADER;
-	si.gs = GEOMETRY_SHADER;
-	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 0u;
+	si.vertexShader = VERTEX_SHADER;
+	si.geometryShader = GEOMETRY_SHADER;
+	si.fragmentShader = FRAGMENT_SHADER;
+	si.samplers = 0u;
 	si.samplerNames = nullptr;
 	si.samplerLocations = nullptr;
-	si.numTransformFeedbackOutputs = 0;
+	si.transformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
 	shaderProgram.Init ( si );

@@ -13,13 +13,13 @@ class EMPhysicsDrivenActor : public EMActor
 {
 	private:
 		EMWireframeMaterial*				wireframeMaterial;
-
-		GXRigidBody							rigidBody;
-		GXMeshGeometry						mesh;
 		GXTexture2D							albedo;
 		GXTexture2D							normal;
 		GXTexture2D							emission;
 		GXTexture2D							parameter;
+
+		GXRigidBody							rigidBody;
+		GXMeshGeometry						mesh;
 		EMCookTorranceCommonPassMaterial	material;
 
 		GXMeshGeometry						unitSphereMesh;

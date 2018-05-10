@@ -10,16 +10,16 @@
 
 struct GXShaderProgramInfo 
 {
-	const GXWChar*		vs;
-	const GXWChar*		gs;
-	const GXWChar*		fs;
+	const GXWChar*		vertexShader;
+	const GXWChar*		geometryShader;
+	const GXWChar*		fragmentShader;
 
 	const GLchar**		samplerNames;
 	const GLuint*		samplerLocations;
-	GXUInt				numSamplers;
+	GXUInt				samplers;
 
 	const GLchar**		transformFeedbackOutputNames;
-	GLsizei				numTransformFeedbackOutputs;
+	GLsizei				transformFeedbackOutputs;
 };
 
 // Class handles lazy loading reference counting shader program resource creation.
@@ -34,6 +34,7 @@ class GXShaderProgram
 		GXShaderProgram ();
 		~GXShaderProgram ();
 
+		// Releases previous shader program resource if it exists.
 		GXVoid Init ( const GXShaderProgramInfo &info );
 
 		GLuint GetProgram () const;
@@ -41,6 +42,7 @@ class GXShaderProgram
 
 		static GXVoid GXCALL InitPrecompiledShaderProgramSubsystem ();
 		static GXVoid GXCALL DestroyPrecompiledShaderProgramSubsystem ();
+
 		static GXUInt GXCALL GetTotalLoadedShaderPrograms ( const GXWChar** lastVS, const GXWChar** lastGS, const GXWChar** lastFS );
 
 	private:

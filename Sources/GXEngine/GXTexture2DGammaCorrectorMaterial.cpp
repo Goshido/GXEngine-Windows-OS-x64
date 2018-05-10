@@ -20,13 +20,13 @@ GXTexture2DGammaCorrectorMaterial::GXTexture2DGammaCorrectorMaterial ():
 	static const GLuint samplerLocations[ 1 ] = { TEXTURE_SLOT };
 
 	GXShaderProgramInfo si;
-	si.vs = VERTEX_SHADER;
-	si.gs = GEOMETRY_SHADER;
-	si.fs = FRAGMENT_SHADER;
-	si.numSamplers = 1u;
+	si.vertexShader = VERTEX_SHADER;
+	si.geometryShader = GEOMETRY_SHADER;
+	si.fragmentShader = FRAGMENT_SHADER;
+	si.samplers = 1u;
 	si.samplerNames = samplerNames;
 	si.samplerLocations = samplerLocations;
-	si.numTransformFeedbackOutputs = 0;
+	si.transformFeedbackOutputs = 0;
 	si.transformFeedbackOutputNames = nullptr;
 
 	shaderProgram.Init ( si );
@@ -56,7 +56,7 @@ GXVoid GXTexture2DGammaCorrectorMaterial::Unbind ()
 	sRGBTexture->Unbind ();
 }
 
-GXVoid GXTexture2DGammaCorrectorMaterial::SetsRGBTexture ( GXTexture2D &texture )
+GXVoid GXTexture2DGammaCorrectorMaterial::SetSRGBTexture ( GXTexture2D &texture )
 {
 	sRGBTexture = &texture;
 }

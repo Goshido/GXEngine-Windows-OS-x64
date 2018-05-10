@@ -45,9 +45,9 @@ class EMUIDraggableAreaRenderer : public GXWidgetRenderer
 };
 
 EMUIDraggableAreaRenderer::EMUIDraggableAreaRenderer ( GXUIDragableArea* draggableAreaWidget ):
-	GXWidgetRenderer ( draggableAreaWidget )
+	GXWidgetRenderer ( draggableAreaWidget ),
+	background ( BACKGROUND_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE )
 {
-	background = GXTexture2D::LoadTexture ( BACKGROUND_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 	surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
@@ -55,7 +55,6 @@ EMUIDraggableAreaRenderer::EMUIDraggableAreaRenderer ( GXUIDragableArea* draggab
 EMUIDraggableAreaRenderer::~EMUIDraggableAreaRenderer ()
 {
 	delete surface;
-	GXTexture2D::RemoveTexture ( background );
 }
 
 GXVoid EMUIDraggableAreaRenderer::OnRefresh ()

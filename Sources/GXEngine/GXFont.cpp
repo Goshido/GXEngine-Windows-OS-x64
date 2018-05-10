@@ -58,7 +58,7 @@ class GXFontEntry
 		GXFontEntry*	next;
 		GXInt			refs;
 
-		GXTexture2D*	atlases;
+		GXTexture2D**	atlases;
 		GXByte			lastAtlasID;
 		GXUShort		left;
 		GXUShort		top;
@@ -159,7 +159,7 @@ GXBool GXFontEntry::GetGlyph ( GXUInt symbol, GXGlyphInfo &info )
 
 	if ( glyphs[ symbol ].atlasID != ATLAS_UNDEFINED )
 	{
-		info.atlas = atlases + glyph.atlasID;
+		info.atlas = atlases[ glyph.atlasID ];
 		info.min = glyph.min;
 		info.max = glyph.max;
 		info.offsetY = glyph.offsetY;
@@ -172,7 +172,7 @@ GXBool GXFontEntry::GetGlyph ( GXUInt symbol, GXGlyphInfo &info )
 
 	RenderGlyph ( symbol );
 
-	info.atlas = atlases + glyph.atlasID;
+	info.atlas = atlases[ glyph.atlasID ];
 	info.min = glyph.min;
 	info.max = glyph.max;
 	info.offsetY = glyph.offsetY;
@@ -208,7 +208,7 @@ GXTexture2D* GXFontEntry::GetAtlasTexture ( GXByte atlasID )
 		return nullptr;
 	}
 
-	return atlases + atlasID;
+	return atlases[ atlasID ];
 }
 
 GXUInt GXCDECLCALL GXFontEntry::GetTextLength ( GXUInt bufferNumSymbols, const GXWChar* format, va_list parameters )
@@ -282,7 +282,7 @@ GXFontEntry::~GXFontEntry ()
 	if ( lastAtlasID != ATLAS_UNDEFINED )
 	{
 		for ( GXByte i = 0; i <= lastAtlasID; i++ )
-			atlases[ i ].FreeResources ();
+			delete atlases[ i ];
 
 		free ( atlases );
 	}
@@ -354,7 +354,7 @@ GXVoid GXFontEntry::RenderGlyph ( GXUInt symbol )
 			buffer[ h * bitmap.width + w ] = bitmap.buffer[ ( bitmap.rows - 1 - h ) * bitmap.width + w ];
 	}
 
-	atlases[ lastAtlasID ].FillRegionPixelData ( left, bottom, static_cast<GXUShort> ( bitmap.width ), static_cast<GXUShort> ( bitmap.rows ), buffer );
+	atlases[ lastAtlasID ]->FillRegionPixelData ( left, bottom, static_cast<GXUShort> ( bitmap.width ), static_cast<GXUShort> ( bitmap.rows ), buffer );
 
 	free ( buffer );
 
@@ -389,11 +389,11 @@ GXVoid GXFontEntry::CreateAtlas ()
 	if ( lastAtlasID == ATLAS_UNDEFINED )
 	{
 		lastAtlasID = 0;
-		atlases = static_cast<GXTexture2D*> ( malloc ( sizeof ( GXTexture2D ) ) );
+		atlases = static_cast<GXTexture2D**> ( malloc ( sizeof ( GXTexture2D* ) ) );
 	}
 	else
 	{
-		GXTexture2D* temp = static_cast<GXTexture2D*> ( malloc ( ( lastAtlasID + 2 ) * sizeof ( GXTexture2D ) ) );
+		GXTexture2D** temp = static_cast<GXTexture2D**> ( malloc ( ( lastAtlasID + 2 ) * sizeof ( GXTexture2D* ) ) );
 
 		for ( GXByte i = 0u; i < lastAtlasID; i++ )
 			temp[ i ] = atlases[ i ];
@@ -403,8 +403,9 @@ GXVoid GXFontEntry::CreateAtlas ()
 		atlases = temp;
 	}
 
-	atlases[ lastAtlasID ].InitResources ( ATLAS_RESOLUTION, ATLAS_RESOLUTION, GL_R8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	atlases[ lastAtlasID ].FillWholePixelData ( nullptr );
+	GXTexture2D* atlas = new GXTexture2D ( ATLAS_RESOLUTION, ATLAS_RESOLUTION, GL_R8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	atlas->FillWholePixelData ( nullptr );
+	atlases[ lastAtlasID ] = atlas;
 }
 
 //---------------------------------------------------------------------------------------------------------------------

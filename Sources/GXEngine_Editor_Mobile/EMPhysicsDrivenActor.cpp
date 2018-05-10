@@ -29,15 +29,14 @@
 
 EMPhysicsDrivenActor::EMPhysicsDrivenActor ( const GXWChar* name, const GXTransform& transform ):
 	EMActor ( name, eEMActorType::PhysicsDrivenActor, transform ),
-	wireframeMaterial ( nullptr )
+	wireframeMaterial ( nullptr ),
+	albedo ( DEFAULT_ALBEDO_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE ),
+	normal ( DEFAULT_NORMAL_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE ),
+	emission ( DEFAULT_EMISSION_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE ),
+	parameter ( DEFAULT_PARAMETER_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE )
 {
 	rigidBody.SetLocation ( transform.GetLocation () );
 	rigidBody.SetRotaton ( GXQuat ( transform.GetRotation () ) );
-
-	albedo = GXTexture2D::LoadTexture ( DEFAULT_ALBEDO_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
-	normal = GXTexture2D::LoadTexture ( DEFAULT_NORMAL_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
-	emission = GXTexture2D::LoadTexture ( DEFAULT_EMISSION_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
-	parameter = GXTexture2D::LoadTexture ( DEFAULT_PARAMETER_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
 
 	material.SetAlbedoTexture ( albedo );
 	material.SetNormalTexture ( normal );
@@ -56,11 +55,6 @@ EMPhysicsDrivenActor::EMPhysicsDrivenActor ( const GXWChar* name, const GXTransf
 
 EMPhysicsDrivenActor::~EMPhysicsDrivenActor ()
 {
-	GXTexture2D::RemoveTexture ( albedo );
-	GXTexture2D::RemoveTexture ( normal );
-	GXTexture2D::RemoveTexture ( emission );
-	GXTexture2D::RemoveTexture ( parameter );
-
 	GXPhysicsEngine::GetInstance ().GetWorld ().UnregisterRigidBody ( rigidBody );
 
 	if ( !wireframeMaterial ) return;

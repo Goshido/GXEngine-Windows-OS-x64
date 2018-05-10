@@ -10,8 +10,6 @@
 #define DEFAULT_BOUND_RANGE_Y									7.0f
 #define DEFAULT_BOUND_RANGE_Z									7.0f
 
-#define INVALID_TEXTURE_OBJECT									0u
-
 #define DEFAULT_DIFFUSE_IRRADIANCE_CONVOLUTION_ANGLE_STEP		0.025f
 #define DEFAULT_DIFFUSE_IRRADIANCE_RESOLUTION					256u
 
@@ -46,11 +44,10 @@ EMLightProbe::EMLightProbe ():
 	cube.LoadMesh ( CUBE_MESH );
 	screenQuad.LoadMesh ( SCREEN_QUAD_MESH );
 
-	if ( brdfIntegrationMap.GetTextureObject () == INVALID_TEXTURE_OBJECT )
-	{
-		brdfIntegratorMaterial.SetSamplesPerPixel ( DEFAULT_BRDF_INTEGRATION_MAP_SAMPLES_PER_PIXEL );
-		SetBRDFIntegrationMapResolution ( DEFAULT_BRDF_INTEGRATION_MAP_RESOLUTION );
-	}
+	if ( brdfIntegrationMap.IsInited () ) return;
+
+	brdfIntegratorMaterial.SetSamplesPerPixel ( DEFAULT_BRDF_INTEGRATION_MAP_SAMPLES_PER_PIXEL );
+	SetBRDFIntegrationMapResolution ( DEFAULT_BRDF_INTEGRATION_MAP_RESOLUTION );
 }
 
 EMLightProbe::~EMLightProbe ()
@@ -62,13 +59,13 @@ EMLightProbe::~EMLightProbe ()
 	else
 		probes = next;
 
-	if ( diffuseIrradiance.GetTextureObject () != INVALID_TEXTURE_OBJECT )
+	if ( diffuseIrradiance.IsInited () )
 		diffuseIrradiance.FreeResources ();
 
-	if ( prefilteredEnvironmentMap.GetTextureObject () != INVALID_TEXTURE_OBJECT )
+	if ( prefilteredEnvironmentMap.IsInited () )
 		prefilteredEnvironmentMap.FreeResources ();
 
-	if ( !probes && brdfIntegrationMap.GetTextureObject () != INVALID_TEXTURE_OBJECT )
+	if ( !probes && brdfIntegrationMap.IsInited () )
 		brdfIntegrationMap.FreeResources ();
 }
 
@@ -80,10 +77,10 @@ GXVoid EMLightProbe::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 
 GXVoid EMLightProbe::SetEnvironmentMap ( GXTextureCubeMap &cubeMap )
 {
-	environmentMap = cubeMap;
+	environmentMap = &cubeMap;
 	UpdatePrefilteredEnvironmentMap ();
 
-	if ( diffuseIrradiance.GetTextureObject () == INVALID_TEXTURE_OBJECT )
+	if ( !diffuseIrradiance.IsInited () )
 		diffuseIrradiance.InitResources ( DEFAULT_DIFFUSE_IRRADIANCE_RESOLUTION, GL_RGB16F, GL_FALSE );
 
 	UpdateDiffuseIrradiance ();
@@ -110,7 +107,7 @@ GXUInt EMLightProbe::SetDiffuseIrradianceConvolutionAngleStep ( GXFloat radians 
 
 GXVoid EMLightProbe::SetDiffuseIrradianceResolution ( GXUShort resolution )
 {
-	if ( diffuseIrradiance.GetTextureObject () != INVALID_TEXTURE_OBJECT )
+	if ( diffuseIrradiance.IsInited () )
 		diffuseIrradiance.FreeResources ();
 
 	diffuseIrradiance.InitResources ( resolution, GL_RGB16F, GX_FALSE );
@@ -119,7 +116,7 @@ GXVoid EMLightProbe::SetDiffuseIrradianceResolution ( GXUShort resolution )
 
 GXVoid EMLightProbe::SetBRDFIntegrationMapResolution ( GXUShort length )
 {
-	if ( brdfIntegrationMap.GetTextureObject () != INVALID_TEXTURE_OBJECT )
+	if ( brdfIntegrationMap.IsInited () )
 		brdfIntegrationMap.FreeResources ();
 
 	brdfIntegrationMap.InitResources ( length, length, GL_RG16F, GL_TRUE, GL_CLAMP_TO_EDGE );
@@ -184,7 +181,7 @@ GXVoid EMLightProbe::UpdateDiffuseIrradiance ()
 	if ( status != GL_FRAMEBUFFER_COMPLETE )
 		GXLogW ( L"EMLightProbe::UpdateDiffuseIrradiance::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
-	diffuseIrradianceGeneratorMaterial.SetEnvironmentMap ( environmentMap );
+	diffuseIrradianceGeneratorMaterial.SetEnvironmentMap ( *environmentMap );
 	diffuseIrradianceGeneratorMaterial.SetAngleStep ( DEFAULT_DIFFUSE_IRRADIANCE_CONVOLUTION_ANGLE_STEP );
 	diffuseIrradianceGeneratorMaterial.Bind ( GXTransform::GetNullTransform () );
 	cube.Render ();
@@ -201,7 +198,7 @@ GXVoid EMLightProbe::UpdatePrefilteredEnvironmentMap ()
 	GXOpenGLState state;
 	state.Save ();
 
-	GXUShort length = environmentMap.GetFaceLength ();
+	GXUShort length = environmentMap->GetFaceLength ();
 
 	GLuint fbo;
 	glGenFramebuffers ( 1, &fbo );
@@ -228,12 +225,12 @@ GXVoid EMLightProbe::UpdatePrefilteredEnvironmentMap ()
 	static const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers ( 1, buffers );
 
-	if ( prefilteredEnvironmentMap.GetTextureObject () != INVALID_TEXTURE_OBJECT )
+	if ( prefilteredEnvironmentMap.IsInited () )
 		prefilteredEnvironmentMap.FreeResources ();
 
 	prefilteredEnvironmentMap.InitResources ( length, GL_RGB16F, GL_TRUE );
 
-	prefilteredEnvironmentMapGeneratorMaterial.SetEnvironmentMap ( environmentMap );
+	prefilteredEnvironmentMapGeneratorMaterial.SetEnvironmentMap ( *environmentMap );
 
 	GXFloat roughnessStep = 1.0f / static_cast<GXFloat> ( prefilteredEnvironmentMap.GetLevelOfDetailNumber () - 1 );
 	GLint mipmapLevel = 0;

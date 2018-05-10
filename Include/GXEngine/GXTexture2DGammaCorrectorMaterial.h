@@ -21,7 +21,7 @@ class GXTexture2DGammaCorrectorMaterial : public GXMaterial
 		GXVoid Bind ( const GXTransform &transform ) override;
 		GXVoid Unbind () override;
 
-		GXVoid SetsRGBTexture ( GXTexture2D &texture );
+		GXVoid SetSRGBTexture ( GXTexture2D &texture );
 
 	private:
 		GXTexture2DGammaCorrectorMaterial ( const GXTexture2DGammaCorrectorMaterial &other ) = delete;

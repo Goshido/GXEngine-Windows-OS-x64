@@ -13,6 +13,7 @@ class EMScaleGismo : public GXTransform
 		GXBool						isVisible;
 		EMMesh						mesh;
 		GXTexture2D					texture;
+
 		GXUnlitTexture2DMaterial	unlitMaterial;
 
 	public:

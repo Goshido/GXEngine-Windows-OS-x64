@@ -24,7 +24,7 @@ EMRotateGismo::EMRotateGismo ():
 	isVisible ( GX_TRUE ),
 	mesh ( ROTATE_GISMO_MESH )
 {
-	texture = GXTexture2D::LoadTexture ( ROTATE_GISMO_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
+	texture.LoadImage ( ROTATE_GISMO_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
 
 	unlitMaterial.SetColor ( TEXTURE_COLOR_R, TEXTURE_COLOR_G, TEXTURE_COLOR_B, TEXTURE_COLOR_A );
 	unlitMaterial.SetTexture ( texture );
@@ -34,7 +34,7 @@ EMRotateGismo::EMRotateGismo ():
 
 EMRotateGismo::~EMRotateGismo ()
 {
-	GXTexture2D::RemoveTexture ( texture );
+	// NOTHING
 }
 
 GXVoid EMRotateGismo::Hide ()

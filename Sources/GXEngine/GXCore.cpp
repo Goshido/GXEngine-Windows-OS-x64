@@ -168,10 +168,10 @@ GXVoid GXCore::CheckMemoryLeak ()
 	GXUInt textureCubeMaps = GXTextureCubeMap::GetTotalLoadedTextures ( &lastTextureCubeMap );
 
 	const GXWChar* lastMesh = nullptr;
-	GXUInt meshes = GXMesh::GetTotalLoadedMeshes ( &lastMesh );
+	GXUInt meshes = GXMeshGeometry::GetTotalLoadedMeshes ( &lastMesh );
 
 	const GXWChar* lastSkin = nullptr;
-	GXUInt skins = GXSkin::GetTotalLoadedSkins ( &lastSkin );
+	GXUInt skins = GXMeshGeometry::GetTotalLoadedSkins ( &lastSkin );
 
 	if ( ( fonts + shaders + sounds + texture2Ds + textureCubeMaps + meshes + skins ) != 0 )
 	{

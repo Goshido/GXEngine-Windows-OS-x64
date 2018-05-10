@@ -26,15 +26,14 @@
 
 EMUnitActor::EMUnitActor ( const GXWChar* name, const GXTransform &transform ):
 	EMActor ( name, eEMActorType::UnitCube, transform ),
-	mesh ( CUBE_MESH )
+	mesh ( CUBE_MESH ),
+	albedoTexture ( ALBEDO_TEXTURE, GX_FALSE, GL_REPEAT, GX_TRUE ),
+	normalTexture ( NORMAL_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE ),
+	emissionTexture ( EMISSION_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE ),
+	parameterTexture ( PARAMETER_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE )
 {
 	OnTransformChanged ();
-
-	albedoTexture = GXTexture2D::LoadTexture ( ALBEDO_TEXTURE, GX_FALSE, GL_REPEAT, GX_TRUE );
-	normalTexture = GXTexture2D::LoadTexture ( NORMAL_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
-	emissionTexture = GXTexture2D::LoadTexture ( EMISSION_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
-	parameterTexture = GXTexture2D::LoadTexture ( PARAMETER_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
-
+	
 	commonPassMaterial.SetAlbedoTexture ( albedoTexture );
 	commonPassMaterial.SetNormalTexture ( normalTexture );
 	commonPassMaterial.SetEmissionTexture ( emissionTexture );
@@ -49,10 +48,7 @@ EMUnitActor::EMUnitActor ( const GXWChar* name, const GXTransform &transform ):
 
 EMUnitActor::~EMUnitActor ()
 {
-	GXTexture2D::RemoveTexture ( albedoTexture );
-	GXTexture2D::RemoveTexture ( normalTexture );
-	GXTexture2D::RemoveTexture ( emissionTexture );
-	GXTexture2D::RemoveTexture ( parameterTexture );
+	// NOTHING
 }
 
 GXVoid EMUnitActor::OnDrawCommonPass ( GXFloat deltaTime )

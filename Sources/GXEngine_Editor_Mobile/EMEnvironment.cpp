@@ -7,7 +7,6 @@
 
 
 #define CUBE_SCALE				7.77f
-#define INVALID_TEXTURE_OBJECT	0u
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -28,7 +27,8 @@ EMEnvironment::~EMEnvironment ()
 
 GXVoid EMEnvironment::SetEnvironmentMap ( GXTextureCubeMap& cubeMap )
 {
-	environment = cubeMap;
+	environment = &cubeMap;
+	environmentMapMaterial.SetEnvironmentMap ( cubeMap );
 }
 
 GXVoid EMEnvironment::SetEnvironmentQuasiDistance ( GXFloat meters )
@@ -38,12 +38,12 @@ GXVoid EMEnvironment::SetEnvironmentQuasiDistance ( GXFloat meters )
 
 GXTextureCubeMap& EMEnvironment::GetEnvironmentMap ()
 {
-	return environment;
+	return *environment;
 }
 
 GXVoid EMEnvironment::Render ( GXFloat deltaTime )
 {
-	if ( environment.GetTextureObject () == INVALID_TEXTURE_OBJECT ) return;
+	if ( !environment || !environment->IsInited () ) return;
 
 	GXOpenGLState state;
 	state.Save ();
@@ -66,14 +66,14 @@ GXVoid EMEnvironment::OnViewerLocationChanged ()
 	cube.SetLocation ( viewerLocation );
 }
 
-EMEnvironment::EMEnvironment () :
-	cube ( L"Meshes/System/Unit Cube.stm" )
+EMEnvironment::EMEnvironment ():
+	cube ( L"Meshes/System/Unit Cube.stm" ),
+	environment ( nullptr )
 {
 	GXRenderer& renderer = GXRenderer::GetInstance ();
 
-	environmentMapMaterial.SetEnvironmentMap ( environment );
 	environmentMapMaterial.SetDepthTexture ( EMRenderer::GetInstance ().GetDepthTexture () );
-	environmentMapMaterial.SetScreenResolution ( (GXUShort)renderer.GetWidth (), (GXUShort)renderer.GetHeight () );
+	environmentMapMaterial.SetScreenResolution ( static_cast<GXUShort> ( renderer.GetWidth () ), static_cast<GXUShort> ( renderer.GetHeight () ) );
 
 	cube.SetScale ( CUBE_SCALE, CUBE_SCALE, CUBE_SCALE );
 

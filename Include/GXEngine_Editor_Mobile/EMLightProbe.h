@@ -19,7 +19,7 @@ class EMLightProbe
 		GXVec3											locationWorld;
 		GXAABB											boundsWorld;
 
-		GXTextureCubeMap								environmentMap;
+		GXTextureCubeMap*								environmentMap;
 
 		GXTextureCubeMap								diffuseIrradiance;
 		EMDiffuseIrradianceGeneratorMaterial			diffuseIrradianceGeneratorMaterial;
