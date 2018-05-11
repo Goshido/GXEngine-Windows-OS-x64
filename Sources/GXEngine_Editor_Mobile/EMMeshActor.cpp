@@ -22,10 +22,10 @@
 EMMeshActor::EMMeshActor ( const GXWChar* name, const GXTransform& transform ):
 	EMActor ( name, eEMActorType::Mesh, transform )
 {
-	albedo.LoadImage ( DEFAULT_ALBEDO_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
-	normal.LoadImage ( DEFAULT_NORMAL_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
-	emission.LoadImage ( DEFAULT_EMISSION_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
-	parameter.LoadImage ( DEFAULT_PARAMETER_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE );
+	albedo.LoadImage ( DEFAULT_ALBEDO_TEXTURE, GX_TRUE, GX_FALSE );
+	normal.LoadImage ( DEFAULT_NORMAL_TEXTURE, GX_TRUE, GX_FALSE );
+	emission.LoadImage ( DEFAULT_EMISSION_TEXTURE, GX_TRUE, GX_FALSE );
+	parameter.LoadImage ( DEFAULT_PARAMETER_TEXTURE, GX_TRUE, GX_FALSE );
 
 	material.SetAlbedoTexture ( albedo );
 	material.SetNormalTexture ( normal );

@@ -66,7 +66,7 @@ class EMUIMenuRenderer : public GXWidgetRenderer
 EMUIMenuRenderer::EMUIMenuRenderer ( GXUIMenu* widget ):
 	GXWidgetRenderer ( widget ),
 	font ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) ),
-	texture ( DEFAULT_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE )
+	texture ( DEFAULT_TEXTURE, GX_FALSE, GX_FALSE )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 	surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );

@@ -6,7 +6,6 @@
 #include <GXEngine_Editor_Mobile/EMUIToneMapperSettings.h>
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXCamera.h>
-#include <GXEngine/GXSamplerUtils.h>
 #include <GXCommon/GXLogger.h>
 
 
@@ -957,25 +956,25 @@ GXVoid EMRenderer::CreateFBO ()
 
 	GXUShort importantAreaSide = height < width ? height : width;
 
-	albedoTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	normalTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE, GL_CLAMP_TO_EDGE );
-	emissionTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE, GL_CLAMP_TO_EDGE );
-	parameterTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	velocityBlurTexture.InitResources ( width, height, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	ssaoOmegaTexture.InitResources ( width, height, GL_R8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	ssaoYottaTexture.InitResources ( width, height, GL_R8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	objectTextures[ 0 ].InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	objectTextures[ 1 ].InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	importantAreaTexture.InitResources ( importantAreaSide, importantAreaSide, GL_RGB16F, GX_TRUE, GL_CLAMP_TO_EDGE );
-	depthStencilTexture.InitResources ( width, height, GL_DEPTH24_STENCIL8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	omegaTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE, GL_CLAMP_TO_EDGE );
-	yottaTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE, GL_CLAMP_TO_EDGE );
+	albedoTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE );
+	normalTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE );
+	emissionTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE );
+	parameterTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE );
+	velocityBlurTexture.InitResources ( width, height, GL_RG8, GX_FALSE );
+	ssaoOmegaTexture.InitResources ( width, height, GL_R8, GX_FALSE );
+	ssaoYottaTexture.InitResources ( width, height, GL_R8, GX_FALSE );
+	objectTextures[ 0 ].InitResources ( width, height, GL_RGBA8, GX_FALSE );
+	objectTextures[ 1 ].InitResources ( width, height, GL_RGBA8, GX_FALSE );
+	importantAreaTexture.InitResources ( importantAreaSide, importantAreaSide, GL_RGB16F, GX_TRUE );
+	depthStencilTexture.InitResources ( width, height, GL_DEPTH24_STENCIL8, GX_FALSE );
+	omegaTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE );
+	yottaTexture.InitResources ( width, height, GL_RGB16F, GX_FALSE );
 
 	GXUShort maxSamples = static_cast<GXUShort> ( motionBlurMaterial.GetMaxBlurSamples () );
 	GXUShort w = static_cast<GXUShort> ( width / maxSamples );
 	GXUShort h = static_cast<GXUShort> ( height / maxSamples );
-	velocityTileMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
-	velocityNeighborMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	velocityTileMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE );
+	velocityNeighborMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE );
 
 	glGenFramebuffers ( 1, &fbo );
 	glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
@@ -1014,8 +1013,8 @@ GXVoid EMRenderer::UpdateMotionBlurSettings ()
 		GXUShort w = static_cast<GXUShort> ( width / newMaxMotionBlurSamples );
 		GXUShort h = static_cast<GXUShort> ( height / newMaxMotionBlurSamples );
 
-		velocityTileMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
-		velocityNeighborMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE, GL_CLAMP_TO_EDGE );
+		velocityTileMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE );
+		velocityNeighborMaxTexture.InitResources ( w, h, GL_RG8, GX_FALSE );
 
 		velocityTileMaxMaterial.SetMaxBlurSamples ( newMaxMotionBlurSamples );
 		velocityNeighborMaxMaterial.SetVelocityTileMaxTextureResolution ( velocityTileMaxTexture.GetWidth (), velocityTileMaxTexture.GetHeight () );

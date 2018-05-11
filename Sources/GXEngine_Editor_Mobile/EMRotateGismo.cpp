@@ -1,6 +1,5 @@
 #include <GXEngine_Editor_Mobile/EMRotateGismo.h>
 #include <GXEngine_Editor_Mobile/EMRenderer.h>
-#include <GXEngine/GXSamplerUtils.h>
 
 
 #define TEXTURE_COLOR_R			255u
@@ -24,7 +23,7 @@ EMRotateGismo::EMRotateGismo ():
 	isVisible ( GX_TRUE ),
 	mesh ( ROTATE_GISMO_MESH )
 {
-	texture.LoadImage ( ROTATE_GISMO_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
+	texture.LoadImage ( ROTATE_GISMO_TEXTURE, GX_FALSE, GX_FALSE );
 
 	unlitMaterial.SetColor ( TEXTURE_COLOR_R, TEXTURE_COLOR_G, TEXTURE_COLOR_B, TEXTURE_COLOR_A );
 	unlitMaterial.SetTexture ( texture );

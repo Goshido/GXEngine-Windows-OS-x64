@@ -71,7 +71,7 @@ class EMUIEditBoxRenderer : public GXWidgetRenderer
 
 EMUIEditBoxRenderer::EMUIEditBoxRenderer ( GXUIEditBox* widget ):
 	GXWidgetRenderer ( widget ),
-	background ( DEFAULT_BACKGROUND, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE )
+	background ( DEFAULT_BACKGROUND, GX_FALSE, GX_FALSE )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
 	surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );

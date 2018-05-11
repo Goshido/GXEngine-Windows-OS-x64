@@ -44,7 +44,7 @@ EMLightProbe::EMLightProbe ():
 	cube.LoadMesh ( CUBE_MESH );
 	screenQuad.LoadMesh ( SCREEN_QUAD_MESH );
 
-	if ( brdfIntegrationMap.IsInited () ) return;
+	if ( brdfIntegrationMap.IsInitialized () ) return;
 
 	brdfIntegratorMaterial.SetSamplesPerPixel ( DEFAULT_BRDF_INTEGRATION_MAP_SAMPLES_PER_PIXEL );
 	SetBRDFIntegrationMapResolution ( DEFAULT_BRDF_INTEGRATION_MAP_RESOLUTION );
@@ -59,13 +59,13 @@ EMLightProbe::~EMLightProbe ()
 	else
 		probes = next;
 
-	if ( diffuseIrradiance.IsInited () )
+	if ( diffuseIrradiance.IsInitialized () )
 		diffuseIrradiance.FreeResources ();
 
-	if ( prefilteredEnvironmentMap.IsInited () )
+	if ( prefilteredEnvironmentMap.IsInitialized () )
 		prefilteredEnvironmentMap.FreeResources ();
 
-	if ( !probes && brdfIntegrationMap.IsInited () )
+	if ( !probes && brdfIntegrationMap.IsInitialized () )
 		brdfIntegrationMap.FreeResources ();
 }
 
@@ -80,7 +80,7 @@ GXVoid EMLightProbe::SetEnvironmentMap ( GXTextureCubeMap &cubeMap )
 	environmentMap = &cubeMap;
 	UpdatePrefilteredEnvironmentMap ();
 
-	if ( !diffuseIrradiance.IsInited () )
+	if ( !diffuseIrradiance.IsInitialized () )
 		diffuseIrradiance.InitResources ( DEFAULT_DIFFUSE_IRRADIANCE_RESOLUTION, GL_RGB16F, GL_FALSE );
 
 	UpdateDiffuseIrradiance ();
@@ -107,7 +107,7 @@ GXUInt EMLightProbe::SetDiffuseIrradianceConvolutionAngleStep ( GXFloat radians 
 
 GXVoid EMLightProbe::SetDiffuseIrradianceResolution ( GXUShort resolution )
 {
-	if ( diffuseIrradiance.IsInited () )
+	if ( diffuseIrradiance.IsInitialized () )
 		diffuseIrradiance.FreeResources ();
 
 	diffuseIrradiance.InitResources ( resolution, GL_RGB16F, GX_FALSE );
@@ -116,10 +116,10 @@ GXVoid EMLightProbe::SetDiffuseIrradianceResolution ( GXUShort resolution )
 
 GXVoid EMLightProbe::SetBRDFIntegrationMapResolution ( GXUShort length )
 {
-	if ( brdfIntegrationMap.IsInited () )
+	if ( brdfIntegrationMap.IsInitialized () )
 		brdfIntegrationMap.FreeResources ();
 
-	brdfIntegrationMap.InitResources ( length, length, GL_RG16F, GL_TRUE, GL_CLAMP_TO_EDGE );
+	brdfIntegrationMap.InitResources ( length, length, GL_RG16F, GL_TRUE );
 	UpdateBRDFIntegrationMap ();
 }
 
@@ -225,7 +225,7 @@ GXVoid EMLightProbe::UpdatePrefilteredEnvironmentMap ()
 	static const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers ( 1, buffers );
 
-	if ( prefilteredEnvironmentMap.IsInited () )
+	if ( prefilteredEnvironmentMap.IsInitialized () )
 		prefilteredEnvironmentMap.FreeResources ();
 
 	prefilteredEnvironmentMap.InitResources ( length, GL_RGB16F, GL_TRUE );

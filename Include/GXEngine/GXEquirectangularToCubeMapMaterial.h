@@ -6,12 +6,14 @@
 
 #include "GXMaterial.h"
 #include "GXTexture2D.h"
+#include "GXSampler.h"
 
 
 class GXEquirectangularToCubeMapMaterial : public GXMaterial
 {
 	private:
 		GXTexture2D*	equirectangularTexture;
+		GXSampler		sampler;
 
 		GXMat4			viewProjectionMatrices[ 6 ];
 		GLint			viewProjectionMatricesLocation;

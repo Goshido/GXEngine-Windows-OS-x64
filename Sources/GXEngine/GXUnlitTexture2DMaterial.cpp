@@ -24,6 +24,7 @@
 
 GXUnlitTexture2DMaterial::GXUnlitTexture2DMaterial ():
 	texture ( nullptr ),
+	sampler ( GL_REPEAT, eGXResampling::None, 1.0f ),
 	color ( static_cast<GXUByte> ( DEFAULT_COLOR_RED ), static_cast<GXUByte> ( DEFAULT_COLOR_GREEN ), static_cast<GXUByte> ( DEFAULT_COLOR_BLUE ), static_cast<GXUByte> ( DEFAULT_COLOR_ALPHA ) ),
 	uvScaleOffset ( DEFAULT_UV_SCALE_X, DEFAULT_UV_SCALE_Y, DEFAULT_UV_OFFSET_X, DEFAULT_UV_OFFSET_Y )
 {
@@ -65,12 +66,14 @@ GXVoid GXUnlitTexture2DMaterial::Bind ( const GXTransform &transfrom )
 	glUniform4fv ( colorLocation, 1, color.data );
 
 	texture->Bind ( TEXTURE_SLOT );
+	sampler.Bind ( TEXTURE_SLOT );
 }
 
 GXVoid GXUnlitTexture2DMaterial::Unbind ()
 {
 	if ( !texture ) return;
 
+	sampler.Unbind ( TEXTURE_SLOT );
 	texture->Unbind ();
 	glUseProgram ( 0u );
 }

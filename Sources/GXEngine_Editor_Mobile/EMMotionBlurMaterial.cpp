@@ -24,6 +24,7 @@ EMMotionBlurMaterial::EMMotionBlurMaterial ():
 	velocityTexture ( nullptr ),
 	depthTexture ( nullptr ),
 	imageTexture ( nullptr ),
+	sampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f ),
 	depthLimit ( DEFAULT_DEPTH_LIMIT ),
 	inverseDepthLimit ( 1.0f / DEFAULT_DEPTH_LIMIT ),
 	maxBlurSamples ( static_cast<GXFloat> ( DEFAULT_MAX_BLUR_SAMPLES ) ),
@@ -69,21 +70,35 @@ GXVoid EMMotionBlurMaterial::Bind ( const GXTransform& /*transform*/ )
 	glUniformMatrix4fv ( inverseProjectionMatrixLocation, 1, GL_FALSE, inverseProjectionMatrix.data );
 
 	velocityNeighborMaxTexture->Bind ( VELOCITY_NEIGHBOR_MAX_SLOT );
+	sampler.Bind ( VELOCITY_NEIGHBOR_MAX_SLOT );
+
 	velocityTexture->Bind ( VELOCITY_SLOT );
+	sampler.Bind ( VELOCITY_SLOT );
+
 	depthTexture->Bind ( DEPTH_SLOT );
+	sampler.Bind ( DEPTH_SLOT );
+
 	imageTexture->Bind ( IMAGE_SLOT );
+	sampler.Bind ( IMAGE_SLOT );
 }
 
 GXVoid EMMotionBlurMaterial::Unbind ()
 {
 	if ( !velocityNeighborMaxTexture || !velocityTexture || !depthTexture || !imageTexture ) return;
 
-	glUseProgram ( 0u );
-
+	sampler.Unbind ( VELOCITY_NEIGHBOR_MAX_SLOT );
 	velocityNeighborMaxTexture->Unbind ();
+
+	sampler.Unbind ( VELOCITY_SLOT );
 	velocityTexture->Unbind ();
+
+	sampler.Unbind ( DEPTH_SLOT );
 	depthTexture->Unbind ();
+
+	sampler.Unbind ( IMAGE_SLOT );
 	imageTexture->Unbind ();
+
+	glUseProgram ( 0u );
 }
 
 GXVoid EMMotionBlurMaterial::SetVelocityNeighborMaxTexture ( GXTexture2D &texture )

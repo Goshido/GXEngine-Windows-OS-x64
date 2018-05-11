@@ -20,9 +20,11 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-EMEnvironmentMapMaterial::EMEnvironmentMapMaterial ():
+EMEnvironmentMapMaterial::EMEnvironmentMapMaterial () :
 	environmentTexture ( nullptr ),
 	depthTexture ( nullptr ),
+	environmentSampler ( GL_CLAMP_TO_EDGE, eGXResampling::Linear, 1.0f ),
+	depthSampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f ),
 	screenResolution ( DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT ),
 	inverseScreenResolution ( 1.0f / DEFAULT_SCREEN_WIDTH, 1.0f / DEFAULT_SCREEN_HEIGHT ),
 	inverseDeltaTime ( 1.0f / DEFAULT_DELTA_TIME ),
@@ -122,16 +124,23 @@ GXVoid EMEnvironmentMapMaterial::Bind ( const GXTransform &transform )
 	glUniform2fv ( velocityBlurLocation, 1, velocityBlur.data );
 
 	environmentTexture->Bind ( ENVIRONMENT_SLOT );
+	environmentSampler.Bind ( ENVIRONMENT_SLOT );
+
 	depthTexture->Bind ( DEPTH_SLOT );
+	depthSampler.Bind ( DEPTH_SLOT );
 }
 
 GXVoid EMEnvironmentMapMaterial::Unbind ()
 {
 	if ( !environmentTexture || !depthTexture ) return;
 
-	glUseProgram ( 0u );
+	environmentSampler.Unbind ( ENVIRONMENT_SLOT );
 	environmentTexture->Unbind ();
+
+	depthSampler.Unbind ( DEPTH_SLOT );
 	depthTexture->Unbind ();
+
+	glUseProgram ( 0u );
 }
 
 GXVoid EMEnvironmentMapMaterial::SetEnvironmentMap ( GXTextureCubeMap &cubeMap )

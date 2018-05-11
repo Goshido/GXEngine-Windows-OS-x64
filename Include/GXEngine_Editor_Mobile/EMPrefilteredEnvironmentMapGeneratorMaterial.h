@@ -4,12 +4,14 @@
 
 #include <GXEngine/GXMaterial.h>
 #include <GXEngine/GXTextureCubeMap.h>
+#include <GXEngine/GXSampler.h>
 
 
 class EMPrefilteredEnvironmentMapGeneratorMaterial : public GXMaterial
 {
 	private:
 		GXTextureCubeMap*		environmentMap;
+		GXSampler				sampler;
 		GXFloat					roughness;
 
 		GXInt					totalSamples;

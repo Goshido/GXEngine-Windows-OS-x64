@@ -4,12 +4,15 @@
 
 #include <GXEngine/GXMaterial.h>
 #include <GXEngine/GXTexture2D.h>
+#include <GXEngine/GXSampler.h>
 
 
 class EMImportantAreaFilterMaterial : public GXMaterial
 {
 	private:
 		GXTexture2D*		imageTexture;
+		GXSampler			sampler;
+
 		GXTexture2D			retinaFilterTexture;
 
 	public:

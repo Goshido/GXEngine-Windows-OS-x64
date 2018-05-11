@@ -139,7 +139,7 @@ GXVoid EMGame::OnInit ()
 	physicsInfoFont = new GXFont ( L"Fonts/trebuc.ttf", static_cast<GXUShort> ( 0.4f * gx_ui_Scale ) );
 	physicsInfo->SetLocation ( 0.5f * ( physicsInfoWidth - w ), 0.5f * ( physicsInfoHeight - h ), 7.0f );
 
-	physicsInfoBackgroundTexture.LoadImage ( L"Textures/System/Default_Diffuse.tga", GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE );
+	physicsInfoBackgroundTexture.LoadImage ( L"Textures/System/Default_Diffuse.tga", GX_FALSE, GX_FALSE );
 
 	physicsContactPointMesh = new GXMeshGeometry ();
 	physicsContactPointMesh->LoadMesh ( L"Meshes/System/Unit Sphere.obj" );
@@ -217,7 +217,7 @@ GXVoid EMGame::OnInit ()
 	kinematicPlaneMaterial.SetIndexOfRefractionScale ( 0.292f );
 	GXTexture2D* texture = kinematicPlaneMaterial.GetAlbedoTexture ();
 	texture->FreeResources ();
-	texture->LoadImage ( L"Textures/System/GXEngine Logo 4k.png", GX_TRUE, GL_REPEAT, GX_TRUE );
+	texture->LoadImage ( L"Textures/System/GXEngine Logo 4k.png", GX_TRUE, GX_TRUE );
 	kinematicPlane->EnablePhysicsDebug ();
 
 	transform.SetLocation ( -2.0f, 0.0f, 0.0f );

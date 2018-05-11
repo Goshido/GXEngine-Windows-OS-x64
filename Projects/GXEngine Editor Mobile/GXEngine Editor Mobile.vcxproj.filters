@@ -120,9 +120,6 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXRenderer.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXEngine\GXSamplerUtils.cpp">
-      <Filter>Source Files\GXEngine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\GXSound.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
@@ -507,6 +504,9 @@
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXTime.cpp">
       <Filter>Source Files\GXCommon\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXSampler.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -666,9 +666,6 @@
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXResource.h">
-      <Filter>Header Files\GXEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\GXEngine\GXSamplerUtils.h">
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXSound.h">
@@ -1021,6 +1018,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\GXCommon\GXWarning.h">
       <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXSampler.h">
+      <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

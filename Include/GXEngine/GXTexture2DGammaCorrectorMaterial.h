@@ -6,12 +6,15 @@
 
 #include "GXMaterial.h"
 #include "GXTexture2D.h"
+#include "GXSampler.h"
 
 
 class GXTexture2DGammaCorrectorMaterial : public GXMaterial
 {
 	private:
 		GXTexture2D*		sRGBTexture;
+		GXSampler			sampler;
+
 		GLint				gammaLocation;
 
 	public:

@@ -448,7 +448,7 @@ class GXShaderProgramEntry
 		GXShaderProgramEntry*						previous;
 		GXShaderProgramEntry*						next;
 
-		GXInt										refs;
+		GXInt										references;
 
 		GXWChar*									vertexShader;
 		GXWChar*									geometryShader;
@@ -497,7 +497,7 @@ GXShaderProgramEntry*				GXShaderProgramEntry::top = nullptr;
 GXShaderProgramEntry::GXShaderProgramEntry ( const GXShaderProgramInfo &info ):
 	previous ( nullptr ),
 	next ( top ),
-	refs ( 1 )
+	references ( 1 )
 {
 	if ( top )
 		top->previous = this;
@@ -624,14 +624,14 @@ GLint GXShaderProgramEntry::GetUniform ( const GLchar* name ) const
 
 GXVoid GXShaderProgramEntry::AddReference ()
 {
-	refs++;
+	references++;
 }
 
 GXVoid GXShaderProgramEntry::Release ()
 {
-	refs--;
+	references--;
 
-	if ( refs > 0 ) return;
+	if ( references > 0 ) return;
 
 	delete this;
 }

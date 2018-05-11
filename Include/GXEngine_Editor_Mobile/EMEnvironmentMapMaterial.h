@@ -5,6 +5,7 @@
 #include <GXEngine/GXMaterial.h>
 #include <GXEngine/GXTextureCubeMap.h>
 #include <GXEngine/GXTexture2D.h>
+#include <GXEngine/GXSampler.h>
 
 
 class EMEnvironmentMapMaterial : public GXMaterial
@@ -12,6 +13,9 @@ class EMEnvironmentMapMaterial : public GXMaterial
 	private:
 		GXTextureCubeMap*		environmentTexture;
 		GXTexture2D*			depthTexture;
+
+		GXSampler				environmentSampler;
+		GXSampler				depthSampler;
 
 		GXVec2					screenResolution;
 		GXVec2					inverseScreenResolution;

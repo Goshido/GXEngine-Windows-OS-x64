@@ -13,6 +13,7 @@
 
 EMToneMapperLuminanceTripletReducerMaterial::EMToneMapperLuminanceTripletReducerMaterial ():
 	luminanceTripletTexture ( nullptr ),
+	sampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f ),
 	levelOfDetail ( static_cast<GXFloat> ( DEFAULT_LEVEL_OF_DETAIL_TO_REDUCE ) )
 {
 	static const GLchar* samplerNames[ 1 ] = { "luminanceTripletSampler" };
@@ -43,15 +44,19 @@ GXVoid EMToneMapperLuminanceTripletReducerMaterial::Bind ( const GXTransform& /*
 
 	glUseProgram ( shaderProgram.GetProgram () );
 	glUniform1f ( levelOfDetailLocation, levelOfDetail );
+
 	luminanceTripletTexture->Bind ( TEXTURE_SLOT );
+	sampler.Bind ( TEXTURE_SLOT );
 }
 
 GXVoid EMToneMapperLuminanceTripletReducerMaterial::Unbind ()
 {
 	if ( !luminanceTripletTexture ) return;
 
-	glUseProgram ( 0u );
+	sampler.Unbind ( TEXTURE_SLOT );
 	luminanceTripletTexture->Unbind ();
+
+	glUseProgram ( 0u );
 }
 
 GXVoid EMToneMapperLuminanceTripletReducerMaterial::SetLuminanceTripletTexture ( GXTexture2D &texture )

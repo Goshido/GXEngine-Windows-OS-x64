@@ -4,6 +4,7 @@
 
 #include <GXEngine/GXMaterial.h>
 #include <GXEngine/GXTexture2D.h>
+#include <GXEngine/GXSampler.h>
 
 
 class EMSSAOApplyMaterial : public GXMaterial
@@ -11,6 +12,8 @@ class EMSSAOApplyMaterial : public GXMaterial
 	private:
 		GXTexture2D*	ssaoTexture;
 		GXTexture2D*	imageTexture;
+
+		GXSampler		sampler;
 
 	public:
 		EMSSAOApplyMaterial ();

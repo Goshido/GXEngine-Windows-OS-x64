@@ -4,6 +4,7 @@
 
 #include <GXEngine/GXMaterial.h>
 #include <GXEngine/GXTexture2D.h>
+#include <GXEngine/GXSampler.h>
 
 
 class EMCookTorranceDirectedLightMaterial : public GXMaterial
@@ -14,6 +15,8 @@ class EMCookTorranceDirectedLightMaterial : public GXMaterial
 		GXTexture2D*	emissionTexture;
 		GXTexture2D*	parameterTexture;
 		GXTexture2D*	depthTexture;
+
+		GXSampler		sampler;
 
 		GXColorRGB		hue;
 		GXFloat			intensity;

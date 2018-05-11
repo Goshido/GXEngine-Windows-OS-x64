@@ -19,7 +19,8 @@
 //---------------------------------------------------------------------------------------------
 
 EMImportantAreaFilterMaterial::EMImportantAreaFilterMaterial ():
-	imageTexture ( nullptr )
+	imageTexture ( nullptr ),
+	sampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f )
 {
 	static const GLchar* samplerNames[ 3 ] = { "imageSampler", "retinaFilterSampler" };
 	static const GLuint samplerLocations[ 3 ] = { IMAGE_SLOT, RETINA_FILTER_SLOT };
@@ -49,7 +50,10 @@ GXVoid EMImportantAreaFilterMaterial::Bind ( const GXTransform& /*transform*/ )
 	glUseProgram ( shaderProgram.GetProgram () );
 
 	imageTexture->Bind ( IMAGE_SLOT );
+	sampler.Bind ( IMAGE_SLOT );
+
 	retinaFilterTexture.Bind ( RETINA_FILTER_SLOT );
+	sampler.Bind ( RETINA_FILTER_SLOT );
 }
 
 GXVoid EMImportantAreaFilterMaterial::Unbind ()
@@ -58,7 +62,10 @@ GXVoid EMImportantAreaFilterMaterial::Unbind ()
 
 	glUseProgram ( 0u );
 
+	sampler.Unbind ( IMAGE_SLOT );
 	imageTexture->Unbind ();
+
+	sampler.Unbind ( RETINA_FILTER_SLOT );
 	retinaFilterTexture.Unbind ();
 }
 
@@ -71,7 +78,7 @@ GXVoid EMImportantAreaFilterMaterial::SetImageTexture ( GXTexture2D &texture )
 
 	GXUShort effectiveLength = height < width ? height : width;
 
-	if ( retinaFilterTexture.IsInited () && effectiveLength == retinaFilterTexture.GetHeight () ) return;
+	if ( retinaFilterTexture.IsInitialized () && effectiveLength == retinaFilterTexture.GetHeight () ) return;
 
 	GenerateRetinaFilterTexture ( effectiveLength );
 }
@@ -132,10 +139,10 @@ GXVoid EMImportantAreaFilterMaterial::GenerateRetinaFilterTexture ( GXUShort eff
 
 	free ( probabilityDensitySamples );
 
-	if ( retinaFilterTexture.IsInited () )
+	if ( retinaFilterTexture.IsInitialized () )
 		retinaFilterTexture.FreeResources ();
 
-	retinaFilterTexture.InitResources ( effectiveLength, effectiveLength, GL_R32F, GX_FALSE, GL_CLAMP_TO_EDGE );
+	retinaFilterTexture.InitResources ( effectiveLength, effectiveLength, GL_R32F, GX_FALSE );
 	retinaFilterTexture.FillWholePixelData ( retinaFilterSamples );
 
 	free ( retinaFilterSamples );

@@ -4,12 +4,14 @@
 
 #include <GXEngine/GXMaterial.h>
 #include <GXEngine/GXTexture2D.h>
+#include <GXEngine/GXSampler.h>
 
 
 class EMToneMapperLuminanceTripletReducerMaterial : public GXMaterial
 {
 	private:
 		GXTexture2D*		luminanceTripletTexture;
+		GXSampler			sampler;
 		GXFloat				levelOfDetail;
 
 		GLint				levelOfDetailLocation;

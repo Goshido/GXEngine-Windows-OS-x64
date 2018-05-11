@@ -1,7 +1,6 @@
 #include <GXEngine_Editor_Mobile/EMUnitActor.h>
 #include <GXEngine_Editor_Mobile/EMRenderer.h>
 #include <GXEngine/GXCamera.h>
-#include <GXEngine/GXSamplerUtils.h>
 #include <GXEngine/GXShaderProgram.h>
 #include <GXEngine/GXRenderable.h>
 #include <GXEngine/GXRenderer.h>
@@ -27,10 +26,10 @@
 EMUnitActor::EMUnitActor ( const GXWChar* name, const GXTransform &transform ):
 	EMActor ( name, eEMActorType::UnitCube, transform ),
 	mesh ( CUBE_MESH ),
-	albedoTexture ( ALBEDO_TEXTURE, GX_FALSE, GL_REPEAT, GX_TRUE ),
-	normalTexture ( NORMAL_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE ),
-	emissionTexture ( EMISSION_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE ),
-	parameterTexture ( PARAMETER_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE )
+	albedoTexture ( ALBEDO_TEXTURE, GX_FALSE, GX_TRUE ),
+	normalTexture ( NORMAL_TEXTURE, GX_FALSE, GX_FALSE ),
+	emissionTexture ( EMISSION_TEXTURE, GX_FALSE, GX_FALSE ),
+	parameterTexture ( PARAMETER_TEXTURE, GX_FALSE, GX_FALSE )
 {
 	OnTransformChanged ();
 	

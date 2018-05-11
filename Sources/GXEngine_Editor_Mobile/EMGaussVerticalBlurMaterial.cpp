@@ -12,9 +12,9 @@
 
 EMGaussVerticalBlurMaterial::EMGaussVerticalBlurMaterial ( eEMGaussVerticalBlurKernelType kernelType ):
 	kernelType ( kernelType ),
-	imageTexture ( nullptr )
+	imageTexture ( nullptr ),
+	sampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f )
 {
-
 	static const GLchar* samplerNames[ 1 ] = { "imageSampler" };
 	static const GLuint samplerLocations[ 1 ] = { IMAGE_SLOT };
 
@@ -52,15 +52,19 @@ GXVoid EMGaussVerticalBlurMaterial::Bind ( const GXTransform& /*transform*/ )
 	if ( !imageTexture ) return;
 
 	glUseProgram ( shaderProgram.GetProgram () );
-	imageTexture->Bind ( static_cast<GXUByte> ( IMAGE_SLOT ) );
+
+	imageTexture->Bind ( IMAGE_SLOT );
+	sampler.Bind ( IMAGE_SLOT );
 }
 
 GXVoid EMGaussVerticalBlurMaterial::Unbind ()
 {
 	if ( !imageTexture ) return;
 
-	glUseProgram ( 0u );
+	sampler.Unbind ( IMAGE_SLOT );
 	imageTexture->Unbind ();
+
+	glUseProgram ( 0u );
 }
 
 GXVoid EMGaussVerticalBlurMaterial::SetImageTexture ( GXTexture2D &texture )

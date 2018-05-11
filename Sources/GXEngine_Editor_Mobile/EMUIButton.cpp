@@ -99,7 +99,7 @@ class EMUIButtonRenderer : public GXWidgetRenderer
 EMUIButtonRenderer::EMUIButtonRenderer ( GXUIButton* buttonWidget ):
 	GXWidgetRenderer ( buttonWidget ),
 	font ( DEFAULT_FONT, static_cast<GXUShort> ( DEFAULT_FONT_SIZE * gx_ui_Scale ) ),
-	background ( BACKGROUND_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE )
+	background ( BACKGROUND_TEXTURE, GX_FALSE, GX_FALSE )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 	surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );

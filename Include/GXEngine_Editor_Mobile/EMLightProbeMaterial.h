@@ -4,6 +4,7 @@
 
 #include <GXEngine/GXMaterial.h>
 #include <GXEngine/GXTextureCubeMap.h>
+#include <GXEngine/GXSampler.h>
 
 
 class EMLightProbeMaterial : public GXMaterial
@@ -18,6 +19,11 @@ class EMLightProbeMaterial : public GXMaterial
 		GXTexture2D*				emissionTexture;
 		GXTexture2D*				parameterTexture;
 		GXTexture2D*				depthTexture;
+
+		GXSampler					diffuseIrradianceSampler;
+		GXSampler					prefilteredEnvironmentSampler;
+		GXSampler					brdfIntegrationSampler;
+		GXSampler					gBufferSampler;
 
 		GLint						viewerLocationWorldLocation;
 		GLint						prefilteredEnvironmentMapLODsLocation;

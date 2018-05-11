@@ -43,7 +43,7 @@ GXTextureCubeMap& EMEnvironment::GetEnvironmentMap ()
 
 GXVoid EMEnvironment::Render ( GXFloat deltaTime )
 {
-	if ( !environment || !environment->IsInited () ) return;
+	if ( !environment || !environment->IsInitialized () ) return;
 
 	GXOpenGLState state;
 	state.Save ();

@@ -12,7 +12,8 @@
 
 EMSSAOApplyMaterial::EMSSAOApplyMaterial ():
 	ssaoTexture ( nullptr ),
-	imageTexture ( nullptr )
+	imageTexture ( nullptr ),
+	sampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f )
 {
 	static const GLchar* samplerNames[ 2 ] = { "ssaoSampler", "imageSampler" };
 	static const GLuint samplerLocations[ 2 ] = { SSAO_SLOT, IMAGE_SLOT };
@@ -42,17 +43,23 @@ GXVoid EMSSAOApplyMaterial::Bind ( const GXTransform& /*transform*/ )
 	glUseProgram ( shaderProgram.GetProgram () );
 
 	ssaoTexture->Bind ( SSAO_SLOT );
+	sampler.Bind ( SSAO_SLOT );
+
 	imageTexture->Bind ( IMAGE_SLOT );
+	sampler.Bind ( IMAGE_SLOT );
 }
 
 GXVoid EMSSAOApplyMaterial::Unbind ()
 {
 	if ( !ssaoTexture || !imageTexture ) return;
 
-	glUseProgram ( 0u );
-
+	sampler.Unbind ( SSAO_SLOT );
 	ssaoTexture->Unbind ();
+
+	sampler.Unbind ( IMAGE_SLOT );
 	imageTexture->Unbind ();
+
+	glUseProgram ( 0u );
 }
 
 GXVoid EMSSAOApplyMaterial::SetSSAOTexture ( GXTexture2D &texture )

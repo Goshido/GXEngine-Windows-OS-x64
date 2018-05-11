@@ -72,6 +72,7 @@ EMCookTorranceCommonPassMaterial::EMCookTorranceCommonPassMaterial ():
 	normalTexture ( nullptr ),
 	emissionTexture ( nullptr ),
 	parameterTexture ( nullptr ),
+	sampler ( GL_REPEAT, eGXResampling::Trilinear, 16.0f ),
 	albedoColor ( static_cast<GXUByte> ( DEFAULT_ALBEDO_COLOR_R ), static_cast<GXUByte> ( DEFAULT_ALBEDO_COLOR_G ), static_cast<GXUByte> ( DEFAULT_ALBEDO_COLOR_B ), static_cast<GXUByte> ( DEFAULT_ALBEDO_COLOR_A ) ),
 	albedoTextureScaleOffset ( DEFAULT_ALBEDO_TEXTURE_SCALE_U, DEFAULT_ALBEDO_TEXTURE_SCALE_V, DEFAULT_ALBEDO_TEXTURE_OFFSET_U, DEFAULT_ALBEDO_TEXTURE_OFFSET_V ),
 	normalTextureScaleOffset ( DEFAULT_NORMAL_TEXTURE_SCALE_U, DEFAULT_NORMAL_TEXTURE_SCALE_V, DEFAULT_NORMAL_TEXTURE_OFFSET_U, DEFAULT_NORMAL_TEXTURE_OFFSET_V ),
@@ -177,17 +178,21 @@ GXVoid EMCookTorranceCommonPassMaterial::Bind ( const GXTransform &transform )
 	glUniform1f ( inverseMaximumBlurSamplesLocation, inverseMaximumBlurSamples );
 
 	albedoTexture->Bind ( ALBEDO_SLOT );
+	sampler.Bind ( ALBEDO_SLOT );
 	glUniform4fv ( albedoTextureScaleOffsetLocation, 1, albedoTextureScaleOffset.data );
 	glUniform4fv ( albedoColorLocation, 1, albedoColor.data );
 
 	normalTexture->Bind ( NORMAL_SLOT );
+	sampler.Bind ( NORMAL_SLOT );
 	glUniform4fv ( normalTextureScaleOffsetLocation, 1, normalTextureScaleOffset.data );
 
 	emissionTexture->Bind ( EMISSION_SLOT );
+	sampler.Bind ( EMISSION_SLOT );
 	glUniform4fv ( emissionTextureScaleOffsetLocation, 1, emissionTextureScaleOffset.data );
 	glUniform3fv ( emissionScaledColorLocation, 1, emissionScaledColor.data );
 
 	parameterTexture->Bind ( PARAMETER_SLOT );
+	sampler.Bind ( PARAMETER_SLOT );
 	glUniform4fv ( parameterTextureScaleOffsetLocation, 1, parameterTextureScaleOffset.data );
 	glUniform4fv ( parameterScaleLocation, 1, parameterScale.data );
 }
@@ -198,9 +203,16 @@ GXVoid EMCookTorranceCommonPassMaterial::Unbind ()
 
 	glUseProgram ( 0u );
 
+	sampler.Unbind ( ALBEDO_SLOT );
 	albedoTexture->Unbind ();
+
+	sampler.Unbind ( NORMAL_SLOT );
 	normalTexture->Unbind ();
+
+	sampler.Unbind ( EMISSION_SLOT );
 	emissionTexture->Unbind ();
+
+	sampler.Unbind ( PARAMETER_SLOT );
 	parameterTexture->Unbind ();
 }
 

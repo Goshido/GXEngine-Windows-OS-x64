@@ -1,7 +1,6 @@
 // version 1.3
 
 #include <GXEngine/GXTextureCubeMap.h>
-#include <GXEngine/GXSamplerUtils.h>
 #include <GXEngine/GXOpenGL.h>
 #include <GXEngine/GXMeshGeometry.h>
 #include <GXCommon/GXLogger.h>
@@ -54,7 +53,7 @@ class GXTextureCubeMapEntry
 	private:
 		GXTextureCubeMapEntry*			previous;
 		GXTextureCubeMapEntry*			next;
-		GXInt							refs;
+		GXInt							references;
 
 		GXWChar*						fileName;
 
@@ -68,9 +67,7 @@ class GXTextureCubeMapEntry
 		GLenum							type;
 
 		GLuint							textureObject;
-
 		GXBool							isGenerateMipmap;
-		GLuint							sampler;
 
 		static GXTextureCubeMapEntry*	top;
 
@@ -81,7 +78,6 @@ class GXTextureCubeMapEntry
 		const GXWChar* GetFileName () const;
 
 		GLuint GetTextureObject () const;
-		GLuint GetSampler () const;
 
 		GXUShort GetFaceLength () const;
 		GXUByte GetChannelNumber () const;
@@ -117,7 +113,7 @@ GXTextureCubeMapEntry* GXTextureCubeMapEntry::top = nullptr;
 GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTextureFileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection ):
 	previous ( nullptr ),
 	next ( top ),
-	refs ( 1 )
+	references ( 1 )
 {
 	if ( top )
 		top->previous = this;
@@ -259,15 +255,15 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
 		switch ( cacheHeader.numChannels )
 		{
 			case 1u:
-				equirectangularTexture.InitResources ( static_cast<GXUShort> ( width ), static_cast<GXUShort> ( height ), GL_R16F, GX_FALSE, GL_REPEAT );
+				equirectangularTexture.InitResources ( static_cast<GXUShort> ( width ), static_cast<GXUShort> ( height ), GL_R16F, GX_FALSE );
 			break;
 
 			case 3u:
-				equirectangularTexture.InitResources ( static_cast<GXUShort> ( width ), static_cast<GXUShort> ( height ), GL_RGB16F, GX_FALSE, GL_REPEAT );
+				equirectangularTexture.InitResources ( static_cast<GXUShort> ( width ), static_cast<GXUShort> ( height ), GL_RGB16F, GX_FALSE );
 			break;
 
 			case 4u:
-				equirectangularTexture.InitResources ( static_cast<GXUShort> ( width ), static_cast<GXUShort> ( height ), GL_RGBA16F, GX_FALSE, GL_REPEAT );
+				equirectangularTexture.InitResources ( static_cast<GXUShort> ( width ), static_cast<GXUShort> ( height ), GL_RGBA16F, GX_FALSE );
 			break;
 
 			default:
@@ -288,15 +284,15 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
 		switch ( cacheHeader.numChannels )
 		{
 			case 1u:
-				equirectangularTexture.InitResources ( static_cast<GXUShort> ( width ), static_cast<GXUShort> ( height ), GL_R8, GX_FALSE, GL_REPEAT );
+				equirectangularTexture.InitResources ( static_cast<GXUShort> ( width ), static_cast<GXUShort> ( height ), GL_R8, GX_FALSE );
 			break;
 
 			case 3u:
-				equirectangularTexture.InitResources ( static_cast<GXUShort> ( width ), static_cast<GXUShort> ( height ), GL_RGB8, GX_FALSE, GL_REPEAT );
+				equirectangularTexture.InitResources ( static_cast<GXUShort> ( width ), static_cast<GXUShort> ( height ), GL_RGB8, GX_FALSE );
 			break;
 
 			case 4u:
-				equirectangularTexture.InitResources ( static_cast<GXUShort> ( width ), static_cast<GXUShort> ( height ), GL_RGBA8, GX_FALSE, GL_REPEAT );
+				equirectangularTexture.InitResources ( static_cast<GXUShort> ( width ), static_cast<GXUShort> ( height ), GL_RGBA8, GX_FALSE );
 			break;
 
 			default:
@@ -507,7 +503,7 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
 GXTextureCubeMapEntry::GXTextureCubeMapEntry ( GXUShort faceLength, GLint internalFormat, GXBool isGenerateMipmap ):
 	previous ( nullptr ),
 	next ( nullptr ),
-	refs ( 1 ),
+	references ( 1 ),
 	fileName ( nullptr )
 {
 	InitResources ( faceLength, internalFormat, isGenerateMipmap );
@@ -521,11 +517,6 @@ const GXWChar* GXTextureCubeMapEntry::GetFileName () const
 GLuint GXTextureCubeMapEntry::GetTextureObject () const
 {
 	return textureObject;
-}
-
-GLuint GXTextureCubeMapEntry::GetSampler () const
-{
-	return sampler;
 }
 
 GXUShort GXTextureCubeMapEntry::GetFaceLength () const
@@ -586,14 +577,14 @@ GXVoid GXTextureCubeMapEntry::UpdateMipmaps ()
 
 GXVoid GXTextureCubeMapEntry::AddReference ()
 {
-	refs++;
+	references++;
 }
 
 GXVoid GXTextureCubeMapEntry::Release ()
 {
-	refs--;
+	references--;
 
-	if ( refs > 0 ) return;
+	if ( references > 0 ) return;
 
 	delete this;
 }
@@ -641,7 +632,6 @@ GXTextureCubeMapEntry::~GXTextureCubeMapEntry ()
 	if ( textureObject == 0u ) return;
 
 	glDeleteTextures ( 1, &textureObject );
-	glDeleteSamplers ( 1, &sampler );
 }
 
 GXVoid GXTextureCubeMapEntry::InitResources ( GXUShort textureFaceLength, GLint textureInternalFormat, GXBool isGenerateMipmapPolicy )
@@ -774,12 +764,8 @@ GXVoid GXTextureCubeMapEntry::InitResources ( GXUShort textureFaceLength, GLint 
 	FillWholePixelData ( nullptr, GL_TEXTURE_CUBE_MAP_POSITIVE_Z );
 	FillWholePixelData ( nullptr, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z );
 
-	GXGLSamplerInfo samplerInfo;
-
 	if ( isGenerateMipmap )
 	{
-		samplerInfo.anisotropy = 16.0f;
-		samplerInfo.resampling = eGXSamplerResampling::Trilinear;
 		UpdateMipmaps ();
 
 		lods = 0u;
@@ -794,13 +780,8 @@ GXVoid GXTextureCubeMapEntry::InitResources ( GXUShort textureFaceLength, GLint 
 	else
 	{
 		glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0 );
-		samplerInfo.anisotropy = 1.0f;
-		samplerInfo.resampling = eGXSamplerResampling::None;
 		lods = 1u;
 	}
-
-	samplerInfo.wrap = GL_CLAMP_TO_EDGE;
-	sampler = GXCreateSampler ( samplerInfo );
 }
 
 GXVoid GXTextureCubeMapEntry::ProjectFaces ( GLuint fbo, GLuint cubeMapTextureObject, GXTexture2D &equirectangularTexture, GXBool isApplyGammaCorrection )
@@ -889,10 +870,10 @@ GXTextureCubeMap::GXTextureCubeMap ( GXUShort faceLength, GLint internalFormat, 
 }
 
 GXTextureCubeMap::GXTextureCubeMap ( const GXWChar* equirectangularImage, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection ):
-	textureCubeMapEntry ( new GXTextureCubeMapEntry ( equirectangularImage, isGenerateMipmap, isApplyGammaCorrection ) ),
+	textureCubeMapEntry ( nullptr ),
 	textureUnit ( INVALID_TEXTURE_UNIT )
 {
-	// NOTHING
+	LoadEquirectangularImage ( equirectangularImage, isGenerateMipmap, isApplyGammaCorrection );
 }
 
 GXTextureCubeMap::~GXTextureCubeMap ()
@@ -956,7 +937,6 @@ GXVoid GXTextureCubeMap::Bind ( GXUByte unit )
 {
 	textureUnit = unit;
 
-	glBindSampler ( textureUnit, textureCubeMapEntry->GetSampler () );
 	glActiveTexture ( static_cast<GLenum> ( GL_TEXTURE0 + textureUnit ) );
 	glBindTexture ( GL_TEXTURE_CUBE_MAP, textureCubeMapEntry->GetTextureObject () );
 }
@@ -965,7 +945,6 @@ GXVoid GXTextureCubeMap::Unbind ()
 {
 	glActiveTexture ( static_cast<GLenum> ( GL_TEXTURE0 + textureUnit ) );
 	glBindTexture ( GL_TEXTURE_CUBE_MAP, 0u );
-	glBindSampler ( textureUnit, 0u );
 }
 
 GLuint GXTextureCubeMap::GetTextureObject () const
@@ -973,7 +952,7 @@ GLuint GXTextureCubeMap::GetTextureObject () const
 	return textureCubeMapEntry->GetTextureObject ();
 }
 
-GXBool GXTextureCubeMap::IsInited () const
+GXBool GXTextureCubeMap::IsInitialized () const
 {
 	return textureCubeMapEntry != nullptr;
 }

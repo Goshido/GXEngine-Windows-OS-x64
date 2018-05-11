@@ -55,7 +55,7 @@ class GXTextureCubeMap
 
 		GLuint GetTextureObject () const;
 
-		GXBool IsInited () const;
+		GXBool IsInitialized () const;
 		GXVoid InitResources ( GXUShort faceLength, GLint internalFormat, GXBool isGenerateMipmap );
 		GXVoid FreeResources ();
 

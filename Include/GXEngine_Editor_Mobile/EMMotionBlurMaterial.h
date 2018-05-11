@@ -4,6 +4,7 @@
 
 #include <GXEngine/GXMaterial.h>
 #include <GXEngine/GXTexture2D.h>
+#include <GXEngine/GXSampler.h>
 
 
 class EMMotionBlurMaterial : public GXMaterial
@@ -13,6 +14,8 @@ class EMMotionBlurMaterial : public GXMaterial
 		GXTexture2D*		velocityTexture;
 		GXTexture2D*		depthTexture;
 		GXTexture2D*		imageTexture;
+
+		GXSampler			sampler;
 
 		GXFloat				depthLimit;
 		GXFloat				inverseDepthLimit;

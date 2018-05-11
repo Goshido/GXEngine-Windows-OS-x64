@@ -26,6 +26,7 @@
 EMSSAOSharpMaterial::EMSSAOSharpMaterial ():
 	depthTexture ( nullptr ),
 	normalTexture ( nullptr ),
+	sampler ( GL_REPEAT, eGXResampling::None, 1.0f ),
 	maxDistance ( DEFAULT_MAX_DISTANCE ),
 	checkRadius ( DEFAULT_MAX_CHECK_RADIUS )
 {
@@ -83,19 +84,29 @@ GXVoid EMSSAOSharpMaterial::Bind ( const GXTransform& /*transform*/ )
 	glUniform1f ( maxDistanceLocation, maxDistance );
 
 	depthTexture->Bind ( DEPTH_SLOT );
+	sampler.Bind ( DEPTH_SLOT );
+
 	normalTexture->Bind ( NORMAL_SLOT );
+	sampler.Bind ( NORMAL_SLOT );
+
 	noiseTexture.Bind ( NOISE_SLOT );
+	sampler.Bind ( NOISE_SLOT );
 }
 
 GXVoid EMSSAOSharpMaterial::Unbind ()
 {
 	if ( !depthTexture || !normalTexture ) return;
 
-	glUseProgram ( 0u );
-
+	sampler.Unbind ( DEPTH_SLOT );
 	depthTexture->Unbind ();
+
+	sampler.Unbind ( NORMAL_SLOT );
 	normalTexture->Unbind ();
+
+	sampler.Unbind ( NOISE_SLOT );
 	noiseTexture.Unbind ();
+
+	glUseProgram ( 0u );
 }
 
 GXVoid EMSSAOSharpMaterial::SetDepthTexture ( GXTexture2D &texture )
@@ -198,7 +209,7 @@ GXVoid EMSSAOSharpMaterial::SetNoiseTextureResolution ( GXUShort resolution )
 		offset++;
 	}
 
-	noiseTexture.InitResources ( resolution, resolution, GL_RG8, GL_FALSE, GL_REPEAT );
+	noiseTexture.InitResources ( resolution, resolution, GL_RG8, GL_FALSE );
 	noiseTexture.FillWholePixelData ( noiseData );
 
 	free ( noiseData );

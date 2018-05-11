@@ -18,6 +18,7 @@
 
 EMDiffuseIrradianceGeneratorMaterial::EMDiffuseIrradianceGeneratorMaterial ():
 	environmentMap ( nullptr ),
+	sampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f ),
 	angleStep ( DEFAULT_ANGLE_STEP )
 {
 	static const GLchar* samplerNames[ 1 ] = { "environmentSampler" };
@@ -73,14 +74,17 @@ GXVoid EMDiffuseIrradianceGeneratorMaterial::Bind ( const GXTransform& /*transfo
 	glUniform1f ( angleStepLocation, angleStep );
 
 	environmentMap->Bind ( TEXTURE_SLOT );
+	sampler.Bind ( TEXTURE_SLOT );
 }
 
 GXVoid EMDiffuseIrradianceGeneratorMaterial::Unbind ()
 {
 	if ( !environmentMap ) return;
 
-	glUseProgram ( 0u );
+	sampler.Unbind ( TEXTURE_SLOT );
 	environmentMap->Unbind ();
+
+	glUseProgram ( 0u );
 }
 
 GXVoid EMDiffuseIrradianceGeneratorMaterial::SetEnvironmentMap ( GXTextureCubeMap &cubeMap )

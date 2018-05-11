@@ -46,7 +46,7 @@ class EMUIDraggableAreaRenderer : public GXWidgetRenderer
 
 EMUIDraggableAreaRenderer::EMUIDraggableAreaRenderer ( GXUIDragableArea* draggableAreaWidget ):
 	GXWidgetRenderer ( draggableAreaWidget ),
-	background ( BACKGROUND_TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE )
+	background ( BACKGROUND_TEXTURE, GX_FALSE, GX_FALSE )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 	surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );

@@ -38,6 +38,7 @@ EMCookTorranceDirectedLightMaterial::EMCookTorranceDirectedLightMaterial ():
 	emissionTexture ( nullptr ),
 	parameterTexture ( nullptr ),
 	depthTexture ( nullptr ),
+	sampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f ),
 	hue ( DEFAULT_HUE_R, DEFAULT_HUE_G, DEFAULT_HUE_B, DEFAULT_HUE_A ),
 	intensity ( DEFAULT_INTENSITY ),
 	hdrColor ( DEFAULT_HUE_R * DEFAULT_INTENSITY, DEFAULT_HUE_G * DEFAULT_INTENSITY, DEFAULT_HUE_B * DEFAULT_INTENSITY, DEFAULT_HUE_A ),
@@ -88,23 +89,41 @@ GXVoid EMCookTorranceDirectedLightMaterial::Bind ( const GXTransform& /*transfor
 	glUniform3fv ( toLightDirectionViewLocation, 1, toLightDirectionView.data );
 
 	albedoTexture->Bind ( ALBEDO_SLOT );
+	sampler.Bind ( ALBEDO_SLOT );
+
 	normalTexture->Bind ( NORMAL_SLOT );
+	sampler.Bind ( NORMAL_SLOT );
+
 	emissionTexture->Bind ( EMISSION_SLOT );
+	sampler.Bind ( EMISSION_SLOT );
+
 	parameterTexture->Bind ( PARAMETER_SLOT );
+	sampler.Bind ( PARAMETER_SLOT );
+
 	depthTexture->Bind ( DEPTH_SLOT );
+	sampler.Bind ( DEPTH_SLOT );
 }
 
 GXVoid EMCookTorranceDirectedLightMaterial::Unbind ()
 {
 	if ( !albedoTexture || !normalTexture || !emissionTexture || !parameterTexture || !depthTexture ) return;
 
-	glUseProgram ( 0u );
-
+	sampler.Unbind ( ALBEDO_SLOT );
 	albedoTexture->Unbind ();
+
+	sampler.Unbind ( NORMAL_SLOT );
 	normalTexture->Unbind ();
+
+	sampler.Unbind ( EMISSION_SLOT );
 	emissionTexture->Unbind ();
+
+	sampler.Unbind ( PARAMETER_SLOT );
 	parameterTexture->Unbind ();
+
+	sampler.Unbind ( DEPTH_SLOT );
 	depthTexture->Unbind ();
+
+	glUseProgram ( 0u );
 }
 
 GXVoid EMCookTorranceDirectedLightMaterial::SetAlbedoTexture ( GXTexture2D &texture )

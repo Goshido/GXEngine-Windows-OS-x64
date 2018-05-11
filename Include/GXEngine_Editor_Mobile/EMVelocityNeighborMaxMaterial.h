@@ -4,12 +4,15 @@
 
 #include <GXEngine/GXMaterial.h>
 #include <GXEngine/GXTexture2D.h>
+#include <GXEngine/GXSampler.h>
 
 
 class EMVelocityNeighborMaxMaterial : public GXMaterial
 {
 	private:
 		GXTexture2D*	velocityTileMaxTexture;
+		GXSampler		sampler;
+
 		GXVec2			inverseVelocityTileMaxTextureResolution;
 
 		GLint			inverseVelocityTileMaxTextureResolutionLocation;

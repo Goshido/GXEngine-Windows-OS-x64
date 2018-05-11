@@ -4,6 +4,7 @@
 
 #include <GXEngine/GXMaterial.h>
 #include <GXEngine/GXTexture2D.h>
+#include <GXEngine/GXSampler.h>
 
 
 class EMCookTorranceCommonPassMaterial : public GXMaterial
@@ -19,6 +20,8 @@ class EMCookTorranceCommonPassMaterial : public GXMaterial
 		// blue - specular intensity. Remapping to [0.0f, 1.0f]
 		// alpha - metallic. Remapping rule: 1.0f if value > 129, 0.0f otherwise
 		GXTexture2D*		parameterTexture;
+
+		GXSampler			sampler;
 
 		GXColorRGB			albedoColor;
 		GXVec4				albedoTextureScaleOffset;

@@ -4,12 +4,14 @@
 
 #include <GXEngine/GXMaterial.h>
 #include <GXEngine/GXTexture2D.h>
+#include <GXEngine/GXSampler.h>
 
 
 class EMVelocityTileMaxMaterial : public GXMaterial
 {
 	private:
 		GXTexture2D*	velocityBlurTexture;
+		GXSampler		sampler;
 
 		GXInt			maxBlurSamples;
 		GXVec2			inverseScreenResolution;

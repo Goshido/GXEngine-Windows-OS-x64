@@ -14,7 +14,8 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 GXTexture2DGammaCorrectorMaterial::GXTexture2DGammaCorrectorMaterial ():
-	sRGBTexture ( nullptr )
+	sRGBTexture ( nullptr ),
+	sampler( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f )
 {
 	static const GLchar* samplerNames[ 1 ] = { "sRGBSampler" };
 	static const GLuint samplerLocations[ 1 ] = { TEXTURE_SLOT };
@@ -45,15 +46,19 @@ GXVoid GXTexture2DGammaCorrectorMaterial::Bind ( const GXTransform& /*transform*
 	glUseProgram ( shaderProgram.GetProgram () );
 
 	glUniform1f ( gammaLocation, GAMMA );
+
 	sRGBTexture->Bind ( TEXTURE_SLOT );
+	sampler.Bind ( TEXTURE_SLOT );
 }
 
 GXVoid GXTexture2DGammaCorrectorMaterial::Unbind ()
 {
 	if ( !sRGBTexture ) return;
 
-	glUseProgram ( 0u );
+	sampler.Unbind ( TEXTURE_SLOT );
 	sRGBTexture->Unbind ();
+
+	glUseProgram ( 0u );
 }
 
 GXVoid GXTexture2DGammaCorrectorMaterial::SetSRGBTexture ( GXTexture2D &texture )

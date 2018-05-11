@@ -206,7 +206,7 @@ class EMColorRenderer : public GXWidgetRenderer
 
 EMColorRenderer::EMColorRenderer ( GXUIInput* widget ):
 	GXWidgetRenderer ( widget ),
-	texture ( TEXTURE, GX_FALSE, GL_CLAMP_TO_EDGE, GX_FALSE ),
+	texture ( TEXTURE, GX_FALSE, GX_FALSE ),
 	screenQuad ( SCREEN_QUAD_MESH )
 {
 	const GXAABB& boundsLocal = widget->GetBoundsLocal ();
@@ -299,7 +299,7 @@ GXVoid EMColorRenderer::OnMoved ( GXFloat x, GXFloat y )
 GXVoid EMColorRenderer::UpdateCheckerTexture ()
 {
 	checkerTexture.FreeResources ();
-	checkerTexture.InitResources ( surface->GetWidth (), surface->GetHeight (), GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	checkerTexture.InitResources ( surface->GetWidth (), surface->GetHeight (), GL_RGBA8, GX_FALSE );
 
 	openGLState.Save ();
 
@@ -597,9 +597,9 @@ GXVoid EMColorSelectorRenderer::UpdateHueCircleTexture ()
 	else
 		msaaSide = static_cast<GXUShort> ( w * COLOR_SELECTOR_MSAA_FACTOR );
 
-	hueTexture.InitResources ( msaaSide, msaaSide, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	hueTexture.InitResources ( msaaSide, msaaSide, GL_RGBA8, GX_FALSE );
 
-	compositeTexture.InitResources ( msaaSide, msaaSide, GL_RGBA8, GX_TRUE, GL_CLAMP_TO_EDGE );
+	compositeTexture.InitResources ( msaaSide, msaaSide, GL_RGBA8, GX_TRUE );
 	hueCircleGeneratorMaterial.SetResolution ( msaaSide, msaaSide );
 	glViewport ( 0, 0, static_cast<GLsizei> ( msaaSide ), static_cast<GLsizei> ( msaaSide ) );
 	projectionCamera.SetProjection ( static_cast<GXFloat> ( msaaSide ), static_cast<GXFloat> ( msaaSide ), COLOR_SELECTOR_PROJECTION_NEAR, COLOR_SELECTOR_PROJECTION_FAR );

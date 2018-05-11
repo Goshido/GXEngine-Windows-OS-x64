@@ -6,12 +6,14 @@
 
 #include "GXMaterial.h"
 #include "GXTexture2D.h"
+#include "GXSampler.h"
 
 
 class GXUnlitColorMaskMaterial : public GXMaterial
 {
 	private:
 		GXTexture2D*	mask;
+		GXSampler		sampler;
 		GXVec4			uvScaleOffset;
 		GXColorRGB		color;
 

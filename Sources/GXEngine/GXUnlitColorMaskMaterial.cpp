@@ -24,6 +24,7 @@
 
 GXUnlitColorMaskMaterial::GXUnlitColorMaskMaterial ():
 	mask ( nullptr ),
+	sampler ( GL_REPEAT, eGXResampling::None, 1.0f ),
 	uvScaleOffset ( DEFAULT_MASK_SCALE_X, DEFAULT_MASK_SCALE_Y, DEFAULT_MASK_OFFSET_X, DEFAULT_MASK_OFFSET_Y ),
 	color ( static_cast<GXUByte> ( DEFAULT_COLOR_RED ), static_cast<GXUByte> ( DEFAULT_COLOR_GREEN ), static_cast<GXUByte> ( DEFAULT_COLOR_BLUE ), static_cast<GXUByte> ( DEFAULT_COLOR_ALPHA ) )
 {
@@ -66,13 +67,16 @@ GXVoid GXUnlitColorMaskMaterial::Bind ( const GXTransform &transform )
 	glUniform4fv ( colorLocation, 1, color.data );
 
 	mask->Bind ( MASK_SLOT );
+	sampler.Bind ( MASK_SLOT );
 }
 
 GXVoid GXUnlitColorMaskMaterial::Unbind ()
 {
 	if ( !mask ) return;
 
+	sampler.Unbind ( MASK_SLOT );
 	mask->Unbind ();
+
 	glUseProgram ( 0u );
 }
 

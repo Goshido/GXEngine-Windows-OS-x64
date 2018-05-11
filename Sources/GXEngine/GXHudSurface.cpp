@@ -1,7 +1,6 @@
 // version 1.19
 
 #include <GXEngine/GXHudSurface.h>
-#include <GXEngine/GXSamplerUtils.h>
 #include <GXCommon/GXStrings.h>
 
 
@@ -11,6 +10,7 @@
 #define Z_FAR			20.0f
 #define RENDER_Z		7.0f
 
+//---------------------------------------------------------------------------------------------------------------------
 
 class GXImageRenderable : public GXTransform, public GXRenderable
 {
@@ -57,7 +57,7 @@ GXVoid GXImageRenderable::TransformUpdated ()
 	// NOTHING
 }
 
-//-----------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 class GXGlyphRenderable : public GXTransform, public GXRenderable
 {
@@ -134,7 +134,7 @@ GXVoid GXGlyphRenderable::TransformUpdated ()
 	// NOTHING
 }
 
-//-----------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 class GXLineRenderable : public GXTransform, public GXRenderable
 {
@@ -194,7 +194,7 @@ GXVoid GXLineRenderable::TransformUpdated ()
 	// NOTHING
 }
 
-//-----------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXHudSurface::GXHudSurface ( GXUShort width, GXUShort height ):
 	width ( width ),
@@ -208,7 +208,7 @@ GXHudSurface::GXHudSurface ( GXUShort width, GXUShort height ):
 	GXUByte* data = static_cast<GXUByte*> ( malloc ( size ) );
 	memset ( data, 0, size );
 
-	canvasTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE, GL_CLAMP_TO_EDGE );
+	canvasTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE );
 	canvasTexture.FillWholePixelData ( data );
 	free ( data );
 

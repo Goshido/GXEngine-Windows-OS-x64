@@ -30,10 +30,10 @@
 EMPhysicsDrivenActor::EMPhysicsDrivenActor ( const GXWChar* name, const GXTransform& transform ):
 	EMActor ( name, eEMActorType::PhysicsDrivenActor, transform ),
 	wireframeMaterial ( nullptr ),
-	albedo ( DEFAULT_ALBEDO_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE ),
-	normal ( DEFAULT_NORMAL_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE ),
-	emission ( DEFAULT_EMISSION_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE ),
-	parameter ( DEFAULT_PARAMETER_TEXTURE, GX_TRUE, GL_REPEAT, GX_FALSE )
+	albedo ( DEFAULT_ALBEDO_TEXTURE, GX_TRUE, GX_FALSE ),
+	normal ( DEFAULT_NORMAL_TEXTURE, GX_TRUE, GX_FALSE ),
+	emission ( DEFAULT_EMISSION_TEXTURE, GX_TRUE, GX_FALSE ),
+	parameter ( DEFAULT_PARAMETER_TEXTURE, GX_TRUE, GX_FALSE )
 {
 	rigidBody.SetLocation ( transform.GetLocation () );
 	rigidBody.SetRotaton ( GXQuat ( transform.GetRotation () ) );

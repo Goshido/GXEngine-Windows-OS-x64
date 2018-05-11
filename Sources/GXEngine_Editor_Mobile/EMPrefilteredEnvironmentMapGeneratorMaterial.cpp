@@ -18,8 +18,9 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-EMPrefilteredEnvironmentMapGeneratorMaterial::EMPrefilteredEnvironmentMapGeneratorMaterial ():
+EMPrefilteredEnvironmentMapGeneratorMaterial::EMPrefilteredEnvironmentMapGeneratorMaterial () :
 	environmentMap ( nullptr ),
+	sampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f ),
 	roughness ( DEFAULT_ROUGHNESS * DEFAULT_ROUGHNESS ),
 	totalSamples ( static_cast<GXInt> ( DEFAULT_TOTAL_SAMPLES ) ),
 	inverseTotalSamples ( 1.0f / static_cast<GXFloat> ( DEFAULT_TOTAL_SAMPLES ) )
@@ -81,15 +82,17 @@ GXVoid EMPrefilteredEnvironmentMapGeneratorMaterial::Bind ( const GXTransform& /
 	glUniform1f ( inverseTotalSamplesLocation, inverseTotalSamples );
 
 	environmentMap->Bind ( TEXTURE_SLOT );
+	sampler.Bind ( TEXTURE_SLOT );
 }
 
 GXVoid EMPrefilteredEnvironmentMapGeneratorMaterial::Unbind ()
 {
 	if ( !environmentMap ) return;
 
-	glUseProgram ( 0 );
-
+	sampler.Unbind ( TEXTURE_SLOT );
 	environmentMap->Unbind ();
+	
+	glUseProgram ( 0u );
 }
 
 GXVoid EMPrefilteredEnvironmentMapGeneratorMaterial::SetEnvironmentMap ( GXTextureCubeMap &cubeMap )

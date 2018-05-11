@@ -13,6 +13,7 @@
 
 EMVelocityNeighborMaxMaterial::EMVelocityNeighborMaxMaterial ():
 	velocityTileMaxTexture ( nullptr ),
+	sampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f ),
 	inverseVelocityTileMaxTextureResolution( 1.0f / static_cast<GXFloat> ( VELOCITY_TILE_MAX_TEXTURE_WIDTH ), 1.0f / static_cast<GXFloat> ( VELOCITY_TILE_MAX_TEXTURE_HEIGHT ) )
 {
 	static const GLchar* samplerNames[ 1 ] = { "velocityTileMaxSampler" };
@@ -44,15 +45,19 @@ GXVoid EMVelocityNeighborMaxMaterial::Bind ( const GXTransform& /*transform*/ )
 
 	glUseProgram ( shaderProgram.GetProgram () );
 	glUniform2fv ( inverseVelocityTileMaxTextureResolutionLocation, 1, inverseVelocityTileMaxTextureResolution.data );
+
 	velocityTileMaxTexture->Bind ( VELOCITY_TILE_MAX_SLOT );
+	sampler.Bind ( VELOCITY_TILE_MAX_SLOT );
 }
 
 GXVoid EMVelocityNeighborMaxMaterial::Unbind ()
 {
 	if ( !velocityTileMaxTexture ) return;
 
-	glUseProgram ( 0u );
+	sampler.Unbind ( VELOCITY_TILE_MAX_SLOT );
 	velocityTileMaxTexture->Unbind ();
+
+	glUseProgram ( 0u );
 }
 
 GXVoid EMVelocityNeighborMaxMaterial::SetVelocityTileMaxTexture ( GXTexture2D &texture )

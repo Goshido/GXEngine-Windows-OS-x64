@@ -26,6 +26,7 @@
 
 EMToneMapperMaterial::EMToneMapperMaterial ():
 	linearSpaceTexture ( nullptr ),
+	sampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f ),
 	gamma ( DEFAULT_GAMMA ),
 	inverseGamma ( 1.0f / DEFAULT_GAMMA ),
 	eyeSensitivity ( DEFAULT_EYE_SENSETIVITY )
@@ -67,15 +68,19 @@ GXVoid EMToneMapperMaterial::Bind ( const GXTransform& /*transform*/ )
 	glUniform1f ( inverseGammaLocation, inverseGamma );
 	glUniform1f ( prescaleFactorLocation, prescaleFactor );
 	glUniform1f ( inverseAbsoluteWhiteSquareIntensityLocation, inverseAbsoluteWhiteSquareIntensity );
+
 	linearSpaceTexture->Bind ( TEXTURE_SLOT );
+	sampler.Bind ( TEXTURE_SLOT );
 }
 
 GXVoid EMToneMapperMaterial::Unbind ()
 {
 	if ( !linearSpaceTexture ) return;
 
-	glUseProgram ( 0 );
+	sampler.Unbind ( TEXTURE_SLOT );
 	linearSpaceTexture->Unbind ();
+
+	glUseProgram ( 0 );
 }
 
 GXVoid EMToneMapperMaterial::SetLinearSpaceTexture ( GXTexture2D &texture )

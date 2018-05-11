@@ -4,12 +4,14 @@
 
 #include <GXEngine/GXMaterial.h>
 #include <GXEngine/GXTextureCubeMap.h>
+#include <GXEngine/GXSampler.h>
 
 
 class EMDiffuseIrradianceGeneratorMaterial : public GXMaterial
 {
 	private:
 		GXTextureCubeMap*		environmentMap;
+		GXSampler				sampler;
 		GXFloat					angleStep;
 
 		GXMat4					viewProjectionMatrices[ 6 ];

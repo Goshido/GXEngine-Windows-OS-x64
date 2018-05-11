@@ -4,6 +4,7 @@
 
 #include <GXEngine/GXMaterial.h>
 #include <GXEngine/GXTexture2D.h>
+#include <GXEngine/GXSampler.h>
 
 
 #define EM_MAX_SSAO_SAMPLES		64u
@@ -12,12 +13,15 @@
 class EMSSAOSharpMaterial : public GXMaterial
 {
 	private:
-		GXTexture2D		noiseTexture;
 		GXTexture2D*	depthTexture;
 		GXTexture2D*	normalTexture;
 
+		GXSampler		sampler;
+
 		GXFloat			maxDistance;
 		GXFloat			checkRadius;
+
+		GXTexture2D		noiseTexture;
 
 		GXInt			samples;
 		GXFloat			inverseSamples;

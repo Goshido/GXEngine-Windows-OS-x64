@@ -4,6 +4,7 @@
 
 #include <GXEngine/GXMaterial.h>
 #include <GXEngine/GXTexture2D.h>
+#include <GXEngine/GXSampler.h>
 
 
 enum class eEMGaussVerticalBlurKernelType : GXUShort
@@ -16,6 +17,7 @@ class EMGaussVerticalBlurMaterial : public GXMaterial
 	private:
 		eEMGaussVerticalBlurKernelType		kernelType;
 		GXTexture2D*						imageTexture;
+		GXSampler							sampler;
 
 	public:
 		EMGaussVerticalBlurMaterial ( eEMGaussVerticalBlurKernelType kernelType );

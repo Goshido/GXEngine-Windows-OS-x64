@@ -4,12 +4,14 @@
 
 #include <GXEngine/GXMaterial.h>
 #include <GXEngine/GXTexture2D.h>
+#include <GXEngine/GXSampler.h>
 
 
 class EMToneMapperMaterial : public GXMaterial
 {
 	private:
 		GXTexture2D*		linearSpaceTexture;
+		GXSampler			sampler;
 
 		GXFloat				gamma;
 		GXFloat				inverseGamma;

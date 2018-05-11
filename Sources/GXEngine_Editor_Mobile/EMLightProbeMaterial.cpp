@@ -25,7 +25,11 @@ EMLightProbeMaterial::EMLightProbeMaterial ():
 	normalTexture ( nullptr ),
 	emissionTexture ( nullptr ),
 	parameterTexture ( nullptr ),
-	depthTexture ( nullptr )
+	depthTexture ( nullptr ),
+	diffuseIrradianceSampler ( GL_CLAMP_TO_EDGE, eGXResampling::Linear, 1.0f ),
+	prefilteredEnvironmentSampler ( GL_CLAMP_TO_EDGE, eGXResampling::Trilinear, 16.0f ),
+	brdfIntegrationSampler ( GL_CLAMP_TO_EDGE, eGXResampling::Linear, 1.0f ),
+	gBufferSampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f )
 {
 	static const GLchar* samplerNames[ 8 ] = { "diffuseIrradianceSampler", "prefilteredEnvironmentMapSampler", "brdfIntegrationMapSampler", "albedoSampler", "normalSampler", "emissionSampler", "parameterSampler", "depthSampler" };
 	static const GLuint sampleLocations[ 8 ] = { DIFFUSE_IRRADIANCE_SLOT, PREFILTERED_ENVIRONMENT_MAP_SLOT, BRDF_INTEGRATION_MAP_SLOT, ALBEDO_SLOT, NORMAL_SLOT, EMISSION_SLOT, PARAMETER_SLOT, DEPTH_SLOT };
@@ -73,13 +77,28 @@ GXVoid EMLightProbeMaterial::Bind ( const GXTransform& /*transform*/ )
 	glUniformMatrix4fv ( inverseViewProjectionMatrixLocation, 1, GL_FALSE, camera->GetCurrentFrameInverseViewProjectionMatrix ().data );
 
 	diffuseIrradianceTexture->Bind ( DIFFUSE_IRRADIANCE_SLOT );
+	diffuseIrradianceSampler.Bind ( DIFFUSE_IRRADIANCE_SLOT );
+
 	prefilteredEnvironmentMapTexture->Bind ( PREFILTERED_ENVIRONMENT_MAP_SLOT );
+	prefilteredEnvironmentSampler.Bind ( PREFILTERED_ENVIRONMENT_MAP_SLOT );
+
 	brdfIntegrationMapTexture->Bind ( BRDF_INTEGRATION_MAP_SLOT );
+	brdfIntegrationSampler.Bind ( BRDF_INTEGRATION_MAP_SLOT );
+
 	albedoTexture->Bind ( ALBEDO_SLOT );
+	gBufferSampler.Bind ( ALBEDO_SLOT );
+
 	normalTexture->Bind ( NORMAL_SLOT );
+	gBufferSampler.Bind ( NORMAL_SLOT );
+
 	emissionTexture->Bind ( EMISSION_SLOT );
+	gBufferSampler.Bind ( EMISSION_SLOT );
+
 	parameterTexture->Bind ( PARAMETER_SLOT );
+	gBufferSampler.Bind ( PARAMETER_SLOT );
+
 	depthTexture->Bind ( DEPTH_SLOT );
+	gBufferSampler.Bind ( DEPTH_SLOT );
 }
 
 GXVoid EMLightProbeMaterial::Unbind ()
@@ -87,16 +106,31 @@ GXVoid EMLightProbeMaterial::Unbind ()
 	if ( !diffuseIrradianceTexture || !prefilteredEnvironmentMapTexture || !brdfIntegrationMapTexture || !albedoTexture || !normalTexture || !emissionTexture || !parameterTexture || !depthTexture )
 		return;
 
-	glUseProgram ( 0u );
-
+	diffuseIrradianceSampler.Unbind ( DIFFUSE_IRRADIANCE_SLOT );
 	diffuseIrradianceTexture->Unbind ();
+
+	prefilteredEnvironmentSampler.Unbind ( PREFILTERED_ENVIRONMENT_MAP_SLOT );
 	prefilteredEnvironmentMapTexture->Unbind ();
+
+	brdfIntegrationSampler.Unbind ( BRDF_INTEGRATION_MAP_SLOT );
 	brdfIntegrationMapTexture->Unbind ();
+
+	gBufferSampler.Unbind ( ALBEDO_SLOT );
 	albedoTexture->Unbind ();
+
+	gBufferSampler.Unbind ( NORMAL_SLOT );
 	normalTexture->Unbind ();
+
+	gBufferSampler.Unbind ( EMISSION_SLOT );
 	emissionTexture->Unbind ();
+
+	gBufferSampler.Unbind ( PARAMETER_SLOT );
 	parameterTexture->Unbind ();
+
+	gBufferSampler.Unbind ( DEPTH_SLOT );
 	depthTexture->Unbind ();
+
+	glUseProgram ( 0u );
 }
 
 GXVoid EMLightProbeMaterial::SetDiffuseIrradianceTexture ( GXTextureCubeMap &cubeMap )

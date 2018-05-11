@@ -20,7 +20,8 @@
 
 
 GXEquirectangularToCubeMapMaterial::GXEquirectangularToCubeMapMaterial ():
-	equirectangularTexture ( nullptr )
+	equirectangularTexture ( nullptr ),
+	sampler ( GL_REPEAT, eGXResampling::Linear, 1.0f )
 {
 	static const GLchar* samplerNames[ 1 ] = { "equirectangularSampler" };
 	static const GLuint samplerLocations[ 1 ] = { TEXTURE_SLOT };
@@ -74,15 +75,19 @@ GXVoid GXEquirectangularToCubeMapMaterial::Bind ( const GXTransform& /*transform
 	glUseProgram ( shaderProgram.GetProgram () );
 	glUniformMatrix4fv ( viewProjectionMatricesLocation, 6, GL_FALSE, reinterpret_cast<const GLfloat*> ( viewProjectionMatrices ) );
 	glUniform1f ( gammaLocation, gamma );
+
 	equirectangularTexture->Bind ( static_cast<GXUByte> ( TEXTURE_SLOT ) );
+	sampler.Bind ( TEXTURE_SLOT );
 }
 
 GXVoid GXEquirectangularToCubeMapMaterial::Unbind ()
 {
 	if ( !equirectangularTexture ) return;
 
-	glUseProgram ( 0u );
+	sampler.Unbind ( TEXTURE_SLOT );
 	equirectangularTexture->Unbind ();
+
+	glUseProgram ( 0u );
 }
 
 GXVoid GXEquirectangularToCubeMapMaterial::SetEquirectangularTexture ( GXTexture2D &texture )

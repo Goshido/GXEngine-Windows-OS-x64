@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_TEXTURE_2D
 #define GX_TEXTURE_2D
@@ -21,10 +21,10 @@ class GXTexture2D
 		GXTexture2D ();
 
 		// Creates program texture resource.
-		explicit GXTexture2D ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap, GLint wrapMode );
+		explicit GXTexture2D ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap );
 
 		// Creates reference counting texture resource.
-		explicit GXTexture2D ( const GXWChar* fileName, GXBool isGenerateMipmap, GLint wrapMode, GXBool isApplyGammaCorrection );
+		explicit GXTexture2D ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection );
 
 		~GXTexture2D ();
 
@@ -39,18 +39,18 @@ class GXTexture2D
 		// - JPEG
 		// - PNG
 		// - HDR
-		GXVoid LoadImage ( const GXWChar* fileName, GXBool isGenerateMipmap, GLint wrapMode, GXBool isApplyGammaCorrection );
+		GXVoid LoadImage ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection );
 
 		// If object holds reference counting resource then method releases that resource and makes new
-		// texture resource with specified pixel data. Width, height, internal format, generate mipmap intend
-		// and wrap mode will be same as old reference counting resource.
+		// texture resource with specified pixel data. Width, height, internal format and generate mipmap intend
+		// will be same as old reference counting resource.
 		// If object holds program texture then method will update pixel data only.
 		GXVoid FillWholePixelData ( const GXVoid* data );
 
 		// If texture holds reference counting resource then method releases that resource and created new
-		// texture resource with undefined pixel data. Width, height, internal format, generate mipmap intend
-		// and wrap mode will be same as old reference counting resource. Then method will fill specified
-		// texture region with specified pixel data.
+		// texture resource with undefined pixel data. Width, height, internal format and generate mipmap intend
+		// will be same as old reference counting resource. Then method will fill specified texture region with
+		// specified pixel data.
 		// If texture holds program texture then method will update pixel region only.
 		GXVoid FillRegionPixelData ( GXUShort left, GXUShort bottom, GXUShort regionWidth, GXUShort regionHeight, const GXVoid* data );
 		
@@ -62,8 +62,8 @@ class GXTexture2D
 
 		GLuint GetTextureObject () const;
 
-		GXBool IsInited () const;
-		GXVoid InitResources ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap, GLint wrapMode );
+		GXBool IsInitialized () const;
+		GXVoid InitResources ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap );
 		GXVoid FreeResources ();
 
 		static GXUInt GXCALL GetTotalLoadedTextures ( const GXWChar** lastTexture );

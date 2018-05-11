@@ -205,6 +205,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXLocale.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXRenderable.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXSampler.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSkeleton.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSkinningMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSplashScreen.cpp" />
@@ -218,7 +219,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXOpenGL.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXPhysXFrontend.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXRenderer.cpp" />
-    <ClCompile Include="..\..\Sources\GXEngine\GXSamplerUtils.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXShaderProgram.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSound.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSoundChannel.cpp" />
@@ -375,6 +375,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXLocale.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXRenderable.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXSampler.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSkeleton.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSkinningMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSplashScreen.h" />
@@ -389,7 +390,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXPhysXFrontend.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXRenderer.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXResource.h" />
-    <ClInclude Include="..\..\Include\GXEngine\GXSamplerUtils.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXShaderProgram.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSound.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSoundChannel.h" />
