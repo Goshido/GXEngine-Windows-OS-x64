@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_SINGLE_BODY_CONSTRAINT_SOLVER
 #define GX_SINGLE_BODY_CONSTRAINT_SOLVER
@@ -52,6 +52,7 @@ class GXSingleBodyConstraintSolver
 
 		const GXVec6& GetJacobianElement ( GXUInt constraint, GXUByte bodyIndex ) const;
 
+		GXSingleBodyConstraintSolver () = delete;
 		GXSingleBodyConstraintSolver ( const GXSingleBodyConstraintSolver &other ) = delete;
 		GXSingleBodyConstraintSolver& operator = ( const GXSingleBodyConstraintSolver &other ) = delete;
 };

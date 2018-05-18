@@ -1,14 +1,15 @@
-// version 1.0
+// version 1.1
 
 #include <GXPhysics/GXSingleBodyConstraintSolver.h>
 #include <GXPhysics/GXPhysicsEngine.h>
 #include <GXCommon/GXLogger.h>
 
 
-#define CONSTRAINT_STORAGE_GROW_FACTOR		32
-#define ELEMENTS_PER_CONSTRAINT				2
 #define DEFAULT_INITIAL_LAMBDA				0.0f
+#define CONSTRAINT_STORAGE_GROW_FACTOR		32u
+#define ELEMENTS_PER_CONSTRAINT				2u
 
+//---------------------------------------------------------------------------------------------------------------------
 
 GXSingleBodyConstraintSolver::GXSingleBodyConstraintSolver ( GXUShort maximumIterations ):
 	jacobian (sizeof ( GXVec6 ) ),
@@ -182,16 +183,7 @@ GXVoid GXSingleBodyConstraintSolver::UpdateA ()
 	memset ( &a, 0, sizeof ( GXVec6 ) );
 
 	for ( GXUInt i = 0u; i < constraints; i++ )
-	{
-		const GXVec6& b0 = bData[ i ];
-
-		a.data[ 0 ] += b0.data[ 0 ] * lambdaData[ i ];
-		a.data[ 1 ] += b0.data[ 1 ] * lambdaData[ i ];
-		a.data[ 2 ] += b0.data[ 2 ] * lambdaData[ i ];
-		a.data[ 3 ] += b0.data[ 3 ] * lambdaData[ i ];
-		a.data[ 4 ] += b0.data[ 4 ] * lambdaData[ i ];
-		a.data[ 5 ] += b0.data[ 5 ] * lambdaData[ i ];
-	}
+		a.Sum ( a, lambdaData[ i ], bData[ i ] );
 }
 
 GXVoid GXSingleBodyConstraintSolver::UpdateBodyVelocity ()
@@ -205,16 +197,7 @@ GXVoid GXSingleBodyConstraintSolver::UpdateBodyVelocity ()
 	memset ( &alpha, 0, sizeof ( GXVec6 ) );
 
 	for ( GXUInt i = 0u; i < constraints; i++ )
-	{
-		const GXVec6& j0 = GetJacobianElement ( i, 0 );
-
-		alpha.data[ 0 ] += j0.data[ 0 ] * lambdaData[ i ];
-		alpha.data[ 1 ] += j0.data[ 1 ] * lambdaData[ i ];
-		alpha.data[ 2 ] += j0.data[ 2 ] * lambdaData[ i ];
-		alpha.data[ 3 ] += j0.data[ 3 ] * lambdaData[ i ];
-		alpha.data[ 4 ] += j0.data[ 4 ] * lambdaData[ i ];
-		alpha.data[ 5 ] += j0.data[ 5 ] * lambdaData[ i ];
-	}
+		alpha.Sum ( alpha, lambdaData[ i ], GetJacobianElement ( i, 0 ) );
 
 	GXVec6 betta;
 	betta.From ( firstBody->GetTotalForce (), firstBody->GetTotalTorque () );

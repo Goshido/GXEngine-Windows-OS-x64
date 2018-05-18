@@ -105,7 +105,7 @@ GXVoid GXContact::SetGJKIterations ( GXUInt iterations )
 	gjkIterations = iterations;
 }
 
-GXUInt GXContact::GetGTKIterations () const
+GXUInt GXContact::GetGJKIterations () const
 {
 	return gjkIterations;
 }

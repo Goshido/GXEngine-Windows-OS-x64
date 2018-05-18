@@ -67,7 +67,7 @@ class GXContact
 		GXFloat GetRestitution () const;
 
 		GXVoid SetGJKIterations ( GXUInt iterations );
-		GXUInt GetGTKIterations () const;
+		GXUInt GetGJKIterations () const;
 
 		GXVoid SetEPAIterations ( GXUInt iterations );
 		GXUInt GetEPAIterations () const;

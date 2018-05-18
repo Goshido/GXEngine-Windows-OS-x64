@@ -152,17 +152,19 @@ GXVoid EMGame::OnInit ()
 	GXTransform transform;
 	unitActor = new EMUnitActor ( L"Unit actor 01", transform );
 
-	//transform.SetLocation ( 1.0f, 1.0f, 0.0f );
+	//transform.SetLocation ( 1.0f, 4.0f, 0.0f );
 	transform.SetLocation ( 1.0f, 4.0f, 0.0f );
-	transform.SetRotation ( 0.0f, 0.0f, 0.3f );
+	transform.SetRotation ( 0.5f, 0.0f, 0.3f );
+	transform.SetScale ( 1.0f, 1.0f, 1.0f );
 	colliderOne = new EMPhysicsDrivenActor ( L"Collider One", transform );
 	GXBoxShape* colliderOneShape = new GXBoxShape ( &( colliderOne->GetRigidBody () ), 1.0f, 1.0f, 1.0f );
 	colliderOneShape->SetRestitution ( 0.5f );
+	colliderOne->GetRigidBody ().SetMass ( 1.0f );
 	colliderOne->GetRigidBody ().SetShape ( *colliderOneShape );
 	//colliderOne->GetRigidBody ().SetCanSleep ( GX_FALSE );
 	//colliderOne->GetRigidBody ().EnableKinematic ();
 	//colliderOne->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, -1.0f, 1.0f ) );
-	colliderOne->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 0.0f, -5.0f ) );
+	colliderOne->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 10.0f, -5.0f ) );
 	colliderOne->SetMesh ( L"Meshes/System/Unit Cube.stm" );
 	EMCookTorranceCommonPassMaterial& colliderOneMaterial = colliderOne->GetMaterial ();
 	colliderOneMaterial.SetAlbedoColor ( 253u, 180u, 17u, 255u );
@@ -175,17 +177,18 @@ GXVoid EMGame::OnInit ()
 
 	world.RegisterForceGenerator ( colliderOne->GetRigidBody (), gravity );
 
-	transform.SetLocation ( 3.0f, 2.0f, 0.0f );
+	transform.SetLocation ( 3.0f, 0.5f, 0.0f );
 	//transform.SetLocation ( 1.0f, 1.0f, 0.0f );
 	transform.SetRotation ( 0.0f, 0.0f, 0.0f );
+	transform.SetScale ( 1.0f, 1.0f, 1.0f );
 	colliderTwo = new EMPhysicsDrivenActor ( L"Collider Two", transform );
 	GXSphereShape* colliderTwoShape = new GXSphereShape ( &( colliderTwo->GetRigidBody () ), 0.5f );
 	colliderTwoShape->SetRestitution ( 0.8f );
+	colliderTwo->GetRigidBody ().SetMass ( 1.0f );
 	colliderTwo->GetRigidBody ().SetShape ( *colliderTwoShape );
 	//colliderTwo->GetRigidBody ().SetCanSleep ( GX_FALSE );
 	//colliderTwo->GetRigidBody ().EnableKinematic ();
-	colliderTwo->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 0.0f, 100.0f ) );
-	colliderTwo->GetRigidBody ().SetMass ( 1.0f );
+	colliderTwo->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 0.0f, 35.0f ) );
 	colliderTwo->SetMesh ( L"Meshes/System/Unit Sphere.obj" );
 	EMCookTorranceCommonPassMaterial& colliderTwoMaterial = colliderTwo->GetMaterial ();
 	colliderTwoMaterial.SetAlbedoColor ( 247u, 244u, 233u, 255u );
@@ -203,7 +206,7 @@ GXVoid EMGame::OnInit ()
 	transform.SetScale ( 50.0f, 1.0, 50.0f );
 	kinematicPlane = new EMPhysicsDrivenActor ( L"Kinematic Plane", transform );
 	GXBoxShape* kinematicPlaneShape = new GXBoxShape ( &( kinematicPlane->GetRigidBody () ), 50.0f, 1.0f, 50.0f );
-	kinematicPlane->GetRigidBody ().SetMass ( 10000.0f );
+	kinematicPlane->GetRigidBody ().SetMass ( 777.777e+7f );
 	kinematicPlane->GetRigidBody ().SetShape ( *kinematicPlaneShape );
 	kinematicPlane->GetRigidBody ().EnableKinematic ();
 	//kinematicPlane->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, 0.1f, 0.0f ) );
@@ -446,7 +449,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 		physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Penetration depth: %f" ), contact->GetPenetration () );
 
 		pi.insertY += offset;
-		physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->GJK iterations: %i" ), contact->GetGTKIterations () );
+		physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->GJK iterations: %i" ), contact->GetGJKIterations () );
 
 		pi.insertY += offset;
 		physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->EPA iterations: %i" ), contact->GetEPAIterations () );
@@ -623,7 +626,7 @@ GXVoid GXCALL EMGame::OnMouseButton ( GXVoid* /*handler*/, GXInputMouseFlags mou
 
 	contactNormalTransform.From ( contactNormal, contactLocation );
 
-	const GXFloat impulseModule = 6.0f;
+	const GXFloat impulseModule = 3.0f;
 	GXVec3 impulseWorld;
 	impulseWorld.Multiply ( rayDirection, impulseModule );
 

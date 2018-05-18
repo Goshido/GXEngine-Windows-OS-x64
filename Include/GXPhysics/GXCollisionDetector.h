@@ -1,4 +1,4 @@
-//version 1.3
+//version 1.4
 
 #ifndef GX_COLLISION_DETECTOR
 #define GX_COLLISION_DETECTOR
@@ -11,6 +11,7 @@
 
 struct GXSupportPoint;
 struct GXEdge;
+struct GXSimplex;
 class GXCollisionDetector
 {
 	private:
@@ -54,7 +55,11 @@ class GXCollisionDetector
 		static GXCollisionDetector& GXCALL GetInstance ();
 		~GXCollisionDetector ();
 
+		// Method will append contact if it exists.
+		// Note two kinematic bodies will cause undefined behaviour.
 		GXVoid Check ( const GXShape &shapeA, const GXShape &shapeB, GXCollisionData &collisionData );
+
+		GXBool DoesCollide ( const GXShape &shapeA, const GXShape &shapeB );
 
 		GXVoid EnableDebugData ();
 		GXVoid DisableDebugData ();
@@ -87,6 +92,11 @@ class GXCollisionDetector
 	private:
 		GXCollisionDetector ();
 
+		GXBool RunGJK ( GXSimplex &simplex, GXUInt &usedIterations, const GXShape &shapeA, const GXShape &shapeB );
+
+		// Note contactNormal will contain direction to move body with shapeA by convention.
+		GXBool RunEPA ( GXVec3 &contactNormal, GXFloat &contactPenetration, GXUInt &usedEdges, GXUInt &usedIterations, const GXShape &shapeA, const GXShape &shapeB, GXSimplex &simplex );
+
 		GXVoid CalculateSupportPoint ( GXSupportPoint &supportPoint, const GXShape &shapeA, const GXShape &shapeB, const GXVec3 &direction );
 		GXVoid ProceedEdge ( GXEdge &edge, GXUInt &lastEdgeIndex, GXEdge** edgeArrayPointer, GXUInt &totalEdgeNumber );
 		GXVoid ProjectContactGeometry ( GXVec3* contactGeometryProjection, const GXVec3* contactGeometryWorld, GXUShort totalContactGeometryPoints, const GXVec3 &contactNormal );
@@ -96,6 +106,15 @@ class GXCollisionDetector
 		GXVoid GetCentroid ( GXVec3 &centroid, const GXVec3* points, GXUInt totalPoints );
 		GXVoid UpdateDeviationAxes ();
 		GXVoid UpdateDebugData ( const GXVec2* planarIntersectionGeometry );
+
+		// Note contact resolver implements constraint based method.
+		// This method has some limitations. So there are two rules:
+		// 1) Kinematic body MUST be first body
+		// 2) Body with less mass MUST be fisrt body if two bodies are dynamics bodies
+		//
+		// See details in paper "Iterative Dynamics with Temporal Coherence" by Erin Catto,
+		// Paragraph: 9.2 Extreme Mass Ratios
+		GXVoid NormalizeShapes ( const GXShape** normalizedShapeA, const GXShape** normalizedShapeB, const GXShape &shapeA, const GXShape &shapeB ) const;
 
 		GXCollisionDetector ( const GXCollisionDetector &other ) = delete;
 		GXCollisionDetector& operator = ( const GXCollisionDetector &other ) = delete;

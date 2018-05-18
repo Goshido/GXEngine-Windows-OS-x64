@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_PAIR_BODY_CONSTRAINT_SOLVER
 #define GX_PAIR_BODY_CONSTRAINT_SOLVER
@@ -23,7 +23,7 @@ class GXPairBodyConstraintSolver
 		GXDynamicArray		lambdaRange;		// s GXVec2's
 		GXDynamicArray		initialLambda;		// s GXFloat's
 
-												// working arrays
+		// working arrays
 		GXDynamicArray		lambda;				// s GXFloat's
 		GXDynamicArray		eta;				// s GXFloat's
 		GXDynamicArray		d;					// s GXFloat's
@@ -53,6 +53,7 @@ class GXPairBodyConstraintSolver
 		const GXVec6& GetJacobianElement ( GXUInt constraint, GXUByte bodyIndex ) const;
 		const GXVec6& GetBElement ( GXUByte bodyIndex, GXUInt constraint ) const;
 
+		GXPairBodyConstraintSolver () = delete;
 		GXPairBodyConstraintSolver ( const GXPairBodyConstraintSolver &other ) = delete;
 		GXPairBodyConstraintSolver& operator = ( const GXPairBodyConstraintSolver &other ) = delete;
 };

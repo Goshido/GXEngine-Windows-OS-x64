@@ -151,7 +151,7 @@ GXCore::GXCore ()
 GXVoid GXCore::CheckMemoryLeak ()
 {
 	const GXWChar* lastFont = nullptr;
-	GXUShort lastFontSize = 0;
+	GXUShort lastFontSize = 0u;
 	GXUInt fonts = GXFont::GetTotalLoadedFonts ( &lastFont, lastFontSize );
 
 	const GXWChar* lastVS = nullptr;
@@ -179,76 +179,75 @@ GXVoid GXCore::CheckMemoryLeak ()
 	const GXWChar* lastSkin = nullptr;
 	GXUInt skins = GXMeshGeometry::GetTotalLoadedSkins ( &lastSkin );
 
-	if ( ( fonts + shaders + sounds + texture2Ds + textureCubeMaps + samplers + meshes + skins ) != 0 )
+	if ( ( fonts + shaders + sounds + texture2Ds + textureCubeMaps + samplers + meshes + skins ) < 1u ) return;
+
+	GXLogW ( L"GXCore::CheckMemoryLeak::Warning - Обнаружена утечка памяти\n" );
+
+	if ( fonts > 0u )
+		GXLogW ( L"Шрифты - %i [%s] [размер %i]\n", fonts, lastFont, lastFontSize );
+
+	if ( shaders > 0u )
+		GXLogW ( L"Шейдерные программы - %i [%s] [%s] [%s]\n", shaders, lastVS, lastGS, lastFS );
+
+	if ( sounds > 0u )
+		GXLogW ( L"Звуковые файлы - %i [%s]\n", sounds, lastSound );
+
+	if ( texture2Ds > 0u )
+		GXLogW ( L"Текстурные объекты (2D текстуры)  - %i [%s]\n", texture2Ds, lastTexture2D );
+
+	if ( textureCubeMaps > 0u )
+		GXLogW ( L"Текстурные объекты (Cube map текстуры)- %i [%s]\n", textureCubeMaps, lastTextureCubeMap );
+
+	if ( samplers > 0u )
 	{
-		GXLogW ( L"GXCore::CheckMemoryLeak::Warning - Обнаружена утечка памяти\n" );
+		GXLogW ( L"Семплеры - %i [", samplers );
 
-		if ( fonts > 0u )
-			GXLogW ( L"Шрифты - %i [%s] [размер %i]\n", fonts, lastFont, lastFontSize );
-
-		if ( shaders > 0u )
-			GXLogW ( L"Шейдерные программы - %i [%s] [%s] [%s]\n", shaders, lastVS, lastGS, lastFS );
-
-		if ( sounds > 0u )
-			GXLogW ( L"Звуковые файлы - %i [%s]\n", sounds, lastSound );
-
-		if ( texture2Ds > 0u )
-			GXLogW ( L"Текстурные объекты (2D текстуры)  - %i [%s]\n", texture2Ds, lastTexture2D );
-
-		if ( textureCubeMaps > 0u )
-			GXLogW ( L"Текстурные объекты (Cube map текстуры)- %i [%s]\n", textureCubeMaps, lastTextureCubeMap );
-
-		if ( samplers > 0u )
+		switch ( lastWrapMode )
 		{
-			GXLogW ( L"Семплеры - %i [", samplers );
+			case GL_REPEAT:
+				GXLogW ( L"GL_REPEAT, " );
+			break;
 
-			switch ( lastWrapMode )
-			{
-				case GL_REPEAT:
-					GXLogW ( L"GL_REPEAT, " );
-				break;
+			case GL_MIRRORED_REPEAT:
+				GXLogW ( L"GL_MIRRORED_REPEAT, " );
+			break;
 
-				case GL_MIRRORED_REPEAT:
-					GXLogW ( L"GL_MIRRORED_REPEAT, " );
-				break;
+			case GL_CLAMP_TO_EDGE:
+				GXLogW ( L"GL_CLAMP_TO_EDGE, " );
+			break;
 
-				case GL_CLAMP_TO_EDGE:
-					GXLogW ( L"GL_CLAMP_TO_EDGE, " );
-				break;
-
-				default:
-					// NOTHING
-				break;
-			}
-
-			switch ( lastResampling )
-			{
-				case eGXResampling::None:
-					GXLogW ( L"eGXResampling::None, " );
-				break;
-
-				case eGXResampling::Linear:
-					GXLogW ( L"eGXResampling::Linear, " );
-				break;
-
-				case eGXResampling::Bilinear:
-					GXLogW ( L"eGXResampling::Bilinear, " );
-				break;
-
-				case eGXResampling::Trilinear:
-					GXLogW ( L"eGXResampling::Trilinear, " );
-				break;
-			}
-
-			GXLogW ( L"x%g anisotropy]\n", lastAnisotropy );
+			default:
+				// NOTHING
+			break;
 		}
 
-		if ( meshes > 0u )
-			GXLogW ( L"Меши - %i [%s]\n", meshes, lastMesh );
+		switch ( lastResampling )
+		{
+			case eGXResampling::None:
+				GXLogW ( L"eGXResampling::None, " );
+			break;
 
-		if ( meshes > 0u )
-			GXLogW ( L"Скины - %i [%s]\n", skins, lastSkin );
+			case eGXResampling::Linear:
+				GXLogW ( L"eGXResampling::Linear, " );
+			break;
 
-		system ( "pause" );
+			case eGXResampling::Bilinear:
+				GXLogW ( L"eGXResampling::Bilinear, " );
+			break;
+
+			case eGXResampling::Trilinear:
+				GXLogW ( L"eGXResampling::Trilinear, " );
+			break;
+		}
+
+		GXLogW ( L"x%g anisotropy]\n", lastAnisotropy );
 	}
+
+	if ( meshes > 0u )
+		GXLogW ( L"Меши - %i [%s]\n", meshes, lastMesh );
+
+	if ( meshes > 0u )
+		GXLogW ( L"Скины - %i [%s]\n", skins, lastSkin );
+
+	system ( "pause" );
 }

@@ -1,15 +1,16 @@
-// version 1.0
+// version 1.1
 
 #include <GXPhysics/GXPairBodyConstraintSolver.h>
 #include <GXPhysics/GXPhysicsEngine.h>
 
 
-#define CONSTRAINT_STORAGE_GROW_FACTOR		32
-#define ELEMENTS_PER_CONSTRAINT				2
 #define DEFAULT_INITIAL_LAMBDA				0.0f
+#define CONSTRAINT_STORAGE_GROW_FACTOR		32u
+#define ELEMENTS_PER_CONSTRAINT				2u
 
+//---------------------------------------------------------------------------------------------------------------------
 
-GXPairBodyConstraintSolver::GXPairBodyConstraintSolver ( GXUShort maximumIterations ) :
+GXPairBodyConstraintSolver::GXPairBodyConstraintSolver ( GXUShort maximumIterations ):
 	jacobian ( sizeof ( GXVec6 ) ),
 	bias ( sizeof ( GXFloat ) ),
 	lambdaRange ( sizeof ( GXVec2 ) ),
@@ -20,7 +21,7 @@ GXPairBodyConstraintSolver::GXPairBodyConstraintSolver ( GXUShort maximumIterati
 	b ( sizeof ( GXVec6 ) )
 {
 	this->maximumIterations = maximumIterations;
-	constraints = 0;
+	constraints = 0u;
 	firstBody = nullptr;
 	secondBody = nullptr;
 }
@@ -35,7 +36,7 @@ GXVoid GXPairBodyConstraintSolver::Begin ( GXRigidBody &first, GXRigidBody &seco
 	firstBody = &first;
 	secondBody = &second;
 
-	constraints = 0;
+	constraints = 0u;
 }
 
 GXVoid GXPairBodyConstraintSolver::AddConstraint ( const GXConstraint& constraint )
@@ -88,9 +89,9 @@ GXVoid GXPairBodyConstraintSolver::End ()
 
 	for ( GXUInt i = 0u; i < constraints; i++ )
 	{
-		const GXVec6& j0 = GetJacobianElement ( i, 0 );
-		const GXVec6& j1 = GetJacobianElement ( i, 1 );
-		dData[ i ] = j0.DotProduct ( GetBElement ( 0, i ) ) + j1.DotProduct ( GetBElement ( 1, i ) );
+		const GXVec6& j0 = GetJacobianElement ( i, 0u );
+		const GXVec6& j1 = GetJacobianElement ( i, 1u );
+		dData[ i ] = j0.DotProduct ( GetBElement ( 0u, i ) ) + j1.DotProduct ( GetBElement ( 1u, i ) );
 	}
 
 	const GXFloat* etaData = static_cast<const GXFloat*> ( eta.GetData () );
@@ -100,17 +101,17 @@ GXVoid GXPairBodyConstraintSolver::End ()
 	{
 		for ( GXUInt i = 0u; i < constraints; i++ )
 		{
-			GXFloat deltaLambda = ( etaData[ i ] - a[ 0 ].DotProduct ( GetJacobianElement ( i, 0 ) ) - a[ 1 ].DotProduct ( GetJacobianElement ( i, 1 ) ) ) / dData[ i ];
+			GXFloat deltaLambda = ( etaData[ i ] - a[ 0 ].DotProduct ( GetJacobianElement ( i, 0u ) ) - a[ 1 ].DotProduct ( GetJacobianElement ( i, 1u ) ) ) / dData[ i ];
 			GXFloat oldLambda = lambdaData[ i ];
 
 			lambdaData[ i ] = GXMaxf ( lambdaRangeData[ i ].data[ 0 ], GXMinf ( lambdaData[ i ] + deltaLambda, lambdaRangeData[ i ].data[ 1 ] ) );
 			deltaLambda = lambdaData[ i ] - oldLambda;
 
 			GXVec6 alpha;
-			alpha.Multiply ( GetBElement ( 0, i ), deltaLambda );
+			alpha.Multiply ( GetBElement ( 0u, i ), deltaLambda );
 			a[ 0 ].Sum ( a[ 0 ], alpha );
 
-			alpha.Multiply ( GetBElement ( 1, i ), deltaLambda );
+			alpha.Multiply ( GetBElement ( 1u, i ), deltaLambda );
 			a[ 1 ].Sum ( a[ 1 ], alpha );
 		}
 	}
@@ -118,12 +119,12 @@ GXVoid GXPairBodyConstraintSolver::End ()
 	UpdateBodyVelocities ();
 
 	firstBody = secondBody = nullptr;
-	constraints = 0;
+	constraints = 0u;
 }
 
 GXVoid GXPairBodyConstraintSolver::UpdateB ()
 {
-	GXVec6* bData = (GXVec6*)b.GetData ();
+	GXVec6* bData = static_cast<GXVec6*> ( b.GetData () );
 
 	GXFloat firstInverseMass = firstBody->GetInverseMass ();
 	const GXMat3& firstInverseInertia = firstBody->GetInverseInertiaTensorWorld ();
@@ -133,7 +134,7 @@ GXVoid GXPairBodyConstraintSolver::UpdateB ()
 
 	for ( GXUInt i = 0u; i < constraints; i++ )
 	{
-		const GXVec6& j0 = GetJacobianElement ( i, 0 );
+		const GXVec6& j0 = GetJacobianElement ( i, 0u );
 
 		bData->data[ 0 ] = firstInverseMass * j0.data[ 0 ];
 		bData->data[ 1 ] = firstInverseMass * j0.data[ 1 ];
@@ -142,7 +143,7 @@ GXVoid GXPairBodyConstraintSolver::UpdateB ()
 		bData->data[ 4 ] = firstInverseInertia.m[ 1 ][ 0 ] * j0.data[ 3 ] + firstInverseInertia.m[ 1 ][ 1 ] * j0.data[ 4 ] + firstInverseInertia.m[ 1 ][ 2 ] * j0.data[ 5 ];
 		bData->data[ 5 ] = firstInverseInertia.m[ 2 ][ 0 ] * j0.data[ 3 ] + firstInverseInertia.m[ 2 ][ 1 ] * j0.data[ 4 ] + firstInverseInertia.m[ 2 ][ 2 ] * j0.data[ 5 ];
 
-		const GXVec6& j1 = GetJacobianElement ( i, 1 );
+		const GXVec6& j1 = GetJacobianElement ( i, 1u );
 		bData++;
 
 		bData->data[ 0 ] = secondInverseMass * j1.data[ 0 ];
@@ -205,7 +206,7 @@ GXVoid GXPairBodyConstraintSolver::UpdateEta ()
 	const GXFloat* biasData = static_cast<GXFloat*> ( bias.GetData () );
 
 	for ( GXUInt i = 0u; i < constraints; i++ )
-		etaData[ i ] = inverseDeltaTime * biasData[ i ] - ( alpha0.DotProduct ( GetJacobianElement ( i, 0 ) ) + alpha1.DotProduct ( GetJacobianElement ( i, 1 ) ) );
+		etaData[ i ] = inverseDeltaTime * biasData[ i ] - ( alpha0.DotProduct ( GetJacobianElement ( i, 0u ) ) + alpha1.DotProduct ( GetJacobianElement ( i, 1u ) ) );
 }
 
 GXVoid GXPairBodyConstraintSolver::UpdateA ()
@@ -218,23 +219,9 @@ GXVoid GXPairBodyConstraintSolver::UpdateA ()
 
 	for ( GXUInt i = 0u; i < constraints; i++ )
 	{
-		const GXVec6& b0 = GetBElement ( 0, i );
-
-		a0.data[ 0 ] += b0.data[ 0 ] * lambdaData[ i ];
-		a0.data[ 1 ] += b0.data[ 1 ] * lambdaData[ i ];
-		a0.data[ 2 ] += b0.data[ 2 ] * lambdaData[ i ];
-		a0.data[ 3 ] += b0.data[ 3 ] * lambdaData[ i ];
-		a0.data[ 4 ] += b0.data[ 4 ] * lambdaData[ i ];
-		a0.data[ 5 ] += b0.data[ 5 ] * lambdaData[ i ];
-
-		const GXVec6& b1 = GetBElement ( 1, i );
-
-		a1.data[ 0 ] += b1.data[ 0 ] * lambdaData[ i ];
-		a1.data[ 1 ] += b1.data[ 1 ] * lambdaData[ i ];
-		a1.data[ 2 ] += b1.data[ 2 ] * lambdaData[ i ];
-		a1.data[ 3 ] += b1.data[ 3 ] * lambdaData[ i ];
-		a1.data[ 4 ] += b1.data[ 4 ] * lambdaData[ i ];
-		a1.data[ 5 ] += b1.data[ 5 ] * lambdaData[ i ];
+		GXFloat alpha = lambdaData[ i ];
+		a0.Sum ( a0, alpha, GetBElement ( 0u, i ) );
+		a1.Sum ( a1, alpha, GetBElement ( 1u, i ) );
 	}
 }
 
@@ -255,23 +242,10 @@ GXVoid GXPairBodyConstraintSolver::UpdateBodyVelocities ()
 
 	for ( GXUInt i = 0u; i < constraints; i++ )
 	{
-		const GXVec6& j0 = GetJacobianElement ( i, 0 );
+		GXFloat yotta = lambdaData[ i ];
 
-		alpha0.data[ 0 ] += j0.data[ 0 ] * lambdaData[ i ];
-		alpha0.data[ 1 ] += j0.data[ 1 ] * lambdaData[ i ];
-		alpha0.data[ 2 ] += j0.data[ 2 ] * lambdaData[ i ];
-		alpha0.data[ 3 ] += j0.data[ 3 ] * lambdaData[ i ];
-		alpha0.data[ 4 ] += j0.data[ 4 ] * lambdaData[ i ];
-		alpha0.data[ 5 ] += j0.data[ 5 ] * lambdaData[ i ];
-
-		const GXVec6& j1 = GetJacobianElement ( i, 1 );
-
-		alpha1.data[ 0 ] += j1.data[ 0 ] * lambdaData[ i ];
-		alpha1.data[ 1 ] += j1.data[ 1 ] * lambdaData[ i ];
-		alpha1.data[ 2 ] += j1.data[ 2 ] * lambdaData[ i ];
-		alpha1.data[ 3 ] += j1.data[ 3 ] * lambdaData[ i ];
-		alpha1.data[ 4 ] += j1.data[ 4 ] * lambdaData[ i ];
-		alpha1.data[ 5 ] += j1.data[ 5 ] * lambdaData[ i ];
+		alpha0.Sum ( alpha0, yotta, GetJacobianElement ( i, 0u ) );
+		alpha1.Sum ( alpha1, yotta, GetJacobianElement ( i, 1u ) );
 	}
 
 	GXVec6 betta[ 2 ];
@@ -281,8 +255,8 @@ GXVoid GXPairBodyConstraintSolver::UpdateBodyVelocities ()
 	betta[ 0 ].From ( firstBody->GetTotalForce (), firstBody->GetTotalTorque () );
 	betta[ 1 ].From ( secondBody->GetTotalForce (), secondBody->GetTotalTorque () );
 
-	alpha0.Sum ( alpha0, betta[ 0 ] );
-	alpha1.Sum ( alpha1, betta[ 1 ] );
+	alpha0.Sum ( alpha0, betta0 );
+	alpha1.Sum ( alpha1, betta1 );
 
 	betta0.data[ 0 ] = firstInverseMass * alpha0.data[ 0 ];
 	betta0.data[ 1 ] = firstInverseMass * alpha0.data[ 1 ];
@@ -319,11 +293,11 @@ GXVoid GXPairBodyConstraintSolver::UpdateBodyVelocities ()
 const GXVec6& GXPairBodyConstraintSolver::GetJacobianElement ( GXUInt constraint, GXUByte bodyIndex ) const
 {
 	const GXVec6* elements = static_cast<const GXVec6*> ( jacobian.GetData () );
-	return elements[ constraint * ELEMENTS_PER_CONSTRAINT + (GXUInt)bodyIndex ];
+	return elements[ constraint * ELEMENTS_PER_CONSTRAINT + static_cast<GXUInt> ( bodyIndex ) ];
 }
 
 const GXVec6& GXPairBodyConstraintSolver::GetBElement ( GXUByte bodyIndex, GXUInt constraint ) const
 {
 	const GXVec6* elements = static_cast<const GXVec6*> ( b.GetData () );
-	return elements[ constraint * ELEMENTS_PER_CONSTRAINT + (GXUInt)bodyIndex ];
+	return elements[ constraint * ELEMENTS_PER_CONSTRAINT + static_cast<GXUInt> ( bodyIndex ) ];
 }

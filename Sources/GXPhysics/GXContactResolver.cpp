@@ -10,6 +10,7 @@
 #define DEFAULT_BAUMGARTE_FACTOR		0.5f
 #define DEFAULT_STATIONARY_THRESHOLD	1.0e-4f
 
+//---------------------------------------------------------------------------------------------------------------------
 
 GXContactResolver::GXContactResolver ():
 	pairBodyConstraintSolver ( SOLVER_ITERATIONS ),

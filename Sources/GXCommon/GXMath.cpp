@@ -1,4 +1,4 @@
-﻿// version 1.49
+﻿// version 1.50
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
@@ -99,10 +99,10 @@ GXVoid GXVec2::Sum ( const GXVec2 &a, const GXVec2 &b )
 	data[ 1 ] = a.data[ 1 ] + b.data[ 1 ];
 }
 
-GXVoid GXVec2::Sum ( const GXVec2 &a, GXFloat scale, const GXVec2 &b )
+GXVoid GXVec2::Sum ( const GXVec2 &a, GXFloat bScale, const GXVec2 &b )
 {
-	data[ 0 ] = a.data[ 0 ] + scale * b.data[ 0 ];
-	data[ 1 ] = a.data[ 1 ] + scale * b.data[ 1 ];
+	data[ 0 ] = a.data[ 0 ] + bScale * b.data[ 0 ];
+	data[ 1 ] = a.data[ 1 ] + bScale * b.data[ 1 ];
 }
 
 GXVoid GXVec2::Substract ( const GXVec2 &a, const GXVec2 &b )
@@ -273,11 +273,11 @@ GXVoid GXVec3::Sum ( const GXVec3 &a, const GXVec3 &b )
 	data[ 2 ] = a.data[ 2 ] + b.data[ 2 ];
 }
 
-GXVoid GXVec3::Sum ( const GXVec3 &a, GXFloat scale, const GXVec3 &b )
+GXVoid GXVec3::Sum ( const GXVec3 &a, GXFloat bScale, const GXVec3 &b )
 {
-	data[ 0 ] = a.data[ 0 ] + scale * b.data[ 0 ];
-	data[ 1 ] = a.data[ 1 ] + scale * b.data[ 1 ];
-	data[ 2 ] = a.data[ 2 ] + scale * b.data[ 2 ];
+	data[ 0 ] = a.data[ 0 ] + bScale * b.data[ 0 ];
+	data[ 1 ] = a.data[ 1 ] + bScale * b.data[ 1 ];
+	data[ 2 ] = a.data[ 2 ] + bScale * b.data[ 2 ];
 }
 
 GXVoid GXVec3::Substract ( const GXVec3 &a, const GXVec3 &b )
@@ -598,12 +598,12 @@ GXVoid GXVec4::Sum ( const GXVec4 &a, const GXVec4 &b )
 	data[ 3 ] = a.data[ 3 ] + b.data[ 3 ];
 }
 
-GXVoid GXVec4::Sum ( const GXVec4 &a, GXFloat scale, const GXVec4 &b )
+GXVoid GXVec4::Sum ( const GXVec4 &a, GXFloat bScale, const GXVec4 &b )
 {
-	data[ 0 ] = a.data[ 0 ] + scale * b.data[ 0 ];
-	data[ 1 ] = a.data[ 1 ] + scale * b.data[ 1 ];
-	data[ 2 ] = a.data[ 2 ] + scale * b.data[ 2 ];
-	data[ 3 ] = a.data[ 3 ] + scale * b.data[ 3 ];
+	data[ 0 ] = a.data[ 0 ] + bScale * b.data[ 0 ];
+	data[ 1 ] = a.data[ 1 ] + bScale * b.data[ 1 ];
+	data[ 2 ] = a.data[ 2 ] + bScale * b.data[ 2 ];
+	data[ 3 ] = a.data[ 3 ] + bScale * b.data[ 3 ];
 }
 
 GXVoid GXVec4::Substract ( const GXVec4 &a, const GXVec4 &b )
@@ -686,6 +686,16 @@ GXVoid GXVec6::Sum ( const GXVec6 &a, const GXVec6 &b )
 	data[ 3 ] = a.data[ 3 ] + b.data[ 3 ];
 	data[ 4 ] = a.data[ 4 ] + b.data[ 4 ];
 	data[ 5 ] = a.data[ 5 ] + b.data[ 5 ];
+}
+
+GXVoid GXVec6::Sum ( const GXVec6 &a, GXFloat bScale, const GXVec6 &b )
+{
+	data[ 0 ] = a.data[ 0 ] + bScale * b.data[ 0 ];
+	data[ 1 ] = a.data[ 1 ] + bScale * b.data[ 1 ];
+	data[ 2 ] = a.data[ 2 ] + bScale * b.data[ 2 ];
+	data[ 3 ] = a.data[ 3 ] + bScale * b.data[ 3 ];
+	data[ 4 ] = a.data[ 4 ] + bScale * b.data[ 4 ];
+	data[ 5 ] = a.data[ 5 ] + bScale * b.data[ 5 ];
 }
 
 GXVoid GXVec6::Multiply ( const GXVec6 &a, GXFloat factor )

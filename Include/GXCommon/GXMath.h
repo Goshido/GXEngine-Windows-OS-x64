@@ -1,4 +1,4 @@
-// version 1.49
+// version 1.50
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -44,7 +44,7 @@ struct GXVec2
 	GXVoid CalculateNormal ( const GXVec2 &a, const GXVec2 &b );
 
 	GXVoid Sum ( const GXVec2 &a, const GXVec2 &b );
-	GXVoid Sum ( const GXVec2 &a, GXFloat scale, const GXVec2 &b );
+	GXVoid Sum ( const GXVec2 &a, GXFloat bScale, const GXVec2 &b );
 	GXVoid Substract ( const GXVec2 &a, const GXVec2 &b );
 	GXVoid Multiply ( const GXVec2 &a, const GXVec2 &b );
 	GXVoid Multiply ( const GXVec2 &v, GXFloat scale );
@@ -95,7 +95,7 @@ struct GXVec3
 	GXVoid Reverse ();
 
 	GXVoid Sum ( const GXVec3 &a, const GXVec3 &b );
-	GXVoid Sum ( const GXVec3 &a, GXFloat scale, const GXVec3 &b );
+	GXVoid Sum ( const GXVec3 &a, GXFloat bScale, const GXVec3 &b );
 	GXVoid Substract ( const GXVec3 &a, const GXVec3 &b );
 	GXVoid Multiply ( const GXVec3 &a, GXFloat scale );
 	GXVoid Multiply ( const GXVec3 &a, const GXVec3 &b );
@@ -168,7 +168,7 @@ struct GXVec4
 	GXFloat GetW () const;
 
 	GXVoid Sum ( const GXVec4 &a, const GXVec4 &b );
-	GXVoid Sum ( const GXVec4 &a, GXFloat scale, const GXVec4 &b );
+	GXVoid Sum ( const GXVec4 &a, GXFloat bScale, const GXVec4 &b );
 	GXVoid Substract ( const GXVec4 &a, const GXVec4 &b );
 
 	GXFloat DotProduct ( const GXVec4 &other ) const;
@@ -194,6 +194,7 @@ struct GXVec6
 
 	GXFloat DotProduct ( const GXVec6 &other ) const;
 	GXVoid Sum ( const GXVec6 &a, const GXVec6 &b );
+	GXVoid Sum ( const GXVec6 &a, GXFloat bScale, const GXVec6 &b );
 	GXVoid Multiply ( const GXVec6 &a, GXFloat factor );
 
 	GXVec6& operator = ( const GXVec6 &other );
