@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_STRINGS
 #define GX_STRINGS
@@ -7,7 +7,7 @@
 #include "GXTypes.h"
 
 
-class GXUTF8Parser
+class GXUTF8Parser final
 {
 	private:
 		const GXUTF8*	string;

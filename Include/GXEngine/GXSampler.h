@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_SAMPLER
 #define GX_SAMPLER
@@ -18,7 +18,7 @@ enum class eGXResampling : GXUByte
 // Class handles lazy loading reference counting sampler resource creation.
 
 class GXSamplerEntry;
-class GXSampler
+class GXSampler final
 {
 	private:
 		GXSamplerEntry*		samplerEntry;

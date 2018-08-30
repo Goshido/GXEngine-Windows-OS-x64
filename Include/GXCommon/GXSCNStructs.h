@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_SCN_STRUCTS
 #define GX_SCN_STRUCTS
@@ -18,13 +18,13 @@
 #define GX_SCENE_OBJ_TYPE_PHYSICAL_MESH		7
 
 
-struct GXSceneObjectHeader
+struct GXSceneObjectHeader final
 {
 	GXUShort	objectType;
 	GXUInt		objectName;
 };
 
-struct GXSceneMeshHeader
+struct GXSceneMeshHeader final
 {
 	GXBool	castShadows;
 	GXBool	twoSided;
@@ -40,7 +40,7 @@ struct GXSceneMeshHeader
 	GXVec3	location;
 };
 
-struct GXSceneDirectedLightHeader
+struct GXSceneDirectedLightHeader final
 {
 	GXVec3		color;
 	GXFloat		intensity;
@@ -49,7 +49,7 @@ struct GXSceneDirectedLightHeader
 	GXMat4		rotation;
 };
 
-struct GXSceneBulpHeader
+struct GXSceneBulpHeader final
 {
 	GXVec3		color;
 	GXFloat		intensity;
@@ -59,7 +59,7 @@ struct GXSceneBulpHeader
 	GXVec3		location;
 };
 
-struct GXSceneSpotLightHeader
+struct GXSceneSpotLightHeader final
 {
 	GXVec3		color;
 	GXFloat		intensity;
@@ -72,7 +72,7 @@ struct GXSceneSpotLightHeader
 	GXVec3		location;
 };
 
-struct GXScenePhysicalBoxHeader
+struct GXScenePhysicalBoxHeader final
 {
 	GXFloat		width;
 	GXFloat		height;
@@ -82,13 +82,13 @@ struct GXScenePhysicalBoxHeader
 	GXVec3		location;
 };
 
-struct GXScenePhysicalSphereHeader
+struct GXScenePhysicalSphereHeader final
 {
 	GXFloat		radius;
 	GXVec3		location;
 };
 
-struct GXScenePhysicalCapsuleHeader
+struct GXScenePhysicalCapsuleHeader final
 {
 	GXFloat		radius;
 	GXFloat		height;
@@ -97,7 +97,7 @@ struct GXScenePhysicalCapsuleHeader
 	GXVec3		location;
 };
 
-struct GXScenePhysicalMeshHeader
+struct GXScenePhysicalMeshHeader final
 {
 	GXMat4		rotation;
 	GXVec3		scale;

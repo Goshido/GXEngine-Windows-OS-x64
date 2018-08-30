@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_TEXTURE_2D
 #define GX_TEXTURE_2D
@@ -10,7 +10,7 @@
 // Class handles lazy loading reference counting texture 2D resource creation.
 
 class GXTexture2DEntry;
-class GXTexture2D
+class GXTexture2D final
 {
 	private:
 		GXTexture2DEntry*	texture2DEntry;

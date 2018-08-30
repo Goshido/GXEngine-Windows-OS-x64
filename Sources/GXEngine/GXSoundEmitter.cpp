@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #include <GXEngine/GXSoundEmitter.h>
 #include <GXCommon/GXMutex.h>

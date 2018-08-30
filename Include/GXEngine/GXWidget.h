@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #ifndef GX_WIDGET
 #define GX_WIDGET
@@ -66,7 +66,7 @@ class GXWidget
 		GXWidget& operator = ( const GXWidget &other ) = delete;
 };
 
-class GXWidgetIterator
+class GXWidgetIterator final
 {
 	private:
 		GXWidget*	widget;

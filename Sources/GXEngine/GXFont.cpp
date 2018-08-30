@@ -1,4 +1,4 @@
-// version 1.8
+// version 1.9
 
 #include <GXEngine/GXFont.h>
 #include <GXEngineDLL/GXEngineAPI.h>
@@ -40,7 +40,9 @@ static PFNGXFREETYPEDESTROY		GXFreeTypeDestroy			= nullptr;
 
 static GXFontEntry*				gx_FontEntries				= nullptr;
 
-struct GXGlyph
+//---------------------------------------------------------------------------------------------------------------------
+
+struct GXGlyph final
 {
 	GXVec2		min;
 	GXVec2		max;
@@ -49,7 +51,9 @@ struct GXGlyph
 	GXByte		atlasID;
 };
 
-class GXFontEntry
+//---------------------------------------------------------------------------------------------------------------------
+
+class GXFontEntry final
 {
 	friend class GXFont;
 
@@ -119,7 +123,7 @@ GXFontEntry::GXFontEntry ( const GXWChar* fileName, GXUShort size ):
 
 	gx_FontEntries = this;
 
-	for ( GXUShort i = 0u; i < MAXIMUM_GLYPHS; i++ )
+	for ( GXUShort i = 0u; i < MAXIMUM_GLYPHS; ++i )
 		glyphs[ i ].atlasID = ATLAS_UNDEFINED;
 
 	GXUShort temp = static_cast<GXUShort> ( size * 0.5f );
@@ -234,7 +238,7 @@ GXUInt GXCDECLCALL GXFontEntry::GetTextLength ( GXUInt bufferNumSymbols, const G
 	GXUInt prevSymbol = 0u;
 	GXGlyphInfo info;
 
-	for ( GXUInt i = 0u; i < len; i++ )
+	for ( GXUInt i = 0u; i < len; ++i )
 	{
 		GXUInt symbol = static_cast<GXUInt> ( text[ i ] );
 
@@ -262,12 +266,12 @@ GXUInt GXCDECLCALL GXFontEntry::GetTextLength ( GXUInt bufferNumSymbols, const G
 
 GXVoid GXFontEntry::AddRef ()
 {
-	refs++;
+	++refs;
 }
 
 GXVoid GXFontEntry::Release ()
 {
-	refs--;
+	--refs;
 
 	if ( refs > 0 ) return;
 
@@ -281,7 +285,7 @@ GXFontEntry::~GXFontEntry ()
 
 	if ( lastAtlasID != ATLAS_UNDEFINED )
 	{
-		for ( GXByte i = 0; i <= lastAtlasID; i++ )
+		for ( GXByte i = 0; i <= lastAtlasID; ++i )
 			delete atlases[ i ];
 
 		free ( atlases );
@@ -348,9 +352,9 @@ GXVoid GXFontEntry::RenderGlyph ( GXUInt symbol )
 
 	GXUByte* buffer = static_cast<GXUByte*> ( malloc ( static_cast<GXUPointer> ( bitmap.width * bitmap.rows ) ) );
 
-	for ( GXUInt h = 0u; h < static_cast<GXUInt> ( bitmap.rows ); h++ )
+	for ( GXUInt h = 0u; h < static_cast<GXUInt> ( bitmap.rows ); ++h )
 	{
-		for ( GXUInt w = 0u; w < static_cast<GXUInt> ( bitmap.width ); w++ )
+		for ( GXUInt w = 0u; w < static_cast<GXUInt> ( bitmap.width ); ++w )
 			buffer[ h * bitmap.width + w ] = bitmap.buffer[ ( bitmap.rows - 1 - h ) * bitmap.width + w ];
 	}
 
@@ -395,10 +399,10 @@ GXVoid GXFontEntry::CreateAtlas ()
 	{
 		GXTexture2D** temp = static_cast<GXTexture2D**> ( malloc ( ( lastAtlasID + 2 ) * sizeof ( GXTexture2D* ) ) );
 
-		for ( GXByte i = 0u; i < lastAtlasID; i++ )
+		for ( GXByte i = 0u; i < lastAtlasID; ++i )
 			temp[ i ] = atlases[ i ];
 
-		lastAtlasID++;
+		++lastAtlasID;
 		free ( atlases );
 		atlases = temp;
 	}
@@ -473,7 +477,7 @@ GXUInt GXCALL GXFont::GetTotalLoadedFonts ( const GXWChar** lastFont, GXUShort &
 	GXUInt total = 0u;
 
 	for ( GXFontEntry* p = gx_FontEntries; p; p = p->next )
-		total++;
+		++total;
 
 	if ( total > 0u )
 	{

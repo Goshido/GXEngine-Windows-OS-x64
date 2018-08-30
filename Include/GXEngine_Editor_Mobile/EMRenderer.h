@@ -36,7 +36,7 @@ enum class eEMRenderTarget : GXUShort
 	Combine
 };
 
-class EMRenderer
+class EMRenderer final
 {
 	private:
 		GXInt											mouseX;

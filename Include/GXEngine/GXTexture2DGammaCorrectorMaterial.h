@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_TEXUTE_2D_GAMMA_CORRECTOR_MATERIAL
 #define GX_TEXUTE_2D_GAMMA_CORRECTOR_MATERIAL
@@ -9,7 +9,7 @@
 #include "GXSampler.h"
 
 
-class GXTexture2DGammaCorrectorMaterial : public GXMaterial
+class GXTexture2DGammaCorrectorMaterial final : public GXMaterial
 {
 	private:
 		GXTexture2D*		sRGBTexture;

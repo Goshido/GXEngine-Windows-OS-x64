@@ -9,7 +9,7 @@
 #include <GXPhysics/GXRigidBody.h>
 
 
-class EMPhysicsDrivenActor : public EMActor
+class EMPhysicsDrivenActor final : public EMActor
 {
 	private:
 		EMWireframeMaterial*				wireframeMaterial;

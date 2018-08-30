@@ -16,7 +16,7 @@ typedef GXVoid ( GXCALL* PFNEMONRGBACOLORPROC ) ( GXVoid* handler, const GXColor
 typedef GXVoid ( GXCALL* PFNEMONRGBAUBYTECOLORPROC ) ( GXVoid* handler, GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
 
 
-class EMUIColorPicker : public EMUI
+class EMUIColorPicker final : public EMUI
 {
 	private:
 		EMUIDraggableArea*			mainPanel;

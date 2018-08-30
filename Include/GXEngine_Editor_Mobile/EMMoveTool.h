@@ -9,7 +9,7 @@
 #include <GXEngine/GXUnlitColorMaterial.h>
 
 
-class EMMoveTool : public EMTool
+class EMMoveTool final : public EMTool
 {
 	private:
 		GXUByte					mode;

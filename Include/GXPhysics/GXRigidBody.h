@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_RIGID_BODY
 #define GX_RIGID_BODY
@@ -11,7 +11,7 @@ class GXRigidBody;
 typedef GXVoid ( GXCALL* PFNRIGIDBODYONTRANSFORMCHANGED ) ( GXVoid* handler, const GXRigidBody &rigidBody );
 
 class GXShape;
-class GXRigidBody
+class GXRigidBody final
 {
 	private:
 		GXFloat							mass;

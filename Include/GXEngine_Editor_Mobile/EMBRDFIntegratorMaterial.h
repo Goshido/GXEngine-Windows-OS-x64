@@ -5,7 +5,7 @@
 #include <GXEngine/GXMaterial.h>
 
 
-class EMBRDFIntegratorMaterial : public GXMaterial
+class EMBRDFIntegratorMaterial final : public GXMaterial
 {
 	private:
 		GXInt		samples;

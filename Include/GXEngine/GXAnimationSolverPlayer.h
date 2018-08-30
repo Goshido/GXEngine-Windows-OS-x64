@@ -1,4 +1,4 @@
-// version 1.8
+// version 1.9
 
 #ifndef GX_ANIMATION_SOLVER_PLAYER
 #define GX_ANIMATION_SOLVER_PLAYER
@@ -8,7 +8,7 @@
 
 
 class GXBoneFinder;
-class GXAnimationSolverPlayer : public GXAnimationSolver
+class GXAnimationSolverPlayer final : public GXAnimationSolver
 {
 	private:
 		GXBoneFinder*					finder;

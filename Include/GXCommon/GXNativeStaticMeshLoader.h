@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_NATIVE_STATIC_MESH_LOADER
 #define GX_NATIVE_STATIC_MESH_LOADER
@@ -7,7 +7,7 @@
 #include "GXNativeStaticMeshStructs.h"
 
 
-struct GXNativeStaticMeshInfo
+struct GXNativeStaticMeshInfo final
 {
 	GXAABB			bounds;
 

@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef	GX_ANIMATION_SOLVER_MOVEMENT
 #define	GX_ANIMATION_SOLVER_MOVEMENT
@@ -14,7 +14,7 @@ enum class eGXAnimationSolverMovementState : GXUShort
 	Idle = 2
 };
 
-class GXAnimationSolverMovement : public GXAnimationSolver
+class GXAnimationSolverMovement final : public GXAnimationSolver
 {
 	private:
 		eGXAnimationSolverMovementState		state;

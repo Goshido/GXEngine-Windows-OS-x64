@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #include <GXCommon/GXNativeStaticMeshSaver.h>
 #include <GXCommon/GXNativeStaticMeshStructs.h>
@@ -27,7 +27,7 @@ GXVoid GXCALL GXCompileNativeStaticMesh ( GXUByte** data, GXUInt &size, const GX
 
 	GXUInt offset = sizeof ( GXNativeStaticMeshHeader );
 
-	for ( GXUInt i = 0u; i < descriptor.numVertices; i++ )
+	for ( GXUInt i = 0u; i < descriptor.numVertices; ++i )
 	{
 		h->bounds.AddVertex ( descriptor.vertices[ i ] );
 

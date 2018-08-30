@@ -7,7 +7,7 @@
 #include <GXEngine/GXUIMenu.h>
 
 
-class EMUIMenu : public EMUI
+class EMUIMenu final : public EMUI
 {
 	private:
 		GXUIMenu*	widget;

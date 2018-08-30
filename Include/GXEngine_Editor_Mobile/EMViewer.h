@@ -10,7 +10,7 @@
 typedef GXVoid ( GXCALL* PFNEMONVIEWERTRANSFORMCHANGEDPROC ) ( GXVoid* handler );
 
 
-class EMViewer
+class EMViewer final
 {
 	private:
 		GXUIInput*							inputWidget;

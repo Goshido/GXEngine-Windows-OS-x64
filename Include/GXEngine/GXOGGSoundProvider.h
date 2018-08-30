@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_OGG_SOUND_PROVIDER
 #define GX_OGG_SOUND_PROVIDER
@@ -8,7 +8,7 @@
 #include "GXSound.h"
 
 
-class GXOGGSoundStreamer : public GXSoundStreamer
+class GXOGGSoundStreamer final : public GXSoundStreamer
 {
 	private:
 		OggVorbis_File		vorbisFile;
@@ -28,7 +28,7 @@ class GXOGGSoundStreamer : public GXSoundStreamer
 
 //----------------------------------------------------------------------------------------------------
 
-class GXOGGSoundTrack : public GXSoundTrack
+class GXOGGSoundTrack final : public GXSoundTrack
 {
 	public:
 		explicit GXOGGSoundTrack ( const GXWChar* trackFile );

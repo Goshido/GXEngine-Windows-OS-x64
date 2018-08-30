@@ -6,7 +6,7 @@
 #include <GXEngine/GXUIButton.h>
 
 
-class EMUIButton : public EMUI
+class EMUIButton final : public EMUI
 {
 	private:
 		GXUIButton*		widget;

@@ -7,7 +7,7 @@
 #include <GXEngine/GXSampler.h>
 
 
-class EMToneMapperLuminanceTripletReducerMaterial : public GXMaterial
+class EMToneMapperLuminanceTripletReducerMaterial final : public GXMaterial
 {
 	private:
 		GXTexture2D*		luminanceTripletTexture;

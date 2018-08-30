@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.5
 
 #include <GXEngine/GXUIEditBox.h>
 #include <GXEngine/GXUIMessage.h>
@@ -32,7 +32,7 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-struct GXUIEditBoxFontInfo
+struct GXUIEditBoxFontInfo final
 {
 	GXWChar*		fontFile;
 	GXUShort		size;
@@ -183,7 +183,7 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
 		GXInt end = current + 1;
 
-		for ( ; end < static_cast<GXInt> ( textSymbols ); end++ )
+		for ( ; end < static_cast<GXInt> ( textSymbols ); ++end )
 		{
 			if ( text[ end ] == GX_UI_SEPARATOR_SYMBOL )
 				break;
@@ -191,11 +191,11 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
 		GXInt begin = current;
 
-		for ( ; begin > 0; begin-- )
+		for ( ; begin > 0; --begin )
 		{
 			if ( text[ begin ] == GX_UI_SEPARATOR_SYMBOL )
 			{
-				begin++;
+				++begin;
 				break;
 			}
 		}
@@ -340,7 +340,7 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
 				if ( cursor == selection && cursor == static_cast<GXInt> ( textSymbols ) )
 					break;
 				else if ( cursor == selection )
-					selection++;
+					++selection;
 
 				if ( DeleteText () && renderer )
 					renderer->OnUpdate ();
@@ -352,7 +352,7 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
 				if ( cursor == selection && cursor == 0 )
 					break;
 				else if ( cursor == selection )
-					cursor--;
+					--cursor;
 
 				if ( DeleteText () && renderer )
 					renderer->OnUpdate ();
@@ -549,7 +549,7 @@ GXInt GXUIEditBox::GetSelectionPosition ( const GXVec2 &mousePosition ) const
 	if ( abs ( offset - textLength ) < GX_UI_EPSILON ) 
 		return static_cast<GXInt> ( GXWcslen ( text ) );
 
-	for ( GXUInt i = 0u; i < textSymbols; i++ )
+	for ( GXUInt i = 0u; i < textSymbols; ++i )
 	{
 		workingBuffer[ i ] = text[ i ];
 		workingBuffer[ i + 1 ] = 0;

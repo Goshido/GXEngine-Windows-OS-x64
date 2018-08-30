@@ -21,7 +21,7 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class EMUIDraggableAreaRenderer : public GXWidgetRenderer
+class EMUIDraggableAreaRenderer final : public GXWidgetRenderer
 {
 	private:
 		GXTexture2D			background;

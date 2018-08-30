@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_SPRING
 #define GX_SPRING
@@ -7,7 +7,7 @@
 #include "GXForceGenerator.h"
 
 
-class GXSpring : public GXForceGenerator
+class GXSpring final : public GXForceGenerator
 {
 	private:
 		GXVec3			connectionPointLocal;

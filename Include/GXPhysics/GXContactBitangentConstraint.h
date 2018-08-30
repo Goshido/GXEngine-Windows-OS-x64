@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_CONTACT_BITANGENT_CONSTRAINT
 #define GX_CONTACT_BITANGENT_CONSTRAINT
@@ -14,7 +14,7 @@
 // It is used friction approximation which is not physics correct but
 // gives plausible result.
 
-class GXContactBitangentConstraint : public GXConstraint
+class GXContactBitangentConstraint final : public GXConstraint
 {
 	public:
 		// inverseLinkedContacts - is 1.0f / ( total manifold contacts ).

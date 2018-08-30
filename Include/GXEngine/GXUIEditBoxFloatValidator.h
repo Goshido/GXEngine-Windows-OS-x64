@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_UI_EDIT_BOX_FLOAT_VALIDATOR
 #define GX_UI_EDIT_BOX_FLOAT_VALIDATOR
@@ -8,7 +8,7 @@
 #include "GXUIEditBox.h"
 
 
-class GXUIEditBoxFloatValidator : public GXTextValidator
+class GXUIEditBoxFloatValidator final : public GXTextValidator
 {
 	private:
 		GXUIEditBox&	editBox;

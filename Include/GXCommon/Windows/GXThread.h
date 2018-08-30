@@ -7,7 +7,7 @@
 #include <GXCommon/GXThread.h>
 
 
-class GXThread : public GXAbstractThread
+class GXThread final : public GXAbstractThread
 {
 	private:
 		HANDLE				thread;

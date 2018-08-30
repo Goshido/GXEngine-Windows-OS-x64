@@ -7,7 +7,7 @@
 #include <GXEngine/GXUnlitTexture2DMaterial.h>
 
 
-class EMScaleGismo : public GXTransform
+class EMScaleGismo final : public GXTransform
 {
 	private:
 		GXBool						isVisible;

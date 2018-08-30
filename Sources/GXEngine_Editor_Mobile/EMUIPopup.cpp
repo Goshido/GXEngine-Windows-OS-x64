@@ -47,7 +47,7 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class EMUIPopupRenderer : public GXWidgetRenderer
+class EMUIPopupRenderer final : public GXWidgetRenderer
 {
 	private:
 		GXFont			font;
@@ -90,7 +90,7 @@ EMUIPopupRenderer::~EMUIPopupRenderer ()
 	GXWChar** names = reinterpret_cast<GXWChar**> ( itemNames.GetData () );
 	GXUByte totalNames = static_cast<GXUByte> ( itemNames.GetLength () );
 
-	for ( GXUByte i = 0u; i < totalNames; i++ )
+	for ( GXUByte i = 0u; i < totalNames; ++i )
 		free ( names[ i ] );
 }
 
@@ -167,7 +167,7 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
 	pi.insertX = TEXT_OFFSET_X * gx_ui_Scale;
 	pi.insertY = totalHeight - itemHeight + ( itemHeight - (GXFloat)font.GetSize () ) * 0.5f;
 
-	for ( GXUByte i = 0; i < totalItems; i++ )
+	for ( GXUByte i = 0; i < totalItems; ++i )
 	{
 		if ( popup->IsItemActive ( i ) )
 			pi.color.From ( static_cast<GXUByte> ( ENABLE_ITEM_COLOR_R ), static_cast<GXUByte> ( ENABLE_ITEM_COLOR_G ), static_cast<GXUByte> ( ENABLE_ITEM_COLOR_B ), static_cast<GXUByte> ( ENABLE_ITEM_COLOR_A ) );

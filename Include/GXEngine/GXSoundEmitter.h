@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #ifndef GX_SOUND_EMITTER
 #define GX_SOUND_EMITTER
@@ -8,7 +8,7 @@
 #include <GXCommon/GXMath.h>
 
 
-class GXSoundEmitter
+class GXSoundEmitter final
 {
 	public:
 		GXSoundEmitter**	top;

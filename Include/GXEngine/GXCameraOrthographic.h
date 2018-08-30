@@ -1,4 +1,4 @@
-// version 1.10
+// version 1.11
 
 #ifndef GX_CAMERA_ORHTOGRAPHIC
 #define GX_CAMERA_ORHTOGRAPHIC
@@ -7,7 +7,7 @@
 #include "GXCamera.h"
 
 
-class GXCameraOrthographic : public GXCamera
+class GXCameraOrthographic final : public GXCamera
 {
 	protected:
 		GXFloat		width;

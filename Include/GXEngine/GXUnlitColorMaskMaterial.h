@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_UNLIT_COLOR_MASK_MATERIAL
 #define GX_UNLIT_COLOR_MASK_MATERIAL
@@ -9,7 +9,7 @@
 #include "GXSampler.h"
 
 
-class GXUnlitColorMaskMaterial : public GXMaterial
+class GXUnlitColorMaskMaterial final : public GXMaterial
 {
 	private:
 		GXTexture2D*	mask;

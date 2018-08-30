@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_BKE_STRUCTS
 #define GX_BKE_STRUCTS
@@ -7,13 +7,13 @@
 #include "GXTypes.h"
 
 
-struct GXBakeHeader
+struct GXBakeHeader final
 {
 	GXUShort	us_FileNameOffset;
 	GXUShort	us_CacheFileNameOffset;
 };
 
-struct GXBakeInfo
+struct GXBakeInfo final
 {
 	GXWChar*	fileName;
 	GXWChar*	cacheFileName;

@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #include <GXEngine/GXTexture2D.h>
 #include <GXEngine/GXMeshGeometry.h>
@@ -32,7 +32,7 @@ enum class eGXChannelDataType : GXUByte
 	Float
 };
 
-struct GXTexture2DCacheHeader
+struct GXTexture2DCacheHeader final
 {
 	GXUByte				numChannels;
 	eGXChannelDataType	channelDataType;
@@ -45,7 +45,7 @@ struct GXTexture2DCacheHeader
 
 //----------------------------------------------------------------------
 
-class GXTexture2DEntry
+class GXTexture2DEntry final
 {
 	private:
 		GXTexture2DEntry*			previous;
@@ -626,12 +626,12 @@ GXVoid GXTexture2DEntry::UpdateMipmaps ()
 
 GXVoid GXTexture2DEntry::AddReference ()
 {
-	references++;
+	++references;
 }
 
 GXVoid GXTexture2DEntry::Release ()
 {
-	references--;
+	--references;
 
 	if ( references > 0 ) return;
 
@@ -655,7 +655,7 @@ GXUInt GXCALL GXTexture2DEntry::GetTotalLoadedTextures ( const GXWChar** lastTex
 	GXUInt total = 0u;
 
 	for ( const GXTexture2DEntry* p = top; p; p = p->next )
-		total++;
+		++total;
 
 	if ( total > 0u )
 		*lastTexture = top->GetFileName ();
@@ -821,7 +821,7 @@ GXVoid GXTexture2DEntry::InitResources ( GXUShort textureWidth, GXUShort texture
 
 		while ( currentResolution <= maxSide )
 		{
-			lods++;
+			++lods;
 			currentResolution *= 2;
 		}
 	}

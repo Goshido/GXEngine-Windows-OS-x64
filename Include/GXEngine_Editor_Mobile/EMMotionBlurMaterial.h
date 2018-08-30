@@ -7,7 +7,7 @@
 #include <GXEngine/GXSampler.h>
 
 
-class EMMotionBlurMaterial : public GXMaterial
+class EMMotionBlurMaterial final : public GXMaterial
 {
 	private:
 		GXTexture2D*		velocityNeighborMaxTexture;

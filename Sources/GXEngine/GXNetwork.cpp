@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #include <GXEngine/GXNetwork.h>
 #include <GXCommon/GXMemory.h>
@@ -348,7 +348,7 @@ GXBool GXNetServer::BroadcastTCP ( GXVoid* data, GXInt size )
 {
 	GXBool	result = GX_TRUE;
 
-	for ( GXUChar i = 0u; i < GX_MAX_NETWORK_CLIENTS; i++ )
+	for ( GXUChar i = 0u; i < GX_MAX_NETWORK_CLIENTS; ++i )
 	{
 		if ( clientsTCP[ i ].IsFree () ) continue;
 
@@ -362,7 +362,7 @@ GXBool GXNetServer::BroadcastUDP ( GXVoid* data, GXInt size )
 {
 	GXBool	result = GX_TRUE;
 
-	for ( GXUChar i = 0u; i < GX_MAX_NETWORK_CLIENTS; i++ )
+	for ( GXUChar i = 0u; i < GX_MAX_NETWORK_CLIENTS; ++i )
 	{
 		sockaddr_in address;
 
@@ -377,7 +377,7 @@ GXBool GXNetServer::DestroyTCP ()
 {
 	if ( listenerTCP == INVALID_SOCKET ) return GX_TRUE;
 
-	for ( GXUInt i = 0u; i < GX_MAX_NETWORK_CLIENTS; i++ )
+	for ( GXUInt i = 0u; i < GX_MAX_NETWORK_CLIENTS; ++i )
 	{
 		if ( clientsTCP[ i ].IsFree () ) continue;
 
@@ -505,7 +505,7 @@ GXUPointer GXTHREADCALL GXNetServer::ServeClientTCP ( GXVoid* arg, GXThread& /*t
 
 	const GXClientInfo* info = static_cast<const GXClientInfo*> ( arg );
 
-	numClientsTCP++;
+	++numClientsTCP;
 
 	BOOL disable = FALSE;
 	setsockopt ( info->socket, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*> ( &disable ), sizeof ( BOOL ) );
@@ -529,7 +529,7 @@ GXUPointer GXTHREADCALL GXNetServer::ServeClientTCP ( GXVoid* arg, GXThread& /*t
 
 	GXLogW ( L"GXNetServer::ServeClientTCP::Info - Клиент отключился\n" );
 
-	numClientsTCP--;
+	--numClientsTCP;
 	clientsTCP[ info->id ].Destroy ();
 
 	if ( OnDisconnect )
@@ -566,7 +566,7 @@ GXUPointer GXTHREADCALL GXNetServer::ServeClientUDP ( GXVoid* /*arg*/, GXThread&
 
 GXInt GXNetServer::GetFreeClientTCP ()
 {
-	for ( GXUInt i = 0u; i < GX_MAX_NETWORK_CLIENTS; i++ )
+	for ( GXUInt i = 0u; i < GX_MAX_NETWORK_CLIENTS; ++i )
 	{
 		if ( clientsTCP[ i ].IsFree () )
 			return static_cast<GXInt> ( i );
@@ -577,7 +577,7 @@ GXInt GXNetServer::GetFreeClientTCP ()
 
 GXInt GXNetServer::FindClientTCP ( SOCKET socket )
 {
-	for ( GXUInt i = 0u; i < GX_MAX_NETWORK_CLIENTS; i++ )
+	for ( GXUInt i = 0u; i < GX_MAX_NETWORK_CLIENTS; ++i )
 	{
 		if ( !clientsTCP[ i ].IsFree () && clientsTCP[ i ].GetSocket () == socket )
 			return static_cast<GXInt> ( i );
@@ -729,7 +729,7 @@ GXBool GXNetClient::DeployUDP ( const GXChar* url, GXUShort port )
 		{
 			GXUInt* alpha = reinterpret_cast<GXUInt*> ( &serverAddressUDP.sin_addr );
 			GXUInt** betta = reinterpret_cast<GXUInt**> ( hst->h_addr_list );
-			alpha[ 0 ] = betta[ 0 ][ 0 ];
+			alpha[ 0u ] = betta[ 0u ][ 0u ];
 		}
 		else
 		{

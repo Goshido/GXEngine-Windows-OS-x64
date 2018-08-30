@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_STG_STRUCTS
 #define GX_STG_STRUCTS
@@ -14,7 +14,7 @@
 UV		(опционально)
 */
 
-struct GXStaticGeometryHeader
+struct GXStaticGeometryHeader final
 {
 	GXUInt		numVertices;
 	GXBool		isUVs;

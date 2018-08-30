@@ -8,7 +8,7 @@
 #include <GXEngine/GXMeshGeometry.h>
 
 
-class EMLightProbe
+class EMLightProbe final
 {
 	friend class EMRenderer;
 

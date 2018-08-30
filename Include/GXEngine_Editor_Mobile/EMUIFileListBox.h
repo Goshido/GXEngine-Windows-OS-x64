@@ -12,7 +12,7 @@ enum class eEMUIFileListBoxItemType : GXUByte
 	File
 };
 
-class EMUIFileListBoxItem
+class EMUIFileListBoxItem final
 {
 	private:
 		eEMUIFileListBoxItemType	type;
@@ -34,7 +34,7 @@ class EMUIFileListBoxItem
 		EMUIFileListBoxItem& operator = ( const EMUIFileListBoxItem &other ) = delete;
 };
 
-class EMUIFileListBox : public EMUI
+class EMUIFileListBox final : public EMUI
 {
 	private:
 		GXUIListBox*	widget;

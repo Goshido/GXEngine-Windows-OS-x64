@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_BOX_SHAPE
 #define GX_BOX_SHAPE
@@ -12,7 +12,7 @@ struct GXBoxShapeVertices
 	GXVec3	vertices[ 8 ];
 };
 
-class GXBoxShape : public GXShape
+class GXBoxShape final : public GXShape
 {
 	private:
 		GXFloat width;

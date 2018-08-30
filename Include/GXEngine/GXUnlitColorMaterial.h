@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_UNLIT_COLOR_MATERIAL
 #define GX_UNLIT_COLOR_MATERIAL
@@ -7,7 +7,7 @@
 #include "GXMaterial.h"
 
 
-class GXUnlitColorMaterial : public GXMaterial
+class GXUnlitColorMaterial final : public GXMaterial
 {
 	private:
 		GXColorRGB	color;

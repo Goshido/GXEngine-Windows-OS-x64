@@ -7,7 +7,7 @@
 #include <GXEngine/GXSampler.h>
 
 
-class EMImportantAreaFilterMaterial : public GXMaterial
+class EMImportantAreaFilterMaterial final : public GXMaterial
 {
 	private:
 		GXTexture2D*		imageTexture;

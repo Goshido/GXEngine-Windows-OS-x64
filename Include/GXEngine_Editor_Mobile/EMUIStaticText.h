@@ -6,7 +6,7 @@
 #include <GXEngine/GXUIStaticText.h>
 
 
-class EMUIStaticText : public EMUI
+class EMUIStaticText final : public EMUI
 {
 	private:
 		GXUIStaticText*		widget;

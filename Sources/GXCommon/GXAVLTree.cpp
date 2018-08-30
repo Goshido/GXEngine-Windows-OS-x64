@@ -109,7 +109,7 @@ GXVoid GXAVLTree::Add ( GXAVLTreeNode &node )
 	else
 	{
 		root = Insert ( &node, root );
-		totalNodes++;
+		++totalNodes;
 	}
 }
 

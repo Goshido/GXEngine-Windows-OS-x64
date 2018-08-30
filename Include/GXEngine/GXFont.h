@@ -1,4 +1,4 @@
-// version 1.8
+// version 1.9
 
 #ifndef GX_FONT
 #define GX_FONT
@@ -8,7 +8,7 @@
 #include <GXEngineDLL/GXEngineAPI.h>
 
 
-struct GXGlyphInfo
+struct GXGlyphInfo final
 {
 	GXTexture2D*	atlas;
 	GXVec2			min;
@@ -22,7 +22,7 @@ struct GXGlyphInfo
 // Class handles lazy loading reference counting font resource creation.
 
 class GXFontEntry;
-class GXFont
+class GXFont final
 {
 	private:
 		GXFontEntry*		fontEntry;

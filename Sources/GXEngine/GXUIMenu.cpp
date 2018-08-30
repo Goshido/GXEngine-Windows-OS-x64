@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #include <GXEngine/GXUIMenu.h>
 #include <GXEngine/GXUIMessage.h>
@@ -11,7 +11,7 @@
 #define INVALID_WIDTH	0.0f
 
 
-struct GXUIMenuItem
+struct GXUIMenuItem final
 {
 	GXWChar*	name;
 	GXAABB		bounds;
@@ -34,7 +34,7 @@ GXUIMenu::~GXUIMenu ()
 	GXUByte totalItems = static_cast<GXUByte> ( items.GetLength () );
 	GXUIMenuItem* itemStorage = static_cast<GXUIMenuItem*> ( items.GetData () );
 
-	for ( GXUByte i = 0u; i < totalItems; i++ )
+	for ( GXUByte i = 0u; i < totalItems; ++i )
 		GXSafeFree ( itemStorage[ i ].name );
 }
 
@@ -122,7 +122,7 @@ GXVoid GXUIMenu::OnMessage ( eGXUIMessage message, const GXVoid* data )
 		GXUByte totalItems = static_cast<GXUByte> ( items.GetLength () );
 		GXUByte mouseoverItemIndex = 0u;
 
-		for ( ; mouseoverItemIndex < totalItems; mouseoverItemIndex++ )
+		for ( ; mouseoverItemIndex < totalItems; ++mouseoverItemIndex )
 			if ( itemStorage[ mouseoverItemIndex ].bounds.IsOverlaped ( pos->GetX (), pos->GetY (), 0.0f ) ) break;
 
 		if ( highlightedItemIndex == mouseoverItemIndex ) return;
@@ -158,7 +158,7 @@ GXVoid GXUIMenu::OnMessage ( eGXUIMessage message, const GXVoid* data )
 			GXFloat heightDelta = boundsLocal.GetHeight () - bounds->GetHeight ();
 			GXUIMenuItem* itemStorage = static_cast<GXUIMenuItem*> ( items.GetData () );
 
-			for ( GXUByte i = 0u; i < totalItems; i++ )
+			for ( GXUByte i = 0u; i < totalItems; ++i )
 			{
 				GXUIMenuItem* currentItem = itemStorage + i;
 

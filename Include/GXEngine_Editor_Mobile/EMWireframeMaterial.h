@@ -5,7 +5,7 @@
 #include <GXEngine/GXMaterial.h>
 
 
-class EMWireframeMaterial : public GXMaterial
+class EMWireframeMaterial final : public GXMaterial
 {
 	private:
 		GXColorRGB	color;

@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_CONTACT
 #define GX_CONTACT
@@ -9,7 +9,7 @@
 #include <GXCommon/GXMath.h>
 
 
-class GXContact
+class GXContact final
 {
 	private:
 		GXRigidBody*	bodies[ 2 ];

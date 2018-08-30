@@ -5,7 +5,7 @@
 #include <GXEngine/GXMaterial.h>
 
 
-class EMCheckerGeneratorMaterial : public GXMaterial
+class EMCheckerGeneratorMaterial final : public GXMaterial
 {
 	private:
 		GXColorRGB	colorOne;

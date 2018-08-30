@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #include <GXEngine/GXUnlitColorMaskMaterial.h>
 #include <GXEngine/GXCamera.h>

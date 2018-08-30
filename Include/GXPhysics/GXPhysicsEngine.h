@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_PHYSICS_ENGINE
 #define GX_PHYSICS_ENGINE
@@ -7,7 +7,7 @@
 #include "GXWorld.h"
 
 
-class GXPhysicsEngine
+class GXPhysicsEngine final
 {
 	private:
 		static GXPhysicsEngine*	instance;

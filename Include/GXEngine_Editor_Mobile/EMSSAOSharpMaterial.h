@@ -10,7 +10,7 @@
 #define EM_MAX_SSAO_SAMPLES		64u
 
 
-class EMSSAOSharpMaterial : public GXMaterial
+class EMSSAOSharpMaterial final : public GXMaterial
 {
 	private:
 		GXTexture2D*	depthTexture;

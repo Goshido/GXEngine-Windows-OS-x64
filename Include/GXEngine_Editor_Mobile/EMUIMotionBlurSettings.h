@@ -9,7 +9,7 @@
 #include "EMUIButton.h"
 
 
-class EMUIMotionBlurSettings : public EMUI
+class EMUIMotionBlurSettings final : public EMUI
 {
 	private:
 		EMUIDraggableArea*				mainPanel;

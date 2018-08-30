@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_UI_STATIC_TEXT
 #define GX_UI_STATIC_TEXT
@@ -14,7 +14,7 @@ enum eGXUITextAlignment : GXUByte
 	Center
 };
 
-class GXUIStaticText : public GXWidget
+class GXUIStaticText final : public GXWidget
 {
 	private:
 		GXWChar*				text;

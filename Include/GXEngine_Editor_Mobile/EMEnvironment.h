@@ -7,7 +7,7 @@
 #include <GXEngine/GXTextureCubeMap.h>
 
 
-class EMEnvironment
+class EMEnvironment final
 {
 	private:
 		EMMesh						cube;

@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #include <GXEngine/GXMeshGeometry.h>
 #include <GXCommon/GXStrings.h>
@@ -17,7 +17,7 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class GXMesh
+class GXMesh final
 {
 	friend class GXMeshGeometry;
 
@@ -75,12 +75,12 @@ GXMesh* GXMesh::top = nullptr;
 
 GXVoid GXMesh::AddReference ()
 {
-	referenceCount++;
+	++referenceCount;
 }
 
 GXVoid GXMesh::Release ()
 {
-	referenceCount--;
+	--referenceCount;
 
 	if ( referenceCount > 0 ) return;
 
@@ -128,7 +128,7 @@ GXUInt GXCALL GXMesh::GetTotalLoadedMeshes ( const GXWChar** lastMesh )
 	GXUInt total = 0u;
 
 	for ( GXMesh* mesh = top; mesh; mesh = mesh->next )
-		total++;
+		++total;
 
 	if ( total > 0u )
 		*lastMesh = top->GetMeshFileName ();
@@ -138,15 +138,17 @@ GXUInt GXCALL GXMesh::GetTotalLoadedMeshes ( const GXWChar** lastMesh )
 	return total;
 }
 
-GXMesh::GXMesh ()
+GXMesh::GXMesh ():
+	referenceCount ( 1u ),
+	previous ( nullptr ), 
+	vboSize ( 0 ),
+	next ( nullptr ),
+	meshFile ( nullptr ),
+	vboUsage ( GL_INVALID_ENUM ),
+	totalVertices ( 0 ),
+	meshVBO ( 0u )
 {
-	next = previous = nullptr;
-	referenceCount = 1;
-	meshFile = nullptr;
-	vboSize = 0;
-	vboUsage = GL_INVALID_ENUM;
-	meshVBO = 0u;
-	totalVertices = 0;
+	// NOTHING
 }
 
 GXMesh::GXMesh ( const GXWChar* fileName ):
@@ -261,7 +263,7 @@ GXBool GXMesh::LoadFromOBJ ( const GXWChar* fileName )
 	GXUByte* cache = static_cast<GXUByte*> ( malloc ( (size_t)vboSize ) );
 	GXUPointer offset = 0u;
 
-	for ( GXUInt i = 0u; i < descriptor.numVertices; i++ )
+	for ( GXUInt i = 0u; i < descriptor.numVertices; ++i )
 	{
 		bounds.AddVertex ( points[ i ].vertex );
 
@@ -371,7 +373,7 @@ GXBool GXMesh::LoadFromSKM ( const GXWChar* fileName )
 	GXUByte* destination = static_cast<GXUByte*> ( malloc ( (size_t)vboSize ) );
 	GXUPointer offset = 0u;
 
-	for ( GLsizei i = 0u; i < totalVertices; i++ )
+	for ( GLsizei i = 0u; i < totalVertices; ++i )
 	{
 		// Vertex, UV, normal, tangent, bitangent.
 		memcpy ( destination + offset, source, meshVBOStride );
@@ -419,7 +421,7 @@ GXBool GXMesh::LoadFromMESH ( const GXWChar* fileName )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class GXSkin
+class GXSkin final
 {
 	friend class GXMeshGeometry;
 
@@ -459,12 +461,12 @@ GXSkin* GXSkin::top = nullptr;
 
 GXVoid GXSkin::AddReference ()
 {
-	referenceCount++;
+	++referenceCount;
 }
 
 GXVoid GXSkin::Release ()
 {
-	referenceCount--;
+	--referenceCount;
 
 	if ( referenceCount > 0u ) return;
 
@@ -484,7 +486,7 @@ GXUInt GXCALL GXSkin::GetTotalLoadedSkins ( const GXWChar** lastSkin )
 	GXUInt total = 0u;
 
 	for ( GXSkin* skin = top; skin; skin = skin->next )
-		total++;
+		++total;
 
 	if ( total > 0u )
 		*lastSkin = top->skinFile;
@@ -553,7 +555,7 @@ GXBool GXSkin::LoadFromSKM ( const GXWChar* fileName )
 	GXUByte* destination = static_cast<GXUByte*> ( malloc ( skinVBOSize ) );
 	GXUPointer offset = 0u;
 
-	for ( GLsizei i = 0; i < totalVertices; i++ )
+	for ( GLsizei i = 0; i < totalVertices; ++i )
 	{
 		// Bone index, bone weight
 		memcpy ( destination + offset, source, skinVBOStride );
@@ -605,8 +607,8 @@ GXMeshGeometry::GXMeshGeometry ():
 	skinningSwitchIndex ( 0u ),
 	skinningMaterial ( nullptr )
 {
-	pose[ 0 ] = pose[ 1 ] = nullptr;
-	poseVAO[ 0 ] = poseVAO[ 1 ] = 0u;
+	pose[ 0u ] = pose[ 1u ] = nullptr;
+	poseVAO[ 0u ] = poseVAO[ 1u ] = 0u;
 }
 
 GXMeshGeometry::~GXMeshGeometry ()
@@ -626,8 +628,8 @@ GXMeshGeometry::~GXMeshGeometry ()
 
 	glDeleteVertexArrays ( 2, poseVAO );
 
-	pose[ 0 ]->Release ();
-	pose[ 1 ]->Release ();
+	pose[ 0u ]->Release ();
+	pose[ 1u ]->Release ();
 }
 
 GXVoid GXMeshGeometry::Render ()
@@ -864,10 +866,10 @@ GXVoid GXMeshGeometry::UpdateGraphicResources ()
 		glBindVertexArray ( 0u );
 		glDeleteVertexArrays ( 2, poseVAO );
 
-		pose[ 0 ]->Release ();
-		pose[ 1 ]->Release ();
+		pose[ 0u ]->Release ();
+		pose[ 1u ]->Release ();
 
-		pose[ 0 ] = pose[ 1 ] = nullptr;
+		pose[ 0u ] = pose[ 1u ] = nullptr;
 
 		return;
 	}
@@ -878,11 +880,11 @@ GXVoid GXMeshGeometry::UpdateGraphicResources ()
 
 	glGenVertexArrays ( 2, poseVAO );
 	
-	pose[ 0 ] = new GXMesh ();
-	pose[ 0 ]->FillVBO ( nullptr, poseVBOSize, GL_DYNAMIC_DRAW );
+	pose[ 0u ] = new GXMesh ();
+	pose[ 0u ]->FillVBO ( nullptr, poseVBOSize, GL_DYNAMIC_DRAW );
 
-	pose[ 1 ] = new GXMesh ();
-	pose[ 1 ]->FillVBO ( nullptr, poseVBOSize, GL_DYNAMIC_DRAW );
+	pose[ 1u ] = new GXMesh ();
+	pose[ 1u ]->FillVBO ( nullptr, poseVBOSize, GL_DYNAMIC_DRAW );
 
 	GXUPointer offset = 0u;
 
@@ -909,7 +911,7 @@ GXVoid GXMeshGeometry::UpdateGraphicResources ()
 		glEnableVertexAttribArray ( static_cast<GLuint> ( eGXMeshStreamIndex::Bitangent ) );
 		glVertexAttribPointer ( static_cast<GLuint> ( eGXMeshStreamIndex::Bitangent ), 3, GL_FLOAT, GL_FALSE, meshStride, reinterpret_cast<const GLvoid*> ( offset ) );
 
-		glBindBuffer ( GL_ARRAY_BUFFER, pose[ 1 ]->meshVBO );
+		glBindBuffer ( GL_ARRAY_BUFFER, pose[ 1u ]->meshVBO );
 
 		glEnableVertexAttribArray ( static_cast<GLuint> ( eGXMeshStreamIndex::LastFrameVertex ) );
 		glVertexAttribPointer ( static_cast<GLuint> ( eGXMeshStreamIndex::LastFrameVertex ), 3, GL_FLOAT, GL_FALSE, meshStride, static_cast<const GLvoid*> ( 0u ) );
@@ -918,9 +920,9 @@ GXVoid GXMeshGeometry::UpdateGraphicResources ()
 
 	offset = 0u;
 
-	glBindVertexArray ( poseVAO[ 1 ] );
+	glBindVertexArray ( poseVAO[ 1u ] );
 	// {
-		glBindBuffer ( GL_ARRAY_BUFFER, pose[ 1 ]->meshVBO );
+		glBindBuffer ( GL_ARRAY_BUFFER, pose[ 1u ]->meshVBO );
 
 		glEnableVertexAttribArray ( static_cast<GLuint> ( eGXMeshStreamIndex::CurrenVertex ) );
 		glVertexAttribPointer ( static_cast<GLuint> ( eGXMeshStreamIndex::CurrenVertex ), 3, GL_FLOAT, GL_FALSE, meshStride, reinterpret_cast<const GLvoid*> ( offset ) );
@@ -941,7 +943,7 @@ GXVoid GXMeshGeometry::UpdateGraphicResources ()
 		glEnableVertexAttribArray ( static_cast<GLuint> ( eGXMeshStreamIndex::Bitangent ) );
 		glVertexAttribPointer ( static_cast<GLuint> ( eGXMeshStreamIndex::Bitangent ), 3, GL_FLOAT, GL_FALSE, meshStride, reinterpret_cast<const GLvoid*> ( offset ) );
 
-		glBindBuffer ( GL_ARRAY_BUFFER, pose[ 0 ]->meshVBO );
+		glBindBuffer ( GL_ARRAY_BUFFER, pose[ 0u ]->meshVBO );
 
 		glEnableVertexAttribArray ( static_cast<GLuint> ( eGXMeshStreamIndex::LastFrameVertex ) );
 		glVertexAttribPointer ( static_cast<GLuint> ( eGXMeshStreamIndex::LastFrameVertex ), 3, GL_FLOAT, GL_FALSE, meshStride, static_cast<const GLvoid*> ( 0u ) );

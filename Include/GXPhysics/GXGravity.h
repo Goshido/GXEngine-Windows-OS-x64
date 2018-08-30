@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_GRAVITY
 #define GX_GRAVITY
@@ -7,7 +7,7 @@
 #include "GXForceGenerator.h"
 
 
-class GXGravity : public GXForceGenerator
+class GXGravity final : public GXForceGenerator
 {
 	private:
 		GXVec3		gravity;

@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_UI_DRAGGABLE_AREA
 #define GX_UI_DRAGGABLE_AREA
@@ -24,7 +24,7 @@ enum eGXDraggableAreaResizeMode : GXUByte
 	WidthAndHeightLockBottomRight
 };
 
-class GXUIDragableArea : public GXWidget
+class GXUIDragableArea final : public GXWidget
 {
 	private:
 		GXFloat							headerHeight;

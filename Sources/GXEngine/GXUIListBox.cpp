@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXEngine/GXUIListBox.h>
 #include <GXEngine/GXUICommon.h>
@@ -16,7 +16,7 @@ GX_RESTORE_WARNING_STATE
 
 //---------------------------------------------------------------------------------------------------------------------
 
-struct GXUIListBoxRawItem
+struct GXUIListBoxRawItem final
 {
 	GXUIListBoxRawItem*			next;
 	GXVoid*						data;
@@ -159,7 +159,7 @@ GXVoid GXUIListBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
 		itemTail = item;
 
-		totalItems++;
+		++totalItems;
 		viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
 
 		if ( renderer )
@@ -189,7 +189,7 @@ GXVoid GXUIListBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
 			itemTail = item;
 
-			totalItems++;
+			++totalItems;
 		}
 
 		viewportSize = boundsLocal.GetHeight () / GetTotalHeight ();
@@ -228,7 +228,7 @@ GXVoid GXUIListBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
 		GXUIListBoxItem* p = itemHead;
 
-		for ( GXUInt i = 0; i < *itemIndex; i++ )
+		for ( GXUInt i = 0; i < *itemIndex; ++i )
 			p = p->next;
 
 		if ( p->next )
@@ -242,7 +242,7 @@ GXVoid GXUIListBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
 			itemHead = p->next;
 
 		DestroyItem ( p->data );
-		totalItems--;
+		--totalItems;
 
 		delete p;
 
@@ -317,11 +317,11 @@ GXVoid GXUIListBox::AddItems ( GXVoid** itemData, GXUInt items )
 
 	GXUInt limit = items - 1;
 
-	for ( GXUInt i = 0u; i < limit; i++ )
+	for ( GXUInt i = 0u; i < limit; ++i )
 	{
 		p->data = itemData[ i ];
 		p->next = p + 1;
-		p++;
+		++p;
 	}
 
 	p->data = itemData[ limit ];
@@ -452,7 +452,7 @@ GXUIListBoxItem* GXUIListBox::FindItem ( const GXVec2 &mousePosition )
 	GXFloat offset = GetTotalHeight () * viewportOffset;
 	GXUIListBoxItem* p = itemHead;
 
-	for ( GXUInt i = 0u; i < totalItems; i++ )
+	for ( GXUInt i = 0u; i < totalItems; ++i )
 	{
 		GXAABB itemBounds;
 		itemBounds.AddVertex ( boundsWorld.min.GetX (), boundsWorld.max.GetY () + offset - itemHeight, boundsWorld.min.GetZ () );

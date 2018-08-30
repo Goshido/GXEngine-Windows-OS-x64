@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_UI_BUTTON
 #define GX_UI_BUTTON
@@ -12,7 +12,7 @@ class GXUIButton;
 typedef GXVoid ( GXCALL* PFNGXONMOUSEBUTTONPROC ) ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state );
 
 
-class GXUIButton : public GXWidget
+class GXUIButton final : public GXWidget
 {
 	private:
 		PFNGXONMOUSEBUTTONPROC		OnLeftMouseButton;

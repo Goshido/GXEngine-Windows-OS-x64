@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #include <GXEngine/GXUIEditBoxFloatValidator.h>
 #include <GXCommon/GXMemory.h>
@@ -52,7 +52,7 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
 				if ( text[ i ] == L'-' )
 				{
 					state = eParserState::IntegerPart;
-					i++;
+					++i;
 				}
 				else if ( isdigit ( static_cast<int> ( text[ i ] ) ) )
 				{
@@ -69,12 +69,12 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
 			{
 				if ( isdigit ( static_cast<int> ( text[ i ] ) ) )
 				{
-					i++;
+					++i;
 				}
 				else if ( text[ i ] == L'.' )
 				{
 					state = eParserState::FractionalPart;
-					i++;
+					++i;
 				}
 				else
 				{
@@ -87,12 +87,12 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
 			{
 				if ( isdigit ( static_cast<int> ( text[ i ] ) ) )
 				{
-					i++;
+					++i;
 				}
 				else if ( text[ i ] == L'e' || text[ i ] == L'E' )
 				{
 					state = eParserState::ExponentSign;
-					i++;
+					++i;
 				}
 				else
 				{
@@ -106,7 +106,7 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
 				if ( text[ i ] == L'+' || text[ i ] == L'-' )
 				{
 					state = eParserState::ExponentValue;
-					i++;
+					++i;
 				}
 				else
 				{
@@ -119,7 +119,7 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
 			{
 				if ( isdigit ( static_cast<int> ( text[ i ] ) ) )
 				{
-					i++;
+					++i;
 				}
 				else
 				{

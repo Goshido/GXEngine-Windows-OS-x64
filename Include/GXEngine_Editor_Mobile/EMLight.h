@@ -54,7 +54,7 @@ class EMLightEmitter
 		EMLightEmitter& operator = ( const EMLightEmitter &other ) = delete;
 };
 
-class EMBulp : public EMLightEmitter
+class EMBulp final : public EMLightEmitter
 {
 	private:
 		GXMeshGeometry	lightVolume;
@@ -79,7 +79,7 @@ class EMBulp : public EMLightEmitter
 		EMBulp& operator = ( const EMBulp &other ) = delete;
 };
 
-class EMSpotlight : public EMLightEmitter
+class EMSpotlight final : public EMLightEmitter
 {
 	private:
 		GXFloat			coneAngle;
@@ -116,7 +116,7 @@ class EMSpotlight : public EMLightEmitter
 		EMSpotlight& operator = ( const EMSpotlight &other ) = delete;
 };
 
-class EMDirectedLight : public EMLightEmitter
+class EMDirectedLight final : public EMLightEmitter
 {
 	private:
 		GXColorRGB	ambientBase;

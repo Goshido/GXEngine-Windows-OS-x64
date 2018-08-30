@@ -8,7 +8,7 @@
 #include <GXEngine/GXTexture2D.h>
 
 
-class EMUnitActor : public EMActor
+class EMUnitActor final : public EMActor
 {
 	private:
 		EMMesh								mesh;

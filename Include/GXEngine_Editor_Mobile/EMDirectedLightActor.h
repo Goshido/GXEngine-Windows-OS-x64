@@ -6,7 +6,7 @@
 #include "EMLight.h"
 
 
-class EMDirectedLightActor : public EMActor
+class EMDirectedLightActor final : public EMActor
 {
 	private:
 		EMDirectedLight*	light;

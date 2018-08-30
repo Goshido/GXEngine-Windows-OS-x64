@@ -1,4 +1,4 @@
-// version 1.15
+// version 1.16
 
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXOpenGL.h>
@@ -263,7 +263,7 @@ GXVoid GXRenderer::GetSupportedResolutions ( GXRendererResolutions &out ) const
 	dm.dmSize = sizeof ( dm );
 
 	GXUShort rawTotal;
-	for ( rawTotal = 0; EnumDisplaySettingsW ( 0, rawTotal, &dm ); rawTotal++ );
+	for ( rawTotal = 0; EnumDisplaySettingsW ( 0, rawTotal, &dm ); ++rawTotal );
 
 	GXRendererResolutions temp;
 	temp.wxh = static_cast<GXUShort*> ( malloc ( ( rawTotal << 1 ) * sizeof ( GXUShort ) ) );
@@ -273,13 +273,13 @@ GXVoid GXRenderer::GetSupportedResolutions ( GXRendererResolutions &out ) const
 
 	out.total = 0u;
 
-	for ( GXUShort i = 0u; i < rawTotal; i++ )
+	for ( GXUShort i = 0u; i < rawTotal; ++i )
 	{
 		EnumDisplaySettingsW ( nullptr, i, &dm );
 
 		GXBool hit = GX_FALSE;
 
-		for ( GXUShort j = 0u; j < out.total; j++ )
+		for ( GXUShort j = 0u; j < out.total; ++j )
 		{
 			if ( ( lastWidth == dm.dmPelsWidth && lastHeight == dm.dmPelsHeight ) || ( dm.dmPelsWidth == temp.wxh[ j << 1 ] && dm.dmPelsHeight == temp.wxh[ ( j << 1 ) + 1 ] ) )
 			{
@@ -296,7 +296,7 @@ GXVoid GXRenderer::GetSupportedResolutions ( GXRendererResolutions &out ) const
 		temp.wxh[ out.total << 1 ] = static_cast<GXUShort> ( lastWidth );
 		temp.wxh[ ( out.total << 1 ) + 1 ] = static_cast<GXUShort> ( lastHeight );
 
-		out.total++;
+		++out.total;
 	}
 
 	GXUInt size = ( out.total << 1 ) * sizeof ( GXUShort );
@@ -517,7 +517,7 @@ GXVoid GXCALL GXRenderer::DrawScene ()
 
 	if ( accumulator <= 0.001 ) return;
 
-	fpsCounter++;
+	++fpsCounter;
 
 	GXFloat update = static_cast<GXFloat> ( accumulator );
 	accumulator = 0.0;

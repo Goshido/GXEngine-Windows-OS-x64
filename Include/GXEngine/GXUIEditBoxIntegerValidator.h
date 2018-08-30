@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_UI_EDIT_BOX_INTEGER_VALIDATOR
 #define GX_UI_EDIT_BOX_INTEGER_VALIDATOR
@@ -8,7 +8,7 @@
 #include "GXUIEditBox.h"
 
 
-class GXUIEditBoxIntegerValidator : public GXTextValidator
+class GXUIEditBoxIntegerValidator final : public GXTextValidator
 {
 	private:
 		GXUIEditBox&	editBox;

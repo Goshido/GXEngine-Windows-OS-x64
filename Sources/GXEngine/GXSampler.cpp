@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #include <GXEngine/GXSampler.h>
 
@@ -7,7 +7,7 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class GXSamplerEntry
+class GXSamplerEntry final
 {
 	private:
 		GXSamplerEntry*			previous;
@@ -102,12 +102,12 @@ GLuint GXSamplerEntry::GetSamplerObject () const
 
 GXVoid GXSamplerEntry::AddReference ()
 {
-	references++;
+	++references;
 }
 
 GXVoid GXSamplerEntry::Release ()
 {
-	references--;
+	--references;
 
 	if ( references > 0 ) return;
 
@@ -131,7 +131,7 @@ GXUInt GXCALL GXSamplerEntry::GetTotalSamplers ( GLint &lastWrapMode, eGXResampl
 	GXUInt total = 0u;
 
 	for ( GXSamplerEntry* p = top; p; p = p->next )
-		total++;
+		++total;
 
 	if ( total == 0u ) return 0u;
 

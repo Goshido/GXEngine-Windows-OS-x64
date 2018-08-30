@@ -1,4 +1,4 @@
-//version 1.1
+//version 1.2
 
 #ifndef GX_SPLASH_SCREEN
 #define GX_SPLASH_SCREEN
@@ -14,7 +14,7 @@ enum class eGXSplashScreenState : GXUByte
 };
 
 
-class GXSplashScreen
+class GXSplashScreen final
 {
 	private:
 		HWND					hwnd;

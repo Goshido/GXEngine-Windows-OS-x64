@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #include <GXEngine/GXUIPopup.h>
 #include <GXEngine/GXUIMessage.h>
@@ -8,7 +8,7 @@
 #define DEFAULT_HEIGHT	0.5f
 
 
-struct GXUIPopupItem
+struct GXUIPopupItem final
 {
 	GXBool						isActive;
 	GXVoid*						handler;
@@ -63,7 +63,7 @@ GXVoid GXUIPopup::OnMessage ( eGXUIMessage message, const GXVoid* data )
 		}
 
 		items.SetValue ( totalItems, &item );
-		totalItems++;
+		++totalItems;
 
 		if ( totalItems != 0u && renderer )
 			renderer->OnUpdate ();
@@ -85,7 +85,7 @@ GXVoid GXUIPopup::OnMessage ( eGXUIMessage message, const GXVoid* data )
 			GXAABB newBoundsLocal ( boundsLocal );
 			newBoundsLocal.min.SetY ( newBoundsLocal.max.GetY () );
 
-			for ( GXUInt i = 0u; i < totalItems; i++ )
+			for ( GXUInt i = 0u; i < totalItems; ++i )
 			{
 				itemStorage[ i ].boundsWorld.Empty ();
 				itemStorage[ i ].boundsWorld.AddVertex ( newBoundsLocal.max.GetX (), newBoundsLocal.min.GetY (), newBoundsLocal.max.GetZ () );
@@ -181,7 +181,7 @@ GXVoid GXUIPopup::OnMessage ( eGXUIMessage message, const GXVoid* data )
 			
 		GXUByte mouseOverItem = 0u;
 
-		for ( ; mouseOverItem < totalItems; mouseOverItem++ )
+		for ( ; mouseOverItem < totalItems; ++mouseOverItem )
 			if ( itemStorage[ mouseOverItem ].boundsWorld.IsOverlaped ( pos->GetX (), pos->GetY (), 0.0f ) ) break;
 
 		if ( selectedItemIndex == static_cast<GXUByte> ( GX_UI_POPUP_INVALID_INDEX ) && !itemStorage[ mouseOverItem ].isActive ) return;
@@ -226,7 +226,7 @@ GXVoid GXUIPopup::OnMessage ( eGXUIMessage message, const GXVoid* data )
 		GXFloat top = newPosition.GetY () + totalItems * itemHeight;
 		GXUIPopupItem* itemStorage = static_cast<GXUIPopupItem*> ( items.GetData () );
 
-		for ( GXUInt i = 0u; i < totalItems; i++ )
+		for ( GXUInt i = 0u; i < totalItems; ++i )
 		{
 			itemStorage[ i ].boundsWorld.Empty ();
 			itemStorage[ i ].boundsWorld.AddVertex ( newPosition.GetX (), top - itemHeight, -1.0f );

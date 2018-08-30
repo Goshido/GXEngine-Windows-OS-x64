@@ -7,7 +7,7 @@
 #include <GXEngine/GXMeshGeometry.h>
 
 
-class EMMesh : public GXTransform, public GXRenderable
+class EMMesh final : public GXTransform, public GXRenderable
 {
 	private:
 		GXWChar*		skinFileName;

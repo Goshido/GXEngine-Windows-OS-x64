@@ -1,4 +1,4 @@
-//version 1.4
+//version 1.5
 
 #ifndef GX_COLLISION_DETECTOR
 #define GX_COLLISION_DETECTOR
@@ -12,7 +12,7 @@
 struct GXSupportPoint;
 struct GXEdge;
 struct GXSimplex;
-class GXCollisionDetector
+class GXCollisionDetector final
 {
 	private:
 		GXDynamicArray					supportPoints;

@@ -47,7 +47,7 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class EMUIEditBoxRenderer : public GXWidgetRenderer
+class EMUIEditBoxRenderer final : public GXWidgetRenderer
 {
 	private:
 		GXTexture2D			background;

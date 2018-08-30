@@ -5,7 +5,7 @@
 #include "EMUI.h"
 
 
-class EMUISeparator : public EMUI
+class EMUISeparator final : public EMUI
 {
 	private:
 		GXWidget*	widget;

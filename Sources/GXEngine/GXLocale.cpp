@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXEngine/GXLocale.h>
 #include <GXCommon/GXAVLTree.h>
@@ -143,7 +143,7 @@ GXLocale::~GXLocale ()
 
 	GXStringTree** trees = static_cast<GXStringTree**> ( storage.GetData () );
 
-	for ( GXUPointer i = 0u; i < len; i++ )
+	for ( GXUPointer i = 0u; i < len; ++i )
 		GXSafeDelete ( trees[ i ] );
 
 	instance = nullptr;
@@ -189,13 +189,13 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 
 				while ( GX_TRUE )
 				{
-					offset++;
+					++offset;
 
 					if ( offset >= size ) break;
 
 					else if ( data[ offset ] != ' ' && data[ offset ] != '\n' && data[ offset ] != '\r' && data[ offset ] != '\t' )
 					{
-						offset--;
+						--offset;
 						break;
 					}
 				}
@@ -207,7 +207,7 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 			}
 		}
 
-		offset++;
+		++offset;
 	}
 
 	free ( data );

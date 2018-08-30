@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_TEXTURE_CUBE_MAP
 #define GX_TEXTURE_CUBE_MAP
@@ -11,7 +11,7 @@
 
 
 class GXTextureCubeMapEntry;
-class GXTextureCubeMap
+class GXTextureCubeMap final
 {
 	private:
 		GXTextureCubeMapEntry*	textureCubeMapEntry;

@@ -124,7 +124,7 @@ GXVoid EMImportantAreaFilterMaterial::GenerateRetinaFilterTexture ( GXUShort eff
 			totalGaussSum += sample;
 			probabilityDensitySamples[ sampleOffset ] = sample;
 
-			sampleOffset++;
+			++sampleOffset;
 			u += step;
 		}
 
@@ -134,7 +134,7 @@ GXVoid EMImportantAreaFilterMaterial::GenerateRetinaFilterTexture ( GXUShort eff
 	GXDouble hardwareReducingCompensationFactor = static_cast<GXDouble> ( samples ) / totalGaussSum;
 	GXFloat* retinaFilterSamples = static_cast<GXFloat*> ( malloc ( samples * sizeof ( GXFloat ) ) );
 
-	for ( sampleOffset = 0u; sampleOffset < samples; sampleOffset++ )
+	for ( sampleOffset = 0u; sampleOffset < samples; ++sampleOffset )
 		retinaFilterSamples[ sampleOffset ] = static_cast<GXFloat> ( hardwareReducingCompensationFactor * probabilityDensitySamples[ sampleOffset ] );
 
 	free ( probabilityDensitySamples );

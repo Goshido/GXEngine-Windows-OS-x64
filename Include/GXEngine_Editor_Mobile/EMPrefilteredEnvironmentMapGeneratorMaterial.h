@@ -7,7 +7,7 @@
 #include <GXEngine/GXSampler.h>
 
 
-class EMPrefilteredEnvironmentMapGeneratorMaterial : public GXMaterial
+class EMPrefilteredEnvironmentMapGeneratorMaterial final : public GXMaterial
 {
 	private:
 		GXTextureCubeMap*		environmentMap;

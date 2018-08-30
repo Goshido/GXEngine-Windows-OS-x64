@@ -69,7 +69,7 @@
 
 //----------------------------------------------------------------------------------
 
-class EMUIButtonRenderer : public GXWidgetRenderer
+class EMUIButtonRenderer final : public GXWidgetRenderer
 {
 	private:
 		GXFont				font;

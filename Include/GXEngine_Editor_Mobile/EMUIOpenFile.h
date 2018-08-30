@@ -12,7 +12,7 @@
 
 typedef GXVoid ( GXCALL* PFNEMONBROWSEFILEPROC ) ( const GXWChar* filePath );
 
-class EMUIOpenFile : public EMUI
+class EMUIOpenFile final : public EMUI
 {
 	private:
 		GXWChar*				currentDirectory;

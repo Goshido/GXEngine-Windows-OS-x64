@@ -7,7 +7,7 @@
 #include <GXEngine/GXUnlitTexture2DMaterial.h>
 
 
-class EMRotateGismo : public GXTransform
+class EMRotateGismo final : public GXTransform
 {
 	private:
 		GXBool						isVisible;

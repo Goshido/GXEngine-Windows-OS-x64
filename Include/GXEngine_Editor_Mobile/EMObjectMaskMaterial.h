@@ -5,7 +5,7 @@
 #include <GXEngine/GXMaterial.h>
 
 
-class EMObjectMaskMaterial : public GXMaterial
+class EMObjectMaskMaterial final : public GXMaterial
 {
 	private:
 		GLint	mod_view_proj_matLocation;

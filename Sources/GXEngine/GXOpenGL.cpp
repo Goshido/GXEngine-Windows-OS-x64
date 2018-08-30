@@ -1,4 +1,4 @@
-// version 1.10
+// version 1.11
 
 #include <GXEngine/GXOpenGL.h>
 #include <GXCommon/GXLogger.h>
@@ -206,7 +206,7 @@ GXVoid GXOpenGLState::Save ()
 	GLint maxDrawBuffers = 0;
 	glGetIntegerv ( GL_MAX_DRAW_BUFFERS, &maxDrawBuffers );
 
-	for ( GLint i = 0; i < maxDrawBuffers; i++ )
+	for ( GLint i = 0; i < maxDrawBuffers; ++i )
 		glGetIntegerv ( static_cast<GLenum> ( GL_DRAW_BUFFER0 + i ), reinterpret_cast<GLint*> ( drawBuffers + i ) );
 
 	GXCheckOpenGLError ();

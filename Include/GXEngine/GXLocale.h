@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_LOCALE
 #define GX_LOCALE
@@ -13,7 +13,7 @@ enum class eGXLanguage : GXUShort
 	Russian = 1
 };
 
-class GXLocale
+class GXLocale final
 {
 	private:
 		eGXLanguage			currentLanguage;

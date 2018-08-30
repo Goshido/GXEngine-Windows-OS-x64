@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_UI_POPUP
 #define GX_UI_POPUP
@@ -14,7 +14,7 @@
 typedef GXVoid ( GXCALL* PFNGXONUIPOPUPACTIONPROC ) ( GXVoid* handler );
 
 
-class GXUIPopup : public GXWidget
+class GXUIPopup final : public GXWidget
 {
 	private:
 		GXDynamicArray		items;

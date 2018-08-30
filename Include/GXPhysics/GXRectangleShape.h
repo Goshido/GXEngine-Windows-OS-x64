@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_RECTANGLE_SHAPE
 #define GX_RECTANGLE_SHAPE
@@ -7,7 +7,7 @@
 #include "GXShape.h"
 
 
-class GXRectangleShape : public GXShape
+class GXRectangleShape final : public GXShape
 {
 	private:
 		GXFloat		width;

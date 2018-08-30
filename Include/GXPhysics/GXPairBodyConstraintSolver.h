@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_PAIR_BODY_CONSTRAINT_SOLVER
 #define GX_PAIR_BODY_CONSTRAINT_SOLVER
@@ -13,7 +13,7 @@
 // "Iterative Dynamics with Temporal Coherence"
 // by Erin Catto
 
-class GXPairBodyConstraintSolver
+class GXPairBodyConstraintSolver final
 {
 	private:
 		// s is number of constaints.

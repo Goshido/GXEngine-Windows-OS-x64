@@ -6,7 +6,7 @@
 #include <GXEngine/GXUIPopup.h>
 
 
-class EMUIPopup : public EMUI
+class EMUIPopup final : public EMUI
 {
 	private:
 		GXUIPopup*		widget;

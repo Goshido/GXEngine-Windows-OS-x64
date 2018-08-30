@@ -521,17 +521,17 @@ GXVoid EMRenderer::ApplyToneMapping ( GXFloat deltaTime )
 
 	GXUByte reducingSteps = importantAreaTexture.GetLevelOfDetailNumber ();
 
-	for ( GXUByte i = 1u; i < reducingSteps; i++ )
+	for ( GXUByte i = 1u; i < reducingSteps; ++i )
 	{
-		width /= 2u;
+		width /= 2;
 
 		if ( width == 0 )
-			width = 1u;
+			width = 1;
 
-		height /= 2u;
+		height /= 2;
 
 		if ( height == 0 )
-			height = 1u;
+			height = 1;
 
 		glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, importantAreaTexture.GetTextureObject (), static_cast<GLint> ( i ) );
 

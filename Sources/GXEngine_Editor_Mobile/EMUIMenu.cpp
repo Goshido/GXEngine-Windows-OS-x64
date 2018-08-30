@@ -38,7 +38,7 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class EMUIMenuRenderer : public GXWidgetRenderer
+class EMUIMenuRenderer final : public GXWidgetRenderer
 {
 	private:
 		GXFont				font;
@@ -137,7 +137,7 @@ GXVoid EMUIMenuRenderer::OnRefresh ()
 	pi.font = &font;
 	pi.insertY = ( h - font.GetSize () ) * 0.7f;
 
-	for ( GXUByte i = 0u; i < totalItems; i++ )
+	for ( GXUByte i = 0u; i < totalItems; ++i )
 	{
 		const GXWChar* itemName = menu->GetItemName ( i );
 		GXFloat itemOffset = menu->GetItemOffset ( i );

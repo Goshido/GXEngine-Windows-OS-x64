@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #include <GXEngine/GXEquirectangularToCubeMapMaterial.h>
 #include <GXEngine/GXCameraPerspective.h>

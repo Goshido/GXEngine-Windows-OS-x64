@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_CFG_STRUCT
 #define GX_CFG_STRUCT
@@ -7,7 +7,7 @@
 #include "GXTypes.h"
 
 
-struct GXEngineConfiguration
+struct GXEngineConfiguration final
 {
 	GXUShort		usRendererWidthResoluton;
 	GXUShort		usRendererHeightResoluton;

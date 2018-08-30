@@ -6,7 +6,7 @@
 #include <GXEngine/GXUIEditBox.h>
 
 
-class EMUIEditBox : public EMUI
+class EMUIEditBox final : public EMUI
 {
 	private:
 		GXUIEditBox*	widget;

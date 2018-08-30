@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_NATIVE_STATIC_MESH_SAVER
 #define GX_NATIVE_STATIC_MESH_SAVER
@@ -7,7 +7,7 @@
 #include "GXMath.h"
 
 
-struct GXNativeStaticMeshDesc
+struct GXNativeStaticMeshDesc final
 {
 	GXUInt		numVertices;
 	GXUInt		numUVs;

@@ -5,7 +5,7 @@
 #include <GXEngine/GXMaterial.h>
 
 
-class EMVertexColorMaterial : public GXMaterial
+class EMVertexColorMaterial final : public GXMaterial
 {
 	private:
 		GLint		currentFrameModelViewProjectionMatrixLocation;

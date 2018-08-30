@@ -1,4 +1,4 @@
-// version 1.19
+// version 1.20
 
 #ifndef GX_HUD_SURFACE
 #define GX_HUD_SURFACE
@@ -24,7 +24,7 @@ enum class eGXImageOverlayType
 	SimpleReplace
 };
 
-struct GXImageInfo
+struct GXImageInfo final
 {
 	GXTexture2D*		texture;
 
@@ -37,7 +37,7 @@ struct GXImageInfo
 	eGXImageOverlayType	overlayType;
 };
 
-struct GXPenInfo
+struct GXPenInfo final
 {
 	GXFont*				font;
 	GXColorRGB			color;
@@ -47,7 +47,7 @@ struct GXPenInfo
 	eGXImageOverlayType	overlayType;
 };
 
-struct GXLineInfo
+struct GXLineInfo final
 {
 	GXColorRGB			color;
 	GXFloat				thickness;
@@ -60,7 +60,7 @@ struct GXLineInfo
 class GXImageRenderable;
 class GXGlyphRenderable;
 class GXLineRenderable;
-class GXHudSurface : public GXTransform
+class GXHudSurface final : public GXTransform
 {
 	private:
 		GXUShort					width;

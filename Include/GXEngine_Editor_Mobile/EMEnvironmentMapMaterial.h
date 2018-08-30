@@ -8,7 +8,7 @@
 #include <GXEngine/GXSampler.h>
 
 
-class EMEnvironmentMapMaterial : public GXMaterial
+class EMEnvironmentMapMaterial final : public GXMaterial
 {
 	private:
 		GXTextureCubeMap*		environmentTexture;

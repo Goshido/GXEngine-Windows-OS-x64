@@ -12,7 +12,7 @@ enum class eEMGaussVerticalBlurKernelType : GXUShort
 	OneChannelFivePixel
 };
 
-class EMGaussVerticalBlurMaterial : public GXMaterial
+class EMGaussVerticalBlurMaterial final : public GXMaterial
 {
 	private:
 		eEMGaussVerticalBlurKernelType		kernelType;

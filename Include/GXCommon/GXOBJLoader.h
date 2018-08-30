@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #ifndef GX_OBJLOADER
 #define GX_OBJLOADER
@@ -10,38 +10,38 @@
 // #define DEBUG_TO_LOG
 
 
-struct GXOBJIndex
+struct GXOBJIndex final
 {
 	GXInt v;
 	GXInt vn;
 	GXInt vt;
 };
 
-struct GXOBJVertex
+struct GXOBJVertex final
 {
 	GXVec3 position;
 	GXOBJVertex *next;
 };
 
-struct GXOBJNormals
+struct GXOBJNormals final
 {
 	GXVec3 normal;
 	GXOBJNormals *next;
 };
 
-struct GXOBJUV_s
+struct GXOBJUV_s final
 {
 	GXVec2 uv;
 	GXOBJUV_s *next;
 };
 
-struct GXOBJTriangle
+struct GXOBJTriangle final
 {
 	GXOBJIndex dat[ 3 ];
 	GXOBJTriangle *next;
 };
 
-struct GXOBJPoint
+struct GXOBJPoint final
 {
 	GXVec3	vertex;
 	GXVec3	normal;

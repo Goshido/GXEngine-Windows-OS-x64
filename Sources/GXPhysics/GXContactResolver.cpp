@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #include <GXPhysics/GXContactResolver.h>
 #include <GXPhysics/GXContactFrictionlessConstraint.h>
@@ -76,7 +76,7 @@ GXVoid GXContactResolver::ResolvePairBodyContacts ( GXContact* contacts )
 
 	pairBodyConstraintSolver.Begin ( firstBody, secondBody );
 
-	for ( GXUInt i = 0u; i < linkedContacts; i++ )
+	for ( GXUInt i = 0u; i < linkedContacts; ++i )
 	{
 		pairBodyConstraintSolver.AddConstraint ( GXContactFrictionlessConstraint ( contacts[ i ], baumgarteFactor ) );
 		pairBodyConstraintSolver.AddConstraint ( GXContactTangentConstraint ( contacts[ i ], inverseLinkedContacts, squareStationaryThreshold ) );
@@ -112,7 +112,7 @@ GXVoid GXContactResolver::ResolveSingleBodyContacts ( GXContact* contacts )
 
 	singleBodyConstraintSolver.Begin ( firstBody, secondBody );
 
-	for ( GXUInt i = 0u; i < linkedContacts; i++ )
+	for ( GXUInt i = 0u; i < linkedContacts; ++i )
 	{
 		singleBodyConstraintSolver.AddConstraint ( GXContactFrictionlessConstraint ( contacts[ i ], baumgarteFactor ) );
 		singleBodyConstraintSolver.AddConstraint ( GXContactTangentConstraint ( contacts[ i ], inverseLinkedContacts, squareStationaryThreshold ) );

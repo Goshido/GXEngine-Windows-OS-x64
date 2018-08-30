@@ -1,4 +1,4 @@
-// version 1.8
+// version 1.9
 
 #include <GXEngine/GXAnimationSolverPlayer.h>
 #include <GXCommon/GXNativeSkeletalMesh.h>
@@ -77,7 +77,7 @@ GXBoneFinder::GXBoneFinder ( const GXAnimationInfo &animInfo ) :
 	GXAVLTree ( &GXBoneFinderNode::Compare, GX_FALSE ),
 	cacheFriendlyNodes ( static_cast<GXBoneFinderNode*> ( malloc ( sizeof ( GXBoneFinderNode ) * animInfo.totalBones ) ) )
 {
-	for ( GXUShort i = 0u; i < animInfo.totalBones; i++ )
+	for ( GXUShort i = 0u; i < animInfo.totalBones; ++i )
 	{
 		new ( cacheFriendlyNodes + i ) GXBoneFinderNode ( animInfo.boneNames + i * GX_BONE_NAME_SIZE, i );
 		Add ( *( cacheFriendlyNodes + i ) );

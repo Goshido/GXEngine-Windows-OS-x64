@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_SKELETON
 #define GX_SKELETON
@@ -8,7 +8,7 @@
 #include <GXCommon/GXNativeSkeletalMesh.h>
 
 
-class GXSkeleton
+class GXSkeleton final
 {
 	private:
 		GXUShort			totalBones;

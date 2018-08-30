@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_MESH_GEOMETRY
 #define GX_MESH_GEOMETRY
@@ -25,7 +25,7 @@ enum class eGXMeshStreamIndex : GLuint
 
 class GXMesh;
 class GXSkin;
-class GXMeshGeometry
+class GXMeshGeometry final
 {
 	private:
 		GXMesh*					mesh;

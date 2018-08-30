@@ -1,4 +1,4 @@
-// version 1.15
+// version 1.16
 
 #include <GXEngine/GXCore.h>
 #include <GXEngine/GXInput.h>
@@ -99,12 +99,15 @@ GXCore::GXCore ()
 	gx_EngineSettings.rendererHeight = config.usRendererHeightResoluton;
 
 	gx_EngineSettings.potWidth = 1u;
+
 	for ( ; gx_EngineSettings.potWidth < gx_EngineSettings.rendererWidth; gx_EngineSettings.potWidth <<= 1 );
+
 	gx_EngineSettings.potHeight = 1u;
+
 	for ( ; gx_EngineSettings.potHeight < gx_EngineSettings.rendererHeight; gx_EngineSettings.potHeight <<=  1 );
 
 	gx_EngineSettings.windowed = config.bIsWindowedMode;
-	gx_EngineSettings.vSync = GX_TRUE;
+	gx_EngineSettings.vSync = GX_FALSE;
 	gx_EngineSettings.resampling = config.chResampling;
 	gx_EngineSettings.anisotropy = config.chAnisotropy;
 	gx_EngineSettings.dof = config.bDoF;

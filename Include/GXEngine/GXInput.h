@@ -1,4 +1,4 @@
-// version 1.16
+// version 1.17
 
 #ifndef GX_INPUT
 #define GX_INPUT
@@ -94,7 +94,7 @@ enum class eGXInputDevice : GXUByte
 	XBOXController
 };
 
-class GXInput
+class GXInput final
 {
 	private:
 		static GXThread*				thread;

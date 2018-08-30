@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #ifndef GX_SOUND_MIXER
 #define GX_SOUND_MIXER
@@ -9,7 +9,7 @@
 #include <GXCommon/GXMutex.h>
 
 
-class GXSoundMixer
+class GXSoundMixer final
 {
 	private:
 		GXThread					thread;

@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_UI_EDIT_BOX
 #define GX_UI_EDIT_BOX
@@ -13,7 +13,7 @@ typedef GXVoid ( GXCALL* PFNGXUIEDITBOXONFINISHEDITINGPROC ) ( GXVoid* handler, 
 
 
 class GXTextValidator;
-class GXUIEditBox : public GXWidget
+class GXUIEditBox final : public GXWidget
 {
 	private:
 		GXWChar*							text;

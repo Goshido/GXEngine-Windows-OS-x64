@@ -169,7 +169,7 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class EMColorRenderer : public GXWidgetRenderer
+class EMColorRenderer final : public GXWidgetRenderer
 {
 	private:
 		GXTexture2D					texture;
@@ -331,7 +331,7 @@ GXVoid EMColorRenderer::UpdateCheckerTexture ()
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class EMColorSelectorRenderer : public GXWidgetRenderer
+class EMColorSelectorRenderer final : public GXWidgetRenderer
 {
 	private:
 		EMMesh							screenQuad;
@@ -744,7 +744,7 @@ EMUIColorPicker::~EMUIColorPicker ()
 
 	delete middleSeparator;
 
-	for ( GXUByte i = 0u; i < 16u; i++ )
+	for ( GXUByte i = 0u; i < 16u; ++i )
 	{
 		delete savedColors[ i ]->GetRenderer ();
 		delete savedColors[ i ];
@@ -843,7 +843,7 @@ EMUIColorPicker::EMUIColorPicker ():
 
 	addColor = new EMUIButton ( mainPanel );
 
-	for ( GXUByte i = 0u; i < 16u; i++ )
+	for ( GXUByte i = 0u; i < 16u; ++i )
 	{
 		GXUIInput* savedColor = new GXUIInput ( mainPanelWidget, GX_TRUE );
 		savedColor->SetRenderer ( new EMColorRenderer ( savedColor ) );
@@ -914,7 +914,7 @@ EMUIColorPicker::EMUIColorPicker ():
 	oldColor->SetHandler ( this );
 	oldColor->SetOnLeftMouseButtonDownCallback ( &EMUIColorPicker::OnLeftMouseButton );
 
-	for ( GXUByte i = 0u; i < 16u; i++ )
+	for ( GXUByte i = 0u; i < 16u; ++i )
 	{
 		GXUIInput* input = savedColors[ i ];
 		input->SetHandler ( this );
@@ -978,7 +978,7 @@ EMUIColorPicker::EMUIColorPicker ():
 
 	static const GXColorHSV defaultSavedColor ( DEFAULT_SAVED_COLOR_H, DEFAULT_SAVED_COLOR_S, DEFAULT_SAVED_COLOR_V, DEFAULT_SAVED_COLOR_A );
 
-	for ( GXUByte i = 0u; i < 16u; i++ )
+	for ( GXUByte i = 0u; i < 16u; ++i )
 	{
 		EMColorRenderer* renderer = static_cast<EMColorRenderer*> ( savedColors[ i ]->GetRenderer () );
 		renderer->SetColor ( defaultSavedColor );
@@ -1124,7 +1124,7 @@ GXVoid GXCALL EMUIColorPicker::OnButton ( GXVoid* handler, GXUIButton& button, G
 	
 	if ( &button == colorPicker->addColor->GetWidget () )
 	{
-		for ( GXByte i = 15; i > 0; i-- )
+		for ( GXByte i = 15; i > 0; --i )
 		{
 			EMColorRenderer* destinationRenderer = static_cast<EMColorRenderer*> ( colorPicker->savedColors[ i ]->GetRenderer () );
 			EMColorRenderer* sourceRenderer = static_cast<EMColorRenderer*> ( colorPicker->savedColors[ i - 1 ]->GetRenderer () );
@@ -1227,7 +1227,7 @@ GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput& i
 
 		static GXVec3 equitaleralTriangleWorld[ 3 ];
 
-		for ( GXUByte i = 0u; i < 3u; i++ )
+		for ( GXUByte i = 0u; i < 3u; ++i )
 			modelMatrix.MultiplyAsPoint ( equitaleralTriangleWorld[ i ], equilateralTriangleLocal[ i ] );
 
 		GXVec3 barycentricCoordinates;
@@ -1255,7 +1255,7 @@ GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput& i
 		return;
 	}
 
-	for ( GXUByte i = 0u; i < 16u; i++ )
+	for ( GXUByte i = 0u; i < 16u; ++i )
 	{
 		if ( &input != colorPicker->savedColors[ i ] ) continue;
 
@@ -1292,7 +1292,7 @@ GXVoid GXCALL EMUIColorPicker::OnResize ( GXVoid* handler, GXUIDragableArea& /*a
 	GXFloat savedColorHeight = SAVED_COLOR_HEIGHT * gx_ui_Scale;
 	GXFloat savedColorHorizontalStep = ( SAVED_COLOR_WIDTH + SAVED_COLOR_HORIZONTAL_SPACING ) * gx_ui_Scale;
 
-	for ( GXUByte i = 0u; i < 8u; i++ )
+	for ( GXUByte i = 0u; i < 8u; ++i )
 	{
 		colorPicker->savedColors[ i ]->Resize ( savedColorX, savedColorTopRowY, savedColorWidth, savedColorHeight );
 		colorPicker->savedColors[ i + 8 ]->Resize ( savedColorX, savedColorBottomRowY, savedColorWidth, savedColorHeight );

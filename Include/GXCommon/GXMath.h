@@ -1,4 +1,4 @@
-// version 1.50
+// version 1.51
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -22,7 +22,7 @@ GX_RESTORE_WARNING_STATE
 
 
 // By convention it is row-vertex.
-struct GXVec2
+struct GXVec2 final
 {
 	// Stores vector components in x, y order.
 	GXFloat		data[ 2 ];
@@ -72,7 +72,7 @@ eGXLineRelationship GXCALL GXLineIntersection2D ( GXVec2 &intersectionPoint, con
 //-------------------------------------------------------------
 
 // By convention it is row-vector.
-struct GXVec3
+struct GXVec3 final
 {
 	// Stores vector components in x, y, z order.
 	GXFloat		data[ 3 ];
@@ -127,7 +127,7 @@ GXBool GXCALL GXRayTriangleIntersection3D ( GXFloat &outT, const GXVec3 &origin,
 
 //-------------------------------------------------------------
 
-struct GXEuler
+struct GXEuler final
 {
 	GXFloat		pitchRadians;
 	GXFloat		yawRadians;
@@ -143,7 +143,7 @@ struct GXEuler
 //-------------------------------------------------------------
 
 // By convention it is row-vector.
-struct GXVec4
+struct GXVec4 final
 {
 	// Stores vector components in x, y, z, w order.
 	GXFloat		data[ 4 ];
@@ -181,7 +181,7 @@ struct GXVec4
 
 //-------------------------------------------------------------
 
-struct GXVec6
+struct GXVec6 final
 {
 	GXFloat		data[ 6 ];
 
@@ -203,7 +203,7 @@ struct GXVec6
 //-------------------------------------------------------------
 
 struct GXColorHSV;
-struct GXColorRGB
+struct GXColorRGB final
 {
 	// Stores components in red, green, blue, alpha order.
 	GXFloat		data[ 4 ];
@@ -242,7 +242,7 @@ struct GXColorRGB
 
 //-------------------------------------------------------------
 
-struct GXColorHSV
+struct GXColorHSV final
 {
 	// Stores components in hue, saturation, value, alpha order.
 	GXFloat		data[ 4 ];
@@ -280,7 +280,7 @@ struct GXMat4;
 
 // Quaternion representation: r + ai + bj + ck.
 // By convention stores only orientation without any scale.
-struct GXQuat
+struct GXQuat final
 {
 	// Stores quaternion components in r, a, b, c order.
 	GXFloat		data[ 4 ];
@@ -345,7 +345,7 @@ struct GXQuat
 
 //-------------------------------------------------------------
 
-struct GXMat3
+struct GXMat3 final
 {
 	union
 	{
@@ -399,7 +399,7 @@ struct GXMat3
 
 //-------------------------------------------------------------
 
-struct GXMat4
+struct GXMat4 final
 {
 	union
 	{
@@ -484,7 +484,7 @@ struct GXMat4
 
 //-------------------------------------------------------------
 
-struct GXAABB
+struct GXAABB final
 {
 	GXUByte	vertices;
 
@@ -522,7 +522,7 @@ enum class eGXPlaneClassifyVertex : GXUByte
 	Behind = 2
 };
 
-struct GXPlane
+struct GXPlane final
 {
 	GXFloat a;
 	GXFloat b;
@@ -546,7 +546,7 @@ struct GXPlane
 
 //-------------------------------------------------------------
 
-class GXProjectionClipPlanes
+class GXProjectionClipPlanes final
 {
 	private:
 		GXPlane	planes[ 6 ];

@@ -247,7 +247,7 @@ GXVoid EMLightProbe::UpdatePrefilteredEnvironmentMap ()
 		if ( status != GL_FRAMEBUFFER_COMPLETE )
 		{
 			GXLogW ( L"EMLightProbe::UpdatePrefilteredEnvironmentMap::Error - Что-то не так на проходе генерации %i mipmap уровня FBO (ошибка 0x%08x)\n", mipmapLevel, status );
-			mipmapLevel++;
+			++mipmapLevel;
 			continue;
 		}
 
@@ -258,7 +258,7 @@ GXVoid EMLightProbe::UpdatePrefilteredEnvironmentMap ()
 
 		currentResolution /= 2;
 
-		mipmapLevel++;
+		++mipmapLevel;
 	}
 
 	glBindFramebuffer ( GL_FRAMEBUFFER, 0u );

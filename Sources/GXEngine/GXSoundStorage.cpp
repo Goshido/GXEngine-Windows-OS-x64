@@ -26,7 +26,7 @@ GXUInt GXCALL GXGetTotalSoundStorageObjects ( GXWChar** lastSound )
 	for ( GXSoundTrack* p = gx_strgSoundTracks; p; p = p->next )
 	{
 		*lastSound = p->trackFile;
-		objects++;
+		++objects;
 	}
 
 	return objects;

@@ -5,7 +5,7 @@
 #include <GXEngine/GXMaterial.h>
 
 
-class EMHueCircleGeneratorMaterial : public GXMaterial
+class EMHueCircleGeneratorMaterial final : public GXMaterial
 {
 	private:
 		GXFloat		innerRadius;

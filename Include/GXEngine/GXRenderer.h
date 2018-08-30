@@ -1,4 +1,4 @@
-// version 1.15
+// version 1.16
 
 #ifndef GX_RENDERER
 #define GX_RENDERER
@@ -8,7 +8,7 @@
 #include <GXCommon/GXThread.h>
 
 
-class GXRendererResolutions
+class GXRendererResolutions final
 {
 	friend class GXRenderer;
 
@@ -30,7 +30,7 @@ class GXRendererResolutions
 		GXRendererResolutions& operator = ( const GXRendererResolutions &other ) = delete;
 };
 
-class GXRenderer
+class GXRenderer final
 {	
 	private:
 		static GXGame*				game;

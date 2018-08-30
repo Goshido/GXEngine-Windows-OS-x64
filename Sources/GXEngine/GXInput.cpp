@@ -1,4 +1,4 @@
-// version 1.16
+// version 1.17
 
 #include <GXEngine/GXInput.h>
 #include <GXEngine/GXCore.h>
@@ -442,7 +442,7 @@ GXInput::GXInput ()
 {
 	activeInputDevice = eGXInputDevice::Keyboard;
 
-	for ( GXInt i = 0; i < GX_INPUT_TOTAL_KEYBOARD_KEYS; i++ )
+	for ( GXInt i = 0; i < GX_INPUT_TOTAL_KEYBOARD_KEYS; ++i )
 	{
 		keysMask[ i ] = GX_FALSE;
 		KeysMapping[ i ] = nullptr;
@@ -467,7 +467,7 @@ GXInput::GXInput ()
 
 	GXInt limit = GX_INPUT_TOTAL_GAMEPAD_KEYS * 2;
 
-	for ( GXInt i = 0; i < limit; i++ )
+	for ( GXInt i = 0; i < limit; ++i )
 	{
 		gamepadKeysHandlers[ i ] = nullptr;
 		GamepadKeysMapping[ i ] = nullptr;
@@ -499,7 +499,7 @@ GXUPointer GXTHREADCALL GXInput::InputLoop ( GXVoid* /*args*/, GXThread& /*threa
 		{
 			case eGXInputDevice::Keyboard:
 			{
-				for ( GXUShort i = 0u; i < GX_INPUT_TOTAL_KEYBOARD_KEYS; i++ )
+				for ( GXUShort i = 0u; i < GX_INPUT_TOTAL_KEYBOARD_KEYS; ++i )
 				{
 					if ( keysMask[ i ] && KeysMapping[ i ] )
 					{
@@ -519,7 +519,7 @@ GXUPointer GXTHREADCALL GXInput::InputLoop ( GXVoid* /*args*/, GXThread& /*threa
 
 			case eGXInputDevice::XBOXController:
 			{
-				for ( GXInt i = 0;  i < GX_INPUT_TOTAL_GAMEPAD_KEYS * 2; i++ )
+				for ( GXInt i = 0;  i < GX_INPUT_TOTAL_GAMEPAD_KEYS * 2; ++i )
 				{
 					if ( GamepadKeysMapping[ i ] && gamepadKeysMask[ i ] )
 					{

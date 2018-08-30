@@ -12,7 +12,7 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class EMUIStaticTextRenderer : public GXWidgetRenderer
+class EMUIStaticTextRenderer final : public GXWidgetRenderer
 {
 	private:
 		GXFont				font;

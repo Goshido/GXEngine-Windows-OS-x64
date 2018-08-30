@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXEngine/GXTextureCubeMap.h>
 #include <GXEngine/GXOpenGL.h>
@@ -29,7 +29,7 @@ enum class eGXChannelDataType : GXUByte
 	Float
 };
 
-struct GXTextureCubeMapCacheHeader
+struct GXTextureCubeMapCacheHeader final
 {
 	GXUByte				numChannels;
 	eGXChannelDataType	channelDataType;
@@ -48,7 +48,7 @@ struct GXTextureCubeMapCacheHeader
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class GXTextureCubeMapEntry
+class GXTextureCubeMapEntry final
 {
 	private:
 		GXTextureCubeMapEntry*			previous;
@@ -577,12 +577,12 @@ GXVoid GXTextureCubeMapEntry::UpdateMipmaps ()
 
 GXVoid GXTextureCubeMapEntry::AddReference ()
 {
-	references++;
+	++references;
 }
 
 GXVoid GXTextureCubeMapEntry::Release ()
 {
-	references--;
+	--references;
 
 	if ( references > 0 ) return;
 
@@ -606,7 +606,7 @@ GXUInt GXCALL GXTextureCubeMapEntry::GetTotalLoadedTextures ( const GXWChar** la
 	GXUInt total = 0u;
 
 	for ( GXTextureCubeMapEntry* p = top; p; p = p->next )
-		total++;
+		++total;
 
 	if ( total > 0u )
 		*lastTexture = top->fileName;
@@ -773,7 +773,7 @@ GXVoid GXTextureCubeMapEntry::InitResources ( GXUShort textureFaceLength, GLint 
 
 		while ( currentResolution <= faceLength )
 		{
-			lods++;
+			++lods;
 			currentResolution *= 2u;
 		}
 	}

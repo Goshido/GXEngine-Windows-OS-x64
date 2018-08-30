@@ -90,7 +90,7 @@ GXSoundTrack::GXSoundTrack ( const GXWChar* trackFile ):
 
 GXVoid GXSoundTrack::AddRef ()
 {
-	numRef++;
+	++numRef;
 }
 
 GXVoid GXSoundTrack::Release ()
@@ -101,7 +101,7 @@ GXVoid GXSoundTrack::Release ()
 		return;
 	}
 
-	numRef--;
+	--numRef;
 
 	if ( numRef > 0u ) return;
 

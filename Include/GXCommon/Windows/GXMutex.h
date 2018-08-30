@@ -7,7 +7,7 @@
 #include <GXCommon/GXMutex.h>
 
 
-class GXMutex : public GXAbstractMutex
+class GXMutex final : public GXAbstractMutex
 {
 	private:
 		HANDLE	mutex;

@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #include <GXEngine/GXUIEditBoxIntegerValidator.h>
 #include <GXCommon/GXStrings.h>
@@ -30,11 +30,11 @@ GXBool GXUIEditBoxIntegerValidator::Validate ( const GXWChar* text )
 	GXUInt i = 0u;
 
 	if ( text[ i ] == L'-' )
-		i++;
+		++i;
 
 	GXUInt symbols = GXWcslen ( text );
 
-	for ( ; i < symbols; i++ )
+	for ( ; i < symbols; ++i )
 	{
 		if ( !isdigit ( static_cast<int> ( text[ i ] ) ) )
 		{

@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_UNLIT_TEXTURE2D_MATERIAL
 #define GX_UNLIT_TEXTURE2D_MATERIAL
@@ -9,7 +9,7 @@
 #include "GXSampler.h"
 
 
-class GXUnlitTexture2DMaterial : public GXMaterial
+class GXUnlitTexture2DMaterial final : public GXMaterial
 {
 	private:
 		GXTexture2D*	texture;

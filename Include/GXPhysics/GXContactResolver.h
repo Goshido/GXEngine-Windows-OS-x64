@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_CONTACT_RESOLVER
 #define GX_CONTACT_RESOLVER
@@ -9,7 +9,7 @@
 #include "GXSingleBodyConstraintSolver.h"
 
 
-class GXContactResolver
+class GXContactResolver final
 {
 	private:
 		GXPairBodyConstraintSolver		pairBodyConstraintSolver;

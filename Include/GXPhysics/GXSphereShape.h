@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_SPHERE_SHAPE
 #define GX_SPHERE_SHAPE
@@ -7,7 +7,7 @@
 #include "GXShape.h"
 
 
-class GXSphereShape : public GXShape
+class GXSphereShape final : public GXShape
 {
 	private:
 		GXFloat		radius;

@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #include <GXEngine/GXSplashScreen.h>
 #include <GXEngine/GXResource.h>
@@ -83,9 +83,9 @@ GXVoid GXSplashScreen::FillRGB ( GXUByte** destination, const GXUByte* source, G
 	GXUPointer offsetDst = 0u;
 	GXUPointer offsetSrc = ( height - 1u ) * lineSizeSrc;
 
-	for ( GXUShort h = 0u; h < height; h++ )
+	for ( GXUShort h = 0u; h < height; ++h )
 	{
-		for ( GXUShort w = 0u; w < width; w++ )
+		for ( GXUShort w = 0u; w < width; ++w )
 		{
 			// BGRA model
 			dst[ offsetDst ] = source[ offsetSrc + 2u ];
@@ -110,9 +110,9 @@ GXVoid GXSplashScreen::FillARGB ( GXUByte** destination, const GXUByte* source, 
 	GXUPointer offsetDst = 0u;
 	GXUPointer offsetSrc = ( height - 1u ) * lineSize;
 
-	for ( GXUShort h = 0u; h < height; h++ )
+	for ( GXUShort h = 0u; h < height; ++h )
 	{
-		for ( GXUShort w = 0u; w < width; w++ )
+		for ( GXUShort w = 0u; w < width; ++w )
 		{
 			// BGRA model
 			dst[ offsetDst ] = source[ offsetSrc + 2u ];
@@ -161,11 +161,11 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
 
 		switch ( numChannels )
 		{
-			case 3:
+			case 3u:
 				splashScreen->FillRGB ( &splashScreen->pixels, data, splashScreen->bitmapWidth, splashScreen->bitmapHeight );
 			break;
 
-			case 4:
+			case 4u:
 				splashScreen->FillARGB ( &splashScreen->pixels, data, splashScreen->bitmapWidth, splashScreen->bitmapHeight );
 			break;
 

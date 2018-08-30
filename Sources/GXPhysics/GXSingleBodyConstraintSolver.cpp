@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #include <GXPhysics/GXSingleBodyConstraintSolver.h>
 #include <GXPhysics/GXPhysicsEngine.h>
@@ -71,7 +71,7 @@ GXVoid GXSingleBodyConstraintSolver::AddConstraint ( const GXConstraint& constra
 	GXFloat* initialLambdaData = static_cast<GXFloat*> ( initialLambda.GetData () );
 	initialLambdaData[ constraints ] = DEFAULT_INITIAL_LAMBDA;
 
-	constraints++;
+	++constraints;
 }
 
 GXVoid GXSingleBodyConstraintSolver::End ()
@@ -88,15 +88,15 @@ GXVoid GXSingleBodyConstraintSolver::End ()
 	GXFloat* dData = (GXFloat*)d.GetData ();
 	const GXVec6* bData = static_cast<const GXVec6*> ( b.GetData () );
 
-	for ( GXUInt i = 0u; i < constraints; i++ )
+	for ( GXUInt i = 0u; i < constraints; ++i )
 		dData[ i ] = bData[ i ].DotProduct ( GetJacobianElement ( i, 0 ) );
 
 	const GXFloat* etaData = static_cast<const GXFloat*> ( eta.GetData () );
 	const GXVec2* lambdaRangeData = static_cast<const GXVec2*> ( lambdaRange.GetData () );
 
-	for ( GXUInt iteration = 0u; iteration < maximumIterations; iteration++ )
+	for ( GXUInt iteration = 0u; iteration < maximumIterations; ++iteration )
 	{
-		for ( GXUInt i = 0u; i < constraints; i++ )
+		for ( GXUInt i = 0u; i < constraints; ++i )
 		{
 			GXFloat deltaLambda = ( etaData[ i ] - a.DotProduct ( GetJacobianElement ( i, 0 ) ) ) / dData[ i ];
 			GXFloat oldLambda = lambdaData[ i ];
@@ -123,18 +123,18 @@ GXVoid GXSingleBodyConstraintSolver::UpdateB ()
 	GXFloat firstInverseMass = firstBody->GetInverseMass ();
 	const GXMat3& firstInverseInertia = firstBody->GetInverseInertiaTensorWorld ();
 
-	for ( GXUInt i = 0u; i < constraints; i++ )
+	for ( GXUInt i = 0u; i < constraints; ++i )
 	{
-		const GXVec6& j0 = GetJacobianElement ( i, 0 );
+		const GXVec6& j0 = GetJacobianElement ( i, 0u );
 
-		bData->data[ 0 ] = firstInverseMass * j0.data[ 0 ];
-		bData->data[ 1 ] = firstInverseMass * j0.data[ 1 ];
-		bData->data[ 2 ] = firstInverseMass * j0.data[ 2 ];
-		bData->data[ 3 ] = firstInverseInertia.m[ 0 ][ 0 ] * j0.data[ 3 ] + firstInverseInertia.m[ 0 ][ 1 ] * j0.data[ 4 ] + firstInverseInertia.m[ 0 ][ 2 ] * j0.data[ 5 ];
-		bData->data[ 4 ] = firstInverseInertia.m[ 1 ][ 0 ] * j0.data[ 3 ] + firstInverseInertia.m[ 1 ][ 1 ] * j0.data[ 4 ] + firstInverseInertia.m[ 1 ][ 2 ] * j0.data[ 5 ];
-		bData->data[ 5 ] = firstInverseInertia.m[ 2 ][ 0 ] * j0.data[ 3 ] + firstInverseInertia.m[ 2 ][ 1 ] * j0.data[ 4 ] + firstInverseInertia.m[ 2 ][ 2 ] * j0.data[ 5 ];
+		bData->data[ 0u ] = firstInverseMass * j0.data[ 0u ];
+		bData->data[ 1u ] = firstInverseMass * j0.data[ 1u ];
+		bData->data[ 2u ] = firstInverseMass * j0.data[ 2u ];
+		bData->data[ 3u ] = firstInverseInertia.m[ 0u ][ 0u ] * j0.data[ 3u ] + firstInverseInertia.m[ 0u ][ 1u ] * j0.data[ 4u ] + firstInverseInertia.m[ 0u ][ 2u ] * j0.data[ 5u ];
+		bData->data[ 4u ] = firstInverseInertia.m[ 1u ][ 0u ] * j0.data[ 3u ] + firstInverseInertia.m[ 1u ][ 1u ] * j0.data[ 4u ] + firstInverseInertia.m[ 1u ][ 2u ] * j0.data[ 5u ];
+		bData->data[ 5u ] = firstInverseInertia.m[ 2u ][ 0u ] * j0.data[ 3u ] + firstInverseInertia.m[ 2u ][ 1u ] * j0.data[ 4u ] + firstInverseInertia.m[ 2u ][ 2u ] * j0.data[ 5u ];
 
-		bData++;
+		++bData;
 	}
 }
 
@@ -171,7 +171,7 @@ GXVoid GXSingleBodyConstraintSolver::UpdateEta ()
 	GXFloat* etaData = static_cast<GXFloat*> ( eta.GetData () );
 	const GXFloat* biasData = static_cast<GXFloat*> ( bias.GetData () );
 
-	for ( GXUInt i = 0u; i < constraints; i++ )
+	for ( GXUInt i = 0u; i < constraints; ++i )
 		etaData[ i ] = inverseDeltaTime * biasData[ i ] - ( alpha0.DotProduct ( GetJacobianElement ( i, 0 ) ) + alpha1.DotProduct ( GetJacobianElement ( i, 1 ) ) );
 }
 
@@ -182,7 +182,7 @@ GXVoid GXSingleBodyConstraintSolver::UpdateA ()
 
 	memset ( &a, 0, sizeof ( GXVec6 ) );
 
-	for ( GXUInt i = 0u; i < constraints; i++ )
+	for ( GXUInt i = 0u; i < constraints; ++i )
 		a.Sum ( a, lambdaData[ i ], bData[ i ] );
 }
 
@@ -196,7 +196,7 @@ GXVoid GXSingleBodyConstraintSolver::UpdateBodyVelocity ()
 	GXVec6 alpha;
 	memset ( &alpha, 0, sizeof ( GXVec6 ) );
 
-	for ( GXUInt i = 0u; i < constraints; i++ )
+	for ( GXUInt i = 0u; i < constraints; ++i )
 		alpha.Sum ( alpha, lambdaData[ i ], GetJacobianElement ( i, 0 ) );
 
 	GXVec6 betta;

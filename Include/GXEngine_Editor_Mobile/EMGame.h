@@ -22,7 +22,7 @@
 #include <GXPhysics/GXGravity.h>
 
 
-class EMGame : public GXGame
+class EMGame final : public GXGame
 {
 	private:
 		GXCameraOrthographic*	hudCamera;

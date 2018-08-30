@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXEngine/GXSkeleton.h>
 #include <GXCommon/GXMemory.h>
@@ -67,7 +67,7 @@ GXVoid GXSkeleton::UpdatePose ( GXAnimationSolver &solver, GXFloat /*deltaTime*/
 {
 	GXUInt boneNameOffset = 0u;
 
-	for ( GXUShort i = 0u; i < totalBones; i++ )
+	for ( GXUShort i = 0u; i < totalBones; ++i )
 	{
 		GXBoneJoint joint;
 
@@ -107,13 +107,13 @@ GXVoid GXSkeleton::CalculatePose ()
 	// Note: Quaternion mathematics simular to column-major notation matrix mathematics.
 	// So we need to do multiplication in reverse order to calculate skin transform.
 
-	tempPoseGlobal[ 0 ] = tempPoseLocal[ 0 ];
-	skinTransform[ 0 ].rotation.Multiply ( tempPoseGlobal[ 0 ].rotation, inverseBindTransform[ 0 ].rotation );
+	tempPoseGlobal[ 0u ] = tempPoseLocal[ 0u ];
+	skinTransform[ 0u ].rotation.Multiply ( tempPoseGlobal[ 0u ].rotation, inverseBindTransform[ 0u ].rotation );
 	GXVec3 buffer;
-	tempPoseGlobal[ 0 ].rotation.TransformFast ( buffer, inverseBindTransform[ 0 ].location );
-	skinTransform[ 0 ].location.Sum ( buffer, tempPoseGlobal[ 0 ].location );
+	tempPoseGlobal[ 0u ].rotation.TransformFast ( buffer, inverseBindTransform[ 0u ].location );
+	skinTransform[ 0u ].location.Sum ( buffer, tempPoseGlobal[ 0u ].location );
 
-	for ( GXUShort i = 1u; i < totalBones; i++ )
+	for ( GXUShort i = 1u; i < totalBones; ++i )
 	{
 		const GXBoneJoint& parentBoneTransformGlobal = tempPoseGlobal[ parentBoneIndices[ i ] ];
 		const GXBoneJoint& boneInverseBindTransform = inverseBindTransform[ i ];

@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_CONTACT_FRICTIONLESS_CONSTRAINT
 #define GX_CONTACT_FRICTIONLESS_CONSTRAINT
@@ -8,7 +8,7 @@
 #include "GXContact.h"
 
 
-class GXContactFrictionlessConstraint : public GXConstraint
+class GXContactFrictionlessConstraint final : public GXConstraint
 {
 	public:
 		// Baumgarte factor - is optimization factor which has no physics explanation.

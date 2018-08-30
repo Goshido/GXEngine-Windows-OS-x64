@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_SINGLE_BODY_CONSTRAINT_SOLVER
 #define GX_SINGLE_BODY_CONSTRAINT_SOLVER
@@ -13,7 +13,7 @@
 // "Iterative Dynamics with Temporal Coherence"
 // by Erin Catto
 
-class GXSingleBodyConstraintSolver
+class GXSingleBodyConstraintSolver final
 {
 	private:
 		// s is number of constaints.

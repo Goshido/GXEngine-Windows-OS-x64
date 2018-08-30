@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXLogger.h>
@@ -83,14 +83,14 @@ GXVoid GXUTF8Parser::Copy ( GXUTF8* dest, GXUInt startPos, GXUInt endPos )
 	GXUInt offset = 0u;
 	GXUInt baseOffset = GetOffset ( startPos );
 
-	for ( GXUInt i = startPos; i <= endPos; i++ )
+	for ( GXUInt i = startPos; i <= endPos; ++i )
 	{
 		GXUInt ind = baseOffset + offset;
 
 		if ( ( string[ ind ] & 0x80 ) == 0x00 )
 		{
 			dest[ offset ] = string[ ind ];
-			offset++;
+			++offset;
 
 			continue;
 		}
@@ -98,11 +98,11 @@ GXVoid GXUTF8Parser::Copy ( GXUTF8* dest, GXUInt startPos, GXUInt endPos )
 		if ( ( string[ ind ] & 0xE0 ) == 0xC0 )
 		{
 			dest[ offset ] = string[ ind ];
-			offset++;
-			ind++;
+			++offset;
+			++ind;
 
 			dest[ offset ] = string[ ind ];
-			offset++;
+			++offset;
 
 			continue;
 		}
@@ -110,15 +110,15 @@ GXVoid GXUTF8Parser::Copy ( GXUTF8* dest, GXUInt startPos, GXUInt endPos )
 		if ( ( string[ ind ] & 0xF0 ) == 0xE0 )
 		{
 			dest[ offset ] = string[ ind ];
-			offset++;
-			ind++;
+			++offset;
+			++ind;
 
 			dest[ offset ] = string[ ind ];
-			offset++;
-			ind++;
+			++offset;
+			++ind;
 
 			dest[ offset ] = string[ ind ];
-			offset++;
+			++offset;
 
 			continue;
 		}
@@ -126,19 +126,19 @@ GXVoid GXUTF8Parser::Copy ( GXUTF8* dest, GXUInt startPos, GXUInt endPos )
 		if ( ( string[ ind ] & 0xF8 ) == 0xF0 )
 		{
 			dest[ offset ] = string[ ind ];
-			offset++;
-			ind++;
+			++offset;
+			++ind;
 
 			dest[ offset ] = string[ ind ];
-			offset++;
-			ind++;
+			++offset;
+			++ind;
 
 			dest[ offset ] = string[ ind ];
-			offset++;
-			ind++;
+			++offset;
+			++ind;
 
 			dest[ offset ] = string[ ind ];
-			offset++;
+			++offset;
 
 			continue;
 		}
@@ -146,23 +146,23 @@ GXVoid GXUTF8Parser::Copy ( GXUTF8* dest, GXUInt startPos, GXUInt endPos )
 		if ( ( string[ ind ] & 0xFC ) == 0xF8 )
 		{
 			dest[ offset ] = string[ ind ];
-			offset++;
-			ind++;
+			++offset;
+			++ind;
 
 			dest[ offset ] = string[ ind ];
-			offset++;
-			ind++;
+			++offset;
+			++ind;
 
 			dest[ offset ] = string[ ind ];
-			offset++;
-			ind++;
+			++offset;
+			++ind;
 
 			dest[ offset ] = string[ ind ];
-			offset++;
-			ind++;
+			++offset;
+			++ind;
 
 			dest[ offset ] = string[ ind ];
-			offset++;
+			++offset;
 
 			continue;
 		}
@@ -170,27 +170,27 @@ GXVoid GXUTF8Parser::Copy ( GXUTF8* dest, GXUInt startPos, GXUInt endPos )
 		if ( ( string[ ind ] & 0xFE ) == 0xFC )
 		{
 			dest[ offset ] = string[ ind ];
-			offset++;
-			ind++;
+			++offset;
+			++ind;
 
 			dest[ offset ] = string[ ind ];
-			offset++;
-			ind++;
+			++offset;
+			++ind;
 
 			dest[ offset ] = string[ ind ];
-			offset++;
-			ind++;
+			++offset;
+			++ind;
 
 			dest[ offset ] = string[ ind ];
-			offset++;
-			ind++;
+			++offset;
+			++ind;
 
 			dest[ offset ] = string[ ind ];
-			offset++;
-			ind++;
+			++offset;
+			++ind;
 
 			dest[ offset ] = string[ ind ];
-			offset++;
+			++offset;
 		}
 	}
 }
@@ -206,8 +206,8 @@ GXUInt GXUTF8Parser::GetOffset ( GXUInt position )
 		{
 			if ( ( string[ offset ] & 0xC0 ) != 0x80 )
 			{
-				i++;
-				offset++;
+				++i;
+				++offset;
 
 				if ( i < position ) continue;
 
@@ -216,13 +216,13 @@ GXUInt GXUTF8Parser::GetOffset ( GXUInt position )
 					if ( ( string[ offset ] & 0xC0 ) != 0x80 )
 						break;
 
-					offset++;
+					++offset;
 				}
 
 				break;
 			}
 
-			offset++;
+			++offset;
 		}
 	}
 
@@ -231,7 +231,7 @@ GXUInt GXUTF8Parser::GetOffset ( GXUInt position )
 
 GXVoid GXUTF8Parser::Debug ()
 {
-	for ( GXUInt i = 0; string[ i ]; i++ )
+	for ( GXUInt i = 0u; string[ i ]; ++i )
 	{
 		GXUByte bit0 = static_cast<GXUByte> ( string[ i ] & 0x01 );
 		GXUByte bit1 = static_cast<GXUByte> ( ( string[ i ] & 0x02 ) >> 1 );
@@ -289,10 +289,10 @@ GXUInt GXCALL GXUTF8len ( const GXUTF8* str )
 
 	GXUInt numSymbols = 0u;
 
-	for ( GXUInt i = 0u; i < numBytes; i++ )
+	for ( GXUInt i = 0u; i < numBytes; ++i )
 	{
 		if ( ( str[ i ] & 0xC0 ) != 0x80 )
-			numSymbols++;
+			++numSymbols;
 	}
 
 	return numSymbols;
@@ -354,12 +354,12 @@ GXUPointer GXCALL GXCalculateSpaceForUTF8 ( const GXWChar* str )
 	GXUInt symbols = GXWcslen ( str );
 	GXUPointer space = 1u;
 
-	for ( GXUInt i = 0u; i < symbols; i++ )
+	for ( GXUInt i = 0u; i < symbols; ++i )
 	{
 		if ( str[ i ] < 0x0080 )
 		{
 			// One byte per symbol
-			space++;
+			++space;
 			continue;
 		}
 
@@ -468,7 +468,7 @@ GXUPointer GXCALL GXToUTF8 ( GXUTF8** dest, const GXWChar* str )
 
 	GXUPointer offset = 0u;
 
-	for ( GXUInt i = 0u; i < symbols; i++ )
+	for ( GXUInt i = 0u; i < symbols; ++i )
 		offset += GXWriteUTF8Symbol ( ( *dest ) + offset, (GXUInt)str[ i ] );
 
 	return space;
@@ -488,7 +488,7 @@ GXVoid GXCALL GXToWcs ( GXWChar** dest, const GXUTF8* str )
 	*dest = static_cast<GXWChar*> ( malloc ( ( len + 1 ) * sizeof ( GXWChar ) ) );
 	( *dest )[ len ] = 0;
 
-	for ( GXUInt i = 0u; i < len; i++ )
+	for ( GXUInt i = 0u; i < len; ++i )
 		( *dest )[ i ] = static_cast<GXWChar> ( parser.GetSymbol ( i ) );
 }
 

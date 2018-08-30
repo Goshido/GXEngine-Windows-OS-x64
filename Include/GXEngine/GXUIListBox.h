@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_UI_LIST_BOX
 #define GX_UI_LIST_BOX
@@ -12,7 +12,7 @@ typedef GXVoid ( GXCALL* PFNGXUILISTBOXITEMDESTRUCTORPROC ) ( GXVoid* itemData )
 typedef GXVoid ( GXCALL* PFNGXUILISTBOXONITEMSELECTEDPROC ) ( GXVoid* handler, GXUIListBox& listBox, const GXVoid* item );
 typedef GXVoid ( GXCALL* PFNGXUILISTBOXONITEMDOUBLECLICKEDPROC ) ( GXVoid* handler, GXUIListBox& listBox, const GXVoid* item );
 
-struct GXUIListBoxItem
+struct GXUIListBoxItem final
 {
 	GXUIListBoxItem*		next;
 	GXUIListBoxItem*		prev;
@@ -23,7 +23,7 @@ struct GXUIListBoxItem
 	GXVoid*					data;
 };
 
-class GXUIListBox : public GXWidget
+class GXUIListBox final : public GXWidget
 {
 	private:
 		GXUIListBoxItem*						itemHead;

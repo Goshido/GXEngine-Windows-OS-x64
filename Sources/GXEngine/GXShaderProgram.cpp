@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #include <GXEngine/GXShaderProgram.h>
 #include <GXEngine/GXLocale.h>
@@ -23,7 +23,7 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 class GXPrecompiledShaderProgramFinder;
-class GXPrecompiledShaderProgramNode : public GXAVLTreeNode
+class GXPrecompiledShaderProgramNode final : public GXAVLTreeNode
 {
 	friend class GXPrecompiledShaderProgramFinder;
 
@@ -139,14 +139,14 @@ GXVoid GXCALL GXPrecompiledShaderProgramNode::DestroyFinderNode ( GXPrecompiledS
 #pragma pack ( push )
 #pragma pack ( 1 )
 
-struct GXDictionaryHeader
+struct GXDictionaryHeader final
 {
 	GXUBigInt	counter;
 	GXUInt		totalPrecompiledPrograms;
 	GXUBigInt	chunkOffset;
 };
 
-struct GXChunk
+struct GXChunk final
 {
 	GXUBigInt	vertexShaderOffset;
 	GXUBigInt	geometryShaderOffset;
@@ -159,7 +159,7 @@ struct GXChunk
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class GXSaveState
+class GXSaveState final
 {
 	public:
 		GXWriteFileStream	info;
@@ -191,7 +191,7 @@ GXSaveState::~GXSaveState ()
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class GXPrecompiledShaderProgramFinder : public GXAVLTree
+class GXPrecompiledShaderProgramFinder final : public GXAVLTree
 {
 	friend class GXShaderProgramEntry;
 
@@ -229,7 +229,7 @@ GXPrecompiledShaderProgramFinder::GXPrecompiledShaderProgramFinder () :
 	GXChunk* chuncks = reinterpret_cast<GXChunk*> ( data + header->chunkOffset );
 	counter = header->counter;
 
-	for ( GXUInt i = 0u; i < header->totalPrecompiledPrograms; i++ )
+	for ( GXUInt i = 0u; i < header->totalPrecompiledPrograms; ++i )
 	{
 		const GXChunk& chunk = chuncks[ i ];
 
@@ -302,7 +302,7 @@ GXVoid GXPrecompiledShaderProgramFinder::AddProgram ( const GXWChar* vertexShade
 GXUBigInt GXPrecompiledShaderProgramFinder::GetCounter ()
 {
 	GXUBigInt c = counter;
-	counter++;
+	++counter;
 	return c;
 }
 
@@ -442,7 +442,7 @@ GXVoid GXCALL GXPrecompiledShaderProgramFinder::SaveDictionary ( const GXAVLTree
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class GXShaderProgramEntry
+class GXShaderProgramEntry final
 {
 	private:
 		GXShaderProgramEntry*						previous;
@@ -596,7 +596,7 @@ GXShaderProgramEntry::GXShaderProgramEntry ( const GXShaderProgramInfo &info ):
 
 	glUseProgram ( program );
 
-	for ( GXUInt i = 0u; i < info.samplers; i++ )
+	for ( GXUInt i = 0u; i < info.samplers; ++i )
 		glUniform1i ( GetUniform ( info.samplerNames[ i ] ), static_cast<GLint> ( info.samplerLocations[ i ] ) );
 
 	glUseProgram ( 0u );
@@ -624,12 +624,12 @@ GLint GXShaderProgramEntry::GetUniform ( const GLchar* name ) const
 
 GXVoid GXShaderProgramEntry::AddReference ()
 {
-	references++;
+	++references;
 }
 
 GXVoid GXShaderProgramEntry::Release ()
 {
-	references--;
+	--references;
 
 	if ( references > 0 ) return;
 
@@ -675,7 +675,7 @@ GXUInt GXCALL GXShaderProgramEntry::GetTotalLoadedShaderPrograms ( const GXWChar
 	GXUInt total = 0u;
 
 	for ( GXShaderProgramEntry* p = top; p; p = p->next )
-		total++;
+		++total;
 
 	if ( total > 0u )
 	{

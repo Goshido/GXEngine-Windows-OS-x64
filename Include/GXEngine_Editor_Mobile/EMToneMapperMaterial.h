@@ -7,7 +7,7 @@
 #include <GXEngine/GXSampler.h>
 
 
-class EMToneMapperMaterial : public GXMaterial
+class EMToneMapperMaterial final : public GXMaterial
 {
 	private:
 		GXTexture2D*		linearSpaceTexture;

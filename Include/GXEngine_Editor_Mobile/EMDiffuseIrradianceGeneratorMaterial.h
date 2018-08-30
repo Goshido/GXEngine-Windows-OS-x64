@@ -7,7 +7,7 @@
 #include <GXEngine/GXSampler.h>
 
 
-class EMDiffuseIrradianceGeneratorMaterial : public GXMaterial
+class EMDiffuseIrradianceGeneratorMaterial final : public GXMaterial
 {
 	private:
 		GXTextureCubeMap*		environmentMap;

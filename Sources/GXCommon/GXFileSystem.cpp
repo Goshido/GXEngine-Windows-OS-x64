@@ -32,7 +32,7 @@ GXVoid GXDirectoryInfo::Clear ()
 	GXSafeFree ( p );
 	absolutePath = nullptr;
 
-	for ( GXUInt i = 0; i < totalFolders; i++ )
+	for ( GXUInt i = 0; i < totalFolders; ++i )
 	{
 		p = (GXWChar*)folderNames[ i ];
 		GXSafeFree ( p );
@@ -41,7 +41,7 @@ GXVoid GXDirectoryInfo::Clear ()
 	totalFolders = 0u;
 	GXSafeFree ( folderNames );
 
-	for ( GXUInt i = 0u; i < totalFiles; i++ )
+	for ( GXUInt i = 0u; i < totalFiles; ++i )
 	{
 		p = (GXWChar*)fileNames[ i ];
 		GXSafeFree ( p );
@@ -151,7 +151,7 @@ GXVoid GXCALL GXGetCurrentDirectory ( GXWChar** currentDirectory )
 	GXWChar* buffer = static_cast<GXWChar*> ( malloc ( BUFFER_SIZE_IN_SYMBOLS * sizeof ( GXWChar ) ) );
 	GetCurrentDirectoryW ( BUFFER_SIZE_IN_SYMBOLS, buffer );
 
-	for ( GXWChar* p = buffer; *p != L'\0'; p++ )
+	for ( GXWChar* p = buffer; *p != L'\0'; ++p )
 	{
 		if ( *p == '\\' )
 			*p = L'/';
@@ -220,13 +220,13 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 		GXWChar** files = reinterpret_cast<GXWChar**> ( fileNames.GetData () );
 		GXUPointer total = fileNames.GetLength ();
 
-		for ( GXUPointer i = 0u; i < total; i++ )
+		for ( GXUPointer i = 0u; i < total; ++i )
 			free ( files[ i ] );
 
 		GXWChar** folders = reinterpret_cast<GXWChar**> ( folderNames.GetData () );
 		total = folderNames.GetLength ();
 
-		for ( GXUPointer i = 0u; i < total; i++ )
+		for ( GXUPointer i = 0u; i < total; ++i )
 			free ( folders[ i ] );
 
 		return GX_FALSE;
@@ -239,7 +239,7 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 	GXWChar* absolutePath = (GXWChar*)malloc ( BUFFER_SIZE_IN_SYMBOLS * sizeof ( GXWChar) );
 	GetFullPathNameW ( directory, BUFFER_SIZE_IN_SYMBOLS, absolutePath, nullptr );
 
-	for ( GXWChar* p = absolutePath; *p != L'\0'; p++ )
+	for ( GXWChar* p = absolutePath; *p != L'\0'; ++p )
 	{
 		if ( *p == L'\\' )
 			*p = L'/';
@@ -302,7 +302,7 @@ GXVoid GXCALL GXGetFileDirectoryPath ( GXWChar** path, const GXWChar* fileName )
 
 	GXInt i = symbols;
 
-	for ( ; i > 0; i-- )
+	for ( ; i > 0; --i )
 		if ( fileName[ i ] == L'\\' || fileName[ i ] == L'/' ) break;
 
 	if ( i < 0 )
@@ -337,7 +337,7 @@ GXVoid GXCALL GXGetBaseFileName ( GXWChar** baseFileName, const GXWChar* fileNam
 
 	GXInt i = symbols;
 
-	for ( ; i > 0; i-- )
+	for ( ; i > 0; --i )
 		if ( fileName[ i ] == L'.' ) break;
 
 	if ( i <= 0 )
@@ -346,13 +346,13 @@ GXVoid GXCALL GXGetBaseFileName ( GXWChar** baseFileName, const GXWChar* fileNam
 		return;
 	}
 
-	i--;
+	--i;
 	GXInt end = i;
 
-	for ( ; i >= 0; i-- )
+	for ( ; i >= 0; --i )
 		if ( fileName[ i ] == L'\\' || fileName[ i ] == L'/' ) break;
 
-	i++;
+	++i;
 
 	if ( i < 0 )
 		i = 0;
@@ -377,7 +377,7 @@ GXVoid GXCALL GXGetFileExtension ( GXWChar** extension, const GXWChar* fileName 
 	GXInt symbols = static_cast<GXInt> ( GXWcslen ( fileName ) );
 	GXInt i = symbols - 1;
 
-	for ( ; i > 0; i-- )
+	for ( ; i > 0; --i )
 		if ( fileName[ i ] == L'.' ) break;
 
 	if ( i < 0 )
@@ -386,7 +386,7 @@ GXVoid GXCALL GXGetFileExtension ( GXWChar** extension, const GXWChar* fileName 
 		return;
 	}
 
-	i++;
+	++i;
 
 	GXUInt extensionSymbols = static_cast<GXUInt> ( symbols ) - i + 1;
 	GXUInt size = extensionSymbols * sizeof ( GXWChar );

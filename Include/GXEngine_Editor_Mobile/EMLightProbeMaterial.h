@@ -7,7 +7,7 @@
 #include <GXEngine/GXSampler.h>
 
 
-class EMLightProbeMaterial : public GXMaterial
+class EMLightProbeMaterial final : public GXMaterial
 {
 	private:
 		GXTextureCubeMap*			diffuseIrradianceTexture;

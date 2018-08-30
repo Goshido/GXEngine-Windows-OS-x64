@@ -7,7 +7,7 @@
 #include <GXEngine/GXSampler.h>
 
 
-class EMCookTorranceCommonPassMaterial : public GXMaterial
+class EMCookTorranceCommonPassMaterial final : public GXMaterial
 {
 	private:
 		GXTexture2D*		albedoTexture;

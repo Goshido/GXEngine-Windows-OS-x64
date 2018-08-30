@@ -5,7 +5,7 @@
 #include <GXEngine/GXHudSurface.h>
 
 
-class EMUIFPSCounter
+class EMUIFPSCounter final
 {
 	private:
 		GXUInt					lastFPS;

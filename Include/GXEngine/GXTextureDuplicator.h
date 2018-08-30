@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_TEXTURE_DUPLICATOR
 #define GX_TEXTURE_DUPLICATOR
@@ -7,7 +7,7 @@
 #include "GXOpenGL.h"
 
 
-class GXTextureDuplicator
+class GXTextureDuplicator final
 {
 	private:
 		GLuint							fbo;

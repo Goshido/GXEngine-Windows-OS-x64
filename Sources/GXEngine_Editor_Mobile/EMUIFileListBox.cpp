@@ -84,7 +84,7 @@ GXVoid EMUIFileListBoxItem::SetName ( const GXWChar* newName )
 
 //---------------------------------------------------------
 
-class EMUIFileListBoxRenderer : public GXWidgetRenderer
+class EMUIFileListBoxRenderer final : public GXWidgetRenderer
 {
 	private:
 		GXFont				font;
@@ -170,7 +170,7 @@ GXVoid EMUIFileListBoxRenderer::OnRefresh ()
 
 	GXFloat itemNameYOffset = ( itemHeight - font.GetSize () * 0.5f ) * 0.5f;
 
-	for ( GXUInt i = 0u; i < totalItems; i++ )
+	for ( GXUInt i = 0u; i < totalItems; ++i )
 	{
 		if ( !listBoxWidget->IsItemVisible ( i ) )
 		{
@@ -319,7 +319,7 @@ GXVoid EMUIFileListBox::AddItems ( const EMUIFileListBoxItem* itemArray, GXUInt 
 
 	EMUIFileListBoxItem** elements = reinterpret_cast<EMUIFileListBoxItem**> ( malloc ( items * sizeof ( EMUIFileListBoxItem* ) ) );
 
-	for ( GXUInt i = 0u; i < items; i++ )
+	for ( GXUInt i = 0u; i < items; ++i )
 		elements[ i ] = new EMUIFileListBoxItem ( itemArray[ i ].GetType (), itemArray[ i ].GetName () );
 	
 	widget->AddItems ( reinterpret_cast<GXVoid**> ( elements ), items );

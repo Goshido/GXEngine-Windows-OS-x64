@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_WORLD
 #define GX_WORLD
@@ -14,7 +14,7 @@
 struct GXRigidBodyRegistration;
 struct GXContactGeneratorsRegistration;
 struct GXForceGeneratorsRegistration;
-class GXWorld
+class GXWorld final
 {
 	private:
 		GXBool								isCalculateIterations;

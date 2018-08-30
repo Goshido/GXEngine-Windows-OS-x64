@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_COLLISION_DATA
 #define GX_COLLISION_DATA
@@ -7,7 +7,7 @@
 #include "GXContact.h"
 
 
-class GXCollisionData
+class GXCollisionData final
 {
 	private:
 		GXUInt			maxContacts;

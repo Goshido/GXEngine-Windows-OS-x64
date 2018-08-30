@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #ifndef GX_SHADER_PROGRAM
 #define GX_SHADER_PROGRAM
@@ -8,7 +8,7 @@
 #include <GXCommon/GXAVLTree.h>
 
 
-struct GXShaderProgramInfo 
+struct GXShaderProgramInfo final
 {
 	const GXWChar*		vertexShader;
 	const GXWChar*		geometryShader;
@@ -25,7 +25,7 @@ struct GXShaderProgramInfo
 // Class handles lazy loading reference counting shader program resource creation.
 
 class GXShaderProgramEntry;
-class GXShaderProgram
+class GXShaderProgram final
 {
 	private:
 		GXShaderProgramEntry*		shaderProgramEntry;

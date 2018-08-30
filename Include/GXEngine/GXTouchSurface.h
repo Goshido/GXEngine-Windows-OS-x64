@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #ifndef GX_TOUCH_SURFACE
 #define GX_TOUCH_SURFACE
@@ -8,7 +8,7 @@
 
 
 struct GXMessage;
-class GXTouchSurface
+class GXTouchSurface final
 {
 	private:
 		GXMessage*					messages;

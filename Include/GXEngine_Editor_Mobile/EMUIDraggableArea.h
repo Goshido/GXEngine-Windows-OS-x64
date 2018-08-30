@@ -6,7 +6,7 @@
 #include <GXEngine/GXUIDraggableArea.h>
 
 
-class EMUIDraggableArea : public EMUI
+class EMUIDraggableArea final : public EMUI
 {
 	private:
 		GXUIDragableArea*	widget;

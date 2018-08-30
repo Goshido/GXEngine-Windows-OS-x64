@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_SOUND_CHANNEL
 #define GX_SOUND_CHANNEL
@@ -7,7 +7,7 @@
 #include "GXSoundEmitter.h"
 
 
-class GXSoundChannel
+class GXSoundChannel final
 {
 	public:
 		GXSoundChannel**	top;

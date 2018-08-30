@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_UI_MENU_EXT
 #define GX_UI_MENU_EXT
@@ -10,7 +10,7 @@
 #define GX_UI_MENU_INVALID_INDEX 0xFFu
 
 
-class GXUIMenu : public GXWidget
+class GXUIMenu final : public GXWidget
 {
 	private:
 		GXDynamicArray		items;

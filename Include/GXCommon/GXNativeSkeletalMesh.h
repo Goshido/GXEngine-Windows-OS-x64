@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_NATIVE_SKELETAL_MESH
 #define GX_NATIVE_SKELETAL_MESH
@@ -18,7 +18,7 @@
 #pragma pack ( push )
 #pragma pack ( 1 )
 
-struct GXNativeSkeletalMeshHeader
+struct GXNativeSkeletalMeshHeader final
 {
 	GXUInt		totalVertices;
 	GXUBigInt	vboOffset;						// VBO element struct: position (GXVec3), uv (GXVec2), normal (GXVec3), tangent (GXVec3), bitangent (GXVec3), indices (GXVec4), weights (GXVec4).
@@ -32,13 +32,13 @@ struct GXNativeSkeletalMeshHeader
 
 #pragma pack ( pop )
 
-struct GXBoneJoint
+struct GXBoneJoint final
 {
 	GXQuat	rotation;
 	GXVec3	location;
 };
 
-struct GXSkeletalMeshData
+struct GXSkeletalMeshData final
 {
 	GXUInt					totalVertices;
 	GXFloat*				vboData;
@@ -56,7 +56,7 @@ struct GXSkeletalMeshData
 #pragma pack ( push )
 #pragma pack ( 1 )
 
-struct GXNativeAnimationHeader
+struct GXNativeAnimationHeader final
 {
 	GXFloat		fps;
 	GXUInt		totalFrames;
@@ -69,7 +69,7 @@ struct GXNativeAnimationHeader
 
 #pragma pack ( pop )
 
-struct GXAnimationInfo
+struct GXAnimationInfo final
 {
 	GXUShort				totalBones;
 	GXUTF8*					boneNames;

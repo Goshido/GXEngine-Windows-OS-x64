@@ -3,7 +3,7 @@
 #include <GXEngine/GXMeshGeometry.h>
 
 
-class EMMeshActor : public EMActor
+class EMMeshActor final : public EMActor
 {
 	private:
 		GXMeshGeometry						mesh;

@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #include <GXEngine/GXWidget.h>
 #include <GXEngine/GXRenderer.h>

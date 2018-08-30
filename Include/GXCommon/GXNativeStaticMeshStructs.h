@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_NATIVE_STATIC_MESH_STRUCTS
 #define GX_NATIVE_STATIC_MESH_STRUCTS
@@ -7,7 +7,7 @@
 #include "GXMath.h"
 
 
-struct GXNativeStaticMeshHeader
+struct GXNativeStaticMeshHeader final
 {
 	GXAABB		bounds;
 

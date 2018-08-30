@@ -1,4 +1,4 @@
-// version 1.11
+// version 1.12
 
 #ifndef GX_CAMERA_PERSPECTIVE
 #define GX_CAMERA_PERSPECTIVE
@@ -7,7 +7,7 @@
 #include "GXCamera.h"
 
 
-class GXCameraPerspective : public GXCamera
+class GXCameraPerspective final : public GXCamera
 {
 	protected:
 		GXFloat		fieldOfViewYRadians;

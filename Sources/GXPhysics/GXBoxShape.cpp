@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #include <GXPhysics/GXBoxShape.h>
 #include <GXCommon/GXLogger.h>
@@ -46,10 +46,10 @@ GXVoid GXBoxShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) co
 	GXBoxShapeVertices v;
 	GetRotatedVecticesWorld ( v );
 
-	GXUByte index = 0;
+	GXUByte index = 0u;
 	GXFloat projection = -FLT_MAX;
 
-	for ( GXUByte i = 0; i < 8; i++ )
+	for ( GXUByte i = 0; i < 8; ++i )
 	{
 		GXFloat p = direction.DotProduct ( v.vertices[ i ] );
 		if ( p > projection )
@@ -105,6 +105,6 @@ GXVoid GXBoxShape::GetRotatedVecticesWorld ( GXBoxShapeVertices &vertices ) cons
 	static const GXVec3 origin ( 0.0f, 0.0f, 0.0f );
 	rotatationWorld.SetW ( origin );
 
-	for ( GXUByte i = 0; i < 8; i++ )
+	for ( GXUByte i = 0u; i < 8u; ++i )
 		rotatationWorld.MultiplyAsPoint ( vertices.vertices[ i ], v[ i ] );
 }

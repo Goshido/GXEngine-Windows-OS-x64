@@ -1,4 +1,4 @@
-// version 1.15
+// version 1.16
 
 #ifndef GX_CORE
 #define GX_CORE
@@ -7,7 +7,7 @@
 #include "GXGame.h"
 
 
-class GXCore
+class GXCore final
 {
 	private:
 		static GXBool		loopFlag;

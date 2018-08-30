@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_UI_INPUT
 #define GX_UI_INPUT
@@ -17,7 +17,7 @@ typedef GXVoid ( GXCALL* PFNGXUIINPUTNMOUSELEAVEPROC ) ( GXVoid* handler, GXUIIn
 typedef GXVoid ( GXCALL* PFNGXUIINPUTNONKEYPROC ) ( GXVoid* handler, GXUIInput& input, GXInt key );
 
 
-class GXUIInput : public GXWidget
+class GXUIInput final : public GXWidget
 {
 	private:
 		PFNGXUIINPUTONMOUSEBUTTONPROC		OnLMBDown;

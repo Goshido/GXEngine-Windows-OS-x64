@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #include <GXPhysics/GXWorld.h>
 #include <GXPhysics/GXContactGenerator.h>
@@ -6,7 +6,7 @@
 #include <GXCommon/GXLogger.h>
 
 
-struct GXRigidBodyRegistration
+struct GXRigidBodyRegistration final
 {
 	GXRigidBodyRegistration*		next;
 	GXRigidBodyRegistration*		prev;
@@ -16,7 +16,7 @@ struct GXRigidBodyRegistration
 
 //----------------------------------------------------------------
 
-struct GXContactGeneratorsRegistration
+struct GXContactGeneratorsRegistration final
 {
 	GXContactGeneratorsRegistration*	next;
 	GXContactGeneratorsRegistration*	prev;
@@ -26,7 +26,7 @@ struct GXContactGeneratorsRegistration
 
 //----------------------------------------------------------------
 
-struct GXForceGeneratorsRegistration
+struct GXForceGeneratorsRegistration final
 {
 	GXForceGeneratorsRegistration*		next;
 	GXForceGeneratorsRegistration*		prev;
@@ -38,7 +38,7 @@ struct GXForceGeneratorsRegistration
 //----------------------------------------------------------------
 
 GXWorld::GXWorld ( GXUInt maxContacts, GXUInt iterations ):
-collisions ( maxContacts )
+	collisions ( maxContacts )
 {
 	GXCollisionDetector::GetInstance ();
 
@@ -324,17 +324,17 @@ GXBool GXWorld::Raycast ( const GXVec3 &origin, const GXVec3 &direction, GXFloat
 			{
 				const GXAABB boundsLocal ( shape.GetBoundsLocal () );
 
-				GXVec3 geometryLocal[ 8 ];
-				geometryLocal[ 0 ] = boundsLocal.min;
-				geometryLocal[ 1 ].Init ( boundsLocal.min.GetX (), boundsLocal.min.GetY (), boundsLocal.max.GetZ () );
-				geometryLocal[ 2 ].Init ( boundsLocal.max.GetX (), boundsLocal.min.GetY (), boundsLocal.max.GetZ () );
-				geometryLocal[ 3 ].Init ( boundsLocal.max.GetX (), boundsLocal.min.GetY (), boundsLocal.min.GetZ () );
-				geometryLocal[ 4 ].Init ( boundsLocal.min.GetX (), boundsLocal.max.GetY (), boundsLocal.min.GetZ () );
-				geometryLocal[ 5 ].Init ( boundsLocal.min.GetX (), boundsLocal.max.GetY (), boundsLocal.max.GetZ () );
-				geometryLocal[ 6 ] = boundsLocal.max;
-				geometryLocal[ 7 ].Init ( boundsLocal.max.GetX (), boundsLocal.max.GetY (), boundsLocal.min.GetZ () );
+				GXVec3 geometryLocal[ 8u ];
+				geometryLocal[ 0u ] = boundsLocal.min;
+				geometryLocal[ 1u ].Init ( boundsLocal.min.GetX (), boundsLocal.min.GetY (), boundsLocal.max.GetZ () );
+				geometryLocal[ 2u ].Init ( boundsLocal.max.GetX (), boundsLocal.min.GetY (), boundsLocal.max.GetZ () );
+				geometryLocal[ 3u ].Init ( boundsLocal.max.GetX (), boundsLocal.min.GetY (), boundsLocal.min.GetZ () );
+				geometryLocal[ 4u ].Init ( boundsLocal.min.GetX (), boundsLocal.max.GetY (), boundsLocal.min.GetZ () );
+				geometryLocal[ 5u ].Init ( boundsLocal.min.GetX (), boundsLocal.max.GetY (), boundsLocal.max.GetZ () );
+				geometryLocal[ 6u ] = boundsLocal.max;
+				geometryLocal[ 7u ].Init ( boundsLocal.max.GetX (), boundsLocal.max.GetY (), boundsLocal.min.GetZ () );
 
-				const GXUByte indices[ 36 ] =
+				const GXUByte indices[ 36u ] =
 				{
 					0u, 3u, 1u,
 					1u, 3u, 2u,
@@ -350,15 +350,15 @@ GXBool GXWorld::Raycast ( const GXVec3 &origin, const GXVec3 &direction, GXFloat
 					7u, 5u, 6u
 				};
 
-				GXVec3 geometryWorld[ 8 ];
+				GXVec3 geometryWorld[ 8u ];
 
-				for ( GXUByte i = 0u; i < 8u; i++ )
+				for ( GXUByte i = 0u; i < 8u; ++i )
 					shapeTransform.MultiplyAsPoint ( geometryWorld[ i ], geometryLocal[ i ] );
 
 				const GXUByte totalTriangles = 12u;
 				GXUByte offset = 0u;
 
-				for ( GXUByte i = 0u; i < totalTriangles; i++ )
+				for ( GXUByte i = 0u; i < totalTriangles; ++i )
 				{
 					GXFloat t;
 					const GXVec3& a = geometryWorld[ indices[ offset ] ];

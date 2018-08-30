@@ -19,7 +19,7 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class EMUISeparatorRenderer : public GXWidgetRenderer
+class EMUISeparatorRenderer final : public GXWidgetRenderer
 {
 	private:
 		GXHudSurface*	surface;

@@ -1,4 +1,4 @@
-// version 1.10
+// version 1.11
 
 #ifndef GX_OPENGL
 #define GX_OPENGL
@@ -91,7 +91,7 @@ GXVoid GXCALL GXOpenGLInit ();
 GXVoid GXCALL GXCheckOpenGLError ();
 
 
-class GXOpenGLState
+class GXOpenGLState final
 {
 	private:
 		GLuint		fbo;

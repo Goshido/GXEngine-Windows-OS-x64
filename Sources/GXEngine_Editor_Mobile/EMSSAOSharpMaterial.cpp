@@ -125,7 +125,7 @@ GXVoid EMSSAOSharpMaterial::SetCheckRadius ( GXFloat meters )
 
 	GXRandomize ();
 
-	for ( GXInt i = 0; i < samples; i++ )
+	for ( GXInt i = 0; i < samples; ++i )
 	{
 		GXFloat scale = i * inverseSamples;
 		scale *= scale;
@@ -191,7 +191,7 @@ GXVoid EMSSAOSharpMaterial::SetNoiseTextureResolution ( GXUShort resolution )
 
 	GXUInt offset = 0u;
 
-	for ( GXUInt i = 0u; i < totalPixels; i++ )
+	for ( GXUInt i = 0u; i < totalPixels; ++i )
 	{
 		GXVec2 v;
 		v.SetX ( GXRandomBetween ( -1.0f, 1.0f ) );
@@ -203,10 +203,10 @@ GXVoid EMSSAOSharpMaterial::SetNoiseTextureResolution ( GXUShort resolution )
 			v.Normalize ();
 
 		noiseData[ offset ] = static_cast<GXUByte> ( v.data[ 0 ] * 128.0f + 127.0f );
-		offset++;
+		++offset;
 
 		noiseData[ offset ] = (GXUByte)( v.data[ 1 ] * 128.0f + 127.0f );
-		offset++;
+		++offset;
 	}
 
 	noiseTexture.InitResources ( resolution, resolution, GL_RG8, GL_FALSE );

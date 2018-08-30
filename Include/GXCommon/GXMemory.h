@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_MEMORY
 #define GX_MEMORY
@@ -28,7 +28,7 @@ GX_RESTORE_WARNING_STATE
 			ptr = nullptr;		\
 		}
 
-class GXCircleBuffer
+class GXCircleBuffer final
 {
 	private:
 		GXUPointer		size;
@@ -46,7 +46,7 @@ class GXCircleBuffer
 		GXCircleBuffer& operator = ( const GXCircleBuffer &other ) = delete;
 };
 
-class GXDynamicArray
+class GXDynamicArray final
 {
 	protected:
 		GXUByte*	data;

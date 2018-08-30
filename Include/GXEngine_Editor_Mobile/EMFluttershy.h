@@ -7,7 +7,7 @@
 #include <GXEngine/GXAnimationSolverPlayer.h>
 
 
-class EMFluttershy : public GXTransform
+class EMFluttershy final : public GXTransform
 {
 	private:
 		EMMesh								mesh;

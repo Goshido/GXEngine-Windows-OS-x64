@@ -1,4 +1,4 @@
-// verison 1.9
+// verison 1.10
 
 #ifndef GX_NETWORK
 #define GX_NETWORK
@@ -25,7 +25,7 @@ typedef GXVoid ( GXCALL* PFNGXONSERVERDISCONNECTPROC ) ( GXUInt clientID );
 typedef GXVoid ( GXCALL* PFNGXONCLIENTMESSAGEPROC ) ( const GXVoid* data, GXUInt size );
 
 
-class GXNetConnectionTCP
+class GXNetConnectionTCP final
 {
 	private:
 		SOCKET			socket;
@@ -47,7 +47,7 @@ class GXNetConnectionTCP
 		GXNetConnectionTCP& operator = ( const GXNetConnectionTCP &other ) = delete;
 };
 
-class GXNetServer
+class GXNetServer final
 {
 	private:
 		GXThread*									threadTCP;
@@ -112,7 +112,7 @@ class GXNetServer
 		GXNetServer& operator = ( const GXNetServer &other ) = delete;
 };
 
-class GXNetClient
+class GXNetClient final
 {
 	private:
 		sockaddr_in							serverAddressUDP;

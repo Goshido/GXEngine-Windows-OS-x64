@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_EQUIRECTANGULAR_TO_CUBE_MAP_MATERIAL
 #define GX_EQUIRECTANGULAR_TO_CUBE_MAP_MATERIAL
@@ -9,7 +9,7 @@
 #include "GXSampler.h"
 
 
-class GXEquirectangularToCubeMapMaterial : public GXMaterial
+class GXEquirectangularToCubeMapMaterial final : public GXMaterial
 {
 	private:
 		GXTexture2D*	equirectangularTexture;

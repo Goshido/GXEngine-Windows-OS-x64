@@ -9,7 +9,7 @@
 #include "EMUIButton.h"
 
 
-class EMUISSAOSettings : public EMUI
+class EMUISSAOSettings final : public EMUI
 {
 	private:
 		EMUIDraggableArea*			mainPanel;

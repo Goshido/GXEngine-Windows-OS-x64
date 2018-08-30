@@ -395,7 +395,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 		transform.SetScale ( 0.1f, 0.1f, 0.1f );
 
-		for ( GXUInt i = 0; i < collisionData.GetTotalContacts (); i++ )
+		for ( GXUInt i = 0u; i < collisionData.GetTotalContacts (); ++i )
 		{
 			transform.SetLocation ( contact[ i ].GetContactPoint () );
 

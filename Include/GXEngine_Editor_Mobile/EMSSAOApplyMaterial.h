@@ -7,7 +7,7 @@
 #include <GXEngine/GXSampler.h>
 
 
-class EMSSAOApplyMaterial : public GXMaterial
+class EMSSAOApplyMaterial final : public GXMaterial
 {
 	private:
 		GXTexture2D*	ssaoTexture;
