@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXEngine/GXMeshGeometry.h>
 #include <GXCommon/GXStrings.h>
@@ -9,6 +9,7 @@
 #include <GXCommon/GXNativeStaticMeshSaver.h>
 #include <GXCommon/GXNativeMesh.h>
 #include <GXCommon/GXNativeSkin.h>
+#include <GXCommon/GXUIntAtomic.h>
 #include <GXCommon/GXLogger.h>
 
 
@@ -22,7 +23,7 @@ class GXMesh final
 	friend class GXMeshGeometry;
 
 	private:
-		GXUInt					referenceCount;
+		GXUIntAtomic			referenceCount;
 		GXMesh*					previous;
 		GLsizeiptr				vboSize;
 
@@ -82,7 +83,7 @@ GXVoid GXMesh::Release ()
 {
 	--referenceCount;
 
-	if ( referenceCount > 0 ) return;
+	if ( referenceCount > 0u ) return;
 
 	delete this;
 }

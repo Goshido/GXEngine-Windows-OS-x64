@@ -1,11 +1,11 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_UI_COMMON
 #define GX_UI_COMMON
 
 
 #include <GXEngine/GXTouchSurface.h>
-#include <GXCommon/GXMutex.h>
+#include <GXCommon/GXSmartLock.h>
 #include <GXCommon/GXMemory.h>
 
 
@@ -20,10 +20,10 @@ typedef GXVoid ( GXCALL* PFNGXONMOUSESCROLLPROC ) ( GXFloat scroll, GXFloat x, G
 typedef GXVoid ( GXCALL* PFNGXONMOUSEMOVEPROC ) ( GXFloat x, GXFloat y );
 
 
-extern GXFloat gx_ui_Scale;		// rough pixels in centimeter
+extern GXFloat			gx_ui_Scale;		// rough pixels in centimeter
 
-extern GXMutex* gx_ui_Mutex;
-extern GXCircleBuffer* gx_ui_MessageBuffer;
+extern GXSmartLock*		gx_ui_SmartLock;
+extern GXCircleBuffer*	gx_ui_MessageBuffer;
 
 
 #endif // GX_UI_COMMON

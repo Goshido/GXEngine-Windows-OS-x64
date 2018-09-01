@@ -1,6 +1,7 @@
-// version 1.1
+// version 1.2
 
 #include <GXEngine/GXSampler.h>
+#include <GXCommon/GXUIntAtomic.h>
 
 
 #define INVALID_TEXTURE_UNIT				0xFFu
@@ -12,7 +13,7 @@ class GXSamplerEntry final
 	private:
 		GXSamplerEntry*			previous;
 		GXSamplerEntry*			next;
-		GXInt					references;
+		GXUIntAtomic			references;
 
 		GLint					wrapMode;
 		eGXResampling			resampling;
@@ -109,7 +110,7 @@ GXVoid GXSamplerEntry::Release ()
 {
 	--references;
 
-	if ( references > 0 ) return;
+	if ( references > 0u ) return;
 
 	delete this;
 }

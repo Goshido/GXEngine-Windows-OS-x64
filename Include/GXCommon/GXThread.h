@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_THREAD
 #define GX_THREAD
@@ -8,7 +8,7 @@
 
 
 class GXThread;
-typedef GXUPointer ( GXTHREADCALL* PFNGXTHREADPROC ) ( GXVoid* arg, GXThread& thread );
+typedef GXUPointer ( GXTHREADCALL* PFNGXTHREADPROC ) ( GXVoid* argument, GXThread &thread );
 
 
 enum class eGXThreadState : GXUByte
@@ -26,25 +26,29 @@ class GXAbstractThread
 		eGXThreadState		state;
 
 	public:
-		explicit GXAbstractThread ( PFNGXTHREADPROC procedure, GXVoid* argument );
-		virtual ~GXAbstractThread ();
-
 		eGXThreadState GetState () const;
 
 		virtual GXVoid Start () = 0;
 		virtual GXVoid Switch () = 0;
+		virtual GXVoid Sleep ( GXUInt milliseconds ) = 0;
 		virtual GXVoid Join () = 0;
 
+	protected:
+		explicit GXAbstractThread ( PFNGXTHREADPROC procedure, GXVoid* argument );
+		virtual ~GXAbstractThread ();
+
 	private:
+		GXAbstractThread () = delete;
 		GXAbstractThread ( const GXAbstractThread &other ) = delete;
 		GXAbstractThread& operator = ( const GXAbstractThread &other ) = delete;
 };
 
 
 #ifdef __GNUC__
-	#include "Posix/GXThread.h"
+// TODO implement this
+#include "Posix/GXThread.h"
 #else
-	#include "Windows/GXThread.h"
+#include "Windows/GXThread.h"
 #endif // __GNUC__
 
 

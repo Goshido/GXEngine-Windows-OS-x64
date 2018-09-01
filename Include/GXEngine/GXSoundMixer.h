@@ -1,4 +1,4 @@
-// version 1.8
+// version 1.9
 
 #ifndef GX_SOUND_MIXER
 #define GX_SOUND_MIXER
@@ -6,7 +6,6 @@
 
 #include "GXSoundChannel.h"
 #include <GXCommon/GXThread.h>
-#include <GXCommon/GXMutex.h>
 
 
 class GXSoundMixer final

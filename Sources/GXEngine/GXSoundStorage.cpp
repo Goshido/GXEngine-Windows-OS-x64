@@ -10,7 +10,7 @@ GXSoundTrack* GXCALL GXGetSoundTrack ( const GXWChar* trackFile )
 	{
 		if ( !GXWcscmp ( t->trackFile, trackFile ) )
 		{
-			t->AddRef ();
+			t->AddReference ();
 			return t;
 		}
 	}

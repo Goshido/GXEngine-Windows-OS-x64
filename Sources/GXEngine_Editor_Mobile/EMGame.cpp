@@ -147,7 +147,8 @@ GXVoid EMGame::OnInit ()
 	physicsContactPointMaterial->SetColor ( 255u, 0u, 0u, 255u );
 
 	GXPhysicsEngine::GetInstance ().SetTimeMultiplier ( 1.0f );
-	GXWorld& world = GXPhysicsEngine::GetInstance ().GetWorld ();
+	GXPhysicsEngine& physicsEngine = GXPhysicsEngine::GetInstance ();
+	GXWorld& world = physicsEngine.GetWorld ();
 
 	GXTransform transform;
 	unitActor = new EMUnitActor ( L"Unit actor 01", transform );
@@ -310,6 +311,8 @@ GXVoid EMGame::OnInit ()
 
 	ShowCursor ( 1 );
 	SetCursor ( LoadCursorW ( 0, IDC_ARROW ) );
+
+	physicsEngine.Start ();
 }
 
 GXVoid EMGame::OnResize ( GXInt width, GXInt height )
@@ -321,8 +324,8 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 {
 	GXTouchSurface::GetInstance ().ExecuteMessages ();
 
-	if ( deltaTime < 0.2f )
-		GXPhysicsEngine::GetInstance ().RunSimulateLoop ( deltaTime );
+	/*if ( deltaTime < 0.2f )
+		GXPhysicsEngine::GetInstance ().RunSimulateLoop ( deltaTime );*/
 
 	fluttershy->UpdatePose ( deltaTime );
 

@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #include <GXEngine/GXFont.h>
 #include <GXEngineDLL/GXEngineAPI.h>
@@ -6,6 +6,7 @@
 #include <GXCommon/GXLogger.h>
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXMemory.h>
+#include <GXCommon/GXUIntAtomic.h>
 
 
 #define ATLAS_UNDEFINED		-1
@@ -60,7 +61,7 @@ class GXFontEntry final
 	private:
 		GXFontEntry*	prev;
 		GXFontEntry*	next;
-		GXInt			refs;
+		GXUIntAtomic	references;
 
 		GXTexture2D**	atlases;
 		GXByte			lastAtlasID;
@@ -90,7 +91,7 @@ class GXFontEntry final
 
 		GXUInt GXCDECLCALL GetTextLength ( GXUInt bufferNumSymbols, const GXWChar* format, va_list parameters );
 
-		GXVoid AddRef ();
+		GXVoid AddReference ();
 		GXVoid Release ();
 
 	private:
@@ -108,7 +109,7 @@ class GXFontEntry final
 GXFontEntry::GXFontEntry ( const GXWChar* fileName, GXUShort size ):
 	prev ( nullptr ),
 	next ( gx_FontEntries ),
-	refs ( 1 ),
+	references ( 1u ),
 	atlases ( nullptr ),
 	lastAtlasID ( ATLAS_UNDEFINED ),
 	left ( 0u ),
@@ -264,16 +265,16 @@ GXUInt GXCDECLCALL GXFontEntry::GetTextLength ( GXUInt bufferNumSymbols, const G
 	return static_cast<GXUInt> ( penX );
 }
 
-GXVoid GXFontEntry::AddRef ()
+GXVoid GXFontEntry::AddReference ()
 {
-	++refs;
+	++references;
 }
 
 GXVoid GXFontEntry::Release ()
 {
-	--refs;
+	--references;
 
-	if ( refs > 0 ) return;
+	if ( references > 0u ) return;
 
 	delete this;
 }
@@ -420,7 +421,7 @@ GXFont::GXFont ( const GXWChar* fileName, GXUShort size )
 	{
 		if ( GXWcscmp ( p->GetFileName (), fileName ) != 0 || p->GetSize () != size ) continue;
 
-		p->AddRef ();
+		p->AddReference ();
 		fontEntry = p;
 
 		return;

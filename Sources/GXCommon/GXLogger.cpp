@@ -1,7 +1,7 @@
-// version 1.6
+// version 1.7
 
 #include <GXCommon/GXLogger.h>
-#include <GXCommon/GXMutex.h>
+#include <GXCommon/GXSmartLock.h>
 #include <GXCommon/GXMemory.h>
 
 GX_DISABLE_COMMON_WARNINGS
@@ -20,31 +20,31 @@ enum class GXConsoleLocale : GXUByte
 };
 
 
-GXConsoleLocale gx_lggr_ConsoleLocale = GXConsoleLocale::Unknown;
-GXMutex*		gx_lggr_ConsoleMutex = nullptr;
+GXConsoleLocale		gx_logger_ConsoleLocale = GXConsoleLocale::Unknown;
+GXSmartLock*		gx_logger_SmartLock = nullptr;
 
 
 GXVoid GXCALL GXLogInit ()
 {
-	if ( gx_lggr_ConsoleMutex ) return;
+	if ( gx_logger_SmartLock ) return;
 
-	gx_lggr_ConsoleMutex = new GXMutex (); 
+	gx_logger_SmartLock = new GXSmartLock ();
 }
 
 GXVoid GXCALL GXLogDestroy ()
 {
-	GXSafeDelete ( gx_lggr_ConsoleMutex );
+	GXSafeDelete ( gx_logger_SmartLock );
 }
 
 GXVoid GXCDECLCALL GXLogA ( const GXMBChar* format, ... )
 {
-	if ( gx_lggr_ConsoleMutex )
+	if ( gx_logger_SmartLock )
 	{
-		gx_lggr_ConsoleMutex->Lock ();
+		gx_logger_SmartLock->AcquireExlusive ();
 
-		if ( gx_lggr_ConsoleLocale != GXConsoleLocale::ASCII )
+		if ( gx_logger_ConsoleLocale != GXConsoleLocale::ASCII )
 		{
-			gx_lggr_ConsoleLocale = GXConsoleLocale::ASCII;
+			gx_logger_ConsoleLocale = GXConsoleLocale::ASCII;
 			setlocale ( LC_CTYPE, "" );
 		}
 
@@ -53,18 +53,19 @@ GXVoid GXCDECLCALL GXLogA ( const GXMBChar* format, ... )
 		vprintf ( format, ap );
 		va_end ( ap );
 
-		gx_lggr_ConsoleMutex->Release ();
+		gx_logger_SmartLock->ReleaseExlusive ();
 	}
 }
 
 GXVoid GXCDECLCALL GXLogW ( const GXWChar* format, ... )
 {
-	if ( gx_lggr_ConsoleMutex )
+	if ( gx_logger_SmartLock )
 	{
-		gx_lggr_ConsoleMutex->Lock ();
-		if ( gx_lggr_ConsoleLocale != GXConsoleLocale::UnicodeRussian )
+		gx_logger_SmartLock->AcquireExlusive ();
+
+		if ( gx_logger_ConsoleLocale != GXConsoleLocale::UnicodeRussian )
 		{
-			gx_lggr_ConsoleLocale = GXConsoleLocale::UnicodeRussian;
+			gx_logger_ConsoleLocale = GXConsoleLocale::UnicodeRussian;
 			setlocale ( LC_CTYPE, "Russian" );
 		}
 
@@ -73,6 +74,6 @@ GXVoid GXCDECLCALL GXLogW ( const GXWChar* format, ... )
 		vwprintf ( format, ap );
 		va_end ( ap );
 
-		gx_lggr_ConsoleMutex->Release ();
+		gx_logger_SmartLock->ReleaseExlusive ();
 	}
 }

@@ -31,8 +31,8 @@ EMToneMapperMaterial::EMToneMapperMaterial ():
 	inverseGamma ( 1.0f / DEFAULT_GAMMA ),
 	eyeSensitivity ( DEFAULT_EYE_SENSETIVITY )
 {
-	static const GLchar* samplerNames[ 1 ] = { "linearSpaceSampler" };
-	static const GLuint samplerLocations[ 1 ] = { TEXTURE_SLOT };
+	static const GLchar* samplerNames[ 1u ] = { "linearSpaceSampler" };
+	static const GLuint samplerLocations[ 1u ] = { TEXTURE_SLOT };
 
 	GXShaderProgramInfo si;
 	si.vertexShader = VERTEX_SHADER;
@@ -80,7 +80,7 @@ GXVoid EMToneMapperMaterial::Unbind ()
 	sampler.Unbind ( TEXTURE_SLOT );
 	linearSpaceTexture->Unbind ();
 
-	glUseProgram ( 0 );
+	glUseProgram ( 0u );
 }
 
 GXVoid EMToneMapperMaterial::SetLinearSpaceTexture ( GXTexture2D &texture )
@@ -92,7 +92,7 @@ GXVoid EMToneMapperMaterial::SetLuminanceTriplet ( GXFloat averageLuminance, GXF
 {
 	GXFloat alpha = ( maximumLuminance - averageLuminance );
 	GXFloat betta = ( averageLuminance - minimumLuminance );
-	GXFloat yotta = eyeSensitivity * powf ( 2.0f, 2.0f * ( betta - alpha ) / ( alpha + betta ) );
+	GXFloat yotta = eyeSensitivity * powf ( 2.0f, 2.0f * ( betta - alpha ) / ( alpha + betta + EPSILON ) );
 
 	prescaleFactor = yotta / ( averageLuminance + EPSILON );
 }

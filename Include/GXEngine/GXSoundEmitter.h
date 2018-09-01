@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #ifndef GX_SOUND_EMITTER
 #define GX_SOUND_EMITTER

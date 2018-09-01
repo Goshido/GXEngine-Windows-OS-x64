@@ -1,18 +1,24 @@
-// version 1.3
+// version 1.4
 
 #include <GXCommon/Windows/GXThread.h>
 #include <GXCommon/GXLogger.h>
 
+GX_DISABLE_COMMON_WARNINGS
 
-GXThread::GXThread ( PFNGXTHREADPROC procedure, GXVoid* argument ) :
-GXAbstractThread ( procedure, argument )
+#include <process.h>
+
+GX_RESTORE_WARNING_STATE
+
+
+GXThread::GXThread ( PFNGXTHREADPROC procedure, GXVoid* argument ):
+	GXAbstractThread ( procedure, argument )
 {
-	thread = NULL;
+	thread = INVALID_HANDLE_VALUE;
 }
 
 GXThread::~GXThread ()
 {
-	if ( thread == NULL || state != eGXThreadState::Started ) return;
+	if ( thread == INVALID_HANDLE_VALUE || state != eGXThreadState::Started ) return;
 
 	GXLogW ( L"GXThread::~GXThread::Warning - Поток завершён неверно\n" );
 	system ( "pause" );
@@ -23,10 +29,9 @@ GXVoid GXThread::Start ()
 {
 	if ( state == eGXThreadState::Started ) return;
 
-	DWORD threadID = 0;
-	thread = CreateThread ( nullptr, 0, &GXThread::RootThreadStarter, this, 0, &threadID );
+	thread = reinterpret_cast<HANDLE> ( _beginthreadex ( nullptr, 0u, &GXThread::RootThreadStarter, this, 0, nullptr ) );
 
-	if ( thread == NULL )
+	if ( thread == INVALID_HANDLE_VALUE )
 		GXLogW ( L"GXThread::Start::Error - Не удалось создать поток\n" );
 	else
 		state = eGXThreadState::Started;
@@ -35,6 +40,11 @@ GXVoid GXThread::Start ()
 GXVoid GXThread::Switch ()
 {
 	SwitchToThread ();
+}
+
+GXVoid GXThread::Sleep ( GXUInt milliseconds )
+{
+	::Sleep ( static_cast<DWORD> ( milliseconds ) );
 }
 
 GXVoid GXThread::Join ()
@@ -47,14 +57,14 @@ GXVoid GXThread::Join ()
 
 	WaitForSingleObject ( thread, INFINITE );
 	CloseHandle ( thread );
-	thread = NULL;
+	thread = INVALID_HANDLE_VALUE;
 }
 
-DWORD WINAPI GXThread::RootThreadStarter ( LPVOID lpThreadParameter )
+unsigned __stdcall GXThread::RootThreadStarter ( void* lpThreadParameter )
 {
 	GXThread* thread = reinterpret_cast<GXThread*> ( lpThreadParameter );
 	GXUPointer result = thread->Procedure ( thread->argument, *thread );
 	GXLogW ( L"GXThread::RootThreadStarter::Info - Поток 0x%p завершился с кодом %X\n", lpThreadParameter, result );
 
-	return 0;
+	return 0u;
 }

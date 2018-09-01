@@ -1,8 +1,8 @@
-// version 1.7
+// version 1.8
 
 #include <GXEngine/GXTouchSurface.h>
 #include <GXCommon/GXMemory.h>
-#include <GXCommon/GXMutex.h>
+#include <GXCommon/GXSmartLock.h>
 #include <GXCommon/GXLogger.h>
 
 
@@ -12,7 +12,7 @@
 
 GXFloat				gx_ui_Scale = 1.0f;
 
-GXMutex*			gx_ui_Mutex = nullptr;
+GXSmartLock*		gx_ui_SmartLock = nullptr;
 GXCircleBuffer*		gx_ui_MessageBuffer = nullptr;
 
 struct GXMessage
@@ -40,7 +40,7 @@ GXTouchSurface::~GXTouchSurface ()
 {
 	delete gx_ui_MessageBuffer;
 	DeleteWidgets ();
-	delete gx_ui_Mutex;
+	delete gx_ui_SmartLock;
 	instance = nullptr;
 }
 
@@ -275,7 +275,7 @@ GXVoid GXTouchSurface::SendMessage ( GXWidget* widget, eGXUIMessage message, con
 
 	msg->size = size;
 
-	gx_ui_Mutex->Lock ();
+	gx_ui_SmartLock->AcquireExlusive ();
 
 	if ( !messages )
 	{
@@ -287,7 +287,7 @@ GXVoid GXTouchSurface::SendMessage ( GXWidget* widget, eGXUIMessage message, con
 		lastMessage = msg;
 	}
 
-	gx_ui_Mutex->Release ();
+	gx_ui_SmartLock->ReleaseExlusive ();
 }
 
 GXVoid GXTouchSurface::ExecuteMessages ()
@@ -296,9 +296,9 @@ GXVoid GXTouchSurface::ExecuteMessages ()
 	{
 		GXMessage* msg = messages;
 
-		gx_ui_Mutex->Lock ();
+		gx_ui_SmartLock->AcquireExlusive ();
 		messages = messages->next;
-		gx_ui_Mutex->Release ();
+		gx_ui_SmartLock->ReleaseExlusive ();
 
 		msg->widget->OnMessage ( msg->message, msg->data );
 	}
@@ -306,9 +306,9 @@ GXVoid GXTouchSurface::ExecuteMessages ()
 
 GXVoid GXTouchSurface::DrawWidgets ()
 {
-	gx_ui_Mutex->Lock ();
+	gx_ui_SmartLock->AcquireShared ();
 	DrawWidgets ( widgetTail );
-	gx_ui_Mutex->Release ();
+	gx_ui_SmartLock->ReleaseShared ();
 }
 
 GXVoid GXTouchSurface::MoveWidgetToForeground ( GXWidget* widget )
@@ -382,7 +382,7 @@ GXTouchSurface::GXTouchSurface ()
 	messages = lastMessage = nullptr;
 	widgetHead = widgetTail = mouseOverWidget = lockedWidget = defaultWidget = nullptr;
 
-	gx_ui_Mutex = new GXMutex ();
+	gx_ui_SmartLock = new GXSmartLock ();
 	gx_ui_MessageBuffer = new GXCircleBuffer ( GX_UI_MESSAGE_BUFFER_SIZE );
 }
 
@@ -396,7 +396,7 @@ GXWidget* GXTouchSurface::FindWidget ( const GXVec2 &position )
 {
 	GXVec3 v ( position.GetX (), position.GetY (), 0.0f );
 
-	gx_ui_Mutex->Lock ();
+	gx_ui_SmartLock->AcquireShared ();
 
 	GXWidgetIterator iterator;
 	GXWidget* p = iterator.Init ( widgetHead );
@@ -405,14 +405,14 @@ GXWidget* GXTouchSurface::FindWidget ( const GXVec2 &position )
 	{
 		if ( p->IsVisible () && p->GetBoundsWorld ().IsOverlaped ( v ) )
 		{
-			gx_ui_Mutex->Release ();
+			gx_ui_SmartLock->ReleaseShared ();
 			return p->FindWidget ( position );
 		}
 
 		p = iterator.GetNext ();
 	}
 
-	gx_ui_Mutex->Release ();
+	gx_ui_SmartLock->ReleaseShared ();
 
 	return defaultWidget;
 }

@@ -9,6 +9,7 @@
 #include "GXContactResolver.h"
 #include "GXCollisionData.h"
 #include "GXForceGenerator.h"
+#include <GXCommon/GXSmartLock.h>
 
 
 struct GXRigidBodyRegistration;
@@ -17,23 +18,25 @@ struct GXForceGeneratorsRegistration;
 class GXWorld final
 {
 	private:
-		GXBool								isCalculateIterations;
-
+		GXCollisionData						collisions;
 		GXRigidBodyRegistration*			bodies;
 		GXContactGeneratorsRegistration*	contactGenerators;
 		GXForceGeneratorsRegistration*		forceGenerators;
+		GXBool								isCalculateIterations;
 
 		GXContactResolver					contactResolver;
-		GXCollisionData						collisions;
+		GXSmartLock							smartLock;
 
 	public:
 		explicit GXWorld ( GXUInt maxContacts, GXUInt iterations );
 		~GXWorld ();
 
+		// Note methods are thread safe.
 		GXVoid RegisterRigidBody ( GXRigidBody &body );
 		GXVoid UnregisterRigidBody ( GXRigidBody &body );
 		GXVoid ClearRigidBodyRegistrations ();
 
+		// Note methods are thread safe.
 		GXVoid RegisterForceGenerator ( GXRigidBody &body, GXForceGenerator &generator );
 		GXVoid UnregisterForceGenerator ( GXRigidBody &body, GXForceGenerator &generator );
 		GXVoid ClearForceGeneratorRegistrations ();
@@ -42,7 +45,7 @@ class GXWorld final
 
 		const GXCollisionData& GetCollisionData () const;
 
-		GXBool Raycast ( const GXVec3 &origin, const GXVec3 &direction, GXFloat length, GXVec3 &contactLocation, GXVec3 &contactNormal, const GXShape** shape ) const;
+		GXBool Raycast ( const GXVec3 &origin, const GXVec3 &direction, GXFloat length, GXVec3 &contactLocation, GXVec3 &contactNormal, const GXShape** shape );
 
 	private:
 		GXRigidBodyRegistration* FindRigidBodyRegistration ( GXRigidBody &body );

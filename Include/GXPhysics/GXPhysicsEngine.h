@@ -1,26 +1,30 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_PHYSICS_ENGINE
 #define GX_PHYSICS_ENGINE
 
 
 #include "GXWorld.h"
+#include <GXCommon/GXThread.h>
 
 
 class GXPhysicsEngine final
 {
 	private:
-		static GXPhysicsEngine*	instance;
-
 		GXWorld					world;
 		GXFloat					time;
+		GXBool					loopFlag;
+
+		GXThread*				thread;
 
 		GXFloat					timeStep;
-		GXFloat					adjustedTimeStep;
-		GXFloat					timeMultiplier;
+		GXDouble				adjustedTimeStep;
+		GXDouble				timeMultiplier;
 		GXFloat					sleepTimeout;
 		GXFloat					maximumLocationChangeSquaredDeviation;
 		GXFloat					maximumRotationChangeSquaredDeviation;
+
+		static GXPhysicsEngine*	instance;
 
 	public:
 		~GXPhysicsEngine ();
@@ -59,10 +63,13 @@ class GXPhysicsEngine final
 
 		GXWorld& GetWorld ();
 
-		GXVoid RunSimulateLoop ( GXFloat deltaTime );
+		// Start simulation.
+		GXVoid Start ();
 
 	private:
 		GXPhysicsEngine ();
+
+		static GXUPointer GXTHREADCALL Simulate ( GXVoid* argument, GXThread &thread );
 
 		GXPhysicsEngine ( const GXPhysicsEngine &other ) = delete;
 		GXPhysicsEngine& operator = ( const GXPhysicsEngine &other ) = delete;

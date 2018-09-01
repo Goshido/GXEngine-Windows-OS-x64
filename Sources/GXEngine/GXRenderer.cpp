@@ -378,11 +378,12 @@ GXUPointer GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* /*args*/, GXThread &thr
 {
 	if ( !MakeWindow () ) return 0u;
 
-	MSG msg;
 	while ( loopFlag )
 	{
 		if ( !isRenderableObjectInited )
 			InitRenderableObjects ();
+
+		MSG msg;
 
 		while ( PeekMessage ( &msg, 0, 0u, 0u, PM_REMOVE ) ) 
 		{

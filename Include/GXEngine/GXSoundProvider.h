@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_SOUND_PROVIDER
 #define GX_SOUND_PROVIDER
@@ -6,6 +6,7 @@
 
 #include "GXSound.h"
 #include <GXCommon/GXFileSystem.h>
+#include <GXCommon/GXUIntAtomic.h>
 
 
 #define GX_SOUND_PROVIDER_BUFFER_SIZE	2097152u		// 2 Mb
@@ -46,7 +47,7 @@ class GXSoundTrack
 		GXSoundTrack*		prev;
 
 	protected:
-		GXUInt				numRef;
+		GXUIntAtomic		references;
 		ALuint				readyBuffer;
 
 	public:
@@ -60,7 +61,7 @@ class GXSoundTrack
 	public:
 		explicit GXSoundTrack ( const GXWChar* trackFile );
 
-		GXVoid AddRef ();
+		GXVoid AddReference ();
 		GXVoid Release ();
 
 		virtual GXSoundStreamer* GetStreamer () = 0;

@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #ifndef GX_TEXTURE_2D
 #define GX_TEXTURE_2D

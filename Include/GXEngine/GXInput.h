@@ -1,4 +1,4 @@
-// version 1.17
+// version 1.18
 
 #ifndef GX_INPUT
 #define GX_INPUT
@@ -109,7 +109,7 @@ class GXInput final
 		static PFNGXTYPEPROC			OnType;
 		static GXWChar					symbol;
 
-		static XINPUT_STATE				gamepadState[ 2 ];
+		static XINPUT_STATE				gamepadState[ 2u ];
 		static GXUChar					currentGamepadState;
 
 		static GXVoid*					gamepadKeysHandlers[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2 ];
@@ -188,7 +188,7 @@ class GXInput final
 	private:
 		GXInput ();
 
-		static GXUPointer GXTHREADCALL InputLoop ( GXVoid* args, GXThread &thread );
+		static GXUPointer GXTHREADCALL InputLoop ( GXVoid* args, GXThread &inputThread );
 
 		static GXBool GXCALL IsGamepadConnected ( GXDword gamepadID );
 		static GXVoid GXCALL TestGamepadButton ( GXDword buttonFlag, GXUChar buttonID );

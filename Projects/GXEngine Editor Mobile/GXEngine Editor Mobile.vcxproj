@@ -126,13 +126,15 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -172,6 +174,8 @@ del "$(OutDir)$(TargetName).iobj"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractMutex.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractSmartLock.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractUIntAtomic.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAVLTree.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXCFGLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXCFGSaver.cpp" />
@@ -189,8 +193,10 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractThread.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXSmartLock.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXThread.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXTime.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXUIntAtomic.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimationSolver.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimationSolverMovement.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimationSolverPlayer.cpp" />
@@ -323,6 +329,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXPhysics\GXWorld.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Include\GXCommon\GXUIntAtomic.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXAVLTree.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXBKELoader.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXBKESaver.h" />
@@ -344,12 +351,15 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXCommon\GXPHGStructs.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXRestoreWarnings.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXSCNStructs.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXSmartLock.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXSTGStructs.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXStrings.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXThread.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXTime.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXTypes.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXWarning.h" />
+    <ClInclude Include="..\..\Include\GXCommon\Windows\GXSmartLock.h" />
+    <ClInclude Include="..\..\Include\GXCommon\Windows\GXUIntAtomic.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXWarning.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXMutex.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXThread.h" />

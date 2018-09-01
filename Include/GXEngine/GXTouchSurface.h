@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #ifndef GX_TOUCH_SURFACE
 #define GX_TOUCH_SURFACE

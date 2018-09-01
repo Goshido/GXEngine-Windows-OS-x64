@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #ifndef GX_SHADER_PROGRAM
 #define GX_SHADER_PROGRAM

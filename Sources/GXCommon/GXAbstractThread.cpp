@@ -1,7 +1,11 @@
-// version 1.2
+// version 1.3
 
 #include <GXCommon/GXThread.h>
 
+eGXThreadState GXAbstractThread::GetState () const
+{
+	return state;
+}
 
 GXAbstractThread::GXAbstractThread ( PFNGXTHREADPROC procedure, GXVoid* argument )
 {
@@ -13,9 +17,4 @@ GXAbstractThread::GXAbstractThread ( PFNGXTHREADPROC procedure, GXVoid* argument
 GXAbstractThread::~GXAbstractThread ()
 {
 	// NOTHING
-}
-
-eGXThreadState GXAbstractThread::GetState () const
-{
-	return state;
 }

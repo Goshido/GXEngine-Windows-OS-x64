@@ -1,6 +1,7 @@
-// version 1.2
+// version 1.3
 
 #include <GXPhysics/GXPhysicsEngine.h>
+#include <GXCommon/GXTime.h>
 
 #define DEFAULT_SLEEP_TIMEOUT								0.2f
 #define DEFAULT_MAXIMUM_LOCATION_CHANGE_SQUARED_DEVIATION	2.0e-5f
@@ -10,13 +11,16 @@
 
 #define MAX_CONTACTS										16384
 #define WORLD_ITERATIONS									50
+#define THREAD_IDLE											5u		// simulate over 200 iterations per second is not practical
 
 
 GXPhysicsEngine* GXPhysicsEngine::instance = nullptr;
 
 GXPhysicsEngine::~GXPhysicsEngine ()
 {
-	// NOTHING
+	loopFlag = GX_FALSE;
+	thread->Join ();
+	delete thread;
 }
 
 GXPhysicsEngine& GXPhysicsEngine::GetInstance ()
@@ -60,7 +64,7 @@ GXFloat GXPhysicsEngine::GetMaximumRotationChangeSquaredDeviation () const
 GXVoid GXPhysicsEngine::SetTimeStep ( GXFloat step )
 {
 	timeStep = step;
-	adjustedTimeStep = step * timeMultiplier;
+	adjustedTimeStep = static_cast<GXDouble> ( step * timeMultiplier );
 }
 
 GXFloat GXPhysicsEngine::GetTimeStep () const
@@ -70,8 +74,8 @@ GXFloat GXPhysicsEngine::GetTimeStep () const
 
 GXVoid GXPhysicsEngine::SetTimeMultiplier ( GXFloat multiplier )
 {
-	timeMultiplier = multiplier;
-	adjustedTimeStep = timeStep * multiplier;
+	timeMultiplier = static_cast<GXDouble> ( multiplier );
+	adjustedTimeStep = static_cast<GXDouble> ( timeStep * multiplier );
 }
 
 GXWorld& GXPhysicsEngine::GetWorld ()
@@ -79,24 +83,46 @@ GXWorld& GXPhysicsEngine::GetWorld ()
 	return world;
 }
 
-GXVoid GXPhysicsEngine::RunSimulateLoop ( GXFloat deltaTime )
+GXVoid GXPhysicsEngine::Start ()
 {
-	time += deltaTime * timeMultiplier;
-
-	while ( time > adjustedTimeStep )
-	{
-		world.RunPhysics ( adjustedTimeStep );
-		time -= adjustedTimeStep;
-	}
+	thread->Start ();
 }
 
 GXPhysicsEngine::GXPhysicsEngine ():
 	world ( MAX_CONTACTS, WORLD_ITERATIONS ),
-	time ( 0.0f )
+	time ( 0.0f ),
+	loopFlag ( GX_TRUE )
 {
+	thread = new GXThread ( &GXPhysicsEngine::Simulate, this );
 	SetSleepTimeout ( DEFAULT_SLEEP_TIMEOUT );
 	SetMaximumLocationChangeSquaredDeviation ( DEFAULT_MAXIMUM_LOCATION_CHANGE_SQUARED_DEVIATION );
 	SetMaximumRotationChangeSquaredDeviation ( DEFAULT_MAXIMUM_ROTATION_CHANGE_SQUARED_DEVIATION );
 	SetTimeStep ( DEFAULT_TIME_STEP );
 	SetTimeMultiplier ( DEFAULT_TIME_MULTIPLIER );
+}
+
+GXUPointer GXTHREADCALL GXPhysicsEngine::Simulate ( GXVoid* argument, GXThread &thread )
+{
+	GXPhysicsEngine* physicsEngine = static_cast<GXPhysicsEngine*> ( argument );
+
+	GXDouble tickToSeconds = 1.0 / GXGetProcessorTicksPerSecond ();
+	GXDouble lastTicks = GXGetProcessorTicks ();
+	GXDouble time = 0.0;
+
+	while ( physicsEngine->loopFlag )
+	{
+		GXDouble currentTicks = GXGetProcessorTicks ();
+		time += ( currentTicks - lastTicks ) * tickToSeconds * physicsEngine->timeMultiplier;
+		lastTicks = currentTicks;
+
+		while ( time > physicsEngine->adjustedTimeStep )
+		{
+			physicsEngine->world.RunPhysics ( static_cast<GXFloat> ( physicsEngine->adjustedTimeStep ) );
+			time -= physicsEngine->adjustedTimeStep;
+		}
+
+		thread.Sleep ( THREAD_IDLE );
+	}
+
+	return 0u;
 }

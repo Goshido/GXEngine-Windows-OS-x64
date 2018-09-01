@@ -28,28 +28,28 @@ GXWidget::GXWidget ( GXWidget* parent, GXBool isNeedRegister ):
 
 	if ( !isRegistered ) return;
 
-	gx_ui_Mutex->Lock ();
+	gx_ui_SmartLock->AcquireExlusive ();
 
 	if ( parent )
 		parent->AddChild ( this );
 	else
 		GXTouchSurface::GetInstance ().RegisterWidget ( this );
 
-	gx_ui_Mutex->Release ();
+	gx_ui_SmartLock->ReleaseExlusive ();
 }
 
 GXWidget::~GXWidget ()
 {
 	if ( !isRegistered ) return;
 
-	gx_ui_Mutex->Lock ();
+	gx_ui_SmartLock->AcquireExlusive ();
 
 	if ( parent )
 		parent->RemoveChild ( this );
 	else
 		GXTouchSurface::GetInstance ().UnRegisterWidget ( this );
 
-	gx_ui_Mutex->Release ();
+	gx_ui_SmartLock->ReleaseExlusive ();
 }
 
 GXVoid GXWidget::OnMessage ( eGXUIMessage message, const GXVoid* data )
@@ -276,7 +276,7 @@ GXWidgetRenderer* GXWidget::GetRenderer () const
 
 GXWidget* GXWidget::FindWidget ( const GXVec2 &position )
 {
-	gx_ui_Mutex->Lock ();
+	gx_ui_SmartLock->AcquireShared ();
 
 	GXWidgetIterator iterator;
 	GXWidget* p = iterator.Init ( childs );
@@ -285,14 +285,14 @@ GXWidget* GXWidget::FindWidget ( const GXVec2 &position )
 	{
 		if ( p->IsVisible () && p->GetBoundsWorld ().IsOverlaped ( position.GetX (), position.GetY (), 0.0f ) )
 		{
-			gx_ui_Mutex->Release ();
+			gx_ui_SmartLock->ReleaseShared ();
 			return p;
 		}
 
 		p = iterator.GetNext ();
 	}
 
-	gx_ui_Mutex->Release ();
+	gx_ui_SmartLock->ReleaseShared ();
 
 	return this;
 }

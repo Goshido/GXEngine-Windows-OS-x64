@@ -20,7 +20,7 @@
 #include <GXCommon/GXCFGLoader.h>
 
 
-#define INPUT_SLEEP				30
+#define INPUT_SLEEP				30u
 
 #define SYSTEM_LANGUAGE_RU		L"../../Locale/System/RU.lng"
 #define SYSTEM_LANGUAGE_EN		L"../../Locale/System/EN.lng"

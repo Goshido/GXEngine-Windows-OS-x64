@@ -10,11 +10,12 @@
 class GXAbstractMutex
 {
 	public:
-		GXAbstractMutex ();
-		virtual ~GXAbstractMutex ();
-
 		virtual GXVoid Lock () = 0;
 		virtual GXVoid Release () = 0;
+
+	protected:
+		GXAbstractMutex ();
+		virtual ~GXAbstractMutex ();
 
 	private:
 		GXAbstractMutex ( const GXAbstractMutex &other ) = delete;

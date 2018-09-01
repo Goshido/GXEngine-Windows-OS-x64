@@ -1,10 +1,11 @@
-// version 1.6
+// version 1.7
 
 #include <GXEngine/GXShaderProgram.h>
 #include <GXEngine/GXLocale.h>
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXMemory.h>
+#include <GXCommon/GXUIntAtomic.h>
 #include <GXCommon/GXLogger.h>
 
 
@@ -448,7 +449,7 @@ class GXShaderProgramEntry final
 		GXShaderProgramEntry*						previous;
 		GXShaderProgramEntry*						next;
 
-		GXInt										references;
+		GXUIntAtomic								references;
 
 		GXWChar*									vertexShader;
 		GXWChar*									geometryShader;
@@ -631,7 +632,7 @@ GXVoid GXShaderProgramEntry::Release ()
 {
 	--references;
 
-	if ( references > 0 ) return;
+	if ( references > 0u ) return;
 
 	delete this;
 }

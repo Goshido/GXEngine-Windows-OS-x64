@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #include <GXEngine/GXTextureCubeMap.h>
 #include <GXEngine/GXOpenGL.h>
@@ -7,6 +7,7 @@
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXImageLoader.h>
+#include <GXCommon/GXUIntAtomic.h>
 
 
 #define INVALID_INTERNAL_FORMAT				0
@@ -53,7 +54,7 @@ class GXTextureCubeMapEntry final
 	private:
 		GXTextureCubeMapEntry*			previous;
 		GXTextureCubeMapEntry*			next;
-		GXInt							references;
+		GXUIntAtomic					references;
 
 		GXWChar*						fileName;
 
@@ -113,7 +114,7 @@ GXTextureCubeMapEntry* GXTextureCubeMapEntry::top = nullptr;
 GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTextureFileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection ):
 	previous ( nullptr ),
 	next ( top ),
-	references ( 1 )
+	references ( 1u )
 {
 	if ( top )
 		top->previous = this;
@@ -503,7 +504,7 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
 GXTextureCubeMapEntry::GXTextureCubeMapEntry ( GXUShort faceLength, GLint internalFormat, GXBool isGenerateMipmap ):
 	previous ( nullptr ),
 	next ( nullptr ),
-	references ( 1 ),
+	references ( 1u ),
 	fileName ( nullptr )
 {
 	InitResources ( faceLength, internalFormat, isGenerateMipmap );
@@ -584,7 +585,7 @@ GXVoid GXTextureCubeMapEntry::Release ()
 {
 	--references;
 
-	if ( references > 0 ) return;
+	if ( references > 0u ) return;
 
 	delete this;
 }

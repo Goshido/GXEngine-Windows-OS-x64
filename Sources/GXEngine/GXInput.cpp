@@ -1,4 +1,4 @@
-// version 1.17
+// version 1.18
 
 #include <GXEngine/GXInput.h>
 #include <GXEngine/GXCore.h>
@@ -6,13 +6,18 @@
 #include <GXEngine/GXTouchSurface.h>
 #include <GXEngineDLL/GXEngineAPI.h>
 #include <GXCommon/GXLogger.h>
+
+GX_DISABLE_COMMON_WARNINGS
+
 #include <Windowsx.h>
 
+GX_RESTORE_WARNING_STATE
 
-#define	GX_INPUT_THREAD_SLEEP		40
 
-#define GX_INPUT_INV_STICK_VALUE	3.0519e-5f
-#define GX_INPUT_INV_TRIGGER_VALUE	3.9216e-3f
+#define	INPUT_THREAD_SLEEP		40u
+
+#define INPUT_INV_STICK_VALUE	3.0519e-5f
+#define INPUT_INV_TRIGGER_VALUE	3.9216e-3f
 
 
 extern HMODULE gx_GXEngineDLLModuleHandle;
@@ -29,7 +34,7 @@ GXVoid*					GXInput::onTypeHandler = nullptr;
 PFNGXTYPEPROC			GXInput::OnType = nullptr;
 GXWChar					GXInput::symbol;
 
-XINPUT_STATE			GXInput::gamepadState[ 2 ];
+XINPUT_STATE			GXInput::gamepadState[ 2u ];
 GXUByte					GXInput::currentGamepadState;
 
 GXVoid*					GXInput::gamepadKeysHandlers[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2 ];
@@ -489,7 +494,7 @@ GXInput::GXInput ()
 	thread = new GXThread ( &InputLoop, nullptr );
 }
 
-GXUPointer GXTHREADCALL GXInput::InputLoop ( GXVoid* /*args*/, GXThread& /*thread*/ )
+GXUPointer GXTHREADCALL GXInput::InputLoop ( GXVoid* /*args*/, GXThread &inputThread )
 {
 	while ( loopFlag )
 	{
@@ -531,7 +536,7 @@ GXUPointer GXTHREADCALL GXInput::InputLoop ( GXVoid* /*args*/, GXThread& /*threa
 			break;
 		}
 
-		Sleep ( GX_INPUT_THREAD_SLEEP );
+		inputThread.Sleep ( INPUT_THREAD_SLEEP );
 	}
 
 	return 0u;
@@ -564,21 +569,21 @@ GXVoid GXInput::TestGamepadButton ( GXDword buttonFlag, GXUChar buttonID )
 
 GXVoid GXInput::UpdateGamepad ()
 {
-	if ( XInputGetState ( 0, &gamepadState[ currentGamepadState ] ) == ERROR_DEVICE_NOT_CONNECTED ) return;
+	if ( XInputGetState ( 0u, &gamepadState[ currentGamepadState ] ) == ERROR_DEVICE_NOT_CONNECTED ) return;
 	
 	if ( activeInputDevice == eGXInputDevice::XBOXController )
 	{
 		if ( DoLeftStick )
-			DoLeftStick ( onLeftStickHandler, gamepadState[ currentGamepadState ].Gamepad.sThumbLX * GX_INPUT_INV_STICK_VALUE, gamepadState[ currentGamepadState ].Gamepad.sThumbLY * GX_INPUT_INV_STICK_VALUE );
+			DoLeftStick ( onLeftStickHandler, gamepadState[ currentGamepadState ].Gamepad.sThumbLX * INPUT_INV_STICK_VALUE, gamepadState[ currentGamepadState ].Gamepad.sThumbLY * INPUT_INV_STICK_VALUE );
 
 		if ( DoRightStick )
-			DoRightStick ( onRightStickTrigger, gamepadState[ currentGamepadState ].Gamepad.sThumbRX * GX_INPUT_INV_STICK_VALUE, gamepadState[ currentGamepadState ].Gamepad.sThumbRY * GX_INPUT_INV_STICK_VALUE );
+			DoRightStick ( onRightStickTrigger, gamepadState[ currentGamepadState ].Gamepad.sThumbRX * INPUT_INV_STICK_VALUE, gamepadState[ currentGamepadState ].Gamepad.sThumbRY * INPUT_INV_STICK_VALUE );
 
 		if ( DoLeftTrigger )
-			DoLeftTrigger ( onLeftTriggerHandler, gamepadState[ currentGamepadState ].Gamepad.bLeftTrigger * GX_INPUT_INV_TRIGGER_VALUE );
+			DoLeftTrigger ( onLeftTriggerHandler, gamepadState[ currentGamepadState ].Gamepad.bLeftTrigger * INPUT_INV_TRIGGER_VALUE );
 
 		if ( DoRightTrigger )
-			DoRightTrigger ( onRightTriggerHandler, gamepadState[ currentGamepadState ].Gamepad.bRightTrigger * GX_INPUT_INV_TRIGGER_VALUE );
+			DoRightTrigger ( onRightTriggerHandler, gamepadState[ currentGamepadState ].Gamepad.bRightTrigger * INPUT_INV_TRIGGER_VALUE );
 	}
 
 	GXUByte oldGamepadState = ( currentGamepadState == 0u ) ? 1u : 0u;

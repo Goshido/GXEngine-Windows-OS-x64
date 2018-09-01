@@ -1,14 +1,15 @@
-// version 1.8
+// version 1.9
 
 #include <GXEngine/GXSoundMixer.h>
+#include <GXCommon/GXSmartLock.h>
 
 
 #define DEFAULT_MASTER_VOLUME	1.0f
-#define GX_SOUND_MIXER_DELAY	10
+#define IDLE_DELAY				10u
 
 //-------------------------------------------------------------------------------------
 
-extern GXMutex* gx_sound_mixer_Mutex;
+extern GXSmartLock* gx_sound_mixer_SmartLock;
 
 GXBool				GXSoundMixer::loopFlag = GX_TRUE;
 GXSoundChannel*		GXSoundMixer::channels = nullptr;
@@ -16,7 +17,7 @@ GXSoundMixer*		GXSoundMixer::instance = nullptr;
 
 GXSoundMixer::~GXSoundMixer ()
 {
-	delete gx_sound_mixer_Mutex;
+	delete gx_sound_mixer_SmartLock;
 	instance = nullptr;
 }
 
@@ -121,21 +122,21 @@ GXSoundMixer::GXSoundMixer ():
 	thread ( &Update, nullptr ),
 	masterVolume ( DEFAULT_MASTER_VOLUME )
 {
-	gx_sound_mixer_Mutex = new GXMutex (); 
+	gx_sound_mixer_SmartLock = new GXSmartLock ();
 }
 
-GXUPointer GXTHREADCALL GXSoundMixer::Update ( GXVoid* /*args*/, GXThread& /*thread*/ )
+GXUPointer GXTHREADCALL GXSoundMixer::Update ( GXVoid* /*args*/, GXThread &thread )
 {
 	while ( loopFlag )
 	{
-		gx_sound_mixer_Mutex->Lock ();
+		gx_sound_mixer_SmartLock->AcquireShared ();
 
 		for ( GXSoundChannel* c = channels; c; c = c->next )
 			c->Update ();
 
-		gx_sound_mixer_Mutex->Release ();
+		gx_sound_mixer_SmartLock->ReleaseShared ();
 
-		Sleep ( GX_SOUND_MIXER_DELAY );
+		thread.Sleep ( IDLE_DELAY );
 	}
 
 	return 0u;

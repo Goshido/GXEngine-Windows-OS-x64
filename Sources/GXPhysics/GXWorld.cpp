@@ -37,15 +37,14 @@ struct GXForceGeneratorsRegistration final
 
 //----------------------------------------------------------------
 
-GXWorld::GXWorld ( GXUInt maxContacts, GXUInt iterations ):
-	collisions ( maxContacts )
+GXWorld::GXWorld ( GXUInt maxContacts, GXUInt /*iterations*/ ):
+	collisions ( maxContacts ),
+	bodies ( nullptr ),
+	contactGenerators ( nullptr ),
+	forceGenerators ( nullptr ),
+	isCalculateIterations ( GX_FALSE )
 {
 	GXCollisionDetector::GetInstance ();
-
-	bodies = nullptr;
-	contactGenerators = nullptr;
-	forceGenerators = nullptr;
-	isCalculateIterations = iterations == 0;
 }
 
 GXWorld::~GXWorld ()
@@ -63,21 +62,27 @@ GXVoid GXWorld::RegisterRigidBody ( GXRigidBody &body )
 	reg->next = nullptr;
 	reg->prev = nullptr;
 
+	smartLock.AcquireExlusive ();
+
 	if ( bodies )
 		bodies->prev = reg;
 
 	reg->next = bodies;
 	bodies = reg;
-}
 
+	smartLock.ReleaseExlusive ();
+}
 
 GXVoid GXWorld::UnregisterRigidBody ( GXRigidBody &body )
 {
+	smartLock.AcquireExlusive ();
+
 	GXRigidBodyRegistration* reg = FindRigidBodyRegistration ( body );
 
 	if ( !reg )
 	{
 		GXLogW ( L"GXWorld::UnregisterRigidBody::Error - Can't find rigid body!" );
+		smartLock.ReleaseExlusive ();
 		return;
 	}
 
@@ -107,14 +112,23 @@ GXVoid GXWorld::UnregisterRigidBody ( GXRigidBody &body )
 
 		delete reg;
 	}
+
+	smartLock.ReleaseExlusive ();
 }
 
 GXVoid GXWorld::ClearRigidBodyRegistrations ()
 {
-	while ( bodies )
+	smartLock.AcquireExlusive ();
+
+	GXRigidBodyRegistration* toDelete = bodies;
+	bodies = nullptr;
+
+	smartLock.ReleaseExlusive ();
+
+	while ( toDelete )
 	{
-		GXRigidBodyRegistration* reg = bodies;
-		bodies = bodies->next;
+		GXRigidBodyRegistration* reg = toDelete;
+		toDelete = toDelete->next;
 		delete reg;
 	}
 }
@@ -127,19 +141,27 @@ GXVoid GXWorld::RegisterForceGenerator ( GXRigidBody &body, GXForceGenerator &ge
 	reg->next = nullptr;
 	reg->prev = nullptr;
 
+	smartLock.AcquireExlusive ();
+
 	if ( forceGenerators )
 		forceGenerators->prev = reg;
 
 	reg->next = forceGenerators;
 	forceGenerators = reg;
+
+	smartLock.ReleaseExlusive ();
 }
 
 GXVoid GXWorld::UnregisterForceGenerator ( GXRigidBody &body, GXForceGenerator &generator )
 {
 	GXForceGeneratorsRegistration* reg = FindForceGeneratorRegistration ( body, generator );
+
+	smartLock.AcquireExlusive ();
+
 	if ( !reg )
 	{
 		GXLogW ( L"GXWorld::UnregisterForceGenerator::Error - Can't find force generator!" );
+		smartLock.ReleaseExlusive ();
 		return;
 	}
 
@@ -169,14 +191,23 @@ GXVoid GXWorld::UnregisterForceGenerator ( GXRigidBody &body, GXForceGenerator &
 
 		delete reg;
 	}
+
+	smartLock.ReleaseExlusive ();
 }
 
 GXVoid GXWorld::ClearForceGeneratorRegistrations ()
 {
-	while ( forceGenerators )
+	smartLock.AcquireExlusive ();
+
+	GXForceGeneratorsRegistration* toDelete = forceGenerators;
+	forceGenerators = nullptr;
+
+	smartLock.ReleaseExlusive ();
+
+	while ( toDelete )
 	{
-		GXForceGeneratorsRegistration* reg = forceGenerators;
-		forceGenerators = forceGenerators->next;
+		GXForceGeneratorsRegistration* reg = toDelete;
+		toDelete = toDelete->next;
 		delete reg;
 	}
 }
@@ -185,8 +216,14 @@ GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 {
 	collisions.Reset ();
 
+	smartLock.AcquireShared ();
+
 	// We do not do anything unless 2 rigid bodies were registered
-	if ( !bodies || !bodies->next ) return;
+	if ( !bodies || !bodies->next )
+	{
+		smartLock.ReleaseShared ();
+		return;
+	}
 
 	for ( GXRigidBodyRegistration* p = bodies; p; p = p->next )
 		p->body->ClearAccumulators ();
@@ -200,6 +237,7 @@ GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 	for ( GXContactGeneratorsRegistration* reg = contactGenerators; reg; reg = reg->next )
 	{
 		reg->generator->AddContact ( collisions );
+
 		if ( !collisions.HasMoreContacts () ) break;
 	}
 
@@ -219,6 +257,7 @@ GXVoid GXWorld::RunPhysics ( GXFloat deltaTime )
 	}
 
 	contactResolver.ResolveContacts ( collisions.GetAllContacts (), collisions.GetTotalContacts () );
+	smartLock.ReleaseShared ();
 }
 
 const GXCollisionData& GXWorld::GetCollisionData () const
@@ -226,7 +265,7 @@ const GXCollisionData& GXWorld::GetCollisionData () const
 	return collisions;
 }
 
-GXBool GXWorld::Raycast ( const GXVec3 &origin, const GXVec3 &direction, GXFloat length, GXVec3 &contactLocation, GXVec3 &contactNormal, const GXShape** contactShape ) const
+GXBool GXWorld::Raycast ( const GXVec3 &origin, const GXVec3 &direction, GXFloat length, GXVec3 &contactLocation, GXVec3 &contactNormal, const GXShape** contactShape )
 {
 	GXFloat inverseX = 1.0f / direction.GetX ();
 	GXFloat inverseY = 1.0f / direction.GetY ();
@@ -234,6 +273,8 @@ GXBool GXWorld::Raycast ( const GXVec3 &origin, const GXVec3 &direction, GXFloat
 
 	GXBool foundIntersection = GX_FALSE;
 	GXFloat intersectionFactor = 0.0f;
+
+	smartLock.AcquireShared ();
 
 	for ( GXRigidBodyRegistration* p = bodies; p != nullptr; p = p->next )
 	{
@@ -404,6 +445,8 @@ GXBool GXWorld::Raycast ( const GXVec3 &origin, const GXVec3 &direction, GXFloat
 			break;
 		}
 	}
+
+	smartLock.ReleaseShared ();
 
 	return foundIntersection;
 }

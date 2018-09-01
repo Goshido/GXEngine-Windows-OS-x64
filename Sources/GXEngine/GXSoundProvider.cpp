@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXEngine/GXSoundProvider.h>
 #include <GXCommon/GXMemory.h>
@@ -74,7 +74,7 @@ GXVoid GXSoundStreamer::Reset ()
 GXSoundTrack::GXSoundTrack ( const GXWChar* trackFile ):
 	next ( gx_strgSoundTracks ),
 	prev ( nullptr ),
-	numRef ( 1u ),
+	references ( 1u ),
 	readyBuffer ( 0u )
 {
 	if ( next ) next->prev = this;
@@ -88,22 +88,22 @@ GXSoundTrack::GXSoundTrack ( const GXWChar* trackFile ):
 	GXDebugBox ( L"GXSoundTrack::Error - не удалось загрузить файл" );
 }
 
-GXVoid GXSoundTrack::AddRef ()
+GXVoid GXSoundTrack::AddReference ()
 {
-	++numRef;
+	++references;
 }
 
 GXVoid GXSoundTrack::Release ()
 {
-	if ( numRef < 1u )
+	if ( references < 1u )
 	{
-		GXDebugBox ( L"GXSoundTrack::Error - ѕопытка уменьшить количество ссылок, когда их нет" );
+		GXDebugBox ( L"GXSoundTrack::Error - ѕопытка уменьшить количество ссылок, когда их нет." );
 		return;
 	}
 
-	--numRef;
+	--references;
 
-	if ( numRef > 0u ) return;
+	if ( references > 0u ) return;
 
 	delete this;
 }

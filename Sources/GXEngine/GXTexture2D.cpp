@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #include <GXEngine/GXTexture2D.h>
 #include <GXEngine/GXMeshGeometry.h>
@@ -7,6 +7,7 @@
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXImageLoader.h>
 #include <GXCommon/GXFileSystem.h>
+#include <GXCommon/GXUIntAtomic.h>
 #include <GXCommon/GXLogger.h>
 
 
@@ -51,7 +52,7 @@ class GXTexture2DEntry final
 		GXTexture2DEntry*			previous;
 		GXTexture2DEntry*			next;
 
-		GXInt						references;
+		GXUIntAtomic				references;
 		GXWChar*					fileName;
 
 		GXUShort					width;
@@ -112,7 +113,7 @@ GXTexture2DEntry* GXTexture2DEntry::top = nullptr;
 GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection ):
 	previous ( nullptr ),
 	next ( top ),
-	references ( 1 )
+	references ( 1u )
 {
 	GXWcsclone ( &this->fileName, fileName );
 
@@ -633,7 +634,7 @@ GXVoid GXTexture2DEntry::Release ()
 {
 	--references;
 
-	if ( references > 0 ) return;
+	if ( references > 0u ) return;
 
 	delete this;
 }
