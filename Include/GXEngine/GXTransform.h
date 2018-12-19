@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_TRANSFORM
 #define GX_TRANSFORM
@@ -9,54 +9,54 @@
 
 class GXTransform
 {
-	protected:
-		GXVec3				currentFrameLocation;
-		GXVec3				currentFrameScale;
-		GXMat4				currentFrameRotationMatrix;
-		GXMat4				currentFrameModelMatrix;
-		GXMat4				lastFrameModelMatrix;
+    protected:
+        GXVec3      currentFrameLocation;
+        GXVec3      currentFrameScale;
+        GXMat4      currentFrameRotationMatrix;
+        GXMat4      currentFrameModelMatrix;
+        GXMat4      lastFrameModelMatrix;
 
-	private:
-		static GXTransform	nullTransform;
+    private:
+        static GXTransform    nullTransform;
 
-	public:
-		GXTransform ();
-		GXTransform ( const GXTransform &other );
-		virtual ~GXTransform ();
+    public:
+        GXTransform ();
+        GXTransform ( const GXTransform &other );
+        virtual ~GXTransform ();
 
-		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
-		GXVoid SetLocation ( const GXVec3 &loc );
+        GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
+        GXVoid SetLocation ( const GXVec3 &loc );
 
-		GXVoid SetRotation ( const GXEuler &rot_rad );
-		GXVoid SetRotation ( const GXMat4 &rot );
-		GXVoid SetRotation ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians );
-		GXVoid SetRotation ( const GXQuat &quaternion );
+        GXVoid SetRotation ( const GXEuler &rot_rad );
+        GXVoid SetRotation ( const GXMat4 &rot );
+        GXVoid SetRotation ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians );
+        GXVoid SetRotation ( const GXQuat &quaternion );
 
-		GXVoid SetScale ( GXFloat x, GXFloat y, GXFloat z );
-		GXVoid SetScale ( const GXVec3 &scale );
+        GXVoid SetScale ( GXFloat x, GXFloat y, GXFloat z );
+        GXVoid SetScale ( const GXVec3 &scale );
 
-		GXVoid GetLocation ( GXVec3 &loc ) const;
-		const GXVec3& GetLocation () const;
+        GXVoid GetLocation ( GXVec3 &loc ) const;
+        const GXVec3& GetLocation () const;
 
-		GXVoid GetRotation ( GXMat4 &rot ) const;
-		GXVoid GetRotation ( GXQuat &rot ) const;
-		const GXMat4& GetRotation () const;
+        GXVoid GetRotation ( GXMat4 &rot ) const;
+        GXVoid GetRotation ( GXQuat &rot ) const;
+        const GXMat4& GetRotation () const;
 
-		GXVoid GetScale ( GXVec3 &scale ) const;
-		const GXVec3& GetScale () const;
+        GXVoid GetScale ( GXVec3 &scale ) const;
+        const GXVec3& GetScale () const;
 
-		const GXMat4& GetCurrentFrameModelMatrix () const;
-		GXVoid SetCurrentFrameModelMatrix ( const GXMat4 &matrix );
+        const GXMat4& GetCurrentFrameModelMatrix () const;
+        GXVoid SetCurrentFrameModelMatrix ( const GXMat4 &matrix );
 
-		const GXMat4& GetLastFrameModelMatrix () const;
-		GXVoid UpdateLastFrameModelMatrix ();
+        const GXMat4& GetLastFrameModelMatrix () const;
+        GXVoid UpdateLastFrameModelMatrix ();
 
-		static const GXTransform& GetNullTransform ();
+        static const GXTransform& GetNullTransform ();
 
-		GXTransform& operator = ( const GXTransform &other );
+        GXTransform& operator = ( const GXTransform &other );
 
-	protected:
-		virtual GXVoid TransformUpdated ();
+    protected:
+        virtual GXVoid TransformUpdated ();
 };
 
 

@@ -1,68 +1,79 @@
-// version 1.3
+// version 1.4
 
 #include <GXEngine/GXSoundChannel.h>
 
 
-#define DEFAULT_CHANNEL_VOLUME		1.0f
+#define DEFAULT_CHANNEL_VOLUME      1.0f
 
 //--------------------------------------------------------------------------
 
 GXSoundChannel::GXSoundChannel ():
-	top ( nullptr ),
-	next ( nullptr ),
-	prev ( nullptr ),
-	volume ( DEFAULT_CHANNEL_VOLUME ),
-	emitters ( nullptr )
+    top ( nullptr ),
+    next ( nullptr ),
+    prev ( nullptr ),
+    volume ( DEFAULT_CHANNEL_VOLUME ),
+    emitters ( nullptr )
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXSoundChannel::~GXSoundChannel ()
 {
-	if ( top )
-	{
-		if ( next ) next->prev = prev;
+    if ( top )
+    {
+        if ( next )
+            next->prev = prev;
 
-		if ( prev )
-			prev->next = next;
-		else
-			*top = next;
-	}
+        if ( prev )
+        {
+            prev->next = next;
+        }
+        else
+        {
+            *top = next;
+        }
+    }
 
-	GXSoundEmitter* e = emitters;
+    GXSoundEmitter* e = emitters;
 
-	while ( e )
-	{
-		GXSoundEmitter* nextEmitter = e->next;
-		delete e;
-		e = nextEmitter;
-	}
+    while ( e )
+    {
+        GXSoundEmitter* nextEmitter = e->next;
+        delete e;
+        e = nextEmitter;
+    }
 }
 
 GXVoid GXSoundChannel::SetVolume ( GXFloat volumeLevel )
 {
-	volume = volumeLevel;
+    volume = volumeLevel;
 
-	for ( GXSoundEmitter* e = emitters; e; e = e->next )
-		e->SetChannelVolume ( volume );
+    for ( GXSoundEmitter* e = emitters; e; e = e->next )
+    {
+        e->SetChannelVolume ( volume );
+    }
 }
 
 GXVoid GXSoundChannel::AddEmitter ( GXSoundEmitter* emitter )
 {
-	if ( !emitter )
-		GXDebugBox ( L"GXSoundChannel::AddEmitter::Error - добавление звукового эмиттера по нулевому указателю!" );
+    if ( !emitter )
+        GXDebugBox ( L"GXSoundChannel::AddEmitter::Error - добавление звукового эмиттера по нулевому указателю!" );
 
-	emitter->prev = 0;
+    emitter->prev = nullptr;
 
-	emitter->next = emitters;
-	if ( emitter->next ) emitter->next->prev = emitter;
-	emitters = emitter;
+    emitter->next = emitters;
 
-	emitter->top = &emitters;
+    if ( emitter->next )
+        emitter->next->prev = emitter;
+
+    emitters = emitter;
+    emitter->top = &emitters;
 }
 
 GXVoid GXSoundChannel::Update ()
 {
-	for ( GXSoundEmitter* e = emitters; e; e = e->next )
-		e->Update ();
+    for ( GXSoundEmitter* e = emitters; e; e = e->next )
+    {
+        e->Update ();
+    }
 }

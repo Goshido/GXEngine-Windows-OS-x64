@@ -1,14 +1,14 @@
-// version 1.1
+// version 1.2
 
 #include <GXEngine/GXMaterial.h>
 
 
 GXMaterial::GXMaterial ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXMaterial::~GXMaterial ()
 {
-	// NOTHING
+    // NOTHING
 }

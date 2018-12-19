@@ -1,4 +1,4 @@
-// verison 1.1
+// verison 1.2
 
 #ifndef GX_GAME
 #define GX_GAME
@@ -9,18 +9,18 @@
 
 class GXGame
 {
-	public:
-		GXGame ();
-		virtual ~GXGame ();
+    public:
+        GXGame ();
+        virtual ~GXGame ();
 
-		virtual GXVoid OnInit () = 0;
-		virtual GXVoid OnResize ( GXInt width, GXInt height ) = 0;
-		virtual GXVoid OnFrame ( GXFloat deltaTime ) = 0;
-		virtual GXVoid OnDestroy () = 0;
+        virtual GXVoid OnInit () = 0;
+        virtual GXVoid OnResize ( GXInt width, GXInt height ) = 0;
+        virtual GXVoid OnFrame ( GXFloat deltaTime ) = 0;
+        virtual GXVoid OnDestroy () = 0;
 
-	private:
-		GXGame ( const GXGame &other ) = delete;
-		GXGame& operator = ( const GXGame &other ) = delete;
+    private:
+        GXGame ( const GXGame &other ) = delete;
+        GXGame& operator = ( const GXGame &other ) = delete;
 };
 
 

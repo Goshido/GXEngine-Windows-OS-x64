@@ -1,14 +1,14 @@
-// version 1.0
+// version 1.1
 
 #include <GXCommon/GXUIntAtomic.h>
 
 
 GXAbstractUIntAtomic::GXAbstractUIntAtomic ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXAbstractUIntAtomic::~GXAbstractUIntAtomic ()
 {
-	// NOTHING
+    // NOTHING
 }

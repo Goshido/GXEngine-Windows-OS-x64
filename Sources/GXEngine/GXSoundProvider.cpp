@@ -1,122 +1,124 @@
-// version 1.4
+// version 1.5
 
 #include <GXEngine/GXSoundProvider.h>
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXStrings.h>
 
 
-GXSoundTrack*	gx_strgSoundTracks = nullptr;
-
+GXSoundTrack* gx_strgSoundTracks = nullptr;
 
 GXSoundStreamer::GXSoundStreamer ( GXVoid* mappedFile, GXUPointer totalSize ):
-	mappedFile ( static_cast<GXUByte*> ( mappedFile ) ),
-	totalSize ( totalSize ),
-	position ( 0 )
+    mappedFile ( static_cast<GXUByte*> ( mappedFile ) ),
+    totalSize ( totalSize ),
+    position ( 0 )
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXSoundStreamer::~GXSoundStreamer ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXUInt GXSoundStreamer::Read ( GXVoid* out, GXUInt size )
 {
-	GXUInt temp = static_cast<GXUInt> ( totalSize - position );
+    GXUInt temp = static_cast<GXUInt> ( totalSize - position );
 
-	if ( size > temp )
-		size = temp;
-	
-	memcpy ( out, mappedFile + position, size );
-	position += size;
+    if ( size > temp )
+        size = temp;
+    
+    memcpy ( out, mappedFile + position, size );
+    position += size;
 
-	return size;
+    return size;
 }
 
 GXInt GXSoundStreamer::Seek ( GXInt offset, GXInt whence )
 {
-	switch ( whence )
-	{
-		case SEEK_SET:
-			position = offset;
-		break;
+    switch ( whence )
+    {
+        case SEEK_SET:
+            position = offset;
+        break;
 
-		case SEEK_CUR:
-			position += offset;
-		break;
+        case SEEK_CUR:
+            position += offset;
+        break;
 
-		case SEEK_END:
-			position = static_cast<GXLong> ( totalSize ) + offset;
-		break;
-	}
+        case SEEK_END:
+            position = static_cast<GXLong> ( totalSize ) + offset;
+        break;
+    }
 
-	if ( position < 0 ) 
-		position = 0;
-	else if ( position > static_cast<GXLong> ( totalSize ) ) 
-		position = static_cast<GXLong> ( totalSize );
+    if ( position < 0 ) 
+        position = 0;
+    else if ( position > static_cast<GXLong> ( totalSize ) ) 
+        position = static_cast<GXLong> ( totalSize );
 
-	return 0;
+    return 0;
 }
 
 GXLong GXSoundStreamer::Tell ()
 {
-	return position;
+    return position;
 }
 
 GXVoid GXSoundStreamer::Reset ()
 {
-	position = 0;
+    position = 0;
 }
 
 //-----------------------------------------------------------------------------------------------------
 
 GXSoundTrack::GXSoundTrack ( const GXWChar* trackFile ):
-	next ( gx_strgSoundTracks ),
-	prev ( nullptr ),
-	references ( 1u ),
-	readyBuffer ( 0u )
+    next ( gx_strgSoundTracks ),
+    prev ( nullptr ),
+    references ( 1u ),
+    readyBuffer ( 0u )
 {
-	if ( next ) next->prev = this;
+    if ( next ) next->prev = this;
 
-	gx_strgSoundTracks = this;
+    gx_strgSoundTracks = this;
 
-	GXWcsclone ( &this->trackFile, trackFile );
+    GXWcsclone ( &this->trackFile, trackFile );
 
-	if ( GXLoadFile ( this->trackFile, &mappedFile, totalSize, GX_TRUE ) ) return;
-		
-	GXDebugBox ( L"GXSoundTrack::Error - не удалось загрузить файл" );
+    if ( GXLoadFile ( this->trackFile, &mappedFile, totalSize, GX_TRUE ) ) return;
+        
+    GXDebugBox ( L"GXSoundTrack::Error - не удалось загрузить файл" );
 }
 
 GXVoid GXSoundTrack::AddReference ()
 {
-	++references;
+    ++references;
 }
 
 GXVoid GXSoundTrack::Release ()
 {
-	if ( references < 1u )
-	{
-		GXDebugBox ( L"GXSoundTrack::Error - ѕопытка уменьшить количество ссылок, когда их нет." );
-		return;
-	}
+    if ( references < 1u )
+    {
+        GXDebugBox ( L"GXSoundTrack::Error - ѕопытка уменьшить количество ссылок, когда их нет." );
+        return;
+    }
 
-	--references;
+    --references;
 
-	if ( references > 0u ) return;
+    if ( references > 0u ) return;
 
-	delete this;
+    delete this;
 }
 
 GXSoundTrack::~GXSoundTrack ()
 {
-	GXSafeFree ( trackFile );
-	GXSafeFree ( mappedFile );
+    GXSafeFree ( trackFile );
+    GXSafeFree ( mappedFile );
 
-	if ( next ) next->prev = prev;
+    if ( next ) next->prev = prev;
 
-	if ( prev ) 
-		prev->next = next;
-	else 
-		gx_strgSoundTracks = next;
+    if ( prev )
+    {
+        prev->next = next;
+        return;
+    }
+
+    gx_strgSoundTracks = next;
 }

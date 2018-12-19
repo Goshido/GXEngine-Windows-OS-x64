@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #include <GXCommon/GXNativeSkin.h>
 #include <GXCommon/GXFileSystem.h>
@@ -8,35 +8,35 @@
 
 GXSkinInfo::GXSkinInfo ()
 {
-	totalVertices = 0;
-	vboData = nullptr;
+    totalVertices = 0u;
+    vboData = nullptr;
 }
 
 GXVoid GXSkinInfo::Cleanup ()
 {
-	GXSafeFree ( vboData );
+    GXSafeFree ( vboData );
 }
 
 //-------------------------------------------------------------------------------------------------------------
 
 GXVoid GXCALL GXLoadNativeSkin ( GXSkinInfo &info, const GXWChar* fileName )
 {
-	GXUByte* data;
-	GXUBigInt fileSize;
+    GXUByte* data;
+    GXUBigInt fileSize;
 
-	if ( !GXLoadFile ( fileName, (GXVoid**)&data, fileSize, GX_TRUE ) )
-	{
-		GXLogW ( L"GXLoadNativeSkin::Error - Can't load file %s\n", fileName );
-		return;
-	}
+    if ( !GXLoadFile ( fileName, reinterpret_cast<GXVoid**> ( &data ), fileSize, GX_TRUE ) )
+    {
+        GXLogW ( L"GXLoadNativeSkin::Error - Can't load file %s\n", fileName );
+        return;
+    }
 
-	GXNativeSkinHeader* h = (GXNativeSkinHeader*)data;
+    GXNativeSkinHeader* h = reinterpret_cast<GXNativeSkinHeader*> ( data );
 
-	info.totalVertices = h->totalVertices;
+    info.totalVertices = h->totalVertices;
 
-	GXUPointer size = info.totalVertices * ( sizeof ( GXVec4 ) + sizeof ( GXVec4 ) );
-	info.vboData = (GXFloat*)malloc ( size );
-	memcpy ( info.vboData, data + h->vboOffset, size );
+    GXUPointer size = info.totalVertices * ( sizeof ( GXVec4 ) + sizeof ( GXVec4 ) );
+    info.vboData = static_cast<GXFloat*> ( malloc ( size ) );
+    memcpy ( info.vboData, data + h->vboOffset, size );
 
-	free ( data );
+    free ( data );
 }

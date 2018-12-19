@@ -1,4 +1,4 @@
-// vesrion 1.0
+// vesrion 1.1
 
 #include <GXCommon/GXNativeMesh.h>
 #include <GXCommon/GXFileSystem.h>
@@ -8,35 +8,35 @@
 
 GXMeshInfo::GXMeshInfo ()
 {
-	totalVertices = 0;
-	vboData = nullptr;
+    totalVertices = 0u;
+    vboData = nullptr;
 }
 
 GXVoid GXMeshInfo::Cleanup ()
 {
-	GXSafeFree ( vboData );
+    GXSafeFree ( vboData );
 }
 
 //-------------------------------------------------------------------------------------------------------------
 
 GXVoid GXCALL GXLoadNativeMesh ( GXMeshInfo &info, const GXWChar* fileName )
 {
-	GXUByte* data;
-	GXUBigInt fileSize;
+    GXUByte* data;
+    GXUBigInt fileSize;
 
-	if ( !GXLoadFile ( fileName, (GXVoid**)&data, fileSize, GX_TRUE ) )
-	{
-		GXLogW ( L"GXLoadNativeMesh::Error - Can't load file %s\n", fileName );
-		return;
-	}
+    if ( !GXLoadFile ( fileName, reinterpret_cast<GXVoid**> ( &data ), fileSize, GX_TRUE ) )
+    {
+        GXLogW ( L"GXLoadNativeMesh::Error - Can't load file %s\n", fileName );
+        return;
+    }
 
-	GXNativeMeshHeader* h = (GXNativeMeshHeader*)data;
+    GXNativeMeshHeader* h = reinterpret_cast<GXNativeMeshHeader*> ( data );
 
-	info.totalVertices = h->totalVertices;
+    info.totalVertices = h->totalVertices;
 
-	GXUPointer size = info.totalVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) );
-	info.vboData = (GXFloat*)malloc ( size );
-	memcpy ( info.vboData, data + h->vboOffset, size );
+    GXUPointer size = info.totalVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) );
+    info.vboData = (GXFloat*)malloc ( size );
+    memcpy ( info.vboData, data + h->vboOffset, size );
 
-	free ( data );
+    free ( data );
 }

@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_SOUND_CHANNEL
 #define GX_SOUND_CHANNEL
@@ -9,27 +9,27 @@
 
 class GXSoundChannel final
 {
-	public:
-		GXSoundChannel**	top;
-		GXSoundChannel*		next;
-		GXSoundChannel*		prev;
+    public:
+        GXSoundChannel**    top;
+        GXSoundChannel*     next;
+        GXSoundChannel*     prev;
 
-	private:
-		GXFloat				volume;
-		GXSoundEmitter*		emitters;
+    private:
+        GXFloat             volume;
+        GXSoundEmitter*     emitters;
 
-	public:
-		GXSoundChannel ();
-		~GXSoundChannel ();
+    public:
+        GXSoundChannel ();
+        ~GXSoundChannel ();
 
-		GXVoid SetVolume ( GXFloat volumeLevel );
-		GXVoid AddEmitter ( GXSoundEmitter* emitter );
+        GXVoid SetVolume ( GXFloat volumeLevel );
+        GXVoid AddEmitter ( GXSoundEmitter* emitter );
 
-		GXVoid Update ();
+        GXVoid Update ();
 
-	private:
-		GXSoundChannel ( const GXSoundChannel &other ) = delete;
-		GXSoundChannel& operator = ( const GXSoundChannel &other ) = delete;
+    private:
+        GXSoundChannel ( const GXSoundChannel &other ) = delete;
+        GXSoundChannel& operator = ( const GXSoundChannel &other ) = delete;
 };
 
 

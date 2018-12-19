@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_SAMPLER
 #define GX_SAMPLER
@@ -9,10 +9,10 @@
 
 enum class eGXResampling : GXUByte
 {
-	None,
-	Linear,
-	Bilinear,
-	Trilinear
+    None,
+    Linear,
+    Bilinear,
+    Trilinear
 };
 
 // Class handles lazy loading reference counting sampler resource creation.
@@ -20,22 +20,22 @@ enum class eGXResampling : GXUByte
 class GXSamplerEntry;
 class GXSampler final
 {
-	private:
-		GXSamplerEntry*		samplerEntry;
+    private:
+        GXSamplerEntry*     samplerEntry;
 
-	public:
-		explicit GXSampler ( GLint wrapMode, eGXResampling resampling, GXFloat anisotropy );
-		~GXSampler ();
+    public:
+        explicit GXSampler ( GLint wrapMode, eGXResampling resampling, GXFloat anisotropy );
+        ~GXSampler ();
 
-		GXVoid Bind ( GXUByte unit );
-		GXVoid Unbind ( GXUByte unit );
+        GXVoid Bind ( GXUByte unit );
+        GXVoid Unbind ( GXUByte unit );
 
-		static GXUInt GXCALL GetTotalSamplers ( GLint &lastWrapMode, eGXResampling &lastResampling, GXFloat &lastAnisotropy );
+        static GXUInt GXCALL GetTotalSamplers ( GLint &lastWrapMode, eGXResampling &lastResampling, GXFloat &lastAnisotropy );
 
-	private:
-		GXSampler () = delete;
-		GXSampler ( const GXSampler &other ) = delete;
-		GXSampler& operator = ( const GXSampler &other ) = delete;
+    private:
+        GXSampler () = delete;
+        GXSampler ( const GXSampler &other ) = delete;
+        GXSampler& operator = ( const GXSampler &other ) = delete;
 };
 
 

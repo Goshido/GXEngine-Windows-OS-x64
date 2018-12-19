@@ -7,6 +7,8 @@ Debug/x64/Software OpenGL 3.3
 Debug/x64/xinput1_3.dll
 Debug/x64/opengl32.dll
 
+Sources/GXEngine/Windows/RC*
+
 Projects/GXEngine/.vs
 Projects/GXEngine/Debug
 Projects/GXEngine/Generated Files
@@ -14,6 +16,14 @@ Projects/GXEngine/x64
 Projects/GXEngine/*.sdf
 Projects/GXEngine/*.opendb
 Projects/GXEngine/*.db
+
+Projects/GXBuddhabrot/.vs
+Projects/GXBuddhabrot/Debug
+Projects/GXBuddhabrot/Generated Files
+Projects/GXBuddhabrot/x64
+Projects/GXBuddhabrot/*.sdf
+Projects/GXBuddhabrot/*.opendb
+Projects/GXBuddhabrot/*.db
 
 Projects/GXEngine Editor Mobile/.vs
 Projects/GXEngine Editor Mobile/Debug

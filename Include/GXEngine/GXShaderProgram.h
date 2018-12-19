@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #ifndef GX_SHADER_PROGRAM
 #define GX_SHADER_PROGRAM
@@ -10,16 +10,16 @@
 
 struct GXShaderProgramInfo final
 {
-	const GXWChar*		vertexShader;
-	const GXWChar*		geometryShader;
-	const GXWChar*		fragmentShader;
+    const GXWChar*      vertexShader;
+    const GXWChar*      geometryShader;
+    const GXWChar*      fragmentShader;
 
-	const GLchar**		samplerNames;
-	const GLuint*		samplerLocations;
-	GXUInt				samplers;
+    const GLchar**      samplerNames;
+    const GLuint*       samplerLocations;
+    GXUInt              samplers;
 
-	const GLchar**		transformFeedbackOutputNames;
-	GLsizei				transformFeedbackOutputs;
+    const GLchar**      transformFeedbackOutputNames;
+    GLsizei             transformFeedbackOutputs;
 };
 
 // Class handles lazy loading reference counting shader program resource creation.
@@ -27,27 +27,27 @@ struct GXShaderProgramInfo final
 class GXShaderProgramEntry;
 class GXShaderProgram final
 {
-	private:
-		GXShaderProgramEntry*		shaderProgramEntry;
+    private:
+        GXShaderProgramEntry*       shaderProgramEntry;
 
-	public:
-		GXShaderProgram ();
-		~GXShaderProgram ();
+    public:
+        GXShaderProgram ();
+        ~GXShaderProgram ();
 
-		// Releases previous shader program resource if it exists.
-		GXVoid Init ( const GXShaderProgramInfo &info );
+        // Releases previous shader program resource if it exists.
+        GXVoid Init ( const GXShaderProgramInfo &info );
 
-		GLuint GetProgram () const;
-		GLint GetUniform ( const GLchar* name ) const;
+        GLuint GetProgram () const;
+        GLint GetUniform ( const GLchar* name ) const;
 
-		static GXVoid GXCALL InitPrecompiledShaderProgramSubsystem ();
-		static GXVoid GXCALL DestroyPrecompiledShaderProgramSubsystem ();
+        static GXVoid GXCALL InitPrecompiledShaderProgramSubsystem ();
+        static GXVoid GXCALL DestroyPrecompiledShaderProgramSubsystem ();
 
-		static GXUInt GXCALL GetTotalLoadedShaderPrograms ( const GXWChar** lastVS, const GXWChar** lastGS, const GXWChar** lastFS );
+        static GXUInt GXCALL GetTotalLoadedShaderPrograms ( const GXWChar** lastVS, const GXWChar** lastGS, const GXWChar** lastFS );
 
-	private:
-		GXShaderProgram ( const GXShaderProgram &other ) = delete;
-		GXShaderProgram& operator = ( const GXShaderProgram &other ) = delete;
+    private:
+        GXShaderProgram ( const GXShaderProgram &other ) = delete;
+        GXShaderProgram& operator = ( const GXShaderProgram &other ) = delete;
 };
 
 

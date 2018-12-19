@@ -1,100 +1,100 @@
-// version 1.0
+// version 1.2
 
 #include <GXCommon/Windows/GXUIntAtomic.h>
 
 
-#define DEFAULT_VALUE	0u
+#define DEFAULT_VALUE       0u
 
 //---------------------------------------------------------------------------------------------------------------------
 
 GXUIntAtomic::GXUIntAtomic ():
-	value ( DEFAULT_VALUE )
+    value ( DEFAULT_VALUE )
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXUIntAtomic::GXUIntAtomic ( GXUInt value ):
-	value ( value )
+    value ( value )
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXUIntAtomic::~GXUIntAtomic ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXUInt GXUIntAtomic::Read () const
 {
-	return static_cast<GXUInt> ( *this );
+    return static_cast<GXUInt> ( *this );
 }
 
 GXVoid GXUIntAtomic::Write ( GXUInt newValue )
 {
-	InterlockedExchange ( &value, newValue );
+    InterlockedExchange ( &value, newValue );
 }
 
 GXVoid GXUIntAtomic::operator = ( GXUInt newValue )
 {
-	Write ( newValue );
+    Write ( newValue );
 }
 
 GXUIntAtomic::operator GXUInt () const
 {
-	GXUInt result = value;
+    GXUInt result = value;
 
-	#ifdef _M_X64
+    #ifdef _M_X64
 
-		// Note _ReadWriteBarrier used by analogy from MSVC std::atomic implementation.
-		// According to MSDN it is deprecated method but by design GXEngine doesn't use stardart library.
-		// see https://docs.microsoft.com/en-us/cpp/intrinsics/readwritebarrier?view=vs-2015
-		_ReadWriteBarrier ();
+        // Note _ReadWriteBarrier used by analogy from MSVC std::atomic implementation.
+        // According to MSDN it is deprecated method but by design GXEngine doesn't use stardart library.
+        // see https://docs.microsoft.com/en-us/cpp/intrinsics/readwritebarrier?view=vs-2015
+        _ReadWriteBarrier ();
 
-	#else
+    #else
 
-		#error Unsupported platform detected!
+        #error Unsupported platform detected!
 
-	#endif
+    #endif
 
-	return result;
+    return result;
 }
 
 GXUInt GXUIntAtomic::operator ++ ()
 {
-	return InterlockedIncrement ( &value );
+    return InterlockedIncrement ( &value );
 }
 
 GXUInt GXUIntAtomic::operator -- ()
 {
-	return InterlockedDecrement ( &value );
+    return InterlockedDecrement ( &value );
 }
 
 GXBool GXUIntAtomic::operator == ( GXUInt testValue ) const
 {
-	return static_cast<GXUInt> ( *this ) == testValue;
+    return static_cast<GXUInt> ( *this ) == testValue;
 }
 
 GXBool GXUIntAtomic::operator != ( GXUInt testValue ) const
 {
-	return static_cast<GXUInt> ( *this ) != testValue;
+    return static_cast<GXUInt> ( *this ) != testValue;
 }
 
 GXBool GXUIntAtomic::operator > ( GXUInt testValue ) const
 {
-	return static_cast<GXUInt> ( *this ) > testValue;
+    return static_cast<GXUInt> ( *this ) > testValue;
 }
 
 GXBool GXUIntAtomic::operator >= ( GXUInt testValue ) const
 {
-	return static_cast<GXUInt> ( *this ) >= testValue;
+    return static_cast<GXUInt> ( *this ) >= testValue;
 }
 
 GXBool GXUIntAtomic::operator < ( GXUInt testValue ) const
 {
-	return static_cast<GXUInt> ( *this ) < testValue;
+    return static_cast<GXUInt> ( *this ) < testValue;
 }
 
 GXBool GXUIntAtomic::operator <= ( GXUInt testValue ) const
 {
-	return static_cast<GXUInt> ( *this ) <= testValue;
+    return static_cast<GXUInt> ( *this ) <= testValue;
 }

@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_TEXUTE_2D_GAMMA_CORRECTOR_MATERIAL
 #define GX_TEXUTE_2D_GAMMA_CORRECTOR_MATERIAL
@@ -11,24 +11,24 @@
 
 class GXTexture2DGammaCorrectorMaterial final : public GXMaterial
 {
-	private:
-		GXTexture2D*		sRGBTexture;
-		GXSampler			sampler;
+    private:
+        GXTexture2D*    sRGBTexture;
+        GXSampler       sampler;
 
-		GLint				gammaLocation;
+        GLint           gammaLocation;
 
-	public:
-		GXTexture2DGammaCorrectorMaterial ();
-		~GXTexture2DGammaCorrectorMaterial () override;
+    public:
+        GXTexture2DGammaCorrectorMaterial ();
+        ~GXTexture2DGammaCorrectorMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) override;
-		GXVoid Unbind () override;
+        GXVoid Bind ( const GXTransform &transform ) override;
+        GXVoid Unbind () override;
 
-		GXVoid SetSRGBTexture ( GXTexture2D &texture );
+        GXVoid SetSRGBTexture ( GXTexture2D &texture );
 
-	private:
-		GXTexture2DGammaCorrectorMaterial ( const GXTexture2DGammaCorrectorMaterial &other ) = delete;
-		GXTexture2DGammaCorrectorMaterial& operator = ( const GXTexture2DGammaCorrectorMaterial &other ) = delete;
+    private:
+        GXTexture2DGammaCorrectorMaterial ( const GXTexture2DGammaCorrectorMaterial &other ) = delete;
+        GXTexture2DGammaCorrectorMaterial& operator = ( const GXTexture2DGammaCorrectorMaterial &other ) = delete;
 };
 
 

@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #ifndef GX_NATIVE_MESH
 #define GX_NATIVE_MESH
@@ -12,19 +12,19 @@
 
 struct GXNativeMeshHeader
 {
-	GXUInt		totalVertices;
-	GXUBigInt	vboOffset;			//VBO element struct: position (GXVec3), uv (GXVec2), normal (GXVec3), tangent (GXVec3), bitangent (GXVec3).
+    GXUInt          totalVertices;
+    GXUBigInt       vboOffset;      //VBO element struct: position (GXVec3), uv (GXVec2), normal (GXVec3), tangent (GXVec3), bitangent (GXVec3).
 };
 
 #pragma pack ( pop )
 
 struct GXMeshInfo
 {
-	GXUInt		totalVertices;
-	GXFloat*	vboData;
+    GXUInt      totalVertices;
+    GXFloat*    vboData;
 
-	GXMeshInfo ();
-	GXVoid Cleanup ();
+    GXMeshInfo ();
+    GXVoid Cleanup ();
 };
 
 //------------------------------------------------------------------------------------

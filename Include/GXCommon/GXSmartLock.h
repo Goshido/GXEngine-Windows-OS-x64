@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_SMART_LOCK
 #define GX_SMART_LOCK
@@ -13,26 +13,30 @@
 class GXAbstractSmartLock
 {
 public:
-	GXAbstractSmartLock ();
-	virtual ~GXAbstractSmartLock ();
+    GXAbstractSmartLock ();
+    virtual ~GXAbstractSmartLock ();
 
-	virtual GXVoid AcquireShared () = 0;
-	virtual GXVoid ReleaseShared () = 0;
+    virtual GXVoid AcquireShared () = 0;
+    virtual GXVoid ReleaseShared () = 0;
 
-	virtual GXVoid AcquireExlusive () = 0;
-	virtual GXVoid ReleaseExlusive () = 0;
+    virtual GXVoid AcquireExlusive () = 0;
+    virtual GXVoid ReleaseExlusive () = 0;
 
 private:
-	GXAbstractSmartLock ( const GXAbstractSmartLock &other ) = delete;
-	GXAbstractSmartLock& operator = ( const GXAbstractSmartLock &other ) = delete;
+    GXAbstractSmartLock ( const GXAbstractSmartLock &other ) = delete;
+    GXAbstractSmartLock& operator = ( const GXAbstractSmartLock &other ) = delete;
 };
 
 
 #ifdef __GNUC__
-// TODO implement this
-#include "Posix/GXSmartLock.h"
+
+    // TODO implement this
+    #include "Posix/GXSmartLock.h"
+
 #else
-#include "Windows/GXSmartLock.h"
+
+    #include "Windows/GXSmartLock.h"
+
 #endif // __GNU__
 
 

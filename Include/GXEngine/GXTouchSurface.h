@@ -1,4 +1,4 @@
-// version 1.8
+// version 1.9
 
 #ifndef GX_TOUCH_SURFACE
 #define GX_TOUCH_SURFACE
@@ -10,65 +10,65 @@
 struct GXMessage;
 class GXTouchSurface final
 {
-	private:
-		GXMessage*					messages;
-		GXMessage*					lastMessage;
+    private:
+        GXMessage*                  messages;
+        GXMessage*                  lastMessage;
 
-		GXWidget*					widgetHead;
-		GXWidget*					widgetTail;
+        GXWidget*                   widgetHead;
+        GXWidget*                   widgetTail;
 
-		GXWidget*					mouseOverWidget;
-		GXWidget*					lockedWidget;
-		GXWidget*					defaultWidget;
+        GXWidget*                   mouseOverWidget;
+        GXWidget*                   lockedWidget;
+        GXWidget*                   defaultWidget;
 
-		GXVec2						mousePosition;
+        GXVec2                      mousePosition;
 
-		static GXTouchSurface*		instance;
+        static GXTouchSurface*      instance;
 
-	public:
-		static GXTouchSurface& GXCALL GetInstance ();
-		~GXTouchSurface ();
+    public:
+        static GXTouchSurface& GXCALL GetInstance ();
+        ~GXTouchSurface ();
 
-		GXVoid OnLeftMouseButtonDown ( const GXVec2 &position );
-		GXVoid OnLeftMouseButtonUp ( const GXVec2 &position );
-		GXVoid OnMiddleMouseButtonDown ( const GXVec2 &position );
-		GXVoid OnMiddleMouseButtonUp ( const GXVec2 &position );
-		GXVoid OnRightMouseButtonDown ( const GXVec2 &position );
-		GXVoid OnRightMouseButtonUp ( const GXVec2 &position );
-		GXVoid OnDoubleClick ( const GXVec2 &position );
+        GXVoid OnLeftMouseButtonDown ( const GXVec2 &position );
+        GXVoid OnLeftMouseButtonUp ( const GXVec2 &position );
+        GXVoid OnMiddleMouseButtonDown ( const GXVec2 &position );
+        GXVoid OnMiddleMouseButtonUp ( const GXVec2 &position );
+        GXVoid OnRightMouseButtonDown ( const GXVec2 &position );
+        GXVoid OnRightMouseButtonUp ( const GXVec2 &position );
+        GXVoid OnDoubleClick ( const GXVec2 &position );
 
-		GXVoid OnScroll ( const GXVec2 &position, GXFloat scroll );
-		GXVoid OnMouseMove ( const GXVec2 &position );
+        GXVoid OnScroll ( const GXVec2 &position, GXFloat scroll );
+        GXVoid OnMouseMove ( const GXVec2 &position );
 
-		GXVoid OnKeyDown ( GXInt keyCode );
-		GXVoid OnKeyUp ( GXInt keyCode );
+        GXVoid OnKeyDown ( GXInt keyCode );
+        GXVoid OnKeyUp ( GXInt keyCode );
 
-		GXVoid SendMessage ( GXWidget* widget, eGXUIMessage message, const GXVoid* data, GXUInt size );
-		GXVoid ExecuteMessages ();
+        GXVoid SendMessage ( GXWidget* widget, eGXUIMessage message, const GXVoid* data, GXUInt size );
+        GXVoid ExecuteMessages ();
 
-		GXVoid DrawWidgets ();
-		GXVoid MoveWidgetToForeground ( GXWidget* widget );
+        GXVoid DrawWidgets ();
+        GXVoid MoveWidgetToForeground ( GXWidget* widget );
 
-		GXVoid LockCursor ( GXWidget* widget );			// For draggable and resizable widgets
-		GXWidget* GetLockedCursorWidget ();
-		GXVoid ReleaseCursor ();
+        GXVoid LockCursor ( GXWidget* widget );            // For draggable and resizable widgets
+        GXWidget* GetLockedCursorWidget ();
+        GXVoid ReleaseCursor ();
 
-		GXVoid RegisterWidget ( GXWidget* widget );
-		GXVoid UnRegisterWidget ( GXWidget* widget );
+        GXVoid RegisterWidget ( GXWidget* widget );
+        GXVoid UnRegisterWidget ( GXWidget* widget );
 
-		const GXVec2& GetMousePosition ();
+        const GXVec2& GetMousePosition ();
 
-		GXVoid SetDefaultWidget ( GXWidget* widget );
+        GXVoid SetDefaultWidget ( GXWidget* widget );
 
-	private:
-		GXTouchSurface ();
+    private:
+        GXTouchSurface ();
 
-		GXVoid DeleteWidgets ();
-		GXWidget* FindWidget ( const GXVec2 &position );
-		GXVoid DrawWidgets ( GXWidget* widget );
+        GXVoid DeleteWidgets ();
+        GXWidget* FindWidget ( const GXVec2 &position );
+        GXVoid DrawWidgets ( GXWidget* widget );
 
-		GXTouchSurface ( const GXTouchSurface &other ) = delete;
-		GXTouchSurface& operator = ( const GXTouchSurface &other ) = delete;
+        GXTouchSurface ( const GXTouchSurface &other ) = delete;
+        GXTouchSurface& operator = ( const GXTouchSurface &other ) = delete;
 };
 
 

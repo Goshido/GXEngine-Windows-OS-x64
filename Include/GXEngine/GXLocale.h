@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_LOCALE
 #define GX_LOCALE
@@ -9,34 +9,34 @@
 
 enum class eGXLanguage : GXUShort
 {
-	English = 0,
-	Russian = 1
+    English = 0,
+    Russian = 1
 };
 
 class GXLocale final
 {
-	private:
-		eGXLanguage			currentLanguage;
-		GXDynamicArray		storage;
+    private:
+        eGXLanguage         currentLanguage;
+        GXDynamicArray      storage;
 
-		static GXLocale*	instance;
+        static GXLocale*    instance;
 
-	public:
-		static GXLocale& GXCALL GetInstance ();
-		~GXLocale ();
+    public:
+        static GXLocale& GXCALL GetInstance ();
+        ~GXLocale ();
 
-		GXVoid LoadLanguage ( const GXWChar* fileName, eGXLanguage language );
+        GXVoid LoadLanguage ( const GXWChar* fileName, eGXLanguage language );
 
-		GXVoid SetLanguage ( eGXLanguage language );
-		eGXLanguage GetLanguage () const;
-	
-		const GXWChar* GetString ( const GXWChar* resName ) const;
+        GXVoid SetLanguage ( eGXLanguage language );
+        eGXLanguage GetLanguage () const;
+    
+        const GXWChar* GetString ( const GXWChar* resName ) const;
 
-	private:
-		GXLocale ();
+    private:
+        GXLocale ();
 
-		GXLocale ( const GXLocale &other ) = delete;
-		GXLocale& operator = ( const GXLocale &other ) = delete;
+        GXLocale ( const GXLocale &other ) = delete;
+        GXLocale& operator = ( const GXLocale &other ) = delete;
 };
 
 

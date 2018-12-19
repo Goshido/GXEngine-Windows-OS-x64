@@ -2,7 +2,15 @@
 
 
 #include <GXEngine/GXGlobals.h>
+
+#ifdef GX_BUDDHABROT
+
+#else
+
 #include <Editor Mobile/EMMain.h>
+
+#endif
+
 //#include <GXCommon/GXMTRSaver.h>
 //#include <GXCommon/GXBKESaver.h>
 //#include <Test/GXGameTest.h>
@@ -174,7 +182,14 @@ int wmain ( int argc, LPWSTR commandline )
 	//gx_Core = new GXCore ( OnMLPUltimateGameInit, OnMLPUltimateGameClose, L"MLP - Ultimate" );
 	//gx_Core = new GXCore ( OnLevelInit, OnLevelClose, L"GXEngine - Test game" );
 	//gx_Core = new GXCore ( TSGameInit, TSGameClose, L"Thesis" );
-	gx_Core = new GXCore ( &EMOnInit, &EMOnClose, L"GXEngine Editor Mobile" );
+
+	#ifdef GX_BUDDHABROT
+
+	#else
+
+		gx_Core = new GXCore ( &EMOnInit, &EMOnClose, L"GXEngine Editor Mobile" );
+
+	#endif
 	
 	gx_Core->Start ();
 

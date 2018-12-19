@@ -1,4 +1,4 @@
-// version 1.16
+// version 1.17
 
 #ifndef GX_CORE
 #define GX_CORE
@@ -9,23 +9,23 @@
 
 class GXCore final
 {
-	private:
-		static GXBool		loopFlag;
-		static GXCore*		instance;
+    private:
+        static GXBool       loopFlag;
+        static GXCore*      instance;
 
-	public:
-		static GXCore& GXCALL GetInstance ();
-		~GXCore ();
+    public:
+        static GXCore& GXCALL GetInstance ();
+        ~GXCore ();
 
-		GXVoid Start ( GXGame &game );
-		GXVoid Exit ();
+        GXVoid Start ( GXGame &game );
+        GXVoid Exit ();
 
-	private:
-		GXCore ();
-		GXVoid CheckMemoryLeak ();
+    private:
+        GXCore ();
+        GXVoid CheckMemoryLeak ();
 
-		GXCore ( const GXCore &other ) = delete;
-		GXCore& operator = ( const GXCore &other ) = delete;
+        GXCore ( const GXCore &other ) = delete;
+        GXCore& operator = ( const GXCore &other ) = delete;
 };
 
 

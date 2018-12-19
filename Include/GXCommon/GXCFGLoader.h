@@ -1,4 +1,5 @@
-// version 1.2
+// version 1.3
+
 
 #ifndef GX_CFG_LOADER
 #define GX_CFG_LOADER

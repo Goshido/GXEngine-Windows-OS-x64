@@ -1,8 +1,8 @@
-// version 1.7
+// version 1.8
 
 #include <GXCommon/GXLogger.h>
-#include <GXCommon/GXSmartLock.h>
 #include <GXCommon/GXMemory.h>
+#include <GXCommon/GXSmartLock.h>
 
 GX_DISABLE_COMMON_WARNINGS
 
@@ -14,66 +14,64 @@ GX_RESTORE_WARNING_STATE
 
 enum class GXConsoleLocale : GXUByte
 {
-	UnicodeRussian,
-	ASCII,
-	Unknown
+    UnicodeRussian,
+    ASCII,
+    Unknown
 };
 
 
-GXConsoleLocale		gx_logger_ConsoleLocale = GXConsoleLocale::Unknown;
-GXSmartLock*		gx_logger_SmartLock = nullptr;
+GXConsoleLocale     gx_logger_ConsoleLocale = GXConsoleLocale::Unknown;
+GXSmartLock*        gx_logger_SmartLock = nullptr;
 
 
 GXVoid GXCALL GXLogInit ()
 {
-	if ( gx_logger_SmartLock ) return;
+    if ( gx_logger_SmartLock ) return;
 
-	gx_logger_SmartLock = new GXSmartLock ();
+    gx_logger_SmartLock = new GXSmartLock ();
 }
 
 GXVoid GXCALL GXLogDestroy ()
 {
-	GXSafeDelete ( gx_logger_SmartLock );
+    GXSafeDelete ( gx_logger_SmartLock );
 }
 
 GXVoid GXCDECLCALL GXLogA ( const GXMBChar* format, ... )
 {
-	if ( gx_logger_SmartLock )
-	{
-		gx_logger_SmartLock->AcquireExlusive ();
+    if ( !gx_logger_SmartLock ) return;
 
-		if ( gx_logger_ConsoleLocale != GXConsoleLocale::ASCII )
-		{
-			gx_logger_ConsoleLocale = GXConsoleLocale::ASCII;
-			setlocale ( LC_CTYPE, "" );
-		}
+    gx_logger_SmartLock->AcquireExlusive ();
 
-		va_list ap;
-		va_start ( ap, format );
-		vprintf ( format, ap );
-		va_end ( ap );
+    if ( gx_logger_ConsoleLocale != GXConsoleLocale::ASCII )
+    {
+        gx_logger_ConsoleLocale = GXConsoleLocale::ASCII;
+        setlocale ( LC_CTYPE, "" );
+    }
 
-		gx_logger_SmartLock->ReleaseExlusive ();
-	}
+    va_list ap;
+    va_start ( ap, format );
+    vprintf ( format, ap );
+    va_end ( ap );
+
+    gx_logger_SmartLock->ReleaseExlusive ();
 }
 
 GXVoid GXCDECLCALL GXLogW ( const GXWChar* format, ... )
 {
-	if ( gx_logger_SmartLock )
-	{
-		gx_logger_SmartLock->AcquireExlusive ();
+    if ( !gx_logger_SmartLock ) return;
 
-		if ( gx_logger_ConsoleLocale != GXConsoleLocale::UnicodeRussian )
-		{
-			gx_logger_ConsoleLocale = GXConsoleLocale::UnicodeRussian;
-			setlocale ( LC_CTYPE, "Russian" );
-		}
+    gx_logger_SmartLock->AcquireExlusive ();
 
-		va_list ap;
-		va_start ( ap, format );
-		vwprintf ( format, ap );
-		va_end ( ap );
+    if ( gx_logger_ConsoleLocale != GXConsoleLocale::UnicodeRussian )
+    {
+        gx_logger_ConsoleLocale = GXConsoleLocale::UnicodeRussian;
+        setlocale ( LC_CTYPE, "Russian" );
+    }
 
-		gx_logger_SmartLock->ReleaseExlusive ();
-	}
+    va_list ap;
+    va_start ( ap, format );
+    vwprintf ( format, ap );
+    va_end ( ap );
+
+    gx_logger_SmartLock->ReleaseExlusive ();
 }

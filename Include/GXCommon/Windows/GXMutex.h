@@ -1,4 +1,4 @@
-﻿// version 1.2
+﻿// version 1.3
 
 #ifndef GX_MUTEX_WINDOWS
 #define GX_MUTEX_WINDOWS
@@ -9,19 +9,19 @@
 
 class GXMutex final : public GXAbstractMutex
 {
-	private:
-		HANDLE	mutex;
+    private:
+        HANDLE      mutex;
 
-	public:
-		GXMutex ();
-		~GXMutex () override;
+    public:
+        GXMutex ();
+        ~GXMutex () override;
 
-		GXVoid Lock () override;
-		GXVoid Release () override;
+        GXVoid Lock () override;
+        GXVoid Release () override;
 
-	private:
-		GXMutex ( const GXMutex &other ) = delete;
-		GXMutex& operator = ( const GXMutex &other ) = delete;
+    private:
+        GXMutex ( const GXMutex &other ) = delete;
+        GXMutex& operator = ( const GXMutex &other ) = delete;
 };
 
 

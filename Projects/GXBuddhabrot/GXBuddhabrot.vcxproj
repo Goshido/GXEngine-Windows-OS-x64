@@ -1,0 +1,289 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3395F1AA-EAE3-4977-BA59-F2CCC51F2F23}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>GXBuddhabrot</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)..\..\$(Configuration)\x64\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)..\..\$(Configuration)\x64\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WINSOCK_DEPRECATED_NO_WARNINGS;GX_BUDDHABROT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Include;$(SolutionDir)..\..\Include\FreeType;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/wd4710 /wd4820 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <AdditionalDependencies>OpenGL32.Lib;Ws2_32.Lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_WINSOCK_DEPRECATED_NO_WARNINGS;GX_BUDDHABROT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Include;$(SolutionDir)..\..\Include\FreeType;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/wd4710 /wd4820 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <AdditionalDependencies>OpenGL32.Lib;Ws2_32.Lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Sources\GXBuddhabrot\BBGame.cpp" />
+    <ClCompile Include="..\..\Sources\GXBuddhabrot\BBMain.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractMutex.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractSmartLock.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractThread.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractUIntAtomic.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXAVLTree.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXCFGLoader.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXFileSystem.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXImageLoader.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXLogger.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXMath.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXMemory.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeMesh.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeSkeletalMesh.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeSkin.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshLoader.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshSaver.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXOBJLoader.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXSmartLock.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXThread.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXTime.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXUIntAtomic.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXCamera.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXCameraPerspective.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXCore.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXEngineSettings.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXEquirectangularToCubeMapMaterial.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXFont.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXGame.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXInput.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXLocale.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXMaterial.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXMeshGeometry.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXNetwork.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXOGGSoundProvider.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXOpenGL.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXPhysXFrontend.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXRenderer.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXSampler.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXShaderProgram.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXSkeleton.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXSkinningMaterial.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXSound.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXSoundChannel.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXSoundEmitter.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXSoundMixer.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXSoundProvider.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXSoundStorage.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXSplashScreen.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXTexture2D.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXTexture2DGammaCorrectorMaterial.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXTextureCubeMap.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXTouchSurface.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXTransform.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXWidget.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Include\GXBuddhabrot\BBGame.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXAVLTree.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXCFGLoader.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXImageLoader.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXLogger.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXMath.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXMemory.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXMutex.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeMesh.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeSkeletalMesh.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeSkin.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeStaticMeshLoader.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeStaticMeshSaver.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXOBJLoader.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXStrings.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXTime.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXTypes.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXUIntAtomic.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXWarning.h" />
+    <ClInclude Include="..\..\Include\GXCommon\Windows\GXMutex.h" />
+    <ClInclude Include="..\..\Include\GXCommon\Windows\GXSmartLock.h" />
+    <ClInclude Include="..\..\Include\GXCommon\Windows\GXThread.h" />
+    <ClInclude Include="..\..\Include\GXCommon\Windows\GXTypes.h" />
+    <ClInclude Include="..\..\Include\GXCommon\Windows\GXUIntAtomic.h" />
+    <ClInclude Include="..\..\Include\GXCommon\Windows\GXWarning.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXCamera.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXCameraPerspective.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXCore.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXEngineSettings.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXEquirectangularToCubeMapMaterial.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXFont.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXGame.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXInput.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXLocale.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXMaterial.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXMeshGeometry.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXNetwork.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXOGGSoundProvider.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXOpenGL.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXPhysXFrontend.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXRenderer.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXSampler.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXShaderProgram.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXSkeleton.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXSkinningMaterial.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXSound.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXSoundChannel.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXSoundEmitter.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXSoundMixer.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXSoundProvider.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXSoundStorage.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXSplashScreen.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXTexture2D.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXTexture2DGammaCorrectorMaterial.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXTextureCubeMap.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXTouchSurface.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXTransform.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXVersion.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXWidget.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\Sources\GXEngine\Windows\Main.rc" />
+    <ResourceCompile Include="..\..\Sources\GXEngine\Windows\Version.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

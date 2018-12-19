@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_SOUND_PROVIDER
 #define GX_SOUND_PROVIDER
@@ -9,70 +9,69 @@
 #include <GXCommon/GXUIntAtomic.h>
 
 
-#define GX_SOUND_PROVIDER_BUFFER_SIZE	2097152u		// 2 Mb
+#define GX_SOUND_PROVIDER_BUFFER_SIZE       2097152u    // 2 Mb
 
 class GXSoundStreamer
 {
-	protected:
-		GXUByte*	mappedFile;
-		GXUPointer	totalSize;
-		GXLong		position;
-		GXUByte		pcmData[ GX_SOUND_PROVIDER_BUFFER_SIZE ];
+    protected:
+        GXUByte*        mappedFile;
+        GXUPointer      totalSize;
+        GXLong          position;
+        GXUByte         pcmData[ GX_SOUND_PROVIDER_BUFFER_SIZE ];
 
-	public:
-		explicit GXSoundStreamer ( GXVoid* mappedFile, GXUPointer totalSize );
-		virtual ~GXSoundStreamer ();
+    public:
+        explicit GXSoundStreamer ( GXVoid* mappedFile, GXUPointer totalSize );
+        virtual ~GXSoundStreamer ();
 
-		GXUInt Read ( GXVoid* out, GXUInt size );
-		GXInt Seek ( GXInt offset, GXInt whence );
-		GXLong Tell ();
+        GXUInt Read ( GXVoid* out, GXUInt size );
+        GXInt Seek ( GXInt offset, GXInt whence );
+        GXLong Tell ();
 
-		GXVoid Reset ();
+        GXVoid Reset ();
 
-		virtual GXBool FillBuffer ( ALuint buffer, GXBool isLooped ) = 0;
-		virtual GXVoid DecompressAll ( ALuint buffer ) = 0;
+        virtual GXBool FillBuffer ( ALuint buffer, GXBool isLooped ) = 0;
+        virtual GXVoid DecompressAll ( ALuint buffer ) = 0;
 
-	private:
-		GXSoundStreamer () = delete;
-		GXSoundStreamer ( const GXSoundStreamer &other ) = delete;
-		GXSoundStreamer& operator = ( const GXSoundStreamer &other ) = delete;
+    private:
+        GXSoundStreamer () = delete;
+        GXSoundStreamer ( const GXSoundStreamer &other ) = delete;
+        GXSoundStreamer& operator = ( const GXSoundStreamer &other ) = delete;
 };
 
 //-----------------------------------------------------------------------------------------------------
 
 class GXSoundTrack
 {
-	public:
-		GXSoundTrack*		next;
-		GXSoundTrack*		prev;
+    public:
+        GXSoundTrack*   next;
+        GXSoundTrack*   prev;
 
-	protected:
-		GXUIntAtomic		references;
-		ALuint				readyBuffer;
+    protected:
+        GXUIntAtomic    references;
+        ALuint          readyBuffer;
 
-	public:
-		GXWChar*			trackFile;
+    public:
+        GXWChar*        trackFile;
 
-	protected:
-		GXVoid*				mappedFile;
-		GXUBigInt			totalSize;
+    protected:
+        GXVoid*         mappedFile;
+        GXUBigInt       totalSize;
 
-		
-	public:
-		explicit GXSoundTrack ( const GXWChar* trackFile );
+    public:
+        explicit GXSoundTrack ( const GXWChar* trackFile );
 
-		GXVoid AddReference ();
-		GXVoid Release ();
+        GXVoid AddReference ();
+        GXVoid Release ();
 
-		virtual GXSoundStreamer* GetStreamer () = 0;
-		virtual ALuint GetBuffer () = 0;
+        virtual GXSoundStreamer* GetStreamer () = 0;
+        virtual ALuint GetBuffer () = 0;
 
-	protected:
-		virtual ~GXSoundTrack ();
+    protected:
+        virtual ~GXSoundTrack ();
 
-		GXSoundTrack () = delete;
-		GXSoundTrack ( const GXSoundTrack &other ) = delete;
-		GXSoundTrack& operator = ( const GXSoundTrack &other ) = delete;
+        GXSoundTrack () = delete;
+        GXSoundTrack ( const GXSoundTrack &other ) = delete;
+        GXSoundTrack& operator = ( const GXSoundTrack &other ) = delete;
 };
 
 

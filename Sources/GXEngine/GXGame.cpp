@@ -1,14 +1,14 @@
-// version 1.1
+// verison 1.2
 
 #include <GXEngine/GXGame.h>
 
 
 GXGame::GXGame ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXGame::~GXGame ()
 {
-	// NOTHING
+    // NOTHING
 }

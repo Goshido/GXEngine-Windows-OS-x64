@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #include <GXCommon/GXImageLoader.h>
 #include <GXCommon/GXLogger.h>
@@ -28,89 +28,89 @@ GX_RESTORE_WARNING_STATE
 
 GXBool GXCALL GXLoadLDRImage ( const GXWChar* fileName, GXUInt &width, GXUInt &height, GXUByte &numChannels, GXUByte** data )
 {
-	GXUPointer len;
-	stbi_uc* mappedFile;
+    GXUPointer len;
+    stbi_uc* mappedFile;
 
-	if ( !GXLoadFile ( fileName, reinterpret_cast<GXVoid**> ( &mappedFile ), len, GX_TRUE ) )
-	{
-		GXLogW ( L"GXLoadLDRImage::Error - Can't load file %s\n", fileName );
-		return GX_FALSE;
-	}
+    if ( !GXLoadFile ( fileName, reinterpret_cast<GXVoid**> ( &mappedFile ), len, GX_TRUE ) )
+    {
+        GXLogW ( L"GXLoadLDRImage::Error - Can't load file %s\n", fileName );
+        return GX_FALSE;
+    }
 
-	GXInt comp;
-	GXInt w;
-	GXInt h;
+    GXInt comp;
+    GXInt w;
+    GXInt h;
 
-	*data = static_cast<GXUByte*> ( stbi_load_from_memory ( mappedFile, static_cast<int>( len ), &w, &h, &comp, 0 ) );
-	free ( mappedFile );
+    *data = static_cast<GXUByte*> ( stbi_load_from_memory ( mappedFile, static_cast<int>( len ), &w, &h, &comp, 0 ) );
+    free ( mappedFile );
 
-	if ( !( *data ) ) return GX_FALSE;
+    if ( !( *data ) ) return GX_FALSE;
 
-	width = static_cast<GXUInt> ( w );
-	height = static_cast<GXUInt> ( h );
+    width = static_cast<GXUInt> ( w );
+    height = static_cast<GXUInt> ( h );
 
-	GXUPointer lineSize = width * comp * sizeof ( GXUByte );
-	GXUByte* tmp = static_cast<GXUByte*> ( malloc ( lineSize ) );
-	GXUByte* p = *data;
-	GXUByte* n = *data + lineSize * ( height - 1u );
+    GXUPointer lineSize = width * comp * sizeof ( GXUByte );
+    GXUByte* tmp = static_cast<GXUByte*> ( malloc ( lineSize ) );
+    GXUByte* p = *data;
+    GXUByte* n = *data + lineSize * ( height - 1u );
 
-	while ( p < n )
-	{
-		memcpy ( tmp, p, lineSize );
-		memcpy ( p, n, lineSize );
-		memcpy ( n, tmp, lineSize );
+    while ( p < n )
+    {
+        memcpy ( tmp, p, lineSize );
+        memcpy ( p, n, lineSize );
+        memcpy ( n, tmp, lineSize );
 
-		p += lineSize;
-		n -= lineSize;
-	}
+        p += lineSize;
+        n -= lineSize;
+    }
 
-	free ( tmp );
+    free ( tmp );
 
-	numChannels = static_cast<GXUByte> ( comp );
-	return GX_TRUE;
+    numChannels = static_cast<GXUByte> ( comp );
+    return GX_TRUE;
 }
 
 GXBool GXCALL GXLoadHDRImage ( const GXWChar* fileName, GXUInt &width, GXUInt &height, GXUByte &numChannels, GXFloat** data )
 {
-	GXUPointer len;
-	stbi_uc* mappedFile;
+    GXUPointer len;
+    stbi_uc* mappedFile;
 
-	if ( !GXLoadFile ( fileName, reinterpret_cast<GXVoid**> ( &mappedFile ), len, GX_TRUE ) )
-	{
-		GXLogW ( L"GXLoadHDRImage::Error - Can't load file %s\n", fileName );
-		return GX_FALSE;
-	}
+    if ( !GXLoadFile ( fileName, reinterpret_cast<GXVoid**> ( &mappedFile ), len, GX_TRUE ) )
+    {
+        GXLogW ( L"GXLoadHDRImage::Error - Can't load file %s\n", fileName );
+        return GX_FALSE;
+    }
 
-	GXInt comp;
-	GXInt w;
-	GXInt h;
+    GXInt comp;
+    GXInt w;
+    GXInt h;
 
-	*data = static_cast<GXFloat*> ( stbi_loadf_from_memory ( mappedFile, static_cast<int>( len ), &w, &h, &comp, 0 ) );
-	free ( mappedFile );
+    *data = static_cast<GXFloat*> ( stbi_loadf_from_memory ( mappedFile, static_cast<int>( len ), &w, &h, &comp, 0 ) );
+    free ( mappedFile );
 
-	if ( !( *data ) ) return GX_FALSE;
+    if ( !( *data ) ) return GX_FALSE;
 
-	width = static_cast<GXUInt> ( w );
-	height = static_cast<GXUInt> ( h );
+    width = static_cast<GXUInt> ( w );
+    height = static_cast<GXUInt> ( h );
 
-	GXUPointer floatsPerLine = width * comp;
-	GXUPointer lineSize = floatsPerLine * sizeof ( GXFloat );
-	GXFloat* tmp = static_cast<GXFloat*> ( malloc ( lineSize ) );
-	GXFloat* p = *data;
-	GXFloat* n = *data + floatsPerLine * ( height - 1 );
+    GXUPointer floatsPerLine = width * comp;
+    GXUPointer lineSize = floatsPerLine * sizeof ( GXFloat );
+    GXFloat* tmp = static_cast<GXFloat*> ( malloc ( lineSize ) );
+    GXFloat* p = *data;
+    GXFloat* n = *data + floatsPerLine * ( height - 1u );
 
-	while ( p < n )
-	{
-		memcpy ( tmp, p, lineSize );
-		memcpy ( p, n, lineSize );
-		memcpy ( n, tmp, lineSize );
+    while ( p < n )
+    {
+        memcpy ( tmp, p, lineSize );
+        memcpy ( p, n, lineSize );
+        memcpy ( n, tmp, lineSize );
 
-		p += floatsPerLine;
-		n -= floatsPerLine;
-	}
+        p += floatsPerLine;
+        n -= floatsPerLine;
+    }
 
-	free ( tmp );
+    free ( tmp );
 
-	numChannels = static_cast<GXUByte> ( comp );
-	return GX_TRUE;
+    numChannels = static_cast<GXUByte> ( comp );
+    return GX_TRUE;
 }

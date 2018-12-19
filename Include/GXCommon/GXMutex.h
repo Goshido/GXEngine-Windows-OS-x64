@@ -1,4 +1,4 @@
-﻿// version 1.2
+﻿// version 1.3
 
 #ifndef GX_MUTEX
 #define GX_MUTEX
@@ -9,24 +9,24 @@
 
 class GXAbstractMutex
 {
-	public:
-		virtual GXVoid Lock () = 0;
-		virtual GXVoid Release () = 0;
+    public:
+        virtual GXVoid Lock () = 0;
+        virtual GXVoid Release () = 0;
 
-	protected:
-		GXAbstractMutex ();
-		virtual ~GXAbstractMutex ();
+    protected:
+        GXAbstractMutex ();
+        virtual ~GXAbstractMutex ();
 
-	private:
-		GXAbstractMutex ( const GXAbstractMutex &other ) = delete;
-		GXAbstractMutex& operator = ( const GXAbstractMutex &other ) = delete;
+    private:
+        GXAbstractMutex ( const GXAbstractMutex &other ) = delete;
+        GXAbstractMutex& operator = ( const GXAbstractMutex &other ) = delete;
 };
 
 
 #ifdef __GNUC__
-	#include "Posix/GXMutex.h"
+    #include "Posix/GXMutex.h"
 #else
-	#include "Windows/GXMutex.h"
+    #include "Windows/GXMutex.h"
 #endif // __GNU__
 
 

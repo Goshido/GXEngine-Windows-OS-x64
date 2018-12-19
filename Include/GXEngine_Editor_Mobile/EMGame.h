@@ -24,80 +24,80 @@
 
 class EMGame final : public GXGame
 {
-	private:
-		GXCameraOrthographic*	hudCamera;
+    private:
+        GXCameraOrthographic*       hudCamera;
 
-		EMUIOpenFile*			openFile;
+        EMUIOpenFile*               openFile;
 
-		EMUIMenu*				menu;
-		EMUIPopup*				filePopup;
-		EMUIPopup*				createPopup;
-		EMUIPopup*				toolsPopup;
-		EMUIPopup*				utilityPopup;
-		EMUIPopup*				effectsPopup;
+        EMUIMenu*                   menu;
+        EMUIPopup*                  filePopup;
+        EMUIPopup*                  createPopup;
+        EMUIPopup*                  toolsPopup;
+        EMUIPopup*                  utilityPopup;
+        EMUIPopup*                  effectsPopup;
 
-		GXHudSurface*			physicsInfo;
-		GXMeshGeometry*			physicsContactPointMesh;
-		GXUnlitColorMaterial*	physicsContactPointMaterial;
+        GXHudSurface*               physicsInfo;
+        GXMeshGeometry*             physicsContactPointMesh;
+        GXUnlitColorMaterial*       physicsContactPointMaterial;
 
-		GXGravity				gravity;
+        GXGravity                   gravity;
 
-		EMDirectedLightActor*	directedLight;
+        EMDirectedLightActor*       directedLight;
 
-		EMUnitActor*			unitActor;
-		EMPhysicsDrivenActor*	colliderOne;
-		EMPhysicsDrivenActor*	colliderTwo;
-		EMPhysicsDrivenActor*	kinematicPlane;
-		EMMeshActor*			plasticSphere;
-		EMMeshActor*			goldSphere;
-		EMMeshActor*			silverSphere;
+        EMUnitActor*                unitActor;
+        EMPhysicsDrivenActor*       colliderOne;
+        EMPhysicsDrivenActor*       colliderTwo;
+        EMPhysicsDrivenActor*       kinematicPlane;
+        EMMeshActor*                plasticSphere;
+        EMMeshActor*                goldSphere;
+        EMMeshActor*                silverSphere;
 
-		EMMoveTool*				moveTool;
+        EMMoveTool*                 moveTool;
 
-		EMFluttershy*			fluttershy;
+        EMFluttershy*               fluttershy;
 
-		GXMeshGeometry*			contactLocationMesh;
-		GXUnlitColorMaterial*	contactLocationMaterial;
+        GXMeshGeometry*             contactLocationMesh;
+        GXUnlitColorMaterial*       contactLocationMaterial;
 
-		GXMeshGeometry*			contactNormalMesh;
-		GXUnlitColorMaterial*	contactNormalMaterial;
+        GXMeshGeometry*             contactNormalMesh;
+        GXUnlitColorMaterial*       contactNormalMaterial;
 
-		GXTextureCubeMap*		environmentMap;
-		GXTextureCubeMap*		lightProbeSourceTexture;
+        GXTextureCubeMap*           environmentMap;
+        GXTextureCubeMap*           lightProbeSourceTexture;
 
-		EMLightProbe*			lightProbe;
+        EMLightProbe*               lightProbe;
 
-		GXUIInput*				uiInput;
+        GXUIInput*                  uiInput;
 
-		GXFont*					physicsInfoFont;
-		GXTexture2D				physicsInfoBackgroundTexture;
+        GXFont*                     physicsInfoFont;
+        GXTexture2D                 physicsInfoBackgroundTexture;
 
-		static GXBool			isContact;
-		static GXMat4			contactNormalTransform;
+        static GXBool               isContact;
+        static GXMat4               contactNormalTransform;
 
-	public:
-		EMGame ();
-		~EMGame () override;
+    public:
+        EMGame ();
+        ~EMGame () override;
 
-		GXVoid OnInit () override;
-		GXVoid OnResize ( GXInt width, GXInt height ) override;
-		GXVoid OnFrame ( GXFloat deltaTime ) override;
-		GXVoid OnDestroy () override;
+        GXVoid OnInit () override;
+        GXVoid OnResize ( GXInt width, GXInt height ) override;
+        GXVoid OnFrame ( GXFloat deltaTime ) override;
+        GXVoid OnDestroy () override;
 
-	private:
-		static GXVoid GXCALL OnExit ( GXVoid* handler );
-		static GXVoid GXCALL OnColorPicker ( GXVoid* handler );
-		static GXVoid GXCALL OnPickRGBUByte ( GXVoid* handler, GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
-		static GXVoid GXCALL OnShowMotionBlurSettings ( GXVoid* handler );
-		static GXVoid GXCALL OnShowSSAOSettings ( GXVoid* handler );
-		static GXVoid GXCALL OnShowToneMapperSettings ( GXVoid* handler );
-		static GXVoid GXCALL OnMouseButton ( GXVoid* handler, GXInputMouseFlags mouseflags );
-		static GXVoid GXCALL OnObject ( GXVoid* handler, GXVoid* object );
-		static GXVoid GXCALL OnViewerTransformChanged ( GXVoid* handler );
-		static GXVoid GXCALL OnOpenFile ( const GXWChar* filePath );
+    private:
+        static GXVoid GXCALL OnExit ( GXVoid* handler );
+        static GXVoid GXCALL OnColorPicker ( GXVoid* handler );
+        static GXVoid GXCALL OnPickRGBUByte ( GXVoid* handler, GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
+        static GXVoid GXCALL OnShowMotionBlurSettings ( GXVoid* handler );
+        static GXVoid GXCALL OnShowSSAOSettings ( GXVoid* handler );
+        static GXVoid GXCALL OnShowToneMapperSettings ( GXVoid* handler );
+        static GXVoid GXCALL OnMouseButton ( GXVoid* handler, GXInputMouseFlags mouseflags );
+        static GXVoid GXCALL OnObject ( GXVoid* handler, GXVoid* object );
+        static GXVoid GXCALL OnViewerTransformChanged ( GXVoid* handler );
+        static GXVoid GXCALL OnOpenFile ( const GXWChar* filePath );
 
-		EMGame ( const EMGame &other ) = delete;
-		EMGame& operator = ( const EMGame &other ) = delete;
+        EMGame ( const EMGame &other ) = delete;
+        EMGame& operator = ( const EMGame &other ) = delete;
 };
 
 

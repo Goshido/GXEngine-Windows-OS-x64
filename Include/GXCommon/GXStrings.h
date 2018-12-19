@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_STRINGS
 #define GX_STRINGS
@@ -9,35 +9,35 @@
 
 class GXUTF8Parser final
 {
-	private:
-		const GXUTF8*	string;
-		GXUInt			totalSymbols;
+    private:
+        const GXUTF8*       string;
+        GXUInt              totalSymbols;
 
-	public:
-		explicit GXUTF8Parser ( const GXUTF8* string );
-		~GXUTF8Parser ();
+    public:
+        explicit GXUTF8Parser ( const GXUTF8* string );
+        ~GXUTF8Parser ();
 
-		GXUInt GetSymbol ( GXUInt position );
-		GXUInt GetLength ();
+        GXUInt GetSymbol ( GXUInt position );
+        GXUInt GetLength ();
 
-		GXVoid Copy ( GXUTF8* dest, GXUInt startPos, GXUInt endPos );
-		GXUInt GetOffset ( GXUInt position );
+        GXVoid Copy ( GXUTF8* dest, GXUInt startPos, GXUInt endPos );
+        GXUInt GetOffset ( GXUInt position );
 
-		GXVoid Debug ();
+        GXVoid Debug ();
 
-	private:
-		GXUTF8Parser ( const GXUTF8Parser &other ) = delete;
-		GXUTF8Parser& operator = ( const GXUTF8Parser &other ) = delete;
+    private:
+        GXUTF8Parser ( const GXUTF8Parser &other ) = delete;
+        GXUTF8Parser& operator = ( const GXUTF8Parser &other ) = delete;
 };
 
 //--------------------------------------------------------------
 
 enum eGXEndianness : GXUByte
 {
-	BigEndian,
-	LittleEndian,
-	PDPEndian,
-	ErrorEndian
+    BigEndian,
+    LittleEndian,
+    PDPEndian,
+    ErrorEndian
 };
 
 eGXEndianness GXCALL GXDetermineEndianness ();

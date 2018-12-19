@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_NATIVE_STATIC_MESH_LOADER
 #define GX_NATIVE_STATIC_MESH_LOADER
@@ -9,19 +9,19 @@
 
 struct GXNativeStaticMeshInfo final
 {
-	GXAABB			bounds;
+    GXAABB      bounds;
 
-	GXUInt			numVertices;
-	GXUInt			numUVs;
-	GXUInt			numNormals;
-	GXUInt			numTBPairs;
-	GXUInt			numElements;
+    GXUInt      numVertices;
+    GXUInt      numUVs;
+    GXUInt      numNormals;
+    GXUInt      numTBPairs;
+    GXUInt      numElements;
 
-	GXUByte*		vboData;
-	GXUByte*		eboData;
+    GXUByte*    vboData;
+    GXUByte*    eboData;
 
-	GXNativeStaticMeshInfo ();
-	GXVoid Cleanup ();
+    GXNativeStaticMeshInfo ();
+    GXVoid Cleanup ();
 };
 
 

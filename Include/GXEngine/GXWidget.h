@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #ifndef GX_WIDGET
 #define GX_WIDGET
@@ -11,111 +11,111 @@
 class GXWidgetRenderer;
 class GXWidget
 {
-	friend class GXTouchSurface;
-	friend class GXWidgetIterator;
+    friend class GXTouchSurface;
+    friend class GXWidgetIterator;
 
-	private:
-		GXBool					isRegistered;
+    private:
+        GXBool                  isRegistered;
 
-	protected:
-		GXWidget*				next;
-		GXWidget*				prev;
+    protected:
+        GXWidget*               next;
+        GXWidget*               prev;
 
-		GXWidget*				parent;
-		GXWidget*				childs;
+        GXWidget*               parent;
+        GXWidget*               childs;
 
-		GXBool					isVisible;
-		GXBool					isDraggable;
-		GXWidgetRenderer*		renderer;
+        GXBool                  isVisible;
+        GXBool                  isDraggable;
+        GXWidgetRenderer*       renderer;
 
-		GXAABB					boundsWorld;
-		GXAABB					boundsLocal;
+        GXAABB                  boundsWorld;
+        GXAABB                  boundsLocal;
 
-	public:
-		explicit GXWidget ( GXWidget* parent, GXBool isNeedRegister = GX_TRUE );
-		virtual ~GXWidget ();
+    public:
+        explicit GXWidget ( GXWidget* parent, GXBool isNeedRegister = GX_TRUE );
+        virtual ~GXWidget ();
 
-		virtual GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data );
+        virtual GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data );
 
-		GXVoid Resize ( GXFloat x, GXFloat y, GXFloat width, GXFloat height );
-		const GXAABB& GetBoundsWorld () const;
-		const GXAABB& GetBoundsLocal () const;
+        GXVoid Resize ( GXFloat x, GXFloat y, GXFloat width, GXFloat height );
+        const GXAABB& GetBoundsWorld () const;
+        const GXAABB& GetBoundsLocal () const;
 
-		GXVoid Show ();
-		GXVoid Refresh ();
-		GXVoid Hide ();
-		GXVoid ToForeground ();
-		GXBool IsVisible () const;
-		GXBool IsDraggable () const;
+        GXVoid Show ();
+        GXVoid Refresh ();
+        GXVoid Hide ();
+        GXVoid ToForeground ();
+        GXBool IsVisible () const;
+        GXBool IsDraggable () const;
 
-		GXVoid SetRenderer ( GXWidgetRenderer* rendererObject );
-		GXWidgetRenderer* GetRenderer () const;
-		GXWidget* FindWidget ( const GXVec2 &position );	// return child widget or itself. Never nullptr
+        GXVoid SetRenderer ( GXWidgetRenderer* rendererObject );
+        GXWidgetRenderer* GetRenderer () const;
+        GXWidget* FindWidget ( const GXVec2 &position );    // return child widget or itself. Never nullptr
 
-	protected:
-		GXVoid UpdateBoundsWorld ( const GXAABB &newBoundsLocal );
-		GXVoid OnDraw ();
+    protected:
+        GXVoid UpdateBoundsWorld ( const GXAABB &newBoundsLocal );
+        GXVoid OnDraw ();
 
-	private:
-		GXVoid AddChild ( GXWidget* child );
-		GXVoid RemoveChild ( GXWidget* child );
-		GXBool DoesChildExist ( GXWidget* child ) const;
+    private:
+        GXVoid AddChild ( GXWidget* child );
+        GXVoid RemoveChild ( GXWidget* child );
+        GXBool DoesChildExist ( GXWidget* child ) const;
 
-		GXWidget () = delete;
-		GXWidget ( const GXWidget &other ) = delete;
-		GXWidget& operator = ( const GXWidget &other ) = delete;
+        GXWidget () = delete;
+        GXWidget ( const GXWidget &other ) = delete;
+        GXWidget& operator = ( const GXWidget &other ) = delete;
 };
 
 class GXWidgetIterator final
 {
-	private:
-		GXWidget*	widget;
+    private:
+        GXWidget*       widget;
 
-	public:
-		GXWidgetIterator ();
-		~GXWidgetIterator ();
+    public:
+        GXWidgetIterator ();
+        ~GXWidgetIterator ();
 
-		GXWidget* Init ( GXWidget* startWidget );
+        GXWidget* Init ( GXWidget* startWidget );
 
-		GXWidget* GetNext ();
-		GXWidget* GetPrevious ();
-		GXWidget* GetParent ();
-		GXWidget* GetChilds ();
+        GXWidget* GetNext ();
+        GXWidget* GetPrevious ();
+        GXWidget* GetParent ();
+        GXWidget* GetChilds ();
 
-	private:
-		GXWidgetIterator ( const GXWidgetIterator &other ) = delete;
-		GXWidgetIterator& operator = ( const GXWidgetIterator &other ) = delete;
+    private:
+        GXWidgetIterator ( const GXWidgetIterator &other ) = delete;
+        GXWidgetIterator& operator = ( const GXWidgetIterator &other ) = delete;
 };
 
 class GXWidgetRenderer
 {
-	friend class GXWidget;
+    friend class GXWidget;
 
-	protected:
-		GXWidget*	widget;
+    protected:
+        GXWidget*       widget;
 
-	private:
-		GXAABB		oldBounds;
+    private:
+        GXAABB          oldBounds;
 
-	public:
-		explicit GXWidgetRenderer ( GXWidget* widget );
-		virtual ~GXWidgetRenderer ();
+    public:
+        explicit GXWidgetRenderer ( GXWidget* widget );
+        virtual ~GXWidgetRenderer ();
 
-		GXVoid OnUpdate ();
+        GXVoid OnUpdate ();
 
-	protected:
-		virtual GXVoid OnRefresh ();
-		virtual GXVoid OnDraw ();
-		virtual GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height );
-		virtual GXVoid OnMoved ( GXFloat x, GXFloat y );
+    protected:
+        virtual GXVoid OnRefresh ();
+        virtual GXVoid OnDraw ();
+        virtual GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height );
+        virtual GXVoid OnMoved ( GXFloat x, GXFloat y );
 
-	private:
-		GXBool IsResized ();
-		GXBool IsMoved ();
+    private:
+        GXBool IsResized ();
+        GXBool IsMoved ();
 
-		GXWidgetRenderer () = delete;
-		GXWidgetRenderer ( const GXWidgetRenderer &other ) = delete;
-		GXWidgetRenderer& operator = ( const GXWidgetRenderer &other ) = delete;
+        GXWidgetRenderer () = delete;
+        GXWidgetRenderer ( const GXWidgetRenderer &other ) = delete;
+        GXWidgetRenderer& operator = ( const GXWidgetRenderer &other ) = delete;
 };
 
 #endif // GX_WIDGET

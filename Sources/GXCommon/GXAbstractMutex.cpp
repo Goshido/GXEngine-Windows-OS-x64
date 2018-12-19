@@ -1,14 +1,14 @@
-// version 1.2
+// version 1.3
 
 #include <GXCommon/GXMutex.h>
 
 
 GXAbstractMutex::GXAbstractMutex ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXAbstractMutex::~GXAbstractMutex ()
 {
-	// NOTHING
+    // NOTHING
 }
