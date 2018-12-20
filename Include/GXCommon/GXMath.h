@@ -59,7 +59,7 @@ struct GXVec2 final
     GXVec2& operator = ( const GXVec2 &vector );
 };
 
-//-------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 enum class eGXLineRelationship : GXUByte
 {
@@ -70,7 +70,7 @@ enum class eGXLineRelationship : GXUByte
 
 eGXLineRelationship GXCALL GXLineIntersection2D ( GXVec2 &intersectionPoint, const GXVec2 &a0, const GXVec2 &a1, const GXVec2 &b0, const GXVec2 &b1 );
 
-//-------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 // By convention it is row-vector.
 struct GXVec3 final
@@ -122,11 +122,11 @@ struct GXVec3 final
     GXVec3& operator = ( const GXVec3 &vector );
 };
 
-//-------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXBool GXCALL GXRayTriangleIntersection3D ( GXFloat &outT, const GXVec3 &origin, const GXVec3 &direction, GXFloat length, const GXVec3 &a, const GXVec3 &b, const GXVec3 &c );
 
-//-------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 struct GXEuler final
 {
@@ -141,7 +141,7 @@ struct GXEuler final
     GXEuler& operator = ( const GXEuler &other );
 };
 
-//-------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 // By convention it is row-vector.
 struct GXVec4 final
@@ -180,7 +180,7 @@ struct GXVec4 final
     GXVec4& operator = ( const GXVec4 &vector );
 };
 
-//-------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 struct GXVec6 final
 {
@@ -201,7 +201,7 @@ struct GXVec6 final
     GXVec6& operator = ( const GXVec6 &other );
 };
 
-//-------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 struct GXColorHSV;
 struct GXColorRGB final
@@ -241,7 +241,7 @@ struct GXColorRGB final
     GXColorRGB& operator = ( const GXColorRGB &other );
 };
 
-//-------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 struct GXColorHSV final
 {
@@ -274,7 +274,31 @@ struct GXColorHSV final
     GXVoid operator = ( const GXColorHSV &other );
 };
 
-//-------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
+
+struct GXPreciseComplex final
+{
+    GXDouble    r;
+    GXDouble    i;
+
+    GXPreciseComplex ();
+    GXPreciseComplex ( const GXPreciseComplex &other );
+    explicit GXPreciseComplex ( GXDouble r, GXDouble i );
+    ~GXPreciseComplex ();
+
+    GXDouble Length ();
+    GXDouble SquaredLength ();
+
+    // Method returns GX_FALSE if ( 0.0 + 0.0i ) ^ 0 will happen.
+    GXBool Power ( GXUInt power );
+
+    GXPreciseComplex& operator = ( const GXPreciseComplex &other );
+    GXPreciseComplex& operator + ( const GXPreciseComplex &other );
+    GXPreciseComplex& operator - ( const GXPreciseComplex &other );
+    GXPreciseComplex& operator * ( const GXPreciseComplex &other );
+};
+
+//---------------------------------------------------------------------------------------------------------------------
 
 struct GXMat3;
 struct GXMat4;
@@ -344,7 +368,7 @@ struct GXQuat final
     GXQuat& operator = ( const GXVec4 &other );
 };
 
-//-------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 struct GXMat3 final
 {
@@ -398,7 +422,7 @@ struct GXMat3 final
     GXMat3& operator = ( const GXMat3 &matrix );
 };
 
-//-------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 struct GXMat4 final
 {
@@ -483,7 +507,7 @@ struct GXMat4 final
     GXMat4& operator = ( const GXMat4 &other );
 };
 
-//-------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 struct GXAABB final
 {
@@ -514,7 +538,7 @@ struct GXAABB final
     GXAABB& operator = ( const GXAABB &other );
 };
 
-//-------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 enum class eGXPlaneClassifyVertex : GXUByte
 {
@@ -545,7 +569,7 @@ struct GXPlane final
     GXPlane& operator = ( const GXPlane &other );
 };
 
-//-------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 class GXProjectionClipPlanes final
 {
@@ -568,7 +592,7 @@ class GXProjectionClipPlanes final
         GXUByte PlaneTest ( GXFloat x, GXFloat y, GXFloat z );
 };
 
-//-------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXFloat GXCALL GXDegToRad ( GXFloat degrees );
 GXFloat GXCALL GXRadToDeg ( GXFloat radians );

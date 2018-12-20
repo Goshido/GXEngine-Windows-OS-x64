@@ -160,7 +160,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\GXBuddhabrot\BBGame.cpp" />
+    <ClCompile Include="..\..\Sources\GXBuddhabrot\BBJob.cpp" />
     <ClCompile Include="..\..\Sources\GXBuddhabrot\BBMain.cpp" />
+    <ClCompile Include="..\..\Sources\GXBuddhabrot\BBTask.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractMutex.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractSmartLock.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractThread.cpp" />
@@ -220,6 +222,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXBuddhabrot\BBGame.h" />
+    <ClInclude Include="..\..\Include\GXBuddhabrot\BBJob.h" />
+    <ClInclude Include="..\..\Include\GXBuddhabrot\BBTask.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXAVLTree.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXCFGLoader.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXImageLoader.h" />

@@ -58,6 +58,8 @@ GXVoid GXThread::Join ()
         return;
     }
 
+    if ( thread == INVALID_HANDLE_VALUE ) return;
+
     WaitForSingleObject ( thread, INFINITE );
     CloseHandle ( thread );
     thread = INVALID_HANDLE_VALUE;

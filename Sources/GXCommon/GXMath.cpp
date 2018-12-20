@@ -152,7 +152,7 @@ GXVec2& GXVec2::operator = ( const GXVec2 &vector )
     return *this;
 }
 
-//------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 eGXLineRelationship GXCALL GXLineIntersection2D ( GXVec2 &intersectionPoint, const GXVec2 &a0, const GXVec2 &a1, const GXVec2 &b0, const GXVec2 &b1 )
 {
@@ -399,7 +399,7 @@ GXVec3& GXVec3::operator = ( const GXVec3 &vector )
     return *this;
 }
 
-//----------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXBool GXCALL GXRayTriangleIntersection3D ( GXFloat &outT, const GXVec3 &origin, const GXVec3 &direction, GXFloat length, const GXVec3 &a, const GXVec3 &b, const GXVec3 &c )
 {
@@ -509,7 +509,7 @@ GXEuler& GXEuler::operator = ( const GXEuler &other )
     return *this;
 }
 
-//----------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXVec4::GXVec4 ()
 {
@@ -625,7 +625,7 @@ GXVec4& GXVec4::operator = ( const GXVec4 &vector )
     return *this;
 }
 
-//------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXVec6::GXVec6 ()
 {
@@ -704,7 +704,7 @@ GXVec6& GXVec6::operator = ( const GXVec6 &other )
     return *this;
 }
 
-//------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXColorRGB::GXColorRGB ()
 {
@@ -865,7 +865,7 @@ GXColorRGB& GXColorRGB::operator = ( const GXColorRGB &other )
     return *this;
 }
 
-//------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXColorHSV::GXColorHSV ()
 {
@@ -975,7 +975,100 @@ GXVoid GXColorHSV::operator = ( const GXColorHSV &other )
     memcpy ( this, &other, sizeof ( GXColorHSV ) );
 }
 
-//------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
+
+GXPreciseComplex::GXPreciseComplex ()
+{
+    // NOTHING
+}
+
+GXPreciseComplex::GXPreciseComplex ( const GXPreciseComplex &other ):
+    r ( other.r ),
+    i ( other.i )
+{
+    // NOTHING
+}
+
+GXPreciseComplex::GXPreciseComplex ( GXDouble r, GXDouble i ):
+    r ( r ),
+    i ( i )
+{
+    // NOTHING
+}
+
+GXPreciseComplex::~GXPreciseComplex ()
+{
+    // NOTHING
+}
+
+GXDouble GXPreciseComplex::Length ()
+{
+    return sqrt ( SquaredLength () );
+}
+
+GXDouble GXPreciseComplex::SquaredLength ()
+{
+    return r * r + i * i;
+}
+
+GXBool GXPreciseComplex::Power ( GXUInt power )
+{
+    if ( power == 1u )
+        return GX_TRUE;
+
+    if ( power > 1u )
+    {
+        GXPreciseComplex alpha ( *this );
+
+        while ( power > 0u )
+        {
+            *this * alpha;
+            --power;
+        }
+
+        return GX_TRUE;
+    }
+
+    if ( r == 0.0 && i == 0.0 )
+    {
+        GXLogA ( "GXPreciseComplex::Power - ( 0.0 + 0.0i ) ^ 0 is undefined!" );
+        return GX_FALSE;
+    }
+
+    r = 1.0;
+    i = 0.0;
+
+    return GX_FALSE;
+}
+
+GXPreciseComplex& GXPreciseComplex::operator = ( const GXPreciseComplex &other )
+{
+    memcpy ( this, &other, sizeof ( GXPreciseComplex ) );
+    return *this;
+}
+
+GXPreciseComplex& GXPreciseComplex::operator + ( const GXPreciseComplex &other )
+{
+    r += other.r;
+    i += other.i;
+    return *this;
+}
+
+GXPreciseComplex& GXPreciseComplex::operator - ( const GXPreciseComplex &other )
+{
+    r -= other.r;
+    i -= other.i;
+    return *this;
+}
+
+GXPreciseComplex& GXPreciseComplex::operator * ( const GXPreciseComplex &other )
+{
+    GXPreciseComplex result ( r * other.r - i * other.i, r * other.i + i * other.r );
+    *this = result;
+    return *this;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 
 GXQuat::GXQuat ()
 {
@@ -1470,7 +1563,7 @@ GXQuat& GXQuat::operator = ( const GXVec4 &other )
     return *this;
 }
 
-//-------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXMat3::GXMat3 ()
 {
@@ -1806,7 +1899,7 @@ GXMat3& GXMat3::operator = ( const GXMat3 &matrix )
     return *this;
 }
 
-//------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXMat4::GXMat4 ()
 {
@@ -2392,7 +2485,7 @@ GXMat4& GXMat4::operator = ( const GXMat4 &matrix )
     return *this;
 }
 
-//------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXAABB::GXAABB ()
 {
@@ -2676,7 +2769,7 @@ GXPlane& GXPlane::operator = ( const GXPlane &other )
     return *this;
 }
 
-//------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXProjectionClipPlanes::GXProjectionClipPlanes ()
 {

@@ -1,5 +1,6 @@
 #include <GXBuddhabrot/BBGame.h>
 
+
 BBGame::BBGame ()
 {
 
