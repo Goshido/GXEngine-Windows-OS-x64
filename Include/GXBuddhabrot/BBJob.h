@@ -7,7 +7,7 @@
 
 
 // Note progress could be [0.0f, 1.0f].
-typedef GXVoid ( GXCALL* PFNBBJOBPROGRESSPROC ) ( GXVoid* context, GXFloat progress );
+typedef GXVoid ( GXCALL* PFNBBJOBPROGRESSPROC ) ( GXVoid* context );
 
 class BBJob final
 {
@@ -18,17 +18,20 @@ class BBJob final
         GXBool                      isAbort;
 
         const GXPreciseComplex*     points;
-        GXUInt                      totalPoints;
+        GXUShort                    totalPoints;
 
+        GXFloat                     progress;
         BBTask&                     task;
 
         GXThread*                   thread;
 
     public:
         // Note pointsViewport MUST be valid memory until this object live.
-        explicit BBJob ( BBTask &task, const GXPreciseComplex* pointsViewport, GXUInt pointCount, GXVoid* onProgressContext, PFNBBJOBPROGRESSPROC onProgressCallback );
+        explicit BBJob ( BBTask &task, const GXPreciseComplex* pointsViewport, GXUShort pointCount, GXVoid* onProgressContext, PFNBBJOBPROGRESSPROC onProgressCallback );
 
         ~BBJob ();
+
+        GXFloat GetProgress () const;
 
         // Note job restarting is not supported. Create new one instead.
         GXVoid Start ();

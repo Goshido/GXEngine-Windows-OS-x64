@@ -2,12 +2,13 @@
 #include <GXCommon/GXMemory.h>
 
 
-BBJob::BBJob ( BBTask &taskObject, const GXPreciseComplex* pointsViewport, GXUInt pointCount, GXVoid* onProgressContext, PFNBBJOBPROGRESSPROC onProgressCallback ):
+BBJob::BBJob ( BBTask &taskObject, const GXPreciseComplex* pointsViewport, GXUShort pointCount, GXVoid* onProgressContext, PFNBBJOBPROGRESSPROC onProgressCallback ):
     callback ( onProgressCallback ),
     context ( onProgressContext ),
     isAbort ( GX_FALSE ),
     points ( pointsViewport ),
     totalPoints ( pointCount ),
+    progress ( 0.0f ),
     task ( taskObject )
 {
     thread = new GXThread ( &BBJob::Thread, this );
@@ -16,6 +17,11 @@ BBJob::BBJob ( BBTask &taskObject, const GXPreciseComplex* pointsViewport, GXUIn
 BBJob::~BBJob ()
 {
     Abort ();
+}
+
+GXFloat BBJob::GetProgress () const
+{
+    return progress;
 }
 
 GXVoid BBJob::Start ()
@@ -49,10 +55,12 @@ GXUPointer GXTHREADCALL BBJob::Thread ( GXVoid* argument, GXThread& /*thread*/ )
     if ( job->isAbort )
         return 0u;
 
-    job->callback ( job->context, 0.0f );
+    job->callback ( job->context );
 
     // TODO make Buddhabrot magic here!
 
-    job->callback ( job->context, 1.0f );
+    job->progress = 1.0f;
+    job->callback ( job->context );
+
     return 0u;
 }

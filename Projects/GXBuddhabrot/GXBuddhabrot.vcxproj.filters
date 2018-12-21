@@ -219,6 +219,9 @@
     <ClCompile Include="..\..\Sources\GXBuddhabrot\BBJob.cpp">
       <Filter>Source Files\GXBuddhabrot</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXBuddhabrot\BBScheduler.cpp">
+      <Filter>Source Files\GXBuddhabrot</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXBuddhabrot\BBGame.h">
@@ -402,6 +405,9 @@
       <Filter>Header Files\GXBuddhabrot</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXBuddhabrot\BBJob.h">
+      <Filter>Header Files\GXBuddhabrot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXBuddhabrot\BBScheduler.h">
       <Filter>Header Files\GXBuddhabrot</Filter>
     </ClInclude>
   </ItemGroup>
