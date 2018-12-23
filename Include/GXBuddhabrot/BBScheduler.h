@@ -46,27 +46,33 @@ struct BBJobContext
     BBJob*                  job;
 };
 
+class BBScheduler;
+typedef GXVoid ( BBScheduler::* PFNBBSCHEDULERCOLLECTORPROC ) ( BBJobContext& jobContext, GXPreciseComplex &activePoint );
+
 class BBScheduler final
 {
     private:
-        GXBool                  isAbort;
-        GXBool                  isLoop;
-        eBBThreadState          state;
+        GXBool                          isAbort;
+        GXBool                          isLoop;
+        eBBThreadState                  state;
 
-        GXPreciseComplex*       distributionPattern;
+        GXPreciseComplex*               distributionPattern;
 
-        BBTask*                 task;
-        GXDouble                pointSize;          // perfect square point
-        GXUShort                samplesPerPoint;
+        BBTask*                         task;
+        GXDouble                        pointSize;          // perfect square point
+        GXUShort                        samplesPerPoint;
 
-        BBJobContext*           jobContexts;
-        GXUPointer              targetJobCount;
+        BBJobContext*                   jobContexts;
 
-        GXThread*               scheduerThread;
-        BBProgressInfo          progressInfo;
+        GXUPointer                      targetJobCount;
 
-        GXPreciseComplex        jobVieportMininum;
-        GXPreciseComplex        jobViewportMaximum;
+        GXThread*                       scheduerThread;
+        BBProgressInfo                  progressInfo;
+
+        GXPreciseComplex                currentPoint;
+
+        // See BBScheduler::InitCollectors implementation.
+        PFNBBSCHEDULERCOLLECTORPROC     collectors[ 4u ];
 
     public:
         BBScheduler ();
@@ -80,9 +86,16 @@ class BBScheduler final
 
     private:
         GXVoid DoAbort ();
-        GXVoid InitJobs ();
-        GXVoid ScheduleJobs ();
 
+        GXVoid CollectJobPointNoCheck ( BBJobContext& jobContext, GXPreciseComplex &activePoint );
+        GXVoid CollectJobPointRealCheck ( BBJobContext& jobContext, GXPreciseComplex &activePoint );
+        GXVoid CollectJobPointImaginaryCheck ( BBJobContext& jobContext, GXPreciseComplex &activePoint );
+        GXVoid CollectJobPointCheckBoth ( BBJobContext& jobContext, GXPreciseComplex &activePoint );
+
+        GXVoid InitCollectors ();
+        GXVoid InitJobs ();
+
+        GXVoid ScheduleJobs ();
         GXVoid UpdateDistributionPattern ();
 
         static GXVoid GXCALL OnJobProgress ( GXVoid* context );

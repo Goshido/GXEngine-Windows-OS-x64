@@ -283,8 +283,10 @@ struct GXPreciseComplex final
 
     GXPreciseComplex ();
     GXPreciseComplex ( const GXPreciseComplex &other );
-    explicit GXPreciseComplex ( GXDouble r, GXDouble i );
+    explicit GXPreciseComplex ( GXDouble real, GXDouble imaginary );
     ~GXPreciseComplex ();
+
+    GXVoid Init ( GXDouble real, GXDouble imaginary );
 
     GXDouble Length ();
     GXDouble SquaredLength ();
@@ -293,9 +295,9 @@ struct GXPreciseComplex final
     GXBool Power ( GXUInt power );
 
     GXPreciseComplex& operator = ( const GXPreciseComplex &other );
-    GXPreciseComplex& operator + ( const GXPreciseComplex &other );
-    GXPreciseComplex& operator - ( const GXPreciseComplex &other );
-    GXPreciseComplex& operator * ( const GXPreciseComplex &other );
+    GXPreciseComplex operator + ( const GXPreciseComplex &other );
+    GXPreciseComplex operator - ( const GXPreciseComplex &other );
+    GXPreciseComplex operator * ( const GXPreciseComplex &other );
 };
 
 //---------------------------------------------------------------------------------------------------------------------

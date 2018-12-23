@@ -989,9 +989,9 @@ GXPreciseComplex::GXPreciseComplex ( const GXPreciseComplex &other ):
     // NOTHING
 }
 
-GXPreciseComplex::GXPreciseComplex ( GXDouble r, GXDouble i ):
-    r ( r ),
-    i ( i )
+GXPreciseComplex::GXPreciseComplex ( GXDouble real, GXDouble imaginary ):
+    r ( real ),
+    i ( imaginary )
 {
     // NOTHING
 }
@@ -999,6 +999,12 @@ GXPreciseComplex::GXPreciseComplex ( GXDouble r, GXDouble i ):
 GXPreciseComplex::~GXPreciseComplex ()
 {
     // NOTHING
+}
+
+GXVoid GXPreciseComplex::Init ( GXDouble real, GXDouble imaginary )
+{
+    r = real;
+    i = imaginary;
 }
 
 GXDouble GXPreciseComplex::Length ()
@@ -1022,7 +1028,7 @@ GXBool GXPreciseComplex::Power ( GXUInt power )
 
         while ( power > 0u )
         {
-            *this * alpha;
+            *this = *this * alpha;
             --power;
         }
 
@@ -1047,25 +1053,19 @@ GXPreciseComplex& GXPreciseComplex::operator = ( const GXPreciseComplex &other )
     return *this;
 }
 
-GXPreciseComplex& GXPreciseComplex::operator + ( const GXPreciseComplex &other )
+GXPreciseComplex GXPreciseComplex::operator + ( const GXPreciseComplex &other )
 {
-    r += other.r;
-    i += other.i;
-    return *this;
+    return GXPreciseComplex ( r + other.r, i + other.i );
 }
 
-GXPreciseComplex& GXPreciseComplex::operator - ( const GXPreciseComplex &other )
+GXPreciseComplex GXPreciseComplex::operator - ( const GXPreciseComplex &other )
 {
-    r -= other.r;
-    i -= other.i;
-    return *this;
+    return GXPreciseComplex ( r - other.r, i - other.i );
 }
 
-GXPreciseComplex& GXPreciseComplex::operator * ( const GXPreciseComplex &other )
+GXPreciseComplex GXPreciseComplex::operator * ( const GXPreciseComplex &other )
 {
-    GXPreciseComplex result ( r * other.r - i * other.i, r * other.i + i * other.r );
-    *this = result;
-    return *this;
+    return GXPreciseComplex ( r * other.r - i * other.i, r * other.i + i * other.r );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
