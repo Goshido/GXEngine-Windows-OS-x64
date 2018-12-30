@@ -298,6 +298,8 @@ struct GXPreciseComplex final
     GXPreciseComplex operator + ( const GXPreciseComplex &other );
     GXPreciseComplex operator - ( const GXPreciseComplex &other );
     GXPreciseComplex operator * ( const GXPreciseComplex &other );
+    GXPreciseComplex operator * ( GXDouble a );
+    GXPreciseComplex operator / ( GXDouble a );
 };
 
 //---------------------------------------------------------------------------------------------------------------------

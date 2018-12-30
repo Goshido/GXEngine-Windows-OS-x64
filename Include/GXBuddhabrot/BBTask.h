@@ -10,6 +10,8 @@
 class BBTask final
 {
     private:
+        const GXUInt                iterationCap;
+
         const GXPreciseComplex      minimum;
         const GXPreciseComplex      maximum;
 
@@ -26,7 +28,7 @@ class BBTask final
         GXUIntAtomic*               hitMap;
 
     public:
-        explicit BBTask ( const GXPreciseComplex &minimumViewport, const GXPreciseComplex &maximumViewport, GXUInt imageWidth, GXUInt imageHeight );
+        explicit BBTask ( const GXPreciseComplex &minimumViewport, const GXPreciseComplex &maximumViewport, GXUInt imageWidth, GXUInt imageHeight, GXUInt maximumIterations );
         ~BBTask ();
 
         // Allocation will be done via malloc. User code MUST call free when best sample map is no needed anymore.
@@ -34,6 +36,8 @@ class BBTask final
 
         // Allocation will be done via malloc. User code MUST call free when hit map is no needed anymore.
         const GXUInt* GetHitMap ();
+
+        GXUInt GetIterationCap () const;
 
         GXVoid GetViewport ( GXPreciseComplex &minimumVieport, GXPreciseComplex &maximumVieport ) const;
 

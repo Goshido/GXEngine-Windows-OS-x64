@@ -2,14 +2,15 @@
 #include <GXCommon/GXMemory.h>
 
 
-BBTask::BBTask ( const GXPreciseComplex &minimumViewport, const GXPreciseComplex &maximumViewport, GXUInt imageWidth, GXUInt imageHeight ):
+BBTask::BBTask ( const GXPreciseComplex &minimumViewport, const GXPreciseComplex &maximumViewport, GXUInt imageWidth, GXUInt imageHeight, GXUInt maximumIterations ):
+    iterationCap ( maximumIterations ),
     minimum ( minimumViewport ),
     maximum ( maximumViewport ),
     width ( static_cast<GXUPointer> ( imageWidth ) ),
     height ( static_cast<GXUPointer> ( imageHeight ) ),
-    mapSize ( static_cast<GXUPointer> ( width * height ) * sizeof ( GXUInt ) ),
-    resampleX ( 1.0 / ( maximumViewport.r - minimum.r ) ),
-    resampleY ( 1.0 / ( maximumViewport.i - minimum.i ) )
+    mapSize ( imageWidth * imageHeight * sizeof ( GXUInt ) ),
+    resampleX ( 1.0 / ( maximumViewport.r - minimumViewport.r ) ),
+    resampleY ( 1.0 / ( maximumViewport.i - minimumViewport.i ) )
 {
     bestSampleMap = static_cast<GXUInt*> ( malloc ( mapSize ) );
     memset ( bestSampleMap, 0, mapSize );
@@ -46,6 +47,11 @@ const GXUInt* BBTask::GetHitMap ()
     smartLock.ReleaseExlusive ();
 
     return result;
+}
+
+GXUInt BBTask::GetIterationCap () const
+{
+    return iterationCap;
 }
 
 GXVoid BBTask::GetViewport ( GXPreciseComplex &minimumViewport, GXPreciseComplex &maximumViewport ) const

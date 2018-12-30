@@ -2,13 +2,21 @@
 #include <GXCommon/GXMemory.h>
 
 
-BBJob::BBJob ( BBTask &taskObject, const GXPreciseComplex* pointsViewport, GXUShort pointCount, GXVoid* onProgressContext, PFNBBJOBPROGRESSPROC onProgressCallback ):
-    callback ( onProgressCallback ),
-    context ( onProgressContext ),
+#define IDLE_TIMEOUT                    7u
+#define SQUARE_ESCAPE_RADIUS            4.0
+
+//---------------------------------------------------------------------------------------------------------------------
+
+BBJob::BBJob ( BBTask &taskObject, PFNBBJOBPROGRESSPROC callback, GXVoid* callbackContext ):
     isAbort ( GX_FALSE ),
-    points ( pointsViewport ),
-    totalPoints ( pointCount ),
+    isLoop ( GX_TRUE ),
+    isRelax ( GX_TRUE ),
+    escapePoints ( static_cast<GXPreciseComplex*> ( malloc ( ( taskObject.GetIterationCap () + 1u ) * sizeof ( GXPreciseComplex ) ) ) ),
+    escapePointCount ( 0u ),
     progress ( 0.0f ),
+    progressCallback ( callback ),
+    progressCallbackContext ( callbackContext ),
+    state ( eBBThreadState::Idle ),
     task ( taskObject )
 {
     thread = new GXThread ( &BBJob::Thread, this );
@@ -16,12 +24,21 @@ BBJob::BBJob ( BBTask &taskObject, const GXPreciseComplex* pointsViewport, GXUSh
 
 BBJob::~BBJob ()
 {
-    Abort ();
+    Join ();
+    free ( escapePoints );
 }
 
-GXFloat BBJob::GetProgress () const
+eBBThreadState BBJob::GetState () const
 {
-    return progress;
+    return state;
+}
+
+GXVoid BBJob::Init ( BBJobContext &newJobContext, GXUPointer newJobIndex )
+{
+    jobContext = &newJobContext;
+    jobIndex = newJobIndex;
+    isRelax = GX_FALSE;
+    state = eBBThreadState::JobProgress;
 }
 
 GXVoid BBJob::Start ()
@@ -36,31 +53,93 @@ GXVoid BBJob::Abort ()
     if ( isAbort || !thread ) return;
 
     isAbort = GX_TRUE;
-    thread->Join ();
-    GXSafeDelete ( thread );
 }
 
 GXVoid BBJob::Join ()
 {
     if ( !thread ) return;
 
+    isLoop = GX_FALSE;
     thread->Join ();
     GXSafeDelete ( thread );
 }
 
-GXUPointer GXTHREADCALL BBJob::Thread ( GXVoid* argument, GXThread& /*thread*/ )
+GXVoid BBJob::Relax ()
+{
+    isRelax = GX_TRUE;
+}
+
+GXBool BBJob::ProcessPoint ( GXUShort pointIndex )
+{
+    GXPreciseComplex z ( 0.0f, 0.0f );
+    const GXPreciseComplex c = jobContext->points[ pointIndex ];
+    const GXUPointer iterationCap = task.GetIterationCap ();
+
+    for ( escapePointCount = 0u; escapePointCount < iterationCap; ++escapePointCount )
+    {
+        if ( z.SquaredLength () <= SQUARE_ESCAPE_RADIUS )
+        {
+            z = z * z + c;
+            escapePoints[ escapePointCount ] = z;
+            continue;
+        }
+
+        for ( GXUInt i = 0u; i < escapePointCount; ++i )
+            task.MakeHit ( escapePoints[ i ] );
+
+        task.MarkSampleMap ( c, escapePointCount );
+        return GX_TRUE;
+    }
+
+    return GX_FALSE;
+}
+
+GXUPointer GXTHREADCALL BBJob::Thread ( GXVoid* argument, GXThread &thread )
 {
     BBJob* job = static_cast<BBJob*> ( argument );
 
     if ( job->isAbort )
         return 0u;
 
-    job->callback ( job->context );
+    while ( job->isLoop )
+    {
+        switch ( job->state )
+        {
+            case eBBThreadState::Idle:
+            {
+                if ( !job->isRelax ) continue;
 
-    // TODO make Buddhabrot magic here!
+                thread.Sleep ( IDLE_TIMEOUT );
+            }
+            break;
 
-    job->progress = 1.0f;
-    job->callback ( job->context );
+            case eBBThreadState::JobProgress:
+            {
+                job->progressCallback ( job->progressCallbackContext, 0.0f, job->jobIndex );
+
+                const GXUShort pointCount = job->jobContext->pointCount;
+                const GXFloat progressFactor = 1.0f / static_cast<GXFloat> ( pointCount );
+
+                for ( GXUShort i = 0u; i < pointCount; ++i )
+                {
+                    if ( job->isAbort ) break;
+
+                    job->ProcessPoint ( i );
+                    job->progressCallback ( job->progressCallbackContext, i * progressFactor, job->jobIndex );
+                }
+
+                if ( job->isAbort )
+                {
+                    job->state = eBBThreadState::Idle;
+                    break;
+                }
+
+                job->progressCallback ( job->progressCallbackContext, 1.0f, job->jobIndex );
+                job->state = eBBThreadState::Idle;
+            }
+            break;
+        }
+    }
 
     return 0u;
 }

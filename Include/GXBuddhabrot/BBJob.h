@@ -2,43 +2,51 @@
 #define BB_JOB
 
 
-#include "BBTask.h"
-#include <GXCommon/GXThread.h>
+#include "BBScheduler.h"
 
 
 // Note progress could be [0.0f, 1.0f].
-typedef GXVoid ( GXCALL* PFNBBJOBPROGRESSPROC ) ( GXVoid* context );
+typedef GXVoid ( GXCALL* PFNBBJOBPROGRESSPROC ) ( GXVoid* context, GXFloat progress, GXUPointer jobIndex );
 
 class BBJob final
 {
     private:
-        PFNBBJOBPROGRESSPROC        callback;
-        GXVoid*                     context;
-
         GXBool                      isAbort;
+        GXBool                      isLoop;
+        GXBool                      isRelax;
 
-        const GXPreciseComplex*     points;
-        GXUShort                    totalPoints;
+        GXPreciseComplex*           escapePoints;
+        GXUInt                      escapePointCount;
 
         GXFloat                     progress;
+        PFNBBJOBPROGRESSPROC        progressCallback;
+        GXVoid*                     progressCallbackContext;
+
+        eBBThreadState              state;
         BBTask&                     task;
 
+        BBJobContext*               jobContext;
+        GXUPointer                  jobIndex;
         GXThread*                   thread;
 
     public:
-        // Note pointsViewport MUST be valid memory until this object live.
-        explicit BBJob ( BBTask &task, const GXPreciseComplex* pointsViewport, GXUShort pointCount, GXVoid* onProgressContext, PFNBBJOBPROGRESSPROC onProgressCallback );
-
+        explicit BBJob ( BBTask &taskObject, PFNBBJOBPROGRESSPROC callback, GXVoid* callbackContext );
         ~BBJob ();
 
-        GXFloat GetProgress () const;
+        eBBThreadState GetState () const;
+        GXVoid Init ( BBJobContext &newJobContext, GXUPointer newJobIndex );
 
         // Note job restarting is not supported. Create new one instead.
         GXVoid Start ();
         GXVoid Abort ();
         GXVoid Join ();
 
+        GXVoid Relax ();
+
     private:
+        // Method returns GX_TRUE if point chain was appended to hit map.
+        GXBool ProcessPoint ( GXUShort pointIndex );
+
         static GXUPointer GXTHREADCALL Thread ( GXVoid* argument, GXThread &thread );
 
         BBJob () = delete;

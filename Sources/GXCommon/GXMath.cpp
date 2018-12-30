@@ -1068,6 +1068,17 @@ GXPreciseComplex GXPreciseComplex::operator * ( const GXPreciseComplex &other )
     return GXPreciseComplex ( r * other.r - i * other.i, r * other.i + i * other.r );
 }
 
+GXPreciseComplex GXPreciseComplex::operator * ( GXDouble a )
+{
+    return GXPreciseComplex ( r * a, i * a );
+}
+
+GXPreciseComplex GXPreciseComplex::operator / ( GXDouble a )
+{
+    const GXDouble invA = 1.0 / a;
+    return GXPreciseComplex ( r * invA, i * invA );
+}
+
 //---------------------------------------------------------------------------------------------------------------------
 
 GXQuat::GXQuat ()

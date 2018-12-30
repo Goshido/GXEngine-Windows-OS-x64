@@ -1,4 +1,5 @@
 #include <GXBuddhabrot/BBScheduler.h>
+#include <GXBuddhabrot/BBJob.h>
 #include <GXCommon/GXMemory.h>
 
 
@@ -74,6 +75,15 @@ GXVoid BBScheduler::Start ( BBTask &newTask, GXUPointer asyncJobs, GXUShort newS
 
     task = &newTask;
     pointSize = newPointSize;
+    currentPointIndex = 0u;
+
+    GXPreciseComplex minimumViewport;
+    GXPreciseComplex maximumViewport;
+    newTask.GetViewport ( minimumViewport, maximumViewport );
+
+    const GXPreciseComplex delta = ( maximumViewport - minimumViewport ) / newPointSize;
+    progressPerPoint = static_cast<GXFloat> ( 1.0 / ( ceil ( delta.r ) * ceil ( delta.i ) ) );
+
     samplesPerPoint = newSamplesPerPoint;
     targetJobCount = asyncJobs;
 
@@ -103,11 +113,7 @@ GXVoid BBScheduler::Join ()
     for ( GXUPointer i = 0u; i < progressInfo.jobs; ++i )
     {
         BBJobContext& context = jobContexts[ i ];
-
-        context.isLoop = GX_FALSE;
-        context.thread->Join ();
-
-        delete context.thread;
+        delete context.job;
         free ( context.points );
     }
 }
@@ -115,11 +121,13 @@ GXVoid BBScheduler::Join ()
 GXVoid BBScheduler::DoAbort ()
 {
     for ( GXUPointer i = 0u; i < progressInfo.jobs; ++i )
-    {
-        BBJobContext& context = jobContexts[ i ];
-        context.isAbort = GX_TRUE;
+        jobContexts[ i ].job->Abort ();
 
-        while ( context.state != eBBThreadState::Idle )
+    for ( GXUPointer i = 0u; i < progressInfo.jobs; ++i )
+    {
+        BBJob& job = *( jobContexts[ i ].job );
+
+        while ( job.GetState () != eBBThreadState::Idle )
         {
             scheduerThread->Sleep ( IDLE_TIMEOUT );
         }
@@ -229,12 +237,7 @@ GXVoid BBScheduler::InitJobs ()
         memcpy ( newJobContexts, jobContexts, targetJobCount * sizeof ( BBJobContext ) );
 
         for ( GXUPointer i = progressInfo.jobs; i < targetJobCount; ++i )
-        {
-            BBJobContext& context = jobContexts[ i ];
-            context.isLoop = GX_FALSE;
-            context.thread->Join ();
-            delete context.thread;
-        }
+            delete jobContexts[ i ].job;
 
         jobContexts = newJobContexts;
         progressInfo.Init ( targetJobCount );
@@ -248,14 +251,10 @@ GXVoid BBScheduler::InitJobs ()
     for ( GXUPointer i = progressInfo.jobs; i < targetJobCount; ++i )
     {
         BBJobContext& context = jobContexts[ i ];
-        context.isLoop = GX_TRUE;
-        context.isAbort = GX_FALSE;
-        context.state = eBBThreadState::Idle;
         context.pointCount = 0u;
         context.points = static_cast<GXPreciseComplex*> ( malloc ( pointStorageSize ) );
-        context.job = nullptr;
-        context.thread = new GXThread ( &BBScheduler::JobThread, this );
-        context.thread->Start ();
+        context.job = new BBJob ( *task, &BBScheduler::OnJobProgress, this );
+        context.job->Start ();
     }
 
     jobContexts = newJobContexts;
@@ -268,11 +267,12 @@ GXVoid BBScheduler::ScheduleJobs ()
     {
         for ( GXUPointer i = 0u; i < targetJobCount; ++i )
         {
-            if ( jobContexts[ i ].state == eBBThreadState::Idle ) continue;
+            if ( jobContexts[ i ].job->GetState () == eBBThreadState::Idle ) continue;
 
             return;
         }
 
+        progressInfo.totalProgress = 1.0f;
         state = eBBThreadState::Idle;
         return;
     }
@@ -281,7 +281,7 @@ GXVoid BBScheduler::ScheduleJobs ()
     {
         BBJobContext& jobContext = jobContexts[ jobIndex ];
 
-        if ( jobContext.state == eBBThreadState::JobProgress ) continue;
+        if ( jobContext.job->GetState () == eBBThreadState::JobProgress ) continue;
 
         GXUByte collectorIndex = currentPoint.r + pointSize > MAXIMUM_REAL ? 2u : 0u;
 
@@ -293,11 +293,12 @@ GXVoid BBScheduler::ScheduleJobs ()
         // Note it is calling method by pointer C++ syntax.
         ( this->*collector ) ( jobContext, currentPoint );
 
+        ++currentPointIndex;
+        progressInfo.totalProgress = currentPointIndex * progressPerPoint;
+
         if ( jobContext.pointCount == 0u ) break;
 
-        // TODO spawn job.
-
-        jobContext.state = eBBThreadState::JobProgress;
+        jobContext.job->Init ( jobContext, jobIndex );
     }
 }
 
@@ -316,9 +317,10 @@ GXVoid BBScheduler::UpdateDistributionPattern ()
     }
 }
 
-GXVoid GXCALL BBScheduler::OnJobProgress ( GXVoid* /*context*/ )
+GXVoid GXCALL BBScheduler::OnJobProgress ( GXVoid* context, GXFloat progress, GXUPointer jobIndex )
 {
-    // TODO
+    BBScheduler* scheduler = static_cast<BBScheduler*> ( context );
+    scheduler->progressInfo.jobProgress[ jobIndex ] = progress;
 }
 
 GXUPointer GXTHREADCALL BBScheduler::SchedulerThread ( GXVoid* argument, GXThread &thread )
@@ -354,10 +356,5 @@ GXUPointer GXTHREADCALL BBScheduler::SchedulerThread ( GXVoid* argument, GXThrea
         }
     }
 
-    return 0u;
-}
-
-GXUPointer GXTHREADCALL BBScheduler::JobThread ( GXVoid* /*argument*/, GXThread& /*thread*/ )
-{
     return 0u;
 }

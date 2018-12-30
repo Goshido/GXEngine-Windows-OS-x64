@@ -2,7 +2,7 @@
 #define BB_SCHEDULER
 
 
-#include "BBJob.h"
+#include "BBTask.h"
 #include <GXCommon/GXThread.h>
 #include <GXCommon/GXSmartLock.h>
 
@@ -35,13 +35,10 @@ enum class eBBThreadState : GXUByte
     JobProgress
 };
 
+class BBJob;
 struct BBJobContext
 {
-    GXBool                  isLoop;
-    GXBool                  isAbort;
-    GXThread*               thread;
-    eBBThreadState          state;
-    GXUInt                  pointCount;
+    GXUShort                pointCount;
     GXPreciseComplex*       points;
     BBJob*                  job;
 };
@@ -59,6 +56,7 @@ class BBScheduler final
         GXPreciseComplex*               distributionPattern;
 
         BBTask*                         task;
+
         GXDouble                        pointSize;          // perfect square point
         GXUShort                        samplesPerPoint;
 
@@ -70,6 +68,8 @@ class BBScheduler final
         BBProgressInfo                  progressInfo;
 
         GXPreciseComplex                currentPoint;
+        GXUInt                          currentPointIndex;
+        GXFloat                         progressPerPoint;
 
         // See BBScheduler::InitCollectors implementation.
         PFNBBSCHEDULERCOLLECTORPROC     collectors[ 4u ];
@@ -98,10 +98,9 @@ class BBScheduler final
         GXVoid ScheduleJobs ();
         GXVoid UpdateDistributionPattern ();
 
-        static GXVoid GXCALL OnJobProgress ( GXVoid* context );
+        static GXVoid GXCALL OnJobProgress ( GXVoid* context, GXFloat progress, GXUPointer jobIndex );
 
         static GXUPointer GXTHREADCALL SchedulerThread ( GXVoid* argument, GXThread &thread );
-        static GXUPointer GXTHREADCALL JobThread ( GXVoid* argument, GXThread &thread );
 
         BBScheduler ( const BBScheduler &other ) = delete;
         BBScheduler& operator = ( const BBScheduler &other ) = delete;
