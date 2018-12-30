@@ -272,6 +272,9 @@ GXVoid BBScheduler::ScheduleJobs ()
             return;
         }
 
+        for ( GXUPointer i = 0u; i < targetJobCount; ++i )
+            jobContexts[ i ].job->Relax ();
+
         progressInfo.totalProgress = 1.0f;
         state = eBBThreadState::Idle;
         return;
