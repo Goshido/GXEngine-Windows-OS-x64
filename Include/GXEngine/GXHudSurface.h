@@ -1,4 +1,4 @@
-// version 1.20
+// version 1.23
 
 #ifndef GX_HUD_SURFACE
 #define GX_HUD_SURFACE
@@ -17,44 +17,44 @@
 
 enum class eGXImageOverlayType
 {
-	AlphaTransparency,
-	AlphaTransparencyPreserveAlpha,
-	AlphaAdd,
-	AlphaMultiply,
-	SimpleReplace
+    AlphaTransparency,
+    AlphaTransparencyPreserveAlpha,
+    AlphaAdd,
+    AlphaMultiply,
+    SimpleReplace
 };
 
 struct GXImageInfo final
 {
-	GXTexture2D*		texture;
+    GXTexture2D*            texture;
 
-	GXColorRGB			color;
-	GXFloat				insertX;
-	GXFloat				insertY;
-	GXFloat				insertWidth;
-	GXFloat				insertHeight;
+    GXColorRGB              color;
+    GXFloat                 insertX;
+    GXFloat                 insertY;
+    GXFloat                 insertWidth;
+    GXFloat                 insertHeight;
 
-	eGXImageOverlayType	overlayType;
+    eGXImageOverlayType     overlayType;
 };
 
 struct GXPenInfo final
 {
-	GXFont*				font;
-	GXColorRGB			color;
-	GXFloat 			insertX;
-	GXFloat				insertY;
+    GXFont*                 font;
+    GXColorRGB              color;
+    GXFloat                 insertX;
+    GXFloat                 insertY;
 
-	eGXImageOverlayType	overlayType;
+    eGXImageOverlayType     overlayType;
 };
 
 struct GXLineInfo final
 {
-	GXColorRGB			color;
-	GXFloat				thickness;
-	GXVec2				startPoint;
-	GXVec2				endPoint;
-	
-	eGXImageOverlayType	overlayType;
+    GXColorRGB              color;
+    GXFloat                 thickness;
+    GXVec2                  startPoint;
+    GXVec2                  endPoint;
+    
+    eGXImageOverlayType     overlayType;
 };
 
 class GXImageRenderable;
@@ -62,47 +62,48 @@ class GXGlyphRenderable;
 class GXLineRenderable;
 class GXHudSurface final : public GXTransform
 {
-	private:
-		GXUShort					width;
-		GXUShort					height;
+    private:
+        GXImageRenderable*          image;
+        GXGlyphRenderable*          glyph;
+        GXLineRenderable*           line;
 
-		GXCameraOrthographic		canvasCamera;
+        GXUShort                    width;
+        GXUShort                    height;
 
-		GXImageRenderable*			image;
-		GXGlyphRenderable*			glyph;
-		GXLineRenderable*			line;
+        GXCameraOrthographic        canvasCamera;
 
-		GLuint						fbo;
-		GXTexture2D					canvasTexture;
-		GXOpenGLState				openGLState;
+        GLuint                      fbo;
+        GXTexture2D                 canvasTexture;
+        GXOpenGLState               openGLState;
 
-		GXUnlitColorMaterial		unlitColorMaterial;
-		GXUnlitColorMaskMaterial	unlitColorMaskMaterial;
-		GXUnlitTexture2DMaterial	unlitTexture2DMaterial;
+        GXUnlitColorMaterial        unlitColorMaterial;
+        GXUnlitColorMaskMaterial    unlitColorMaskMaterial;
+        GXUnlitTexture2DMaterial    unlitTexture2DMaterial;
 
-		GXMeshGeometry				screenQuadMesh;
+        GXMeshGeometry              screenQuadMesh;
 
-	public:
-		explicit GXHudSurface ( GXUShort width, GXUShort height );
-		~GXHudSurface () override;
-		
-		GXVoid Reset ();
+    public:
+        explicit GXHudSurface ( GXUShort imageWidth, GXUShort imageHeight );
+        ~GXHudSurface () override;
 
-		GXVoid AddImage ( const GXImageInfo &imageInfo );
-		GXVoid AddLine ( const GXLineInfo &lineInfo );
-		GXFloat AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbols, const GXWChar* format, ... );
+        GXVoid Reset ();
+        GXVoid Resize ( GXUShort newWidth, GXUShort newHeight );
 
-		GXUShort GetWidth () const;
-		GXUShort GetHeight () const;
+        GXVoid AddImage ( const GXImageInfo &imageInfo );
+        GXVoid AddLine ( const GXLineInfo &lineInfo );
+        GXFloat AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbols, const GXWChar* format, ... );
 
-		GXVoid Render ();
+        GXUShort GetWidth () const;
+        GXUShort GetHeight () const;
 
-	protected:
-		GXVoid TransformUpdated () override;
+        GXVoid Render ();
 
-	private:
-		GXHudSurface ( const GXHudSurface &other ) = delete;
-		GXHudSurface& operator = ( const GXHudSurface &other ) = delete;
+    protected:
+        GXVoid TransformUpdated () override;
+
+    private:
+        GXHudSurface ( const GXHudSurface &other ) = delete;
+        GXHudSurface& operator = ( const GXHudSurface &other ) = delete;
 };
 
 

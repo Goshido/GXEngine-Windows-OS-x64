@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\Sources\GXBuddhabrot\BBGame.cpp" />
     <ClCompile Include="..\..\Sources\GXBuddhabrot\BBJob.cpp" />
+    <ClCompile Include="..\..\Sources\GXBuddhabrot\BBLabel.cpp" />
     <ClCompile Include="..\..\Sources\GXBuddhabrot\BBMain.cpp" />
     <ClCompile Include="..\..\Sources\GXBuddhabrot\BBScheduler.cpp" />
     <ClCompile Include="..\..\Sources\GXBuddhabrot\BBTask.cpp" />
@@ -188,12 +189,14 @@
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXTime.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXUIntAtomic.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXCamera.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXCameraOrthographic.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXCameraPerspective.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXCore.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXEngineSettings.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXEquirectangularToCubeMapMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXFont.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXGame.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXHudSurface.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXInput.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXLocale.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXMaterial.cpp" />
@@ -202,6 +205,7 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXOGGSoundProvider.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXOpenGL.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXPhysXFrontend.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXRenderable.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXRenderer.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXSampler.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXShaderProgram.cpp" />
@@ -219,11 +223,17 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXTextureCubeMap.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTouchSurface.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXTransform.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXUIStaticText.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXUnlitColorMaskMaterial.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXUnlitColorMaterial.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXUnlitTexture2DMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXBuddhabrot\BBGame.h" />
+    <ClInclude Include="..\..\Include\GXBuddhabrot\BBGUIMeta.h" />
     <ClInclude Include="..\..\Include\GXBuddhabrot\BBJob.h" />
+    <ClInclude Include="..\..\Include\GXBuddhabrot\BBLabel.h" />
     <ClInclude Include="..\..\Include\GXBuddhabrot\BBScheduler.h" />
     <ClInclude Include="..\..\Include\GXBuddhabrot\BBTask.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXAVLTree.h" />
@@ -257,6 +267,7 @@
     <ClInclude Include="..\..\Include\GXEngine\GXEquirectangularToCubeMapMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXFont.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXGame.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXHudSurface.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXInput.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXLocale.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXMaterial.h" />
@@ -265,6 +276,7 @@
     <ClInclude Include="..\..\Include\GXEngine\GXOGGSoundProvider.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXOpenGL.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXPhysXFrontend.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXRenderable.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXRenderer.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXSampler.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXShaderProgram.h" />
@@ -282,6 +294,10 @@
     <ClInclude Include="..\..\Include\GXEngine\GXTextureCubeMap.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTouchSurface.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTransform.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXUIStaticText.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXUnlitColorMaskMaterial.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXUnlitColorMaterial.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXUnlitTexture2DMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXVersion.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXWidget.h" />
   </ItemGroup>

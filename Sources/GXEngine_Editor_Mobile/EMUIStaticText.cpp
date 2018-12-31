@@ -90,7 +90,7 @@ GXVoid EMUIStaticTextRenderer::OnRefresh ()
 	surface->AddText ( pi, 0u, staticText->GetText () );
 }
 
-	GXVoid EMUIStaticTextRenderer::OnDraw ()
+GXVoid EMUIStaticTextRenderer::OnDraw ()
 {
 	glDisable ( GL_DEPTH_TEST );
 	surface->Render ();

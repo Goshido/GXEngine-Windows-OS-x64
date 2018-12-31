@@ -10,14 +10,14 @@
 class GXTransform
 {
     protected:
-        GXVec3      currentFrameLocation;
-        GXVec3      currentFrameScale;
-        GXMat4      currentFrameRotationMatrix;
-        GXMat4      currentFrameModelMatrix;
-        GXMat4      lastFrameModelMatrix;
+        GXVec3                  currentFrameLocation;
+        GXVec3                  currentFrameScale;
+        GXMat4                  currentFrameRotationMatrix;
+        GXMat4                  currentFrameModelMatrix;
+        GXMat4                  lastFrameModelMatrix;
 
     private:
-        static GXTransform    nullTransform;
+        static GXTransform      nullTransform;
 
     public:
         GXTransform ();

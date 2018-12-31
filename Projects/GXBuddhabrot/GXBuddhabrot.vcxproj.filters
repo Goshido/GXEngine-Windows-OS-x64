@@ -37,6 +37,18 @@
     <Filter Include="Header Files\GXCommon\Windows">
       <UniqueIdentifier>{afa2a5ad-b942-40d2-95e8-b215d4c81f46}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GXBuddhabrot\GUI">
+      <UniqueIdentifier>{ac102928-0838-4e1d-90af-db83ccaad08b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GXBuddhabrot\Math core">
+      <UniqueIdentifier>{0e81806b-a0e5-4d82-a178-b5117b1d64c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GXBuddhabrot\Math core">
+      <UniqueIdentifier>{8fc314e5-acdf-4c2c-91d7-714ab35a3a77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GXBuddhabrot\GUI">
+      <UniqueIdentifier>{f9846f47-9447-4525-837e-75c8462077fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\GXBuddhabrot\BBGame.cpp">
@@ -214,13 +226,37 @@
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXBuddhabrot\BBTask.cpp">
-      <Filter>Source Files\GXBuddhabrot</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\GXBuddhabrot\BBJob.cpp">
-      <Filter>Source Files\GXBuddhabrot</Filter>
+      <Filter>Source Files\GXBuddhabrot\Math core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXBuddhabrot\BBScheduler.cpp">
-      <Filter>Source Files\GXBuddhabrot</Filter>
+      <Filter>Source Files\GXBuddhabrot\Math core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXBuddhabrot\BBJob.cpp">
+      <Filter>Source Files\GXBuddhabrot\Math core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXBuddhabrot\BBLabel.cpp">
+      <Filter>Source Files\GXBuddhabrot\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXUIStaticText.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXHudSurface.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXCameraOrthographic.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXUnlitColorMaskMaterial.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXUnlitColorMaterial.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXUnlitTexture2DMaterial.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXRenderable.cpp">
+      <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -402,13 +438,37 @@
       <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXBuddhabrot\BBTask.h">
-      <Filter>Header Files\GXBuddhabrot</Filter>
+      <Filter>Header Files\GXBuddhabrot\Math core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXBuddhabrot\BBJob.h">
-      <Filter>Header Files\GXBuddhabrot</Filter>
+      <Filter>Header Files\GXBuddhabrot\Math core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\GXBuddhabrot\BBScheduler.h">
-      <Filter>Header Files\GXBuddhabrot</Filter>
+      <Filter>Header Files\GXBuddhabrot\Math core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXBuddhabrot\BBLabel.h">
+      <Filter>Header Files\GXBuddhabrot\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXUIStaticText.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXHudSurface.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXBuddhabrot\BBGUIMeta.h">
+      <Filter>Header Files\GXBuddhabrot\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXRenderable.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXUnlitColorMaskMaterial.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXUnlitColorMaterial.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXUnlitTexture2DMaterial.h">
+      <Filter>Header Files\GXEngine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

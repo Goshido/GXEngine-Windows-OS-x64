@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_UNLIT_TEXTURE2D_MATERIAL
 #define GX_UNLIT_TEXTURE2D_MATERIAL
@@ -11,33 +11,33 @@
 
 class GXUnlitTexture2DMaterial final : public GXMaterial
 {
-	private:
-		GXTexture2D*	texture;
-		GXSampler		sampler;
-		GXColorRGB		color;
-		GXVec4			uvScaleOffset;
+    private:
+        GXTexture2D*    texture;
+        GXSampler       sampler;
+        GXColorRGB      color;
+        GXVec4          uvScaleOffset;
 
-		GLint			mod_view_proj_matLocation;
-		GLint			uvScaleOffsetLocation;
-		GLint			colorLocation;
+        GLint           mod_view_proj_matLocation;
+        GLint           uvScaleOffsetLocation;
+        GLint           colorLocation;
 
-	public:
-		GXUnlitTexture2DMaterial ();
-		~GXUnlitTexture2DMaterial () override;
+    public:
+        GXUnlitTexture2DMaterial ();
+        ~GXUnlitTexture2DMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) override;
-		GXVoid Unbind () override;
+        GXVoid Bind ( const GXTransform &transform ) override;
+        GXVoid Unbind () override;
 
-		GXVoid SetTexture ( GXTexture2D &textureObject );
-		GXVoid SetTextureScale ( GXFloat x, GXFloat y );
-		GXVoid SetTextureOffset ( GXFloat x, GXFloat y );
+        GXVoid SetTexture ( GXTexture2D &textureObject );
+        GXVoid SetTextureScale ( GXFloat x, GXFloat y );
+        GXVoid SetTextureOffset ( GXFloat x, GXFloat y );
 
-		GXVoid SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
-		GXVoid SetColor ( const GXColorRGB &newColor );
+        GXVoid SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
+        GXVoid SetColor ( const GXColorRGB &newColor );
 
-	private:
-		GXUnlitTexture2DMaterial ( const GXUnlitTexture2DMaterial &other ) = delete;
-		GXUnlitTexture2DMaterial& operator = ( const GXUnlitTexture2DMaterial &other ) = delete;
+    private:
+        GXUnlitTexture2DMaterial ( const GXUnlitTexture2DMaterial &other ) = delete;
+        GXUnlitTexture2DMaterial& operator = ( const GXUnlitTexture2DMaterial &other ) = delete;
 };
 
 

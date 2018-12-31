@@ -9,7 +9,7 @@
 #include <GXCommon/GXUIntAtomic.h>
 
 
-#define ATLAS_UNDEFINED        -1
+#define ATLAS_UNDEFINED         -1
 #define ATLAS_NEW_LINE          0u
 #define ATLAS_NEW_TEXTURE       1u
 #define ATLAS_FILL              2u

@@ -1,4 +1,4 @@
-// version 1.11
+// version 1.12
 
 #ifndef GX_CAMERA_ORHTOGRAPHIC
 #define GX_CAMERA_ORHTOGRAPHIC
@@ -9,23 +9,23 @@
 
 class GXCameraOrthographic final : public GXCamera
 {
-	protected:
-		GXFloat		width;
-		GXFloat		height;
+    protected:
+        GXFloat     width;
+        GXFloat     height;
 
-	public:
-		GXCameraOrthographic ();
-		explicit GXCameraOrthographic ( GXFloat width, GXFloat height, GXFloat zNear, GXFloat zFar );
-		~GXCameraOrthographic () override;
+    public:
+        GXCameraOrthographic ();
+        explicit GXCameraOrthographic ( GXFloat width, GXFloat height, GXFloat zNear, GXFloat zFar );
+        ~GXCameraOrthographic () override;
 
-		GXVoid SetZNear ( GXFloat newZNear ) override;
-		GXVoid SetZFar ( GXFloat newZFar ) override;
+        GXVoid SetZNear ( GXFloat newZNear ) override;
+        GXVoid SetZFar ( GXFloat newZFar ) override;
 
-		GXVoid SetProjection ( GXFloat newWidth, GXFloat newHeight, GXFloat newZNear, GXFloat newZFar );
+        GXVoid SetProjection ( GXFloat newWidth, GXFloat newHeight, GXFloat newZNear, GXFloat newZFar );
 
-	private:
-		GXCameraOrthographic ( const GXCameraOrthographic &other ) = delete;
-		GXCameraOrthographic& operator = ( const GXCameraOrthographic &other ) = delete;
+    private:
+        GXCameraOrthographic ( const GXCameraOrthographic &other ) = delete;
+        GXCameraOrthographic& operator = ( const GXCameraOrthographic &other ) = delete;
 };
 
 
