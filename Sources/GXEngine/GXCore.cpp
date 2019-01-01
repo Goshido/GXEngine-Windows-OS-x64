@@ -78,6 +78,8 @@ GXVoid GXCore::Start ( GXGame &game )
     renderer.Shutdown ();
     soundMixer.Shutdown ();
 
+    delete &game;
+
     CheckMemoryLeak ();
 }
 
@@ -153,6 +155,8 @@ GXCore::GXCore ()
 
 GXVoid GXCore::CheckMemoryLeak ()
 {
+    GXBool haveHeapLeaks = !GXMemoryInspector::CheckMemoryLeaks ();
+
     const GXWChar* lastFont = nullptr;
     GXUShort lastFontSize = 0u;
     GXUInt fonts = GXFont::GetTotalLoadedFonts ( &lastFont, lastFontSize );
@@ -182,7 +186,13 @@ GXVoid GXCore::CheckMemoryLeak ()
     const GXWChar* lastSkin = nullptr;
     GXUInt skins = GXMeshGeometry::GetTotalLoadedSkins ( &lastSkin );
 
-    if ( ( fonts + shaders + sounds + texture2Ds + textureCubeMaps + samplers + meshes + skins ) < 1u ) return;
+    if ( ( fonts + shaders + sounds + texture2Ds + textureCubeMaps + samplers + meshes + skins ) < 1u )
+    {
+        if ( haveHeapLeaks )
+            system ( "pause" );
+
+        return;
+    }
 
     GXLogW ( L"GXCore::CheckMemoryLeak::Warning - Обнаружена утечка памяти\n" );
 
@@ -249,7 +259,7 @@ GXVoid GXCore::CheckMemoryLeak ()
     if ( meshes > 0u )
         GXLogW ( L"Меши - %i [%s]\n", meshes, lastMesh );
 
-    if ( meshes > 0u )
+    if ( skins > 0u )
         GXLogW ( L"Скины - %i [%s]\n", skins, lastSkin );
 
     system ( "pause" );

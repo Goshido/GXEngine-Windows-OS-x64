@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_UINT_ATOMIC_WINDOWS
 #define GX_UINT_ATOMIC_WINDOWS
@@ -10,7 +10,7 @@
 class GXUIntAtomic final : public GXAbstractUIntAtomic
 {
     private:
-        volatile GXUInt     value;
+        volatile LONG       v;
 
     public:
         GXUIntAtomic ();
@@ -25,7 +25,12 @@ class GXUIntAtomic final : public GXAbstractUIntAtomic
         // Note it is cast operator to GXUInt.
         operator GXUInt () const override;
 
+        GXUInt operator + ( GXUInt value ) override;
+        GXUInt operator += ( GXUInt value ) override;
         GXUInt operator ++ () override;
+
+        GXUInt operator - ( GXUInt value ) override;
+        GXUInt operator -= ( GXUInt value ) override;
         GXUInt operator -- () override;
 
         GXBool operator == ( GXUInt testValue ) const override;

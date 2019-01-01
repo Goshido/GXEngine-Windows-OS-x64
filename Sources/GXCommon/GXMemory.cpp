@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #include <GXCommon/GXMemory.h>
 
@@ -31,7 +31,7 @@ GXVoid* GXCircleBuffer::Allocate ( GXUPointer bytes )
     return b;
 }
 
-//------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXDynamicArray::GXDynamicArray ( GXUPointer elementSize ):
     data ( nullptr ),

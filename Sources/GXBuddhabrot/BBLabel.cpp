@@ -35,7 +35,7 @@ BBLabelRenderer::BBLabelRenderer ( GXWidget* widget ):
     font ( BB_GUI_MAIN_FONT, static_cast<GXUShort> ( BB_GUI_MAIN_NORMAL_FONT_SIZE * gx_ui_Scale  ) ),
     surface ( static_cast<GXUShort> ( widget->GetBoundsLocal ().GetWidth () ), static_cast<GXUShort> ( widget->GetBoundsLocal ().GetHeight () ) )
 {
-    // NOTHING
+    surface.SetLocation ( 0.0f, 0.0f, BB_GUI_ELEMENT_Z );
 }
 
 BBLabelRenderer::~BBLabelRenderer ()

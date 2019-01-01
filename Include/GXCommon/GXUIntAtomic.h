@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_UINT_ATOMIC
 #define GX_UINT_ATOMIC
@@ -18,7 +18,12 @@ class GXAbstractUIntAtomic
         // Note it is cast cast to GXUInt.
         virtual operator GXUInt () const = 0;
 
+        virtual GXUInt operator + ( GXUInt value ) = 0;
+        virtual GXUInt operator += ( GXUInt value ) = 0;
         virtual GXUInt operator ++ () = 0;
+
+        virtual GXUInt operator - ( GXUInt value ) = 0;
+        virtual GXUInt operator -= ( GXUInt value ) = 0;
         virtual GXUInt operator -- () = 0;
 
         virtual GXBool operator == ( GXUInt testValue ) const = 0;

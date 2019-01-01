@@ -20,5 +20,9 @@
 #define BB_GUI_COLOR_HUE_2_BLUE             255u
 #define BB_GUI_COLOR_HUE_2_ALPHA            255u
 
+#define BB_GUI_NEAR_Z                       0.1f
+#define BB_GUI_FAR_Z                        77.7f
+#define BB_GUI_ELEMENT_Z                    7.77f
+
 
 #endif // BB_GUI_META

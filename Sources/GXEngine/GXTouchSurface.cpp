@@ -237,6 +237,8 @@ GXVoid GXTouchSurface::OnKeyDown ( GXInt keyCode )
         }
     }
 
+    if ( !target ) return;
+
     SendMessage ( target, eGXUIMessage::KeyDown, &keyCode, sizeof ( GXInt ) );
 }
 
@@ -262,6 +264,8 @@ GXVoid GXTouchSurface::OnKeyUp ( GXInt keyCode )
             SendMessage ( target, eGXUIMessage::MouseOver, &mousePosition, sizeof ( GXVec2 ) );
         }
     }
+
+    if ( !target ) return;
 
     SendMessage ( target, eGXUIMessage::KeyUp, &keyCode, sizeof ( GXInt ) );
 }

@@ -3,18 +3,18 @@
 #include <GXCommon/Windows/GXUIntAtomic.h>
 
 
-#define DEFAULT_VALUE       0u
+#define DEFAULT_VALUE       0
 
 //---------------------------------------------------------------------------------------------------------------------
 
 GXUIntAtomic::GXUIntAtomic ():
-    value ( DEFAULT_VALUE )
+    v ( DEFAULT_VALUE )
 {
     // NOTHING
 }
 
 GXUIntAtomic::GXUIntAtomic ( GXUInt value ):
-    value ( value )
+    v ( static_cast<LONG> ( value ) )
 {
     // NOTHING
 }
@@ -31,7 +31,7 @@ GXUInt GXUIntAtomic::Read () const
 
 GXVoid GXUIntAtomic::Write ( GXUInt newValue )
 {
-    InterlockedExchange ( &value, newValue );
+    InterlockedExchange ( reinterpret_cast<volatile GXULong*> ( &v ), static_cast<GXULong> ( newValue ) );
 }
 
 GXVoid GXUIntAtomic::operator = ( GXUInt newValue )
@@ -41,7 +41,7 @@ GXVoid GXUIntAtomic::operator = ( GXUInt newValue )
 
 GXUIntAtomic::operator GXUInt () const
 {
-    GXUInt result = value;
+    GXUInt result = static_cast<GXUInt> ( v );
 
     #ifdef _M_X64
 
@@ -59,14 +59,34 @@ GXUIntAtomic::operator GXUInt () const
     return result;
 }
 
+GXUInt GXUIntAtomic::operator + ( GXUInt value )
+{
+    return static_cast<GXUInt> ( *this ) + value;
+}
+
+GXUInt GXUIntAtomic::operator += ( GXUInt value )
+{
+    return static_cast<GXUInt> ( InterlockedAdd ( &v, static_cast<LONG> ( value ) ) );
+}
+
 GXUInt GXUIntAtomic::operator ++ ()
 {
-    return InterlockedIncrement ( &value );
+    return static_cast<GXUInt> ( InterlockedIncrement ( &v ) );
+}
+
+GXUInt GXUIntAtomic::operator - ( GXUInt value )
+{
+    return static_cast<GXUInt> ( *this ) - value;
+}
+
+GXUInt GXUIntAtomic::operator -= ( GXUInt value )
+{
+    return static_cast<GXUInt> ( InterlockedAdd ( &v, -static_cast<LONG> ( value ) ) );
 }
 
 GXUInt GXUIntAtomic::operator -- ()
 {
-    return InterlockedDecrement ( &value );
+    return static_cast<GXUInt> ( InterlockedDecrement ( &v ) );
 }
 
 GXBool GXUIntAtomic::operator == ( GXUInt testValue ) const

@@ -176,6 +176,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractMutex.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractSmartLock.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractUIntAtomic.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractUPointerAtomic.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAVLTree.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXCFGLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXCFGSaver.cpp" />
@@ -192,11 +193,13 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXCommon\GXOBJLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractThread.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMemoryInspector.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXSmartLock.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXThread.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXTime.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXUIntAtomic.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXUPointerAtomic.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimationSolver.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimationSolverMovement.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimationSolverPlayer.cpp" />
@@ -357,9 +360,11 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXCommon\GXThread.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXTime.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXTypes.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXUPointerAtomic.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXWarning.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXSmartLock.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXUIntAtomic.h" />
+    <ClInclude Include="..\..\Include\GXCommon\Windows\GXUPointerAtomic.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXWarning.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXMutex.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXThread.h" />

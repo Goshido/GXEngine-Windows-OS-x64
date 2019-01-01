@@ -102,7 +102,7 @@
       </PrecompiledHeader>
       <WarningLevel>EnableAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WINSOCK_DEPRECATED_NO_WARNINGS;GX_BUDDHABROT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WINSOCK_DEPRECATED_NO_WARNINGS;GX_BUDDHABROT;GX_INSPECT_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
@@ -169,6 +169,7 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractSmartLock.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractThread.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractUIntAtomic.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractUPointerAtomic.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAVLTree.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXCFGLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXFileSystem.cpp" />
@@ -183,11 +184,13 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshSaver.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXOBJLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMemoryInspector.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXSmartLock.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXThread.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXTime.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXUIntAtomic.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXUPointerAtomic.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXCamera.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXCameraOrthographic.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXCameraPerspective.cpp" />
@@ -253,12 +256,14 @@
     <ClInclude Include="..\..\Include\GXCommon\GXTime.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXTypes.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXUIntAtomic.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXUPointerAtomic.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXWarning.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXMutex.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXSmartLock.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXThread.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXTypes.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXUIntAtomic.h" />
+    <ClInclude Include="..\..\Include\GXCommon\Windows\GXUPointerAtomic.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXWarning.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXCamera.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXCameraPerspective.h" />
@@ -294,6 +299,7 @@
     <ClInclude Include="..\..\Include\GXEngine\GXTextureCubeMap.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTouchSurface.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXTransform.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXUICommon.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUIStaticText.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUnlitColorMaskMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUnlitColorMaterial.h" />

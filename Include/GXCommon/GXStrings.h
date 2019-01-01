@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #ifndef GX_STRINGS
 #define GX_STRINGS
@@ -53,9 +53,10 @@ GXInt GXCALL GXMbscmp ( const GXMBChar* a, const GXMBChar* b );
 
 GXUPointer GXCALL GXUTF8size ( const GXUTF8* str );
 
-GXVoid GXCALL GXWcsclone ( GXWChar** dest, const GXWChar* src );
-GXVoid GXCALL GXUTF8clone ( GXUTF8** dest, const GXUTF8* src );
 GXVoid GXCALL GXMbsclone ( GXMBChar** dest, const GXMBChar* src );
+GXVoid GXCALL GXCstrClone ( GXChar** dest, const GXChar* src );
+GXVoid GXCALL GXUTF8clone ( GXUTF8** dest, const GXUTF8* src );
+GXVoid GXCALL GXWcsclone ( GXWChar** dest, const GXWChar* src );
 
 GXUPointer GXCALL GXToUTF8 ( GXUTF8** dest, const GXWChar* str );
 GXVoid GXCALL GXToWcs ( GXWChar** dest, const GXUTF8* str );

@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXLogger.h>
@@ -328,16 +328,17 @@ GXUPointer GXCALL GXUTF8size ( const GXUTF8* str )
     return strlen ( str ) + 1u;
 }
 
-GXVoid GXCALL GXWcsclone ( GXWChar** dest, const GXWChar* src )
+GXVoid GXCALL GXCstrClone ( GXChar** dest, const GXChar* src )
 {
-    if ( !src )
-    {
-        *dest = nullptr;
-        return;
-    }
+    GXUPointer size = strlen ( src ) + 1u;
+    *dest = static_cast<GXChar*> ( malloc ( size ) );
+    memcpy ( *dest, src, size );
+}
 
-    GXUPointer size = sizeof ( GXWChar ) * ( GXWcslen ( src ) + 1 ); 
-    *dest = static_cast<GXWChar*> ( malloc ( size ) );
+GXVoid GXCALL GXMbsclone ( GXMBChar** dest, const GXMBChar* src )
+{
+    GXUPointer size = strlen ( src ) + 1u;
+    *dest = static_cast<GXMBChar*> ( malloc ( size ) );
     memcpy ( *dest, src, size );
 }
 
@@ -348,10 +349,16 @@ GXVoid GXCALL GXUTF8clone ( GXUTF8** dest, const GXUTF8* src )
     memcpy ( *dest, src, size );
 }
 
-GXVoid GXCALL GXMbsclone ( GXMBChar** dest, const GXMBChar* src )
+GXVoid GXCALL GXWcsclone ( GXWChar** dest, const GXWChar* src )
 {
-    GXUPointer size = strlen ( src ) + 1u;
-    *dest = static_cast<GXMBChar*> ( malloc ( size ) );
+    if ( !src )
+    {
+        *dest = nullptr;
+        return;
+    }
+
+    GXUPointer size = sizeof ( GXWChar ) * ( GXWcslen ( src ) + 1 );
+    *dest = static_cast<GXWChar*> ( malloc ( size ) );
     memcpy ( *dest, src, size );
 }
 

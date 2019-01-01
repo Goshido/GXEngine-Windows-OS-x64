@@ -258,6 +258,15 @@
     <ClCompile Include="..\..\Sources\GXEngine\GXRenderable.cpp">
       <Filter>Source Files\GXEngine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMemoryInspector.cpp">
+      <Filter>Source Files\GXCommon\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXUPointerAtomic.cpp">
+      <Filter>Source Files\GXCommon\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractUPointerAtomic.cpp">
+      <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXBuddhabrot\BBGame.h">
@@ -469,6 +478,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\GXUnlitTexture2DMaterial.h">
       <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXUICommon.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXUPointerAtomic.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\Windows\GXUPointerAtomic.h">
+      <Filter>Header Files\GXCommon\Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -17,6 +17,7 @@ class GXCore final
         static GXCore& GXCALL GetInstance ();
         ~GXCore ();
 
+        // Note game object will be deleted implicitly by GXCore.
         GXVoid Start ( GXGame &game );
         GXVoid Exit ();
 
