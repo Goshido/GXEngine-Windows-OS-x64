@@ -4,121 +4,123 @@
 #include <GXEngine/GXUICommon.h>
 
 
-#define DEFAULT_WIDHT						3.0f
-#define DEFAULT_HEIGHT						0.06f
-#define DEFAULT_BOTTOM_X					0.1f
-#define DEFAULT_BOTTOM_Y					0.1f
+#define DEFAULT_WIDHT                       3.0f
+#define DEFAULT_HEIGHT                      0.06f
+#define DEFAULT_BOTTOM_X                    0.1f
+#define DEFAULT_BOTTOM_Y                    0.1f
 
-#define COLOR_R								128u
-#define COLOR_G								128u
-#define COLOR_B								128u
-#define COLOR_A								255u
+#define COLOR_R                             128u
+#define COLOR_G                             128u
+#define COLOR_B                             128u
+#define COLOR_A                             255u
 
-#define PIXEL_PERFECT_LOCATION_OFFSET_X		0.25f
-#define PIXEL_PERFECT_LOCATION_OFFSET_Y		0.25f
+#define PIXEL_PERFECT_LOCATION_OFFSET_X     0.25f
+#define PIXEL_PERFECT_LOCATION_OFFSET_Y     0.25f
 
 //---------------------------------------------------------------------------------------------------------------------
 
 class EMUISeparatorRenderer final : public GXWidgetRenderer
 {
-	private:
-		GXHudSurface*	surface;
+    private:
+        GXHudSurface*       surface;
 
-	public:
-		explicit EMUISeparatorRenderer ( GXWidget* widget );
-		~EMUISeparatorRenderer () override;
+    public:
+        explicit EMUISeparatorRenderer ( GXWidget* widget );
+        ~EMUISeparatorRenderer () override;
 
-		GXVoid OnRefresh () override;
-		GXVoid OnDraw () override;
+        GXVoid OnRefresh () override;
+        GXVoid OnDraw () override;
 
-	protected:
-		GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
-		GXVoid OnMoved ( GXFloat x, GXFloat y ) override;
+    protected:
+        GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
+        GXVoid OnMoved ( GXFloat x, GXFloat y ) override;
 
-	private:
-		EMUISeparatorRenderer () = delete;
-		EMUISeparatorRenderer ( const EMUISeparatorRenderer &other ) = delete;
-		EMUISeparatorRenderer& operator = ( const EMUISeparatorRenderer &other ) = delete;
+    private:
+        EMUISeparatorRenderer () = delete;
+        EMUISeparatorRenderer ( const EMUISeparatorRenderer &other ) = delete;
+        EMUISeparatorRenderer& operator = ( const EMUISeparatorRenderer &other ) = delete;
 };
 
 EMUISeparatorRenderer::EMUISeparatorRenderer ( GXWidget* widget ):
-	GXWidgetRenderer ( widget )
+    GXWidgetRenderer ( widget )
 {
-	const GXAABB& boundsLocal = widget->GetBoundsWorld ();
-	surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
+    const GXAABB& boundsLocal = widget->GetBoundsWorld ();
+    surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
 EMUISeparatorRenderer::~EMUISeparatorRenderer ()
 {
-	delete surface;
+    delete surface;
 }
 
 GXVoid EMUISeparatorRenderer::OnRefresh ()
 {
-	surface->Reset ();
-	GXFloat y = floorf ( 0.5f * surface->GetHeight () );
+    surface->Reset ();
+    GXFloat y = floorf ( 0.5f * surface->GetHeight () );
 
-	GXLineInfo li;
-	li.color.From ( COLOR_R, COLOR_G, COLOR_B, COLOR_A );
-	li.overlayType = eGXImageOverlayType::SimpleReplace;
-	li.thickness = 1.0f;
-	li.startPoint.Init ( 0.0f, y );
-	li.endPoint.Init ( static_cast<GXFloat> ( surface->GetWidth () ), y );
+    GXLineInfo li;
+    li.color.From ( COLOR_R, COLOR_G, COLOR_B, COLOR_A );
+    li.overlayType = eGXImageOverlayType::SimpleReplace;
+    li.thickness = 1.0f;
+    li.startPoint.Init ( 0.0f, y );
+    li.endPoint.Init ( static_cast<GXFloat> ( surface->GetWidth () ), y );
 
-	surface->AddLine ( li );
+    surface->AddLine ( li );
 }
 
 GXVoid EMUISeparatorRenderer::OnDraw ()
 {
-	glDisable ( GL_DEPTH_TEST );
-	surface->Render ();
-	glEnable ( GL_DEPTH_TEST );
+    glDisable ( GL_DEPTH_TEST );
+    surface->Render ();
+    glEnable ( GL_DEPTH_TEST );
 }
 
 GXVoid EMUISeparatorRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
 {
-	x = truncf ( x ) + PIXEL_PERFECT_LOCATION_OFFSET_X;
-	y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
+    x = truncf ( x ) + PIXEL_PERFECT_LOCATION_OFFSET_X;
+    y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
-	GXSafeDelete ( surface );
-	surface = new GXHudSurface ( width, height );
-	GXVec3 location;
-	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.data[ 2 ] );
+    GXSafeDelete ( surface );
+    surface = new GXHudSurface ( width, height );
+    GXVec3 location;
+    surface->GetLocation ( location );
+    surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 
 GXVoid EMUISeparatorRenderer::OnMoved ( GXFloat x, GXFloat y )
 {
-	x = truncf ( x ) + PIXEL_PERFECT_LOCATION_OFFSET_X;
-	y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
+    x = truncf ( x ) + PIXEL_PERFECT_LOCATION_OFFSET_X;
+    y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
-	GXVec3 location;
-	surface->GetLocation ( location );
-	surface->SetLocation ( x, y, location.data[ 2 ] );
+    GXVec3 location;
+    surface->GetLocation ( location );
+    surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 EMUISeparator::EMUISeparator ( EMUI* parent ):
-	EMUI ( parent ),
-	widget ( new GXWidget ( parent ? parent->GetWidget () : nullptr ) )
+    EMUI ( parent ),
+    widget ( new GXWidget ( parent ? parent->GetWidget () : nullptr ) )
 {
-	widget->Resize ( DEFAULT_BOTTOM_X * gx_ui_Scale, DEFAULT_BOTTOM_Y * gx_ui_Scale, DEFAULT_WIDHT * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
-	widget->SetRenderer ( new EMUISeparatorRenderer ( widget ) );
+    widget->Resize ( DEFAULT_BOTTOM_X * gx_ui_Scale, DEFAULT_BOTTOM_Y * gx_ui_Scale, DEFAULT_WIDHT * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISeparatorRenderer" );
+    widget->SetRenderer ( new EMUISeparatorRenderer ( widget ) );
 }
 
 EMUISeparator::~EMUISeparator ()
 {
-	delete widget->GetRenderer ();
-	delete widget;
+    delete widget->GetRenderer ();
+    delete widget;
 }
 
 GXWidget* EMUISeparator::GetWidget () const
 {
-	return widget;
+    return widget;
 }
 
 GXVoid EMUISeparator::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height )
 {
-	widget->Resize ( bottomLeftX, bottomLeftY, width, height );
+    widget->Resize ( bottomLeftX, bottomLeftY, width, height );
 }

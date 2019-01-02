@@ -39,8 +39,6 @@ GXVoid BBGame::OnInit ()
 
     ShowCursor ( TRUE );
     SetCursor ( LoadCursorW ( nullptr, IDC_ARROW ) );
-
-    Malloc ( 777u );
 }
 
 GXVoid BBGame::OnResize ( GXInt width, GXInt height )
@@ -73,7 +71,10 @@ GXVoid BBGame::InitGUI ()
     if ( !needToInitGUI ) return;
 
     if ( !testLabel )
+    {
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "BBLabel" );
         testLabel = new BBLabel ( nullptr );
+    }
 
     testLabel->Resize ( 100.0f, 100.0f, 100.0f, 30.0f );
     testLabel->SetAlignment ( eGXUITextAlignment::Left );

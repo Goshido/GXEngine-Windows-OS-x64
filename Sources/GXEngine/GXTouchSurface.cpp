@@ -394,6 +394,8 @@ GXTouchSurface::GXTouchSurface ()
     widgetHead = widgetTail = mouseOverWidget = lockedWidget = defaultWidget = nullptr;
 
     gx_ui_SmartLock = new GXSmartLock ();
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXCircleBuffer" );
     gx_ui_MessageBuffer = new GXCircleBuffer ( GX_UI_MESSAGE_BUFFER_SIZE );
 }
 

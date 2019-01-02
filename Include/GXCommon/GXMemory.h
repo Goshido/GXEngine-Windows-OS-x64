@@ -108,7 +108,7 @@ class GXMemoryInspectorFull
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class GXCircleBuffer final
+class GXCircleBuffer final : public GXMemoryInspector
 {
     private:
         GXUPointer      size;

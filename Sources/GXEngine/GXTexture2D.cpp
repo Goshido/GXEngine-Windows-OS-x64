@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #include <GXEngine/GXTexture2D.h>
 #include <GXEngine/GXMeshGeometry.h>
@@ -46,7 +46,7 @@ struct GXTexture2DCacheHeader final
 
 //----------------------------------------------------------------------
 
-class GXTexture2DEntry final
+class GXTexture2DEntry final : public GXMemoryInspector
 {
     private:
         GXTexture2DEntry*               previous;
@@ -110,7 +110,8 @@ class GXTexture2DEntry final
 
 GXTexture2DEntry* GXTexture2DEntry::top = nullptr;
 
-GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection ):
+GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTexture2DEntry" )
     previous ( nullptr ),
     next ( top ),
     references ( 1u )
@@ -138,7 +139,7 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* fileName, GXBool isGenerateM
     size += GXWcslen ( CACHE_FILE_EXTENSION ) * sizeof ( GXWChar );
     size += sizeof ( GXWChar );        // L'\0' symbol
 
-    GXWChar* cacheFileName = static_cast<GXWChar*> ( malloc ( size ) );
+    GXWChar* cacheFileName = static_cast<GXWChar*> ( Malloc ( size ) );
     wsprintfW ( cacheFileName, L"%s/%s/%s.%s", path, CACHE_DIRECTORY_NAME, baseFileName, CACHE_FILE_EXTENSION );
 
     free ( baseFileName );
@@ -151,7 +152,7 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* fileName, GXBool isGenerateM
 
     if ( GXLoadFile ( cacheFileName, reinterpret_cast<GXVoid**> ( &data ), size, GX_FALSE ) )
     {
-        free ( cacheFileName );
+        Free ( cacheFileName );
         free ( path );
 
         const GXTexture2DCacheHeader* cacheHeader = (const GXTexture2DCacheHeader*)data;
@@ -251,7 +252,7 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* fileName, GXBool isGenerateM
     size += GXWcslen ( CACHE_DIRECTORY_NAME ) * sizeof ( GXWChar );
     size += sizeof ( GXWChar );        // L'\0' symbol
 
-    GXWChar* cacheDirectory = static_cast<GXWChar*> ( malloc ( size ) );
+    GXWChar* cacheDirectory = static_cast<GXWChar*> ( Malloc ( size ) );
     wsprintfW ( cacheDirectory, L"%s/%s", path, CACHE_DIRECTORY_NAME );
 
     free ( path );
@@ -259,7 +260,7 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* fileName, GXBool isGenerateM
     if ( !GXDoesDirectoryExist ( cacheDirectory ) )
         GXCreateDirectory ( cacheDirectory );
 
-    free ( cacheDirectory );
+    Free ( cacheDirectory );
 
     GXTexture2DCacheHeader cacheHeader;
     GXUInt resolvedWidth = 0u;
@@ -322,7 +323,7 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* fileName, GXBool isGenerateM
 
             pixelSize = resolvedWidth * resolvedHeight * cacheHeader.numChannels * sizeof ( GXFloat );
 
-            free ( cacheFileName );
+            Free ( cacheFileName );
 
             cacheFile.Write ( &cacheHeader, sizeof ( GXTexture2DCacheHeader ) );
             InitResources ( cacheHeader.width, cacheHeader.height, resolvedInternalFormat, isGenerateMipmap );
@@ -394,7 +395,7 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* fileName, GXBool isGenerateM
 
             pixelSize = resolvedWidth * resolvedHeight * cacheHeader.numChannels * sizeof ( GXUByte );
 
-            free ( cacheFileName );
+            Free ( cacheFileName );
 
             cacheFile.Write ( &cacheHeader, sizeof ( GXTexture2DCacheHeader ) );
 
@@ -424,7 +425,7 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* fileName, GXBool isGenerateM
     if ( !success )
     {
         GXLogW ( L"GXTexture2D::LoadTexture::Error - ѕоддерживаютс€ текстуры с количеством каналов 1, 3 и 4 (текущее количество %hhu)\n", cacheHeader.numChannels );
-        free ( cacheFileName );
+        Free ( cacheFileName );
         return;
     }
 
@@ -511,7 +512,8 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* fileName, GXBool isGenerateM
     UpdateMipmaps ();
 }
 
-GXTexture2DEntry::GXTexture2DEntry ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap ):
+GXTexture2DEntry::GXTexture2DEntry ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTexture2DEntry" )
     previous ( nullptr ),
     next ( nullptr ),
     references ( 1u ),
@@ -839,23 +841,27 @@ GXVoid GXTexture2DEntry::InitResources ( GXUShort textureWidth, GXUShort texture
 
 //----------------------------------------------------------------------
 
-GXTexture2D::GXTexture2D ():
-    texture2DEntry ( nullptr ),
-    textureUnit ( INVALID_TEXTURE_UNIT )
+GXTexture2D::GXTexture2D ()
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTexture2D" )
+    textureUnit ( INVALID_TEXTURE_UNIT ),
+    texture2DEntry ( nullptr )
 {
     // NOTHING
 }
 
-GXTexture2D::GXTexture2D ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap ):
-    texture2DEntry ( new GXTexture2DEntry ( width, height, internalFormat, isGenerateMipmap ) ),
+GXTexture2D::GXTexture2D ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTexture2D" )
     textureUnit ( INVALID_TEXTURE_UNIT )
 {
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" );
+    texture2DEntry = new GXTexture2DEntry ( width, height, internalFormat, isGenerateMipmap );
     // NOTHING
 }
 
-GXTexture2D::GXTexture2D ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection ):
-    texture2DEntry ( nullptr ),
-    textureUnit ( INVALID_TEXTURE_UNIT )
+GXTexture2D::GXTexture2D ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTexture2D" )
+    textureUnit ( INVALID_TEXTURE_UNIT ),
+    texture2DEntry ( nullptr )
 {
     LoadImage ( fileName, isGenerateMipmap, isApplyGammaCorrection );
 }
@@ -900,6 +906,7 @@ GXVoid GXTexture2D::LoadImage ( const GXWChar* fileName, GXBool isGenerateMipmap
         return;
     }
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" );
     texture2DEntry = new GXTexture2DEntry ( fileName, isGenerateMipmap, isApplyGammaCorrection );
 }
 
@@ -917,6 +924,8 @@ GXVoid GXTexture2D::FillWholePixelData ( const GXVoid* data )
     GXBool isGenerateMipmap = texture2DEntry->IsGenerateMipmap ();
 
     texture2DEntry->Release ();
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" );
     texture2DEntry = new GXTexture2DEntry ( width, height, internalFormat, isGenerateMipmap );
     texture2DEntry->FillWholePixelData ( data );
 }
@@ -935,6 +944,8 @@ GXVoid GXTexture2D::FillRegionPixelData ( GXUShort left, GXUShort bottom, GXUSho
     GXBool isGenerateMipmap = texture2DEntry->IsGenerateMipmap ();
 
     texture2DEntry->Release ();
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" );
     texture2DEntry = new GXTexture2DEntry ( width, height, internalFormat, isGenerateMipmap );
     texture2DEntry->FillWholePixelData ( nullptr );
     texture2DEntry->FillRegionPixelData ( left, bottom, regionWidth, regionHeight, data );
@@ -974,6 +985,7 @@ GXVoid GXTexture2D::InitResources ( GXUShort width, GXUShort height, GLint inter
     if ( texture2DEntry )
         texture2DEntry->Release ();
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" );
     texture2DEntry = new GXTexture2DEntry ( width, height, internalFormat, isGenerateMipmap );
 }
 

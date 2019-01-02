@@ -6,6 +6,7 @@
 
 
 GXAVLTreeNode::GXAVLTreeNode ()
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXAVLTreeNode" )
 {
     left = right = nullptr;
     height = 1u;

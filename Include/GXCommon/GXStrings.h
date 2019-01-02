@@ -53,6 +53,9 @@ GXInt GXCALL GXMbscmp ( const GXMBChar* a, const GXMBChar* b );
 
 GXUPointer GXCALL GXUTF8size ( const GXUTF8* str );
 
+// Note string will be cloned via malloc allocation. User code MUST call free
+// when string content is no needed anymore.
+
 GXVoid GXCALL GXMbsclone ( GXMBChar** dest, const GXMBChar* src );
 GXVoid GXCALL GXCstrClone ( GXChar** dest, const GXChar* src );
 GXVoid GXCALL GXUTF8clone ( GXUTF8** dest, const GXUTF8* src );

@@ -1,11 +1,12 @@
-// version 1.8
+// version 1.9
 
 #ifndef GX_WIDGET
 #define GX_WIDGET
 
 
+#include "GXUIMessage.h"
 #include <GXCommon/GXMath.h>
-#include <GXEngine/GXUIMessage.h>
+#include <GXCommon/GXMemory.h>
 
 
 class GXWidgetRenderer;
@@ -87,7 +88,7 @@ class GXWidgetIterator final
         GXWidgetIterator& operator = ( const GXWidgetIterator &other ) = delete;
 };
 
-class GXWidgetRenderer
+class GXWidgetRenderer : public GXMemoryInspector
 {
     friend class GXWidget;
 

@@ -13,199 +13,203 @@ GX_DISABLE_COMMON_WARNINGS
 GX_RESTORE_WARNING_STATE
 
 
-#define DEFAULT_MULTIPLIER					1.0f
-#define DEFAULT_ANIMATION_POSITION			0.0f
-#define DEFAULT_FRAME_INTERVAL				0.016f
-#define DEFAULT_FRAME_INTERPOLATION_FACTOR	0.0f
+#define DEFAULT_MULTIPLIER                      1.0f
+#define DEFAULT_ANIMATION_POSITION              0.0f
+#define DEFAULT_FRAME_INTERVAL                  0.016f
+#define DEFAULT_FRAME_INTERPOLATION_FACTOR      0.0f
 
-#define INVALID_BONE_INDEX					0xFFFFu
+#define INVALID_BONE_INDEX                      0xFFFFu
 
 
 class GXBoneFinderNode : public GXAVLTreeNode
 {
-	public:
-		const GXUTF8*	boneName;
-		GXUShort		boneIndex;
+    public:
+        const GXUTF8*       boneName;
+        GXUShort            boneIndex;
 
-	public:
-		GXBoneFinderNode ();
-		explicit GXBoneFinderNode ( const GXUTF8* boneName, GXUShort boneIndex );
-		~GXBoneFinderNode () override;
+    public:
+        GXBoneFinderNode ();
+        explicit GXBoneFinderNode ( const GXUTF8* boneName, GXUShort boneIndex );
+        ~GXBoneFinderNode () override;
 
-		static GXInt GXCALL Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
+        static GXInt GXCALL Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
 };
 
 GXBoneFinderNode::GXBoneFinderNode ()
 {
-	boneName = nullptr;
-	boneIndex = static_cast<GXUShort> ( INVALID_BONE_INDEX );
+    boneName = nullptr;
+    boneIndex = static_cast<GXUShort> ( INVALID_BONE_INDEX );
 }
 
 GXBoneFinderNode::GXBoneFinderNode ( const GXUTF8* boneName, GXUShort boneIndex )
 {
-	this->boneName = boneName;
-	this->boneIndex = boneIndex;
+    this->boneName = boneName;
+    this->boneIndex = boneIndex;
 }
 
 GXBoneFinderNode::~GXBoneFinderNode ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXInt GXCALL GXBoneFinderNode::Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b )
 {
-	const GXBoneFinderNode& aNode = static_cast<const GXBoneFinderNode&> ( a );
-	const GXBoneFinderNode& bNode = static_cast<const GXBoneFinderNode&> ( b );
-	return GXUTF8cmp ( aNode.boneName, bNode.boneName );
+    const GXBoneFinderNode& aNode = static_cast<const GXBoneFinderNode&> ( a );
+    const GXBoneFinderNode& bNode = static_cast<const GXBoneFinderNode&> ( b );
+    return GXUTF8cmp ( aNode.boneName, bNode.boneName );
 }
 
 //--------------------------------------------------------------------------------------------------
 
-class GXBoneFinder : public GXAVLTree
+class GXBoneFinder : public GXMemoryInspector, public GXAVLTree
 {
-	private:
-		GXBoneFinderNode*	cacheFriendlyNodes;
+    private:
+        GXBoneFinderNode*       cacheFriendlyNodes;
 
-	public:
-		explicit GXBoneFinder ( const GXAnimationInfo &animInfo );
-		~GXBoneFinder () override;
+    public:
+        explicit GXBoneFinder ( const GXAnimationInfo &animInfo );
+        ~GXBoneFinder () override;
 
-		GXUShort FindBoneIndex ( const GXUTF8* boneName ) const;
+        GXUShort FindBoneIndex ( const GXUTF8* boneName ) const;
 };
 
-GXBoneFinder::GXBoneFinder ( const GXAnimationInfo &animInfo ) :
-	GXAVLTree ( &GXBoneFinderNode::Compare, GX_FALSE ),
-	cacheFriendlyNodes ( static_cast<GXBoneFinderNode*> ( malloc ( sizeof ( GXBoneFinderNode ) * animInfo.totalBones ) ) )
+GXBoneFinder::GXBoneFinder ( const GXAnimationInfo &animInfo )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXBoneFinder" )
+    GXAVLTree ( &GXBoneFinderNode::Compare, GX_FALSE )
 {
-	for ( GXUShort i = 0u; i < animInfo.totalBones; ++i )
-	{
-		new ( cacheFriendlyNodes + i ) GXBoneFinderNode ( animInfo.boneNames + i * GX_BONE_NAME_SIZE, i );
-		Add ( *( cacheFriendlyNodes + i ) );
-	}
+    cacheFriendlyNodes = static_cast<GXBoneFinderNode*> ( Malloc ( sizeof ( GXBoneFinderNode ) * animInfo.totalBones ) );
+
+    for ( GXUShort i = 0u; i < animInfo.totalBones; ++i )
+    {
+        ::new ( cacheFriendlyNodes + i ) GXBoneFinderNode ( animInfo.boneNames + i * GX_BONE_NAME_SIZE, i );
+        Add ( *( cacheFriendlyNodes + i ) );
+    }
 }
 
 GXBoneFinder::~GXBoneFinder ()
 {
-	free ( cacheFriendlyNodes );
+    Free ( cacheFriendlyNodes );
 }
 
 GXUShort GXBoneFinder::FindBoneIndex ( const GXUTF8* boneName ) const
 {
-	GXBoneFinderNode finderNode;
-	finderNode.boneName = boneName;
-	const GXBoneFinderNode* node = static_cast<const GXBoneFinderNode*> ( Find ( finderNode ) );
+    GXBoneFinderNode finderNode;
+    finderNode.boneName = boneName;
+    const GXBoneFinderNode* node = static_cast<const GXBoneFinderNode*> ( Find ( finderNode ) );
 
-	if ( !node )
-		return GX_UNKNOWN_BONE_INDEX;
+    if ( !node )
+        return GX_UNKNOWN_BONE_INDEX;
 
-	return node->boneIndex;
+    return node->boneIndex;
 }
 
 //--------------------------------------------------------------------------------------------------
 
 GXAnimationSolverPlayer::GXAnimationSolverPlayer ( GXUShort solverID ):
-	GXAnimationSolver ( solverID ),
-	finder ( nullptr ),
-	animPos ( DEFAULT_ANIMATION_POSITION ),
-	animationInfo ( nullptr ),
-	frameInterval ( DEFAULT_FRAME_INTERVAL ),
-	frameInterpolationFactor ( DEFAULT_FRAME_INTERPOLATION_FACTOR )
+    GXAnimationSolver ( solverID ),
+    finder ( nullptr ),
+    animPos ( DEFAULT_ANIMATION_POSITION ),
+    animationInfo ( nullptr ),
+    frameInterval ( DEFAULT_FRAME_INTERVAL ),
+    frameInterpolationFactor ( DEFAULT_FRAME_INTERPOLATION_FACTOR )
 {
-	DisableNormalization ();
-	SetAnimationMultiplier ( DEFAULT_MULTIPLIER );
+    DisableNormalization ();
+    SetAnimationMultiplier ( DEFAULT_MULTIPLIER );
 }
 
 GXAnimationSolverPlayer::~GXAnimationSolverPlayer ()
 {
-	GXSafeDelete ( finder );
+    GXSafeDelete ( finder );
 }
 
 GXBool GXAnimationSolverPlayer::GetBoneJoint ( GXBoneJoint &joint, const GXUTF8* boneName )
 {
-	if ( !finder || !animationInfo ) return GX_FALSE;
+    if ( !finder || !animationInfo ) return GX_FALSE;
 
-	GXUShort boneIndex = finder->FindBoneIndex ( boneName );
+    GXUShort boneIndex = finder->FindBoneIndex ( boneName );
 
-	if ( boneIndex == GX_UNKNOWN_BONE_INDEX ) return GX_FALSE;
+    if ( boneIndex == GX_UNKNOWN_BONE_INDEX ) return GX_FALSE;
 
-	GXUInt doneFrame = static_cast<GXUInt> ( animPos * animationInfo->totalFrames );
+    GXUInt doneFrame = static_cast<GXUInt> ( animPos * animationInfo->totalFrames );
 
-	if ( doneFrame >= animationInfo->totalFrames )
-		doneFrame = animationInfo->totalFrames - 1;
+    if ( doneFrame >= animationInfo->totalFrames )
+        doneFrame = animationInfo->totalFrames - 1;
 
-	GXUInt nextFrame = doneFrame + 1;
+    GXUInt nextFrame = doneFrame + 1;
 
-	if ( nextFrame >= animationInfo->totalFrames )
-		nextFrame = 0;
+    if ( nextFrame >= animationInfo->totalFrames )
+        nextFrame = 0;
 
-	const GXBoneJoint* doneJoint = animationInfo->keys + doneFrame * animationInfo->totalBones + boneIndex;
-	const GXBoneJoint* nextJoint = animationInfo->keys + nextFrame * animationInfo->totalBones + boneIndex;
+    const GXBoneJoint* doneJoint = animationInfo->keys + doneFrame * animationInfo->totalBones + boneIndex;
+    const GXBoneJoint* nextJoint = animationInfo->keys + nextFrame * animationInfo->totalBones + boneIndex;
 
-	GXFloat alpha = frameInterpolationFactor * animationInfo->fps;
+    GXFloat alpha = frameInterpolationFactor * animationInfo->fps;
 
-	joint.location.LinearInterpolation ( doneJoint->location, nextJoint->location, alpha );
-	joint.rotation.SphericalLinearInterpolation ( doneJoint->rotation, nextJoint->rotation, alpha );
+    joint.location.LinearInterpolation ( doneJoint->location, nextJoint->location, alpha );
+    joint.rotation.SphericalLinearInterpolation ( doneJoint->rotation, nextJoint->rotation, alpha );
 
-	if ( isNormalize )
-		joint.rotation.Normalize ();
+    if ( isNormalize )
+        joint.rotation.Normalize ();
 
-	return GX_TRUE;
+    return GX_TRUE;
 }
 
 GXVoid GXAnimationSolverPlayer::Update ( GXFloat delta )
 {
-	GXFloat alpha = delta * speed;
+    GXFloat alpha = delta * speed;
 
-	animPos += alpha * deltaToPartFactor;
-	frameInterpolationFactor += alpha;
+    animPos += alpha * deltaToPartFactor;
+    frameInterpolationFactor += alpha;
 
-	if ( animPos > 1.0f )
-	{
-		while ( animPos > 1.0f )
-			animPos -= 1.0f;
-	}
-	else if ( animPos < 0.0f )
-	{
-		while ( animPos < 0.0f )
-			animPos += 1.0f;
-	}
+    if ( animPos > 1.0f )
+    {
+        while ( animPos > 1.0f )
+            animPos -= 1.0f;
+    }
+    else if ( animPos < 0.0f )
+    {
+        while ( animPos < 0.0f )
+            animPos += 1.0f;
+    }
 
-	if ( frameInterpolationFactor > frameInterval )
-	{
-		while ( frameInterpolationFactor > frameInterval )
-			frameInterpolationFactor -= frameInterval;
-	}
-	else if ( frameInterpolationFactor < 0.0f )
-	{
-		while ( frameInterpolationFactor < 0.0f )
-			frameInterpolationFactor += frameInterval;
-	}
+    if ( frameInterpolationFactor > frameInterval )
+    {
+        while ( frameInterpolationFactor > frameInterval )
+            frameInterpolationFactor -= frameInterval;
+    }
+    else if ( frameInterpolationFactor < 0.0f )
+    {
+        while ( frameInterpolationFactor < 0.0f )
+            frameInterpolationFactor += frameInterval;
+    }
 }
 
 GXVoid GXAnimationSolverPlayer::SetAnimationSequence ( const GXAnimationInfo* animData )
 {
-	GXSafeDelete ( finder );
-	finder = new GXBoneFinder ( *animData );
+    GXSafeDelete ( finder );
 
-	animationInfo = animData;
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXBoneFinder" );
+    finder = new GXBoneFinder ( *animData );
 
-	frameInterval = 1.0f / animData->fps;
-	frameInterpolationFactor = 0.0f;
-	GXFloat totalTime = animData->totalFrames * frameInterval;
-	deltaToPartFactor = 1.0f / totalTime;
+    animationInfo = animData;
+
+    frameInterval = 1.0f / animData->fps;
+    frameInterpolationFactor = 0.0f;
+    GXFloat totalTime = animData->totalFrames * frameInterval;
+    deltaToPartFactor = 1.0f / totalTime;
 }
 
 GXVoid GXAnimationSolverPlayer::SetAnimationMultiplier ( GXFloat multiplier )
 {
-	speed = multiplier;
+    speed = multiplier;
 }
 
 GXVoid GXAnimationSolverPlayer::EnableNormalization ()
 {
-	isNormalize = GX_TRUE;
+    isNormalize = GX_TRUE;
 }
 
 GXVoid GXAnimationSolverPlayer::DisableNormalization ()
 {
-	isNormalize = GX_FALSE;
+    isNormalize = GX_FALSE;
 }

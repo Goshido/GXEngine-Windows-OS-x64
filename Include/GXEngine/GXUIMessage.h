@@ -1,7 +1,10 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_UI_MESSAGE
 #define GX_UI_MESSAGE
+
+
+#include <GXCommon/GXTypes.h>
 
 
 enum class eGXUIMessage : GXUInt

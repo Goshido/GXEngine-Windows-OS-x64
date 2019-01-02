@@ -3,9 +3,10 @@
 
 
 #include <GXEngine/GXUIStaticText.h>
+#include <GXCommon/GXMemory.h>
 
 
-class BBLabel final
+class BBLabel final : public GXMemoryInspector
 {
     private:
         GXUIStaticText      staticText;

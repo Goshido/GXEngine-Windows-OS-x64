@@ -25,7 +25,7 @@ struct GXShaderProgramInfo final
 // Class handles lazy loading reference counting shader program resource creation.
 
 class GXShaderProgramEntry;
-class GXShaderProgram final
+class GXShaderProgram final : public GXMemoryInspector
 {
     private:
         GXShaderProgramEntry*       shaderProgramEntry;

@@ -409,6 +409,7 @@ GXVoid GXFontEntry::CreateAtlas ()
         atlases = temp;
     }
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2D" );
     GXTexture2D* atlas = new GXTexture2D ( ATLAS_RESOLUTION, ATLAS_RESOLUTION, GL_R8, GX_FALSE );
     atlas->FillWholePixelData ( nullptr );
     atlases[ lastAtlasID ] = atlas;

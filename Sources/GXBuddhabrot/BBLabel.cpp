@@ -119,9 +119,11 @@ GXVoid BBLabelRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 //---------------------------------------------------------------------------------------------------------------------
 
-BBLabel::BBLabel ( GXWidget* parent ):
+BBLabel::BBLabel ( GXWidget* parent )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "BBLabel" )
     staticText ( parent )
 {
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "BBLabelRenderer" );
     staticText.SetRenderer ( new BBLabelRenderer ( &staticText ) );
     staticText.SetTextColor ( BB_GUI_COLOR_HUE_2_RED, BB_GUI_COLOR_HUE_2_GREEN, BB_GUI_COLOR_HUE_2_BLUE, BB_GUI_COLOR_HUE_2_ALPHA );
 }

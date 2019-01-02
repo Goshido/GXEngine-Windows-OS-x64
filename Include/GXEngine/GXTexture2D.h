@@ -1,20 +1,21 @@
-// version 1.7
+// version 1.8
 
 #ifndef GX_TEXTURE_2D
 #define GX_TEXTURE_2D
 
 
 #include "GXOpenGL.h"
+#include <GXCommon/GXMemory.h>
 
 
 // Class handles lazy loading reference counting texture 2D resource creation.
 
 class GXTexture2DEntry;
-class GXTexture2D final
+class GXTexture2D final : public GXMemoryInspector
 {
     private:
-        GXTexture2DEntry*       texture2DEntry;
         GXUByte                 textureUnit;
+        GXTexture2DEntry*       texture2DEntry;
 
     public:
         // Creates uninitiated texture resource.

@@ -57,6 +57,8 @@ GXCore::~GXCore ()
 
     delete &( GXSplashScreen::GetInstance () );
 
+    CheckMemoryLeak ();
+
     GXLogDestroy ();
 }
 
@@ -79,8 +81,6 @@ GXVoid GXCore::Start ( GXGame &game )
     soundMixer.Shutdown ();
 
     delete &game;
-
-    CheckMemoryLeak ();
 }
 
 GXVoid GXCore::Exit ()

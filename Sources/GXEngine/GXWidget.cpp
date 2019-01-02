@@ -1,4 +1,4 @@
-// version 1.8
+// version 1.9
 
 #include <GXEngine/GXWidget.h>
 #include <GXEngine/GXRenderer.h>
@@ -421,7 +421,8 @@ GXWidget* GXWidgetIterator::GetChilds ()
 
 //--------------------------------------------------------------------------
 
-GXWidgetRenderer::GXWidgetRenderer ( GXWidget* widget ):
+GXWidgetRenderer::GXWidgetRenderer ( GXWidget* widget )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXWidgetRenderer" )
     widget ( widget )
 {
     // NOTHING

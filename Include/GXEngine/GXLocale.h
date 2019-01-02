@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #ifndef GX_LOCALE
 #define GX_LOCALE
@@ -13,7 +13,7 @@ enum class eGXLanguage : GXUShort
     Russian = 1
 };
 
-class GXLocale final
+class GXLocale final : public GXMemoryInspector
 {
     private:
         eGXLanguage         currentLanguage;

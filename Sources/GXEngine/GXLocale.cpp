@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #include <GXEngine/GXLocale.h>
 #include <GXCommon/GXAVLTree.h>
@@ -9,8 +9,9 @@
 
 #define GX_DEFAULT_SEPARATOR '~'
 
+//---------------------------------------------------------------------------------------------------------------------
 
-class GXStringNode : public GXAVLTreeNode
+class GXStringNode final : public GXAVLTreeNode
 {
     public:
         GXWChar*    key;
@@ -62,9 +63,9 @@ GXVoid GXCALL GXStringNode::DestroyFinderNode ( GXStringNode &node )
     node.value = nullptr;
 }
 
-//--------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
-class GXStringTree : public GXAVLTree
+class GXStringTree final : public GXMemoryInspector, public GXAVLTree
 {
     public:
         GXStringTree ();
@@ -77,8 +78,9 @@ class GXStringTree : public GXAVLTree
         static GXInt GXCALL Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
 };
 
-GXStringTree::GXStringTree ():
-GXAVLTree ( &Compare, GX_TRUE )
+GXStringTree::GXStringTree ()
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXStringTree" )
+    GXAVLTree ( &Compare, GX_TRUE )
 {
     // NOTHING
 }
@@ -90,6 +92,7 @@ GXStringTree::~GXStringTree ()
 
 GXVoid GXStringTree::AddString ( const GXUTF8* key, const GXUTF8* string )
 {
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringNode" );
     GXStringNode* node = new GXStringNode ( key, string );
     Add ( *node );
 }
@@ -115,7 +118,7 @@ GXInt GXCALL GXStringTree::Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode
     return GXWcscmp ( aNode.key, bNode.key );
 }
 
-//--------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 enum eGXParserState : GXUByte
 {
@@ -123,14 +126,17 @@ enum eGXParserState : GXUByte
     String
 };
 
-//--------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXLocale* GXLocale::instance = nullptr;
 
 GXLocale& GXCALL GXLocale::GetInstance ()
 {
     if ( !instance )
+    {
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXLocale" );
         instance = new GXLocale ();
+    }
 
     return *instance;
 }
@@ -160,6 +166,7 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 
     if ( !tmp )
     {
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringTree" );
         tree = new GXStringTree ();
         storage.SetValue ( static_cast<GXUPointer> ( language ), &tree );
     }
@@ -175,37 +182,42 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 
     while ( offset < size )
     {
-        if ( data[ offset ] == GX_DEFAULT_SEPARATOR )
+        if ( data[ offset ] != GX_DEFAULT_SEPARATOR )
         {
-            data[ offset ] = 0;
-            if ( state == eGXParserState::Key )
+            ++offset;
+            continue;
+        }
+
+        data[ offset ] = 0;
+
+        if ( state == eGXParserState::Key )
+        {
+            string = data + offset + 1u;
+            state = eGXParserState::String;
+
+            ++offset;
+            continue;
+        }
+
+        tree->AddString ( key, string );
+
+        while ( GX_TRUE )
+        {
+            ++offset;
+
+            if ( offset >= size ) break;
+
+            else if ( data[ offset ] != ' ' && data[ offset ] != '\n' && data[ offset ] != '\r' && data[ offset ] != '\t' )
             {
-                string = data + offset + 1u;
-                state = eGXParserState::String;
-            }
-            else
-            {
-                tree->AddString ( key, string );
-
-                while ( GX_TRUE )
-                {
-                    ++offset;
-
-                    if ( offset >= size ) break;
-
-                    else if ( data[ offset ] != ' ' && data[ offset ] != '\n' && data[ offset ] != '\r' && data[ offset ] != '\t' )
-                    {
-                        --offset;
-                        break;
-                    }
-                }
-
-                if ( offset >= size ) break;
-
-                key = data + offset + 1u;
-                state = eGXParserState::Key;
+                --offset;
+                break;
             }
         }
+
+        if ( offset >= size ) break;
+
+        key = data + offset + 1u;
+        state = eGXParserState::Key;
 
         ++offset;
     }
@@ -238,12 +250,14 @@ const GXWChar* GXLocale::GetString ( const GXWChar* resName ) const
     GXStringTree** treePointer = static_cast<GXStringTree**> ( storage.GetValue ( languageIndex ) );
     GXStringTree* tree = *treePointer;
 
-    if ( tree ) return tree->GetString ( resName );
+    if ( tree )
+        return tree->GetString ( resName );
 
     return nullptr;
 }
 
-GXLocale::GXLocale ():
+GXLocale::GXLocale ()
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXLocale" )
     currentLanguage ( eGXLanguage::Russian ),
     storage ( sizeof ( GXStringTree* ) )
 {

@@ -3,16 +3,17 @@
 #include <GXCommon/GXMemory.h>
 
 
-GXCircleBuffer::GXCircleBuffer ( GXUPointer size ):
+GXCircleBuffer::GXCircleBuffer ( GXUPointer size )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXCircleBuffer" )
     size ( size ),
     offset ( 0u )
 {
-    buffer = static_cast<GXUByte*> ( malloc ( size ) );
+    buffer = static_cast<GXUByte*> ( Malloc ( size ) );
 }
 
 GXCircleBuffer::~GXCircleBuffer ()
 {
-    free ( buffer );
+    Free ( buffer );
 }
 
 GXVoid* GXCircleBuffer::Allocate ( GXUPointer bytes )

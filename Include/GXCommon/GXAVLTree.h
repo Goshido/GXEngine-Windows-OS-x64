@@ -4,10 +4,10 @@
 #define GX_AVL_TREE
 
 
-#include <GXCommon/GXTypes.h>
+#include <GXCommon/GXMemory.h>
 
 
-class GXAVLTreeNode
+class GXAVLTreeNode : public GXMemoryInspector
 {
     public:
         GXAVLTreeNode*      left;
