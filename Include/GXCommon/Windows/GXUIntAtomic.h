@@ -17,13 +17,14 @@ class GXUIntAtomic final : public GXAbstractUIntAtomic
         explicit GXUIntAtomic ( GXUInt value );
         ~GXUIntAtomic () override;
 
+        // Current value will be replaced by exchangeValue if current value is equal compareValue.
+        // Compare exchange operation is atomic. Method returns original value.
+        GXUInt CompareExchange ( GXUInt compareValue, GXUInt exchangeValue ) override;
+
         GXUInt Read () const override;
         GXVoid Write ( GXUInt newValue ) override;
 
         GXVoid operator = ( GXUInt newValue ) override;
-
-        // Note it is cast operator to GXUInt.
-        operator GXUInt () const override;
 
         GXUInt operator + ( GXUInt value ) override;
         GXUInt operator += ( GXUInt value ) override;
@@ -39,6 +40,9 @@ class GXUIntAtomic final : public GXAbstractUIntAtomic
         GXBool operator >= ( GXUInt testValue ) const override;
         GXBool operator < ( GXUInt testValue ) const override;
         GXBool operator <= ( GXUInt testValue ) const override;
+
+        // Note it is cast operator to GXUInt.
+        operator GXUInt () const override;
 
     private:
         GXUIntAtomic ( const GXUIntAtomic &other ) = delete;

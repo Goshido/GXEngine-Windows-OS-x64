@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.4
 
 #ifndef GX_UINT_ATOMIC
 #define GX_UINT_ATOMIC
@@ -10,13 +10,14 @@
 class GXAbstractUIntAtomic
 {
     public:
+        // Current value will be replaced by exchangeValue if current value is equal compareValue.
+        // Compare exchange operation is atomic. Method returns original value.
+        virtual GXUInt CompareExchange ( GXUInt compareValue, GXUInt exchangeValue ) = 0;
+
         virtual GXUInt Read () const = 0;
         virtual GXVoid Write ( GXUInt newValue ) = 0;
 
         virtual GXVoid operator = ( GXUInt newValue ) = 0;
-
-        // Note it is cast cast to GXUInt.
-        virtual operator GXUInt () const = 0;
 
         virtual GXUInt operator + ( GXUInt value ) = 0;
         virtual GXUInt operator += ( GXUInt value ) = 0;
@@ -32,6 +33,9 @@ class GXAbstractUIntAtomic
         virtual GXBool operator >= ( GXUInt testValue ) const = 0;
         virtual GXBool operator < ( GXUInt testValue ) const = 0;
         virtual GXBool operator <= ( GXUInt testValue ) const = 0;
+
+        // Note it is cast to GXUInt.
+        virtual operator GXUInt () const = 0;
 
     protected:
         GXAbstractUIntAtomic ();

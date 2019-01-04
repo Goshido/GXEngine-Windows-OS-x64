@@ -1,4 +1,4 @@
-// version 1.8
+// version 1.9
 
 #ifndef GX_TYPES_WINDOWS
 #define GX_TYPES_WINDOWS
@@ -41,6 +41,7 @@ typedef uint8_t                 GXUByte;
 typedef char                    GXChar;
 typedef unsigned char           GXUChar;
 typedef char                    GXUTF8;
+typedef uint16_t                GXUTF16;
 typedef char                    GXMBChar;
 typedef wchar_t                 GXWChar;
 typedef float                   GXFloat;

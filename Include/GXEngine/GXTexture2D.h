@@ -27,7 +27,7 @@ class GXTexture2D final : public GXMemoryInspector
         // Creates reference counting texture resource.
         explicit GXTexture2D ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection );
 
-        ~GXTexture2D ();
+        ~GXTexture2D () override;
 
         GXUShort GetWidth () const;
         GXUShort GetHeight () const;

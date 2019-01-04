@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #ifndef GX_WIDGET
 #define GX_WIDGET
@@ -33,7 +33,7 @@ class GXWidget
         GXAABB                  boundsLocal;
 
     public:
-        explicit GXWidget ( GXWidget* parent, GXBool isNeedRegister = GX_TRUE );
+        explicit GXWidget ( GXWidget* parentWidget, GXBool isNeedRegister = GX_TRUE );
         virtual ~GXWidget ();
 
         virtual GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data );
@@ -99,8 +99,8 @@ class GXWidgetRenderer : public GXMemoryInspector
         GXAABB          oldBounds;
 
     public:
-        explicit GXWidgetRenderer ( GXWidget* widget );
-        virtual ~GXWidgetRenderer ();
+        explicit GXWidgetRenderer ( GXWidget* widgetObject );
+        ~GXWidgetRenderer () override;
 
         GXVoid OnUpdate ();
 

@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.9
 
 #ifndef GX_TYPES
 #define GX_TYPES

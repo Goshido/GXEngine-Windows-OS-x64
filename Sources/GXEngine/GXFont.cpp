@@ -1,11 +1,11 @@
-// version 1.11
+// version 1.12
 
 #include <GXEngine/GXFont.h>
 #include <GXEngineDLL/GXEngineAPI.h>
-#include <GXCommon/GXStrings.h>
-#include <GXCommon/GXLogger.h>
 #include <GXCommon/GXFileSystem.h>
+#include <GXCommon/GXLogger.h>
 #include <GXCommon/GXMemory.h>
+#include <GXCommon/GXStrings.h>
 #include <GXCommon/GXUIntAtomic.h>
 
 
@@ -54,7 +54,7 @@ struct GXGlyph final
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class GXFontEntry final
+class GXFontEntry final : public GXMemoryInspector
 {
     friend class GXFont;
 
@@ -95,7 +95,7 @@ class GXFontEntry final
         GXVoid Release ();
 
     private:
-        ~GXFontEntry ();
+        ~GXFontEntry () override;
 
         GXVoid RenderGlyph ( GXUInt symbol );
         GXUByte CheckAtlas ( GXUInt width, GXUInt heigth ) const;
@@ -106,7 +106,8 @@ class GXFontEntry final
         GXFontEntry& operator = ( const GXFontEntry &other ) = delete;
 };
 
-GXFontEntry::GXFontEntry ( const GXWChar* fileName, GXUShort size ):
+GXFontEntry::GXFontEntry ( const GXWChar* fileName, GXUShort size )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXFontEntry" )
     prev ( nullptr ),
     next ( gx_FontEntries ),
     references ( 1u ),
@@ -224,7 +225,7 @@ GXUInt GXCDECLCALL GXFontEntry::GetTextLength ( GXUInt bufferNumSymbols, const G
 
     if ( bufferNumSymbols )
     {
-        GXWChar* temp = static_cast<GXWChar*> ( malloc ( bufferNumSymbols * sizeof ( GXWChar ) ) );
+        GXWChar* temp = static_cast<GXWChar*> ( Malloc ( bufferNumSymbols * sizeof ( GXWChar ) ) );
         vswprintf_s ( temp, bufferNumSymbols, format, parameters );
 
         text = temp;
@@ -260,7 +261,7 @@ GXUInt GXCDECLCALL GXFontEntry::GetTextLength ( GXUInt bufferNumSymbols, const G
     }
 
     if ( bufferNumSymbols )
-        free ( text );
+        Free ( text );
 
     return static_cast<GXUInt> ( penX );
 }
@@ -289,7 +290,7 @@ GXFontEntry::~GXFontEntry ()
         for ( GXByte i = 0; i <= lastAtlasID; ++i )
             delete atlases[ i ];
 
-        free ( atlases );
+        Free ( atlases );
     }
 
     free ( mappedFile );
@@ -352,17 +353,19 @@ GXVoid GXFontEntry::RenderGlyph ( GXUInt symbol )
 
     glyph.atlasID = lastAtlasID;
 
-    GXUByte* buffer = static_cast<GXUByte*> ( malloc ( static_cast<GXUPointer> ( bitmap.width * bitmap.rows ) ) );
+    GXUByte* buffer = static_cast<GXUByte*> ( Malloc ( static_cast<GXUPointer> ( bitmap.width * bitmap.rows ) ) );
 
     for ( GXUInt h = 0u; h < static_cast<GXUInt> ( bitmap.rows ); ++h )
     {
         for ( GXUInt w = 0u; w < static_cast<GXUInt> ( bitmap.width ); ++w )
+        {
             buffer[ h * bitmap.width + w ] = bitmap.buffer[ ( bitmap.rows - 1 - h ) * bitmap.width + w ];
+        }
     }
 
     atlases[ lastAtlasID ]->FillRegionPixelData ( left, bottom, static_cast<GXUShort> ( bitmap.width ), static_cast<GXUShort> ( bitmap.rows ), buffer );
 
-    free ( buffer );
+    Free ( buffer );
 
     left += static_cast<GXUShort> ( bitmap.width + ATLAS_SPACING );
 
@@ -395,17 +398,17 @@ GXVoid GXFontEntry::CreateAtlas ()
     if ( lastAtlasID == ATLAS_UNDEFINED )
     {
         lastAtlasID = 0;
-        atlases = static_cast<GXTexture2D**> ( malloc ( sizeof ( GXTexture2D* ) ) );
+        atlases = static_cast<GXTexture2D**> ( Malloc ( sizeof ( GXTexture2D* ) ) );
     }
     else
     {
-        GXTexture2D** temp = static_cast<GXTexture2D**> ( malloc ( ( lastAtlasID + 2 ) * sizeof ( GXTexture2D* ) ) );
+        GXTexture2D** temp = static_cast<GXTexture2D**> ( Malloc ( ( lastAtlasID + 2 ) * sizeof ( GXTexture2D* ) ) );
 
         for ( GXByte i = 0u; i < lastAtlasID; ++i )
             temp[ i ] = atlases[ i ];
 
         ++lastAtlasID;
-        free ( atlases );
+        Free ( atlases );
         atlases = temp;
     }
 
@@ -418,6 +421,7 @@ GXVoid GXFontEntry::CreateAtlas ()
 //---------------------------------------------------------------------------------------------------------------------
 
 GXFont::GXFont ( const GXWChar* fileName, GXUShort size )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXFont" )
 {
     for ( GXFontEntry* p = gx_FontEntries; p; p = p->next )
     {
@@ -429,6 +433,7 @@ GXFont::GXFont ( const GXWChar* fileName, GXUShort size )
         return;
     }
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXFontEntry" );
     fontEntry = new GXFontEntry ( fileName, size );
 }
 

@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #include <GXEngine/GXSoundProvider.h>
 #include <GXCommon/GXMemory.h>
@@ -7,9 +7,10 @@
 
 GXSoundTrack* gx_strgSoundTracks = nullptr;
 
-GXSoundStreamer::GXSoundStreamer ( GXVoid* mappedFile, GXUPointer totalSize ):
-    mappedFile ( static_cast<GXUByte*> ( mappedFile ) ),
-    totalSize ( totalSize ),
+GXSoundStreamer::GXSoundStreamer ( GXVoid* memoryMappedFile, GXUPointer fileSize )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXSoundStreamer" )
+    mappedFile ( static_cast<GXUByte*> ( memoryMappedFile ) ),
+    totalSize ( fileSize ),
     position ( 0 )
 {
     // NOTHING
@@ -70,20 +71,21 @@ GXVoid GXSoundStreamer::Reset ()
 
 //-----------------------------------------------------------------------------------------------------
 
-GXSoundTrack::GXSoundTrack ( const GXWChar* trackFile ):
+GXSoundTrack::GXSoundTrack ( const GXWChar* trackFileName )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXSoundTrack" )
     next ( gx_strgSoundTracks ),
     prev ( nullptr ),
     references ( 1u ),
     readyBuffer ( 0u )
 {
-    if ( next ) next->prev = this;
+    if ( next )
+        next->prev = this;
 
     gx_strgSoundTracks = this;
+    GXWcsclone ( &trackFile, trackFileName );
 
-    GXWcsclone ( &this->trackFile, trackFile );
+    if ( GXLoadFile ( trackFile, &mappedFile, totalSize, GX_TRUE ) ) return;
 
-    if ( GXLoadFile ( this->trackFile, &mappedFile, totalSize, GX_TRUE ) ) return;
-        
     GXDebugBox ( L"GXSoundTrack::Error - не удалось загрузить файл" );
 }
 
@@ -112,7 +114,8 @@ GXSoundTrack::~GXSoundTrack ()
     GXSafeFree ( trackFile );
     GXSafeFree ( mappedFile );
 
-    if ( next ) next->prev = prev;
+    if ( next )
+        next->prev = prev;
 
     if ( prev )
     {

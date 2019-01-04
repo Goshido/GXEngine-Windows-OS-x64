@@ -72,8 +72,8 @@ class GXTexture2DEntry final : public GXMemoryInspector
         static GXTexture2DEntry*        top;
 
     public:
-        explicit GXTexture2DEntry ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection );
-        explicit GXTexture2DEntry ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap );
+        explicit GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGenerateMipmap, GXBool isApplyGammaCorrection );
+        explicit GXTexture2DEntry ( GXUShort imageWidth, GXUShort imageHeight, GLint imageInternalFormat, GXBool doesGenerateMipmap );
 
         const GXWChar* GetFileName () const;
         GXUShort GetWidth () const;
@@ -99,7 +99,7 @@ class GXTexture2DEntry final : public GXMemoryInspector
         static GXUInt GXCALL GetTotalLoadedTextures ( const GXWChar** lastTexture );
 
     private:
-        ~GXTexture2DEntry ();
+        ~GXTexture2DEntry () override;
 
         GXVoid InitResources ( GXUShort textureWidth, GXUShort textureHeight, GLint textureInternalFormat, GXBool isGenerateMipmapPolicy );
 
@@ -110,13 +110,14 @@ class GXTexture2DEntry final : public GXMemoryInspector
 
 GXTexture2DEntry* GXTexture2DEntry::top = nullptr;
 
-GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection )
+GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGenerateMipmap, GXBool isApplyGammaCorrection )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTexture2DEntry" )
     previous ( nullptr ),
     next ( top ),
     references ( 1u )
 {
-    GXWcsclone ( &this->fileName, fileName );
+    GXWcsclone ( &fileName, imageFileName );
+    isGenerateMipmap = doesGenerateMipmap;
 
     if ( top )
         top->previous = this;
@@ -512,14 +513,14 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* fileName, GXBool isGenerateM
     UpdateMipmaps ();
 }
 
-GXTexture2DEntry::GXTexture2DEntry ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap )
+GXTexture2DEntry::GXTexture2DEntry ( GXUShort imageWidth, GXUShort imageHeight, GLint imageInternalFormat, GXBool doesGenerateMipmap )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTexture2DEntry" )
     previous ( nullptr ),
     next ( nullptr ),
     references ( 1u ),
     fileName ( nullptr )
 {
-    InitResources ( width, height, internalFormat, isGenerateMipmap );
+    InitResources ( imageWidth, imageHeight, imageInternalFormat, doesGenerateMipmap );
 }
 
 const GXWChar* GXTexture2DEntry::GetFileName () const

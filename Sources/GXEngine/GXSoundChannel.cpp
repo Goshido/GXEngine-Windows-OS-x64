@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #include <GXEngine/GXSoundChannel.h>
 
@@ -7,7 +7,8 @@
 
 //--------------------------------------------------------------------------
 
-GXSoundChannel::GXSoundChannel ():
+GXSoundChannel::GXSoundChannel ()
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXSoundChannel" )
     top ( nullptr ),
     next ( nullptr ),
     prev ( nullptr ),

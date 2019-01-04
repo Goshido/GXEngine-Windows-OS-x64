@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #ifndef GX_MESH_GEOMETRY
 #define GX_MESH_GEOMETRY
@@ -25,7 +25,7 @@ enum class eGXMeshStreamIndex : GLuint
 
 class GXMesh;
 class GXSkin;
-class GXMeshGeometry final
+class GXMeshGeometry final : public GXMemoryInspector
 {
     private:
         GXMesh*                 mesh;
@@ -38,12 +38,12 @@ class GXMeshGeometry final
 
         GXAABB                  boundsLocal;
 
-        GLuint                  poseVAO[ 2 ];
-        GXMesh*                 pose[ 2 ];
+        GLuint                  poseVAO[ 2u ];
+        GXMesh*                 pose[ 2u ];
 
     public:
         GXMeshGeometry ();
-        ~GXMeshGeometry ();
+        ~GXMeshGeometry () override;
 
         GXVoid Render();
 

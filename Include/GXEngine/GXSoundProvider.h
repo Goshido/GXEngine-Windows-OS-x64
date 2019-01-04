@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #ifndef GX_SOUND_PROVIDER
 #define GX_SOUND_PROVIDER
@@ -6,12 +6,13 @@
 
 #include "GXSound.h"
 #include <GXCommon/GXFileSystem.h>
+#include <GXCommon/GXMemory.h>
 #include <GXCommon/GXUIntAtomic.h>
 
 
 #define GX_SOUND_PROVIDER_BUFFER_SIZE       2097152u    // 2 Mb
 
-class GXSoundStreamer
+class GXSoundStreamer : public GXMemoryInspector
 {
     protected:
         GXUByte*        mappedFile;
@@ -20,8 +21,8 @@ class GXSoundStreamer
         GXUByte         pcmData[ GX_SOUND_PROVIDER_BUFFER_SIZE ];
 
     public:
-        explicit GXSoundStreamer ( GXVoid* mappedFile, GXUPointer totalSize );
-        virtual ~GXSoundStreamer ();
+        explicit GXSoundStreamer ( GXVoid* memoryMappedFile, GXUPointer fileSize );
+        ~GXSoundStreamer () override;
 
         GXUInt Read ( GXVoid* out, GXUInt size );
         GXInt Seek ( GXInt offset, GXInt whence );
@@ -40,7 +41,7 @@ class GXSoundStreamer
 
 //-----------------------------------------------------------------------------------------------------
 
-class GXSoundTrack
+class GXSoundTrack : public GXMemoryInspector
 {
     public:
         GXSoundTrack*   next;
@@ -58,7 +59,7 @@ class GXSoundTrack
         GXUBigInt       totalSize;
 
     public:
-        explicit GXSoundTrack ( const GXWChar* trackFile );
+        explicit GXSoundTrack ( const GXWChar* trackFileName );
 
         GXVoid AddReference ();
         GXVoid Release ();
@@ -67,7 +68,7 @@ class GXSoundTrack
         virtual ALuint GetBuffer () = 0;
 
     protected:
-        virtual ~GXSoundTrack ();
+        ~GXSoundTrack () override;
 
         GXSoundTrack () = delete;
         GXSoundTrack ( const GXSoundTrack &other ) = delete;

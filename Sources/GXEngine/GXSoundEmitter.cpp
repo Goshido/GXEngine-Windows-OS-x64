@@ -2,16 +2,15 @@
 
 #include <GXEngine/GXSoundEmitter.h>
 #include <GXCommon/GXSmartLock.h>
-#include <GXCommon/GXMemory.h>
 
 
-GXSmartLock* gx_sound_mixer_SmartLock = 0;
+GXSmartLock* gx_sound_mixer_SmartLock = nullptr;
 
-
-GXSoundEmitter::GXSoundEmitter ( GXSoundTrack* track, GXBool looped, GXBool streamed, GXBool isRelative )
+GXSoundEmitter::GXSoundEmitter ( GXSoundTrack* trackObject, GXBool isTrackLooped, GXBool isTrackStreamed, GXBool isRelative )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXSoundEmitter" )
 {
-    if ( !track )
-        GXDebugBox ( L"GXSoundEmitter::Error - track равен 0!" );
+    if ( !trackObject )
+        GXDebugBox ( L"GXSoundEmitter::Error - track равен nullptr!" );
 
     gx_sound_mixer_SmartLock->AcquireExlusive ();
 
@@ -27,28 +26,28 @@ GXSoundEmitter::GXSoundEmitter ( GXSoundTrack* track, GXBool looped, GXBool stre
     streamBuffers[ 0u ] = streamBuffers[ 1u ] = 0u;
 
 
-    this->track = track;
-    this->looped = looped;
+    track = trackObject;
+    looped = isTrackLooped;
 
-    this->track->AddReference ();
+    track->AddReference ();
 
     GXAlGenSources ( 1, &source );
 
-    if ( streamed ) 
+    if ( isTrackStreamed )
     {
-        streamer = this->track->GetStreamer ();
+        streamer = track->GetStreamer ();
         GXAlGenBuffers ( 2, streamBuffers );
 
-        streamer->FillBuffer ( streamBuffers[ 0u ], this->looped );
-        streamer->FillBuffer ( streamBuffers[ 1u ], this->looped );
+        streamer->FillBuffer ( streamBuffers[ 0u ], looped );
+        streamer->FillBuffer ( streamBuffers[ 1u ], looped );
         GXAlSourceQueueBuffers ( source, 2, streamBuffers );
     }
     else
     {
         streamer = nullptr;
-        GXAlSourcei ( source, AL_LOOPING, this->looped ? AL_TRUE : AL_FALSE );
+        GXAlSourcei ( source, AL_LOOPING, looped ? AL_TRUE : AL_FALSE );
 
-        ALuint bfr = this->track->GetBuffer ();
+        ALuint bfr = track->GetBuffer ();
         GXAlSourcei ( source, AL_BUFFER, static_cast<ALint> ( bfr ) );
     }
 

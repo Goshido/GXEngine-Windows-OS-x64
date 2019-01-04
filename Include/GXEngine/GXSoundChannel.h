@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_SOUND_CHANNEL
 #define GX_SOUND_CHANNEL
@@ -7,7 +7,7 @@
 #include "GXSoundEmitter.h"
 
 
-class GXSoundChannel final
+class GXSoundChannel final : public GXMemoryInspector
 {
     public:
         GXSoundChannel**    top;
@@ -20,7 +20,7 @@ class GXSoundChannel final
 
     public:
         GXSoundChannel ();
-        ~GXSoundChannel ();
+        ~GXSoundChannel () override;
 
         GXVoid SetVolume ( GXFloat volumeLevel );
         GXVoid AddEmitter ( GXSoundEmitter* emitter );

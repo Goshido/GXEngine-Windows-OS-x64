@@ -1,14 +1,15 @@
-// version 1.10
+// version 1.11
 
 #ifndef GX_SOUND_MIXER
 #define GX_SOUND_MIXER
 
 
 #include "GXSoundChannel.h"
+#include <GXCommon/GXMemory.h>
 #include <GXCommon/GXThread.h>
 
 
-class GXSoundMixer final
+class GXSoundMixer final : public GXMemoryInspector
 {
     private:
         GXThread                    thread;
@@ -20,7 +21,7 @@ class GXSoundMixer final
 
     public:
         static GXSoundMixer& GXCALL GetInstance ();
-        ~GXSoundMixer ();
+        ~GXSoundMixer () override;
 
         GXVoid SetListenerVelocity ( const GXVec3 &velocity );
         GXVoid SetListenerVelocity ( GXFloat x, GXFloat y, GXFloat z );

@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #include <GXCommon/Windows/GXUIntAtomic.h>
 
@@ -24,6 +24,11 @@ GXUIntAtomic::~GXUIntAtomic ()
     // NOTHING
 }
 
+GXUInt GXUIntAtomic::CompareExchange ( GXUInt compareValue, GXUInt exchangeValue )
+{
+    return static_cast<GXUInt> ( InterlockedCompareExchange ( reinterpret_cast<volatile GXULong*> ( &v ), exchangeValue, compareValue ) );
+}
+
 GXUInt GXUIntAtomic::Read () const
 {
     return static_cast<GXUInt> ( *this );
@@ -37,26 +42,6 @@ GXVoid GXUIntAtomic::Write ( GXUInt newValue )
 GXVoid GXUIntAtomic::operator = ( GXUInt newValue )
 {
     Write ( newValue );
-}
-
-GXUIntAtomic::operator GXUInt () const
-{
-    GXUInt result = static_cast<GXUInt> ( v );
-
-    #ifdef _M_X64
-
-        // Note _ReadWriteBarrier used by analogy from MSVC std::atomic implementation.
-        // According to MSDN it is deprecated method but by design GXEngine doesn't use stardart library.
-        // see https://docs.microsoft.com/en-us/cpp/intrinsics/readwritebarrier?view=vs-2015
-        _ReadWriteBarrier ();
-
-    #else
-
-        #error Unsupported platform detected!
-
-    #endif
-
-    return result;
 }
 
 GXUInt GXUIntAtomic::operator + ( GXUInt value )
@@ -117,4 +102,24 @@ GXBool GXUIntAtomic::operator < ( GXUInt testValue ) const
 GXBool GXUIntAtomic::operator <= ( GXUInt testValue ) const
 {
     return static_cast<GXUInt> ( *this ) <= testValue;
+}
+
+GXUIntAtomic::operator GXUInt () const
+{
+    GXUInt result = static_cast<GXUInt> ( v );
+
+#ifdef _M_X64
+
+    // Note _ReadWriteBarrier used by analogy from MSVC std::atomic implementation.
+    // According to MSDN it is deprecated method but by design GXEngine doesn't use stardart library.
+    // see https://docs.microsoft.com/en-us/cpp/intrinsics/readwritebarrier?view=vs-2015
+    _ReadWriteBarrier ();
+
+#else
+
+#error Unsupported platform detected!
+
+#endif
+
+    return result;
 }

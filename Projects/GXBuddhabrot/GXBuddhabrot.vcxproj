@@ -187,6 +187,7 @@
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMemoryInspector.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXSmartLock.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXString.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXThread.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXTime.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXUIntAtomic.cpp" />

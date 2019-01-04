@@ -10,12 +10,23 @@
 class GXUPointerAtomic final : public GXAbstractUPointerAtomic
 {
     private:
-        volatile LONG64     v;
+
+#ifdef _M_X64
+        typedef LONG64              GXAtomicType;
+#else
+        typedef LONG                GXAtomicType;
+#endif
+
+        volatile GXAtomicType       v;
 
     public:
         GXUPointerAtomic ();
         explicit GXUPointerAtomic ( GXUPointer value );
         ~GXUPointerAtomic () override;
+
+        // Current value will be replaced by exchangeValue if current value is equal compareValue.
+        // Compare exchange operation is atomic. Method returns original value.
+        GXUPointer CompareExchange ( GXUPointer compareValue, GXUPointer exchangeValue ) override;
 
         GXUPointer Read () const override;
         GXVoid Write ( GXUPointer newValue ) override;

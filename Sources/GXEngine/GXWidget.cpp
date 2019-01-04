@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #include <GXEngine/GXWidget.h>
 #include <GXEngine/GXRenderer.h>
@@ -10,11 +10,11 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXWidget::GXWidget ( GXWidget* parent, GXBool isNeedRegister ):
+GXWidget::GXWidget ( GXWidget* parentWidget, GXBool isNeedRegister ):
     isRegistered ( isNeedRegister ),
     next ( nullptr ),
     prev ( nullptr ),
-    parent ( parent ),
+    parent ( parentWidget ),
     childs ( nullptr ),
     isVisible ( GX_TRUE ),
     isDraggable ( GX_FALSE ),
@@ -421,9 +421,9 @@ GXWidget* GXWidgetIterator::GetChilds ()
 
 //--------------------------------------------------------------------------
 
-GXWidgetRenderer::GXWidgetRenderer ( GXWidget* widget )
+GXWidgetRenderer::GXWidgetRenderer ( GXWidget* widgetObject )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXWidgetRenderer" )
-    widget ( widget )
+    widget ( widgetObject )
 {
     // NOTHING
 }
@@ -450,21 +450,23 @@ GXVoid GXWidgetRenderer::OnUpdate ()
 
         OnResized ( center.GetX (), center.GetY (), width, height );
         OnRefresh ();
-    }
-    else if ( IsMoved () )
-    {
-        GXVec3 center;
-        widget->GetBoundsWorld ().GetCenter ( center );
-        GXRenderer& renderer = GXRenderer::GetInstance ();
-        center.data[ 0u ] -= 0.5f * renderer.GetWidth ();
-        center.data[ 1u ] -= 0.5f * renderer.GetHeight ();
 
-        OnMoved ( center.GetX (), center.GetY () );
+        return;
     }
-    else
+
+    if ( !IsMoved () )
     {
         OnRefresh ();
+        return;
     }
+
+    GXVec3 center;
+    widget->GetBoundsWorld ().GetCenter ( center );
+    GXRenderer& renderer = GXRenderer::GetInstance ();
+    center.data[ 0u ] -= 0.5f * renderer.GetWidth ();
+    center.data[ 1u ] -= 0.5f * renderer.GetHeight ();
+
+    OnMoved ( center.GetX (), center.GetY () );
 }
 
 GXVoid GXWidgetRenderer::OnRefresh ()

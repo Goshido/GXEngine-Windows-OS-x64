@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXEngine/GXSkinningMaterial.h>
 
@@ -9,10 +9,11 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXSkinningMaterial::GXSkinningMaterial ():
+GXSkinningMaterial::GXSkinningMaterial ()
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXSkinningMaterial" )
     skeletonObject ( nullptr )
 {
-    static const GLchar* transformFeedbackOutputNames[ 5 ] = { "v_vertex", "v_uv", "v_normal", "v_tangent", "v_bitangent" };
+    static const GLchar* transformFeedbackOutputNames[ 5u ] = { "v_vertex", "v_uv", "v_normal", "v_tangent", "v_bitangent" };
 
     GXShaderProgramInfo si;
     si.vertexShader = VERTEX_SHADER;

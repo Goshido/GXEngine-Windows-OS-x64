@@ -267,6 +267,9 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractUPointerAtomic.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXString.cpp">
+      <Filter>Source Files\GXCommon\Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXBuddhabrot\BBGame.h">

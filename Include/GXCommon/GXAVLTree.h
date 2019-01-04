@@ -16,7 +16,7 @@ class GXAVLTreeNode : public GXMemoryInspector
 
     public:
         GXAVLTreeNode ();
-        virtual ~GXAVLTreeNode ();
+        ~GXAVLTreeNode () override;
 };
 
 
@@ -46,7 +46,7 @@ class GXAVLTree
         GXUInt GetTotalNodes () const;
 
     protected:
-        explicit GXAVLTree ( PFNGXAVLTREECOMPAREPROC comparator, GXBool isAutoClean );
+        explicit GXAVLTree ( PFNGXAVLTREECOMPAREPROC comparator, GXBool doesAutoClean );
         virtual ~GXAVLTree ();
 
         const GXAVLTreeNode* Find ( const GXAVLTreeNode &node ) const;

@@ -32,7 +32,7 @@ class GXShaderProgram final : public GXMemoryInspector
 
     public:
         GXShaderProgram ();
-        ~GXShaderProgram ();
+        ~GXShaderProgram () override;
 
         // Releases previous shader program resource if it exists.
         GXVoid Init ( const GXShaderProgramInfo &info );

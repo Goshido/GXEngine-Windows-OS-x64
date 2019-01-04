@@ -13,7 +13,7 @@ class BBLabel final : public GXMemoryInspector
 
     public:
         explicit BBLabel ( GXWidget* parent );
-        ~BBLabel ();
+        ~BBLabel () override;
 
         GXVoid SetText ( const GXWChar* text );
         GXVoid SetTextColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );

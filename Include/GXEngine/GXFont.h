@@ -1,4 +1,4 @@
-// version 1.11
+// version 1.12
 
 #ifndef GX_FONT
 #define GX_FONT
@@ -22,14 +22,14 @@ struct GXGlyphInfo final
 // Class handles lazy loading reference counting font resource creation.
 
 class GXFontEntry;
-class GXFont final
+class GXFont final : public GXMemoryInspector
 {
     private:
         GXFontEntry*        fontEntry;
 
     public:
         explicit GXFont ( const GXWChar* fileName, GXUShort size );
-        ~GXFont ();
+        ~GXFont () override;
 
         GXBool GetGlyph ( GXUInt symbol, GXGlyphInfo &info ) const;
         GXInt GetKerning ( GXUInt symbol, GXUInt prevSymbol ) const;

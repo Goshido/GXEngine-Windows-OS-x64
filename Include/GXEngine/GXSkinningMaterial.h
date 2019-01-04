@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_SKINNING_MATERIAL
 #define GX_SKINNING_MATERIAL
@@ -8,7 +8,7 @@
 #include "GXSkeleton.h"
 
 
-class GXSkinningMaterial final : public GXMaterial
+class GXSkinningMaterial final : public GXMemoryInspector, public GXMaterial
 {
     private:
         const GXSkeleton*       skeletonObject;

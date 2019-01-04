@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #ifndef GX_MEMORY
 #define GX_MEMORY
@@ -14,18 +14,20 @@ GX_DISABLE_COMMON_WARNINGS
 GX_RESTORE_WARNING_STATE
 
 
-#define GXSafeDelete(ptr)       \
-        if ( ptr )              \
-        {                       \
-            delete ptr;         \
-            ptr = nullptr;      \
+#define GXSafeDelete(ptr)               \
+        if ( ptr )                      \
+        {                               \
+            delete ptr;                 \
+            ptr = nullptr;              \
         }
 
-#define GXSafeFree(ptr)         \
-        if ( ptr )              \
-        {                       \
-            free ( ptr );       \
-            ptr = nullptr;      \
+// Note memory inspector successor class MUST use GXMemoryInspector::SafeFree
+// for each GXMemoryInspector::Malloc allocated obect instead!
+#define GXSafeFree(ptr)                 \
+        if ( ptr )                      \
+        {                               \
+            free ( ptr );               \
+            ptr = nullptr;              \
         }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -43,15 +45,16 @@ class GXMemoryInspectorLite
         // Method returns GX_TRUE if no any memory leaks are detected.
         static GXBool GXCALL CheckMemoryLeaks ();
 
+        GXVoid* Malloc ( GXUPointer size );
+        GXVoid Free ( GXVoid* heapMemory );
+        GXVoid SafeFree ( GXVoid** heapMemory );
+
         static GXVoid* operator new ( GXUPointer size );
         static GXVoid operator delete ( GXVoid* heapMemory );
 
     protected:
         GXMemoryInspectorLite ();
         virtual ~GXMemoryInspectorLite ();
-
-        GXVoid* Malloc ( GXUPointer size );
-        GXVoid Free ( GXVoid* heapMemory );
 };
 
 class GXMemoryInspectorFull
@@ -67,15 +70,16 @@ class GXMemoryInspectorFull
         // Method returns GX_TRUE if no any memory leaks are detected.
         static GXBool GXCALL CheckMemoryLeaks ();
 
+        GXVoid* Malloc ( GXUPointer size );
+        GXVoid Free ( GXVoid* heapMemory );
+        GXVoid SafeFree ( GXVoid** heapMemory );
+
         static GXVoid* operator new ( GXUPointer size );
         static GXVoid operator delete ( GXVoid* heapMemory );
 
     protected:
         explicit GXMemoryInspectorFull ( const GXChar* name );
         virtual ~GXMemoryInspectorFull ();
-
-        GXVoid* Malloc ( GXUPointer size );
-        GXVoid Free ( GXVoid* heapMemory );
 
     private:
         GXMemoryInspectorFull () = delete;

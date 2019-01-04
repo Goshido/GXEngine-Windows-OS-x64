@@ -8,7 +8,7 @@
 #include <GXCommon/GXMath.h>
 
 
-class GXSoundEmitter final
+class GXSoundEmitter final : public GXMemoryInspector
 {
     public:
         GXSoundEmitter**    top;
@@ -32,8 +32,8 @@ class GXSoundEmitter final
         ALuint              streamBuffers[ 2u ];
 
     public:
-        explicit GXSoundEmitter ( GXSoundTrack* track, GXBool looped, GXBool streamed, GXBool isRelative );
-        ~GXSoundEmitter ();
+        explicit GXSoundEmitter ( GXSoundTrack* trackObject, GXBool isTrackLooped, GXBool isTrackStreamed, GXBool isRelative );
+        ~GXSoundEmitter () override;
 
         GXVoid SetVelocity ( const GXVec3 &velocity );
         GXVoid SetVelocity ( GXFloat x, GXFloat y, GXFloat z );

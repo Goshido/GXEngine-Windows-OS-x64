@@ -15,86 +15,86 @@ typedef GXVoid ( GXCALL* PFNGXUIEDITBOXONFINISHEDITINGPROC ) ( GXVoid* handler, 
 class GXTextValidator;
 class GXUIEditBox final : public GXWidget
 {
-	private:
-		GXWChar*							text;
-		GXWChar*							workingBuffer;
-		GXUInt								textSymbols;
-		GXUInt								maxSymbols;
+    private:
+        GXWChar*                                text;
+        GXWChar*                                workingBuffer;
+        GXUInt                                  textSymbols;
+        GXUInt                                  maxSymbols;
 
-		GXFloat								textLeftOffset;
-		GXFloat								textRightOffset;
+        GXFloat                                 textLeftOffset;
+        GXFloat                                 textRightOffset;
 
-		GXFont*								font;
-		GXInt								cursor;			// index before symbol
-		GXInt								selection;		// index before symbol
-		eGXUITextAlignment					alignment;
+        GXInt                                   cursor;            // index before symbol
+        GXInt                                   selection;        // index before symbol
+        eGXUITextAlignment                      alignment;
 
-		GXTextValidator*					validator;
+        GXTextValidator*                        validator;
 
-		PFNGXUIEDITBOXONFINISHEDITINGPROC	OnFinishEditing;
-		GXVoid*								handler;
+        PFNGXUIEDITBOXONFINISHEDITINGPROC       OnFinishEditing;
+        GXVoid*                                 handler;
 
-		HCURSOR								editCursor;
-		HCURSOR								arrowCursor;
+        HCURSOR                                 editCursor;
+        HCURSOR                                 arrowCursor;
 
-		const HCURSOR*						currentCursor;
+        GXFont*                                 font;
+        const HCURSOR*                          currentCursor;
 
-	public:
-		explicit GXUIEditBox ( GXWidget* parent );
-		~GXUIEditBox () override;
+    public:
+        explicit GXUIEditBox ( GXWidget* parent );
+        ~GXUIEditBox () override;
 
-		GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
+        GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
 
-		GXFloat GetCursorOffset () const;
-		GXFloat GetSelectionBeginOffset () const;
-		GXFloat GetSelectionEndOffset () const;
+        GXFloat GetCursorOffset () const;
+        GXFloat GetSelectionBeginOffset () const;
+        GXFloat GetSelectionEndOffset () const;
 
-		GXVoid SetTextLeftOffset ( GXFloat offset );
-		GXFloat GetTextLeftOffset () const;
+        GXVoid SetTextLeftOffset ( GXFloat offset );
+        GXFloat GetTextLeftOffset () const;
 
-		GXVoid SetTextRightOffset ( GXFloat offset );
-		GXFloat GetTextRightOffset () const;
+        GXVoid SetTextRightOffset ( GXFloat offset );
+        GXFloat GetTextRightOffset () const;
 
-		GXVoid SetText ( const GXWChar* newText );
-		const GXWChar* GetText () const;
+        GXVoid SetText ( const GXWChar* newText );
+        const GXWChar* GetText () const;
 
-		GXVoid SetAlignment ( eGXUITextAlignment newAlignment );
-		eGXUITextAlignment GetAlignment () const;
+        GXVoid SetAlignment ( eGXUITextAlignment newAlignment );
+        eGXUITextAlignment GetAlignment () const;
 
-		GXVoid SetFont ( const GXWChar* fontFile, GXUShort fontSize );
-		GXFont* GetFont ();
+        GXVoid SetFont ( const GXWChar* fontFile, GXUShort fontSize );
+        GXFont* GetFont ();
 
-		GXBool IsActive ();
+        GXBool IsActive ();
 
-		GXVoid SetValidator ( GXTextValidator &validatorObject );
-		GXTextValidator* GetValidator () const;
+        GXVoid SetValidator ( GXTextValidator &validatorObject );
+        GXTextValidator* GetValidator () const;
 
-		GXVoid SetOnFinishEditingCallback ( GXVoid* handlerObject, PFNGXUIEDITBOXONFINISHEDITINGPROC callback );
+        GXVoid SetOnFinishEditingCallback ( GXVoid* handlerObject, PFNGXUIEDITBOXONFINISHEDITINGPROC callback );
 
-	private:
-		GXInt GetSelectionPosition ( const GXVec2 &mousePosition ) const;
-		GXFloat GetSelectionOffset ( GXUInt symbolIndex ) const;
+    private:
+        GXInt GetSelectionPosition ( const GXVec2 &mousePosition ) const;
+        GXFloat GetSelectionOffset ( GXUInt symbolIndex ) const;
 
-		GXVoid LockInput ();
-		GXVoid ReleaseInput ();
+        GXVoid LockInput ();
+        GXVoid ReleaseInput ();
 
-		GXVoid UpdateCursor ( GXInt newCursor );
+        GXVoid UpdateCursor ( GXInt newCursor );
 
-		GXVoid CopyText ();
-		GXVoid PasteText ( const GXWChar* textToPaste );
-		GXBool DeleteText ();
+        GXVoid CopyText ();
+        GXVoid PasteText ( const GXWChar* textToPaste );
+        GXBool DeleteText ();
 
-		static GXVoid GXCALL OnEnd ( GXVoid* handler );
-		static GXVoid GXCALL OnHome ( GXVoid* handler );
-		static GXVoid GXCALL OnDel ( GXVoid* handler );
-		static GXVoid GXCALL OnBackspace ( GXVoid* handler );
-		static GXVoid GXCALL OnLeftArrow ( GXVoid* handler );
-		static GXVoid GXCALL OnRightArrow ( GXVoid* handler );
-		static GXVoid GXCALL OnType ( GXVoid* handler, GXWChar symbol );
+        static GXVoid GXCALL OnEnd ( GXVoid* handler );
+        static GXVoid GXCALL OnHome ( GXVoid* handler );
+        static GXVoid GXCALL OnDel ( GXVoid* handler );
+        static GXVoid GXCALL OnBackspace ( GXVoid* handler );
+        static GXVoid GXCALL OnLeftArrow ( GXVoid* handler );
+        static GXVoid GXCALL OnRightArrow ( GXVoid* handler );
+        static GXVoid GXCALL OnType ( GXVoid* handler, GXWChar symbol );
 
-		GXUIEditBox () = delete;
-		GXUIEditBox ( const GXUIEditBox &other ) = delete;
-		GXUIEditBox& operator = ( const GXUIEditBox &other ) = delete;
+        GXUIEditBox () = delete;
+        GXUIEditBox ( const GXUIEditBox &other ) = delete;
+        GXUIEditBox& operator = ( const GXUIEditBox &other ) = delete;
 };
 
 

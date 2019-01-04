@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXLogger.h>
@@ -49,6 +49,33 @@ GXBool GXCALL GXMemoryInspectorLite::CheckMemoryLeaks ()
     return GX_FALSE;
 }
 
+GXVoid* GXMemoryInspectorLite::Malloc ( GXUPointer size )
+{
+    ++mallocObjects;
+    mallocObjectSize += size;
+    return malloc ( size );
+}
+
+GXVoid GXMemoryInspectorLite::Free ( GXVoid* heapMemory )
+{
+    --mallocObjects;
+    mallocObjectSize -= _msize ( heapMemory );
+    free ( heapMemory );
+}
+
+GXVoid GXMemoryInspectorLite::SafeFree ( GXVoid** heapMemory )
+{
+    GXVoid* m = *heapMemory;
+
+    if ( m == nullptr ) return;
+
+    --mallocObjects;
+    mallocObjectSize -= _msize ( m );
+    free ( m );
+
+    *heapMemory = nullptr;
+}
+
 GXVoid* GXMemoryInspectorLite::operator new ( GXUPointer size )
 {
     ++newObjects;
@@ -71,20 +98,6 @@ GXMemoryInspectorLite::GXMemoryInspectorLite ()
 GXMemoryInspectorLite::~GXMemoryInspectorLite ()
 {
     // NOTHING
-}
-
-GXVoid* GXMemoryInspectorLite::Malloc ( GXUPointer size )
-{
-    ++mallocObjects;
-    mallocObjectSize += size;
-    return malloc ( size );
-}
-
-GXVoid GXMemoryInspectorLite::Free ( GXVoid* heapMemory )
-{
-    --mallocObjects;
-    mallocObjectSize -= _msize ( heapMemory );
-    free ( heapMemory );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -255,10 +268,10 @@ GXBool GXHeapManager::CheckMemoryLeaks ()
     }
 
     if ( leakedMallocObjects != 0u )
-        GXLogA ( "%" PRIuPTR " malloc allocated object(s) with total size %" PRIuPTR " byte(s) was(were) leaked\n", leakedMallocObjects, leakedMallocSize );
+        GXLogA ( "%" PRIuPTR " malloc allocated object(s) with total size %" PRIuPTR " byte(s) was(were) leaked.\n", leakedMallocObjects, leakedMallocSize );
 
     if ( leakedNewObjects != 0u )
-        GXLogA ( "%" PRIuPTR " new allocated object(s) with total size %" PRIuPTR " byte(s) was(were) leaked\n", leakedNewObjects, leakedNewSize );
+        GXLogA ( "%" PRIuPTR " new allocated object(s) with total size %" PRIuPTR " byte(s) was(were) leaked.\n", leakedNewObjects, leakedNewSize );
 
     GXLogA ( "\n" );
 
@@ -443,6 +456,26 @@ GXBool GXCALL GXMemoryInspectorFull::CheckMemoryLeaks ()
     return gx_HeapManager.CheckMemoryLeaks ();
 }
 
+GXVoid* GXMemoryInspectorFull::Malloc ( GXUPointer size )
+{
+    return gx_HeapManager.MakeMalloc ( size, className );
+}
+
+GXVoid GXMemoryInspectorFull::Free ( GXVoid* heapMemory )
+{
+    gx_HeapManager.MakeFree ( heapMemory );
+}
+
+GXVoid GXMemoryInspectorFull::SafeFree ( GXVoid** heapMemory )
+{
+    GXVoid* m = *heapMemory;
+
+    if ( m == nullptr ) return;
+
+    gx_HeapManager.MakeFree ( m );
+    *heapMemory = nullptr;
+}
+
 GXVoid* GXMemoryInspectorFull::operator new ( GXUPointer size )
 {
     return gx_HeapManager.MakeNew ( size );
@@ -461,14 +494,4 @@ GXMemoryInspectorFull::GXMemoryInspectorFull ( const GXChar* name )
 GXMemoryInspectorFull::~GXMemoryInspectorFull ()
 {
     free ( className );
-}
-
-GXVoid* GXMemoryInspectorFull::Malloc ( GXUPointer size )
-{
-    return gx_HeapManager.MakeMalloc ( size, className );
-}
-
-GXVoid GXMemoryInspectorFull::Free ( GXVoid* heapMemory )
-{
-    gx_HeapManager.MakeFree ( heapMemory );
 }

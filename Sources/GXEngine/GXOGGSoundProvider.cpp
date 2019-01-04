@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.6
 
 #include <GXEngine/GXOGGSoundProvider.h>
 
@@ -15,7 +15,7 @@ GXInt GXOGGSeek ( GXVoid* datasource, ogg_int64_t offset, GXInt whence )
     return streamer->Seek ( static_cast<GXInt> ( offset ), whence );
 }
 
-long GXOGGTell ( GXVoid* datasource )
+GXLong GXOGGTell ( GXVoid* datasource )
 {
     GXOGGSoundStreamer* streamer = static_cast<GXOGGSoundStreamer*> ( datasource );
     return streamer->Tell ();
@@ -75,7 +75,7 @@ GXVoid GXOGGSoundStreamer::DecompressAll ( ALuint buffer )
 {
     GXUInt decompressedSize = vorbisFile.vi->channels * 2 * static_cast<GXUInt> ( GXOvPcmTotal ( &vorbisFile, -1 ) );
 
-    GXChar* temp = static_cast<GXChar*> ( malloc ( decompressedSize ) );
+    GXChar* temp = static_cast<GXChar*> ( Malloc ( decompressedSize ) );
     GXInt bitstream;
     GXInt bufferFilling = 0;
 
@@ -89,7 +89,7 @@ GXVoid GXOGGSoundStreamer::DecompressAll ( ALuint buffer )
     GXAlBufferi ( buffer, AL_CHANNELS, vorbisFile.vi->channels );
     GXAlBufferData ( buffer, vorbisFile.vi->channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, temp, static_cast<ALsizei> ( decompressedSize ), static_cast<ALsizei> ( vorbisFile.vi->rate ) );
 
-    free ( temp );
+    Free ( temp );
 }
 
 //---------------------------------------------------------------------------------------------------
@@ -103,6 +103,8 @@ GXOGGSoundTrack::GXOGGSoundTrack ( const GXWChar* trackFile ):
 GXSoundStreamer* GXOGGSoundTrack::GetStreamer ()
 {
     readyBuffer = 0u;
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOGGSoundStreamer" );
     return new GXOGGSoundStreamer ( mappedFile, static_cast<GXUInt> ( totalSize ) );
 }
 
@@ -111,6 +113,8 @@ ALuint GXOGGSoundTrack::GetBuffer ()
     if ( readyBuffer ) return readyBuffer;
     
     GXAlGenBuffers ( 1, &readyBuffer );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOGGSoundStreamer" );
     GXOGGSoundStreamer* streamer = new GXOGGSoundStreamer ( mappedFile, static_cast<GXUInt> ( totalSize ) );
     streamer->DecompressAll ( readyBuffer );
     delete streamer;

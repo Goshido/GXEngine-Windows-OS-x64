@@ -1,4 +1,4 @@
-// version 1.10
+// version 1.11
 
 #include <GXEngine/GXSoundMixer.h>
 #include <GXCommon/GXSmartLock.h>
@@ -113,12 +113,16 @@ GXVoid GXSoundMixer::SetMasterVolume ( GXFloat masterVolumeLevel )
 GXSoundMixer& GXCALL GXSoundMixer::GetInstance ()
 {
     if ( !instance )
+    {
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXSoundMixer" );
         instance = new GXSoundMixer ();
+    }
 
     return *instance;
 }
 
-GXSoundMixer::GXSoundMixer ():
+GXSoundMixer::GXSoundMixer ()
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXSoundMixer" )
     thread ( &Update, nullptr ),
     masterVolume ( DEFAULT_MASTER_VOLUME )
 {

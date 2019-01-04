@@ -24,10 +24,10 @@ GXUInt GXAVLTree::GetTotalNodes () const
     return totalNodes;
 }
 
-GXAVLTree::GXAVLTree ( PFNGXAVLTREECOMPAREPROC comparator, GXBool isAutoClean )
+GXAVLTree::GXAVLTree ( PFNGXAVLTREECOMPAREPROC comparator, GXBool doesAutoClean )
 {
     Compare = comparator;
-    this->isAutoClean = isAutoClean;
+    isAutoClean = doesAutoClean;
     root = nullptr;
     totalNodes = 0;
 }
