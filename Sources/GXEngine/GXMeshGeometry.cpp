@@ -214,7 +214,7 @@ GXBool GXMesh::LoadFromOBJ ( const GXWChar* fileName )
 {
     GXWChar* path = nullptr;
     GXGetFileDirectoryPath ( &path, fileName );
-    GXUInt size = GXWcslen ( path ) * sizeof ( GXWChar );
+    GXUPointer size = GXWcslen ( path ) * sizeof ( GXWChar );
 
     size += sizeof ( GXWChar );        // L'/' symbol
     size += GXWcslen ( CACHE_DIRECTORY_NAME ) * sizeof ( GXWChar );

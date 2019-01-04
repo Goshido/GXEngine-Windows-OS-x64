@@ -210,6 +210,8 @@ EMColorRenderer::EMColorRenderer ( GXUIInput* widget ):
     screenQuad ( SCREEN_QUAD_MESH )
 {
     const GXAABB& boundsLocal = widget->GetBoundsLocal ();
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
     surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
     
     SetColor ( GXColorHSV ( DEFAULT_SAVED_COLOR_H, DEFAULT_SAVED_COLOR_S, DEFAULT_SAVED_COLOR_V, DEFAULT_SAVED_COLOR_A ) );
@@ -278,7 +280,10 @@ GXVoid EMColorRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUSho
     y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
     GXSafeDelete ( surface );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
     surface = new GXHudSurface ( width, height );
+
     GXVec3 location;
     surface->GetLocation ( location );
     surface->SetLocation ( x, y, location.data[ 2 ] );
@@ -381,6 +386,8 @@ EMColorSelectorRenderer::EMColorSelectorRenderer ( GXUIInput* widget ):
     screenQuad ( SCREEN_QUAD_MESH )
 {
     const GXAABB& boundsLocal = widget->GetBoundsLocal ();
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
     surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 
     glGenFramebuffers ( 1, &fbo );
@@ -551,7 +558,10 @@ GXVoid EMColorSelectorRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width
     y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
     GXSafeDelete ( surface );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
     surface = new GXHudSurface ( width, height );
+
     GXVec3 location;
     surface->GetLocation ( location );
     surface->SetLocation ( x, y, location.GetZ () );

@@ -385,7 +385,7 @@ GXVoid GXHeapManager::RemoveChunk ( GXVoid* heapMemory )
     if ( targetIndex == END_INDEX )
     {
         smartLock.ReleaseExlusive ();
-        GXLogA ( "GXHeapManager::RemoveChunk::Error - Can't find chunk with heap address 0x%P!", heapMemory );
+        GXLogA ( "GXHeapManager::RemoveChunk::Error - Can't find chunk with heap address 0x%p!", heapMemory );
         return;
     }
 

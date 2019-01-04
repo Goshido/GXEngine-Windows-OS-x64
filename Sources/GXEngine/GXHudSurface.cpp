@@ -1,4 +1,4 @@
-// version 1.23
+// version 1.24
 
 #include <GXEngine/GXHudSurface.h>
 #include <GXCommon/GXStrings.h>
@@ -12,7 +12,7 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class GXImageRenderable final : public GXTransform, public GXRenderable
+class GXImageRenderable final : public GXMemoryInspector, public GXTransform, public GXRenderable
 {
     private:
         GXMeshGeometry      mesh;
@@ -23,16 +23,16 @@ class GXImageRenderable final : public GXTransform, public GXRenderable
 
         GXVoid Render () override;
 
-    protected:
+    private:
         GXVoid InitGraphicResources () override;
         GXVoid TransformUpdated () override;
 
-    private:
         GXImageRenderable ( const GXImageRenderable &other ) = delete;
         GXImageRenderable& operator = ( const GXImageRenderable &other ) = delete;
 };
 
 GXImageRenderable::GXImageRenderable ()
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXImageRenderable" )
 {
     InitGraphicResources ();
 }
@@ -59,7 +59,7 @@ GXVoid GXImageRenderable::TransformUpdated ()
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class GXGlyphRenderable final : public GXTransform, public GXRenderable
+class GXGlyphRenderable final : public GXMemoryInspector, public GXTransform, public GXRenderable
 {
     private:
         GXMeshGeometry      mesh;
@@ -72,16 +72,16 @@ class GXGlyphRenderable final : public GXTransform, public GXRenderable
 
         GXVoid UpdateGeometry ( const GXVec2 &min, const GXVec2 &max );
 
-    protected:
+    private:
         GXVoid InitGraphicResources () override;
         GXVoid TransformUpdated () override;
 
-    private:
         GXGlyphRenderable ( const GXGlyphRenderable &other ) = delete;
         GXGlyphRenderable& operator = ( const GXGlyphRenderable &other ) = delete;
 };
 
 GXGlyphRenderable::GXGlyphRenderable ()
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXGlyphRenderable" )
 {
     InitGraphicResources ();
 }
@@ -137,7 +137,7 @@ GXVoid GXGlyphRenderable::TransformUpdated ()
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class GXLineRenderable final : public GXTransform, public GXRenderable
+class GXLineRenderable final : public GXMemoryInspector, public GXTransform, public GXRenderable
 {
     private:
         GXMeshGeometry      mesh;
@@ -150,16 +150,16 @@ class GXLineRenderable final : public GXTransform, public GXRenderable
 
         GXVoid UpdateGeometry ( const GXVec2 &start, const GXVec2 &end );
 
-    protected:
+    private:
         GXVoid InitGraphicResources () override;
         GXVoid TransformUpdated () override;
 
-    private:
         GXLineRenderable ( const GXLineRenderable &other ) = delete;
         GXLineRenderable& operator = ( const GXLineRenderable &other ) = delete;
 };
 
 GXLineRenderable::GXLineRenderable ()
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXLineRenderable" )
 {
     InitGraphicResources ();
 }
@@ -197,11 +197,18 @@ GXVoid GXLineRenderable::TransformUpdated ()
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXHudSurface::GXHudSurface ( GXUShort imageWidth, GXUShort imageHeight ):
-    image ( new GXImageRenderable () ),
-    glyph ( new GXGlyphRenderable () ),
-    line ( new GXLineRenderable () )
+GXHudSurface::GXHudSurface ( GXUShort imageWidth, GXUShort imageHeight )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXHudSurface" )
 {
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXImageRenderable" );
+    image = new GXImageRenderable ();
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXGlyphRenderable" );
+    glyph = new GXGlyphRenderable ();
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXLineRenderable" );
+    line = new GXLineRenderable ();
+
     Resize ( imageWidth, imageHeight );
     screenQuadMesh.LoadMesh ( L"Meshes/System/ScreenQuad.stm" );
 
@@ -443,7 +450,7 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
 
     if ( bufferNumSymbols )
     {
-        GXWChar* temp = static_cast<GXWChar*> ( malloc ( bufferNumSymbols * sizeof ( GXWChar ) ) );
+        GXWChar* temp = static_cast<GXWChar*> ( Malloc ( bufferNumSymbols * sizeof ( GXWChar ) ) );
 
         va_list ap;
         va_start ( ap, format );
@@ -455,9 +462,9 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
     else
         text = const_cast<GXWChar*> ( format );
 
-    GXUInt len = GXWcslen ( text );
+    GXUPointer len = GXWcslen ( text );
 
-    for ( GXUInt i = 0u; i < len; ++i )
+    for ( GXUPointer i = 0u; i < len; ++i )
     {
         GXUInt symbol = static_cast<GXUInt> ( text[ i ] );
 
@@ -509,7 +516,7 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
     }
 
     if ( bufferNumSymbols )
-        free ( text );
+        Free ( text );
 
     openGLState.Restore ();
 

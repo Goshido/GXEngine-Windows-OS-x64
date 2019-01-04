@@ -58,7 +58,7 @@ GXVoid GXSoundChannel::SetVolume ( GXFloat volumeLevel )
 GXVoid GXSoundChannel::AddEmitter ( GXSoundEmitter* emitter )
 {
     if ( !emitter )
-        GXDebugBox ( L"GXSoundChannel::AddEmitter::Error - добавление звукового эмиттера по нулевому указателю!" );
+        GXWarningBox ( L"GXSoundChannel::AddEmitter::Error - добавление звукового эмиттера по нулевому указателю!" );
 
     emitter->prev = nullptr;
 

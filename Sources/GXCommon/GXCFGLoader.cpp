@@ -13,7 +13,7 @@ GXVoid GXCALL GXLoadCFG ( GXEngineConfiguration &out )
 
     if ( !GXLoadFile ( L"../../Config/GXEngine.cfg", &buffer, size, GX_TRUE ) )
     {
-        GXDebugBox ( L"GXLoadCFG::Error - Cant't load file" );
+        GXWarningBox ( L"GXLoadCFG::Error - Cant't load file" );
         GXLogW ( L"GXLoadCFG::Error - Can't load file %s\n", L"../../Config/GXEngine.cfg\n" );
     }
 

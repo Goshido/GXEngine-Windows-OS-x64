@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #include <GXEngine/GXUIEditBox.h>
 #include <GXEngine/GXUIMessage.h>
@@ -72,7 +72,7 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
 {
     if ( message == eGXUIMessage::SetText )
     {
-        textSymbols = GXWcslen ( static_cast<const GXWChar*> ( data ) );
+        textSymbols = static_cast<GXUInt> ( GXWcslen ( static_cast<const GXWChar*> ( data ) ) );
         GXUInt size = sizeof ( GXWChar ) * ( textSymbols + 1 );
 
         if ( textSymbols > maxSymbols )
@@ -457,9 +457,12 @@ GXFloat GXUIEditBox::GetTextRightOffset () const
 GXVoid GXUIEditBox::SetText ( const GXWChar* newText )
 {
     if ( newText )
-        GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::SetText, newText, ( GXWcslen ( newText ) + 1 ) * sizeof ( GXWChar ) );
-    else
-        GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::ClearText, 0, 0 );
+    {
+        GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::SetText, newText, static_cast<GXUInt> ( ( GXWcslen ( newText ) + 1u ) * sizeof ( GXWChar ) ) );
+        return;
+    }
+
+    GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::ClearText, nullptr, 0u );
 }
 
 const GXWChar* GXUIEditBox::GetText () const
@@ -481,7 +484,7 @@ GXVoid GXUIEditBox::SetFont ( const GXWChar* fontFile, GXUShort fontSize )
 {
     if ( !fontFile ) return;
 
-    GXUInt size = ( GXWcslen ( fontFile ) + 1 ) * sizeof ( GXWChar );
+    GXUPointer size = ( GXWcslen ( fontFile ) + 1u ) * sizeof ( GXWChar );
 
     GXUIEditBoxFontInfo fi;
     fi.fontFile = static_cast<GXWChar*> ( gx_ui_MessageBuffer->Allocate ( size ) );
@@ -681,7 +684,7 @@ GXVoid GXUIEditBox::CopyText ()
 
 GXVoid GXUIEditBox::PasteText ( const GXWChar* textToPaste )
 {
-    GXUInt numSymbols = GXWcslen ( textToPaste );
+    GXUInt numSymbols = static_cast<GXUInt> ( GXWcslen ( textToPaste ) );
     GXUInt totalSymbols = textSymbols + numSymbols;
 
     if ( totalSymbols > maxSymbols )

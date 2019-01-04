@@ -79,7 +79,7 @@ GXVoid GXSoundMixer::SetListenerRotation ( GXFloat pitchRadians, GXFloat yawRadi
 GXVoid GXSoundMixer::AddChannel ( GXSoundChannel* channel )
 {
     if ( !channel )
-        GXDebugBox ( L"GXSoundMixer::AddChannel::Error - попытка добавить звуковой канал по нулевому указателю!" );
+        GXWarningBox ( L"GXSoundMixer::AddChannel::Error - попытка добавить звуковой канал по нулевому указателю!" );
 
     channel->prev = nullptr;
     channel->next = channels;

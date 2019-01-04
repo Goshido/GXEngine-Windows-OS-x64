@@ -120,9 +120,6 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXFileSystem.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXCommon\GXLogger.cpp">
-      <Filter>Source Files\GXCommon</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
@@ -268,6 +265,9 @@
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXString.cpp">
+      <Filter>Source Files\GXCommon\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXLogger.cpp">
       <Filter>Source Files\GXCommon\Windows</Filter>
     </ClCompile>
   </ItemGroup>

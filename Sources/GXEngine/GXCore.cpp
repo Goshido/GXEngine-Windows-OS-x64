@@ -120,7 +120,7 @@ GXCore::GXCore ()
     if ( !GXGetPhysXInstance () )
     {
         GXLogW ( L"GXCore::GXCore::Error - Инициализация модуля физики провалена\n" );
-        GXDebugBox ( L"Инициализация модуля физики провалена" );
+        GXWarningBox ( L"Инициализация модуля физики провалена" );
     }
 
     GXLocale& locale = GXLocale::GetInstance ();
@@ -132,7 +132,7 @@ GXCore::GXCore ()
     if ( !GXSoundInit () )
     {
         GXLogW ( L"GXCore::GXCore::Error - Инициализация звукового модуля провалена\n" );
-        GXDebugBox ( L"Инициализация звукового модуля провалена" );
+        GXWarningBox ( L"Инициализация звукового модуля провалена" );
     }
 
     GXSoundMixer::GetInstance ();
@@ -140,7 +140,7 @@ GXCore::GXCore ()
     if ( !GXFont::InitFreeTypeLibrary () )
     {
         GXLogW ( L"GXCore::GXCore::Error - Инициализация модуля шрифтов провалена\n" );
-        GXDebugBox ( L"Инициализация модуля шрифтов провалена" );
+        GXWarningBox ( L"Инициализация модуля шрифтов провалена" );
     }
 
     GXNetServer::GetInstance ();

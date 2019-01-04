@@ -96,7 +96,7 @@ GXRenderer::~GXRenderer ()
     {
         if ( ChangeDisplaySettingsW ( nullptr, 0u ) != DISP_CHANGE_SUCCESSFUL )
         {
-            GXDebugBox ( L"Не удалось вернуть графические настройки по умолчанию" );
+            GXWarningBox ( L"Не удалось вернуть графические настройки по умолчанию" );
             GXLogW ( L"GXRenderer::~GXRenderer::Error - Не удалось вернуть графические настройки по умолчанию\n" );
         }
     }
@@ -204,7 +204,7 @@ GXVoid GXRenderer::SetResolution ( GXInt frameWidth, GXInt frameHeight )
         dm.dmPelsWidth = static_cast<DWORD> ( width );
         dm.dmPelsHeight = static_cast<DWORD> ( height );
 
-        if ( ChangeDisplaySettingsW ( &dm, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL )
+        if ( ChangeDisplaySettings ( &dm, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL )
             MessageBoxW ( 0, L"Не удалось поменять оконный режим", L"Проблемка", MB_ICONEXCLAMATION );
 
         SetWindowPos ( hwnd, HWND_TOP, 0, 0, width, height, SWP_FRAMECHANGED | SWP_SHOWWINDOW );
@@ -545,13 +545,13 @@ GXVoid GXCALL GXRenderer::Destroy ()
     {
         if ( !wglMakeCurrent ( 0, 0 ) )
         {
-            GXDebugBox ( L"Освобождение контекстов устройства и редеринга провалено" );
+            GXWarningBox ( L"Освобождение контекстов устройства и редеринга провалено" );
             GXLogW ( L"GXRenderer::Destroy::Error - Освобождение контекстов устройства и редеринга провалено\n" );
         }
 
         if ( !wglDeleteContext ( hglRC ) )
         {
-            GXDebugBox ( L"Удаление контекста редеринга провалено" );
+            GXWarningBox ( L"Удаление контекста редеринга провалено" );
             GXLogW ( L"GXRenderer::Destroy::Error - Удаление контекста редеринга провалено\n" );
         }
 
@@ -560,21 +560,21 @@ GXVoid GXCALL GXRenderer::Destroy ()
 
     if ( hDC && !DeleteDC ( hDC ) )
     {
-        GXDebugBox ( L"Освобождение контекста устройства провалено" );
+        GXWarningBox ( L"Освобождение контекста устройства провалено" );
         GXLogW ( L"GXRenderer::Destroy::Error - Освобождение контекста устройства провалено\n" );
         hDC = static_cast<HDC> ( INVALID_HANDLE_VALUE );
     }
 
     if ( hwnd && !DestroyWindow ( hwnd ) )
     {
-        GXDebugBox ( L"Освобождение HWND провалено" );
+        GXWarningBox ( L"Освобождение HWND провалено" );
         GXLogW ( L"GXRenderer::Destroy::Error - Освобождение HWND провалено\n" );
         hwnd = static_cast<HWND> ( INVALID_HANDLE_VALUE );
     }
 
     if ( UnregisterClassW ( WINDOW_OPENGL_CLASS, hinst ) ) return;
 
-    GXDebugBox ( L"Снятие регистрации класса окна провалено" );
+    GXWarningBox ( L"Снятие регистрации класса окна провалено" );
     GXLogW ( L"GXRenderer::Destroy::Error - Снятие регистрации класса окна провалено\n" );
     hinst = static_cast<HINSTANCE> ( INVALID_HANDLE_VALUE );
 }
@@ -590,12 +590,12 @@ GXBool GXCALL GXRenderer::MakeWindow ()
     wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
     wc.lpszClassName = WINDOW_OPENGL_CLASS;
     wc.lpfnWndProc = &GXInput::InputProc;
-    wc.hCursor = LoadCursorW ( 0, IDC_ARROW );
-    wc.hIcon = LoadIconW ( hinst, MAKEINTRESOURCE ( GX_RID_EXE_MAINICON ) );
+    wc.hCursor = LoadCursor ( 0, IDC_ARROW );
+    wc.hIcon = LoadIcon ( hinst, MAKEINTRESOURCE ( GX_RID_EXE_MAINICON ) );
 
     if ( !RegisterClassW ( &wc ) )
     {
-        GXDebugBox ( L"Не удалось зарегистрировать класс окна" );
+        GXWarningBox ( L"Не удалось зарегистрировать класс окна" );
         GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось зарегистрировать класс окна\n" );
         return GX_FALSE;
     }
@@ -629,7 +629,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
     {
         if ( ChangeDisplaySettingsW ( nullptr, 0 ) != DISP_CHANGE_SUCCESSFUL )
         {
-            GXDebugBox ( L"Не удалось вернуть графические настройки по умолчанию" );
+            GXWarningBox ( L"Не удалось вернуть графические настройки по умолчанию" );
             GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось вернуть графические настройки по умолчанию\n" );
 
             return GX_FALSE;
@@ -645,7 +645,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
     if ( !hwnd )
     {
-        GXDebugBox ( L"При создании окна произошла ошибка" );
+        GXWarningBox ( L"При создании окна произошла ошибка" );
         GXLogW ( L"GXRenderer::MakeWindow::Error - При создании окна произошла ошибка\n" );
         Destroy ();
         return GX_FALSE;
@@ -677,7 +677,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
     if ( !hDC )
     {
-        GXDebugBox ( L"Не удалось получить hDC" );
+        GXWarningBox ( L"Не удалось получить hDC" );
         GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось получить hDC\n" );
         Destroy ();
 
@@ -688,7 +688,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
     if ( pixelFomat == 0 )
     {
-        GXDebugBox ( L"Не удалось найти подходящий формат пикселей" );
+        GXWarningBox ( L"Не удалось найти подходящий формат пикселей" );
         GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось найти подходящий формат пикселей\n" );
         Destroy ();
 
@@ -697,7 +697,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
     if ( !SetPixelFormat ( hDC, pixelFomat, &pfd ) )
     {
-        GXDebugBox ( L"Не удалось установить формат пикселей" );
+        GXWarningBox ( L"Не удалось установить формат пикселей" );
         GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось установить формат пикселей\n" );
         Destroy ();
 
@@ -706,9 +706,9 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
     hglRC = wglCreateContext ( hDC );
 
-    if ( hglRC == 0 )
+    if ( hglRC == nullptr )
     {
-        GXDebugBox ( L"Не удалось создать контекст рендеринга" );
+        GXWarningBox ( L"Не удалось создать контекст рендеринга" );
         GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось создать контекст рендеринга\n" );
         Destroy ();
 
@@ -717,7 +717,7 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
     if ( !wglMakeCurrent ( hDC, hglRC ) )
     {
-        GXDebugBox ( L"Не удалось установить контекст рендеринга" );
+        GXWarningBox ( L"Не удалось установить контекст рендеринга" );
         GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось установить контекст рендеринга\n" );
         Destroy ();
 
@@ -726,12 +726,12 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
     GXOpenGLInit ();
 
-    wglMakeCurrent ( 0, 0 );
+    wglMakeCurrent ( nullptr, nullptr );
     wglDeleteContext ( hglRC );
 
     if ( !wglCreateContextAttribsARB )
     {
-        GXDebugBox ( L"wglCreateContextAttribsARB провален" );
+        GXWarningBox ( L"wglCreateContextAttribsARB провален" );
         GXLogW ( L"GXRenderer::MakeWindow::Error - wglCreateContextAttribsARB провален\n" );
 
         return GX_FALSE;
@@ -746,11 +746,11 @@ GXBool GXCALL GXRenderer::MakeWindow ()
         0
     };
 
-    hglRC = wglCreateContextAttribsARB ( hDC, 0, attribs );
+    hglRC = wglCreateContextAttribsARB ( hDC, nullptr, attribs );
 
     if ( !hglRC || !wglMakeCurrent ( hDC, hglRC ) )
     {
-        GXDebugBox ( L"Создание контекста OpenGL версии 3.3 провалено" );
+        GXWarningBox ( L"Создание контекста OpenGL версии 3.3 провалено" );
         GXLogW ( L"GXRenderer::MakeWindow::Error - Создание контекста OpenGL версии 3.3 провалено\n" );
 
         return GX_FALSE;

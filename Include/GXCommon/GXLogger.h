@@ -1,10 +1,10 @@
-// version 1.8
+// version 1.9
 
 #ifndef GX_LOGGER
 #define GX_LOGGER
 
 
-#include "GXTypes.h"
+#include <GXCommon/GXStrings.h>
 
 GX_DISABLE_COMMON_WARNINGS
 
@@ -14,8 +14,7 @@ GX_DISABLE_COMMON_WARNINGS
 GX_RESTORE_WARNING_STATE
 
 
-#define GXDebugBox(x) MessageBoxW ( 0, x, L"Дебаг-окно", MB_ICONEXCLAMATION )
-
+GXVoid GXCALL GXWarningBox ( GXString message );
 
 GXVoid GXCALL GXLogInit ();
 GXVoid GXCALL GXLogDestroy ();

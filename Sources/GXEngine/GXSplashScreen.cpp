@@ -188,8 +188,8 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
         windowClass.hInstance = hInst;
         windowClass.lpszClassName = SPLASH_SCREEN_WINDOW_CLASS;
         windowClass.lpfnWndProc = &GXSplashScreen::WindowProc;
-        windowClass.hCursor = LoadCursorW ( 0, IDC_ARROW );
-        windowClass.hIcon = LoadIconW ( hInst, MAKEINTRESOURCE ( GX_RID_EXE_MAINICON ) );
+        windowClass.hCursor = LoadCursor ( 0, IDC_ARROW );
+        windowClass.hIcon = LoadIcon ( hInst, MAKEINTRESOURCE ( GX_RID_EXE_MAINICON ) );
 
         if ( !RegisterClassW ( &windowClass ) )
         {

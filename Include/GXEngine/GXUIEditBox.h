@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #ifndef GX_UI_EDIT_BOX
 #define GX_UI_EDIT_BOX

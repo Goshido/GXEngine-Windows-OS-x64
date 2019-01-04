@@ -3,17 +3,17 @@
 #include <GXEngine/GXRenderer.h>
 
 
-#define DEFAULT_LAST_FPS			0xFFFFFFFFu
+#define DEFAULT_LAST_FPS            0xFFFFFFFFu
 
-#define FONT						L"Fonts/trebuc.ttf"
-#define FONT_SIZE					0.6f
-#define FONT_COLOR_R				115u
-#define FONT_COLOR_G				185u
-#define FONT_COLOR_B				0u
-#define FONT_COLOR_A				255u
-#define CONVERT_BUFFER_SYMBOLS		10
-#define LEFT_OFFSET					0.1f
-#define TOP_OFFSET					0.01f
+#define FONT                        L"Fonts/trebuc.ttf"
+#define FONT_SIZE                   0.6f
+#define FONT_COLOR_R                115u
+#define FONT_COLOR_G                185u
+#define FONT_COLOR_B                0u
+#define FONT_COLOR_A                255u
+#define CONVERT_BUFFER_SYMBOLS      10
+#define LEFT_OFFSET                 0.1f
+#define TOP_OFFSET                  0.01f
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -21,53 +21,54 @@ EMUIFPSCounter* EMUIFPSCounter::instance = nullptr;
 
 EMUIFPSCounter& EMUIFPSCounter::GetInstance ()
 {
-	if ( !instance )
-		instance = new EMUIFPSCounter ();
+    if ( !instance )
+        instance = new EMUIFPSCounter ();
 
-	return *instance;
+    return *instance;
 }
 
 EMUIFPSCounter::~EMUIFPSCounter ()
 {
-	delete surface;
-	instance = nullptr;
+    delete surface;
+    instance = nullptr;
 }
 
 void EMUIFPSCounter::Render ()
 {
-	GXUInt currentFPS = GXRenderer::GetInstance ().GetCurrentFPS ();
+    GXUInt currentFPS = GXRenderer::GetInstance ().GetCurrentFPS ();
 
-	if ( currentFPS != lastFPS )
-	{
-		surface->Reset ();
-		wsprintfW ( fpsBuffer, L"%i", currentFPS );
+    if ( currentFPS != lastFPS )
+    {
+        surface->Reset ();
+        wsprintfW ( fpsBuffer, L"%i", currentFPS );
 
-		GXPenInfo pi;
-		pi.color.From ( FONT_COLOR_R, FONT_COLOR_G, FONT_COLOR_B, FONT_COLOR_A );
-		pi.font = &font;
-		pi.overlayType = eGXImageOverlayType::SimpleReplace;
-		pi.insertX = static_cast<GXFloat> ( static_cast<GXUInt> ( surface->GetWidth () ) - font.GetTextLength ( 0u, fpsBuffer ) );
-		pi.insertY = 0.0f;
-		surface->AddText ( pi, 0u, fpsBuffer );
+        GXPenInfo pi;
+        pi.color.From ( FONT_COLOR_R, FONT_COLOR_G, FONT_COLOR_B, FONT_COLOR_A );
+        pi.font = &font;
+        pi.overlayType = eGXImageOverlayType::SimpleReplace;
+        pi.insertX = static_cast<GXFloat> ( static_cast<GXUInt> ( surface->GetWidth () ) - font.GetTextLength ( 0u, fpsBuffer ) );
+        pi.insertY = 0.0f;
+        surface->AddText ( pi, 0u, fpsBuffer );
 
-		lastFPS = currentFPS;
-	}
+        lastFPS = currentFPS;
+    }
 
-	surface->Render ();
+    surface->Render ();
 }
 
 EMUIFPSCounter::EMUIFPSCounter ():
-	lastFPS ( DEFAULT_LAST_FPS ),
-	font ( FONT, static_cast<GXUShort> ( gx_ui_Scale * FONT_SIZE ) )
+    lastFPS ( DEFAULT_LAST_FPS ),
+    font ( FONT, static_cast<GXUShort> ( gx_ui_Scale * FONT_SIZE ) )
 {
-	GXUInt requeredSize = font.GetTextLength ( 0u, L"99999999999" );
+    GXUInt requeredSize = font.GetTextLength ( 0u, L"99999999999" );
 
-	surface = new GXHudSurface ( static_cast<GXUShort> ( requeredSize ), font.GetSize () );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    surface = new GXHudSurface ( static_cast<GXUShort> ( requeredSize ), font.GetSize () );
 
-	GXRenderer& renderer = GXRenderer::GetInstance ();
-	GXVec3 location;
-	surface->GetLocation ( location );
-	location.SetX ( renderer.GetWidth () * 0.5f - ( requeredSize * 0.5f + LEFT_OFFSET * gx_ui_Scale ) );
-	location.SetY ( renderer.GetHeight () * 0.5f - ( FONT_SIZE * 0.5f + TOP_OFFSET ) * gx_ui_Scale );
-	surface->SetLocation ( location );
+    GXRenderer& renderer = GXRenderer::GetInstance ();
+    GXVec3 location;
+    surface->GetLocation ( location );
+    location.SetX ( renderer.GetWidth () * 0.5f - ( requeredSize * 0.5f + LEFT_OFFSET * gx_ui_Scale ) );
+    location.SetY ( renderer.GetHeight () * 0.5f - ( FONT_SIZE * 0.5f + TOP_OFFSET ) * gx_ui_Scale );
+    surface->SetLocation ( location );
 }

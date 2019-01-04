@@ -1,13 +1,14 @@
-// version 1.13
+// version 1.14
 
 #ifndef GX_CAMERA_PERSPECTIVE
 #define GX_CAMERA_PERSPECTIVE
 
 
 #include "GXCamera.h"
+#include <GXCommon/GXMemory.h>
 
 
-class GXCameraPerspective final : public GXCamera
+class GXCameraPerspective final : public GXMemoryInspector, public GXCamera
 {
     protected:
         GXFloat     fieldOfViewYRadians;
@@ -15,7 +16,7 @@ class GXCameraPerspective final : public GXCamera
 
     public:
         GXCameraPerspective ();
-        explicit GXCameraPerspective ( GXFloat fieldOfViewYRadians, GXFloat aspectRatio, GXFloat zNear, GXFloat zFar );
+        explicit GXCameraPerspective ( GXFloat fieldOfViewYValueRadians, GXFloat aspectRatioValue, GXFloat zNear, GXFloat zFar );
         ~GXCameraPerspective () override;
 
         GXVoid SetFieldOfViewY ( GXFloat radians );

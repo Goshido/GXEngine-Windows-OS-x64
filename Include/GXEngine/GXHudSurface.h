@@ -1,17 +1,17 @@
-// version 1.23
+// version 1.24
 
 #ifndef GX_HUD_SURFACE
 #define GX_HUD_SURFACE
 
 
-#include "GXRenderable.h"
 #include "GXCameraOrthographic.h"
-#include "GXTransform.h"
-#include "GXMeshGeometry.h"
-#include "GXTexture2D.h"
 #include "GXFont.h"
-#include "GXUnlitColorMaterial.h"
+#include "GXMeshGeometry.h"
+#include "GXRenderable.h"
+#include "GXTexture2D.h"
+#include "GXTransform.h"
 #include "GXUnlitColorMaskMaterial.h"
+#include "GXUnlitColorMaterial.h"
 #include "GXUnlitTexture2DMaterial.h"
 
 
@@ -60,7 +60,7 @@ struct GXLineInfo final
 class GXImageRenderable;
 class GXGlyphRenderable;
 class GXLineRenderable;
-class GXHudSurface final : public GXTransform
+class GXHudSurface final : public GXMemoryInspector, public GXTransform
 {
     private:
         GXImageRenderable*          image;

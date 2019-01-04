@@ -86,7 +86,7 @@ GXSoundTrack::GXSoundTrack ( const GXWChar* trackFileName )
 
     if ( GXLoadFile ( trackFile, &mappedFile, totalSize, GX_TRUE ) ) return;
 
-    GXDebugBox ( L"GXSoundTrack::Error - не удалось загрузить файл" );
+    GXWarningBox ( L"GXSoundTrack::Error - не удалось загрузить файл" );
 }
 
 GXVoid GXSoundTrack::AddReference ()
@@ -98,7 +98,7 @@ GXVoid GXSoundTrack::Release ()
 {
     if ( references < 1u )
     {
-        GXDebugBox ( L"GXSoundTrack::Error - ѕопытка уменьшить количество ссылок, когда их нет." );
+        GXWarningBox ( L"GXSoundTrack::Error - ѕопытка уменьшить количество ссылок, когда их нет." );
         return;
     }
 

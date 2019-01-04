@@ -39,7 +39,7 @@ GXOGGSoundStreamer::GXOGGSoundStreamer ( GXVoid* mappedFile, GXUInt totalSize ):
 
     if ( GXOvOpenCallbacks ( this, &vorbisFile, nullptr, 0, callbacks ) == 0 ) return;
 
-    GXDebugBox ( L"GXOGGSoundStreamer::Error - не удалось открыть файл" );
+    GXWarningBox ( L"GXOGGSoundStreamer::Error - не удалось открыть файл" );
 }
 
 GXOGGSoundStreamer::~GXOGGSoundStreamer ()

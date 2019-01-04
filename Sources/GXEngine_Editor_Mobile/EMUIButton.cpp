@@ -102,6 +102,8 @@ EMUIButtonRenderer::EMUIButtonRenderer ( GXUIButton* buttonWidget ):
     background ( BACKGROUND_TEXTURE, GX_FALSE, GX_FALSE )
 {
     const GXAABB& boundsLocal = widget->GetBoundsLocal ();
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
     surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 
     GXWcsclone ( &caption, DEFAULT_CAPTION );
@@ -216,7 +218,10 @@ GXVoid EMUIButtonRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXU
     y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
     GXSafeDelete ( surface );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
     surface = new GXHudSurface ( width, height );
+
     GXVec3 location;
     surface->GetLocation ( location );
     surface->SetLocation ( x, y, location.data[ 2 ] );

@@ -69,6 +69,8 @@ EMUIMenuRenderer::EMUIMenuRenderer ( GXUIMenu* widget ):
     texture ( DEFAULT_TEXTURE, GX_FALSE, GX_FALSE )
 {
     const GXAABB& boundsLocal = widget->GetBoundsLocal ();
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
     surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
@@ -161,7 +163,10 @@ GXVoid EMUIMenuRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUSh
     y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
     delete surface;
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
     surface = new GXHudSurface ( width, height );
+
     GXVec3 location;
     surface->GetLocation ( location );
     surface->SetLocation ( x, y, location.data[ 2 ] );

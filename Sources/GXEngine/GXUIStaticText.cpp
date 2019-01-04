@@ -80,7 +80,7 @@ GXVoid GXUIStaticText::SetText ( const GXWChar* newText )
 {
     if ( newText )
     {
-        GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::SetText, newText, ( GXWcslen ( newText ) + 1 ) * sizeof ( GXWChar ) );
+        GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::SetText, newText, static_cast<GXUInt> ( ( GXWcslen ( newText ) + 1u ) * sizeof ( GXWChar ) ) );
         return;
     }
 

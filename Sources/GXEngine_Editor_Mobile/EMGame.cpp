@@ -134,6 +134,8 @@ GXVoid EMGame::OnInit ()
 
     GXFloat physicsInfoWidth = 10.0f * gx_ui_Scale;
     GXFloat physicsInfoHeight = 5.0f * gx_ui_Scale;
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
     physicsInfo = new GXHudSurface ( static_cast<GXUShort> ( physicsInfoWidth ), static_cast<GXUShort> ( physicsInfoHeight ) );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXFont" );
@@ -269,6 +271,7 @@ GXVoid EMGame::OnInit ()
     moveTool->Bind ();
     moveTool->SetWorldMode ();
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXCameraOrthographic" );
     hudCamera = new GXCameraOrthographic ( w, h, EM_UI_HUD_CAMERA_NEAR_Z, EM_UI_HUD_CAMERA_FAR_Z );
 
     EMViewer* viewer = EMViewer::GetInstance ();

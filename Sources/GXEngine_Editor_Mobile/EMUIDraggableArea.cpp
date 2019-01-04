@@ -49,6 +49,8 @@ EMUIDraggableAreaRenderer::EMUIDraggableAreaRenderer ( GXUIDragableArea* draggab
     background ( BACKGROUND_TEXTURE, GX_FALSE, GX_FALSE )
 {
     const GXAABB& boundsLocal = widget->GetBoundsLocal ();
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
     surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
@@ -113,7 +115,10 @@ GXVoid EMUIDraggableAreaRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort wid
     GXVec3 location;
     surface->GetLocation ( location );
     delete surface;
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
     surface = new GXHudSurface ( width, height );
+
     surface->SetLocation ( x, y, location.data[ 2 ] );
 }
 

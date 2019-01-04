@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXLogger.h>
@@ -20,11 +20,12 @@ GXUTF8Parser::~GXUTF8Parser ()
     // NOTHING
 }
 
-GXUInt GXUTF8Parser::GetSymbol ( GXUInt position )
+GXUInt GXUTF8Parser::GetSymbol ( GXUPointer position )
 {
-    if ( position >= totalSymbols ) return INVALID_SYMBOL;
+    if ( position >= totalSymbols )
+        return INVALID_SYMBOL;
 
-    GXUInt offset = GetOffset ( position );
+    GXUPointer offset = GetOffset ( position );
 
     if ( ( string[ offset ] & 0x80 ) == 0x00 )
         return static_cast<GXUInt> ( string[ offset ] );
@@ -73,21 +74,21 @@ GXUInt GXUTF8Parser::GetSymbol ( GXUInt position )
     return INVALID_SYMBOL;
 }
 
-GXUInt GXUTF8Parser::GetLength ()
+GXUPointer GXUTF8Parser::GetLength ()
 {
     return totalSymbols;
 }
 
-GXVoid GXUTF8Parser::Copy ( GXUTF8* dest, GXUInt startPos, GXUInt endPos )
+GXVoid GXUTF8Parser::Copy ( GXUTF8* dest, GXUPointer startPos, GXUPointer endPos )
 {
     if ( endPos >= totalSymbols ) return;
 
-    GXUInt offset = 0u;
-    GXUInt baseOffset = GetOffset ( startPos );
+    GXUPointer offset = 0u;
+    GXUPointer baseOffset = GetOffset ( startPos );
 
-    for ( GXUInt i = startPos; i <= endPos; ++i )
+    for ( GXUPointer i = startPos; i <= endPos; ++i )
     {
-        GXUInt ind = baseOffset + offset;
+        GXUPointer ind = baseOffset + offset;
 
         if ( ( string[ ind ] & 0x80 ) == 0x00 )
         {
@@ -197,15 +198,15 @@ GXVoid GXUTF8Parser::Copy ( GXUTF8* dest, GXUInt startPos, GXUInt endPos )
     }
 }
 
-GXUInt GXUTF8Parser::GetOffset ( GXUInt position )
+GXUPointer GXUTF8Parser::GetOffset ( GXUPointer position )
 {
     if ( position == 0u )
         return 0u;
 
-    GXUInt offset = 0u;
-    GXUInt i = 0u;
+    GXUPointer offset = 0u;
+    GXUPointer i = 0u;
 
-    while ( GX_TRUE )
+    for ( ; ; )
     {
         if ( ( string[ offset ] & 0xC0 ) == 0x80 )
         {
@@ -218,10 +219,9 @@ GXUInt GXUTF8Parser::GetOffset ( GXUInt position )
 
         if ( i < position ) continue;
 
-        while ( GX_TRUE )
+        for ( ; ; )
         {
-            if ( ( string[ offset ] & 0xC0 ) != 0x80 )
-                break;
+            if ( ( string[ offset ] & 0xC0 ) != 0x80 ) break;
 
             ++offset;
         }
@@ -274,31 +274,31 @@ eGXEndianness GXCALL GXDetermineEndianness ()
 
 //--------------------------------------------------------------
 
-
-GXUInt GXCALL GXWcslen ( const GXWChar* str )
+GXUPointer GXCALL GXWcslen ( const GXWChar* str )
 {
     if ( !str )
         return 0u;
 
-    return static_cast<GXUInt> ( wcslen ( str ) );
+    return wcslen ( str );
 }
 
-GXUInt GXCALL GXUTF8len ( const GXUTF8* str )
+GXUPointer GXCALL GXUTF8len ( const GXUTF8* str )
 {
     if ( !str )
         return 0u;
 
-    GXUInt numBytes = static_cast<GXUInt> ( strlen ( str ) );
+    GXUPointer numBytes = strlen ( str );
 
     if ( numBytes == 0u )
         return 0u;
 
-    GXUInt numSymbols = 0u;
+    GXUPointer numSymbols = 0u;
 
-    for ( GXUInt i = 0u; i < numBytes; ++i )
+    for ( GXUPointer i = 0u; i < numBytes; ++i )
     {
-        if ( ( str[ i ] & 0xC0 ) != 0x80 )
-            ++numSymbols;
+        if ( ( str[ i ] & 0xC0 ) == 0x80 ) continue;
+
+        ++numSymbols;
     }
 
     return numSymbols;
@@ -306,20 +306,43 @@ GXUInt GXCALL GXUTF8len ( const GXUTF8* str )
 
 GXInt GXCALL GXWcscmp ( const GXWChar* a, const GXWChar* b )
 {
-    if ( a == nullptr && b == nullptr ) return 0;
-    if ( a == nullptr ) return -1;
-    if ( b == nullptr ) return 1;
+    if ( a == nullptr && b == nullptr )
+        return 0;
+
+    if ( a == nullptr )
+        return -1;
+
+    if ( b == nullptr )
+        return 1;
 
     return wcscmp ( a, b );
 }
 
 GXInt GXCALL GXUTF8cmp ( const GXUTF8* a, const GXUTF8* b )
 {
+    if ( a == nullptr && b == nullptr )
+        return 0;
+
+    if ( a == nullptr )
+        return -1;
+
+    if ( b == nullptr )
+        return 1;
+
     return strcmp ( a, b );
 }
 
 GXInt GXCALL GXMbscmp ( const GXMBChar* a, const GXMBChar* b )
 {
+    if ( a == nullptr && b == nullptr )
+        return 0;
+
+    if ( a == nullptr )
+        return -1;
+
+    if ( b == nullptr )
+        return 1;
+
     return strcmp ( a, b );
 }
 
@@ -364,10 +387,10 @@ GXVoid GXCALL GXWcsclone ( GXWChar** dest, const GXWChar* src )
 
 GXUPointer GXCALL GXCalculateSpaceForUTF8 ( const GXWChar* str )
 {
-    GXUInt symbols = GXWcslen ( str );
+    GXUPointer symbols = GXWcslen ( str );
     GXUPointer space = 1u;
 
-    for ( GXUInt i = 0u; i < symbols; ++i )
+    for ( GXUPointer i = 0u; i < symbols; ++i )
     {
         if ( str[ i ] < 0x0080 )
         {
@@ -400,14 +423,14 @@ GXUByte GXWriteUTF8Symbol ( GXUTF8* start, GXWChar symbol )
 
     if ( symbol < 0x0800 )
     {
-        start[ 0 ] = static_cast<GXUTF8> ( 0x00C0 | ( ( symbol & 0x07C0 ) >> 6 ) );
-        start[ 1 ] = static_cast<GXUTF8> ( 0x0080 | ( symbol & 0x003F ) );
+        start[ 0u ] = static_cast<GXUTF8> ( 0x00C0 | ( ( symbol & 0x07C0 ) >> 6 ) );
+        start[ 1u ] = static_cast<GXUTF8> ( 0x0080 | ( symbol & 0x003F ) );
         return 2u;
     }
 
-    start[ 0 ] = static_cast<GXUTF8> ( 0x00E0 | ( ( symbol & 0x0000F000 ) >> 12 ) );
-    start[ 1 ] = static_cast<GXUTF8> ( 0x0080 | ( ( symbol & 0x00000FC0 ) >> 6 ) );
-    start[ 2 ] = static_cast<GXUTF8> ( 0x0080 | ( symbol & 0x0000003F ) );
+    start[ 0u ] = static_cast<GXUTF8> ( 0x00E0 | ( ( symbol & 0x0000F000 ) >> 12 ) );
+    start[ 1u ] = static_cast<GXUTF8> ( 0x0080 | ( ( symbol & 0x00000FC0 ) >> 6 ) );
+    start[ 2u ] = static_cast<GXUTF8> ( 0x0080 | ( symbol & 0x0000003F ) );
     return 3u;
 }
 
@@ -421,46 +444,46 @@ GXUByte GXWriteUTF8Symbol ( GXUTF8* start, GXUInt symbol )
 
     if ( symbol < 0x00000800u )
     {
-        start[ 0 ] = static_cast<GXUTF8> ( 0x000000C0u | ( ( symbol & 0x000007C0u ) >> 6 ) );
-        start[ 1 ] = static_cast<GXUTF8> ( 0x00000080u | ( symbol & 0x0000003Fu ) );
+        start[ 0u ] = static_cast<GXUTF8> ( 0x000000C0u | ( ( symbol & 0x000007C0u ) >> 6 ) );
+        start[ 1u ] = static_cast<GXUTF8> ( 0x00000080u | ( symbol & 0x0000003Fu ) );
         return 2u;
     }
 
     if ( symbol < 0x00010000u )
     {
-        start[ 0 ] = static_cast<GXUTF8> ( 0x000000E0u | ( ( symbol & 0x0000F000u ) >> 12 ) );
-        start[ 1 ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x00000FC0u ) >> 6 ) );
-        start[ 2 ] = static_cast<GXUTF8> ( 0x00000080u | ( symbol & 0x0000003Fu ) );
+        start[ 0u ] = static_cast<GXUTF8> ( 0x000000E0u | ( ( symbol & 0x0000F000u ) >> 12 ) );
+        start[ 1u ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x00000FC0u ) >> 6 ) );
+        start[ 2u ] = static_cast<GXUTF8> ( 0x00000080u | ( symbol & 0x0000003Fu ) );
         return 3u;
     }
 
     if ( symbol < 0x00200000u )
     {
-        start[ 0 ] = static_cast<GXUTF8> ( 0x000000F0u | ( ( symbol & 0x001C0000u ) >> 18 ) );
-        start[ 1 ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x0003F000u ) >> 12 ) );
-        start[ 2 ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x00000FC0u ) >> 6 ) );
-        start[ 3 ] = static_cast<GXUTF8> ( 0x00000080u | ( symbol & 0x0000003Fu ) );
+        start[ 0u ] = static_cast<GXUTF8> ( 0x000000F0u | ( ( symbol & 0x001C0000u ) >> 18 ) );
+        start[ 1u ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x0003F000u ) >> 12 ) );
+        start[ 2u ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x00000FC0u ) >> 6 ) );
+        start[ 3u ] = static_cast<GXUTF8> ( 0x00000080u | ( symbol & 0x0000003Fu ) );
         return 4u;
     }
 
     if ( symbol < 0x04000000u )
     {
-        start[ 0 ] = static_cast<GXUTF8> ( 0x000000F8u | ( ( symbol & 0x001C0000u ) >> 24 ) );
-        start[ 1 ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x00FC0000u ) >> 18 ) );
-        start[ 2 ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x0003F000u ) >> 12 ) );
-        start[ 3 ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x00000FC0u ) >> 6 ) );
-        start[ 4 ] = static_cast<GXUTF8> ( 0x00000080u | ( symbol & 0x0000003Fu ) );
+        start[ 0u ] = static_cast<GXUTF8> ( 0x000000F8u | ( ( symbol & 0x001C0000u ) >> 24 ) );
+        start[ 1u ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x00FC0000u ) >> 18 ) );
+        start[ 2u ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x0003F000u ) >> 12 ) );
+        start[ 3u ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x00000FC0u ) >> 6 ) );
+        start[ 4u ] = static_cast<GXUTF8> ( 0x00000080u | ( symbol & 0x0000003Fu ) );
         return 5u;
     }
 
     if ( symbol < 0x80000000u )
     {
-        start[ 0 ] = static_cast<GXUTF8> ( 0x000000FCu | ( ( symbol & 0x40000000u ) >> 30 ) );
-        start[ 1 ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x3F000000u ) >> 24 ) );
-        start[ 2 ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x00FC0000u ) >> 18 ) );
-        start[ 3 ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x0003F000u ) >> 12 ) );
-        start[ 4 ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x00000FC0u ) >> 6 ) );
-        start[ 5 ] = static_cast<GXUTF8> ( 0x00000080u | ( symbol & 0x0000003Fu ) );
+        start[ 0u ] = static_cast<GXUTF8> ( 0x000000FCu | ( ( symbol & 0x40000000u ) >> 30 ) );
+        start[ 1u ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x3F000000u ) >> 24 ) );
+        start[ 2u ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x00FC0000u ) >> 18 ) );
+        start[ 3u ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x0003F000u ) >> 12 ) );
+        start[ 4u ] = static_cast<GXUTF8> ( 0x00000080u | ( ( symbol & 0x00000FC0u ) >> 6 ) );
+        start[ 5u ] = static_cast<GXUTF8> ( 0x00000080u | ( symbol & 0x0000003Fu ) );
         return 6u;
     }
 
@@ -470,9 +493,10 @@ GXUByte GXWriteUTF8Symbol ( GXUTF8* start, GXUInt symbol )
 
 GXUPointer GXCALL GXToUTF8 ( GXUTF8** dest, const GXWChar* str )
 {
-    GXUInt symbols = GXWcslen ( str );
+    GXUPointer symbols = GXWcslen ( str );
 
-    if ( symbols == 0u ) return 0u;
+    if ( symbols == 0u )
+        return 0u;
 
     GXUPointer space = GXCalculateSpaceForUTF8 ( str );
 
@@ -481,7 +505,7 @@ GXUPointer GXCALL GXToUTF8 ( GXUTF8** dest, const GXWChar* str )
 
     GXUPointer offset = 0u;
 
-    for ( GXUInt i = 0u; i < symbols; ++i )
+    for ( GXUPointer i = 0u; i < symbols; ++i )
         offset += GXWriteUTF8Symbol ( ( *dest ) + offset, (GXUInt)str[ i ] );
 
     return space;
@@ -496,13 +520,15 @@ GXVoid GXCALL GXToWcs ( GXWChar** dest, const GXUTF8* str )
     }
 
     GXUTF8Parser parser ( str );
-    GXUInt len = parser.GetLength ();
+    GXUPointer len = parser.GetLength ();
 
-    *dest = static_cast<GXWChar*> ( malloc ( ( len + 1 ) * sizeof ( GXWChar ) ) );
+    *dest = static_cast<GXWChar*> ( malloc ( ( len + 1u ) * sizeof ( GXWChar ) ) );
     ( *dest )[ len ] = 0;
 
-    for ( GXUInt i = 0u; i < len; ++i )
+    for ( GXUPointer i = 0u; i < len; ++i )
+    {
         ( *dest )[ i ] = static_cast<GXWChar> ( parser.GetSymbol ( i ) );
+    }
 }
 
 GXVoid GXCALL GXToEngineWcs ( GXWChar** dest, const GXMBChar* str )
@@ -515,6 +541,6 @@ GXVoid GXCALL GXToEngineWcs ( GXWChar** dest, const GXMBChar* str )
 GXVoid GXCALL GXToSystemMbs ( GXMBChar** dest, const GXWChar* str )
 {
     GXInt size = WideCharToMultiByte ( CP_ACP, WC_COMPOSITECHECK, str, -1, *dest, 0, nullptr, nullptr );
-    *dest = static_cast<GXMBChar*> ( malloc ( (size_t)size ) );
+    *dest = static_cast<GXMBChar*> ( malloc ( static_cast<GXUPointer> ( size ) ) );
     WideCharToMultiByte ( CP_ACP, WC_COMPOSITECHECK, str, -1, *dest, size, nullptr, nullptr );
 }

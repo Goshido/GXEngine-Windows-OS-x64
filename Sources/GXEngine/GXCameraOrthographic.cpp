@@ -1,4 +1,4 @@
-// version 1.12
+// version 1.13
 
 #include <GXEngine/GXCameraOrthographic.h>
 
@@ -10,12 +10,12 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXCameraOrthographic::GXCameraOrthographic ():
-    GXCamera ( DEFAULT_Z_NEAR, DEFAULT_Z_FAR )
+GXCameraOrthographic::GXCameraOrthographic ()
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXCameraOrthographic" )
+    GXCamera ( DEFAULT_Z_NEAR, DEFAULT_Z_FAR ),
+    width ( DEFAULT_WIDTH ),
+    height ( DEFAULT_HEIGHT )
 {
-    width = DEFAULT_WIDTH;
-    height = DEFAULT_HEIGHT;
-
     currentFrameProjectionMatrix.Ortho ( width, height, zNear, zFar );
     currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );
 
@@ -26,12 +26,12 @@ GXCameraOrthographic::GXCameraOrthographic ():
     UpdateLastFrameMatrices ();
 }
 
-GXCameraOrthographic::GXCameraOrthographic ( GXFloat width, GXFloat height, GXFloat zNear, GXFloat zFar ):
-    GXCamera ( zNear, zFar )
+GXCameraOrthographic::GXCameraOrthographic ( GXFloat widthUnuts, GXFloat heightUnits, GXFloat zNear, GXFloat zFar )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXCameraOrthographic" )
+    GXCamera ( zNear, zFar ),
+    width ( widthUnuts ),
+    height ( heightUnits )
 {
-    this->width = width;
-    this->height = height;
-
     currentFrameProjectionMatrix.Ortho ( width, height, zNear, zFar );
     currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );
     

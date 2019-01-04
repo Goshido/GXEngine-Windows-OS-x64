@@ -40,6 +40,8 @@ EMUIStaticTextRenderer::EMUIStaticTextRenderer ( GXUIStaticText* staticTextWidge
     font ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) )
 {
     const GXAABB& boundsLocal = widget->GetBoundsWorld ();
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
     surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
@@ -105,8 +107,11 @@ GXVoid EMUIStaticTextRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width,
     GXVec3 location;
     surface->GetLocation ( location );
     delete surface;
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
     surface = new GXHudSurface ( width, height );
-    surface->SetLocation ( x, y, location.data[ 2 ] );
+
+    surface->SetLocation ( x, y, location.data[ 2u ] );
 }
 
 GXVoid EMUIStaticTextRenderer::OnMoved ( GXFloat x, GXFloat y )

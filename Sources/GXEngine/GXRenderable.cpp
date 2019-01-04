@@ -1,14 +1,14 @@
-// version 1.1
+// version 1.2
 
 #include <GXEngine/GXRenderable.h>
 
 
-GXRenderable::GXRenderable ()
+GXRenderable::~GXRenderable ()
 {
     // NOTHING
 }
 
-GXRenderable::~GXRenderable ()
+GXRenderable::GXRenderable ()
 {
     // NOTHING
 }

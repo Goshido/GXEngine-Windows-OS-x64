@@ -11,17 +11,17 @@ class GXUTF8Parser final
 {
     private:
         const GXUTF8*       string;
-        GXUInt              totalSymbols;
+        GXUPointer          totalSymbols;
 
     public:
         explicit GXUTF8Parser ( const GXUTF8* string );
         ~GXUTF8Parser ();
 
-        GXUInt GetSymbol ( GXUInt position );
-        GXUInt GetLength ();
+        GXUInt GetSymbol ( GXUPointer position );
+        GXUPointer GetLength ();
 
-        GXVoid Copy ( GXUTF8* dest, GXUInt startPos, GXUInt endPos );
-        GXUInt GetOffset ( GXUInt position );
+        GXVoid Copy ( GXUTF8* dest, GXUPointer startPos, GXUPointer endPos );
+        GXUPointer GetOffset ( GXUPointer position );
 
         GXVoid Debug ();
 
@@ -44,8 +44,8 @@ eGXEndianness GXCALL GXDetermineEndianness ();
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXUInt GXCALL GXWcslen ( const GXWChar* str );
-GXUInt GXCALL GXUTF8len ( const GXUTF8* str );
+GXUPointer GXCALL GXWcslen ( const GXWChar* str );
+GXUPointer GXCALL GXUTF8len ( const GXUTF8* str );
 
 GXInt GXCALL GXWcscmp ( const GXWChar* a, const GXWChar* b );
 GXInt GXCALL GXUTF8cmp ( const GXUTF8* a, const GXUTF8* b );
@@ -69,7 +69,8 @@ GXVoid GXCALL GXToSystemMbs ( GXMBChar** dest, const GXWChar* str );
 //---------------------------------------------------------------------------------------------------------------------
 
 // This is crosscompile, no thread safe but reentrant, lock free string. Note use GXString objects by value.
-// GXString has size of GXUPointer bytes. GXString implements copy on write (COW) architecture.
+// GXString object has size of GXUPointer bytes. GXString implements copy on write (COW) architecture.
+// Note static allocation is not supported for now. Use standart string literal instead.
 
 class GXStringData;
 class GXString final: public GXMemoryInspector
@@ -79,23 +80,26 @@ class GXString final: public GXMemoryInspector
 
     public:
         GXString ();
-        explicit GXString ( const GXString &string );
-        explicit GXString ( const GXMBChar* string );
-        explicit GXString ( GXMBChar character );
-        explicit GXString ( const GXWChar* string );
-        explicit GXString ( GXWChar character );
+        GXString ( const GXString &string );
+        GXString ( const GXMBChar* string );
+        GXString ( GXMBChar character );
+        GXString ( const GXWChar* string );
+        GXString ( GXWChar character );
         ~GXString () override;
 
         GXVoid Clear ();
 
-        // Note return symbol count without null terminator.
+        GXVoid GXCDECLCALL Format ( const GXMBChar* format, ... );
+
+        // Note method returns symbol count without null terminator.
         const GXUPointer GetSymbolCount () const;
 
         const GXBool IsEmpty () const;
+        const GXBool IsNull () const;
 
         GXVoid FromSystemMultibyteString ( const GXMBChar* string );
         const GXMBChar* ToSystemMultibyteString ();
-        const GXWChar* ToSystemMultibyteString ( GXUPointer &stringSize );
+        const GXMBChar* ToSystemMultibyteString ( GXUPointer &stringSize );
 
         GXVoid FromSystemWideString ( const GXWChar* string );
         const GXWChar* ToSystemWideString ();
@@ -107,39 +111,48 @@ class GXString final: public GXMemoryInspector
 
         GXString& operator = ( const GXString &other );
         GXString& operator = ( const GXMBChar* string );
-        GXString& operator = ( const GXMBChar character );
+        GXString& operator = ( GXMBChar character );
         GXString& operator = ( const GXWChar* string );
-        GXString& operator = ( const GXWChar character );
+        GXString& operator = ( GXWChar character );
 
-        GXString operator + ( const GXString other );
+        GXString operator + ( const GXString &other );
         GXString operator + ( const GXMBChar* string );
-        GXString operator + ( const GXMBChar character );
+        GXString operator + ( GXMBChar character );
         GXString operator + ( const GXWChar* string );
-        GXString operator + ( const GXWChar character );
+        GXString operator + ( GXWChar character );
 
-        GXString& operator += ( const GXString other );
+        GXString& operator += ( const GXString &other );
         GXString& operator += ( const GXMBChar* string );
-        GXString& operator += ( const GXMBChar character );
+        GXString& operator += ( GXMBChar character );
         GXString& operator += ( const GXWChar* string );
-        GXString& operator += ( const GXWChar character );
+        GXString& operator += ( GXWChar character );
 
-        GXBool operator > ( const GXString other ) const;
+        GXBool operator > ( const GXString &other ) const;
         GXBool operator > ( const GXMBChar* string ) const;
-        GXBool operator > ( const GXMBChar character ) const;
+        GXBool operator > ( GXMBChar character ) const;
         GXBool operator > ( const GXWChar* string ) const;
-        GXBool operator > ( const GXWChar character ) const;
+        GXBool operator > ( GXWChar character ) const;
 
-        GXBool operator < ( const GXString other ) const;
+        GXBool operator < ( const GXString &other ) const;
         GXBool operator < ( const GXMBChar* string ) const;
-        GXBool operator < ( const GXMBChar character ) const;
+        GXBool operator < ( GXMBChar character ) const;
         GXBool operator < ( const GXWChar* string ) const;
-        GXBool operator < ( const GXWChar character ) const;
+        GXBool operator < ( GXWChar character ) const;
 
-        GXBool operator == ( const GXString other ) const;
+        GXBool operator == ( const GXString &other ) const;
         GXBool operator == ( const GXMBChar* string ) const;
-        GXBool operator == ( const GXMBChar character ) const;
+        GXBool operator == ( GXMBChar character ) const;
         GXBool operator == ( const GXWChar* string ) const;
-        GXBool operator == ( const GXWChar character ) const;
+        GXBool operator == ( GXWChar character ) const;
+
+        operator const GXMBChar* () const;
+        operator const GXWChar* () const;
+
+    private:
+        // Special constructor.
+        explicit GXString ( const GXUTF16* content, GXBool canOwnContent );
+
+        GXString Append ( const GXUTF16* buffer, GXUPointer bufferSize, GXBool canOwnContent );
 };
 
 

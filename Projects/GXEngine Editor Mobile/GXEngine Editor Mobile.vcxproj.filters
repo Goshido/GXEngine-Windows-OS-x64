@@ -66,9 +66,6 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXImageLoader.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXCommon\GXLogger.cpp">
-      <Filter>Source Files\GXCommon</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\GXMath.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
@@ -527,6 +524,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractUPointerAtomic.cpp">
       <Filter>Source Files\GXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXLogger.cpp">
+      <Filter>Source Files\GXCommon\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXString.cpp">
+      <Filter>Source Files\GXCommon\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

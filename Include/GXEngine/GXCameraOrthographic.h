@@ -1,13 +1,14 @@
-// version 1.12
+// version 1.13
 
 #ifndef GX_CAMERA_ORHTOGRAPHIC
 #define GX_CAMERA_ORHTOGRAPHIC
 
 
 #include "GXCamera.h"
+#include <GXCommon/GXMemory.h>
 
 
-class GXCameraOrthographic final : public GXCamera
+class GXCameraOrthographic final : public GXMemoryInspector, public GXCamera
 {
     protected:
         GXFloat     width;
@@ -15,7 +16,7 @@ class GXCameraOrthographic final : public GXCamera
 
     public:
         GXCameraOrthographic ();
-        explicit GXCameraOrthographic ( GXFloat width, GXFloat height, GXFloat zNear, GXFloat zFar );
+        explicit GXCameraOrthographic ( GXFloat widthUnuts, GXFloat heightUnits, GXFloat zNear, GXFloat zFar );
         ~GXCameraOrthographic () override;
 
         GXVoid SetZNear ( GXFloat newZNear ) override;

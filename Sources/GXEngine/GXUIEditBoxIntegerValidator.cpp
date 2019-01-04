@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #include <GXEngine/GXUIEditBoxIntegerValidator.h>
 #include <GXCommon/GXStrings.h>
@@ -6,54 +6,54 @@
 
 
 GXUIEditBoxIntegerValidator::GXUIEditBoxIntegerValidator ( const GXWChar* defaultValidText, GXUIEditBox& editBox, GXBigInt minimumValue, GXBigInt maximumValue ):
-	GXTextValidator ( defaultValidText ),
-	editBox ( editBox ),
-	minimumValue ( minimumValue ),
-	maximumValue ( maximumValue )
+    GXTextValidator ( defaultValidText ),
+    editBox ( editBox ),
+    minimumValue ( minimumValue ),
+    maximumValue ( maximumValue )
 {
-	Validate ( this->editBox.GetText () );
+    Validate ( this->editBox.GetText () );
 }
 
 GXUIEditBoxIntegerValidator::~GXUIEditBoxIntegerValidator ()
 {
-	GXSafeFree ( oldValidText );
+    GXSafeFree ( oldValidText );
 }
 
 GXBool GXUIEditBoxIntegerValidator::Validate ( const GXWChar* text )
 {
-	if ( !text )
-	{
-		editBox.SetText ( oldValidText );
-		return GX_FALSE;
-	}
+    if ( !text )
+    {
+        editBox.SetText ( oldValidText );
+        return GX_FALSE;
+    }
 
-	GXUInt i = 0u;
+    GXUPointer i = 0u;
 
-	if ( text[ i ] == L'-' )
-		++i;
+    if ( text[ i ] == L'-' )
+        ++i;
 
-	GXUInt symbols = GXWcslen ( text );
+    GXUPointer symbols = GXWcslen ( text );
 
-	for ( ; i < symbols; ++i )
-	{
-		if ( !isdigit ( static_cast<int> ( text[ i ] ) ) )
-		{
-			editBox.SetText ( oldValidText );
-			return GX_FALSE;
-		}
-	}
+    for ( ; i < symbols; ++i )
+    {
+        if ( !isdigit ( static_cast<int> ( text[ i ] ) ) )
+        {
+            editBox.SetText ( oldValidText );
+            return GX_FALSE;
+        }
+    }
 
-	GXBigInt currentValue;
-	swscanf_s ( text, L"%lli", &currentValue );
+    GXBigInt currentValue;
+    swscanf_s ( text, L"%lli", &currentValue );
 
-	if ( currentValue < minimumValue || currentValue > maximumValue )
-	{
-		editBox.SetText ( oldValidText );
-		return GX_FALSE;
-	}
+    if ( currentValue < minimumValue || currentValue > maximumValue )
+    {
+        editBox.SetText ( oldValidText );
+        return GX_FALSE;
+    }
 
-	GXSafeFree ( oldValidText );
-	GXWcsclone ( &oldValidText, text );
+    GXSafeFree ( oldValidText );
+    GXWcsclone ( &oldValidText, text );
 
-	return GX_TRUE;
+    return GX_TRUE;
 }

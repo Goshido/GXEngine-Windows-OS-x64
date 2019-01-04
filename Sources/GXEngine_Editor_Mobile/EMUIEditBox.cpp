@@ -74,6 +74,8 @@ EMUIEditBoxRenderer::EMUIEditBoxRenderer ( GXUIEditBox* widget ):
     background ( DEFAULT_BACKGROUND, GX_FALSE, GX_FALSE )
 {
     const GXAABB& boundsLocal = widget->GetBoundsWorld ();
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
     surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
@@ -199,7 +201,10 @@ GXVoid EMUIEditBoxRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GX
     y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
     GXSafeDelete ( surface );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
     surface = new GXHudSurface ( width, height );
+
     GXVec3 location;
     surface->GetLocation ( location );
     surface->SetLocation ( x, y, location.data[ 2 ] );

@@ -51,9 +51,10 @@ class EMUIPopupRenderer final : public GXWidgetRenderer
 {
     private:
         GXFont              font;
-        GXHudSurface*       surface;
         GXDynamicArray      itemNames;
         GXTexture2D         texture;
+
+        GXHudSurface*       surface;
 
     public:
         explicit EMUIPopupRenderer ( GXUIPopup* widget );
@@ -76,11 +77,11 @@ class EMUIPopupRenderer final : public GXWidgetRenderer
 EMUIPopupRenderer::EMUIPopupRenderer ( GXUIPopup* widget ):
     GXWidgetRenderer ( widget ),
     font ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) ),
-    surface ( new GXHudSurface ( static_cast<GXUShort> ( widget->GetItemWidth () ), static_cast<GXUShort> ( widget->GetItemHeight () ) ) ),
     itemNames ( sizeof ( GXWChar* ) ),
     texture ( DEFAULT_TEXTURE, GX_FALSE, GX_FALSE )
 {
-    // NOTHING
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    surface = new GXHudSurface ( static_cast<GXUShort> ( widget->GetItemWidth () ), static_cast<GXUShort> ( widget->GetItemHeight () ) );
 }
 
 EMUIPopupRenderer::~EMUIPopupRenderer ()
@@ -195,8 +196,11 @@ GXVoid EMUIPopupRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUS
     surface->GetLocation ( location );
 
     delete surface;
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
     surface = new GXHudSurface ( width, height );
-    surface->SetLocation ( x, y, location.data[ 2 ] );
+
+    surface->SetLocation ( x, y, location.data[ 2u ] );
 }
 
 GXVoid EMUIPopupRenderer::OnMoved ( GXFloat x, GXFloat y )

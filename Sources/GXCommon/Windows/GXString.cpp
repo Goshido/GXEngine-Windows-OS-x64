@@ -1,10 +1,12 @@
 // version 1.0
 
 #include <GXCommon/GXStrings.h>
+#include <GXCommon/GXLogger.h>
 #include <GXCommon/GXUIntAtomic.h>
 
 
 #define EXTRA_SPACE_SYMBOLS     32u
+#define CALCULATE_BUFFER_SIZE   0u
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -13,25 +15,44 @@ class GXStringData final : public GXMemoryInspector
     private:
         GXUPointerAtomic        references;
 
-        GXUTF16*                buffer;
-        GXUPointer              bufferSize;
-        GXUPointer              allocatedBufferSize;
+        GXUTF16*                utf16Buffer;
+        GXUPointer              utf16BufferSize;
+        GXUPointer              utf16AllocatedBufferSize;
         GXUPointer              symbols;
 
+        GXMBChar*               multibyteCache;
+        GXUPointer              multibyteCacheSize;
+        GXUPointer              multibyteAllocatedCacheSize;
+        GXBool                  invalidMultibyteCache;
+
+        GXUTF8*                 utf8Cache;
+        GXUPointer              utf8CacheSize;
+        GXUPointer              utf8AllocatedCacheSize;
+        GXBool                  invalidUTF8Cache;
+
+        static GXStringData     nullStringData;
+
     public:
-        explicit GXStringData ( const GXUTF16* content );
+        // Note content ownership will be transmited to this class if canOwnContent equals GX_TRUE.
+        explicit GXStringData ( const GXUTF16* content, GXBool canOwnContent );
 
         GXVoid AddReference ();
         GXVoid Release ();
 
+        GXBool IsNullString ();
         GXBool IsShared ();
 
-        const GXUTF16* GetData ( GXUPointer &size ) const;
+        // Returns buffer for fill UTF16 string content.
+        // Method will try to reuse existing buffer or make Malloc for new buffer.
+        GXUTF16* GetInputBuffer ( GXUPointer neededSpace );
+
+        const GXMBChar* GetMultibyteData ( GXUPointer &size );
+        const GXUTF16* GetUTF16Data ( GXUPointer &size ) const;
+        const GXUTF8* GetUTF8Data ( GXUPointer &size );
+
         const GXUPointer GetSymbolCount () const;
 
-        GXVoid UpdateData ( const GXUTF16* content );
-
-        static GXStringData& GXCALL GetEmptyStringData ();
+        static GXStringData& GXCALL GetNullStringData ();
 
     private:
         ~GXStringData () override;
@@ -41,15 +62,42 @@ class GXStringData final : public GXMemoryInspector
         GXStringData& operator = ( const GXStringData &other ) = delete;
 };
 
-GXStringData::GXStringData ( const GXUTF16* content )
+GXStringData::GXStringData ( const GXUTF16* content, GXBool canOwnContent )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXStringData" )
     references ( 1u ),
-    buffer ( nullptr ),
-    bufferSize ( 0u ),
-    allocatedBufferSize ( 0u ),
-    symbols ( 0u )
+    utf16Buffer ( nullptr ),
+    utf16BufferSize ( 0u ),
+    utf16AllocatedBufferSize ( 0u ),
+    symbols ( 0u ),
+    multibyteCache ( nullptr ),
+    multibyteCacheSize ( 0u ),
+    multibyteAllocatedCacheSize ( 0u ),
+    invalidMultibyteCache ( GX_TRUE ),
+    utf8Cache ( nullptr ),
+    utf8CacheSize ( 0u ),
+    utf8AllocatedCacheSize ( 0u ),
+    invalidUTF8Cache ( GX_TRUE )
 {
-    UpdateData ( content );
+    if ( !content )
+    {
+        utf16BufferSize = 0u;
+        symbols = 0u;
+        return;
+    }
+
+    symbols = static_cast<const GXUPointer> ( GXWcslen ( reinterpret_cast<const GXWChar*> ( content ) ) + 1u );
+    utf16BufferSize = symbols * sizeof ( GXUTF16 );
+
+    if ( canOwnContent )
+    {
+        utf16Buffer = const_cast<GXUTF16*> ( content );
+        utf16AllocatedBufferSize = utf16BufferSize;
+        return;
+    }
+
+    utf16AllocatedBufferSize = utf16BufferSize + EXTRA_SPACE_SYMBOLS * sizeof ( GXUTF16 );
+    utf16Buffer = static_cast<GXUTF16*> ( Malloc ( utf16AllocatedBufferSize ) );
+    memcpy ( utf16Buffer, content, utf16BufferSize );
 }
 
 GXVoid GXStringData::AddReference ()
@@ -66,15 +114,100 @@ GXVoid GXStringData::Release ()
     delete this;
 }
 
+GXBool GXStringData::IsNullString ()
+{
+    return this == &nullStringData;
+}
+
 GXBool GXStringData::IsShared ()
 {
     return references > static_cast<GXUPointer> ( 1u );
 }
 
-const GXUTF16* GXStringData::GetData ( GXUPointer &size ) const
+GXUTF16* GXStringData::GetInputBuffer ( GXUPointer neededSpace )
 {
-    size = bufferSize;
-    return buffer;
+    invalidUTF8Cache = invalidMultibyteCache = GX_TRUE;
+
+    if ( neededSpace <= utf16AllocatedBufferSize )
+        return utf16Buffer;
+
+    utf16BufferSize = neededSpace;
+
+    SafeFree ( reinterpret_cast<GXVoid**> ( &utf16Buffer ) );
+    utf16AllocatedBufferSize = utf16BufferSize + EXTRA_SPACE_SYMBOLS * sizeof ( GXUTF16 );
+    utf16Buffer = static_cast<GXUTF16*> ( Malloc ( utf16AllocatedBufferSize ) );
+
+    return utf16Buffer;
+}
+
+const GXMBChar* GXStringData::GetMultibyteData ( GXUPointer &size )
+{
+    if ( !invalidMultibyteCache )
+    {
+        size = multibyteCacheSize;
+        return multibyteCache;
+    }
+
+    invalidMultibyteCache = GX_FALSE;
+
+    if ( !utf16Buffer )
+    {
+        size = 0u;
+        return nullptr;
+    }
+
+    const GXInt neededSymbols = WideCharToMultiByte ( CP_ACP, WC_COMPOSITECHECK, reinterpret_cast<const GXWChar*> ( utf16Buffer ), -1, multibyteCache, 0, nullptr, nullptr );
+    multibyteCacheSize = static_cast<GXUPointer> ( neededSymbols ) * sizeof ( GXMBChar );
+
+    if ( multibyteCacheSize > multibyteAllocatedCacheSize )
+    {
+        SafeFree ( reinterpret_cast<GXVoid**> ( &multibyteCache ) );
+        multibyteAllocatedCacheSize = multibyteCacheSize;
+        multibyteCache = static_cast<GXMBChar*> ( Malloc ( multibyteAllocatedCacheSize ) );
+    }
+
+    WideCharToMultiByte ( CP_ACP, WC_COMPOSITECHECK, reinterpret_cast<const GXWChar*> ( utf16Buffer ), -1, multibyteCache, neededSymbols, nullptr, nullptr );
+
+    size = multibyteCacheSize;
+    return multibyteCache;
+}
+
+const GXUTF16* GXStringData::GetUTF16Data ( GXUPointer &size ) const
+{
+    size = utf16BufferSize;
+    return utf16Buffer;
+}
+
+const GXUTF8* GXStringData::GetUTF8Data ( GXUPointer &size )
+{
+    if ( !invalidUTF8Cache )
+    {
+        size = utf8CacheSize;
+        return utf8Cache;
+    }
+
+    invalidUTF8Cache = GX_FALSE;
+
+    if ( !utf16Buffer )
+    {
+        size = 0u;
+        return nullptr;
+    }
+
+    const GXInt neededSymbols = WideCharToMultiByte ( CP_UTF8, WC_COMPOSITECHECK, reinterpret_cast<const GXWChar*> ( utf16Buffer ), -1, utf8Cache, 0, nullptr, nullptr );
+    utf8CacheSize = static_cast<GXUPointer> ( neededSymbols ) * sizeof ( GXMBChar );
+
+    if ( utf8CacheSize > utf8AllocatedCacheSize )
+    {
+        SafeFree ( reinterpret_cast<GXVoid**> ( &utf8Cache ) );
+        utf8AllocatedCacheSize = utf8CacheSize;
+        utf8Cache = static_cast<GXMBChar*> ( Malloc ( utf8AllocatedCacheSize ) );
+    }
+
+    WideCharToMultiByte ( CP_UTF8, WC_COMPOSITECHECK, reinterpret_cast<const GXWChar*> ( utf16Buffer ), -1, utf8Cache, neededSymbols, nullptr, nullptr );
+
+    size = utf8CacheSize;
+    return utf8Cache;
 }
 
 const GXUPointer GXStringData::GetSymbolCount () const
@@ -82,45 +215,26 @@ const GXUPointer GXStringData::GetSymbolCount () const
     return symbols;
 }
 
-GXVoid GXStringData::UpdateData ( const GXUTF16* content )
-{
-    if ( !content )
-    {
-        bufferSize = 0u;
-        symbols = 0u;
-        return;
-    }
-
-    symbols = static_cast<const GXUPointer> ( GXWcslen ( reinterpret_cast<const GXWChar*> ( content ) ) + 1u );
-    bufferSize = symbols * sizeof ( GXUTF16 );
-
-    if ( bufferSize > allocatedBufferSize )
-    {
-        SafeFree ( reinterpret_cast<GXVoid**> ( &buffer ) );
-        allocatedBufferSize = bufferSize + EXTRA_SPACE_SYMBOLS * sizeof ( GXUTF16 );
-        buffer = static_cast<GXUTF16*> ( Malloc ( allocatedBufferSize ) );
-    }
-
-    memcpy ( buffer, content, bufferSize );
-}
-
 GXStringData::~GXStringData ()
 {
-    SafeFree ( reinterpret_cast<GXVoid**> ( &buffer ) );
+    SafeFree ( reinterpret_cast<GXVoid**> ( &multibyteCache ) );
+    SafeFree ( reinterpret_cast<GXVoid**> ( &utf16Buffer ) );
+    SafeFree ( reinterpret_cast<GXVoid**> ( &utf8Cache ) );
 }
 
-GXStringData& GXCALL GXStringData::GetEmptyStringData ()
+GXStringData& GXCALL GXStringData::GetNullStringData ()
 {
-    static GXStringData emptyStringData ( nullptr );
-    emptyStringData.AddReference ();
-    return emptyStringData;
+    nullStringData.AddReference ();
+    return nullStringData;
 }
+
+GXStringData GXStringData::nullStringData ( nullptr, GX_FALSE );
 
 //---------------------------------------------------------------------------------------------------------------------
 
 GXString::GXString ()
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXString" ),
-    stringData ( &( GXStringData::GetEmptyStringData () ) )
+    stringData ( &( GXStringData::GetNullStringData () ) )
 {
     // NOTHING
 }
@@ -137,7 +251,7 @@ GXString::GXString ( const GXMBChar* string )
 {
     if ( !string )
     {
-        stringData = &( GXStringData::GetEmptyStringData () );
+        stringData = &( GXStringData::GetNullStringData () );
         return;
     }
 
@@ -148,9 +262,7 @@ GXString::GXString ( const GXMBChar* string )
     MultiByteToWideChar ( CP_ACP, MB_PRECOMPOSED, string, -1, utf16String, symbols );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" );
-    stringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( utf16String ) );
-
-    Free ( utf16String );
+    stringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( utf16String ), GX_TRUE );
 }
 
 GXString::GXString ( GXMBChar character )
@@ -165,9 +277,7 @@ GXString::GXString ( GXMBChar character )
     MultiByteToWideChar ( CP_ACP, MB_PRECOMPOSED, string, -1, utf16String, symbols );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" );
-    stringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( utf16String ) );
-
-    Free ( utf16String );
+    stringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( utf16String ), GX_TRUE );
 }
 
 GXString::GXString ( const GXWChar* string )
@@ -175,12 +285,12 @@ GXString::GXString ( const GXWChar* string )
 {
     if ( !string )
     {
-        stringData = &( GXStringData::GetEmptyStringData () );
+        stringData = &( GXStringData::GetNullStringData () );
         return;
     }
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" );
-    stringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( string ) );
+    stringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( string ), GX_FALSE );
 }
 
 GXString::GXString ( GXWChar character )
@@ -188,7 +298,7 @@ GXString::GXString ( GXWChar character )
 {
     const GXUShort string[ 2u ] = { static_cast<GXUShort> ( character ), 0u };
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" );
-    stringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( string ) );
+    stringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( string ), GX_FALSE );
 }
 
 GXString::~GXString ()
@@ -199,7 +309,22 @@ GXString::~GXString ()
 GXVoid GXString::Clear ()
 {
     stringData->Release ();
-    stringData = &( GXStringData::GetEmptyStringData () );
+    stringData = &( GXStringData::GetNullStringData () );
+}
+
+GXVoid GXCDECLCALL GXString::Format ( const GXMBChar* format, ... )
+{
+    va_list ap;
+    va_start ( ap, format );
+
+    GXUPointer neededSpace = static_cast<GXUPointer> ( vsnprintf ( nullptr, 0u, format, ap ) );
+    GXMBChar* string = static_cast<GXMBChar*> ( Malloc ( neededSpace ) );
+    vsnprintf ( string, neededSpace, format, ap );
+
+    va_end ( ap );
+
+    FromSystemMultibyteString ( string );
+    Free ( string );
 }
 
 const GXUPointer GXString::GetSymbolCount () const
@@ -212,50 +337,68 @@ const GXBool GXString::IsEmpty () const
     return stringData->GetSymbolCount () < 1u;
 }
 
+const GXBool GXString::IsNull () const
+{
+    return stringData->IsNullString ();
+}
+
 GXVoid GXString::FromSystemMultibyteString ( const GXMBChar* string )
 {
-    GXWChar* utf16String = nullptr;
-
-    const GXInt symbols = MultiByteToWideChar ( CP_ACP, MB_PRECOMPOSED, string, -1, utf16String, 0 );
-    utf16String = static_cast<GXWChar*> ( Malloc ( symbols * sizeof ( GXWChar ) ) );
-    MultiByteToWideChar ( CP_ACP, MB_PRECOMPOSED, string, -1, utf16String, symbols );
-
-    if ( !stringData->IsShared () )
+    if ( !string )
     {
-        stringData->UpdateData ( reinterpret_cast<const GXUTF16*> ( utf16String ) );
-        Free ( utf16String );
+        Clear ();
+        return;
     }
 
+    GXWChar* utf16String = nullptr;
+    const GXInt symbols = MultiByteToWideChar ( CP_ACP, MB_PRECOMPOSED, string, -1, utf16String, 0 );
+    const GXUPointer neededSpace = symbols * sizeof ( GXWChar );
+
+    if ( !stringData->IsNullString () && !stringData->IsShared () )
+    {
+        utf16String = reinterpret_cast<GXWChar*> ( stringData->GetInputBuffer ( neededSpace ) );
+        MultiByteToWideChar ( CP_ACP, MB_PRECOMPOSED, string, -1, utf16String, symbols );
+        return;
+    }
+
+    utf16String = static_cast<GXWChar*> ( Malloc ( neededSpace ) );
+    MultiByteToWideChar ( CP_ACP, MB_PRECOMPOSED, string, -1, utf16String, symbols );
+
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" );
-    GXStringData* newStringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( utf16String ) );
+    GXStringData* newStringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( utf16String ), GX_TRUE );
 
     stringData->Release ();
-    Free ( utf16String );
     stringData = newStringData;
 }
 
 const GXMBChar* GXString::ToSystemMultibyteString ()
 {
-    // TODO
-    return nullptr;
+    GXUPointer tmp;
+    return stringData->GetMultibyteData ( tmp );
 }
 
-const GXWChar* GXString::ToSystemMultibyteString ( GXUPointer& /*stringSize*/ )
+const GXMBChar* GXString::ToSystemMultibyteString ( GXUPointer &stringSize )
 {
-    // TODO
-    return nullptr;
+    return stringData->GetMultibyteData ( stringSize );
 }
 
 GXVoid GXString::FromSystemWideString ( const GXWChar* string )
 {
-    if ( !stringData->IsShared () )
+    if ( !string )
     {
-        stringData->UpdateData ( reinterpret_cast<const GXUTF16*> ( string ) );
+        Clear ();
+        return;
+    }
+
+    if ( !stringData->IsNullString () && !stringData->IsShared () )
+    {
+        const GXUPointer neededSpace = ( GXWcslen ( string ) + 1u ) * sizeof ( GXUTF16 );
+        memcpy ( stringData->GetInputBuffer ( neededSpace ), string, neededSpace );
         return;
     }
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" );
-    GXStringData* newStringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( string ) );
+    GXStringData* newStringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( string ), GX_FALSE );
 
     stringData->Release ();
     stringData = newStringData;
@@ -263,229 +406,318 @@ GXVoid GXString::FromSystemWideString ( const GXWChar* string )
 
 const GXWChar* GXString::ToSystemWideString ()
 {
-    // TODO
-    return nullptr;
+    GXUPointer tmp;
+    return reinterpret_cast<const GXWChar*> ( stringData->GetUTF16Data ( tmp ) );
 }
 
-const GXWChar* GXString::ToSystemWideString ( GXUPointer& /*stringSize*/ )
+const GXWChar* GXString::ToSystemWideString ( GXUPointer &stringSize )
 {
-    // TODO
-    return nullptr;
+    return reinterpret_cast<const GXWChar*> ( stringData->GetUTF16Data ( stringSize ) );
 }
 
 GXVoid GXString::FromUTF8 ( const GXUTF8* string )
 {
+    if ( !string )
+    {
+        Clear ();
+        return;
+    }
+
     GXWChar* utf16String = nullptr;
 
     const GXInt symbols = MultiByteToWideChar ( CP_UTF8, MB_PRECOMPOSED, string, -1, utf16String, 0 );
     utf16String = static_cast<GXWChar*> ( Malloc ( symbols * sizeof ( GXWChar ) ) );
-    MultiByteToWideChar ( CP_UTF8, MB_PRECOMPOSED, string, -1, utf16String, symbols );
+    const GXUPointer neededSpace = symbols * sizeof ( GXWChar );
 
-    if ( !stringData->IsShared () )
+    if ( !stringData->IsNullString () && !stringData->IsShared () )
     {
-        stringData->UpdateData ( reinterpret_cast<const GXUTF16*> ( utf16String ) );
-        Free ( utf16String );
+        utf16String = reinterpret_cast<GXWChar*> ( stringData->GetInputBuffer ( neededSpace ) );
+        MultiByteToWideChar ( CP_UTF8, MB_PRECOMPOSED, string, -1, utf16String, symbols );
         return;
     }
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" );
-    GXStringData* newStringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( utf16String ) );
+    utf16String = static_cast<GXWChar*> ( Malloc ( neededSpace ) );
+    MultiByteToWideChar ( CP_UTF8, MB_PRECOMPOSED, string, -1, utf16String, symbols );
 
-    Free ( utf16String );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" );
+    GXStringData* newStringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( utf16String ), GX_TRUE );
+
     stringData->Release ();
     stringData = newStringData;
 }
 
 const GXUTF8* GXString::ToUTF8 ()
 {
-    // TODO
-    return nullptr;
+    GXUPointer tmp;
+    return stringData->GetUTF8Data ( tmp );
 }
 
-const GXUTF8* GXString::ToUTF8 ( GXUPointer& /*stringSize*/ )
+const GXUTF8* GXString::ToUTF8 ( GXUPointer &stringSize )
 {
-    // TODO
-    return nullptr;
+    return stringData->GetUTF8Data ( stringSize );
 }
 
 GXString& GXString::operator = ( const GXString &other )
 {
-    stringData->Release ();
     other.stringData->AddReference ();
+    stringData->Release ();
     stringData = other.stringData;
     return *this;
 }
 
-GXString& GXString::operator = ( const GXMBChar* /*string*/ )
+GXString& GXString::operator = ( const GXMBChar* string )
 {
-    // TODO
+    FromSystemMultibyteString ( string );
     return *this;
 }
 
-GXString& GXString::operator = ( const GXMBChar /*character*/ )
+GXString& GXString::operator = ( GXMBChar character )
 {
-    // TODO
+    const GXMBChar string[ 2u ] = { character, 0u };
+    FromSystemMultibyteString ( string );
     return *this;
 }
 
-GXString& GXString::operator = ( const GXWChar* /*string*/ )
+GXString& GXString::operator = ( const GXWChar* string )
 {
-    // TODO
+    FromSystemWideString ( string );
     return *this;
 }
 
-GXString& GXString::operator = ( const GXWChar /*character*/ )
+GXString& GXString::operator = ( GXWChar character )
 {
-    // TODO
+    const GXWChar string[ 2u ] = { character, 0u };
+    FromSystemWideString ( string );
     return *this;
 }
 
-GXString GXString::operator + ( const GXString /*other*/ )
+GXString GXString::operator + ( const GXString &other )
 {
-    // TODO
-    return {};
+    if ( other.stringData->IsNullString () )
+        return GXString ( *this );
+
+    GXUPointer otherDataSize;
+    const GXUTF16* otherData = other.stringData->GetUTF16Data ( otherDataSize );
+
+    return Append ( otherData, otherDataSize, GX_FALSE );
 }
 
-GXString GXString::operator + ( const GXMBChar* /*string*/ )
+GXString GXString::operator + ( const GXMBChar* string )
 {
-    // TODO
-    return {};
+    if ( !string )
+        return GXString ( *this );
+
+    GXWChar* utf16String = nullptr;
+
+    const GXInt symbols = MultiByteToWideChar ( CP_ACP, MB_PRECOMPOSED, string, -1, utf16String, 0 );
+    const GXUPointer utf16StringSize = symbols * sizeof ( GXWChar );
+    utf16String = static_cast<GXWChar*> ( Malloc ( utf16StringSize ) );
+    MultiByteToWideChar ( CP_ACP, MB_PRECOMPOSED, string, -1, utf16String, symbols );
+
+    return Append ( reinterpret_cast<const GXUTF16*> ( utf16String ), utf16StringSize, GX_TRUE );
 }
 
-GXString GXString::operator + ( const GXMBChar /*character*/ )
+GXString GXString::operator + ( GXMBChar character )
 {
-    // TODO
-    return {};
+    const GXMBChar string[ 2u ] = { character, 0u };
+
+    GXWChar* utf16String = nullptr;
+
+    const GXInt symbols = MultiByteToWideChar ( CP_ACP, MB_PRECOMPOSED, string, -1, utf16String, 0 );
+    const GXUPointer utf16StringSize = symbols * sizeof ( GXWChar );
+    utf16String = static_cast<GXWChar*> ( Malloc ( symbols * sizeof ( GXWChar ) ) );
+    MultiByteToWideChar ( CP_ACP, MB_PRECOMPOSED, string, -1, utf16String, symbols );
+
+    return Append ( reinterpret_cast<const GXUTF16*> ( utf16String ), utf16StringSize, GX_TRUE );
 }
 
-GXString GXString::operator + ( const GXWChar* /*string*/ )
+GXString GXString::operator + ( const GXWChar* string )
 {
-    // TODO
-    return {};
+    if ( !string )
+        return GXString ( *this );
+
+    return Append ( reinterpret_cast<const GXUTF16*> ( string ), CALCULATE_BUFFER_SIZE, GX_FALSE );
 }
 
-GXString GXString::operator + ( const GXWChar /*character*/ )
+GXString GXString::operator + ( GXWChar character )
 {
-    // TODO
-    return {};
+    const GXUShort string[ 2u ] = { static_cast<GXUShort> ( character ), 0u };
+    return Append ( string, 2u * sizeof ( GXUShort ), GX_FALSE );
 }
 
-GXString& GXString::operator += ( const GXString /*other*/ )
+GXString& GXString::operator += ( const GXString &other )
 {
-    // TODO
+    *this = *this + other;
     return *this;
 }
 
-GXString& GXString::operator += ( const GXMBChar* /*string*/ )
+GXString& GXString::operator += ( const GXMBChar* string )
 {
-    // TODO
+    *this = *this + string;
     return *this;
 }
 
-GXString& GXString::operator += ( const GXMBChar /*character*/ )
+GXString& GXString::operator += ( GXMBChar character )
 {
-    // TODO
+    *this = *this + character;
     return *this;
 }
 
-GXString& GXString::operator += ( const GXWChar* /*string*/ )
+GXString& GXString::operator += ( const GXWChar* string )
 {
-    // TODO
+    *this = *this + string;
     return *this;
 }
 
-GXString& GXString::operator += ( const GXWChar /*character*/ )
+GXString& GXString::operator += ( GXWChar character )
 {
-    // TODO
+    *this = *this + character;
     return *this;
 }
 
-GXBool GXString::operator > ( const GXString /*other*/ ) const
+GXBool GXString::operator > ( const GXString &other ) const
 {
-    // TODO
-    return GX_FALSE;
+    GXUPointer tmp;
+    return GXWcscmp ( reinterpret_cast<const GXWChar*> ( stringData->GetUTF16Data ( tmp ) ), reinterpret_cast<const GXWChar*> ( other.stringData->GetUTF16Data ( tmp ) ) ) > 0;
 }
 
-GXBool GXString::operator > ( const GXMBChar* /*string*/ ) const
+GXBool GXString::operator > ( const GXMBChar* string ) const
 {
-    // TODO
-    return GX_FALSE;
+    GXUPointer tmp;
+    return GXMbscmp ( stringData->GetMultibyteData ( tmp ), string ) > 0;
 }
 
-GXBool GXString::operator > ( const GXMBChar /*character*/ ) const
+GXBool GXString::operator > ( GXMBChar character ) const
 {
-    // TODO
-    return GX_FALSE;
+    const GXMBChar string[ 2u ] = { character, 0 };
+    GXUPointer tmp;
+
+    return GXMbscmp ( stringData->GetMultibyteData ( tmp ), string ) > 0;
 }
 
-GXBool GXString::operator > ( const GXWChar* /*string*/ ) const
+GXBool GXString::operator > ( const GXWChar* string ) const
 {
-    // TODO
-    return GX_FALSE;
+    GXUPointer tmp;
+    return GXWcscmp ( reinterpret_cast<const GXWChar*> ( stringData->GetUTF16Data ( tmp ) ), string ) > 0;
 }
 
-GXBool GXString::operator > ( const GXWChar /*character*/ ) const
+GXBool GXString::operator > ( GXWChar character ) const
 {
-    // TODO
-    return GX_FALSE;
+    const GXWChar string[ 2u ] = { character, 0 };
+    GXUPointer tmp;
+
+    return GXWcscmp ( reinterpret_cast<const GXWChar*> ( stringData->GetUTF16Data ( tmp ) ), string ) > 0;
 }
 
-GXBool GXString::operator < ( const GXString /*other*/ ) const
+GXBool GXString::operator < ( const GXString &other ) const
 {
-    // TODO
-    return GX_FALSE;
+    GXUPointer tmp;
+    return GXWcscmp ( reinterpret_cast<const GXWChar*> ( stringData->GetUTF16Data ( tmp ) ), reinterpret_cast<const GXWChar*> ( other.stringData->GetUTF16Data ( tmp ) ) ) < 0;
 }
 
-GXBool GXString::operator < ( const GXMBChar* /*string*/ ) const
+GXBool GXString::operator < ( const GXMBChar* string ) const
 {
-    // TODO
-    return GX_FALSE;
+    GXUPointer tmp;
+    return GXMbscmp ( stringData->GetMultibyteData ( tmp ), string ) < 0;
 }
 
-GXBool GXString::operator < ( const GXMBChar /*character*/ ) const
+GXBool GXString::operator < ( GXMBChar character ) const
 {
-    // TODO
-    return GX_FALSE;
+    const GXMBChar string[ 2u ] = { character, 0 };
+    GXUPointer tmp;
+
+    return GXMbscmp ( stringData->GetMultibyteData ( tmp ), string ) < 0;
 }
 
-GXBool GXString::operator < ( const GXWChar* /*string*/ ) const
+GXBool GXString::operator < ( const GXWChar* string ) const
 {
-    // TODO
-    return GX_FALSE;
+    GXUPointer tmp;
+    return GXWcscmp ( reinterpret_cast<const GXWChar*> ( stringData->GetUTF16Data ( tmp ) ), string ) < 0;
 }
 
-GXBool GXString::operator < ( const GXWChar /*character*/ ) const
+GXBool GXString::operator < ( GXWChar character ) const
 {
-    // TODO
-    return GX_FALSE;
+    const GXWChar string[ 2u ] = { character, 0 };
+    GXUPointer tmp;
+
+    return GXWcscmp ( reinterpret_cast<const GXWChar*> ( stringData->GetUTF16Data ( tmp ) ), string ) < 0;
 }
 
-GXBool GXString::operator == ( const GXString /*other*/ ) const
+GXBool GXString::operator == ( const GXString &other ) const
 {
-    // TODO
-    return GX_FALSE;
+    GXUPointer tmp;
+    return GXWcscmp ( reinterpret_cast<const GXWChar*> ( stringData->GetUTF16Data ( tmp ) ), reinterpret_cast<const GXWChar*> ( other.stringData->GetUTF16Data ( tmp ) ) ) == 0;
 }
 
-GXBool GXString::operator == ( const GXMBChar* /*string*/ ) const
+GXBool GXString::operator == ( const GXMBChar* string ) const
 {
-    // TODO
-    return GX_FALSE;
+    GXUPointer tmp;
+    return GXMbscmp ( stringData->GetMultibyteData ( tmp ), string ) == 0;
 }
 
-GXBool GXString::operator == ( const GXMBChar /*character*/ ) const
+GXBool GXString::operator == ( GXMBChar character ) const
 {
-    // TODO
-    return GX_FALSE;
+    const GXMBChar string[ 2u ] = { character, 0 };
+    GXUPointer tmp;
+
+    return GXMbscmp ( stringData->GetMultibyteData ( tmp ), string ) == 0;
 }
 
-GXBool GXString::operator == ( const GXWChar* /*string*/ ) const
+GXBool GXString::operator == ( const GXWChar* string ) const
 {
-    // TODO
-    return GX_FALSE;
+    GXUPointer tmp;
+    return GXWcscmp ( reinterpret_cast<const GXWChar*> ( stringData->GetUTF16Data ( tmp ) ), string ) == 0;
 }
 
-GXBool GXString::operator == ( const GXWChar /*character*/ ) const
+GXBool GXString::operator == ( GXWChar character ) const
 {
-    // TODO
-    return GX_FALSE;
+    const GXWChar string[ 2u ] = { character, 0 };
+    GXUPointer tmp;
+
+    return GXWcscmp ( reinterpret_cast<const GXWChar*> ( stringData->GetUTF16Data ( tmp ) ), string ) == 0;
+}
+
+GXString::operator const GXMBChar* () const
+{
+    GXUPointer tmp;
+    return stringData->GetMultibyteData ( tmp );
+}
+
+GXString::operator const GXWChar* () const
+{
+    GXUPointer tmp;
+    return reinterpret_cast<const GXWChar*> ( stringData->GetUTF16Data ( tmp ) );
+}
+
+GXString::GXString ( const GXUTF16* content, GXBool canOwnContent )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXString" )
+{
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXString" );
+    stringData = new GXStringData ( content, canOwnContent );
+}
+
+GXString GXString::Append ( const GXUTF16* buffer, GXUPointer bufferSize, GXBool canOwnContent )
+{
+    if ( stringData->IsNullString () )
+        return GXString ( buffer, canOwnContent );
+
+    GXUPointer myDataSize;
+    const GXUTF16* myData = stringData->GetUTF16Data ( myDataSize );
+    myDataSize -= sizeof ( GXUTF16 );
+
+    if ( bufferSize == CALCULATE_BUFFER_SIZE )
+        bufferSize = GXWcslen ( reinterpret_cast<const GXWChar*> ( buffer ) ) * sizeof ( GXUTF16 );
+    else
+        bufferSize -= sizeof ( GXUTF16 );
+
+    const GXUPointer tmp = myDataSize + bufferSize;
+    GXUByte* resultData = static_cast<GXUByte*> ( Malloc ( tmp + sizeof ( GXUTF16 ) ) );
+    memcpy ( resultData, myData, myDataSize );
+    memcpy ( resultData + myDataSize, buffer, bufferSize );
+    resultData[ tmp ] = resultData[ tmp + 1u ] = 0u;
+
+    if ( canOwnContent )
+        Free ( const_cast<GXUTF16*> ( buffer ) );
+
+    return GXString ( reinterpret_cast<const GXUTF16*> ( resultData ), GX_TRUE );
 }

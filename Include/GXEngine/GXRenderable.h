@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_RENDERABLE
 #define GX_RENDERABLE
@@ -10,12 +10,13 @@
 class GXRenderable
 {
     public:
-        GXRenderable ();
         virtual ~GXRenderable ();
 
         virtual GXVoid Render () = 0;
 
     protected:
+        GXRenderable ();
+
         virtual GXVoid InitGraphicResources () = 0;
 };
 

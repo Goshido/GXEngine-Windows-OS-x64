@@ -1,4 +1,4 @@
-// version 1.13
+// version 1.14
 
 #include <GXEngine/GXCameraPerspective.h>
 
@@ -10,15 +10,15 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXCameraPerspective::GXCameraPerspective ():
-    GXCamera ( DEFAULT_Z_NEAR, DEFAULT_Z_FAR )
+GXCameraPerspective::GXCameraPerspective ()
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXCameraPerspective" )
+    GXCamera ( DEFAULT_Z_NEAR, DEFAULT_Z_FAR ),
+    fieldOfViewYRadians ( GXDegToRad ( DEFAULT_FIELD_OF_VIEW_Y_DEGREES ) ),
+    aspectRatio ( DEFAULT_PROJECTION_ASPECT_RATIO )
 {
-    fieldOfViewYRadians = GXDegToRad ( DEFAULT_FIELD_OF_VIEW_Y_DEGREES );
-    aspectRatio = DEFAULT_PROJECTION_ASPECT_RATIO;
-
     currentFrameProjectionMatrix.Perspective ( fieldOfViewYRadians, aspectRatio, zNear, zFar );
     currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );
-    
+
     currentFrameViewProjectionMatrix = currentFrameProjectionMatrix;
     currentFrameInverseViewProjectionMatrix = currentFrameInverseProjectionMatrix;
 
@@ -26,12 +26,12 @@ GXCameraPerspective::GXCameraPerspective ():
     UpdateLastFrameMatrices ();
 }
 
-GXCameraPerspective::GXCameraPerspective ( GXFloat fieldOfViewYRadians, GXFloat aspectRatio, GXFloat zNear, GXFloat zFar ):
-    GXCamera ( zNear, zFar )
+GXCameraPerspective::GXCameraPerspective ( GXFloat fieldOfViewYValueRadians, GXFloat aspectRatioValue, GXFloat zNear, GXFloat zFar )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXCameraPerspective" )
+    GXCamera ( zNear, zFar ),
+    fieldOfViewYRadians ( fieldOfViewYValueRadians ),
+    aspectRatio ( aspectRatioValue )
 {
-    this->fieldOfViewYRadians = fieldOfViewYRadians;
-    this->aspectRatio = aspectRatio;
-
     currentFrameProjectionMatrix.Perspective ( fieldOfViewYRadians, aspectRatio, zNear, zFar );
     currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );
 

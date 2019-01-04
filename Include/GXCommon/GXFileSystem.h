@@ -1,4 +1,4 @@
-// version 1.11
+// version 1.12
 
 #ifndef GX_FILE_SYSTEM
 #define GX_FILE_SYSTEM
@@ -15,19 +15,19 @@ GX_RESTORE_WARNING_STATE
 
 struct GXDirectoryInfo
 {
-	const GXWChar*		absolutePath;
+    const GXWChar*      absolutePath;
 
-	GXUInt				totalFolders;
-	const GXWChar**		folderNames;
+    GXUInt              totalFolders;
+    const GXWChar**     folderNames;
 
-	GXUInt				totalFiles;
-	const GXWChar**		fileNames;
-	const GXUBigInt*	fileSizes;
+    GXUInt              totalFiles;
+    const GXWChar**     fileNames;
+    const GXUBigInt*    fileSizes;
 
-	GXDirectoryInfo ();
-	~GXDirectoryInfo ();
+    GXDirectoryInfo ();
+    ~GXDirectoryInfo ();
 
-	GXVoid Clear ();
+    GXVoid Clear ();
 };
 
 GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUPointer &size, GXBool notsilent );
@@ -43,20 +43,20 @@ GXVoid GXCALL GXGetFileExtension ( GXWChar** extension, const GXWChar* fileName 
 
 class GXWriteFileStream
 {
-	private:
-		FILE* file;
+    private:
+        FILE*       file;
 
-	public:
-		explicit GXWriteFileStream ( const GXWChar* fileName );
-		~GXWriteFileStream ();
+    public:
+        explicit GXWriteFileStream ( const GXWChar* fileName );
+        ~GXWriteFileStream ();
 
-		GXVoid Write ( const GXVoid* data, GXUPointer size );
-		GXVoid Flush ();
-		GXVoid Close ();
+        GXVoid Write ( const GXVoid* data, GXUPointer size );
+        GXVoid Flush ();
+        GXVoid Close ();
 
-	private:
-		GXWriteFileStream ( const GXWriteFileStream &other ) = delete;
-		GXWriteFileStream& operator = ( const GXWriteFileStream &other ) = delete;
+    private:
+        GXWriteFileStream ( const GXWriteFileStream &other ) = delete;
+        GXWriteFileStream& operator = ( const GXWriteFileStream &other ) = delete;
 };
 
 

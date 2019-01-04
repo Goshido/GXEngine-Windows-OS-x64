@@ -235,12 +235,12 @@ GXUInt GXCDECLCALL GXFontEntry::GetTextLength ( GXUInt bufferNumSymbols, const G
         text = const_cast<GXWChar*> ( format );
     }
 
-    GXUInt len = GXWcslen ( text );
+    GXUPointer len = GXWcslen ( text );
 
     GXUInt prevSymbol = 0u;
     GXGlyphInfo info;
 
-    for ( GXUInt i = 0u; i < len; ++i )
+    for ( GXUPointer i = 0u; i < len; ++i )
     {
         GXUInt symbol = static_cast<GXUInt> ( text[ i ] );
 

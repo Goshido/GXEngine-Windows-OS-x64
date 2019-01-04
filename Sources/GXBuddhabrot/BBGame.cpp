@@ -4,7 +4,8 @@
 #include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXSplashScreen.h>
 #include <GXEngine/GXTouchSurface.h>
-#include <GXCommon/GXMemory.h>
+#include <GXCommon/GXLogger.h>
+#include <GXCommon/GXStrings.h>
 
 
 #define BB_WINDOW_TITLE     L"GXBuddhabrot"
@@ -38,7 +39,7 @@ GXVoid BBGame::OnInit ()
     glClearColor ( backgroundColor.GetRed (), backgroundColor.GetRed (), backgroundColor.GetRed (), backgroundColor.GetRed () );
 
     ShowCursor ( TRUE );
-    SetCursor ( LoadCursorW ( nullptr, IDC_ARROW ) );
+    SetCursor ( LoadCursor ( nullptr, IDC_ARROW ) );
 }
 
 GXVoid BBGame::OnResize ( GXInt width, GXInt height )

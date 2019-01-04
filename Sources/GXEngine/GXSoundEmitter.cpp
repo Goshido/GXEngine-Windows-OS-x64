@@ -10,7 +10,7 @@ GXSoundEmitter::GXSoundEmitter ( GXSoundTrack* trackObject, GXBool isTrackLooped
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXSoundEmitter" )
 {
     if ( !trackObject )
-        GXDebugBox ( L"GXSoundEmitter::Error - track равен nullptr!" );
+        GXWarningBox ( L"GXSoundEmitter::Error - track равен nullptr!" );
 
     gx_sound_mixer_SmartLock->AcquireExlusive ();
 
@@ -167,7 +167,7 @@ GXVoid GXSoundEmitter::SetRange ( GXFloat min, GXFloat max )
 GXVoid GXSoundEmitter::ChangeSoundTrack ( GXSoundTrack* trackObject, GXBool isTrackLooped, GXBool isTrackStreamed, GXBool isRelative )
 {
     if ( !trackObject )
-        GXDebugBox ( L"GXSoundEmitter::Error - track равен 0!" );
+        GXWarningBox ( L"GXSoundEmitter::Error - track равен 0!" );
 
     gx_sound_mixer_SmartLock->AcquireExlusive ();
 
