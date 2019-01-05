@@ -1,10 +1,11 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_SPLASH_SCREEN
 #define GX_SPLASH_SCREEN
 
 
 #include <GXCommon/GXThread.h>
+#include <GXCommon/GXMemory.h>
 
 
 enum class eGXSplashScreenState : GXUByte
@@ -13,7 +14,7 @@ enum class eGXSplashScreenState : GXUByte
     Hidden
 };
 
-class GXSplashScreen final
+class GXSplashScreen final : public GXMemoryInspector
 {
     private:
         HWND                        hwnd;
@@ -38,8 +39,8 @@ class GXSplashScreen final
     private:
         GXSplashScreen ();
 
-        GXVoid FillRGB ( GXUByte** destination, const GXUByte* source, GXUShort width, GXUShort height ) const;
-        GXVoid FillARGB ( GXUByte** destination, const GXUByte* source, GXUShort width, GXUShort height ) const;
+        GXVoid FillRGB ( GXUByte** destination, const GXUByte* source, GXUShort width, GXUShort height );
+        GXVoid FillARGB ( GXUByte** destination, const GXUByte* source, GXUShort width, GXUShort height );
 
         static GXUPointer GXTHREADCALL MessageLoop ( GXVoid* arg, GXThread &thread );
         static LRESULT CALLBACK WindowProc ( HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam );

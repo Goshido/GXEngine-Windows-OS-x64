@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #include <GXCommon/Windows/GXThread.h>
 #include <GXCommon/GXLogger.h>
@@ -20,7 +20,7 @@ GXThread::~GXThread ()
 {
     if ( thread == INVALID_HANDLE_VALUE || state != eGXThreadState::Started ) return;
 
-    GXLogW ( L"GXThread::~GXThread::Warning - Поток завершён неверно\n" );
+    GXLogA ( "GXThread::~GXThread::Warning - Поток завершён неверно\n" );
     system ( "pause" );
     CloseHandle ( thread );
 }
@@ -33,7 +33,7 @@ GXVoid GXThread::Start ()
 
     if ( thread == INVALID_HANDLE_VALUE )
     {
-        GXLogW ( L"GXThread::Start::Error - Не удалось создать поток\n" );
+        GXLogA ( "GXThread::Start::Error - Не удалось создать поток\n" );
         return;
     }
 
@@ -54,7 +54,7 @@ GXVoid GXThread::Join ()
 {
     if ( state == eGXThreadState::Waiting )
     {
-        GXLogW ( L"GXThread::Join::Warning - Поток не запущен\n" );
+        GXLogA ( "GXThread::Join::Warning - Поток не запущен\n" );
         return;
     }
 
@@ -69,7 +69,7 @@ unsigned __stdcall GXThread::RootThreadStarter ( void* lpThreadParameter )
 {
     GXThread* thread = reinterpret_cast<GXThread*> ( lpThreadParameter );
     GXUPointer result = thread->Procedure ( thread->argument, *thread );
-    GXLogW ( L"GXThread::RootThreadStarter::Info - Поток 0x%p завершился с кодом %X\n", lpThreadParameter, result );
+    GXLogA ( "GXThread::RootThreadStarter::Info - Поток 0x%p завершился с кодом %X\n", lpThreadParameter, result );
 
     return 0u;
 }

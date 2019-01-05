@@ -81,7 +81,7 @@ GXVoid GXAVLTree::Add ( GXAVLTreeNode &node )
 
     if ( !isAutoClean )
     {
-        GXLogW ( L"GXAVLTree::Add::Error - Обнаружен элемент с идентичным ключом. Не могу выполнить обмен элементов, так как требуется удаление старого элемента, а режим авточистки запрещён.\n" );
+        GXLogA ( "GXAVLTree::Add::Error - Обнаружен элемент с идентичным ключом. Не могу выполнить обмен элементов, так как требуется удаление старого элемента, а режим авточистки запрещён.\n" );
         return;
     }
 
@@ -102,7 +102,7 @@ GXVoid GXAVLTree::Add ( GXAVLTreeNode &node )
             break;
 
             case eGXAVLTreeSide::Unknown:
-                GXLogW ( L"GXAVLTree::Add::Error - Как код попал в ветку eGXAVLTreeSide::Unknown?\n" );
+                GXLogA ( "GXAVLTree::Add::Error - Как код попал в ветку eGXAVLTreeSide::Unknown?\n" );
             break;
 
             default:

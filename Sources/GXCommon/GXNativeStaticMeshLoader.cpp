@@ -1,35 +1,60 @@
 // version 1.3
 
 #include <GXCommon/GXNativeStaticMeshLoader.h>
-#include <GXCommon/GXFileSystem.h>
+#include <GXCommon/GXFile.h>
 #include <GXCommon/GXLogger.h>
 #include <GXCommon/GXMemory.h>
 
 
-GXNativeStaticMeshInfo::GXNativeStaticMeshInfo ()
+class GXNativeStaticMeshLoaderMemoryInspector final : public GXMemoryInspector
 {
-    vboData = nullptr;
-    eboData = nullptr;
+public:
+    GXNativeStaticMeshLoaderMemoryInspector ();
+    ~GXNativeStaticMeshLoaderMemoryInspector () override;
+
+private:
+    GXNativeStaticMeshLoaderMemoryInspector ( const GXNativeStaticMeshLoaderMemoryInspector &other );
+    GXNativeStaticMeshLoaderMemoryInspector& operator = ( const GXNativeStaticMeshLoaderMemoryInspector &other );
+};
+
+GXNativeStaticMeshLoaderMemoryInspector::GXNativeStaticMeshLoaderMemoryInspector ()
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXNativeStaticMeshLoaderMemoryInspector" )
+{
+    // NOTHING
+}
+
+GXNativeStaticMeshLoaderMemoryInspector::~GXNativeStaticMeshLoaderMemoryInspector ()
+{
+    // NOTHING
+}
+
+static GXNativeStaticMeshLoaderMemoryInspector gx_NativeMeshLoaderMemoryInspector;
+
+//-------------------------------------------------------------------------------------------------------------
+
+GXNativeStaticMeshInfo::GXNativeStaticMeshInfo ():
+    vboData ( nullptr ),
+    eboData ( nullptr )
+{
+    // NOTHING
 }
 
 GXVoid GXNativeStaticMeshInfo::Cleanup ()
 {
-    GXSafeFree ( vboData );
-    GXSafeFree ( eboData );
+    gx_NativeMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &vboData ) );
+    gx_NativeMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &eboData ) );
 }
 
 //----------------------------------------------------------------------------------------------
 
 GXVoid GXCALL GXLoadNativeStaticMesh ( const GXWChar* fileName, GXNativeStaticMeshInfo &info )
 {
-    GXUPointer size = 0u;
-    GXUByte* data = nullptr;
+    GXUByte* data;
+    GXUPointer size;
 
-    if ( !GXLoadFile ( fileName, reinterpret_cast<GXVoid**> ( &data ), size, GX_TRUE ) )
-    {
-        GXLogW ( L"GXLoadNativeStaticMesh::Error - Can't load file %s\n", fileName );
-        return;
-    }
+    GXFile file ( fileName );
+
+    if ( !file.LoadContent ( data, size, eGXFileContentOwner::GXFile, GX_TRUE ) ) return;
 
     const GXNativeStaticMeshHeader* h = reinterpret_cast<const GXNativeStaticMeshHeader*> ( data );
 
@@ -41,17 +66,14 @@ GXVoid GXCALL GXLoadNativeStaticMesh ( const GXWChar* fileName, GXNativeStaticMe
     info.numTBPairs = h->numTBPairs;
 
     size = info.numVertices * sizeof ( GXVec3 ) + info.numUVs * sizeof ( GXVec2 ) + info.numNormals * sizeof ( GXVec3 ) + info.numTBPairs * 2 * sizeof ( GXVec3 );
-    info.vboData = static_cast<GXUByte*> ( malloc ( size ) );
+    info.vboData = static_cast<GXUByte*> ( gx_NativeMeshLoaderMemoryInspector.Malloc ( size ) );
     memcpy ( info.vboData, data + sizeof ( GXNativeStaticMeshHeader ), size );
 
     info.numElements = h->numElements;
 
-    if ( info.numElements > 0u )
-    {
-        size = info.numElements * sizeof ( GXUInt );
-        info.eboData = static_cast<GXUByte*> ( malloc ( size ) );
-        memcpy ( info.eboData, data + h->elementOffset, size );
-    }
+    if ( info.numElements < 1u ) return;
 
-    free ( data );
+    size = info.numElements * sizeof ( GXUInt );
+    info.eboData = static_cast<GXUByte*> ( gx_NativeMeshLoaderMemoryInspector.Malloc ( size ) );
+    memcpy ( info.eboData, data + h->elementOffset, size );
 }

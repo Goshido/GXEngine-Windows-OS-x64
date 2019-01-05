@@ -1,12 +1,12 @@
-// version 1.12
+// version 1.14
 
 #include <GXEngine/GXFont.h>
 #include <GXEngineDLL/GXEngineAPI.h>
-#include <GXCommon/GXFileSystem.h>
+#include <GXCommon/GXFile.h>
 #include <GXCommon/GXLogger.h>
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXStrings.h>
-#include <GXCommon/GXUIntAtomic.h>
+#include <GXCommon/GXUPointerAtomic.h>
 
 
 #define ATLAS_UNDEFINED         -1
@@ -61,7 +61,7 @@ class GXFontEntry final : public GXMemoryInspector
     private:
         GXFontEntry*        prev;
         GXFontEntry*        next;
-        GXUIntAtomic        references;
+        GXUPointerAtomic    references;
 
         GXTexture2D**       atlases;
         GXByte              lastAtlasID;
@@ -69,17 +69,17 @@ class GXFontEntry final : public GXMemoryInspector
         GXUShort            top;
         GXUShort            bottom;
 
-        GXUShort            size;
+        const GXUShort      size;
+        const GXString      fileName;
 
         FT_Face             face;
-        GXWChar*            fileName;
         GXUShort            spaceAdvance;
 
         GXGlyph             glyphs[ MAXIMUM_GLYPHS ];
-        GXVoid*             mappedFile;
+        GXUByte*            mappedFile;
 
     public:
-        explicit GXFontEntry ( const GXWChar* fileName, GXUShort size );
+        explicit GXFontEntry ( const GXWChar* fontFileName, GXUShort fontSize );
 
         const GXWChar* GetFileName () const;
         GXUShort GetSize () const;
@@ -106,7 +106,7 @@ class GXFontEntry final : public GXMemoryInspector
         GXFontEntry& operator = ( const GXFontEntry &other ) = delete;
 };
 
-GXFontEntry::GXFontEntry ( const GXWChar* fileName, GXUShort size )
+GXFontEntry::GXFontEntry ( const GXWChar* fontFileName, GXUShort fontSize )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXFontEntry" )
     prev ( nullptr ),
     next ( gx_FontEntries ),
@@ -116,10 +116,9 @@ GXFontEntry::GXFontEntry ( const GXWChar* fileName, GXUShort size )
     left ( 0u ),
     bottom ( 0u ),
     top ( 0u ),
-    size ( size )
+    size ( fontSize ),
+    fileName ( fontFileName )
 {
-    GXWcsclone ( &this->fileName, fileName );
-
     if ( gx_FontEntries )
         gx_FontEntries->prev = this;
 
@@ -132,9 +131,11 @@ GXFontEntry::GXFontEntry ( const GXWChar* fileName, GXUShort size )
     spaceAdvance = temp == 0u ? 1u : temp;
     GXUPointer totalSize = 0u;
 
-    if ( !GXLoadFile ( fileName, &mappedFile, totalSize, GX_TRUE ) )
+    GXFile file ( fileName );
+
+    if ( !file.LoadContent ( mappedFile, totalSize, eGXFileContentOwner::User, GX_TRUE ) )
     {
-        GXLogW ( L"GXFontEntry::GXFontEntry::Error - не могу загрузить файл шрифта %s\n", fileName );
+        GXLogA ( "GXFontEntry::GXFontEntry::Error - Не могу загрузить файл шрифта %S\n", fileName );
         face = nullptr;
 
         return;
@@ -142,8 +143,8 @@ GXFontEntry::GXFontEntry ( const GXWChar* fileName, GXUShort size )
 
     if ( !GXFtNewMemoryFace ( gx_ft_Library, static_cast<FT_Byte*> ( mappedFile ), static_cast<FT_Long> ( totalSize ), 0, &face ) ) return;
 
-    GXLogW ( L"GXFontEntry::GXFontEntry::Error - GXFtNewMemoryFace выполнилась с ошибкой для шрифта %s failed\n", fileName );
-    free ( mappedFile );
+    GXLogA ( "GXFontEntry::GXFontEntry::Error - GXFtNewMemoryFace выполнилась с ошибкой для шрифта %S failed\n", fileName );
+    SafeFree ( reinterpret_cast<GXVoid**> ( &mappedFile ) );
     face = nullptr;
 }
 
@@ -210,7 +211,7 @@ GXTexture2D* GXFontEntry::GetAtlasTexture ( GXByte atlasID )
 {
     if ( atlasID > atlasID )
     {
-        GXLogW ( L"GXFontEntry::GetAtlasTexture::Error - Wrong atlas ID\n" );
+        GXLogA ( "GXFontEntry::GetAtlasTexture::Error - Wrong atlas ID\n" );
         return nullptr;
     }
 
@@ -275,7 +276,7 @@ GXVoid GXFontEntry::Release ()
 {
     --references;
 
-    if ( references > 0u ) return;
+    if ( references > static_cast<GXUPointer> ( 0u ) ) return;
 
     delete this;
 }
@@ -283,7 +284,7 @@ GXVoid GXFontEntry::Release ()
 GXFontEntry::~GXFontEntry ()
 {
     if ( GXFtDoneFace ( face ) )
-        GXLogW ( L"GXFontEntry::~GXFontEntry::Error - GXFtDoneFace выполнилась с ошибкой\n" );
+        GXLogA ( "GXFontEntry::~GXFontEntry::Error - GXFtDoneFace выполнилась с ошибкой\n" );
 
     if ( lastAtlasID != ATLAS_UNDEFINED )
     {
@@ -293,9 +294,7 @@ GXFontEntry::~GXFontEntry ()
         Free ( atlases );
     }
 
-    free ( mappedFile );
-
-    GXSafeFree ( fileName );
+    Free ( mappedFile );
 
     if ( gx_FontEntries == this )
         gx_FontEntries = gx_FontEntries->next;
@@ -507,7 +506,7 @@ GXBool GXCALL GXFont::InitFreeTypeLibrary ()
 
     if ( !gx_GXEngineDLLModuleHandle )
     {
-        GXLogW ( L"GXFont::InitFreeType::Error - Не удалось загрузить GXEngine.dll\n" );
+        GXLogA ( "GXFont::InitFreeType::Error - Не удалось загрузить GXEngine.dll\n" );
         return GX_FALSE;
     }
 
@@ -516,7 +515,7 @@ GXBool GXCALL GXFont::InitFreeTypeLibrary ()
 
     if ( !GXFreeTypeInit )
     {
-        GXLogW ( L"GXFont::InitFreeType::Error - Не удалось найти функцию GXFreeTypeInit\n" );
+        GXLogA ( "GXFont::InitFreeType::Error - Не удалось найти функцию GXFreeTypeInit\n" );
         return GX_FALSE;
     }
 
@@ -538,7 +537,7 @@ GXBool GXCALL GXFont::DestroyFreeTypeLibrary ()
 {
     if ( !gx_GXEngineDLLModuleHandle )
     {
-        GXLogW ( L"GXFont::DestroyFreeTypeLibrary::Error - Попытка выгрузить несуществующую в памяти GXEngine.dll\n" );
+        GXLogA ( "GXFont::DestroyFreeTypeLibrary::Error - Попытка выгрузить несуществующую в памяти GXEngine.dll\n" );
         return GX_FALSE;
     }
 
@@ -546,7 +545,7 @@ GXBool GXCALL GXFont::DestroyFreeTypeLibrary ()
 
     if ( !FreeLibrary ( gx_GXEngineDLLModuleHandle ) )
     {
-        GXLogW ( L"GXFont::DestroyFreeTypeLibrary::Error - Не удалось выгрузить библиотеку GXEngine.dll\n" );
+        GXLogA ( "GXFont::DestroyFreeTypeLibrary::Error - Не удалось выгрузить библиотеку GXEngine.dll\n" );
         return GX_FALSE;
     }
 

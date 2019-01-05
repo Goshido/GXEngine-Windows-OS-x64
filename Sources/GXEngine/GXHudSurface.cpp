@@ -1,7 +1,8 @@
-// version 1.24
+// version 1.25
 
 #include <GXEngine/GXHudSurface.h>
 #include <GXCommon/GXStrings.h>
+#include <GXCommon/GXUPointerAtomic.h>
 
 
 #define BYTES_PER_PIXEL     4u
@@ -15,15 +16,21 @@
 class GXImageRenderable final : public GXMemoryInspector, public GXTransform, public GXRenderable
 {
     private:
-        GXMeshGeometry      mesh;
+        GXMeshGeometry                  mesh;
+
+        static GXImageRenderable*       instance;
+        static GXUPointerAtomic         references;
 
     public:
-        GXImageRenderable ();
-        ~GXImageRenderable () override;
+        static GXImageRenderable& GXCALL GetInstance ();
+        GXVoid Release ();
 
         GXVoid Render () override;
 
     private:
+        GXImageRenderable ();
+        ~GXImageRenderable () override;
+
         GXVoid InitGraphicResources () override;
         GXVoid TransformUpdated () override;
 
@@ -31,20 +38,45 @@ class GXImageRenderable final : public GXMemoryInspector, public GXTransform, pu
         GXImageRenderable& operator = ( const GXImageRenderable &other ) = delete;
 };
 
+GXImageRenderable*      GXImageRenderable::instance = nullptr;
+GXUPointerAtomic        GXImageRenderable::references ( 0u );
+
+GXImageRenderable& GXCALL GXImageRenderable::GetInstance ()
+{
+    ++references;
+
+    if ( !instance )
+    {
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXImageRenderable" );
+        instance = new GXImageRenderable ();
+    }
+
+    return *instance;
+}
+
+GXVoid GXImageRenderable::Release ()
+{
+    --references;
+
+    if ( references > static_cast<GXUPointer> ( 0u ) ) return;
+
+    delete this;
+}
+
+GXVoid GXImageRenderable::Render ()
+{
+    mesh.Render ();
+}
+
 GXImageRenderable::GXImageRenderable ()
-    GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXImageRenderable" )
+GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXImageRenderable" )
 {
     InitGraphicResources ();
 }
 
 GXImageRenderable::~GXImageRenderable ()
 {
-    // NOTHING
-}
-
-GXVoid GXImageRenderable::Render ()
-{
-    mesh.Render ();
+    instance = nullptr;
 }
 
 GXVoid GXImageRenderable::InitGraphicResources ()
@@ -62,17 +94,23 @@ GXVoid GXImageRenderable::TransformUpdated ()
 class GXGlyphRenderable final : public GXMemoryInspector, public GXTransform, public GXRenderable
 {
     private:
-        GXMeshGeometry      mesh;
+        GXMeshGeometry                  mesh;
+
+        static GXGlyphRenderable*       instance;
+        static GXUPointerAtomic         references;
 
     public:
-        GXGlyphRenderable ();
-        ~GXGlyphRenderable () override;
+        static GXGlyphRenderable& GXCALL GetInstance ();
+        GXVoid Release ();
 
         GXVoid Render () override;
 
         GXVoid UpdateGeometry ( const GXVec2 &min, const GXVec2 &max );
 
     private:
+        GXGlyphRenderable ();
+        ~GXGlyphRenderable () override;
+
         GXVoid InitGraphicResources () override;
         GXVoid TransformUpdated () override;
 
@@ -80,15 +118,29 @@ class GXGlyphRenderable final : public GXMemoryInspector, public GXTransform, pu
         GXGlyphRenderable& operator = ( const GXGlyphRenderable &other ) = delete;
 };
 
-GXGlyphRenderable::GXGlyphRenderable ()
-    GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXGlyphRenderable" )
+GXGlyphRenderable*      GXGlyphRenderable::instance = nullptr;
+GXUPointerAtomic        GXGlyphRenderable::references ( 0u );
+
+GXGlyphRenderable& GXCALL GXGlyphRenderable::GetInstance ()
 {
-    InitGraphicResources ();
+    ++references;
+
+    if ( !instance )
+    {
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXGlyphRenderable" );
+        instance = new GXGlyphRenderable ();
+    }
+
+    return *instance;
 }
 
-GXGlyphRenderable::~GXGlyphRenderable ()
+GXVoid GXGlyphRenderable::Release ()
 {
-    // NOTHING
+    --references;
+
+    if ( references > static_cast<GXUPointer> ( 0u ) ) return;
+
+    delete this;
 }
 
 GXVoid GXGlyphRenderable::Render ()
@@ -121,6 +173,17 @@ GXVoid GXGlyphRenderable::UpdateGeometry ( const GXVec2 &min, const GXVec2 &max 
     mesh.FillVertexBuffer ( buffer, 30u * sizeof ( GXFloat ), GL_DYNAMIC_DRAW );
 }
 
+GXGlyphRenderable::GXGlyphRenderable ()
+GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXGlyphRenderable" )
+{
+    InitGraphicResources ();
+}
+
+GXGlyphRenderable::~GXGlyphRenderable ()
+{
+    instance = nullptr;
+}
+
 GXVoid GXGlyphRenderable::InitGraphicResources ()
 {
     GLsizei stride = sizeof ( GXVec3 ) + sizeof ( GXVec2 );
@@ -140,17 +203,23 @@ GXVoid GXGlyphRenderable::TransformUpdated ()
 class GXLineRenderable final : public GXMemoryInspector, public GXTransform, public GXRenderable
 {
     private:
-        GXMeshGeometry      mesh;
+        GXMeshGeometry              mesh;
+
+        static GXLineRenderable*    instance;
+        static GXUPointerAtomic     references;
 
     public:
-        GXLineRenderable ();
-        ~GXLineRenderable () override;
+        static GXLineRenderable& GXCALL GetInstance ();
+        GXVoid Release ();
 
         GXVoid Render () override;
 
         GXVoid UpdateGeometry ( const GXVec2 &start, const GXVec2 &end );
 
     private:
+        GXLineRenderable ();
+        ~GXLineRenderable () override;
+
         GXVoid InitGraphicResources () override;
         GXVoid TransformUpdated () override;
 
@@ -158,15 +227,29 @@ class GXLineRenderable final : public GXMemoryInspector, public GXTransform, pub
         GXLineRenderable& operator = ( const GXLineRenderable &other ) = delete;
 };
 
-GXLineRenderable::GXLineRenderable ()
-    GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXLineRenderable" )
+GXLineRenderable*       GXLineRenderable::instance = nullptr;
+GXUPointerAtomic        GXLineRenderable::references ( 0u );
+
+GXLineRenderable& GXCALL GXLineRenderable::GetInstance ()
 {
-    InitGraphicResources ();
+    ++references;
+
+    if ( !instance )
+    {
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXLineRenderable" );
+        instance = new GXLineRenderable ();
+    }
+
+    return *instance;
 }
 
-GXLineRenderable::~GXLineRenderable ()
+GXVoid GXLineRenderable::Release ()
 {
-    // NOTHING
+    --references;
+
+    if ( references > static_cast<GXUPointer> ( 0u ) ) return;
+
+    delete this;
 }
 
 GXVoid GXLineRenderable::Render ()
@@ -181,6 +264,17 @@ GXVoid GXLineRenderable::UpdateGeometry ( const GXVec2 &start, const GXVec2 &end
     buffer[ 3u ] = end.data[ 0u ];      buffer[ 4u ] = end.data[ 1u ];      buffer[ 5u ] = RENDER_Z;
 
     mesh.FillVertexBuffer ( buffer, 6u * sizeof ( GXFloat ), GL_DYNAMIC_DRAW );
+}
+
+GXLineRenderable::GXLineRenderable ()
+GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXLineRenderable" )
+{
+    InitGraphicResources ();
+}
+
+GXLineRenderable::~GXLineRenderable ()
+{
+    instance = nullptr;
 }
 
 GXVoid GXLineRenderable::InitGraphicResources ()
@@ -198,17 +292,11 @@ GXVoid GXLineRenderable::TransformUpdated ()
 //---------------------------------------------------------------------------------------------------------------------
 
 GXHudSurface::GXHudSurface ( GXUShort imageWidth, GXUShort imageHeight )
-    GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXHudSurface" )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXHudSurface" )
+    image ( GXImageRenderable::GetInstance () ),
+    glyph ( GXGlyphRenderable::GetInstance () ),
+    line ( GXLineRenderable::GetInstance () )
 {
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXImageRenderable" );
-    image = new GXImageRenderable ();
-
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXGlyphRenderable" );
-    glyph = new GXGlyphRenderable ();
-
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXLineRenderable" );
-    line = new GXLineRenderable ();
-
     Resize ( imageWidth, imageHeight );
     screenQuadMesh.LoadMesh ( L"Meshes/System/ScreenQuad.stm" );
 
@@ -221,9 +309,9 @@ GXHudSurface::GXHudSurface ( GXUShort imageWidth, GXUShort imageHeight )
 
 GXHudSurface::~GXHudSurface ()
 {
-    delete image;
-    delete glyph;
-    delete line;
+    image.Release ();
+    glyph.Release ();
+    line.Release ();
 
     glBindFramebuffer ( GL_FRAMEBUFFER, 0u );
     glDeleteFramebuffers ( 1, &fbo );
@@ -251,7 +339,6 @@ GXVoid GXHudSurface::Resize ( GXUShort newWidth, GXUShort newHeight )
     canvasCamera.SetProjection ( static_cast<GXFloat> ( newWidth ), static_cast<GXFloat> ( newHeight ), Z_NEAR, Z_FAR ),
 
     SetScale ( width * 0.5f, height * 0.5f, 1.0f );
-    line->SetLocation ( -0.5f * width, -0.5f * height, RENDER_Z );
 
     GLint oldFBO;
     glGetIntegerv ( GL_FRAMEBUFFER_BINDING, &oldFBO );
@@ -267,7 +354,7 @@ GXVoid GXHudSurface::Resize ( GXUShort newWidth, GXUShort newHeight )
     GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 
     if ( status != GL_FRAMEBUFFER_COMPLETE )
-        GXLogW ( L"GXHudSurface::Resize::Error - Что-то с fbo. Ошибка 0x%04x\n", status );
+        GXLogA ( "GXHudSurface::Resize::Error - Что-то с fbo. Ошибка 0x%04x\n", status );
 
     glBindFramebuffer ( GL_FRAMEBUFFER, static_cast<GLuint> ( oldFBO ) );
 
@@ -288,13 +375,13 @@ GXVoid GXHudSurface::AddImage ( const GXImageInfo &imageInfo )
 
     glViewport ( 0, 0, static_cast<GLsizei> ( width ), static_cast<GLsizei> ( height ) );
 
-    image->SetScale ( imageInfo.insertWidth, imageInfo.insertHeight, 1.0f );
-    image->SetLocation ( imageInfo.insertX - width * 0.5f, imageInfo.insertY - height * 0.5f, RENDER_Z );
+    image.SetScale ( imageInfo.insertWidth, imageInfo.insertHeight, 1.0f );
+    image.SetLocation ( imageInfo.insertX - width * 0.5f, imageInfo.insertY - height * 0.5f, RENDER_Z );
 
     unlitTexture2DMaterial.SetTexture ( *imageInfo.texture );
     unlitTexture2DMaterial.SetColor ( imageInfo.color );
 
-    unlitTexture2DMaterial.Bind ( *image );
+    unlitTexture2DMaterial.Bind ( image );
 
     switch ( imageInfo.overlayType )
     {
@@ -328,7 +415,7 @@ GXVoid GXHudSurface::AddImage ( const GXImageInfo &imageInfo )
     glDisable ( GL_CULL_FACE );
     glDisable ( GL_DEPTH_TEST );
 
-    image->Render ();
+    image.Render ();
 
     unlitTexture2DMaterial.Unbind ();
 
@@ -348,10 +435,11 @@ GXVoid GXHudSurface::AddLine ( const GXLineInfo &lineInfo )
 
     glViewport ( 0, 0, static_cast<GLsizei> ( width ), static_cast<GLsizei> ( height ) );
 
-    line->UpdateGeometry ( lineInfo.startPoint, lineInfo.endPoint );
+    line.UpdateGeometry ( lineInfo.startPoint, lineInfo.endPoint );
+    line.SetLocation ( -0.5f * width, -0.5f * height, RENDER_Z );
 
     unlitColorMaterial.SetColor ( lineInfo.color );
-    unlitColorMaterial.Bind ( *line );
+    unlitColorMaterial.Bind ( line );
 
     switch ( lineInfo.overlayType )
     {
@@ -385,7 +473,7 @@ GXVoid GXHudSurface::AddLine ( const GXLineInfo &lineInfo )
     glDisable ( GL_CULL_FACE );
     glDisable ( GL_DEPTH_TEST );
 
-    line->Render ();
+    line.Render ();
 
     unlitColorMaterial.Unbind ();
 
@@ -492,7 +580,7 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
 
         penInfo.font->GetGlyph ( symbol, info );
 
-        glyph->UpdateGeometry ( info.min, info.max );
+        glyph.UpdateGeometry ( info.min, info.max );
 
         if ( prevSymbol != 0u )
             penX += static_cast<GXFloat> ( penInfo.font->GetKerning ( symbol, prevSymbol ) );
@@ -502,14 +590,14 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
 
         prevSymbol = symbol;
 
-        glyph->SetScale ( info.width, info.height, 1.0f );
-        glyph->SetLocation ( x, y, RENDER_Z );
+        glyph.SetScale ( info.width, info.height, 1.0f );
+        glyph.SetLocation ( x, y, RENDER_Z );
 
         unlitColorMaskMaterial.SetMaskTexture ( *info.atlas );
         unlitColorMaskMaterial.SetColor ( penInfo.color );
 
-        unlitColorMaskMaterial.Bind ( *glyph );
-        glyph->Render ();
+        unlitColorMaskMaterial.Bind ( glyph );
+        glyph.Render ();
         unlitColorMaskMaterial.Unbind ();
 
         penX += static_cast<GXFloat> ( info.advance );

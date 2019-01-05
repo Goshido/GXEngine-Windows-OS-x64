@@ -1,45 +1,13 @@
-// version 1.8
+// version 1.9
 
-#ifndef GX_OBJLOADER
-#define GX_OBJLOADER
+#ifndef GX_OBJ_LOADER
+#define GX_OBJ_LOADER
 
 
 #include "GXMath.h"
 
 
 // #define DEBUG_TO_LOG
-
-
-struct GXOBJIndex final
-{
-    GXInt               v;
-    GXInt               vn;
-    GXInt               vt;
-};
-
-struct GXOBJVertex final
-{
-    GXVec3              position;
-    GXOBJVertex*        next;
-};
-
-struct GXOBJNormals final
-{
-    GXVec3              normal;
-    GXOBJNormals*       next;
-};
-
-struct GXOBJUV_s final
-{
-    GXVec2              uv;
-    GXOBJUV_s*          next;
-};
-
-struct GXOBJTriangle final
-{
-    GXOBJIndex          dat[ 3u ];
-    GXOBJTriangle*      next;
-};
 
 struct GXOBJPoint final
 {
@@ -49,7 +17,8 @@ struct GXOBJPoint final
 };
 
 // Function returns total vertices.
-GXInt GXCALL GXLoadOBJ ( const GXWChar* fileName, GXOBJPoint** points ); 
+// Note points MUST be deleted via GXMemoryInspector::Free.
+GXInt GXCALL GXLoadOBJ ( const GXWChar* fileName, GXOBJPoint*& points ); 
 
 
-#endif // GX_OBJLOADER
+#endif // GX_OBJ_LOADER

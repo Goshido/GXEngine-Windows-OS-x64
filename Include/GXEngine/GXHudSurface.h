@@ -1,4 +1,4 @@
-// version 1.24
+// version 1.25
 
 #ifndef GX_HUD_SURFACE
 #define GX_HUD_SURFACE
@@ -63,9 +63,9 @@ class GXLineRenderable;
 class GXHudSurface final : public GXMemoryInspector, public GXTransform
 {
     private:
-        GXImageRenderable*          image;
-        GXGlyphRenderable*          glyph;
-        GXLineRenderable*           line;
+        GXImageRenderable&          image;
+        GXGlyphRenderable&          glyph;
+        GXLineRenderable&           line;
 
         GXUShort                    width;
         GXUShort                    height;

@@ -1,4 +1,4 @@
-// version 1.53
+// version 1.54
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -26,7 +26,7 @@ GX_RESTORE_WARNING_STATE
 struct GXVec2 final
 {
     // Stores vector components in x, y order.
-    GXFloat     data[ 2 ];
+    GXFloat     data[ 2u ];
 
     GXVec2 ();
     GXVec2 ( const GXVec2 &other );
@@ -76,7 +76,7 @@ eGXLineRelationship GXCALL GXLineIntersection2D ( GXVec2 &intersectionPoint, con
 struct GXVec3 final
 {
     // Stores vector components in x, y, z order.
-    GXFloat     data[ 3 ];
+    GXFloat     data[ 3u ];
 
     GXVec3 ();
     GXVec3 ( const GXVec3 &other );
@@ -147,7 +147,7 @@ struct GXEuler final
 struct GXVec4 final
 {
     // Stores vector components in x, y, z, w order.
-    GXFloat     data[ 4 ];
+    GXFloat     data[ 4u ];
 
     GXVec4 ();
     GXVec4 ( const GXVec4 &other );
@@ -184,7 +184,7 @@ struct GXVec4 final
 
 struct GXVec6 final
 {
-    GXFloat     data[ 6 ];
+    GXFloat     data[ 6u ];
 
     GXVec6 ();
     GXVec6 ( const GXVec6 &other );
@@ -207,7 +207,7 @@ struct GXColorHSV;
 struct GXColorRGB final
 {
     // Stores components in red, green, blue, alpha order.
-    GXFloat     data[ 4 ];
+    GXFloat     data[ 4u ];
 
     GXColorRGB ();
     GXColorRGB ( const GXColorRGB &other );
@@ -246,7 +246,7 @@ struct GXColorRGB final
 struct GXColorHSV final
 {
     // Stores components in hue, saturation, value, alpha order.
-    GXFloat     data[ 4 ];
+    GXFloat     data[ 4u ];
 
     GXColorHSV ();
     GXColorHSV ( const GXColorHSV &other );
@@ -312,7 +312,7 @@ struct GXMat4;
 struct GXQuat final
 {
     // Stores quaternion components in r, a, b, c order.
-    GXFloat     data[ 4 ];
+    GXFloat     data[ 4u ];
 
     GXQuat ();
     GXQuat ( const GXQuat &other );
@@ -378,8 +378,8 @@ struct GXMat3 final
 {
     union
     {
-        GXFloat data[ 9 ];
-        GXFloat m[ 3 ][ 3 ];
+        GXFloat data[ 9u ];
+        GXFloat m[ 3u ][ 3u ];
     };
 
     GXMat3 ();
@@ -412,6 +412,18 @@ struct GXMat3 final
     GXVoid ClearRotation ( const GXMat3 &sourceMatrix );
     GXVoid ClearRotation ( const GXMat4 &sourceMatrix );
 
+    // It is cross product in matrix form.
+    // Proper result will be achieved for this construction only:
+    // a x b = c
+    //
+    // GXVec3 a ( ... );
+    // GXVec3 b ( ... );
+    //
+    // GXMat3 skew;
+    // skew.SkewSymmetric ( b );
+    //
+    // GXVec3 c;
+    // skew.MultiplyVectorMatrix ( c, a );
     GXVoid SkewSymmetric ( const GXVec3 &base );
 
     GXVoid Sum ( const GXMat3 &a, const GXMat3 &b );
@@ -432,8 +444,8 @@ struct GXMat4 final
 {
     union
     {
-        GXFloat data[ 16 ];
-        GXFloat m[ 4 ][ 4 ];
+        GXFloat data[ 16u ];
+        GXFloat m[ 4u ][ 4u ];
     };
 
     GXMat4 ();
@@ -578,7 +590,7 @@ struct GXPlane final
 class GXProjectionClipPlanes final
 {
     private:
-        GXPlane     planes[ 6 ];
+        GXPlane     planes[ 6u ];
 
     public:
         GXProjectionClipPlanes ();

@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXEngine/GXSplashScreen.h>
 #include <GXEngine/GXResource.h>
@@ -15,7 +15,7 @@
 #define NUMBER_PLANES                   1u
 #define ALPHA_FOR_RGB                   255u
 
-//---------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 enum class eGXStatus : GXUByte
 {
@@ -27,14 +27,17 @@ enum class eGXStatus : GXUByte
     CanNotFreeWindowResources = 5
 };
 
-//---------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXSplashScreen* GXSplashScreen::instance = nullptr;
 
 GXSplashScreen& GXSplashScreen::GetInstance ()
 {
     if ( !instance )
+    {
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXSplashScreen" );
         instance = new GXSplashScreen ();
+    }
 
     return *instance;
 }
@@ -61,7 +64,8 @@ GXVoid GXSplashScreen::Hide ()
     intend = eGXSplashScreenState::Hidden;
 }
 
-GXSplashScreen::GXSplashScreen ():
+GXSplashScreen::GXSplashScreen ()
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXSplashScreen" )
     hwnd ( static_cast<HWND> ( INVALID_HANDLE_VALUE ) ),
     bitmap ( static_cast<HBITMAP> ( INVALID_HANDLE_VALUE ) ),
     bitmapWidth ( 0u ),
@@ -74,12 +78,12 @@ GXSplashScreen::GXSplashScreen ():
     thread->Start ();
 }
 
-GXVoid GXSplashScreen::FillRGB ( GXUByte** destination, const GXUByte* source, GXUShort width, GXUShort height ) const
+GXVoid GXSplashScreen::FillRGB ( GXUByte** destination, const GXUByte* source, GXUShort width, GXUShort height )
 {
     GXUPointer lineSizeDst = static_cast<GXUPointer> ( BGRA_BYTES_PER_PIXEL * width );
     GXUPointer lineSizeSrc = static_cast<GXUPointer> ( RGB_BYTES_PER_PIXEL * width );
 
-    GXUByte* dst = static_cast<GXUByte*> ( malloc ( lineSizeDst * height ) );
+    GXUByte* dst = static_cast<GXUByte*> ( Malloc ( lineSizeDst * height ) );
     GXUPointer offsetDst = 0u;
     GXUPointer offsetSrc = ( height - 1u ) * lineSizeSrc;
 
@@ -103,10 +107,10 @@ GXVoid GXSplashScreen::FillRGB ( GXUByte** destination, const GXUByte* source, G
     *destination = dst;
 }
 
-GXVoid GXSplashScreen::FillARGB ( GXUByte** destination, const GXUByte* source, GXUShort width, GXUShort height ) const
+GXVoid GXSplashScreen::FillARGB ( GXUByte** destination, const GXUByte* source, GXUShort width, GXUShort height )
 {
     GXUPointer lineSize = static_cast<GXUPointer> ( BGRA_BYTES_PER_PIXEL * width );
-    GXUByte* dst = static_cast<GXUByte*> ( malloc ( lineSize * height ) );
+    GXUByte* dst = static_cast<GXUByte*> ( Malloc ( lineSize * height ) );
     GXUPointer offsetDst = 0u;
     GXUPointer offsetSrc = ( height - 1u ) * lineSize;
 
@@ -170,14 +174,14 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
             break;
 
             default:
-                free ( data );
+                instance->Free ( data );
                 status = eGXStatus::InvalidChannels;
                 loopFlag = GX_FALSE;
                 continue;
             break;
         }
 
-        free ( data );
+        instance->Free ( data );
 
         splashScreen->bitmap = CreateBitmap ( (int)splashScreen->bitmapWidth, (int)splashScreen->bitmapHeight, NUMBER_PLANES, BGRA_BYTES_PER_PIXEL * BITS_PER_CHANNEL, splashScreen->pixels );
 
@@ -269,40 +273,40 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
         case eGXStatus::Success:
         {
             DeleteObject ( splashScreen->bitmap );
-            free ( splashScreen->pixels );
+            instance->Free ( splashScreen->pixels );
 
             if ( !DestroyWindow ( splashScreen->hwnd ) )
             {
-                GXLogW ( L"GXSplashScreen::MessageLoop::Error - ќсвобождение HWND провалено.\n" );
+                GXLogA ( "GXSplashScreen::MessageLoop::Error - ќсвобождение HWND провалено.\n" );
                 status = eGXStatus::CanNotFreeWindowResources;
             }
 
             if ( !UnregisterClassW ( SPLASH_SCREEN_WINDOW_CLASS, GetModuleHandleW ( nullptr ) ) )
             {
-                GXLogW ( L"GXSplashScreen::MessageLoop::Error - —н€тие регистрации класса окна провалено (ветвь 1).\n" );
+                GXLogA ( "GXSplashScreen::MessageLoop::Error - —н€тие регистрации класса окна провалено (ветвь 1).\n" );
                 status = eGXStatus::CanNotFreeWindowResources;
             }
         }
         break;
 
         case eGXStatus::CanNotLoadImage:
-            GXLogW ( L"GXSplashScreen::MessageLoop::Error - Ќе могу загрузить изображение splash screen'а %s.\n", SPLASH_SCREEN_IMAGE );
+            GXLogA ( "GXSplashScreen::MessageLoop::Error - Ќе могу загрузить изображение splash screen'а %S.\n", SPLASH_SCREEN_IMAGE );
         break;
 
         case eGXStatus::InvalidChannels:
-            GXLogW ( L"GXSplashScreen::GXSplashScreen:Error - »зображение splash screen'а должно иметь 3 или 4 канала (тукущее %hhu).\n", numChannels );
+            GXLogA ( "GXSplashScreen::GXSplashScreen:Error - »зображение splash screen'а должно иметь 3 или 4 канала (тeкущее %hhu).\n", numChannels );
         break;
 
         case eGXStatus::CanNotRegisterClass:
-            GXLogW ( L"GXSplashScreen::MessageLoop::Error - Ќе удалось зарегистрировать класс окна.\n" );
+            GXLogA ( "GXSplashScreen::MessageLoop::Error - Ќе удалось зарегистрировать класс окна.\n" );
         break;
 
         case eGXStatus::CanNotCreateWindow:
-            GXLogW ( L"GXSplashScreen::MessageLoop::Error - Ќе могу создать окно.\n" );
+            GXLogA ( "GXSplashScreen::MessageLoop::Error - Ќе могу создать окно.\n" );
 
             if ( !UnregisterClassW ( SPLASH_SCREEN_WINDOW_CLASS, GetModuleHandleW ( nullptr ) ) )
             {
-                GXLogW ( L"GXSplashScreen::~GXSplashScreen::Error - —н€тие регистрации класса окна провалено (ветвь 2).\n" );
+                GXLogA ( "GXSplashScreen::~GXSplashScreen::Error - —н€тие регистрации класса окна провалено (ветвь 2).\n" );
                 status = eGXStatus::CanNotFreeWindowResources;
             }
         break;
@@ -316,7 +320,7 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
         break;
     }
 
-    return (GXUPointer)status;
+    return static_cast<GXUPointer> ( status );
 }
 
 LRESULT CALLBACK GXSplashScreen::WindowProc ( HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam )
@@ -325,7 +329,7 @@ LRESULT CALLBACK GXSplashScreen::WindowProc ( HWND hwnd, UINT message, WPARAM wP
     {
         case WM_PAINT:
         {
-            GXSplashScreen* splashScreen = (GXSplashScreen*)GetWindowLongPtrW ( hwnd, GWLP_USERDATA );
+            GXSplashScreen* splashScreen = reinterpret_cast<GXSplashScreen*> ( GetWindowLongPtrW ( hwnd, GWLP_USERDATA ) );
 
             PAINTSTRUCT paintStruct;
 
@@ -334,7 +338,7 @@ LRESULT CALLBACK GXSplashScreen::WindowProc ( HWND hwnd, UINT message, WPARAM wP
             HBITMAP oldBitmap = static_cast<HBITMAP> ( SelectObject ( bitmapDC, splashScreen->bitmap ) );
 
             if ( !BitBlt ( splashScreenDC, 0, 0, static_cast<int> ( splashScreen->bitmapWidth ), static_cast<int> ( splashScreen->bitmapHeight ), bitmapDC, 0, 0, SRCCOPY ) )
-                GXLogW ( L"GXSplashScreen::WindowProc::Error - BitBlt не выполнилась.\n" );
+                GXLogA ( "GXSplashScreen::WindowProc::Error - BitBlt не выполнилась.\n" );
 
             SelectObject ( bitmapDC, oldBitmap );
             DeleteDC ( bitmapDC );

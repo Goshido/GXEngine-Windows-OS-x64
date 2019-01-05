@@ -317,7 +317,7 @@ GXVoid GXCDECLCALL GXString::Format ( const GXMBChar* format, ... )
     va_list ap;
     va_start ( ap, format );
 
-    GXUPointer neededSpace = static_cast<GXUPointer> ( vsnprintf ( nullptr, 0u, format, ap ) );
+    GXUPointer neededSpace = static_cast<GXUPointer> ( vsnprintf ( nullptr, 0u, format, ap ) ) + 1u;
     GXMBChar* string = static_cast<GXMBChar*> ( Malloc ( neededSpace ) );
     vsnprintf ( string, neededSpace, format, ap );
 

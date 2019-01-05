@@ -245,7 +245,7 @@ GXVoid GXUTF8Parser::Debug ()
         GXUByte bit6 = static_cast<GXUByte> ( ( string[ i ] & 0x40 ) >> 6 );
         GXUByte bit7 = static_cast<GXUByte> ( ( string[ i ] & 0x80 ) >> 7 );
 
-        GXLogW ( L"GXUTF8Parser::Debug::Info - %i%i%i%i %i%i%i%i\n", bit7, bit6, bit5, bit4, bit3, bit2, bit1, bit0 );
+        GXLogA ( "GXUTF8Parser::Debug::Info - %i%i%i%i %i%i%i%i\n", bit7, bit6, bit5, bit4, bit3, bit2, bit1, bit0 );
     }
 }
 
@@ -487,7 +487,7 @@ GXUByte GXWriteUTF8Symbol ( GXUTF8* start, GXUInt symbol )
         return 6u;
     }
 
-    GXLogW ( L"GXWriteUTF8Symbol::Warning - Unexpected symbol (code %i)\n", symbol );
+    GXLogA ( "GXWriteUTF8Symbol::Warning - Unexpected symbol (code %u)\n", symbol );
     return 0u;
 }
 

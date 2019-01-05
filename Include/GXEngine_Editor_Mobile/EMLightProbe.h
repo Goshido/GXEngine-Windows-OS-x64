@@ -10,64 +10,64 @@
 
 class EMLightProbe final
 {
-	friend class EMRenderer;
+    friend class EMRenderer;
 
-	private:
-		EMLightProbe*									next;
-		EMLightProbe*									prev;
+    private:
+        EMLightProbe*                                   next;
+        EMLightProbe*                                   prev;
 
-		GXVec3											locationWorld;
-		GXAABB											boundsWorld;
+        GXVec3                                          locationWorld;
+        GXAABB                                          boundsWorld;
 
-		GXTextureCubeMap*								environmentMap;
+        GXTextureCubeMap*                               environmentMap;
 
-		GXTextureCubeMap								diffuseIrradiance;
-		EMDiffuseIrradianceGeneratorMaterial			diffuseIrradianceGeneratorMaterial;
+        GXTextureCubeMap                                diffuseIrradiance;
+        EMDiffuseIrradianceGeneratorMaterial            diffuseIrradianceGeneratorMaterial;
 
-		GXTextureCubeMap								prefilteredEnvironmentMap;
-		EMPrefilteredEnvironmentMapGeneratorMaterial	prefilteredEnvironmentMapGeneratorMaterial;
+        GXTextureCubeMap                                prefilteredEnvironmentMap;
+        EMPrefilteredEnvironmentMapGeneratorMaterial    prefilteredEnvironmentMapGeneratorMaterial;
 
-		static GXTexture2D								brdfIntegrationMap;
-		EMBRDFIntegratorMaterial						brdfIntegratorMaterial;
+        static GXTexture2D                              brdfIntegrationMap;
+        EMBRDFIntegratorMaterial                        brdfIntegratorMaterial;
 
-		GXMeshGeometry									cube;
-		GXMeshGeometry									screenQuad;
+        GXMeshGeometry                                  cube;
+        GXMeshGeometry                                  screenQuad;
 
-		static EMLightProbe*							probes;
+        static EMLightProbe*                            probes;
 
-	public:
-		EMLightProbe ();
-		~EMLightProbe ();
+    public:
+        EMLightProbe ();
+        ~EMLightProbe ();
 
-		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
-		GXVoid SetEnvironmentMap ( GXTextureCubeMap &cubeMap );
-		GXVoid SetBoundLocal ( GXFloat xRange, GXFloat yRange, GXFloat zRange );
+        GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
+        GXVoid SetEnvironmentMap ( GXTextureCubeMap &cubeMap );
+        GXVoid SetBoundLocal ( GXFloat xRange, GXFloat yRange, GXFloat zRange );
 
-		// Less step - more precisely convolution result.
-		// Returns total samples will be done.
-		GXUInt SetDiffuseIrradianceConvolutionAngleStep ( GXFloat radians );
+        // Less step - more precisely convolution result.
+        // Returns total samples will be done.
+        GXUInt SetDiffuseIrradianceConvolutionAngleStep ( GXFloat radians );
 
-		// This is 2D square texture
-		GXVoid SetDiffuseIrradianceResolution ( GXUShort resolution );
+        // This is 2D square texture
+        GXVoid SetDiffuseIrradianceResolution ( GXUShort resolution );
 
-		// This texture is square 2D texture.
-		GXVoid SetBRDFIntegrationMapResolution ( GXUShort length );
+        // This texture is square 2D texture.
+        GXVoid SetBRDFIntegrationMapResolution ( GXUShort length );
 
-		GXVoid SetBRDFIntegrationMapSamplesPerPixel ( GXUShort samples );
+        GXVoid SetBRDFIntegrationMapSamplesPerPixel ( GXUShort samples );
 
-		GXTextureCubeMap& GetDiffuseIrradiance ();
-		GXTextureCubeMap& GetPrefilteredEnvironmentMap ();
-		GXTexture2D& GetBRDFIntegrationMap ();
+        GXTextureCubeMap& GetDiffuseIrradiance ();
+        GXTextureCubeMap& GetPrefilteredEnvironmentMap ();
+        GXTexture2D& GetBRDFIntegrationMap ();
 
-	private:
-		GXVoid UpdateDiffuseIrradiance ();
-		GXVoid UpdatePrefilteredEnvironmentMap ();
-		GXVoid UpdateBRDFIntegrationMap ();
+    private:
+        GXVoid UpdateDiffuseIrradiance ();
+        GXVoid UpdatePrefilteredEnvironmentMap ();
+        GXVoid UpdateBRDFIntegrationMap ();
 
-		static EMLightProbe* GetProbes ();
+        static EMLightProbe* GetProbes ();
 
-		EMLightProbe ( const EMLightProbe &other ) = delete;
-		EMLightProbe& operator = ( const EMLightProbe &other ) = delete;
+        EMLightProbe ( const EMLightProbe &other ) = delete;
+        EMLightProbe& operator = ( const EMLightProbe &other ) = delete;
 };
 
 

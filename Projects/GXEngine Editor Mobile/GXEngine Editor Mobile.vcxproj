@@ -192,6 +192,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXCommon\GXOBJLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractThread.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFile.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXLogger.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMemoryInspector.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp" />
@@ -333,6 +334,9 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXPhysics\GXWorld.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Include\GXCommon\GXFile.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeSkeleton.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXNativeSkin.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXUIntAtomic.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXAVLTree.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXBKELoader.h" />

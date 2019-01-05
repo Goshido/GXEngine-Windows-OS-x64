@@ -1,4 +1,4 @@
-// version 1.12
+// version 1.13
 
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXMemory.h>
@@ -6,8 +6,9 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define BUFFER_SIZE_IN_SYMBOLS		1024u
+#define BUFFER_SIZE_IN_SYMBOLS      1024u
 
+//---------------------------------------------------------------------------------------------------------------------
 
 GXDirectoryInfo::GXDirectoryInfo ()
 {
@@ -55,7 +56,7 @@ GXVoid GXDirectoryInfo::Clear ()
     fileSizes = nullptr;
 }
 
-//-----------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUPointer &size, GXBool notsilent )
 {
@@ -70,7 +71,7 @@ GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUPointer 
         if ( notsilent )
         {
             GXWarningBox ( L"GXLoadFile::Error - Не могу открыть файл" );
-            GXLogW ( L"GXLoadFile::Error - Не могу открыть файл %s\n", fileName );
+            GXLogA ( "GXLoadFile::Error - Не могу открыть файл %S\n", fileName );
         }
 
         *buffer = nullptr;
@@ -86,7 +87,7 @@ GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUPointer 
     if ( fileSize == 0u )
     {
         GXWarningBox ( L"GXLoadFile::Error - Файл пуст" );
-        GXLogW ( L"GXLoadFile::Error - Файл пуст\n", fileName );
+        GXLogA ( "GXLoadFile::Error - Файл пуст %S\n", fileName );
 
         fclose ( input );
         *buffer = nullptr;
@@ -102,7 +103,7 @@ GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUPointer 
     if ( readed != fileSize )
     {
         GXWarningBox ( L"GXLoadFile::Error - Не могу прочесть файл" );
-        GXLogW ( L"GXLoadFile::Error - Не могу прочесть файл %s\n", fileName );
+        GXLogA ( "GXLoadFile::Error - Не могу прочесть файл %S\n", fileName );
 
         free ( *buffer );
         *buffer = nullptr;
@@ -123,7 +124,7 @@ GXBool GXCALL GXWriteToFile ( const GXWChar* fileName, const GXVoid* buffer, GXU
     if ( !input )
     {
         GXWarningBox ( L"GXWriteToFile::Error - Не могу создать файл" );
-        GXLogW ( L"GXWriteToFile::Error - Не могу создать файл %s\n", fileName );
+        GXLogA ( "GXWriteToFile::Error - Не могу создать файл %S\n", fileName );
 
         return GX_FALSE;
     }
@@ -178,7 +179,7 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
 {
     if ( !directory ) return GX_FALSE;
 
-    GXUPointer size = ( GXWcslen ( directory ) + 3u ) * sizeof ( GXWChar );	// /, * and \0 symbols
+    GXUPointer size = ( GXWcslen ( directory ) + 3u ) * sizeof ( GXWChar );    // /, * and \0 symbols
     GXWChar* listedDirectory = static_cast<GXWChar*> ( malloc ( size ) );
     wsprintfW ( listedDirectory, L"%s/*", directory );
 
@@ -405,7 +406,7 @@ GXWriteFileStream::GXWriteFileStream ( const GXWChar* fileName )
 
     if ( file ) return;
 
-    GXLogW ( L"GXWriteToFile::Error - Не могу создать файл %s\n", fileName );
+    GXLogA ( "GXWriteToFile::Error - Не могу создать файл %S\n", fileName );
 }
 
 GXWriteFileStream::~GXWriteFileStream ()

@@ -1,19 +1,20 @@
-// version 1.3
+// version 1.4
 
 #include <GXEngine/GXSampler.h>
-#include <GXCommon/GXUIntAtomic.h>
+#include <GXCommon/GXMemory.h>
+#include <GXCommon/GXUPointerAtomic.h>
 
 
 #define INVALID_TEXTURE_UNIT    0xFFu
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class GXSamplerEntry final
+class GXSamplerEntry final : public GXMemoryInspector
 {
     private:
         GXSamplerEntry*             previous;
         GXSamplerEntry*             next;
-        GXUIntAtomic                references;
+        GXUPointerAtomic            references;
 
         GLint                       wrapMode;
         eGXResampling               resampling;
@@ -47,7 +48,8 @@ class GXSamplerEntry final
 
 GXSamplerEntry* GXSamplerEntry::top = nullptr;
 
-GXSamplerEntry::GXSamplerEntry ( GLint wrapMode, eGXResampling resampling, GXFloat anisotropy ):
+GXSamplerEntry::GXSamplerEntry ( GLint wrapMode, eGXResampling resampling, GXFloat anisotropy )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXSamplerEntry" )
     previous ( nullptr ),
     next ( top ),
     references ( 1u ),
@@ -109,7 +111,7 @@ GXVoid GXSamplerEntry::Release ()
 {
     --references;
 
-    if ( references > 0u ) return;
+    if ( references > static_cast<GXUPointer> ( 0u ) ) return;
 
     delete this;
 }
@@ -169,6 +171,7 @@ GXSampler::GXSampler ( GLint wrapMode, eGXResampling resampling, GXFloat anisotr
         return;
     }
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXSamplerEntry" );
     samplerEntry = new GXSamplerEntry ( wrapMode, resampling, anisotropy );
 }
 

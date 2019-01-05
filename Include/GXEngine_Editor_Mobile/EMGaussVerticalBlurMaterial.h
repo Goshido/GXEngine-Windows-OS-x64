@@ -9,29 +9,29 @@
 
 enum class eEMGaussVerticalBlurKernelType : GXUShort
 {
-	OneChannelFivePixel
+    OneChannelFivePixel
 };
 
 class EMGaussVerticalBlurMaterial final : public GXMaterial
 {
-	private:
-		eEMGaussVerticalBlurKernelType		kernelType;
-		GXTexture2D*						imageTexture;
-		GXSampler							sampler;
+    private:
+        eEMGaussVerticalBlurKernelType      kernelType;
+        GXTexture2D*                        imageTexture;
+        GXSampler                           sampler;
 
-	public:
-		EMGaussVerticalBlurMaterial ( eEMGaussVerticalBlurKernelType kernelType );
-		~EMGaussVerticalBlurMaterial () override;
+    public:
+        EMGaussVerticalBlurMaterial ( eEMGaussVerticalBlurKernelType kernelType );
+        ~EMGaussVerticalBlurMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) override;
-		GXVoid Unbind () override;
+        GXVoid Bind ( const GXTransform &transform ) override;
+        GXVoid Unbind () override;
 
-		GXVoid SetImageTexture ( GXTexture2D &texture );
+        GXVoid SetImageTexture ( GXTexture2D &texture );
 
-	private:
-		EMGaussVerticalBlurMaterial () = delete;
-		EMGaussVerticalBlurMaterial ( const EMGaussVerticalBlurMaterial &other ) = delete;
-		EMGaussVerticalBlurMaterial& operator = ( const EMGaussVerticalBlurMaterial &other ) = delete;
+    private:
+        EMGaussVerticalBlurMaterial () = delete;
+        EMGaussVerticalBlurMaterial ( const EMGaussVerticalBlurMaterial &other ) = delete;
+        EMGaussVerticalBlurMaterial& operator = ( const EMGaussVerticalBlurMaterial &other ) = delete;
 };
 
 

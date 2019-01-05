@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #ifndef GX_THREAD_WINDOWS
 #define GX_THREAD_WINDOWS

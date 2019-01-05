@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #ifndef GX_MEMORY
 #define GX_MEMORY
@@ -46,6 +46,7 @@ class GXMemoryInspectorLite
         static GXBool GXCALL CheckMemoryLeaks ();
 
         GXVoid* Malloc ( GXUPointer size );
+        GXVoid* Realloc ( GXVoid* heapMemory, GXUPointer newSize );
         GXVoid Free ( GXVoid* heapMemory );
         GXVoid SafeFree ( GXVoid** heapMemory );
 
@@ -71,6 +72,7 @@ class GXMemoryInspectorFull
         static GXBool GXCALL CheckMemoryLeaks ();
 
         GXVoid* Malloc ( GXUPointer size );
+        GXVoid* Realloc ( GXVoid* heapMemory, GXUPointer newSize );
         GXVoid Free ( GXVoid* heapMemory );
         GXVoid SafeFree ( GXVoid** heapMemory );
 

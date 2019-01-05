@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXLogger.h>
@@ -56,8 +56,22 @@ GXVoid* GXMemoryInspectorLite::Malloc ( GXUPointer size )
     return malloc ( size );
 }
 
+GXVoid* GXMemoryInspectorLite::Realloc ( GXVoid* heapMemory, GXUPointer newSize )
+{
+    if ( !heapMemory )
+        return Malloc ( newSize );
+
+    GXUPointer currentSize = _msize ( heapMemory );
+    GXVoid* newHeapMemory = realloc ( heapMemory, newSize );
+    mallocObjectSize = mallocObjectSize - currentSize + newSize;
+
+    return newHeapMemory;
+}
+
 GXVoid GXMemoryInspectorLite::Free ( GXVoid* heapMemory )
 {
+    if ( !heapMemory ) return;
+
     --mallocObjects;
     mallocObjectSize -= _msize ( heapMemory );
     free ( heapMemory );
@@ -85,6 +99,8 @@ GXVoid* GXMemoryInspectorLite::operator new ( GXUPointer size )
 
 GXVoid GXMemoryInspectorLite::operator delete ( GXVoid* heapMemory )
 {
+    if ( !heapMemory ) return;
+
     --newObjects;
     newObjectSize -= _msize ( heapMemory );
     free ( heapMemory );
@@ -185,11 +201,14 @@ class GXHeapManager final
         GXVoid MakeDelete ( GXVoid* heapMemory );
 
         GXVoid* MakeMalloc ( GXUPointer size, const GXChar* initiatorClass );
+        GXVoid* MakeRealloc ( GXVoid* heapMemory, GXUPointer newSize, const GXChar* initiatorClass );
         GXVoid MakeFree ( GXVoid* heapMemory );
 
     private:
         GXVoid* AddChunk ( eGXHeapAllocationType allocationType, GXUPointer size, const GXChar* initiatorClass );
         GXVoid RemoveChunk ( GXVoid* heapMemory );
+
+        GXUPointer FindChunkIndex ( GXVoid* heapMemory );
 
         GXVoid GrowChunks ();
 
@@ -309,6 +328,31 @@ GXVoid* GXHeapManager::MakeMalloc ( GXUPointer size, const GXChar* initiatorClas
     return memory;
 }
 
+GXVoid* GXHeapManager::MakeRealloc ( GXVoid* heapMemory, GXUPointer newSize, const GXChar* initiatorClass )
+{
+    if ( !heapMemory )
+        return MakeMalloc ( newSize, initiatorClass );
+
+    smartLock.AcquireExlusive ();
+
+    GXUPointer targetIndex = FindChunkIndex ( heapMemory );
+
+    if ( targetIndex == END_INDEX )
+    {
+        smartLock.ReleaseExlusive ();
+        GXLogA ( "GXHeapManager::MakeReallocMalloc::Error - Can't find chunk with heap address 0x%p!\n", heapMemory );
+
+        return nullptr;
+    }
+
+    GXHeapChunk& target = chunks[ targetIndex ];
+    target.heapMemoryMaxSize = newSize;
+    target.heapMemory = realloc ( heapMemory, newSize );
+
+    smartLock.ReleaseExlusive ();
+    return target.heapMemory;
+}
+
 GXVoid GXHeapManager::MakeFree ( GXVoid* heapMemory )
 {
     RemoveChunk ( heapMemory );
@@ -367,25 +411,13 @@ GXVoid GXHeapManager::RemoveChunk ( GXVoid* heapMemory )
 {
     smartLock.AcquireExlusive ();
 
-    GXUPointer targetIndex = END_INDEX;
-
-    for ( GXUPointer i = usedChunkIndex; i != END_INDEX; )
-    {
-        GXHeapChunk& chunk = chunks[ i ];
-
-        if ( chunk.heapMemory == heapMemory )
-        {
-            targetIndex = i;
-            break;
-        }
-
-        i = chunk.nextIndex;
-    }
+    GXUPointer targetIndex = FindChunkIndex ( heapMemory );
 
     if ( targetIndex == END_INDEX )
     {
         smartLock.ReleaseExlusive ();
-        GXLogA ( "GXHeapManager::RemoveChunk::Error - Can't find chunk with heap address 0x%p!", heapMemory );
+        GXLogA ( "GXHeapManager::RemoveChunk::Error - Can't find chunk with heap address 0x%p!\n", heapMemory );
+
         return;
     }
 
@@ -419,6 +451,21 @@ GXVoid GXHeapManager::RemoveChunk ( GXVoid* heapMemory )
     freeChunkIndex = targetIndex;
 
     smartLock.ReleaseExlusive ();
+}
+
+GXUPointer GXHeapManager::FindChunkIndex ( GXVoid* heapMemory )
+{
+    for ( GXUPointer i = usedChunkIndex; i != END_INDEX; )
+    {
+        GXHeapChunk& chunk = chunks[ i ];
+
+        if ( chunk.heapMemory == heapMemory )
+            return i;
+
+        i = chunk.nextIndex;
+    }
+
+    return END_INDEX;
 }
 
 GXVoid GXHeapManager::GrowChunks ()
@@ -461,8 +508,15 @@ GXVoid* GXMemoryInspectorFull::Malloc ( GXUPointer size )
     return gx_HeapManager.MakeMalloc ( size, className );
 }
 
+GXVoid* GXMemoryInspectorFull::Realloc ( GXVoid* heapMemory, GXUPointer newSize )
+{
+    return gx_HeapManager.MakeRealloc ( heapMemory, newSize, className );
+}
+
 GXVoid GXMemoryInspectorFull::Free ( GXVoid* heapMemory )
 {
+    if ( !heapMemory ) return;
+
     gx_HeapManager.MakeFree ( heapMemory );
 }
 
@@ -483,6 +537,8 @@ GXVoid* GXMemoryInspectorFull::operator new ( GXUPointer size )
 
 GXVoid GXMemoryInspectorFull::operator delete ( GXVoid* heapMemory )
 {
+    if ( !heapMemory ) return;
+
     gx_HeapManager.MakeDelete ( heapMemory );
 }
 

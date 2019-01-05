@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #include <GXEngine/GXMeshGeometry.h>
 #include <GXCommon/GXFileSystem.h>
@@ -10,7 +10,7 @@
 #include <GXCommon/GXNativeStaticMeshLoader.h>
 #include <GXCommon/GXNativeStaticMeshSaver.h>
 #include <GXCommon/GXStrings.h>
-#include <GXCommon/GXUIntAtomic.h>
+#include <GXCommon/GXUPointerAtomic.h>
 
 
 #define CACHE_DIRECTORY_NAME    L"Cache"
@@ -23,14 +23,14 @@ class GXMesh final : public GXMemoryInspector
     friend class GXMeshGeometry;
 
     private:
-        GXUIntAtomic        referenceCount;
+        GXUPointerAtomic    referenceCount;
         GXMesh*             previous;
         GLsizeiptr          vboSize;
+        GXString            meshFile;
 
         static GXMesh*      top;
         GXMesh*             next;
 
-        GXWChar*            meshFile;
         GLenum              vboUsage;
 
     public:
@@ -55,7 +55,7 @@ class GXMesh final : public GXMemoryInspector
         static GXUInt GXCALL GetTotalLoadedMeshes ( const GXWChar** lastMesh );
 
     private:
-        // Creates procedure mesh.
+        // Creates procedural mesh.
         GXMesh ();
 
         // Creates static mesh.
@@ -83,7 +83,7 @@ GXVoid GXMesh::Release ()
 {
     --referenceCount;
 
-    if ( referenceCount > 0u ) return;
+    if ( referenceCount > static_cast<GXUPointer> ( 0u ) ) return;
 
     delete this;
 }
@@ -95,7 +95,7 @@ const GXWChar* GXMesh::GetMeshFileName () const
 
 GXVoid GXMesh::FillVBO ( const GXVoid* data, GLsizeiptr size, GLenum usage )
 {
-    GXSafeFree ( meshFile );
+    meshFile.Clear ();
 
     if ( meshVBO == 0u )
         glGenBuffers ( 1, &meshVBO );
@@ -119,7 +119,11 @@ GXVoid GXMesh::FillVBO ( const GXVoid* data, GLsizeiptr size, GLenum usage )
 GXMesh* GXCALL GXMesh::Find ( const GXWChar* fileName )
 {
     for ( GXMesh* mesh = top; mesh; mesh = mesh->next )
-        if ( GXWcscmp ( mesh->meshFile, fileName ) == 0 ) return mesh;
+    {
+        if ( GXWcscmp ( mesh->meshFile, fileName ) != 0 ) continue;
+
+        return mesh;
+    }
 
     return nullptr;
 }
@@ -143,29 +147,26 @@ GXMesh::GXMesh ()
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXMesh" )
     referenceCount ( 1u ),
     previous ( nullptr ), 
-    vboSize ( 0 ),
-    next ( nullptr ),
-    meshFile ( nullptr ),
-    vboUsage ( GL_INVALID_ENUM ),
-    totalVertices ( 0 ),
-    meshVBO ( 0u )
+    vboSize ( 0 )
 {
-    // NOTHING
+    next = nullptr;
+    vboUsage = GL_INVALID_ENUM;
+    totalVertices = 0;
+    meshVBO = 0u;
 }
 
 GXMesh::GXMesh ( const GXWChar* fileName )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXMesh" )
     referenceCount ( 1u ),
     previous ( nullptr ),
-    vboSize ( 0 )
+    vboSize ( 0 ),
+    meshFile ( fileName )
 {
     if ( top )
         top->previous = this;
 
     next = top;
     top = this;
-
-    GXWcsclone ( &meshFile, fileName );
 
     GXWChar* extension = nullptr;
     GXGetFileExtension ( &extension, fileName );
@@ -185,7 +186,7 @@ GXMesh::GXMesh ( const GXWChar* fileName )
 
     if ( result ) return;
 
-    GXLogW ( L"GXMesh::GXMesh::Error - Не могу загрузить меш %s.", fileName );
+    GXLogA ( "GXMesh::GXMesh::Error - Не могу загрузить меш %S.", fileName );
 }
 
 GXMesh::~GXMesh ()
@@ -195,9 +196,7 @@ GXMesh::~GXMesh ()
     glBindBuffer ( GL_ARRAY_BUFFER, 0u );
     glDeleteBuffers ( 1, &meshVBO );
 
-    if ( !meshFile ) return;
-
-    free ( meshFile );
+    if ( meshFile.IsEmpty () ) return;
 
     if ( top == this )
         top = top->next;
@@ -214,22 +213,12 @@ GXBool GXMesh::LoadFromOBJ ( const GXWChar* fileName )
 {
     GXWChar* path = nullptr;
     GXGetFileDirectoryPath ( &path, fileName );
-    GXUPointer size = GXWcslen ( path ) * sizeof ( GXWChar );
-
-    size += sizeof ( GXWChar );        // L'/' symbol
-    size += GXWcslen ( CACHE_DIRECTORY_NAME ) * sizeof ( GXWChar );
-    size += sizeof ( GXWChar );        // L'/' symbol
 
     GXWChar* baseFileName = nullptr;
     GXGetBaseFileName ( &baseFileName, fileName );
-    size += GXWcslen ( baseFileName ) * sizeof ( GXWChar );
 
-    size += sizeof ( GXWChar );        // L'.' symbol
-    size += GXWcslen ( CACHE_FILE_EXTENSION ) * sizeof ( GXWChar );
-    size += sizeof ( GXWChar );        // L'\0' symbol
-
-    GXWChar* cacheFileName = static_cast<GXWChar*> ( Malloc ( size ) );
-    wsprintfW ( cacheFileName, L"%s/%s/%s.%s", path, CACHE_DIRECTORY_NAME, baseFileName, CACHE_FILE_EXTENSION );
+    GXString cacheFileName;
+    cacheFileName.Format ( "%S/%S/%S.%S", path, CACHE_DIRECTORY_NAME, baseFileName, CACHE_FILE_EXTENSION );
 
     if ( GXDoesFileExist ( cacheFileName ) )
     {
@@ -237,13 +226,12 @@ GXBool GXMesh::LoadFromOBJ ( const GXWChar* fileName )
 
         free ( path );
         free ( baseFileName );
-        Free ( cacheFileName );
 
         return result;
     }
 
     GXOBJPoint* points = nullptr;
-    totalVertices = static_cast<GLsizei> ( GXLoadOBJ ( fileName, &points ) );
+    totalVertices = static_cast<GLsizei> ( GXLoadOBJ ( fileName, points ) );
 
     GXAABB bounds;
 
@@ -301,20 +289,13 @@ GXBool GXMesh::LoadFromOBJ ( const GXWChar* fileName )
         offset += sizeof ( GXVec3 );
     }
 
-    free ( points );
+    Free ( points );
 
-    size = GXWcslen ( path ) * sizeof ( GXWChar );
-    size += sizeof ( GXWChar );        // L'/' symbol
-    size += GXWcslen ( CACHE_DIRECTORY_NAME ) * sizeof ( GXWChar );
-    size += sizeof ( GXWChar );        // L'\0' symbol
-
-    GXWChar* cacheDirectory = static_cast<GXWChar*> ( Malloc ( size ) );
-    wsprintfW ( cacheDirectory, L"%s/%s", path, CACHE_DIRECTORY_NAME );
+    GXString cacheDirectory;
+    cacheDirectory.Format ( "%S/%S", path, CACHE_DIRECTORY_NAME );
 
     if ( !GXDoesDirectoryExist ( cacheDirectory ) )
         GXCreateDirectory ( cacheDirectory );
-
-    Free ( cacheDirectory );
 
     GXExportNativeStaticMesh ( cacheFileName, descriptor );
 
@@ -326,7 +307,6 @@ GXBool GXMesh::LoadFromOBJ ( const GXWChar* fileName )
 
     free ( path );
     free ( baseFileName );
-    Free ( cacheFileName );
 
     vboUsage = GL_STATIC_DRAW;
 
@@ -430,7 +410,7 @@ class GXSkin final : public GXMemoryInspector
     friend class GXMeshGeometry;
 
     private:
-        GXUInt              referenceCount;
+        GXUPointerAtomic    referenceCount;
         GXSkin*             previous;
 
         static GXSkin*      top;
@@ -472,7 +452,7 @@ GXVoid GXSkin::Release ()
 {
     --referenceCount;
 
-    if ( referenceCount > 0u ) return;
+    if ( referenceCount > static_cast<GXUPointer> ( 0u ) ) return;
 
     delete this;
 }
@@ -531,7 +511,7 @@ GXSkin::GXSkin ( const GXWChar* fileName )
 
     if ( result ) return;
 
-    GXLogW ( L"GXMesh::GXMesh::Error - Не могу загрузить скин %s.", fileName );
+    GXLogA ( "GXMesh::GXMesh::Error - Не могу загрузить скин %S.", fileName );
 }
 
 GXSkin::~GXSkin ()

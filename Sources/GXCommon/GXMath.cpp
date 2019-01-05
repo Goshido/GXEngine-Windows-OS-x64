@@ -1,4 +1,4 @@
-﻿// version 1.53
+﻿// version 1.54
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
@@ -382,7 +382,7 @@ GXVoid GXCALL GXVec3::MakeOrthonormalBasis ( GXVec3 &baseX, GXVec3 &adjustedY, G
 
     if ( adjustedZ.SquaredLength () == 0.0f )
     {
-        GXLogW ( L"GXMakeOrthonormalBasis::Error - Can't make this!\n" );
+        GXLogA ( "GXMakeOrthonormalBasis::Error - Can't make this!\n" );
         return;
     }
 
@@ -846,7 +846,7 @@ GXVoid GXColorRGB::From ( const GXColorHSV &color )
         break;
 
         default:
-            GXLogW ( L"GXConvertHSVAToRGBA::Error (branch two) - Что-то пошло не так!\n" );
+            GXLogA ( "GXConvertHSVAToRGBA::Error (branch two) - Что-то пошло не так!\n" );
         break;
     }
 }
@@ -1166,7 +1166,7 @@ GXVoid GXQuat::Normalize ()
 
     if ( fabsf ( squaredLength ) < FLOAT_EPSILON )
     {
-        GXLogW ( L"GXQuat::Normalize - Error\n" );
+        GXLogA ( "GXQuat::Normalize - Error\n" );
         return;
     }
 
@@ -1190,7 +1190,7 @@ GXVoid GXQuat::Inverse ( const GXQuat &q )
     }
     else
     {
-        GXLogW ( L"GXQuat::Inverse - Error\n" );
+        GXLogA ( "GXQuat::Inverse - Error\n" );
         Identity ();
     }
 }
@@ -1820,14 +1820,14 @@ GXVoid GXMat3::SkewSymmetric ( const GXVec3 &base )
 {
     m[ 0u ][ 0u ] = m[ 1u ][ 1u ] = m[ 2u ][ 2u ] = 0.0f;
 
-    m[ 0u ][ 1u ] = -base.GetZ ();
-    m[ 0u ][ 2u ] = base.GetY ();
+    m[ 0u ][ 1u ] = -base.data[ 2u ];
+    m[ 0u ][ 2u ] = base.data[ 1u ];
 
-    m[ 1u ][ 0u ] = base.GetZ ();
-    m[ 1u ][ 2u ] = -base.GetX ();
+    m[ 1u ][ 0u ] = base.data[ 2u ];
+    m[ 1u ][ 2u ] = -base.data[ 0u ];
 
-    m[ 2u ][ 0u ] = -base.GetY ();
-    m[ 2u ][ 1u ] = base.GetX ();
+    m[ 2u ][ 0u ] = -base.data[ 1u ];
+    m[ 2u ][ 1u ] = base.data[ 0u ];
 }
 
 GXVoid GXMat3::Sum ( const GXMat3 &a, const GXMat3 &b )

@@ -1,8 +1,8 @@
-// version 1.6
+// version 1.7
 
 #include <GXEngine/GXLocale.h>
 #include <GXCommon/GXAVLTree.h>
-#include <GXCommon/GXFileSystem.h>
+#include <GXCommon/GXFile.h>
 #include <GXCommon/GXLogger.h>
 #include <GXCommon/GXStrings.h>
 
@@ -157,12 +157,16 @@ GXLocale::~GXLocale ()
 
 GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 {
-    GXUTF8* data;
+    GXUByte* rawData;
     GXUPointer size;
-    GXLoadFile ( fileName, reinterpret_cast<GXVoid**> ( &data ), size, GX_TRUE );
+
+    GXFile file ( fileName );
+    file.LoadContent ( rawData, size, eGXFileContentOwner::GXFile, GX_TRUE );
+
+    GXUTF8* data = reinterpret_cast<GXUTF8*> ( rawData );
 
     GXStringTree* tree = nullptr;
-    GXVoid* tmp = storage.GetValue ( (GXUInt)language );
+    GXVoid* tmp = storage.GetValue ( static_cast<GXUInt> ( language ) );
 
     if ( !tmp )
     {
@@ -221,8 +225,6 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 
         ++offset;
     }
-
-    free ( data );
 }
 
 GXVoid GXLocale::SetLanguage ( eGXLanguage language )
@@ -232,7 +234,7 @@ GXVoid GXLocale::SetLanguage ( eGXLanguage language )
 
     if ( *treePointer == nullptr )
     {
-        GXLogW ( L"GXLocale::SetLanguage - Не могу установить язык (не загружен)\n" );
+        GXLogA ( "GXLocale::SetLanguage - Не могу установить язык (не загружен)\n" );
         return;
     }
 

@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #ifndef GX_MESH_GEOMETRY
 #define GX_MESH_GEOMETRY
@@ -7,7 +7,6 @@
 #include "GXOpenGL.h"
 #include "GXSkeleton.h"
 #include "GXSkinningMaterial.h"
-#include <GXCommon/GXMath.h>
 
 
 enum class eGXMeshStreamIndex : GLuint

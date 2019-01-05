@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #ifndef GX_LOCALE
 #define GX_LOCALE

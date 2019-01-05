@@ -300,10 +300,12 @@ GXVoid EMGame::OnInit ()
     contactNormalMaterial = new GXUnlitColorMaterial ();
     contactNormalMaterial->SetColor ( 0u, 0u, 255u, 255u );
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMap" );
     environmentMap = new GXTextureCubeMap ();
     environmentMap->LoadEquirectangularImage ( L"Textures/Editor Mobile/Default LDR environment map.jpg", GX_FALSE, GX_TRUE );
     //environmentMap->LoadEquirectangularImage ( L"Textures/Editor Mobile/Default HDR environment map.hdr", GX_TRUE, GX_FALSE );
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMap" );
     lightProbeSourceTexture = new GXTextureCubeMap ();
     lightProbeSourceTexture->LoadEquirectangularImage ( L"Textures/Editor Mobile/Default HDR environment map.hdr", GX_TRUE, GX_FALSE );
 
@@ -325,7 +327,7 @@ GXVoid EMGame::OnInit ()
 
 GXVoid EMGame::OnResize ( GXInt width, GXInt height )
 {
-    GXLogW ( L"EMGame::OnResize::Info - Новый размер %i x %i\n", width, height );
+    GXLogA ( "EMGame::OnResize::Info - Новый размер %i x %i\n", width, height );
 }
 
 GXVoid EMGame::OnFrame ( GXFloat deltaTime )
@@ -573,7 +575,7 @@ GXVoid EMGame::OnDestroy ()
 GXVoid GXCALL EMGame::OnExit ( GXVoid* /*handler*/ )
 {
     GXCore::GetInstance ().Exit ();
-    GXLogW ( L"Завершение\n" );
+    GXLogA ( "Завершение\n" );
 }
 
 GXVoid GXCALL EMGame::OnColorPicker ( GXVoid* /*handler*/ )
@@ -583,7 +585,7 @@ GXVoid GXCALL EMGame::OnColorPicker ( GXVoid* /*handler*/ )
 
 GXVoid GXCALL EMGame::OnPickRGBUByte ( GXVoid* /*handler*/, GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
 {
-    GXLogW ( L"EMGame::OnPickRGBUByte::Info - Выбран цвет RGBA:\n\tКрасный - %hhu\n\tЗелёный - %hhu\n\tСиний - %hhu\n\tПрозрачность - %hhu\n", red, green, blue, alpha );
+    GXLogA ( "EMGame::OnPickRGBUByte::Info - Выбран цвет RGBA:\n\tКрасный - %hhu\n\tЗелёный - %hhu\n\tСиний - %hhu\n\tПрозрачность - %hhu\n", red, green, blue, alpha );
 }
 
 GXVoid GXCALL EMGame::OnShowMotionBlurSettings ( GXVoid* /*handler*/ )
@@ -652,7 +654,7 @@ GXVoid GXCALL EMGame::OnObject ( GXVoid* handler, GXVoid* object )
     EMActor* actor = static_cast<EMActor*> ( object );
 
     if ( actor )
-        GXLogW ( L"EMOnObject::Info - Объект %s\n", actor->GetName () );
+        GXLogA ( "EMOnObject::Info - Объект %S\n", actor->GetName () );
 
     game->moveTool->SetActor ( actor );
     EMViewer::GetInstance ()->SetTarget ( actor );
@@ -667,5 +669,5 @@ GXVoid GXCALL EMGame::OnViewerTransformChanged ( GXVoid* handler )
 
 GXVoid GXCALL EMGame::OnOpenFile ( const GXWChar* filePath )
 {
-    GXLogW ( L"EMOnOpenFile::Info - Файл %s\n", filePath );
+    GXLogA ( "EMOnOpenFile::Info - Файл %S\n", filePath );
 }

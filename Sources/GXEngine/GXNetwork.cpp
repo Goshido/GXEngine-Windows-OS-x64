@@ -32,7 +32,7 @@ GXBool GXCALL GXNetWSAInit ( eGXNetModule who )
 
         if ( !perfect )
         {
-            GXLogW ( L"GXNetWSAInit::Error - Ошибка WSAStartup\n" );
+            GXLogA ( "GXNetWSAInit::Error - Ошибка WSAStartup\n" );
             return GX_FALSE;
         }
     }
@@ -92,7 +92,7 @@ GXBool GXCALL GXNetWSADestroy ( eGXNetModule who )
 
     if ( !needDestroy || WSACleanup () == 0 ) return GX_TRUE;
 
-    GXLogW ( L"GXNetWSADestroy::Error - Ошибка WSACleanup\n" );
+    GXLogA ( "GXNetWSADestroy::Error - Ошибка WSACleanup\n" );
 
     switch ( who )
     {
@@ -181,7 +181,7 @@ GXNetServer& GXCALL GXNetServer::GetInstance ()
 GXNetServer::~GXNetServer ()
 {
     if ( !DestroyTCP () )
-        GXLogW ( L"GXNetServer::~GXNetServer::Warning - DestroyTCP отработал некорректно\n" ); 
+        GXLogA ( "GXNetServer::~GXNetServer::Warning - DestroyTCP отработал некорректно\n" ); 
 
     DestroyUDP ();
 
@@ -196,7 +196,7 @@ GXBool GXNetServer::CreateTCP ( GXUShort port )
 
     if ( !GXNetWSAInit ( eGXNetModule::Server ) )
     {
-        GXLogW ( L"GXNetServer::CreateTCP::Error - Ошибка WSAStartup\n" );
+        GXLogA ( "GXNetServer::CreateTCP::Error - Ошибка WSAStartup\n" );
         return GX_FALSE;
     }
     
@@ -204,7 +204,7 @@ GXBool GXNetServer::CreateTCP ( GXUShort port )
 
     if ( listenerTCP == INVALID_SOCKET )
     {
-        GXLogW ( L"GXNetServer::CreateTCP::Error - Ошибка создания сокета\n" );
+        GXLogA ( "GXNetServer::CreateTCP::Error - Ошибка создания сокета\n" );
 
         if ( listenerUDP == INVALID_SOCKET )
             GXNetWSADestroy ( eGXNetModule::Server );
@@ -219,7 +219,7 @@ GXBool GXNetServer::CreateTCP ( GXUShort port )
 
     if ( bind ( listenerTCP, reinterpret_cast<sockaddr*> ( &local_addr ), sizeof ( local_addr ) ) )
     {
-        GXLogW ( L"GXNetServer::CreateTCP::Error - Ошибка bind\n" );
+        GXLogA ( "GXNetServer::CreateTCP::Error - Ошибка bind\n" );
 
         shutdown ( listenerTCP, SD_BOTH );
         closesocket ( listenerTCP );
@@ -233,7 +233,7 @@ GXBool GXNetServer::CreateTCP ( GXUShort port )
 
     if ( listen ( listenerTCP, 0x100 ) )
     {
-        GXLogW ( L"GXNetServer::CreateTCP::Error - Ошибка listen\n" );
+        GXLogA ( "GXNetServer::CreateTCP::Error - Ошибка listen\n" );
 
         shutdown ( listenerTCP, SD_BOTH );
         closesocket ( listenerTCP );
@@ -257,7 +257,7 @@ GXBool GXNetServer::CreateUDP ( GXUShort port )
 
     if ( !GXNetWSAInit ( eGXNetModule::Server ) )
     {
-        GXLogW ( L"GXNetServer::CreateUDP::Error - Ошибка WSAStartup\n" );
+        GXLogA ( "GXNetServer::CreateUDP::Error - Ошибка WSAStartup\n" );
         return GX_FALSE;
     }
     
@@ -265,7 +265,7 @@ GXBool GXNetServer::CreateUDP ( GXUShort port )
 
     if ( listenerUDP == INVALID_SOCKET )
     {
-        GXLogW ( L"GXNetServer::CreateUDP::Error - Ошибка создания сокета\n" );
+        GXLogA ( "GXNetServer::CreateUDP::Error - Ошибка создания сокета\n" );
 
         if ( listenerTCP == INVALID_SOCKET ) 
             GXNetWSADestroy ( eGXNetModule::Server );
@@ -280,7 +280,7 @@ GXBool GXNetServer::CreateUDP ( GXUShort port )
 
     if ( bind ( listenerUDP, reinterpret_cast<sockaddr*> ( &local_addr ), sizeof ( local_addr ) ) )
     {
-        GXLogW ( L"GXNetServer::CreateUDP::Error - Ошибка bind\n" );
+        GXLogA ( "GXNetServer::CreateUDP::Error - Ошибка bind\n" );
 
         shutdown ( listenerUDP, SD_BOTH );
         closesocket ( listenerUDP );
@@ -462,11 +462,11 @@ GXUPointer GXTHREADCALL GXNetServer::ListenTCP ( GXVoid* /*arg*/, GXThread& /*th
     {
         HOSTENT* hst;
         hst = gethostbyaddr ( reinterpret_cast<const char*> ( &client_addr.sin_addr.s_addr ), 4, AF_INET );
-        GXLogW ( L"GXNetServer::ListenTCP::Info - Получена заявка на подключение. Пытаюсь зарегистрировать нового клиента...\n" );
+        GXLogA ( "GXNetServer::ListenTCP::Info - Получена заявка на подключение. Пытаюсь зарегистрировать нового клиента...\n" );
 
         if ( numClientsTCP > GX_MAX_NETWORK_CLIENTS )
         {
-            GXLogW ( L"GXNetServer::ListenTCP::Warning - Превышено количество одновременных подключений\n" );
+            GXLogA ( "GXNetServer::ListenTCP::Warning - Превышено количество одновременных подключений\n" );
         }
         else
         {
@@ -496,7 +496,7 @@ GXUPointer GXTHREADCALL GXNetServer::ListenTCP ( GXVoid* /*arg*/, GXThread& /*th
 
 GXUPointer GXTHREADCALL GXNetServer::ServeClientTCP ( GXVoid* arg, GXThread& /*thread*/ )
 {
-    GXLogW ( L"GXNetServer::ServeClientTCP::Info - Клиент зарегистрирован\n" );
+    GXLogA ( "GXNetServer::ServeClientTCP::Info - Клиент зарегистрирован\n" );
 
     const GXClientInfo* info = static_cast<const GXClientInfo*> ( arg );
 
@@ -522,7 +522,7 @@ GXUPointer GXTHREADCALL GXNetServer::ServeClientTCP ( GXVoid* arg, GXThread& /*t
     shutdown ( info->socket, SD_BOTH );
     closesocket ( info->socket );
 
-    GXLogW ( L"GXNetServer::ServeClientTCP::Info - Клиент отключился\n" );
+    GXLogA ( "GXNetServer::ServeClientTCP::Info - Клиент отключился\n" );
 
     --numClientsTCP;
     clientsTCP[ info->id ].Destroy ();
@@ -621,7 +621,7 @@ GXNetClient& GXCALL GXNetClient::GetInstance ()
 GXNetClient::~GXNetClient ()
 {
     if ( !DisconnectTCP () )
-        GXLogW ( L"GXNetClient::~GXNetClient::Warning - DisconnectTCP завершился некорректно\n" );
+        GXLogA ( "GXNetClient::~GXNetClient::Warning - DisconnectTCP завершился некорректно\n" );
 
     DestroyUDP ();
 
@@ -634,13 +634,13 @@ GXBool GXNetClient::ConnectTCP ( const GXChar* url, GXUShort port )
 
     if ( !GXNetWSAInit ( eGXNetModule::Client ) )
     {
-        GXLogW ( L"GXNetClient::ConnectTCP::Error - Ошибка WSAStart\n" );
+        GXLogA ( "GXNetClient::ConnectTCP::Error - Ошибка WSAStart\n" );
         return GX_FALSE;
     }
 
     if ( ( socketTCP = socket ( AF_INET, SOCK_STREAM, 0 ) ) == INVALID_SOCKET  )
     {
-        GXLogW ( L"GXNetClient::ConnectTCP::Error - Ошибка Socket\n" );
+        GXLogA ( "GXNetClient::ConnectTCP::Error - Ошибка Socket\n" );
         return GX_FALSE;
     }
 
@@ -665,7 +665,7 @@ GXBool GXNetClient::ConnectTCP ( const GXChar* url, GXUShort port )
         }
         else
         {
-            GXLogW ( L"GXNetClient::ConnectTCP::Error - Неверный адрес\n" );
+            GXLogA ( "GXNetClient::ConnectTCP::Error - Неверный адрес\n" );
             shutdown ( socketTCP, SD_BOTH );
             closesocket ( socketTCP );
             socketTCP = INVALID_SOCKET;
@@ -676,7 +676,7 @@ GXBool GXNetClient::ConnectTCP ( const GXChar* url, GXUShort port )
 
     if ( connect ( socketTCP, reinterpret_cast<sockaddr*> ( &dest_addr ), sizeof ( dest_addr ) ) == SOCKET_ERROR )
     {
-        GXLogW ( L"GXNetClient::ConnectTCP::Error - Невозможно установить соединение\n" );
+        GXLogA ( "GXNetClient::ConnectTCP::Error - Невозможно установить соединение\n" );
         
         shutdown ( socketTCP, SD_BOTH );
         closesocket ( socketTCP );
@@ -700,13 +700,13 @@ GXBool GXNetClient::DeployUDP ( const GXChar* url, GXUShort port )
 
     if ( !GXNetWSAInit ( eGXNetModule::Client ) )
     {
-        GXLogW ( L"GXNetClient::DeployUDP::Error - Ошибка WSAStart\n" );
+        GXLogA ( "GXNetClient::DeployUDP::Error - Ошибка WSAStart\n" );
         return GX_FALSE;
     }
 
     if ( ( socketUDP = socket ( AF_INET, SOCK_DGRAM, 0 ) ) == INVALID_SOCKET  )
     {
-        GXLogW ( L"GXNetClient::DeployUDP::Error - Ошибка Socket\n" );
+        GXLogA ( "GXNetClient::DeployUDP::Error - Ошибка Socket\n" );
         return GX_FALSE;
     }
 
@@ -728,7 +728,7 @@ GXBool GXNetClient::DeployUDP ( const GXChar* url, GXUShort port )
         }
         else
         {
-            GXLogW ( L"GXNetClient::ConnectTCP::Error - Неверный адрес\n" );
+            GXLogA ( "GXNetClient::ConnectTCP::Error - Неверный адрес\n" );
 
             closesocket ( socketUDP );
             socketUDP = INVALID_SOCKET;
@@ -747,7 +747,7 @@ GXBool GXNetClient::DeployUDP ( const GXChar* url, GXUShort port )
 
     if ( bind ( socketUDP, reinterpret_cast<sockaddr*> ( &self_addr ), sizeof ( self_addr ) ) == SOCKET_ERROR )
     {
-        GXLogW ( L"GXNetClient::DeployUDP::Error - Ошибка bind\n" );
+        GXLogA ( "GXNetClient::DeployUDP::Error - Ошибка bind\n" );
         closesocket ( socketUDP );
 
         if ( socketTCP == INVALID_SOCKET )
@@ -858,7 +858,7 @@ GXNetClient::GXNetClient ()
 
 GXUPointer GXTHREADCALL GXNetClient::ReceiveTCP ( GXVoid* /*arg*/, GXThread& /*thread*/ )
 {
-    GXLogW ( L"GXNetClient::ReceiveTCP::Info - Соединение успешно создано\n" );
+    GXLogA ( "GXNetClient::ReceiveTCP::Info - Соединение успешно создано\n" );
 
     BOOL disable = FALSE;
     setsockopt ( socketTCP, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*> ( &disable ), sizeof ( BOOL ) );
@@ -879,7 +879,7 @@ GXUPointer GXTHREADCALL GXNetClient::ReceiveTCP ( GXVoid* /*arg*/, GXThread& /*t
 
 GXUPointer GXTHREADCALL GXNetClient::ReceiveUDP ( GXVoid* /*arg*/, GXThread& /*thread*/ )
 {
-    GXLogW ( L"GXNetClient::ReceiveUDP::Info - UDP сокет успешно поднят\n" );
+    GXLogA ( "GXNetClient::ReceiveUDP::Info - UDP сокет успешно поднят\n" );
 
     sockaddr_in client_addr;
     GXInt client_addr_size = sizeof ( client_addr );

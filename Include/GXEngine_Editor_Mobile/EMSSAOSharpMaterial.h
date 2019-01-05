@@ -7,62 +7,62 @@
 #include <GXEngine/GXSampler.h>
 
 
-#define EM_MAX_SSAO_SAMPLES		64u
+#define EM_MAX_SSAO_SAMPLES        64u
 
 
 class EMSSAOSharpMaterial final : public GXMaterial
 {
-	private:
-		GXTexture2D*	depthTexture;
-		GXTexture2D*	normalTexture;
+    private:
+        GXTexture2D*    depthTexture;
+        GXTexture2D*    normalTexture;
 
-		GXSampler		sampler;
+        GXSampler       sampler;
 
-		GXFloat			maxDistance;
-		GXFloat			checkRadius;
+        GXFloat         maxDistance;
+        GXFloat         checkRadius;
 
-		GXTexture2D		noiseTexture;
+        GXTexture2D     noiseTexture;
 
-		GXInt			samples;
-		GXFloat			inverseSamples;
+        GXInt           samples;
+        GXFloat         inverseSamples;
 
-		GXVec2			noiseScale;
-		GXVec3			kernel[ EM_MAX_SSAO_SAMPLES ];
+        GXVec2          noiseScale;
+        GXVec3          kernel[ EM_MAX_SSAO_SAMPLES ];
 
-		GLint			checkRadiusLocation;
-		GLint			kernelLocation;
-		GLint			samplesLocation;
-		GLint			inverseSamplesLocation;
-		GLint			noiseScaleLocation;
-		GLint			maxDistanceLocation;
-		GLint			projectionMatrixLocation;
-		GLint			inverseProjectionMatrixLocation;
+        GLint           checkRadiusLocation;
+        GLint           kernelLocation;
+        GLint           samplesLocation;
+        GLint           inverseSamplesLocation;
+        GLint           noiseScaleLocation;
+        GLint           maxDistanceLocation;
+        GLint           projectionMatrixLocation;
+        GLint           inverseProjectionMatrixLocation;
 
-	public:
-		EMSSAOSharpMaterial ();
-		~EMSSAOSharpMaterial () override;
+    public:
+        EMSSAOSharpMaterial ();
+        ~EMSSAOSharpMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) override;
-		GXVoid Unbind () override;
+        GXVoid Bind ( const GXTransform &transform ) override;
+        GXVoid Unbind () override;
 
-		GXVoid SetDepthTexture ( GXTexture2D &texture );
-		GXVoid SetNormalTexture ( GXTexture2D &texture );
+        GXVoid SetDepthTexture ( GXTexture2D &texture );
+        GXVoid SetNormalTexture ( GXTexture2D &texture );
 
-		GXVoid SetCheckRadius ( GXFloat meters );
-		GXFloat GetCheckRadius () const;
+        GXVoid SetCheckRadius ( GXFloat meters );
+        GXFloat GetCheckRadius () const;
 
-		GXVoid SetSampleNumber ( GXUByte samplesPerPixel );
-		GXUByte GetSampleNumber () const;
+        GXVoid SetSampleNumber ( GXUByte samplesPerPixel );
+        GXUByte GetSampleNumber () const;
 
-		GXVoid SetNoiseTextureResolution ( GXUShort resolution );
-		GXUShort GetNoiseTextureResolution () const;
+        GXVoid SetNoiseTextureResolution ( GXUShort resolution );
+        GXUShort GetNoiseTextureResolution () const;
 
-		GXVoid SetMaximumDistance ( GXFloat meters );
-		GXFloat GetMaximumDistance () const;
+        GXVoid SetMaximumDistance ( GXFloat meters );
+        GXFloat GetMaximumDistance () const;
 
-	private:
-		EMSSAOSharpMaterial ( const EMSSAOSharpMaterial &other ) = delete;
-		EMSSAOSharpMaterial& operator = ( const EMSSAOSharpMaterial &other ) = delete;
+    private:
+        EMSSAOSharpMaterial ( const EMSSAOSharpMaterial &other ) = delete;
+        EMSSAOSharpMaterial& operator = ( const EMSSAOSharpMaterial &other ) = delete;
 };
 
 

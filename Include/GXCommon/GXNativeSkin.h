@@ -1,4 +1,4 @@
-//version 1.1
+// version 1.2
 
 #ifndef GX_NATIVE_SKIN
 #define GX_NATIVE_SKIN
@@ -13,7 +13,7 @@
 struct GXNativeSkinHeader
 {
     GXUInt          totalVertices;
-    GXUBigInt       vboOffset;      //VBO element struct: bone index (GXVec4), weight (GXVec4).
+    GXUBigInt       vboOffset;      // VBO element struct: bone index (GXVec4), weight (GXVec4).
 };
 
 #pragma pack ( pop )
@@ -32,4 +32,4 @@ struct GXSkinInfo
 GXVoid GXCALL GXLoadNativeSkin ( GXSkinInfo &info, const GXWChar* fileName );
 
 
-#endif //GX_NATIVE_SKIN
+#endif // GX_NATIVE_SKIN

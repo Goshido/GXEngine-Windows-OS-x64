@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #ifndef GX_TEXTURE_CUBE_MAP
 #define GX_TEXTURE_CUBE_MAP
@@ -7,15 +7,14 @@
 #include "GXOpenGL.h"
 #include "GXEquirectangularToCubeMapMaterial.h"
 #include "GXTexture2D.h"
-#include <GXCommon/GXFileSystem.h>
 
 
 class GXTextureCubeMapEntry;
-class GXTextureCubeMap final
+class GXTextureCubeMap final : public GXMemoryInspector
 {
     private:
-        GXTextureCubeMapEntry*      textureCubeMapEntry;
         GXUByte                     textureUnit;
+        GXTextureCubeMapEntry*      textureCubeMapEntry;
 
     public:
         // Creates uninitiated texture resource.

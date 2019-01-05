@@ -51,7 +51,7 @@ GXBool GXCALL GXSoundInit ()
 
     if ( !gx_GXEngineDLLModuleHandle )
     {
-        GXLogW ( L"GXPhysXUnit::Error - Не удалось загрузить GXEngine.dll\n" );
+        GXLogA ( "GXPhysXUnit::Error - Не удалось загрузить GXEngine.dll\n" );
         return GX_FALSE;
     }
 
@@ -61,7 +61,7 @@ GXBool GXCALL GXSoundInit ()
 
     if ( !GXOGGVorbisInit )
     {
-        GXLogW ( L"GXSoundInit::Error - Не удалось найти функцию GXOGGVorbisInit\n" );
+        GXLogA ( "GXSoundInit::Error - Не удалось найти функцию GXOGGVorbisInit\n" );
         return GX_FALSE;
     }
 
@@ -79,7 +79,7 @@ GXBool GXCALL GXSoundInit ()
 
     if ( !GXOpenALInit )
     {
-        GXLogW ( L"GXSoundInit::Error - Не удалось найти функцию GXOpenALInit\n" );
+        GXLogA ( "GXSoundInit::Error - Не удалось найти функцию GXOpenALInit\n" );
         return GX_FALSE;
     }
 
@@ -110,7 +110,7 @@ GXBool GXCALL GXSoundInit ()
 
     if ( !GXOpenALInit ( alOut ) )
     {
-        GXLogW ( L"GXSoundInit::Error - GXOpenALInit провалена\n" );
+        GXLogA ( "GXSoundInit::Error - GXOpenALInit провалена\n" );
         return GX_FALSE;
     }
 
@@ -121,13 +121,13 @@ GXBool GXCALL GXSoundDestroy ()
 {
     if ( !gx_GXEngineDLLModuleHandle )
     {
-        GXLogW ( L"GXSoundDestroy::Error - Попытка выгрузить несуществующую в памяти GXEngine.dll\n" );
+        GXLogA ( "GXSoundDestroy::Error - Попытка выгрузить несуществующую в памяти GXEngine.dll\n" );
         return GX_FALSE;
     }
 
     if ( !GXOpenALDestroy )
     {
-        GXLogW ( L"GXSoundInit::Error - Не удалось найти функцию GXOGGVorbisInit\n" );
+        GXLogA ( "GXSoundInit::Error - Не удалось найти функцию GXOGGVorbisInit\n" );
         return GX_FALSE;
     }
 
@@ -135,7 +135,7 @@ GXBool GXCALL GXSoundDestroy ()
 
     if ( !FreeLibrary ( gx_GXEngineDLLModuleHandle ) )
     {
-        GXLogW ( L"GXSoundDestroy::Error - Не удалось выгрузить библиотеку GXEngine.dll\n" );
+        GXLogA ( "GXSoundDestroy::Error - Не удалось выгрузить библиотеку GXEngine.dll\n" );
         return GX_FALSE;
     }
 

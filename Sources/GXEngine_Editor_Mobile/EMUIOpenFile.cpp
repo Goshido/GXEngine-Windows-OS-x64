@@ -194,7 +194,7 @@ GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
     }
     else
     {
-        GXLogW ( L"EMUIOpenFile::UpdateDirectory::Error - Can't open directory %s\n", currentDirectory );
+        GXLogA ( "EMUIOpenFile::UpdateDirectory::Error - Can't open directory %S\n", currentDirectory );
         GXSafeFree ( currentDirectory );
     }
 }

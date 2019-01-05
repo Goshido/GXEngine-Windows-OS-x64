@@ -96,8 +96,8 @@ GXRenderer::~GXRenderer ()
     {
         if ( ChangeDisplaySettingsW ( nullptr, 0u ) != DISP_CHANGE_SUCCESSFUL )
         {
-            GXWarningBox ( L"Не удалось вернуть графические настройки по умолчанию" );
-            GXLogW ( L"GXRenderer::~GXRenderer::Error - Не удалось вернуть графические настройки по умолчанию\n" );
+            GXWarningBox ( "Не удалось вернуть графические настройки по умолчанию" );
+            GXLogA ( "GXRenderer::~GXRenderer::Error - Не удалось вернуть графические настройки по умолчанию\n" );
         }
     }
 
@@ -426,78 +426,78 @@ GXVoid GXCALL GXRenderer::InitOpenGL ()
     glEnable ( GL_TEXTURE_CUBE_MAP_SEAMLESS );
     glCullFace ( GL_FRONT );
 
-    GXLogW ( L"GXRenderer::InitOpenGL::Info - Аппаратные возможности:\n--------Текстурирование:\n" );
+    GXLogA ( "GXRenderer::InitOpenGL::Info - Аппаратные возможности:\n--------Текстурирование:\n" );
 
-    GLint value[2];
+    GLint value[ 2u ];
     glGetIntegerv ( GL_MAX_TEXTURE_SIZE, value );
-    GXLogW ( L"Максимальный размер 2D текстуры: %u (минимум стандарта - 1024)\n", value[ 0 ] );
+    GXLogA ( "Максимальный размер 2D текстуры: %u (минимум стандарта - 1024)\n", value[ 0u ] );
 
     glGetIntegerv ( GL_MAX_ARRAY_TEXTURE_LAYERS, value );
-    GXLogW ( L"Максимальное количество слоёв для текстурных массивов: %u (минимум стандарта - 256)\n", value[ 0 ] );
+    GXLogA ( "Максимальное количество слоёв для текстурных массивов: %u (минимум стандарта - 256)\n", value[ 0u ] );
 
     glGetIntegerv ( GL_MAX_CUBE_MAP_TEXTURE_SIZE, value );
-    GXLogW ( L"Максимальный размер cube map текстуры: %u (минимум стандарта - 1024)\n", value[ 0 ] );
+    GXLogA ( "Максимальный размер cube map текстуры: %u (минимум стандарта - 1024)\n", value[ 0u ] );
 
-    GXLogW ( L"\n--------Буфер кадра:\n" );
+    GXLogA ( "\n--------Буфер кадра:\n" );
 
     glGetIntegerv ( GL_MAX_FRAMEBUFFER_WIDTH, value );
     glGetIntegerv ( GL_MAX_FRAMEBUFFER_HEIGHT, value + 1 );
-    GXLogW ( L"Максимальное разрешение буфера кадра: %u х %u (минимум стандарта - 16384 х 16384)\n", value[ 0 ], value[ 1 ] );
+    GXLogA ( "Максимальное разрешение буфера кадра: %u х %u (минимум стандарта - 16384 х 16384)\n", value[ 0u ], value[ 1u ] );
 
     glGetIntegerv ( GL_MAX_DRAW_BUFFERS, value );
-    GXLogW ( L"Максимальное количество выходных буферов, доступных фрагментному шейдеру: %u (минимум стандарта - 8)\n", value[ 0 ] );
+    GXLogA ( "Максимальное количество выходных буферов, доступных фрагментному шейдеру: %u (минимум стандарта - 8)\n", value[ 0u ] );
 
     glGetIntegerv ( GL_MAX_VIEWPORT_DIMS, value );
-    GXLogW ( L"Максимальное разрешение viewport'а: %u x %u\n", value[ 0 ], value[ 1 ] );
+    GXLogA ( "Максимальное разрешение viewport'а: %u x %u\n", value[ 0u ], value[ 1u ] );
 
-    GXLogW ( L"\n--------Шейдерная программа:\n" );
+    GXLogA ( "\n--------Шейдерная программа:\n" );
 
     // There is not GL_MAX_VARYING_VECTORS in OpenGL 3.3 core profile standart. But GL_MAX_VARYING_COMPONENTS did not work at all (Error 0x500 - Invalid Enum)!
     // Tested on NVIDIA GeForce 770 GTX (Driver version 384.94)
     glGetIntegerv ( GL_MAX_VARYING_VECTORS, value );
-    GXLogW ( L"Максимальное количество векторов-интерполяторов, доступных шейдерной программе: %u (минимум стандарта - 15)\n", value[ 0 ] );
+    GXLogA ( "Максимальное количество векторов-интерполяторов, доступных шейдерной программе: %u (минимум стандарта - 15)\n", value[ 0u ] );
 
-    GXLogW ( L"\n--------Вершинный шейдер:\n" );
+    GXLogA ( "\n--------Вершинный шейдер:\n" );
 
     glGetIntegerv ( GL_MAX_VERTEX_ATTRIBS, value );
-    GXLogW ( L"Максимальное количество входных атрибутов-векторов, доступных вершинному шейдеру: %u (минимум стандарта - 16)\n", value[ 0 ] );
+    GXLogA ( "Максимальное количество входных атрибутов-векторов, доступных вершинному шейдеру: %u (минимум стандарта - 16)\n", value[ 0u ] );
 
     glGetIntegerv ( GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, value );
-    GXLogW ( L"Максимальное количество текстур, доступных вершинному шейдеру: %u (минимум стандарта - 16)\n", value[ 0 ] );
+    GXLogA ( "Максимальное количество текстур, доступных вершинному шейдеру: %u (минимум стандарта - 16)\n", value[ 0u ] );
 
     glGetIntegerv ( GL_MAX_VERTEX_UNIFORM_VECTORS, value );
-    GXLogW ( L"Максимальное количество юниформ-векторов, доступных вершинному шейдеру: %u (минимум стандарта - 256)\n", value[ 0 ] );
+    GXLogA ( "Максимальное количество юниформ-векторов, доступных вершинному шейдеру: %u (минимум стандарта - 256)\n", value[ 0u ] );
 
     glGetIntegerv ( GL_MAX_VERTEX_UNIFORM_COMPONENTS, value );
-    GXLogW ( L"Максимальное количество юниформ-компонент, доступных вершинному шейдеру: %u (минимум стандарта - 1024)\n", value[ 0 ] );
+    GXLogA ( "Максимальное количество юниформ-компонент, доступных вершинному шейдеру: %u (минимум стандарта - 1024)\n", value[ 0u ] );
 
-    GXLogW ( L"\n--------Геометрический шейдер:\n" );
+    GXLogA ( "\n--------Геометрический шейдер:\n" );
 
     glGetIntegerv ( GL_MAX_GEOMETRY_INPUT_COMPONENTS, value );
-    GXLogW ( L"Максимальное количество входных атрибутов-компонент, доступных геометрическому шейдеру: %u (минимум стандарта - 64)\n", value[ 0 ] );
+    GXLogA ( "Максимальное количество входных атрибутов-компонент, доступных геометрическому шейдеру: %u (минимум стандарта - 64)\n", value[ 0u ] );
 
     glGetIntegerv ( GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS, value );
-    GXLogW ( L"Максимальное количество текстур, доступных геометрическому шейдеру: %u (минимум стандарта - 16)\n", value[ 0 ] );
+    GXLogA ( "Максимальное количество текстур, доступных геометрическому шейдеру: %u (минимум стандарта - 16)\n", value[ 0 ] );
 
     glGetIntegerv ( GL_MAX_GEOMETRY_OUTPUT_COMPONENTS, value );
-    GXLogW ( L"Максимальное количество выходных атрибутов-компонент, доступных геометрическому шейдеру: %u (минимум стандарта - 128)\n", value[ 0 ] );
+    GXLogA ( "Максимальное количество выходных атрибутов-компонент, доступных геометрическому шейдеру: %u (минимум стандарта - 128)\n", value[ 0u ] );
 
     glGetIntegerv ( GL_MAX_GEOMETRY_UNIFORM_COMPONENTS, value );
-    GXLogW ( L"Максимальное количество юниформ-компонент, доступных геометрическому шейдеру: %u (минимум стандарта - 1024)\n", value[ 0 ] );
+    GXLogA ( "Максимальное количество юниформ-компонент, доступных геометрическому шейдеру: %u (минимум стандарта - 1024)\n", value[ 0u ] );
 
-    GXLogW ( L"\n--------Фрагментный шейдер:\n" );
+    GXLogA ( "\n--------Фрагментный шейдер:\n" );
 
     glGetIntegerv ( GL_MAX_FRAGMENT_INPUT_COMPONENTS, value );
-    GXLogW ( L"Максимальное количество входных атрибутов-компонент, доступных фрагментному шейдеру: %u (минимум стандарта - 128)\n", value[ 0 ] );
+    GXLogA ( "Максимальное количество входных атрибутов-компонент, доступных фрагментному шейдеру: %u (минимум стандарта - 128)\n", value[ 0u ] );
 
     glGetIntegerv ( GL_MAX_TEXTURE_IMAGE_UNITS, value );
-    GXLogW ( L"Максимальное количество текстур, доступных фрагментному шейдеру: %u (минимум стандарта - 16)\n", value[ 0 ] );
+    GXLogA ( "Максимальное количество текстур, доступных фрагментному шейдеру: %u (минимум стандарта - 16)\n", value[ 0u ] );
 
     glGetIntegerv ( GL_MAX_FRAGMENT_UNIFORM_VECTORS, value );
-    GXLogW ( L"Максимальное количество юниформ-векторов, доступных фрагментному шейдеру: %u (минимум стандарта - 256)\n", value[ 0 ] );
+    GXLogA ( "Максимальное количество юниформ-векторов, доступных фрагментному шейдеру: %u (минимум стандарта - 256)\n", value[ 0u ] );
 
     glGetIntegerv ( GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, value );
-    GXLogW ( L"Максимальное количество юниформ-компонент, доступных фрагментному шейдеру: %u (минимум стандарта - 1024)\n", value[ 0 ] );
+    GXLogA ( "Максимальное количество юниформ-компонент, доступных фрагментному шейдеру: %u (минимум стандарта - 1024)\n", value[ 0u ] );
 
     GXCheckOpenGLError ();
 }
@@ -545,14 +545,14 @@ GXVoid GXCALL GXRenderer::Destroy ()
     {
         if ( !wglMakeCurrent ( 0, 0 ) )
         {
-            GXWarningBox ( L"Освобождение контекстов устройства и редеринга провалено" );
-            GXLogW ( L"GXRenderer::Destroy::Error - Освобождение контекстов устройства и редеринга провалено\n" );
+            GXWarningBox ( "Освобождение контекстов устройства и редеринга провалено" );
+            GXLogA ( "GXRenderer::Destroy::Error - Освобождение контекстов устройства и редеринга провалено\n" );
         }
 
         if ( !wglDeleteContext ( hglRC ) )
         {
-            GXWarningBox ( L"Удаление контекста редеринга провалено" );
-            GXLogW ( L"GXRenderer::Destroy::Error - Удаление контекста редеринга провалено\n" );
+            GXWarningBox ( "Удаление контекста редеринга провалено" );
+            GXLogA ( "GXRenderer::Destroy::Error - Удаление контекста редеринга провалено\n" );
         }
 
         hglRC = static_cast<HGLRC> ( INVALID_HANDLE_VALUE );
@@ -560,22 +560,22 @@ GXVoid GXCALL GXRenderer::Destroy ()
 
     if ( hDC && !DeleteDC ( hDC ) )
     {
-        GXWarningBox ( L"Освобождение контекста устройства провалено" );
-        GXLogW ( L"GXRenderer::Destroy::Error - Освобождение контекста устройства провалено\n" );
+        GXWarningBox ( "Освобождение контекста устройства провалено" );
+        GXLogA ( "GXRenderer::Destroy::Error - Освобождение контекста устройства провалено\n" );
         hDC = static_cast<HDC> ( INVALID_HANDLE_VALUE );
     }
 
     if ( hwnd && !DestroyWindow ( hwnd ) )
     {
         GXWarningBox ( L"Освобождение HWND провалено" );
-        GXLogW ( L"GXRenderer::Destroy::Error - Освобождение HWND провалено\n" );
+        GXLogA ( "GXRenderer::Destroy::Error - Освобождение HWND провалено\n" );
         hwnd = static_cast<HWND> ( INVALID_HANDLE_VALUE );
     }
 
     if ( UnregisterClassW ( WINDOW_OPENGL_CLASS, hinst ) ) return;
 
-    GXWarningBox ( L"Снятие регистрации класса окна провалено" );
-    GXLogW ( L"GXRenderer::Destroy::Error - Снятие регистрации класса окна провалено\n" );
+    GXWarningBox ( "Снятие регистрации класса окна провалено" );
+    GXLogA ( "GXRenderer::Destroy::Error - Снятие регистрации класса окна провалено\n" );
     hinst = static_cast<HINSTANCE> ( INVALID_HANDLE_VALUE );
 }
 
@@ -595,8 +595,8 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
     if ( !RegisterClassW ( &wc ) )
     {
-        GXWarningBox ( L"Не удалось зарегистрировать класс окна" );
-        GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось зарегистрировать класс окна\n" );
+        GXWarningBox ( "Не удалось зарегистрировать класс окна" );
+        GXLogA ( "GXRenderer::MakeWindow::Error - Не удалось зарегистрировать класс окна\n" );
         return GX_FALSE;
     }
 
@@ -629,8 +629,8 @@ GXBool GXCALL GXRenderer::MakeWindow ()
     {
         if ( ChangeDisplaySettingsW ( nullptr, 0 ) != DISP_CHANGE_SUCCESSFUL )
         {
-            GXWarningBox ( L"Не удалось вернуть графические настройки по умолчанию" );
-            GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось вернуть графические настройки по умолчанию\n" );
+            GXWarningBox ( "Не удалось вернуть графические настройки по умолчанию" );
+            GXLogA ( "GXRenderer::MakeWindow::Error - Не удалось вернуть графические настройки по умолчанию\n" );
 
             return GX_FALSE;
         }
@@ -645,8 +645,8 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
     if ( !hwnd )
     {
-        GXWarningBox ( L"При создании окна произошла ошибка" );
-        GXLogW ( L"GXRenderer::MakeWindow::Error - При создании окна произошла ошибка\n" );
+        GXWarningBox ( "При создании окна произошла ошибка" );
+        GXLogA ( "GXRenderer::MakeWindow::Error - При создании окна произошла ошибка\n" );
         Destroy ();
         return GX_FALSE;
     }
@@ -677,8 +677,8 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
     if ( !hDC )
     {
-        GXWarningBox ( L"Не удалось получить hDC" );
-        GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось получить hDC\n" );
+        GXWarningBox ( "Не удалось получить hDC" );
+        GXLogA ( "GXRenderer::MakeWindow::Error - Не удалось получить hDC\n" );
         Destroy ();
 
         return GX_FALSE;
@@ -688,8 +688,8 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
     if ( pixelFomat == 0 )
     {
-        GXWarningBox ( L"Не удалось найти подходящий формат пикселей" );
-        GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось найти подходящий формат пикселей\n" );
+        GXWarningBox ( "Не удалось найти подходящий формат пикселей" );
+        GXLogA ( "GXRenderer::MakeWindow::Error - Не удалось найти подходящий формат пикселей\n" );
         Destroy ();
 
         return GX_FALSE;
@@ -697,8 +697,8 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
     if ( !SetPixelFormat ( hDC, pixelFomat, &pfd ) )
     {
-        GXWarningBox ( L"Не удалось установить формат пикселей" );
-        GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось установить формат пикселей\n" );
+        GXWarningBox ( "Не удалось установить формат пикселей" );
+        GXLogA ( "GXRenderer::MakeWindow::Error - Не удалось установить формат пикселей\n" );
         Destroy ();
 
         return GX_FALSE;
@@ -708,8 +708,8 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
     if ( hglRC == nullptr )
     {
-        GXWarningBox ( L"Не удалось создать контекст рендеринга" );
-        GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось создать контекст рендеринга\n" );
+        GXWarningBox ( "Не удалось создать контекст рендеринга" );
+        GXLogA ( "GXRenderer::MakeWindow::Error - Не удалось создать контекст рендеринга\n" );
         Destroy ();
 
         return GX_FALSE;
@@ -717,8 +717,8 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
     if ( !wglMakeCurrent ( hDC, hglRC ) )
     {
-        GXWarningBox ( L"Не удалось установить контекст рендеринга" );
-        GXLogW ( L"GXRenderer::MakeWindow::Error - Не удалось установить контекст рендеринга\n" );
+        GXWarningBox ( "Не удалось установить контекст рендеринга" );
+        GXLogA ( "GXRenderer::MakeWindow::Error - Не удалось установить контекст рендеринга\n" );
         Destroy ();
 
         return GX_FALSE;
@@ -731,8 +731,8 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
     if ( !wglCreateContextAttribsARB )
     {
-        GXWarningBox ( L"wglCreateContextAttribsARB провален" );
-        GXLogW ( L"GXRenderer::MakeWindow::Error - wglCreateContextAttribsARB провален\n" );
+        GXWarningBox ( "wglCreateContextAttribsARB провален" );
+        GXLogA ( "GXRenderer::MakeWindow::Error - wglCreateContextAttribsARB провален\n" );
 
         return GX_FALSE;
     }
@@ -750,8 +750,8 @@ GXBool GXCALL GXRenderer::MakeWindow ()
 
     if ( !hglRC || !wglMakeCurrent ( hDC, hglRC ) )
     {
-        GXWarningBox ( L"Создание контекста OpenGL версии 3.3 провалено" );
-        GXLogW ( L"GXRenderer::MakeWindow::Error - Создание контекста OpenGL версии 3.3 провалено\n" );
+        GXWarningBox ( "Создание контекста OpenGL версии 3.3 провалено" );
+        GXLogA ( "GXRenderer::MakeWindow::Error - Создание контекста OpenGL версии 3.3 провалено\n" );
 
         return GX_FALSE;
     }

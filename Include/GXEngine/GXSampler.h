@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_SAMPLER
 #define GX_SAMPLER

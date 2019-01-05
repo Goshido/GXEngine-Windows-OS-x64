@@ -1,22 +1,23 @@
-// version 1.3
+// version 1.4
 
 #include <GXCommon/GXCFGLoader.h>
-#include <GXCommon/GXFileSystem.h>
+#include <GXCommon/GXFile.h>
 #include <GXCommon/GXLogger.h>
 #include <GXCommon/GXMemory.h>
 
 
+#define CONFIG_FILE_PATH    "../../Config/GXEngine.cfg"
+
+//---------------------------------------------------------------------------------------------------------------------
+
 GXVoid GXCALL GXLoadCFG ( GXEngineConfiguration &out )
 {
-    GXVoid* buffer = nullptr;
-    GXUBigInt size = 0;
+    GXFile file ( CONFIG_FILE_PATH );
 
-    if ( !GXLoadFile ( L"../../Config/GXEngine.cfg", &buffer, size, GX_TRUE ) )
-    {
-        GXWarningBox ( L"GXLoadCFG::Error - Cant't load file" );
-        GXLogW ( L"GXLoadCFG::Error - Can't load file %s\n", L"../../Config/GXEngine.cfg\n" );
-    }
+    GXUByte* content = nullptr;
+    GXUBigInt size = 0u;
 
-    memcpy ( &out, buffer, size );
-    GXSafeFree ( buffer );
+    if ( !file.LoadContent ( content, size, eGXFileContentOwner::GXFile, GX_TRUE ) ) return;
+
+    memcpy ( &out, content, size );
 }

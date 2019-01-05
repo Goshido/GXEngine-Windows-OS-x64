@@ -183,6 +183,7 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshSaver.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXOBJLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFile.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXLogger.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMemoryInspector.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp" />
@@ -242,6 +243,7 @@
     <ClInclude Include="..\..\Include\GXBuddhabrot\BBTask.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXAVLTree.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXCFGLoader.h" />
+    <ClInclude Include="..\..\Include\GXCommon\GXFile.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXImageLoader.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXLogger.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXMath.h" />

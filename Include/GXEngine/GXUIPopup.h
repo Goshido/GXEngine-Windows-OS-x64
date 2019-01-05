@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_UI_POPUP
 #define GX_UI_POPUP
@@ -10,43 +10,43 @@
 
 #define GX_UI_POPUP_INVALID_INDEX 0xFFu
 
+//---------------------------------------------------------------------------------------------------------------------
 
 typedef GXVoid ( GXCALL* PFNGXONUIPOPUPACTIONPROC ) ( GXVoid* handler );
 
-
 class GXUIPopup final : public GXWidget
 {
-	private:
-		GXDynamicArray		items;
-		GXUByte				selectedItemIndex;
-		GXFloat				itemHeight;
-		GXWidget*			owner;
+    private:
+        GXDynamicArray      items;
+        GXUByte             selectedItemIndex;
+        GXFloat             itemHeight;
+        GXWidget*           owner;
 
-	public:
-		explicit GXUIPopup ( GXWidget* parent );
-		~GXUIPopup () override;
+    public:
+        explicit GXUIPopup ( GXWidget* parent );
+        ~GXUIPopup () override;
 
-		GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
+        GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
 
-		GXVoid AddItem ( GXVoid* handler, PFNGXONUIPOPUPACTIONPROC action );
-		GXUByte GetTotalItems () const;
+        GXVoid AddItem ( GXVoid* handler, PFNGXONUIPOPUPACTIONPROC action );
+        GXUByte GetTotalItems () const;
 
-		GXVoid EnableItem ( GXUByte itemIndex );
-		GXVoid DisableItem ( GXUByte itemIndex );
-		GXBool IsItemActive ( GXUByte itemIndex ) const;
+        GXVoid EnableItem ( GXUByte itemIndex );
+        GXVoid DisableItem ( GXUByte itemIndex );
+        GXBool IsItemActive ( GXUByte itemIndex ) const;
 
-		GXUByte GetSelectedItemIndex () const;
+        GXUByte GetSelectedItemIndex () const;
 
-		GXVoid SetItemHeight ( GXFloat height );
-		GXFloat GetItemHeight () const;
+        GXVoid SetItemHeight ( GXFloat height );
+        GXFloat GetItemHeight () const;
 
-		GXFloat GetItemWidth () const;
+        GXFloat GetItemWidth () const;
 
-		GXVoid Show ( GXWidget* currentOwner );
+        GXVoid Show ( GXWidget* currentOwner );
 
-	private:
-		GXUIPopup ( const GXUIPopup &other ) = delete;
-		GXUIPopup& operator = ( const GXUIPopup &other ) = delete;
+    private:
+        GXUIPopup ( const GXUIPopup &other ) = delete;
+        GXUIPopup& operator = ( const GXUIPopup &other ) = delete;
 };
 
 

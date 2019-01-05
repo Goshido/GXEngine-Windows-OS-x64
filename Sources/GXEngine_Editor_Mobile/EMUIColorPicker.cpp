@@ -325,7 +325,7 @@ GXVoid EMColorRenderer::UpdateCheckerTexture ()
     GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 
     if ( status != GL_FRAMEBUFFER_COMPLETE )
-        GXLogW ( L"EMColorRenderer::UpdateCheckerTexture::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
+        GXLogA ( "EMColorRenderer::UpdateCheckerTexture::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
     checkerGeneratorMaterial.Bind ( GXTransform::GetNullTransform () );
     screenQuad.Render ();
@@ -629,7 +629,7 @@ GXVoid EMColorSelectorRenderer::UpdateHueCircleTexture ()
     GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 
     if ( status != GL_FRAMEBUFFER_COMPLETE )
-        GXLogW ( L"EMColorSelectorRenderer::UpdateHueCircleTexture::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
+        GXLogA ( "EMColorSelectorRenderer::UpdateHueCircleTexture::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
     hueCircleGeneratorMaterial.Bind ( GXTransform::GetNullTransform () );
     screenQuad.Render ();
@@ -670,7 +670,7 @@ GXVoid EMColorSelectorRenderer::UpdateCompositeTexture ()
     GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 
     if ( status != GL_FRAMEBUFFER_COMPLETE )
-        GXLogW ( L"EMColorSelectorRenderer::UpdateCompositeTexture::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
+        GXLogA ( "EMColorSelectorRenderer::UpdateCompositeTexture::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
     static const GXFloat clearValue[ 4 ] = { COLOR_SELECTOR_COMPOSITE_CLEAR_COLOR_R, COLOR_SELECTOR_COMPOSITE_CLEAR_COLOR_G, COLOR_SELECTOR_COMPOSITE_CLEAR_COLOR_B, COLOR_SELECTOR_COMPOSITE_CLEAR_COLOR_A };
     glClearBufferfv ( GL_COLOR, 0, clearValue );

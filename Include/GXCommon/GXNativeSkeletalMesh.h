@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #ifndef GX_NATIVE_SKELETAL_MESH
 #define GX_NATIVE_SKELETAL_MESH

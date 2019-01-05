@@ -1,16 +1,17 @@
-// version 1.6
+// version 1.7
 
 #ifndef GX_SOUND_PROVIDER
 #define GX_SOUND_PROVIDER
 
 
 #include "GXSound.h"
-#include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXMemory.h>
-#include <GXCommon/GXUIntAtomic.h>
+#include <GXCommon/GXUPointerAtomic.h>
 
 
 #define GX_SOUND_PROVIDER_BUFFER_SIZE       2097152u    // 2 Mb
+
+//---------------------------------------------------------------------------------------------------------------------
 
 class GXSoundStreamer : public GXMemoryInspector
 {
@@ -39,24 +40,24 @@ class GXSoundStreamer : public GXMemoryInspector
         GXSoundStreamer& operator = ( const GXSoundStreamer &other ) = delete;
 };
 
-//-----------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 class GXSoundTrack : public GXMemoryInspector
 {
     public:
-        GXSoundTrack*   next;
-        GXSoundTrack*   prev;
+        GXSoundTrack*       next;
+        GXSoundTrack*       prev;
 
     protected:
-        GXUIntAtomic    references;
-        ALuint          readyBuffer;
+        GXUPointerAtomic    references;
+        ALuint              readyBuffer;
 
     public:
-        GXWChar*        trackFile;
+        const GXString      trackFile;
 
     protected:
-        GXVoid*         mappedFile;
-        GXUBigInt       totalSize;
+        GXUByte*            mappedFile;
+        GXUBigInt           totalSize;
 
     public:
         explicit GXSoundTrack ( const GXWChar* trackFileName );

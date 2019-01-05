@@ -270,6 +270,9 @@
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXLogger.cpp">
       <Filter>Source Files\GXCommon\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFile.cpp">
+      <Filter>Source Files\GXCommon\Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXBuddhabrot\BBGame.h">
@@ -490,6 +493,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXUPointerAtomic.h">
       <Filter>Header Files\GXCommon\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXFile.h">
+      <Filter>Header Files\GXCommon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

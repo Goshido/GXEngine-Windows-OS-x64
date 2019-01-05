@@ -1,4 +1,4 @@
-//version 1.5
+//version 1.6
 
 #ifndef GX_SOUND_STORAGE
 #define GX_SOUND_STORAGE
@@ -10,7 +10,7 @@
 extern GXSoundTrack*    gx_strgSoundTracks;
 
 GXSoundTrack* GXCALL GXGetSoundTrack ( const GXWChar* trackFile );
-GXUInt GXCALL GXGetTotalSoundStorageObjects ( GXWChar** lastSound );
+GXUInt GXCALL GXGetTotalSoundStorageObjects ( const GXWChar** lastSound );
 
 
 #endif	// GX_SOUND_STORAGE

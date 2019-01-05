@@ -610,8 +610,8 @@ GXBool GXCALL GXInput::InitXInputLibrary ()
 
     if ( !gx_GXEngineDLLModuleHandle )
     {
-        GXLogW ( L"%i\n", GetLastError () );
-        GXLogW ( L"GXInput::InitXInputLibrary::Error - Не удалось загрузить GXEngine.dll\n" );
+        GXLogA ( "%i\n", GetLastError () );
+        GXLogA ( "GXInput::InitXInputLibrary::Error - Не удалось загрузить GXEngine.dll\n" );
         return GX_FALSE;
     }
 
@@ -619,7 +619,7 @@ GXBool GXCALL GXInput::InitXInputLibrary ()
 
     if ( !GXXInputInit )
     {
-        GXLogW ( L"GXInput::InitXInputLibrary::Error - Не удалось найти функцию GXXInputInit\n" );
+        GXLogA ( "GXInput::InitXInputLibrary::Error - Не удалось найти функцию GXXInputInit\n" );
         return GX_FALSE;
     }
 
@@ -635,13 +635,13 @@ GXBool GXCALL GXInput::DestroyXInputLibrary ()
 {
     if ( !gx_GXEngineDLLModuleHandle )
     {
-        GXLogW ( L"GXInput::DestroyXInputLibrary::Error - Попытка выгрузить несуществующую в памяти GXEngine.dll\n" );
+        GXLogA ( "GXInput::DestroyXInputLibrary::Error - Попытка выгрузить несуществующую в памяти GXEngine.dll\n" );
         return GX_FALSE;
     }
 
     if ( !FreeLibrary ( gx_GXEngineDLLModuleHandle ) )
     {
-        GXLogW ( L"GXInput::DestroyXInputLibrary::Error - Не удалось выгрузить библиотеку GXEngine.dll\n" );
+        GXLogA ( "GXInput::DestroyXInputLibrary::Error - Не удалось выгрузить библиотеку GXEngine.dll\n" );
         return GX_FALSE;
     }
 

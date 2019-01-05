@@ -1,6 +1,7 @@
-// version 1.6
+// version 1.7
 
 #include <GXEngine/GXSoundProvider.h>
+#include <GXCommon/GXFile.h>
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXStrings.h>
 
@@ -76,17 +77,17 @@ GXSoundTrack::GXSoundTrack ( const GXWChar* trackFileName )
     next ( gx_strgSoundTracks ),
     prev ( nullptr ),
     references ( 1u ),
-    readyBuffer ( 0u )
+    readyBuffer ( 0u ),
+    trackFile ( trackFileName )
 {
     if ( next )
         next->prev = this;
 
     gx_strgSoundTracks = this;
-    GXWcsclone ( &trackFile, trackFileName );
 
-    if ( GXLoadFile ( trackFile, &mappedFile, totalSize, GX_TRUE ) ) return;
-
-    GXWarningBox ( L"GXSoundTrack::Error - не удалось загрузить файл" );
+    GXUPointer fileSize;
+    GXFile file ( trackFile );
+    file.LoadContent ( mappedFile, fileSize, eGXFileContentOwner::User, GX_TRUE );
 }
 
 GXVoid GXSoundTrack::AddReference ()
@@ -96,23 +97,22 @@ GXVoid GXSoundTrack::AddReference ()
 
 GXVoid GXSoundTrack::Release ()
 {
-    if ( references < 1u )
+    if ( references < static_cast<GXUPointer> ( 1u ) )
     {
-        GXWarningBox ( L"GXSoundTrack::Error - ѕопытка уменьшить количество ссылок, когда их нет." );
+        GXWarningBox ( "GXSoundTrack::Error - ѕопытка уменьшить количество ссылок, когда их нет." );
         return;
     }
 
     --references;
 
-    if ( references > 0u ) return;
+    if ( references > static_cast<GXUPointer> ( 0u ) ) return;
 
     delete this;
 }
 
 GXSoundTrack::~GXSoundTrack ()
 {
-    GXSafeFree ( trackFile );
-    GXSafeFree ( mappedFile );
+    SafeFree ( reinterpret_cast<GXVoid**> ( &mappedFile ) );
 
     if ( next )
         next->prev = prev;

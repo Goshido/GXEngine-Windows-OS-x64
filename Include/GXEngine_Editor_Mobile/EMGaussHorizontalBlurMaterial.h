@@ -9,29 +9,29 @@
 
 enum class eEMGaussHorizontalBlurKernelType : GXUShort
 {
-	OneChannelFivePixel
+    OneChannelFivePixel
 };
 
 class EMGaussHorizontalBlurMaterial final : public GXMaterial
 {
-	private:
-		eEMGaussHorizontalBlurKernelType	kernelType;
-		GXTexture2D*						imageTexture;
-		GXSampler							sampler;
+    private:
+        eEMGaussHorizontalBlurKernelType    kernelType;
+        GXTexture2D*                        imageTexture;
+        GXSampler                           sampler;
 
-	public:
-		EMGaussHorizontalBlurMaterial ( eEMGaussHorizontalBlurKernelType kernelType );
-		~EMGaussHorizontalBlurMaterial () override;
+    public:
+        EMGaussHorizontalBlurMaterial ( eEMGaussHorizontalBlurKernelType kernelType );
+        ~EMGaussHorizontalBlurMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) override;
-		GXVoid Unbind () override;
+        GXVoid Bind ( const GXTransform &transform ) override;
+        GXVoid Unbind () override;
 
-		GXVoid SetImageTexture ( GXTexture2D &texture );
+        GXVoid SetImageTexture ( GXTexture2D &texture );
 
-	private:
-		EMGaussHorizontalBlurMaterial () = delete;
-		EMGaussHorizontalBlurMaterial ( const EMGaussHorizontalBlurMaterial &other ) = delete;
-		EMGaussHorizontalBlurMaterial& operator = ( const EMGaussHorizontalBlurMaterial &other ) = delete;
+    private:
+        EMGaussHorizontalBlurMaterial () = delete;
+        EMGaussHorizontalBlurMaterial ( const EMGaussHorizontalBlurMaterial &other ) = delete;
+        EMGaussHorizontalBlurMaterial& operator = ( const EMGaussHorizontalBlurMaterial &other ) = delete;
 };
 
 

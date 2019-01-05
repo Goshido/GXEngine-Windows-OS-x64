@@ -20,7 +20,7 @@ GXPhysXAdapter* GXCALL GXGetPhysXInstance ()
 
     if ( !gx_GXEngineDLLModuleHandle )
     {
-        GXLogW ( L"GXPhysXInit::Error - Не удалось загрузить GXEngine.dll\n" );
+        GXLogA ( "GXPhysXInit::Error - Не удалось загрузить GXEngine.dll\n" );
         return nullptr;
     }
 
@@ -28,7 +28,7 @@ GXPhysXAdapter* GXCALL GXGetPhysXInstance ()
 
     if ( !GXCreatePhysXInstance )
     {
-        GXLogW ( L"GXPhysXInit::Error - Не удалось найти функцию GXPhysXCreate\n" );
+        GXLogA ( "GXPhysXInit::Error - Не удалось найти функцию GXPhysXCreate\n" );
         return nullptr;
     }
 
@@ -36,7 +36,7 @@ GXPhysXAdapter* GXCALL GXGetPhysXInstance ()
 
     if ( !GXDestroyPhysXInstance )
     {
-        GXLogW ( L"GXPhysXInit::Error - Не удалось найти функцию GXPhysXDestroy\n" );
+        GXLogA ( "GXPhysXInit::Error - Не удалось найти функцию GXPhysXDestroy\n" );
         return nullptr;
     }
 
@@ -52,13 +52,13 @@ GXBool GXCALL GXDestroyPhysX ()
 
     if ( gx_GXEngineDLLModuleHandle == GX_INVALID_MODULE )
     {
-        GXLogW ( L"GXPhysXDestroy::Error - Попытка выгрузить несуществующую в памяти GXEngine.dll\n" );
+        GXLogA ( "GXPhysXDestroy::Error - Попытка выгрузить несуществующую в памяти GXEngine.dll\n" );
         return GX_FALSE;
     }
 
     if ( !FreeLibrary ( gx_GXEngineDLLModuleHandle ) )
     {
-        GXLogW ( L"GXPhysXDestroy::Error - Не удалось выгрузить библиотеку GXEngine.dll\n" );
+        GXLogA ( "GXPhysXDestroy::Error - Не удалось выгрузить библиотеку GXEngine.dll\n" );
         return GX_FALSE;
     }
 
