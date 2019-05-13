@@ -24,12 +24,12 @@ GXVoid GXSmartLock::ReleaseShared ()
     ReleaseSRWLockShared ( &srwLock );
 }
 
-GXVoid GXSmartLock::AcquireExlusive ()
+GXVoid GXSmartLock::AcquireExclusive ()
 {
     AcquireSRWLockExclusive ( &srwLock );
 }
 
-GXVoid GXSmartLock::ReleaseExlusive ()
+GXVoid GXSmartLock::ReleaseExclusive ()
 {
     ReleaseSRWLockExclusive ( &srwLock );
 }

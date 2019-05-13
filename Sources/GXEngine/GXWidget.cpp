@@ -28,28 +28,28 @@ GXWidget::GXWidget ( GXWidget* parentWidget, GXBool isNeedRegister ):
 
     if ( !isRegistered ) return;
 
-    gx_ui_SmartLock->AcquireExlusive ();
+    gx_ui_SmartLock->AcquireExclusive ();
 
     if ( parent )
         parent->AddChild ( this );
     else
         GXTouchSurface::GetInstance ().RegisterWidget ( this );
 
-    gx_ui_SmartLock->ReleaseExlusive ();
+    gx_ui_SmartLock->ReleaseExclusive ();
 }
 
 GXWidget::~GXWidget ()
 {
     if ( !isRegistered ) return;
 
-    gx_ui_SmartLock->AcquireExlusive ();
+    gx_ui_SmartLock->AcquireExclusive ();
 
     if ( parent )
         parent->RemoveChild ( this );
     else
         GXTouchSurface::GetInstance ().UnRegisterWidget ( this );
 
-    gx_ui_SmartLock->ReleaseExlusive ();
+    gx_ui_SmartLock->ReleaseExclusive ();
 }
 
 GXVoid GXWidget::OnMessage ( eGXUIMessage message, const GXVoid* data )

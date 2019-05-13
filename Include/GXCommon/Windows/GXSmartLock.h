@@ -19,8 +19,8 @@ class GXSmartLock final: public GXAbstractSmartLock
         GXVoid AcquireShared () override;
         GXVoid ReleaseShared () override;
 
-        GXVoid AcquireExlusive () override;
-        GXVoid ReleaseExlusive () override;
+        GXVoid AcquireExclusive () override;
+        GXVoid ReleaseExclusive () override;
 
     private:
         GXSmartLock ( const GXSmartLock &other ) = delete;

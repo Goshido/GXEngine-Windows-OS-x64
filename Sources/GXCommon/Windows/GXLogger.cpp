@@ -49,9 +49,12 @@ GXVoid GXCALL GXLogDestroy ()
 
 GXVoid GXCDECLCALL GXLogA ( const GXMBChar* format, ... )
 {
+    // Note console font is important. For example Win7 x64 can't render cyrillic characters
+    // with Raster font. Èãå Consolas font works properly.
+
     if ( !gx_logger_SmartLock ) return;
 
-    gx_logger_SmartLock->AcquireExlusive ();
+    gx_logger_SmartLock->AcquireExclusive ();
 
     if ( gx_logger_ConsoleMode != eGXConsoleMode::Multibyte )
     {
@@ -59,7 +62,7 @@ GXVoid GXCDECLCALL GXLogA ( const GXMBChar* format, ... )
         gx_logger_ConsoleMode = eGXConsoleMode::Multibyte;
     }
 
-    gx_logger_SmartLock->ReleaseExlusive ();
+    gx_logger_SmartLock->ReleaseExclusive ();
 
     va_list ap;
     va_start ( ap, format );
@@ -71,7 +74,7 @@ GXVoid GXCDECLCALL GXLogW ( const GXWChar* format, ... )
 {
     if ( !gx_logger_SmartLock ) return;
 
-    gx_logger_SmartLock->AcquireExlusive ();
+    gx_logger_SmartLock->AcquireExclusive ();
 
     if ( gx_logger_ConsoleMode != eGXConsoleMode::WideCharacters )
     {
@@ -79,7 +82,7 @@ GXVoid GXCDECLCALL GXLogW ( const GXWChar* format, ... )
         gx_logger_ConsoleMode = eGXConsoleMode::WideCharacters;
     }
 
-    gx_logger_SmartLock->ReleaseExlusive ();
+    gx_logger_SmartLock->ReleaseExclusive ();
 
     va_list ap;
     va_start ( ap, format );

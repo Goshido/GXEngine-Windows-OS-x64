@@ -194,7 +194,7 @@ const GXUTF8* GXStringData::GetUTF8Data ( GXUPointer &size )
         return nullptr;
     }
 
-    const GXInt neededSymbols = WideCharToMultiByte ( CP_UTF8, WC_COMPOSITECHECK, reinterpret_cast<const GXWChar*> ( utf16Buffer ), -1, utf8Cache, 0, nullptr, nullptr );
+    const GXInt neededSymbols = WideCharToMultiByte ( CP_UTF8, 0u, reinterpret_cast<const GXWChar*> ( utf16Buffer ), -1, utf8Cache, 0, nullptr, nullptr );
     utf8CacheSize = static_cast<GXUPointer> ( neededSymbols ) * sizeof ( GXMBChar );
 
     if ( utf8CacheSize > utf8AllocatedCacheSize )
@@ -204,7 +204,7 @@ const GXUTF8* GXStringData::GetUTF8Data ( GXUPointer &size )
         utf8Cache = static_cast<GXMBChar*> ( Malloc ( utf8AllocatedCacheSize ) );
     }
 
-    WideCharToMultiByte ( CP_UTF8, WC_COMPOSITECHECK, reinterpret_cast<const GXWChar*> ( utf16Buffer ), -1, utf8Cache, neededSymbols, nullptr, nullptr );
+    WideCharToMultiByte ( CP_UTF8, 0u, reinterpret_cast<const GXWChar*> ( utf16Buffer ), -1, utf8Cache, neededSymbols, nullptr, nullptr );
 
     size = utf8CacheSize;
     return utf8Cache;

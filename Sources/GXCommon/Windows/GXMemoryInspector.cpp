@@ -300,7 +300,7 @@ GXBool GXHeapManager::CheckMemoryLeaks ()
 GXVoid GXHeapManager::BindName ( const GXChar* name )
 {
     // Note release will be done in MakeNew method.
-    smartLock.AcquireExlusive ();
+    smartLock.AcquireExclusive ();
     bindedName = name;
 }
 
@@ -309,7 +309,7 @@ GXVoid* GXHeapManager::MakeNew ( GXUPointer size )
     GXVoid* memory = AddChunk ( eGXHeapAllocationType::New, size, bindedName );
 
     // Note acquire will be done in BindName method.
-    smartLock.ReleaseExlusive ();
+    smartLock.ReleaseExclusive ();
 
     return memory;
 }
@@ -321,9 +321,9 @@ GXVoid GXHeapManager::MakeDelete ( GXVoid* heapMemory )
 
 GXVoid* GXHeapManager::MakeMalloc ( GXUPointer size, const GXChar* initiatorClass )
 {
-    smartLock.AcquireExlusive ();
+    smartLock.AcquireExclusive ();
     GXVoid* memory = AddChunk ( eGXHeapAllocationType::Malloc, size, initiatorClass );
-    smartLock.ReleaseExlusive ();
+    smartLock.ReleaseExclusive ();
 
     return memory;
 }
@@ -333,13 +333,13 @@ GXVoid* GXHeapManager::MakeRealloc ( GXVoid* heapMemory, GXUPointer newSize, con
     if ( !heapMemory )
         return MakeMalloc ( newSize, initiatorClass );
 
-    smartLock.AcquireExlusive ();
+    smartLock.AcquireExclusive ();
 
     GXUPointer targetIndex = FindChunkIndex ( heapMemory );
 
     if ( targetIndex == END_INDEX )
     {
-        smartLock.ReleaseExlusive ();
+        smartLock.ReleaseExclusive ();
         GXLogA ( "GXHeapManager::MakeReallocMalloc::Error - Can't find chunk with heap address 0x%p!\n", heapMemory );
 
         return nullptr;
@@ -349,7 +349,7 @@ GXVoid* GXHeapManager::MakeRealloc ( GXVoid* heapMemory, GXUPointer newSize, con
     target.heapMemoryMaxSize = newSize;
     target.heapMemory = realloc ( heapMemory, newSize );
 
-    smartLock.ReleaseExlusive ();
+    smartLock.ReleaseExclusive ();
     return target.heapMemory;
 }
 
@@ -409,13 +409,13 @@ GXVoid* GXHeapManager::AddChunk ( eGXHeapAllocationType allocationType, GXUPoint
 
 GXVoid GXHeapManager::RemoveChunk ( GXVoid* heapMemory )
 {
-    smartLock.AcquireExlusive ();
+    smartLock.AcquireExclusive ();
 
     GXUPointer targetIndex = FindChunkIndex ( heapMemory );
 
     if ( targetIndex == END_INDEX )
     {
-        smartLock.ReleaseExlusive ();
+        smartLock.ReleaseExclusive ();
         GXLogA ( "GXHeapManager::RemoveChunk::Error - Can't find chunk with heap address 0x%p!\n", heapMemory );
 
         return;
@@ -450,7 +450,7 @@ GXVoid GXHeapManager::RemoveChunk ( GXVoid* heapMemory )
 
     freeChunkIndex = targetIndex;
 
-    smartLock.ReleaseExlusive ();
+    smartLock.ReleaseExclusive ();
 }
 
 GXUPointer GXHeapManager::FindChunkIndex ( GXVoid* heapMemory )

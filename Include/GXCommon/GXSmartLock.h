@@ -19,8 +19,8 @@ public:
     virtual GXVoid AcquireShared () = 0;
     virtual GXVoid ReleaseShared () = 0;
 
-    virtual GXVoid AcquireExlusive () = 0;
-    virtual GXVoid ReleaseExlusive () = 0;
+    virtual GXVoid AcquireExclusive () = 0;
+    virtual GXVoid ReleaseExclusive () = 0;
 
 private:
     GXAbstractSmartLock ( const GXAbstractSmartLock &other ) = delete;

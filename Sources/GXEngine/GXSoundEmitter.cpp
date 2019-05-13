@@ -12,7 +12,7 @@ GXSoundEmitter::GXSoundEmitter ( GXSoundTrack* trackObject, GXBool isTrackLooped
     if ( !trackObject )
         GXWarningBox ( L"GXSoundEmitter::Error - track равен nullptr!" );
 
-    gx_sound_mixer_SmartLock->AcquireExlusive ();
+    gx_sound_mixer_SmartLock->AcquireExclusive ();
 
     top = nullptr;
     next = prev = nullptr;
@@ -56,12 +56,12 @@ GXSoundEmitter::GXSoundEmitter ( GXSoundTrack* trackObject, GXBool isTrackLooped
 
     GXAlSourcei ( source, AL_SOURCE_RELATIVE, isRelative ? AL_TRUE : AL_FALSE );
 
-    gx_sound_mixer_SmartLock->ReleaseExlusive ();
+    gx_sound_mixer_SmartLock->ReleaseExclusive ();
 }
 
 GXSoundEmitter::~GXSoundEmitter ()
 {
-    gx_sound_mixer_SmartLock->AcquireExlusive ();
+    gx_sound_mixer_SmartLock->AcquireExclusive ();
 
     Stop ();
     GXAlDeleteSources ( 1, &source );
@@ -92,7 +92,7 @@ GXSoundEmitter::~GXSoundEmitter ()
         }
     }
 
-    gx_sound_mixer_SmartLock->ReleaseExlusive ();
+    gx_sound_mixer_SmartLock->ReleaseExclusive ();
 }
 
 GXVoid GXSoundEmitter::SetVelocity ( const GXVec3 &velocity )
@@ -169,7 +169,7 @@ GXVoid GXSoundEmitter::ChangeSoundTrack ( GXSoundTrack* trackObject, GXBool isTr
     if ( !trackObject )
         GXWarningBox ( L"GXSoundEmitter::Error - track равен 0!" );
 
-    gx_sound_mixer_SmartLock->AcquireExlusive ();
+    gx_sound_mixer_SmartLock->AcquireExclusive ();
 
     Stop ();
 
@@ -218,7 +218,7 @@ GXVoid GXSoundEmitter::ChangeSoundTrack ( GXSoundTrack* trackObject, GXBool isTr
     stopped = GX_TRUE;
     finished = GX_FALSE;
 
-    gx_sound_mixer_SmartLock->ReleaseExlusive ();
+    gx_sound_mixer_SmartLock->ReleaseExclusive ();
 }
 
 GXSoundTrack* GXSoundEmitter::GetSoundTrack ()
@@ -258,7 +258,7 @@ GXVoid GXSoundEmitter::Rewind ()
         return;
     }
 
-    gx_sound_mixer_SmartLock->AcquireExlusive ();
+    gx_sound_mixer_SmartLock->AcquireExclusive ();
 
     GXAlSourceStop ( source );
     streamer->Reset ();
@@ -267,7 +267,7 @@ GXVoid GXSoundEmitter::Rewind ()
     forceUpdate = GX_FALSE;
     GXAlSourcePlay ( source );
 
-    gx_sound_mixer_SmartLock->ReleaseExlusive ();
+    gx_sound_mixer_SmartLock->ReleaseExclusive ();
 }
 
 GXVoid GXSoundEmitter::Update ()

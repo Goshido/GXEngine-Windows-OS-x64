@@ -62,7 +62,7 @@ GXVoid GXWorld::RegisterRigidBody ( GXRigidBody &body )
     reg->next = nullptr;
     reg->prev = nullptr;
 
-    smartLock.AcquireExlusive ();
+    smartLock.AcquireExclusive ();
 
     if ( bodies )
         bodies->prev = reg;
@@ -70,19 +70,19 @@ GXVoid GXWorld::RegisterRigidBody ( GXRigidBody &body )
     reg->next = bodies;
     bodies = reg;
 
-    smartLock.ReleaseExlusive ();
+    smartLock.ReleaseExclusive ();
 }
 
 GXVoid GXWorld::UnregisterRigidBody ( GXRigidBody &body )
 {
-    smartLock.AcquireExlusive ();
+    smartLock.AcquireExclusive ();
 
     GXRigidBodyRegistration* reg = FindRigidBodyRegistration ( body );
 
     if ( !reg )
     {
         GXLogA ( "GXWorld::UnregisterRigidBody::Error - Can't find rigid body!" );
-        smartLock.ReleaseExlusive ();
+        smartLock.ReleaseExclusive ();
         return;
     }
 
@@ -113,17 +113,17 @@ GXVoid GXWorld::UnregisterRigidBody ( GXRigidBody &body )
         delete reg;
     }
 
-    smartLock.ReleaseExlusive ();
+    smartLock.ReleaseExclusive ();
 }
 
 GXVoid GXWorld::ClearRigidBodyRegistrations ()
 {
-    smartLock.AcquireExlusive ();
+    smartLock.AcquireExclusive ();
 
     GXRigidBodyRegistration* toDelete = bodies;
     bodies = nullptr;
 
-    smartLock.ReleaseExlusive ();
+    smartLock.ReleaseExclusive ();
 
     while ( toDelete )
     {
@@ -141,7 +141,7 @@ GXVoid GXWorld::RegisterForceGenerator ( GXRigidBody &body, GXForceGenerator &ge
     reg->next = nullptr;
     reg->prev = nullptr;
 
-    smartLock.AcquireExlusive ();
+    smartLock.AcquireExclusive ();
 
     if ( forceGenerators )
         forceGenerators->prev = reg;
@@ -149,19 +149,19 @@ GXVoid GXWorld::RegisterForceGenerator ( GXRigidBody &body, GXForceGenerator &ge
     reg->next = forceGenerators;
     forceGenerators = reg;
 
-    smartLock.ReleaseExlusive ();
+    smartLock.ReleaseExclusive ();
 }
 
 GXVoid GXWorld::UnregisterForceGenerator ( GXRigidBody &body, GXForceGenerator &generator )
 {
     GXForceGeneratorsRegistration* reg = FindForceGeneratorRegistration ( body, generator );
 
-    smartLock.AcquireExlusive ();
+    smartLock.AcquireExclusive ();
 
     if ( !reg )
     {
         GXLogA ( "GXWorld::UnregisterForceGenerator::Error - Can't find force generator!" );
-        smartLock.ReleaseExlusive ();
+        smartLock.ReleaseExclusive ();
         return;
     }
 
@@ -192,17 +192,17 @@ GXVoid GXWorld::UnregisterForceGenerator ( GXRigidBody &body, GXForceGenerator &
         delete reg;
     }
 
-    smartLock.ReleaseExlusive ();
+    smartLock.ReleaseExclusive ();
 }
 
 GXVoid GXWorld::ClearForceGeneratorRegistrations ()
 {
-    smartLock.AcquireExlusive ();
+    smartLock.AcquireExclusive ();
 
     GXForceGeneratorsRegistration* toDelete = forceGenerators;
     forceGenerators = nullptr;
 
-    smartLock.ReleaseExlusive ();
+    smartLock.ReleaseExclusive ();
 
     while ( toDelete )
     {

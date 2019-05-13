@@ -283,7 +283,7 @@ GXVoid GXTouchSurface::SendMessage ( GXWidget* widget, eGXUIMessage message, con
 
     msg->size = size;
 
-    gx_ui_SmartLock->AcquireExlusive ();
+    gx_ui_SmartLock->AcquireExclusive ();
 
     if ( !messages )
     {
@@ -295,7 +295,7 @@ GXVoid GXTouchSurface::SendMessage ( GXWidget* widget, eGXUIMessage message, con
         lastMessage = msg;
     }
 
-    gx_ui_SmartLock->ReleaseExlusive ();
+    gx_ui_SmartLock->ReleaseExclusive ();
 }
 
 GXVoid GXTouchSurface::ExecuteMessages ()
@@ -304,9 +304,9 @@ GXVoid GXTouchSurface::ExecuteMessages ()
     {
         GXMessage* msg = messages;
 
-        gx_ui_SmartLock->AcquireExlusive ();
+        gx_ui_SmartLock->AcquireExclusive ();
         messages = messages->next;
-        gx_ui_SmartLock->ReleaseExlusive ();
+        gx_ui_SmartLock->ReleaseExclusive ();
 
         msg->widget->OnMessage ( msg->message, msg->data );
     }
