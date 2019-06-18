@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_UNLIT_COLOR_MATERIAL
 #define GX_UNLIT_COLOR_MATERIAL
@@ -10,10 +10,10 @@
 class GXUnlitColorMaterial final : public GXMaterial
 {
     private:
-        GXColorRGB      color;
+        GXColorRGB      _color;
 
-        GLint           mod_view_proj_matLocation;
-        GLint           colorLocation;
+        GLint           _mod_view_proj_matLocation;
+        GLint           _colorLocation;
 
     public:
         GXUnlitColorMaterial ();

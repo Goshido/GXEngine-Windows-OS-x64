@@ -1,4 +1,4 @@
-// version 1.11
+// version 1.12
 
 #include <GXEngine/GXSoundMixer.h>
 #include <GXCommon/GXSmartLock.h>
@@ -11,14 +11,14 @@
 
 extern GXSmartLock* gx_sound_mixer_SmartLock;
 
-GXBool              GXSoundMixer::loopFlag = GX_TRUE;
-GXSoundChannel*     GXSoundMixer::channels = nullptr;
-GXSoundMixer*       GXSoundMixer::instance = nullptr;
+GXBool              GXSoundMixer::_loopFlag = GX_TRUE;
+GXSoundChannel*     GXSoundMixer::_channels = nullptr;
+GXSoundMixer*       GXSoundMixer::_instance = nullptr;
 
 GXSoundMixer::~GXSoundMixer ()
 {
     delete gx_sound_mixer_SmartLock;
-    instance = nullptr;
+    _instance = nullptr;
 }
 
 GXVoid GXSoundMixer::SetListenerVelocity ( const GXVec3 &velocity )
@@ -81,61 +81,61 @@ GXVoid GXSoundMixer::AddChannel ( GXSoundChannel* channel )
     if ( !channel )
         GXWarningBox ( L"GXSoundMixer::AddChannel::Error - попытка добавить звуковой канал по нулевому указателю!" );
 
-    channel->prev = nullptr;
-    channel->next = channels;
+    channel->_previous = nullptr;
+    channel->_next = _channels;
 
-    if ( channel->next ) channel->next->prev = channel;
+    if ( channel->_next ) channel->_next->_previous = channel;
 
-    channels = channel;
+    _channels = channel;
 
-    channel->top = &channels;
+    channel->_top = &_channels;
 }
 
 GXVoid GXSoundMixer::Start ()
 {
-    thread.Start ();
+    _thread.Start ();
 }
 
 GXBool GXSoundMixer::Shutdown ()
 {
-    loopFlag = GX_FALSE;
-    thread.Join ();
+    _loopFlag = GX_FALSE;
+    _thread.Join ();
 
     return GX_TRUE;
 }
 
 GXVoid GXSoundMixer::SetMasterVolume ( GXFloat masterVolumeLevel )
 {
-    masterVolume = masterVolumeLevel;
-    GXAlListenerf ( AL_GAIN, masterVolume );    
+    _masterVolume = masterVolumeLevel;
+    GXAlListenerf ( AL_GAIN, _masterVolume );    
 }
 
 GXSoundMixer& GXCALL GXSoundMixer::GetInstance ()
 {
-    if ( !instance )
+    if ( !_instance )
     {
         GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXSoundMixer" );
-        instance = new GXSoundMixer ();
+        _instance = new GXSoundMixer ();
     }
 
-    return *instance;
+    return *_instance;
 }
 
 GXSoundMixer::GXSoundMixer ()
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXSoundMixer" )
-    thread ( &Update, nullptr ),
-    masterVolume ( DEFAULT_MASTER_VOLUME )
+    _thread ( &Update, nullptr ),
+    _masterVolume ( DEFAULT_MASTER_VOLUME )
 {
     gx_sound_mixer_SmartLock = new GXSmartLock ();
 }
 
 GXUPointer GXTHREADCALL GXSoundMixer::Update ( GXVoid* /*args*/, GXThread &thread )
 {
-    while ( loopFlag )
+    while ( _loopFlag )
     {
         gx_sound_mixer_SmartLock->AcquireShared ();
 
-        for ( GXSoundChannel* c = channels; c; c = c->next )
+        for ( GXSoundChannel* c = _channels; c; c = c->_next )
             c->Update ();
 
         gx_sound_mixer_SmartLock->ReleaseShared ();

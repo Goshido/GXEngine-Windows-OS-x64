@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #ifndef GX_TEXTURE_CUBE_MAP
 #define GX_TEXTURE_CUBE_MAP
@@ -13,8 +13,8 @@ class GXTextureCubeMapEntry;
 class GXTextureCubeMap final : public GXMemoryInspector
 {
     private:
-        GXUByte                     textureUnit;
-        GXTextureCubeMapEntry*      textureCubeMapEntry;
+        GXUByte                     _textureUnit;
+        GXTextureCubeMapEntry*      _textureCubeMapEntry;
 
     public:
         // Creates uninitiated texture resource.

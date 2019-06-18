@@ -113,37 +113,37 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
     surface->Reset ();
 
     GXImageInfo ii;
-    ii.color.From ( static_cast<GXUByte> ( BACKGROUND_COLOR_R ), static_cast<GXUByte> ( BACKGROUND_COLOR_G ), static_cast<GXUByte> ( BACKGROUND_COLOR_B ), static_cast<GXUByte> ( BACKGROUND_COLOR_A ) );
-    ii.texture = &texture;
-    ii.overlayType = eGXImageOverlayType::SimpleReplace;
-    ii.insertX = 1.0f + 0.1f;
-    ii.insertY = 1.0f + 0.1f;
-    ii.insertWidth = itemWidth - 2.0f - 0.2f;
-    ii.insertHeight = totalHeight - 2.0f - 0.2f;
+    ii._color.From ( static_cast<GXUByte> ( BACKGROUND_COLOR_R ), static_cast<GXUByte> ( BACKGROUND_COLOR_G ), static_cast<GXUByte> ( BACKGROUND_COLOR_B ), static_cast<GXUByte> ( BACKGROUND_COLOR_A ) );
+    ii._texture = &texture;
+    ii._overlayType = eGXImageOverlayType::SimpleReplace;
+    ii._insertX = 1.0f + 0.1f;
+    ii._insertY = 1.0f + 0.1f;
+    ii._insertWidth = itemWidth - 2.0f - 0.2f;
+    ii._insertHeight = totalHeight - 2.0f - 0.2f;
     
     surface->AddImage ( ii );
 
     GXLineInfo li;
-    li.color.From ( static_cast<GXUByte> ( BORDER_COLOR_R ), static_cast<GXUByte> ( BORDER_COLOR_G ), static_cast<GXUByte> ( BORDER_COLOR_B ), static_cast<GXUByte> ( BORDER_COLOR_A ) );
-    li.thickness = 1.0f;
-    li.overlayType = eGXImageOverlayType::SimpleReplace;
-    li.startPoint.Init (1.0f + 0.1f, 0.1f );
-    li.endPoint.Init ( itemWidth - 2.0f + 0.9f, 0.1f );
+    li._color.From ( static_cast<GXUByte> ( BORDER_COLOR_R ), static_cast<GXUByte> ( BORDER_COLOR_G ), static_cast<GXUByte> ( BORDER_COLOR_B ), static_cast<GXUByte> ( BORDER_COLOR_A ) );
+    li._thickness = 1.0f;
+    li._overlayType = eGXImageOverlayType::SimpleReplace;
+    li._startPoint.Init (1.0f + 0.1f, 0.1f );
+    li._endPoint.Init ( itemWidth - 2.0f + 0.9f, 0.1f );
 
     surface->AddLine ( li );
 
-    li.startPoint.Init ( itemWidth - 1.0f + 0.9f, 1.0f + 0.1f );
-    li.endPoint.Init ( itemWidth - 1.0f + 0.9f, totalHeight - 2.0f + 0.9f );
+    li._startPoint.Init ( itemWidth - 1.0f + 0.9f, 1.0f + 0.1f );
+    li._endPoint.Init ( itemWidth - 1.0f + 0.9f, totalHeight - 2.0f + 0.9f );
 
     surface->AddLine ( li );
 
-    li.startPoint.Init ( itemWidth - 2.0f + 0.9f, totalHeight - 1.0f + 0.9f );
-    li.endPoint.Init ( 1.0f + 0.1f, totalHeight - 1.0f + 0.9f );
+    li._startPoint.Init ( itemWidth - 2.0f + 0.9f, totalHeight - 1.0f + 0.9f );
+    li._endPoint.Init ( 1.0f + 0.1f, totalHeight - 1.0f + 0.9f );
 
     surface->AddLine ( li );
 
-    li.startPoint.Init ( 0.1f, totalHeight - 2.0f + 0.9f );
-    li.endPoint.Init ( 0.1f, 1.0f + 0.1f );
+    li._startPoint.Init ( 0.1f, totalHeight - 2.0f + 0.9f );
+    li._endPoint.Init ( 0.1f, 1.0f + 0.1f );
 
     surface->AddLine ( li );
 
@@ -151,32 +151,32 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
 
     if ( hightlighted != static_cast<GXUByte> ( GX_UI_POPUP_INVALID_INDEX ) )
     {
-        ii.color.From ( static_cast<GXUByte> ( HIGHTLIGHT_COLOR_R ), static_cast<GXUByte> ( HIGHTLIGHT_COLOR_G ), static_cast<GXUByte> ( HIGHTLIGHT_COLOR_B ), static_cast<GXUByte> ( HIGHTLIGHT_COLOR_A ) );
-        ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
-        ii.insertX = 0.5f;
-        ii.insertY = totalHeight - 0.5f - ( 1.0f + (GXFloat)hightlighted ) * itemHeight;
-        ii.insertWidth = itemWidth;
-        ii.insertHeight = itemHeight;
+        ii._color.From ( static_cast<GXUByte> ( HIGHTLIGHT_COLOR_R ), static_cast<GXUByte> ( HIGHTLIGHT_COLOR_G ), static_cast<GXUByte> ( HIGHTLIGHT_COLOR_B ), static_cast<GXUByte> ( HIGHTLIGHT_COLOR_A ) );
+        ii._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+        ii._insertX = 0.5f;
+        ii._insertY = totalHeight - 0.5f - ( 1.0f + (GXFloat)hightlighted ) * itemHeight;
+        ii._insertWidth = itemWidth;
+        ii._insertHeight = itemHeight;
         
         surface->AddImage ( ii );
     }
 
     const GXWChar** names = reinterpret_cast<const GXWChar**> ( itemNames.GetData () );
     GXPenInfo pi;
-    pi.font = &font;
-    pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
-    pi.insertX = TEXT_OFFSET_X * gx_ui_Scale;
-    pi.insertY = totalHeight - itemHeight + ( itemHeight - (GXFloat)font.GetSize () ) * 0.5f;
+    pi._font = &font;
+    pi._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+    pi._insertX = TEXT_OFFSET_X * gx_ui_Scale;
+    pi._insertY = totalHeight - itemHeight + ( itemHeight - (GXFloat)font.GetSize () ) * 0.5f;
 
     for ( GXUByte i = 0; i < totalItems; ++i )
     {
         if ( popup->IsItemActive ( i ) )
-            pi.color.From ( static_cast<GXUByte> ( ENABLE_ITEM_COLOR_R ), static_cast<GXUByte> ( ENABLE_ITEM_COLOR_G ), static_cast<GXUByte> ( ENABLE_ITEM_COLOR_B ), static_cast<GXUByte> ( ENABLE_ITEM_COLOR_A ) );
+            pi._color.From ( static_cast<GXUByte> ( ENABLE_ITEM_COLOR_R ), static_cast<GXUByte> ( ENABLE_ITEM_COLOR_G ), static_cast<GXUByte> ( ENABLE_ITEM_COLOR_B ), static_cast<GXUByte> ( ENABLE_ITEM_COLOR_A ) );
         else
-            pi.color.From ( static_cast<GXUByte> ( DISABLE_ITEM_COLOR_R ), static_cast<GXUByte> ( DISABLE_ITEM_COLOR_G ), static_cast<GXUByte> ( DISABLE_ITEM_COLOR_B ), static_cast<GXUByte> ( DISABLE_ITEM_COLOR_A ) );
+            pi._color.From ( static_cast<GXUByte> ( DISABLE_ITEM_COLOR_R ), static_cast<GXUByte> ( DISABLE_ITEM_COLOR_G ), static_cast<GXUByte> ( DISABLE_ITEM_COLOR_B ), static_cast<GXUByte> ( DISABLE_ITEM_COLOR_A ) );
 
         surface->AddText ( pi, 0, names[ i ] );
-        pi.insertY -= itemHeight;
+        pi._insertY -= itemHeight;
     }
 }
 

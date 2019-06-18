@@ -61,22 +61,22 @@ GXVoid EMUIStaticTextRenderer::OnRefresh ()
     if ( !text ) return;
 
     GXPenInfo pi;
-    pi.font = &font;
-    pi.insertY = ( h - font.GetSize () * 0.6f ) * 0.5f;
-    pi.overlayType = eGXImageOverlayType::SimpleReplace;
-    pi.color = staticText->GetTextColor ();
+    pi._font = &font;
+    pi._insertY = ( h - font.GetSize () * 0.6f ) * 0.5f;
+    pi._overlayType = eGXImageOverlayType::SimpleReplace;
+    pi._color = staticText->GetTextColor ();
 
     switch ( staticText->GetAlignment () )
     {
         case eGXUITextAlignment::Left:
-            pi.insertX = 0.0f;
+            pi._insertX = 0.0f;
         break;
 
         case eGXUITextAlignment::Right:
         {
             GXFloat w = static_cast<GXFloat> ( surface->GetWidth () );
             GXFloat len = static_cast<GXFloat> ( font.GetTextLength ( 0u, staticText->GetText () ) );
-            pi.insertX = w - len;
+            pi._insertX = w - len;
         }
         break;
 
@@ -84,7 +84,7 @@ GXVoid EMUIStaticTextRenderer::OnRefresh ()
         {
             GXFloat w = static_cast<GXFloat> ( surface->GetWidth () );
             GXFloat len = static_cast<GXFloat> ( font.GetTextLength ( 0u, staticText->GetText () ) );
-            pi.insertX = ( w - len ) * 0.5f;
+            pi._insertX = ( w - len ) * 0.5f;
         }
         break;
     }

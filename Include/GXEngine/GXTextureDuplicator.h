@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_TEXTURE_DUPLICATOR
 #define GX_TEXTURE_DUPLICATOR
@@ -9,21 +9,21 @@
 
 class GXTextureDuplicator final
 {
-	private:
-		GLuint							fbo;
-		static GXTextureDuplicator*		instance;
+    private:
+        GLuint                          _fbo;
+        static GXTextureDuplicator*     _instance;
 
-	public:
-		static GXTextureDuplicator* GetInstance ();
-		~GXTextureDuplicator ();
+    public:
+        static GXTextureDuplicator* GetInstance ();
+        ~GXTextureDuplicator ();
 
-		GXVoid Duplicate ( GLuint out, GXUInt source );
+        GXVoid Duplicate ( GLuint out, GXUInt source );
 
-	private:
-		GXTextureDuplicator ();
+    private:
+        GXTextureDuplicator ();
 
-		GXTextureDuplicator ( const GXTextureDuplicator &other ) = delete;
-		GXTextureDuplicator& operator = ( const GXTextureDuplicator &other ) = delete;
+        GXTextureDuplicator ( const GXTextureDuplicator &other ) = delete;
+        GXTextureDuplicator& operator = ( const GXTextureDuplicator &other ) = delete;
 };
 
 

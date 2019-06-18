@@ -35,21 +35,21 @@ EMLightProbeMaterial::EMLightProbeMaterial ():
 	static const GLuint sampleLocations[ 8 ] = { DIFFUSE_IRRADIANCE_SLOT, PREFILTERED_ENVIRONMENT_MAP_SLOT, BRDF_INTEGRATION_MAP_SLOT, ALBEDO_SLOT, NORMAL_SLOT, EMISSION_SLOT, PARAMETER_SLOT, DEPTH_SLOT };
 
 	GXShaderProgramInfo si;
-	si.vertexShader = VERTEX_SHADER;
-	si.geometryShader = GEOMETRY_SHADER;
-	si.fragmentShader = FRAGMENT_SHADER;
-	si.samplers = 8u;
-	si.samplerNames = samplerNames;
-	si.samplerLocations = sampleLocations;
-	si.transformFeedbackOutputs = 0;
-	si.transformFeedbackOutputNames = nullptr;
+	si._vertexShader = VERTEX_SHADER;
+	si._geometryShader = GEOMETRY_SHADER;
+	si._fragmentShader = FRAGMENT_SHADER;
+	si._samplers = 8u;
+	si._samplerNames = samplerNames;
+	si._samplerLocations = sampleLocations;
+	si._transformFeedbackOutputs = 0;
+	si._transformFeedbackOutputNames = nullptr;
 
-	shaderProgram.Init ( si );
+	_shaderProgram.Init ( si );
 
-	viewerLocationWorldLocation = shaderProgram.GetUniform ( "viewerLocationWorld" );
-	prefilteredEnvironmentMapLODsLocation = shaderProgram.GetUniform ( "prefilteredEnvironmentMapLODs" );
-	inverseViewMatrixLocation = shaderProgram.GetUniform ( "inverseViewMatrix" );
-	inverseViewProjectionMatrixLocation = shaderProgram.GetUniform ( "inverseViewProjectionMatrix" );
+	viewerLocationWorldLocation = _shaderProgram.GetUniform ( "viewerLocationWorld" );
+	prefilteredEnvironmentMapLODsLocation = _shaderProgram.GetUniform ( "prefilteredEnvironmentMapLODs" );
+	inverseViewMatrixLocation = _shaderProgram.GetUniform ( "inverseViewMatrix" );
+	inverseViewProjectionMatrixLocation = _shaderProgram.GetUniform ( "inverseViewProjectionMatrix" );
 }
 
 EMLightProbeMaterial::~EMLightProbeMaterial ()
@@ -62,7 +62,7 @@ GXVoid EMLightProbeMaterial::Bind ( const GXTransform& /*transform*/ )
 	if ( !diffuseIrradianceTexture || !prefilteredEnvironmentMapTexture || !brdfIntegrationMapTexture || !albedoTexture || !normalTexture || !emissionTexture || !parameterTexture || !depthTexture )
 		return;
 
-	glUseProgram ( shaderProgram.GetProgram () );
+	glUseProgram ( _shaderProgram.GetProgram () );
 
 	GXCamera* camera = GXCamera::GetActiveCamera ();
 

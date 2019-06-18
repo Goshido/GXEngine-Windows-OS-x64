@@ -1,4 +1,4 @@
-// verison 1.11
+// verison 1.12
 
 #ifndef GX_NETWORK
 #define GX_NETWORK
@@ -28,8 +28,8 @@ typedef GXVoid ( GXCALL* PFNGXONCLIENTMESSAGEPROC ) ( const GXVoid* data, GXUInt
 class GXNetConnectionTCP final
 {
     private:
-        SOCKET          socket;
-        GXThread*       thread;
+        SOCKET          _socket;
+        GXThread*       _thread;
 
     public:
         GXNetConnectionTCP ();
@@ -50,26 +50,26 @@ class GXNetConnectionTCP final
 class GXNetServer final
 {
     private:
-        GXThread*                                   threadTCP;
-        GXThread*                                   threadUDP;
+        GXThread*                                   _threadTCP;
+        GXThread*                                   _threadUDP;
 
-        static SOCKET                               listenerTCP;
-        static SOCKET                               listenerUDP;
+        static SOCKET                               _listenerTCP;
+        static SOCKET                               _listenerUDP;
 
-        static GXUInt                               numClientsTCP;
+        static GXUInt                               _numClientsTCP;
 
-        static GXNetConnectionTCP                   clientsTCP[ GX_MAX_NETWORK_CLIENTS ];
+        static GXNetConnectionTCP                   _clientsTCP[ GX_MAX_NETWORK_CLIENTS ];
 
-        static PFNGXONSERVERNEWTCPCONNECTIONPROC    OnNewConnectionTCP;
-        static PFNGXONSERVERDISCONNECTPROC          OnDisconnect;
+        static PFNGXONSERVERNEWTCPCONNECTIONPROC    _onNewConnectionTCP;
+        static PFNGXONSERVERDISCONNECTPROC          _onDisconnect;
 
-        static PFNGXONSERVERPMESSAGETCPPROC         OnMessageTCP;
-        static PFNGXONSERVERPMESSAGEUDPPROC         OnMessageUDP;
+        static PFNGXONSERVERPMESSAGETCPPROC         _onMessageTCP;
+        static PFNGXONSERVERPMESSAGEUDPPROC         _onMessageUDP;
 
-        static GXUByte                              bufferTCP[ GX_SOCKET_BUFFER_SIZE ];
-        static GXUByte                              bufferUDP[ GX_SOCKET_BUFFER_SIZE ];
+        static GXUByte                              _bufferTCP[ GX_SOCKET_BUFFER_SIZE ];
+        static GXUByte                              _bufferUDP[ GX_SOCKET_BUFFER_SIZE ];
 
-        static GXNetServer*                         instance;
+        static GXNetServer*                         _instance;
 
     public:
         static GXNetServer& GXCALL GetInstance ();
@@ -115,21 +115,21 @@ class GXNetServer final
 class GXNetClient final
 {
     private:
-        sockaddr_in                         serverAddressUDP;
+        sockaddr_in                         _serverAddressUDP;
 
-        static SOCKET                       socketTCP;
-        static SOCKET                       socketUDP;
+        static SOCKET                       _socketTCP;
+        static SOCKET                       _socketUDP;
 
-        static GXThread*                    threadTCP;
-        static GXThread*                    threadUDP;
+        static GXThread*                    _threadTCP;
+        static GXThread*                    _threadUDP;
 
-        static PFNGXONCLIENTMESSAGEPROC     OnMessageTCP;
-        static PFNGXONCLIENTMESSAGEPROC     OnMessageUDP;
+        static PFNGXONCLIENTMESSAGEPROC     _onMessageTCP;
+        static PFNGXONCLIENTMESSAGEPROC     _onMessageUDP;
 
-        static GXUByte                      bufferTCP[ GX_SOCKET_BUFFER_SIZE ];
-        static GXUByte                      bufferUDP[ GX_SOCKET_BUFFER_SIZE ];
+        static GXUByte                      _bufferTCP[ GX_SOCKET_BUFFER_SIZE ];
+        static GXUByte                      _bufferUDP[ GX_SOCKET_BUFFER_SIZE ];
 
-        static GXNetClient*                 instance;
+        static GXNetClient*                 _instance;
 
     public:
         static GXNetClient& GXCALL GetInstance ();

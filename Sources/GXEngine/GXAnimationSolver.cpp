@@ -1,14 +1,15 @@
-// version 1.6
+// version 1.7
 
 #include <GXEngine/GXAnimationSolver.h>
 
 
-GXAnimationSolver::GXAnimationSolver ( GXUShort solverID )
+GXAnimationSolver::GXAnimationSolver ( GXUShort solverID ):
+    _solverID ( solverID )
 {
-	this->solverID = solverID;
+    // NOTHING
 }
 
 GXAnimationSolver::~GXAnimationSolver ()
 {
-	// NOTHING
+    // NOTHING
 }

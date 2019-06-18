@@ -11,18 +11,18 @@
 EMObjectMaskMaterial::EMObjectMaskMaterial ()
 {
 	GXShaderProgramInfo si;
-	si.vertexShader = VERTEX_SHADER;
-	si.geometryShader = GEOMETRY_SHADER;
-	si.fragmentShader = FRAGMENT_SHADER;
-	si.samplers = 0u;
-	si.samplerNames = nullptr;
-	si.samplerLocations = nullptr;
-	si.transformFeedbackOutputs = 0;
-	si.transformFeedbackOutputNames = nullptr;
+	si._vertexShader = VERTEX_SHADER;
+	si._geometryShader = GEOMETRY_SHADER;
+	si._fragmentShader = FRAGMENT_SHADER;
+	si._samplers = 0u;
+	si._samplerNames = nullptr;
+	si._samplerLocations = nullptr;
+	si._transformFeedbackOutputs = 0;
+	si._transformFeedbackOutputNames = nullptr;
 
-	shaderProgram.Init ( si );
+	_shaderProgram.Init ( si );
 
-	mod_view_proj_matLocation = shaderProgram.GetUniform ( "mod_view_proj_mat" );
+	mod_view_proj_matLocation = _shaderProgram.GetUniform ( "mod_view_proj_mat" );
 }
 
 EMObjectMaskMaterial::~EMObjectMaskMaterial ()
@@ -35,7 +35,7 @@ GXVoid EMObjectMaskMaterial::Bind ( const GXTransform &transform )
 	GXMat4 mod_view_proj_mat;
 	mod_view_proj_mat.Multiply ( transform.GetCurrentFrameModelMatrix (), GXCamera::GetActiveCamera ()->GetCurrentFrameViewProjectionMatrix () );
 
-	glUseProgram ( shaderProgram.GetProgram () );
+	glUseProgram ( _shaderProgram.GetProgram () );
 	glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.data );
 }
 

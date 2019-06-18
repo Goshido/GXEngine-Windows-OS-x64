@@ -19,20 +19,20 @@ EMHueCircleGeneratorMaterial::EMHueCircleGeneratorMaterial ():
 	halfResolution ( DEFAULT_RESOLUTION_WIDTH * 0.5f, DEFAULT_RESOLUTION_HEIGHT * 0.5f )
 {
 	GXShaderProgramInfo si;
-	si.vertexShader = VERTEX_SHADER;
-	si.geometryShader = GEOMETRY_SHADER;
-	si.fragmentShader = FRAGMENT_SHADER;
-	si.samplers = 0u;
-	si.samplerNames = nullptr;
-	si.samplerLocations = nullptr;
-	si.transformFeedbackOutputs = 0;
-	si.transformFeedbackOutputNames = nullptr;
+	si._vertexShader = VERTEX_SHADER;
+	si._geometryShader = GEOMETRY_SHADER;
+	si._fragmentShader = FRAGMENT_SHADER;
+	si._samplers = 0u;
+	si._samplerNames = nullptr;
+	si._samplerLocations = nullptr;
+	si._transformFeedbackOutputs = 0;
+	si._transformFeedbackOutputNames = nullptr;
 
-	shaderProgram.Init ( si );
+	_shaderProgram.Init ( si );
 
-	innerRadiusLocation = shaderProgram.GetUniform ( "innerRadius" );
-	outerRadiusLocation = shaderProgram.GetUniform ( "outerRadius" );
-	halfResolutionLocation = shaderProgram.GetUniform ( "halfResolution" );
+	innerRadiusLocation = _shaderProgram.GetUniform ( "innerRadius" );
+	outerRadiusLocation = _shaderProgram.GetUniform ( "outerRadius" );
+	halfResolutionLocation = _shaderProgram.GetUniform ( "halfResolution" );
 }
 
 EMHueCircleGeneratorMaterial::~EMHueCircleGeneratorMaterial ()
@@ -42,7 +42,7 @@ EMHueCircleGeneratorMaterial::~EMHueCircleGeneratorMaterial ()
 
 GXVoid EMHueCircleGeneratorMaterial::Bind ( const GXTransform& /*transform*/ )
 {
-	glUseProgram ( shaderProgram.GetProgram () );
+	glUseProgram ( _shaderProgram.GetProgram () );
 
 	glUniform1f ( innerRadiusLocation, innerRadius );
 	glUniform1f ( outerRadiusLocation, outerRadius );

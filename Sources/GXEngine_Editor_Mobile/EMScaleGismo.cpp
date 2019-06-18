@@ -56,7 +56,7 @@ GXVoid EMScaleGismo::Render ()
 
 GXVoid EMScaleGismo::TransformUpdated ()
 {
-	mesh.SetRotation ( currentFrameRotationMatrix );
-	mesh.SetScale ( currentFrameScale );
-	mesh.SetLocation ( currentFrameLocation );
+	mesh.SetRotation ( _currentFrameRotationMatrix );
+	mesh.SetScale ( _currentFrameScale );
+	mesh.SetLocation ( _currentFrameLocation );
 }

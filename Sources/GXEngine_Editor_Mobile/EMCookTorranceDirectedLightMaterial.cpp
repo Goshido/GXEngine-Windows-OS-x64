@@ -49,23 +49,23 @@ EMCookTorranceDirectedLightMaterial::EMCookTorranceDirectedLightMaterial ():
 	static const GLuint samplerLocations[ 5 ] = { ALBEDO_SLOT, NORMAL_SLOT, EMISSION_SLOT, PARAMETER_SLOT, DEPTH_SLOT };
 
 	GXShaderProgramInfo si;
-	si.vertexShader = VERTEX_SHADER;
-	si.geometryShader = GEOMETRY_SHADER;
-	si.fragmentShader = FRAGMENT_SHADER;
-	si.samplers = 5u;
-	si.samplerNames = samplerNames;
-	si.samplerLocations = samplerLocations;
-	si.transformFeedbackOutputs = 0;
-	si.transformFeedbackOutputNames = nullptr;
+	si._vertexShader = VERTEX_SHADER;
+	si._geometryShader = GEOMETRY_SHADER;
+	si._fragmentShader = FRAGMENT_SHADER;
+	si._samplers = 5u;
+	si._samplerNames = samplerNames;
+	si._samplerLocations = samplerLocations;
+	si._transformFeedbackOutputs = 0;
+	si._transformFeedbackOutputNames = nullptr;
 
-	shaderProgram.Init ( si );
+	_shaderProgram.Init ( si );
 
-	hueLocation = shaderProgram.GetUniform ( "hue" );
-	intensityLocation = shaderProgram.GetUniform ( "intensity" );
-	hdrColorLocation = shaderProgram.GetUniform ( "hrdColor" );
-	ambientColorLocation = shaderProgram.GetUniform ( "ambientColor" );
-	toLightDirectionViewLocation = shaderProgram.GetUniform ( "toLightDirectionView" );
-	inverseProjectionMatrixLocation = shaderProgram.GetUniform ( "inverseProjectionMatrix" );
+	hueLocation = _shaderProgram.GetUniform ( "hue" );
+	intensityLocation = _shaderProgram.GetUniform ( "intensity" );
+	hdrColorLocation = _shaderProgram.GetUniform ( "hrdColor" );
+	ambientColorLocation = _shaderProgram.GetUniform ( "ambientColor" );
+	toLightDirectionViewLocation = _shaderProgram.GetUniform ( "toLightDirectionView" );
+	inverseProjectionMatrixLocation = _shaderProgram.GetUniform ( "inverseProjectionMatrix" );
 }
 
 EMCookTorranceDirectedLightMaterial::~EMCookTorranceDirectedLightMaterial ()
@@ -77,7 +77,7 @@ GXVoid EMCookTorranceDirectedLightMaterial::Bind ( const GXTransform& /*transfor
 {
 	if ( !albedoTexture || !normalTexture || !emissionTexture || !parameterTexture || !depthTexture ) return;
 
-	glUseProgram ( shaderProgram.GetProgram () );
+	glUseProgram ( _shaderProgram.GetProgram () );
 
 	const GXMat4& inverseProjectionMatrix = GXCamera::GetActiveCamera ()->GetCurrentFrameInverseProjectionMatrix ();
 	glUniformMatrix4fv ( inverseProjectionMatrixLocation, 1, GL_FALSE, inverseProjectionMatrix.data );

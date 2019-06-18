@@ -96,12 +96,12 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
 
     GXImageInfo ii;
 
-    ii.texture = &background;
-    ii.color.From ( BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
-    ii.insertX = ii.insertY = 1.5f;
-    ii.insertWidth = width - 2.0f;
-    ii.insertHeight = height - 2.0f;
-    ii.overlayType = eGXImageOverlayType::SimpleReplace;
+    ii._texture = &background;
+    ii._color.From ( BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
+    ii._insertX = ii._insertY = 1.5f;
+    ii._insertWidth = width - 2.0f;
+    ii._insertHeight = height - 2.0f;
+    ii._overlayType = eGXImageOverlayType::SimpleReplace;
 
     surface->AddImage ( ii );
 
@@ -112,32 +112,32 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
 
         if ( beginOffset != endOffset )
         {
-            ii.color.From ( SELECTION_COLOR_R, SELECTION_COLOR_G, SELECTION_COLOR_B, SELECTION_COLOR_A );
-            ii.insertX = beginOffset;
-            ii.insertY = 0.0f;
-            ii.insertWidth = endOffset - beginOffset;
-            ii.insertHeight = height;
+            ii._color.From ( SELECTION_COLOR_R, SELECTION_COLOR_G, SELECTION_COLOR_B, SELECTION_COLOR_A );
+            ii._insertX = beginOffset;
+            ii._insertY = 0.0f;
+            ii._insertWidth = endOffset - beginOffset;
+            ii._insertHeight = height;
 
             surface->AddImage ( ii );
         }
 
         GXPenInfo pi;
-        pi.font = font;
-        pi.insertY = ( height - font->GetSize () * 0.6f ) * 0.5f;
-        pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
-        pi.color.From ( FONT_COLOR_R, FONT_COLOR_G, FONT_COLOR_B, FONT_COLOR_A );
+        pi._font = font;
+        pi._insertY = ( height - font->GetSize () * 0.6f ) * 0.5f;
+        pi._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+        pi._color.From ( FONT_COLOR_R, FONT_COLOR_G, FONT_COLOR_B, FONT_COLOR_A );
 
         switch ( editBoxWidget->GetAlignment () )
         {
         case eGXUITextAlignment::Left:
-                pi.insertX = editBoxWidget->GetTextLeftOffset ();
+                pi._insertX = editBoxWidget->GetTextLeftOffset ();
             break;
 
             case eGXUITextAlignment::Right:
             {
                 GXFloat w = static_cast<GXFloat> ( surface->GetWidth () );
                 GXFloat len = static_cast<GXFloat> ( font->GetTextLength ( 0u, text ) );
-                pi.insertX = w - len - editBoxWidget->GetTextRightOffset ();
+                pi._insertX = w - len - editBoxWidget->GetTextRightOffset ();
             }
             break;
 
@@ -145,7 +145,7 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
             {
                 GXFloat w = static_cast<GXFloat> ( surface->GetWidth () );
                 GXFloat len = static_cast<GXFloat> ( font->GetTextLength ( 0u, text ) );
-                pi.insertX = ( w - len ) * 0.5f;
+                pi._insertX = ( w - len ) * 0.5f;
             }
             break;
         }
@@ -154,36 +154,36 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
     }
 
     GXLineInfo li;
-    li.thickness = 1.0f;
-    li.overlayType = eGXImageOverlayType::SimpleReplace;
+    li._thickness = 1.0f;
+    li._overlayType = eGXImageOverlayType::SimpleReplace;
 
     if ( editBoxWidget->IsActive () )
     {
-        li.color.From ( CURSOR_COLOR_R, CURSOR_COLOR_G, CURSOR_COLOR_B, CURSOR_COLOR_A );
-        li.startPoint.Init ( editBoxWidget->GetCursorOffset () + 0.5f, 0.5f );
-        li.endPoint.Init ( li.startPoint.GetX (), height );
+        li._color.From ( CURSOR_COLOR_R, CURSOR_COLOR_G, CURSOR_COLOR_B, CURSOR_COLOR_A );
+        li._startPoint.Init ( editBoxWidget->GetCursorOffset () + 0.5f, 0.5f );
+        li._endPoint.Init ( li._startPoint.GetX (), height );
         surface->AddLine ( li );
     }
 
-    li.color.From ( BORDER_COLOR_R , BORDER_COLOR_G , BORDER_COLOR_B, BORDER_COLOR_A );
+    li._color.From ( BORDER_COLOR_R , BORDER_COLOR_G , BORDER_COLOR_B, BORDER_COLOR_A );
     
-    li.startPoint.Init ( 0.5f, 0.5f );
-    li.endPoint.Init ( width - 0.5f, 0.5f );
+    li._startPoint.Init ( 0.5f, 0.5f );
+    li._endPoint.Init ( width - 0.5f, 0.5f );
 
     surface->AddLine ( li );
 
-    li.startPoint.Init ( width - 0.5f, 0.5f );
-    li.endPoint.Init ( width - 0.5f, height - 0.5f );
+    li._startPoint.Init ( width - 0.5f, 0.5f );
+    li._endPoint.Init ( width - 0.5f, height - 0.5f );
 
     surface->AddLine ( li );
 
-    li.startPoint.Init ( width - 0.5f, height - 0.5f );
-    li.endPoint.Init ( 0.5f, height - 0.5f );
+    li._startPoint.Init ( width - 0.5f, height - 0.5f );
+    li._endPoint.Init ( 0.5f, height - 0.5f );
 
     surface->AddLine ( li );
 
-    li.startPoint.Init ( 0.5f, height - 0.5f );
-    li.endPoint.Init ( 0.5f, 0.5f );
+    li._startPoint.Init ( 0.5f, height - 0.5f );
+    li._endPoint.Init ( 0.5f, 0.5f );
 
     surface->AddLine ( li );
 }

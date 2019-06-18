@@ -43,11 +43,11 @@ void EMUIFPSCounter::Render ()
         wsprintfW ( fpsBuffer, L"%i", currentFPS );
 
         GXPenInfo pi;
-        pi.color.From ( FONT_COLOR_R, FONT_COLOR_G, FONT_COLOR_B, FONT_COLOR_A );
-        pi.font = &font;
-        pi.overlayType = eGXImageOverlayType::SimpleReplace;
-        pi.insertX = static_cast<GXFloat> ( static_cast<GXUInt> ( surface->GetWidth () ) - font.GetTextLength ( 0u, fpsBuffer ) );
-        pi.insertY = 0.0f;
+        pi._color.From ( FONT_COLOR_R, FONT_COLOR_G, FONT_COLOR_B, FONT_COLOR_A );
+        pi._font = &font;
+        pi._overlayType = eGXImageOverlayType::SimpleReplace;
+        pi._insertX = static_cast<GXFloat> ( static_cast<GXUInt> ( surface->GetWidth () ) - font.GetTextLength ( 0u, fpsBuffer ) );
+        pi._insertY = 0.0f;
         surface->AddText ( pi, 0u, fpsBuffer );
 
         lastFPS = currentFPS;

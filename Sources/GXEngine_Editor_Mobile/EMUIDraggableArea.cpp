@@ -66,36 +66,36 @@ GXVoid EMUIDraggableAreaRenderer::OnRefresh ()
     GXFloat h = static_cast<GXFloat> ( surface->GetHeight () );
 
     GXImageInfo ii;
-    ii.texture = &background;
-    ii.color.From ( BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
-    ii.insertX = ii.insertY = 1.5f;
-    ii.insertWidth = w - 2.0f;
-    ii.insertHeight = h - 2.0f;
-    ii.overlayType = eGXImageOverlayType::SimpleReplace;
+    ii._texture = &background;
+    ii._color.From ( BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
+    ii._insertX = ii._insertY = 1.5f;
+    ii._insertWidth = w - 2.0f;
+    ii._insertHeight = h - 2.0f;
+    ii._overlayType = eGXImageOverlayType::SimpleReplace;
 
     surface->AddImage ( ii );
 
     GXLineInfo li;
-    li.color.From ( FRAME_COLOR_R, FRAME_COLOR_G, FRAME_COLOR_B, FRAME_COLOR_A );
-    li.thickness = 1.0f;
-    li.startPoint.Init ( 1.5f, 0.5f );
-    li.endPoint.Init ( w - 0.5f, 0.5f );
-    li.overlayType = eGXImageOverlayType::SimpleReplace;
+    li._color.From ( FRAME_COLOR_R, FRAME_COLOR_G, FRAME_COLOR_B, FRAME_COLOR_A );
+    li._thickness = 1.0f;
+    li._startPoint.Init ( 1.5f, 0.5f );
+    li._endPoint.Init ( w - 0.5f, 0.5f );
+    li._overlayType = eGXImageOverlayType::SimpleReplace;
 
     surface->AddLine ( li );
 
-    li.startPoint.Init ( w - 0.5f, 1.5f );
-    li.endPoint.Init ( w - 0.5f, h - 0.5f );
+    li._startPoint.Init ( w - 0.5f, 1.5f );
+    li._endPoint.Init ( w - 0.5f, h - 0.5f );
 
     surface->AddLine ( li );
 
-    li.startPoint.Init ( w - 1.5f, h - 0.5f );
-    li.endPoint.Init ( 0.5f, h - 0.5f );
+    li._startPoint.Init ( w - 1.5f, h - 0.5f );
+    li._endPoint.Init ( 0.5f, h - 0.5f );
 
     surface->AddLine ( li );
 
-    li.startPoint.Init ( 0.5f, h - 1.5f );
-    li.endPoint.Init ( 0.5f, 0.5f );
+    li._startPoint.Init ( 0.5f, h - 1.5f );
+    li._endPoint.Init ( 0.5f, 0.5f );
 
     surface->AddLine ( li );
 }

@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #ifndef GX_UI_EDIT_BOX
 #define GX_UI_EDIT_BOX
@@ -16,28 +16,28 @@ class GXTextValidator;
 class GXUIEditBox final : public GXWidget
 {
     private:
-        GXWChar*                                text;
-        GXWChar*                                workingBuffer;
-        GXUInt                                  textSymbols;
-        GXUInt                                  maxSymbols;
+        GXWChar*                                _text;
+        GXWChar*                                _workingBuffer;
+        GXUInt                                  _textSymbols;
+        GXUInt                                  _maxSymbols;
 
-        GXFloat                                 textLeftOffset;
-        GXFloat                                 textRightOffset;
+        GXFloat                                 _textLeftOffset;
+        GXFloat                                 _textRightOffset;
 
-        GXInt                                   cursor;            // index before symbol
-        GXInt                                   selection;        // index before symbol
-        eGXUITextAlignment                      alignment;
+        GXInt                                   _cursor;        // index before symbol
+        GXInt                                   _selection;     // index before symbol
+        eGXUITextAlignment                      _alignment;
 
-        GXTextValidator*                        validator;
+        GXTextValidator*                        _validator;
 
-        PFNGXUIEDITBOXONFINISHEDITINGPROC       OnFinishEditing;
-        GXVoid*                                 handler;
+        PFNGXUIEDITBOXONFINISHEDITINGPROC       _onFinishEditing;
+        GXVoid*                                 _context;
 
-        HCURSOR                                 editCursor;
-        HCURSOR                                 arrowCursor;
+        HCURSOR                                 _editCursor;
+        HCURSOR                                 _arrowCursor;
 
-        GXFont*                                 font;
-        const HCURSOR*                          currentCursor;
+        GXFont*                                 _font;
+        const HCURSOR*                          _currentCursor;
 
     public:
         explicit GXUIEditBox ( GXWidget* parent );

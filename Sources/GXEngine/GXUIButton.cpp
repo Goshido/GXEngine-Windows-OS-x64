@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXEngine/GXUIButton.h>
 #include <GXEngine/GXUIMessage.h>
@@ -6,150 +6,150 @@
 
 
 GXUIButton::GXUIButton ( GXWidget* parent ):
-	GXWidget ( parent ),
-	OnLeftMouseButton ( nullptr ),
-	handler ( nullptr ),
-	isPressed ( GX_FALSE ),
-	isDisabled ( GX_FALSE ),
-	isHighlighted ( GX_FALSE )
+    GXWidget ( parent ),
+    _onLeftMouseButton ( nullptr ),
+    _context ( nullptr ),
+    _isPressed ( GX_FALSE ),
+    _isDisabled ( GX_FALSE ),
+    _isHighlighted ( GX_FALSE )
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXUIButton::~GXUIButton ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXVoid GXUIButton::OnMessage ( eGXUIMessage message, const GXVoid* data )
 {
-	if ( message == eGXUIMessage::LMBDown )
-	{
-		if ( isDisabled ) return;
+    if ( message == eGXUIMessage::LMBDown )
+    {
+        if ( _isDisabled ) return;
 
-		isPressed = GX_TRUE;
+        _isPressed = GX_TRUE;
 
-		if ( renderer )
-			renderer->OnUpdate ();
+        if ( _renderer )
+            _renderer->OnUpdate ();
 
-		if ( !OnLeftMouseButton ) return;
+        if ( !_onLeftMouseButton ) return;
 
-		const GXVec2* position = static_cast<const GXVec2*> ( data );
-		OnLeftMouseButton ( handler, *this, position->GetX (), position->GetY (), eGXMouseButtonState::Down );
+        const GXVec2* position = static_cast<const GXVec2*> ( data );
+        _onLeftMouseButton ( _context, *this, position->GetX (), position->GetY (), eGXMouseButtonState::Down );
 
-		return;
-	}
+        return;
+    }
 
-	if ( message == eGXUIMessage::LMBUp )
-	{
-		if ( isDisabled ) return;
+    if ( message == eGXUIMessage::LMBUp )
+    {
+        if ( _isDisabled ) return;
 
-		isPressed = GX_FALSE;
+        _isPressed = GX_FALSE;
 
-		if ( renderer )
-			renderer->OnUpdate ();
+        if ( _renderer )
+            _renderer->OnUpdate ();
 
-		if ( !OnLeftMouseButton ) return;
+        if ( !_onLeftMouseButton ) return;
 
-		const GXVec2* position = static_cast<const GXVec2*> ( data );
-		OnLeftMouseButton ( handler, *this, position->GetX (), position->GetY (), eGXMouseButtonState::Up );
+        const GXVec2* position = static_cast<const GXVec2*> ( data );
+        _onLeftMouseButton ( _context, *this, position->GetX (), position->GetY (), eGXMouseButtonState::Up );
 
-		return;
-	}
+        return;
+    }
 
-	if ( message == eGXUIMessage::MouseOver )
-	{
-		if ( isDisabled ) return;
+    if ( message == eGXUIMessage::MouseOver )
+    {
+        if ( _isDisabled ) return;
 
-		isHighlighted = GX_TRUE;
+        _isHighlighted = GX_TRUE;
 
-		if ( renderer )
-			renderer->OnUpdate ();
+        if ( _renderer )
+            _renderer->OnUpdate ();
 
-		return;
-	}
+        return;
+    }
 
-	if ( message == eGXUIMessage::MouseLeave )
-	{
-		if ( isDisabled ) return;
+    if ( message == eGXUIMessage::MouseLeave )
+    {
+        if ( _isDisabled ) return;
 
-		isHighlighted = GX_FALSE;
-		isPressed = GX_FALSE;
+        _isHighlighted = GX_FALSE;
+        _isPressed = GX_FALSE;
 
-		if ( renderer )
-			renderer->OnUpdate ();
+        if ( _renderer )
+            _renderer->OnUpdate ();
 
-		return;
-	}
+        return;
+    }
 
-	if ( message == eGXUIMessage::Enable )
-	{
-		if ( !isDisabled ) return;
+    if ( message == eGXUIMessage::Enable )
+    {
+        if ( !_isDisabled ) return;
 
-		isDisabled = GX_FALSE;
-		isHighlighted = GX_FALSE;
+        _isDisabled = GX_FALSE;
+        _isHighlighted = GX_FALSE;
 
-		if ( renderer )
-			renderer->OnUpdate ();
+        if ( _renderer )
+            _renderer->OnUpdate ();
 
-		return;
-	}
+        return;
+    }
 
-	if ( message == eGXUIMessage::Disable )
-	{
-		if ( isDisabled ) return;
+    if ( message == eGXUIMessage::Disable )
+    {
+        if ( _isDisabled ) return;
 
-		isDisabled = GX_TRUE;
+        _isDisabled = GX_TRUE;
 
-		if ( renderer )
-			renderer->OnUpdate ();
+        if ( _renderer )
+            _renderer->OnUpdate ();
 
-		return;
-	}
+        return;
+    }
 
-	if ( message == eGXUIMessage::Redraw )
-	{
-		if ( renderer )
-			renderer->OnUpdate ();
+    if ( message == eGXUIMessage::Redraw )
+    {
+        if ( _renderer )
+            _renderer->OnUpdate ();
 
-		return;
-	}
+        return;
+    }
 
-	GXWidget::OnMessage ( message, data );
+    GXWidget::OnMessage ( message, data );
 }
 
-GXVoid GXUIButton::SetOnLeftMouseButtonCallback ( GXVoid* handlerObject, PFNGXONMOUSEBUTTONPROC callback )
+GXVoid GXUIButton::SetOnLeftMouseButtonCallback ( GXVoid* context, PFNGXONMOUSEBUTTONPROC callback )
 {
-	handler = handlerObject;
-	OnLeftMouseButton = callback;
+    _context = context;
+    _onLeftMouseButton = callback;
 }
 
 GXVoid GXUIButton::Enable ()
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::Enable, nullptr, 0u );
+    GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::Enable, nullptr, 0u );
 }
 
 GXVoid GXUIButton::Disable ()
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::Disable, nullptr, 0u );
+    GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::Disable, nullptr, 0u );
 }
 
 GXVoid GXUIButton::Redraw ()
 {
-	GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::Redraw, nullptr, 0u );
+    GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::Redraw, nullptr, 0u );
 }
 
 GXBool GXUIButton::IsPressed () const
 {
-	return isPressed;
+    return _isPressed;
 }
 
 GXBool GXUIButton::IsHighlighted () const
 {
-	return isHighlighted;
+    return _isHighlighted;
 }
 
 GXBool GXUIButton::IsDisabled () const
 {
-	return isDisabled;
+    return _isDisabled;
 }

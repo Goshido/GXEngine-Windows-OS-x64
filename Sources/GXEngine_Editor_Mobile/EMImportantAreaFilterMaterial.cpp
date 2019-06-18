@@ -26,16 +26,16 @@ EMImportantAreaFilterMaterial::EMImportantAreaFilterMaterial ():
 	static const GLuint samplerLocations[ 3 ] = { IMAGE_SLOT, RETINA_FILTER_SLOT };
 
 	GXShaderProgramInfo si;
-	si.vertexShader = VERTEX_SHADER;
-	si.geometryShader = GEOMETRY_SHADER;
-	si.fragmentShader = FRAGMENT_SHADER;
-	si.samplers = 2u;
-	si.samplerNames = samplerNames;
-	si.samplerLocations = samplerLocations;
-	si.transformFeedbackOutputs = 0;
-	si.transformFeedbackOutputNames = nullptr;
+	si._vertexShader = VERTEX_SHADER;
+	si._geometryShader = GEOMETRY_SHADER;
+	si._fragmentShader = FRAGMENT_SHADER;
+	si._samplers = 2u;
+	si._samplerNames = samplerNames;
+	si._samplerLocations = samplerLocations;
+	si._transformFeedbackOutputs = 0;
+	si._transformFeedbackOutputNames = nullptr;
 
-	shaderProgram.Init ( si );
+	_shaderProgram.Init ( si );
 }
 
 EMImportantAreaFilterMaterial::~EMImportantAreaFilterMaterial ()
@@ -47,7 +47,7 @@ GXVoid EMImportantAreaFilterMaterial::Bind ( const GXTransform& /*transform*/ )
 {
 	if ( !imageTexture ) return;
 
-	glUseProgram ( shaderProgram.GetProgram () );
+	glUseProgram ( _shaderProgram.GetProgram () );
 
 	imageTexture->Bind ( IMAGE_SLOT );
 	sampler.Bind ( IMAGE_SLOT );

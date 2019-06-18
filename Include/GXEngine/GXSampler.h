@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_SAMPLER
 #define GX_SAMPLER
@@ -21,7 +21,7 @@ class GXSamplerEntry;
 class GXSampler final
 {
     private:
-        GXSamplerEntry*     samplerEntry;
+        GXSamplerEntry*     _samplerEntry;
 
     public:
         explicit GXSampler ( GLint wrapMode, eGXResampling resampling, GXFloat anisotropy );

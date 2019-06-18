@@ -140,12 +140,12 @@ GXVoid EMUIFileListBoxRenderer::OnRefresh ()
 
     surface->Reset ();
     GXImageInfo ii;
-    ii.color.From ( BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
-    ii.insertX = ii.insertY = 0.0f;
-    ii.insertWidth = width;
-    ii.insertHeight = height;
-    ii.overlayType = eGXImageOverlayType::SimpleReplace;
-    ii.texture = &rectangle;
+    ii._color.From ( BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
+    ii._insertX = ii._insertY = 0.0f;
+    ii._insertWidth = width;
+    ii._insertHeight = height;
+    ii._overlayType = eGXImageOverlayType::SimpleReplace;
+    ii._texture = &rectangle;
 
     surface->AddImage ( ii );
 
@@ -158,13 +158,13 @@ GXVoid EMUIFileListBoxRenderer::OnRefresh ()
     GXFloat fileIconYOffset = ( itemHeight - fileIconWidth ) * 0.5f;
 
     GXPenInfo pi;
-    pi.color.From ( ITEM_NAME_COLOR_R, ITEM_NAME_COLOR_G, ITEM_NAME_COLOR_B, ITEM_NAME_COLOR_A );
-    pi.font = &font;
-    pi.insertX = ITEM_NAME_OFFSET_X * gx_ui_Scale;
-    pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+    pi._color.From ( ITEM_NAME_COLOR_R, ITEM_NAME_COLOR_G, ITEM_NAME_COLOR_B, ITEM_NAME_COLOR_A );
+    pi._font = &font;
+    pi._insertX = ITEM_NAME_OFFSET_X * gx_ui_Scale;
+    pi._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
     GXFloat iconXOffset = ICON_OFFSET_X * gx_ui_Scale;
-    ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+    ii._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
     static const GXColorRGB highlightedColor ( static_cast<GXUByte> ( HIGHLIGHTED_COLOR_R ), static_cast<GXUByte> ( HIGHLIGHTED_COLOR_G ), static_cast<GXUByte> ( HIGHLIGHTED_COLOR_B ), static_cast<GXUByte> ( HIGHLIGHTED_COLOR_A ) );
     static const GXColorRGB selectedColor ( static_cast<GXUByte> ( SELECTED_COLOR_R ), static_cast<GXUByte> ( SELECTED_COLOR_G ), static_cast<GXUByte> ( SELECTED_COLOR_B ), static_cast<GXUByte> ( SELECTED_COLOR_A ) );
@@ -176,35 +176,35 @@ GXVoid EMUIFileListBoxRenderer::OnRefresh ()
     {
         if ( !listBoxWidget->IsItemVisible ( i ) )
         {
-            items = items->next;
+            items = items->_next;
             continue;
         }
 
-        EMUIFileListBoxItem* item = static_cast<EMUIFileListBoxItem*> ( items->data );
+        EMUIFileListBoxItem* item = static_cast<EMUIFileListBoxItem*> ( items->_data );
         GXFloat yOffset = listBoxWidget->GetItemLocalOffsetY ( i );
 
-        if ( items->isSelected )
+        if ( items->_isSelected )
         {
-            ii.insertY = yOffset;
-            ii.insertX = 0.0f;
-            ii.insertWidth = width;
-            ii.insertHeight = itemHeight;
-            ii.color = selectedColor;
-            ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
-            ii.texture = &rectangle;
+            ii._insertY = yOffset;
+            ii._insertX = 0.0f;
+            ii._insertWidth = width;
+            ii._insertHeight = itemHeight;
+            ii._color = selectedColor;
+            ii._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+            ii._texture = &rectangle;
 
             surface->AddImage ( ii );
         }
 
-        if ( items->isHighlighted )
+        if ( items->_isHighlighted )
         {
-            ii.insertY = yOffset;
-            ii.insertX = 0.0f;
-            ii.insertWidth = width;
-            ii.insertHeight = itemHeight;
-            ii.color = highlightedColor;
-            ii.overlayType = eGXImageOverlayType::AlphaAdd;
-            ii.texture = &rectangle;
+            ii._insertY = yOffset;
+            ii._insertX = 0.0f;
+            ii._insertWidth = width;
+            ii._insertHeight = itemHeight;
+            ii._color = highlightedColor;
+            ii._overlayType = eGXImageOverlayType::AlphaAdd;
+            ii._texture = &rectangle;
 
             surface->AddImage ( ii );
         }
@@ -212,17 +212,17 @@ GXVoid EMUIFileListBoxRenderer::OnRefresh ()
         switch ( item->GetType () )
         {
             case eEMUIFileListBoxItemType::File:
-                ii.insertY = yOffset + fileIconYOffset;
-                ii.insertWidth = fileIconWidth;
-                ii.insertHeight = fileIconHeight;
-                ii.texture = &fileIcon;
+                ii._insertY = yOffset + fileIconYOffset;
+                ii._insertWidth = fileIconWidth;
+                ii._insertHeight = fileIconHeight;
+                ii._texture = &fileIcon;
             break;
 
             case eEMUIFileListBoxItemType::Folder:
-                ii.insertY = yOffset + folderIconYOffset;
-                ii.insertWidth = folderIconWidth;
-                ii.insertHeight = folderIconHeight;
-                ii.texture = &folderIcon;
+                ii._insertY = yOffset + folderIconYOffset;
+                ii._insertWidth = folderIconWidth;
+                ii._insertHeight = folderIconHeight;
+                ii._texture = &folderIcon;
             break;
 
             default:
@@ -230,17 +230,17 @@ GXVoid EMUIFileListBoxRenderer::OnRefresh ()
             break;
         }
 
-        ii.insertX = iconXOffset;
-        ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
-        ii.color = iconColor;
+        ii._insertX = iconXOffset;
+        ii._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+        ii._color = iconColor;
 
         surface->AddImage ( ii );
 
-        pi.insertY = yOffset + itemNameYOffset;
+        pi._insertY = yOffset + itemNameYOffset;
         surface->AddText ( pi, 0u, item->GetName () );
 
         yOffset -= itemHeight;
-        items = items->next;
+        items = items->_next;
     }
 }
 

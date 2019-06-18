@@ -1,4 +1,4 @@
-// version 1.10
+// version 1.11
 
 #ifndef GX_WIDGET
 #define GX_WIDGET
@@ -16,24 +16,24 @@ class GXWidget
     friend class GXWidgetIterator;
 
     private:
-        GXBool                  isRegistered;
+        GXBool                  _isRegistered;
 
     protected:
-        GXWidget*               next;
-        GXWidget*               prev;
+        GXWidget*               _next;
+        GXWidget*               _previous;
 
-        GXWidget*               parent;
-        GXWidget*               childs;
+        GXWidget*               _parent;
+        GXWidget*               _childs;
 
-        GXBool                  isVisible;
-        GXBool                  isDraggable;
-        GXWidgetRenderer*       renderer;
+        GXBool                  _isVisible;
+        GXBool                  _isDraggable;
+        GXWidgetRenderer*       _renderer;
 
-        GXAABB                  boundsWorld;
-        GXAABB                  boundsLocal;
+        GXAABB                  _boundsWorld;
+        GXAABB                  _boundsLocal;
 
     public:
-        explicit GXWidget ( GXWidget* parentWidget, GXBool isNeedRegister = GX_TRUE );
+        explicit GXWidget ( GXWidget* parent, GXBool isNeedRegister = GX_TRUE );
         virtual ~GXWidget ();
 
         virtual GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data );
@@ -49,12 +49,12 @@ class GXWidget
         GXBool IsVisible () const;
         GXBool IsDraggable () const;
 
-        GXVoid SetRenderer ( GXWidgetRenderer* rendererObject );
+        GXVoid SetRenderer ( GXWidgetRenderer* renderer );
         GXWidgetRenderer* GetRenderer () const;
         GXWidget* FindWidget ( const GXVec2 &position );    // return child widget or itself. Never nullptr
 
     protected:
-        GXVoid UpdateBoundsWorld ( const GXAABB &newBoundsLocal );
+        GXVoid UpdateBoundsWorld ( const GXAABB &boundsLocal );
         GXVoid OnDraw ();
 
     private:

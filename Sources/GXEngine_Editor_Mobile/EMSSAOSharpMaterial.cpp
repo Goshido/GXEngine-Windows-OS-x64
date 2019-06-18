@@ -34,25 +34,25 @@ EMSSAOSharpMaterial::EMSSAOSharpMaterial ():
     static const GLuint samplerLocations[ 3u ] = { DEPTH_SLOT, NORMAL_SLOT, NOISE_SLOT };
 
     GXShaderProgramInfo si;
-    si.vertexShader = VERTEX_SHADER;
-    si.geometryShader = GEOMETRY_SHADER;
-    si.fragmentShader = FRAGMENT_SHADER;
-    si.samplers = 3u;
-    si.samplerNames = samplerNames;
-    si.samplerLocations = samplerLocations;
-    si.transformFeedbackOutputs = 0;
-    si.transformFeedbackOutputNames = nullptr;
+    si._vertexShader = VERTEX_SHADER;
+    si._geometryShader = GEOMETRY_SHADER;
+    si._fragmentShader = FRAGMENT_SHADER;
+    si._samplers = 3u;
+    si._samplerNames = samplerNames;
+    si._samplerLocations = samplerLocations;
+    si._transformFeedbackOutputs = 0;
+    si._transformFeedbackOutputNames = nullptr;
 
-    shaderProgram.Init ( si );
+    _shaderProgram.Init ( si );
 
-    kernelLocation = shaderProgram.GetUniform ( "kernel" );
-    checkRadiusLocation = shaderProgram.GetUniform ( "checkRadius" );
-    samplesLocation = shaderProgram.GetUniform ( "samples" );
-    inverseSamplesLocation = shaderProgram.GetUniform ( "inverseSamples" );
-    noiseScaleLocation = shaderProgram.GetUniform ( "noiseScale" );
-    maxDistanceLocation = shaderProgram.GetUniform ( "maxDistance" );
-    projectionMatrixLocation = shaderProgram.GetUniform ( "projectionMatrix" );
-    inverseProjectionMatrixLocation = shaderProgram.GetUniform ( "inverseProjectionMatrix" );
+    kernelLocation = _shaderProgram.GetUniform ( "kernel" );
+    checkRadiusLocation = _shaderProgram.GetUniform ( "checkRadius" );
+    samplesLocation = _shaderProgram.GetUniform ( "samples" );
+    inverseSamplesLocation = _shaderProgram.GetUniform ( "inverseSamples" );
+    noiseScaleLocation = _shaderProgram.GetUniform ( "noiseScale" );
+    maxDistanceLocation = _shaderProgram.GetUniform ( "maxDistance" );
+    projectionMatrixLocation = _shaderProgram.GetUniform ( "projectionMatrix" );
+    inverseProjectionMatrixLocation = _shaderProgram.GetUniform ( "inverseProjectionMatrix" );
 
     SetSampleNumber ( DEFAULT_SAMPLES );
     SetNoiseTextureResolution ( DEFAULT_NOISE_TEXTURE_RESOLUTION );
@@ -67,7 +67,7 @@ GXVoid EMSSAOSharpMaterial::Bind ( const GXTransform& /*transform*/ )
 {
     if ( !depthTexture || !normalTexture ) return;
 
-    glUseProgram ( shaderProgram.GetProgram () );
+    glUseProgram ( _shaderProgram.GetProgram () );
 
     GXCamera* camera = GXCamera::GetActiveCamera ();
 

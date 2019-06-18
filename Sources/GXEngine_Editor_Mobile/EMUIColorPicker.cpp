@@ -250,19 +250,19 @@ GXVoid EMColorRenderer::OnRefresh ()
 
     GXImageInfo ii;
 
-    ii.color.From ( 255u, 255u, 255u, 255u );
-    ii.insertX = 0.0f;
-    ii.insertY = 0.0f;
-    ii.insertWidth = w;
-    ii.insertHeight = h;
-    ii.overlayType = eGXImageOverlayType::SimpleReplace;
-    ii.texture = &checkerTexture;
+    ii._color.From ( 255u, 255u, 255u, 255u );
+    ii._insertX = 0.0f;
+    ii._insertY = 0.0f;
+    ii._insertWidth = w;
+    ii._insertHeight = h;
+    ii._overlayType = eGXImageOverlayType::SimpleReplace;
+    ii._texture = &checkerTexture;
 
     surface->AddImage ( ii );
 
-    ii.color = colorRGBA;
-    ii.texture = &texture;
-    ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+    ii._color = colorRGBA;
+    ii._texture = &texture;
+    ii._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
     surface->AddImage ( ii );
 }
@@ -442,26 +442,26 @@ GXVoid EMColorSelectorRenderer::OnRefresh ()
     surface->Reset ();
 
     GXImageInfo ii;
-    ii.color.From ( 255u, 255u, 255u, 255u );
-    ii.texture = &compositeTexture;
-    ii.overlayType = eGXImageOverlayType::SimpleReplace;
+    ii._color.From ( 255u, 255u, 255u, 255u );
+    ii._texture = &compositeTexture;
+    ii._overlayType = eGXImageOverlayType::SimpleReplace;
 
     GXFloat smoothCompositeTextureWidth = compositeTexture.GetWidth () / COLOR_SELECTOR_MSAA_FACTOR;
     GXFloat smoothCompositeTextureHeight = compositeTexture.GetHeight () / COLOR_SELECTOR_MSAA_FACTOR;
 
     if ( smoothCompositeTextureWidth == w )
     {
-        ii.insertX = 0.0f;
-        ii.insertY = ( h - smoothCompositeTextureHeight ) * 0.5f;
+        ii._insertX = 0.0f;
+        ii._insertY = ( h - smoothCompositeTextureHeight ) * 0.5f;
     }
     else
     {
-        ii.insertX = ( w - smoothCompositeTextureWidth ) * 0.5f;
-        ii.insertY = 0.0f;
+        ii._insertX = ( w - smoothCompositeTextureWidth ) * 0.5f;
+        ii._insertY = 0.0f;
     }
 
-    ii.insertWidth = smoothCompositeTextureWidth;
-    ii.insertHeight = smoothCompositeTextureHeight;
+    ii._insertWidth = smoothCompositeTextureWidth;
+    ii._insertHeight = smoothCompositeTextureHeight;
 
     surface->AddImage ( ii );
 
@@ -470,18 +470,18 @@ GXVoid EMColorSelectorRenderer::OnRefresh ()
     GXVec2 center ( w * 0.5f, h * 0.5f );
 
     GXLineInfo li;
-    li.color.From ( GXColorHSV ( colorHSVA.GetHue () + 180.0f, 85.0f, 100.0f, 100.0f ) );
-    li.thickness = 1.0f;
-    ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+    li._color.From ( GXColorHSV ( colorHSVA.GetHue () + 180.0f, 85.0f, 100.0f, 100.0f ) );
+    li._thickness = 1.0f;
+    ii._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
     GXVec2 tmp;
     tmp.Multiply ( markerDirection, HUE_CIRCLE_INNER_RADIUS );
     tmp.Sum ( tmp, center );
-    li.startPoint.Init ( floorf ( tmp.GetX () + 0.5f ) + 0.1f, floorf ( tmp.GetY () + 0.5f ) + 0.1f );
+    li._startPoint.Init ( floorf ( tmp.GetX () + 0.5f ) + 0.1f, floorf ( tmp.GetY () + 0.5f ) + 0.1f );
 
     tmp.Multiply ( markerDirection, HUE_CIRCLE_OUTER_RADIUS );
     tmp.Sum ( tmp, center );
-    li.endPoint.Init ( floorf ( tmp.GetX () + 0.5f ) + 0.1f, floorf ( tmp.GetY () + 0.5f ) + 0.1f );
+    li._endPoint.Init ( floorf ( tmp.GetX () + 0.5f ) + 0.1f, floorf ( tmp.GetY () + 0.5f ) + 0.1f );
 
     surface->AddLine ( li );
 
@@ -522,25 +522,25 @@ GXVoid EMColorSelectorRenderer::OnRefresh ()
     GXFloat borderSideFactor = floorf ( COLOR_SELECTOR_SAMPLE_BORDER_SIDE * gx_ui_Scale * 0.5f + 0.5f );
     colorCoordsSurface.Init ( floorf ( colorCoordsSurface.GetX () + 0.5f ), floorf ( colorCoordsSurface.GetY () + 0.5f ), colorCoordsSurface.GetZ () );
 
-    li.color.From ( borderColorHSVA );
+    li._color.From ( borderColorHSVA );
 
-    li.startPoint.Init ( colorCoordsSurface.GetX () - borderSideFactor + 1.0f + 0.1f, colorCoordsSurface.GetY () - borderSideFactor + 0.1f );
-    li.endPoint.Init ( colorCoordsSurface.GetX () + borderSideFactor - 1.0f + 0.9f, colorCoordsSurface.GetY () - borderSideFactor + 0.1f );
-
-    surface->AddLine ( li );
-
-    li.startPoint.Init ( colorCoordsSurface.GetX () + borderSideFactor + 0.1f, colorCoordsSurface.GetY () - borderSideFactor + 1.0f + 0.1f );
-    li.endPoint.Init ( colorCoordsSurface.GetX () + borderSideFactor + 0.1f, colorCoordsSurface.GetY () + borderSideFactor - 1.0f + 0.9f );
+    li._startPoint.Init ( colorCoordsSurface.GetX () - borderSideFactor + 1.0f + 0.1f, colorCoordsSurface.GetY () - borderSideFactor + 0.1f );
+    li._endPoint.Init ( colorCoordsSurface.GetX () + borderSideFactor - 1.0f + 0.9f, colorCoordsSurface.GetY () - borderSideFactor + 0.1f );
 
     surface->AddLine ( li );
 
-    li.startPoint.Init ( colorCoordsSurface.GetX () + borderSideFactor - 1.0f + 0.9f, colorCoordsSurface.GetY () + borderSideFactor + 0.1f );
-    li.endPoint.Init ( colorCoordsSurface.GetX () - borderSideFactor + 1.0f + 0.1f, colorCoordsSurface.GetY () + borderSideFactor + 0.1f );
+    li._startPoint.Init ( colorCoordsSurface.GetX () + borderSideFactor + 0.1f, colorCoordsSurface.GetY () - borderSideFactor + 1.0f + 0.1f );
+    li._endPoint.Init ( colorCoordsSurface.GetX () + borderSideFactor + 0.1f, colorCoordsSurface.GetY () + borderSideFactor - 1.0f + 0.9f );
 
     surface->AddLine ( li );
 
-    li.startPoint.Init ( colorCoordsSurface.GetX () - borderSideFactor + 0.1f, colorCoordsSurface.GetY () + borderSideFactor - 1.0f + 0.9f );
-    li.endPoint.Init ( colorCoordsSurface.GetX () - borderSideFactor + 0.1f, colorCoordsSurface.GetY () - borderSideFactor + 1.0f + 0.1f );
+    li._startPoint.Init ( colorCoordsSurface.GetX () + borderSideFactor - 1.0f + 0.9f, colorCoordsSurface.GetY () + borderSideFactor + 0.1f );
+    li._endPoint.Init ( colorCoordsSurface.GetX () - borderSideFactor + 1.0f + 0.1f, colorCoordsSurface.GetY () + borderSideFactor + 0.1f );
+
+    surface->AddLine ( li );
+
+    li._startPoint.Init ( colorCoordsSurface.GetX () - borderSideFactor + 0.1f, colorCoordsSurface.GetY () + borderSideFactor - 1.0f + 0.9f );
+    li._endPoint.Init ( colorCoordsSurface.GetX () - borderSideFactor + 0.1f, colorCoordsSurface.GetY () - borderSideFactor + 1.0f + 0.1f );
 
     surface->AddLine ( li );
 }

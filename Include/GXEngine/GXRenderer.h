@@ -13,8 +13,8 @@ class GXRendererResolutions final
     friend class GXRenderer;
 
     private:
-        GXUShort        total;
-        GXUShort*       wxh;
+        GXUShort        _total;
+        GXUShort*       _wxh;
 
     public:
         GXRendererResolutions ();
@@ -33,34 +33,34 @@ class GXRendererResolutions final
 class GXRenderer final
 {    
     private:
-        static GXGame*          game;
+        static GXGame*          _game;
 
-        static GXThread*        thread;
-        static GXBool           loopFlag;
+        static GXThread*        _thread;
+        static GXBool           _loopFlag;
 
-        static HWND             hwnd;
-        static HGLRC            hglRC;
-        static HINSTANCE        hinst;
-        static HDC              hDC;
+        static HWND             _hwnd;
+        static HGLRC            _hglRC;
+        static HINSTANCE        _hinst;
+        static HDC              _hDC;
 
-        static GXBool           isFullScreen;
-        static GXBool           isSettingsChanged;
+        static GXBool           _isFullScreen;
+        static GXBool           _isSettingsChanged;
 
-        static GXInt            width;
-        static GXInt            height;
-        static GXInt            vsync;
+        static GXInt            _width;
+        static GXInt            _height;
+        static GXInt            _vsync;
 
-        static GXWChar*         title;
+        static GXWChar*         _title;
 
-        static GXDouble         lastTime;
-        static GXDouble         accumulator;
-        static GXUInt           currentFPS;
-        static GXUShort         fpsCounter;
-        static GXDouble         fpsTimer;
+        static GXDouble         _lastTime;
+        static GXDouble         _accumulator;
+        static GXUInt           _currentFPS;
+        static GXUShort         _fpsCounter;
+        static GXDouble         _fpsTimer;
 
-        static GXBool           isRenderableObjectInited;
+        static GXBool           _isRenderableObjectInited;
 
-        static GXRenderer*      instance;
+        static GXRenderer*      _instance;
 
     public:
         static GXRenderer& GXCALL GetInstance ();

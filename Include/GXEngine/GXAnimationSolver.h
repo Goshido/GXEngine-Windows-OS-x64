@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #ifndef	GX_ANIMATION_SOLVER
 #define	GX_ANIMATION_SOLVER
@@ -10,19 +10,20 @@
 
 class GXAnimationSolver
 {
-	protected:
-		GXUShort			solverID;
+    protected:
+        GXUShort    _solverID;
 
-	public:
-		explicit GXAnimationSolver ( GXUShort solverID );
-		virtual ~GXAnimationSolver ();
+    public:
+        explicit GXAnimationSolver ( GXUShort solverID );
+        virtual ~GXAnimationSolver ();
 
-		virtual GXBool GetBoneJoint ( GXBoneJoint &joint, const GXUTF8* boneName ) = 0;
-		virtual GXVoid Update ( GXFloat delta ) = 0;
+        virtual GXBool GetBoneJoint ( GXBoneJoint &joint, const GXUTF8* boneName ) = 0;
+        virtual GXVoid Update ( GXFloat delta ) = 0;
 
-	private:
-		GXAnimationSolver ( const GXAnimationSolver &other ) = delete;
-		GXAnimationSolver& operator = ( const GXAnimationSolver &other ) = delete;
+    private:
+        GXAnimationSolver () = delete;
+        GXAnimationSolver ( const GXAnimationSolver &other ) = delete;
+        GXAnimationSolver& operator = ( const GXAnimationSolver &other ) = delete;
 };
 
 

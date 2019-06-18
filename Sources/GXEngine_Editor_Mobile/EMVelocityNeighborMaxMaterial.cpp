@@ -20,18 +20,18 @@ EMVelocityNeighborMaxMaterial::EMVelocityNeighborMaxMaterial ():
 	static const GLuint samplerLocations[ 1 ] = { VELOCITY_TILE_MAX_SLOT };
 
 	GXShaderProgramInfo si;
-	si.vertexShader = VERTEX_SHADER;
-	si.geometryShader = GEOMETRY_SHADER;
-	si.fragmentShader = FRAGMENT_SHADER;
-	si.samplers = 1u;
-	si.samplerNames = samplerNames;
-	si.samplerLocations = samplerLocations;
-	si.transformFeedbackOutputs = 0;
-	si.transformFeedbackOutputNames = nullptr;
+	si._vertexShader = VERTEX_SHADER;
+	si._geometryShader = GEOMETRY_SHADER;
+	si._fragmentShader = FRAGMENT_SHADER;
+	si._samplers = 1u;
+	si._samplerNames = samplerNames;
+	si._samplerLocations = samplerLocations;
+	si._transformFeedbackOutputs = 0;
+	si._transformFeedbackOutputNames = nullptr;
 
-	shaderProgram.Init ( si );
+	_shaderProgram.Init ( si );
 
-	inverseVelocityTileMaxTextureResolutionLocation = shaderProgram.GetUniform ( "inverseVelocityTileMaxTextureResolution" );
+	inverseVelocityTileMaxTextureResolutionLocation = _shaderProgram.GetUniform ( "inverseVelocityTileMaxTextureResolution" );
 }
 
 EMVelocityNeighborMaxMaterial::~EMVelocityNeighborMaxMaterial ()
@@ -43,7 +43,7 @@ GXVoid EMVelocityNeighborMaxMaterial::Bind ( const GXTransform& /*transform*/ )
 {
 	if ( !velocityTileMaxTexture ) return;
 
-	glUseProgram ( shaderProgram.GetProgram () );
+	glUseProgram ( _shaderProgram.GetProgram () );
 	glUniform2fv ( inverseVelocityTileMaxTextureResolutionLocation, 1, inverseVelocityTileMaxTextureResolution.data );
 
 	velocityTileMaxTexture->Bind ( VELOCITY_TILE_MAX_SLOT );

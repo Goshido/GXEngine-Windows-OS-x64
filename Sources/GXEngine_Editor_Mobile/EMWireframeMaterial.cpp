@@ -17,19 +17,19 @@ EMWireframeMaterial::EMWireframeMaterial ():
 	color ( static_cast<GXUByte> ( DEFAULT_COLOR_RED ), static_cast<GXUByte> ( DEFAULT_COLOR_GREEN ), static_cast<GXUByte> ( DEFAULT_COLOR_BLUE ), static_cast<GXUByte> ( DEFAULT_COLOR_ALPHA ) )
 {
 	GXShaderProgramInfo si;
-	si.vertexShader = VERTEX_SHADER;
-	si.geometryShader = GEOMETRY_SHADER;
-	si.fragmentShader = FRAGMENT_SHADER;
-	si.samplers = 0u;
-	si.samplerNames = nullptr;
-	si.samplerLocations = nullptr;
-	si.transformFeedbackOutputs = 0;
-	si.transformFeedbackOutputNames = nullptr;
+	si._vertexShader = VERTEX_SHADER;
+	si._geometryShader = GEOMETRY_SHADER;
+	si._fragmentShader = FRAGMENT_SHADER;
+	si._samplers = 0u;
+	si._samplerNames = nullptr;
+	si._samplerLocations = nullptr;
+	si._transformFeedbackOutputs = 0;
+	si._transformFeedbackOutputNames = nullptr;
 
-	shaderProgram.Init ( si );
+	_shaderProgram.Init ( si );
 
-	currentFrameModelViewProjectionMatrixLocation = shaderProgram.GetUniform ( "currentFrameModelViewProjectionMatrix" );
-	colorLocation = shaderProgram.GetUniform ( "color" );
+	currentFrameModelViewProjectionMatrixLocation = _shaderProgram.GetUniform ( "currentFrameModelViewProjectionMatrix" );
+	colorLocation = _shaderProgram.GetUniform ( "color" );
 }
 
 EMWireframeMaterial::~EMWireframeMaterial ()
@@ -39,7 +39,7 @@ EMWireframeMaterial::~EMWireframeMaterial ()
 
 GXVoid EMWireframeMaterial::Bind ( const GXTransform &transform )
 {
-	glUseProgram ( shaderProgram.GetProgram () );
+	glUseProgram ( _shaderProgram.GetProgram () );
 
 	GXMat4 currentFrameModelViewProjectionMatrix;
 	currentFrameModelViewProjectionMatrix.Multiply ( transform.GetCurrentFrameModelMatrix (), GXCamera::GetActiveCamera ()->GetCurrentFrameViewProjectionMatrix () );

@@ -19,18 +19,18 @@ EMGaussVerticalBlurMaterial::EMGaussVerticalBlurMaterial ( eEMGaussVerticalBlurK
     static const GLuint samplerLocations[ 1u ] = { IMAGE_SLOT };
 
     GXShaderProgramInfo si;
-    si.samplers = 1u;
-    si.samplerNames = samplerNames;
-    si.samplerLocations = samplerLocations;
-    si.transformFeedbackOutputs = 0;
-    si.transformFeedbackOutputNames = nullptr;
+    si._samplers = 1u;
+    si._samplerNames = samplerNames;
+    si._samplerLocations = samplerLocations;
+    si._transformFeedbackOutputs = 0;
+    si._transformFeedbackOutputNames = nullptr;
 
     switch ( kernelType )
     {
         case eEMGaussVerticalBlurKernelType::OneChannelFivePixel:
-            si.vertexShader = VERTEX_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL;
-            si.geometryShader = GEOMETRY_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL;
-            si.fragmentShader = FRAGMENT_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL;
+            si._vertexShader = VERTEX_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL;
+            si._geometryShader = GEOMETRY_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL;
+            si._fragmentShader = FRAGMENT_SHADER_ONE_CHANNEL_FIVE_PIXEL_KERNEL;
         break;
 
         default:
@@ -38,7 +38,7 @@ EMGaussVerticalBlurMaterial::EMGaussVerticalBlurMaterial ( eEMGaussVerticalBlurK
         break;
     }
 
-    shaderProgram.Init ( si );
+    _shaderProgram.Init ( si );
 }
 
 EMGaussVerticalBlurMaterial::~EMGaussVerticalBlurMaterial ()
@@ -50,7 +50,7 @@ GXVoid EMGaussVerticalBlurMaterial::Bind ( const GXTransform& /*transform*/ )
 {
     if ( !imageTexture ) return;
 
-    glUseProgram ( shaderProgram.GetProgram () );
+    glUseProgram ( _shaderProgram.GetProgram () );
 
     imageTexture->Bind ( IMAGE_SLOT );
     sampler.Bind ( IMAGE_SLOT );

@@ -99,45 +99,45 @@ GXVoid EMUIMenuRenderer::OnRefresh ()
     surface->Reset ();
 
     GXImageInfo ii;
-    ii.color.From ( BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
-    ii.texture = &texture;
-    ii.overlayType = eGXImageOverlayType::SimpleReplace;
-    ii.insertX = 0.1f;
-    ii.insertY = 0.1f;
-    ii.insertWidth = w - 0.2f;
-    ii.insertHeight = h - 0.2f;
+    ii._color.From ( BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
+    ii._texture = &texture;
+    ii._overlayType = eGXImageOverlayType::SimpleReplace;
+    ii._insertX = 0.1f;
+    ii._insertY = 0.1f;
+    ii._insertWidth = w - 0.2f;
+    ii._insertHeight = h - 0.2f;
     
     surface->AddImage ( ii );
 
     if ( selectedItemIndex != GX_UI_MENU_INVALID_INDEX )
     {
-        ii.color.From ( SELECT_COLOR_R, SELECT_COLOR_G, SELECT_COLOR_B, SELECT_COLOR_A );
-        ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
-        ii.insertX = menu->GetItemOffset ( selectedItemIndex ) + 0.1f;
-        ii.insertY = 0.1f;
-        ii.insertWidth = menu->GetItemWidth ( selectedItemIndex ) - 0.2f;
-        ii.insertHeight = h - 0.2f;
+        ii._color.From ( SELECT_COLOR_R, SELECT_COLOR_G, SELECT_COLOR_B, SELECT_COLOR_A );
+        ii._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+        ii._insertX = menu->GetItemOffset ( selectedItemIndex ) + 0.1f;
+        ii._insertY = 0.1f;
+        ii._insertWidth = menu->GetItemWidth ( selectedItemIndex ) - 0.2f;
+        ii._insertHeight = h - 0.2f;
 
         surface->AddImage ( ii );
     }
 
     if ( highlightedItemIndex != GX_UI_MENU_INVALID_INDEX )
     {
-        ii.color.From ( HIGHLIGHT_COLOR_R, HIGHLIGHT_COLOR_G, HIGHLIGHT_COLOR_B, HIGHLIGHT_COLOR_A );
-        ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
-        ii.insertX = menu->GetItemOffset ( highlightedItemIndex ) + 0.1f;
-        ii.insertY = 0.1f;
-        ii.insertWidth = menu->GetItemWidth ( highlightedItemIndex ) - 0.2f;
-        ii.insertHeight = h - 0.2f;
+        ii._color.From ( HIGHLIGHT_COLOR_R, HIGHLIGHT_COLOR_G, HIGHLIGHT_COLOR_B, HIGHLIGHT_COLOR_A );
+        ii._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+        ii._insertX = menu->GetItemOffset ( highlightedItemIndex ) + 0.1f;
+        ii._insertY = 0.1f;
+        ii._insertWidth = menu->GetItemWidth ( highlightedItemIndex ) - 0.2f;
+        ii._insertHeight = h - 0.2f;
 
         surface->AddImage ( ii );
     }
 
     GXPenInfo pi;
-    pi.color.From ( FONT_COLOR_R, FONT_COLOR_G, FONT_COLOR_B, FONT_COLOR_A );
-    pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
-    pi.font = &font;
-    pi.insertY = ( h - font.GetSize () ) * 0.7f;
+    pi._color.From ( FONT_COLOR_R, FONT_COLOR_G, FONT_COLOR_B, FONT_COLOR_A );
+    pi._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+    pi._font = &font;
+    pi._insertY = ( h - font.GetSize () ) * 0.7f;
 
     for ( GXUByte i = 0u; i < totalItems; ++i )
     {
@@ -146,7 +146,7 @@ GXVoid EMUIMenuRenderer::OnRefresh ()
         GXFloat itemWidth = menu->GetItemWidth ( i );
         GXFloat textWidth = static_cast<GXFloat> ( font.GetTextLength ( 0u, itemName ) );
 
-        pi.insertX = itemOffset + ( itemWidth - textWidth ) * 0.5f;
+        pi._insertX = itemOffset + ( itemWidth - textWidth ) * 0.5f;
 
         surface->AddText ( pi, 0u, itemName );
     }

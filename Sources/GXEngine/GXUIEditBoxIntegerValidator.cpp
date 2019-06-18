@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXEngine/GXUIEditBoxIntegerValidator.h>
 #include <GXCommon/GXStrings.h>
@@ -7,23 +7,23 @@
 
 GXUIEditBoxIntegerValidator::GXUIEditBoxIntegerValidator ( const GXWChar* defaultValidText, GXUIEditBox& editBox, GXBigInt minimumValue, GXBigInt maximumValue ):
     GXTextValidator ( defaultValidText ),
-    editBox ( editBox ),
-    minimumValue ( minimumValue ),
-    maximumValue ( maximumValue )
+    _editBox ( editBox ),
+    _minimumValue ( minimumValue ),
+    _maximumValue ( maximumValue )
 {
-    Validate ( this->editBox.GetText () );
+    Validate ( this->_editBox.GetText () );
 }
 
 GXUIEditBoxIntegerValidator::~GXUIEditBoxIntegerValidator ()
 {
-    GXSafeFree ( oldValidText );
+    GXSafeFree ( _oldValidText );
 }
 
 GXBool GXUIEditBoxIntegerValidator::Validate ( const GXWChar* text )
 {
     if ( !text )
     {
-        editBox.SetText ( oldValidText );
+        _editBox.SetText ( _oldValidText );
         return GX_FALSE;
     }
 
@@ -38,7 +38,7 @@ GXBool GXUIEditBoxIntegerValidator::Validate ( const GXWChar* text )
     {
         if ( !isdigit ( static_cast<int> ( text[ i ] ) ) )
         {
-            editBox.SetText ( oldValidText );
+            _editBox.SetText ( _oldValidText );
             return GX_FALSE;
         }
     }
@@ -46,14 +46,14 @@ GXBool GXUIEditBoxIntegerValidator::Validate ( const GXWChar* text )
     GXBigInt currentValue;
     swscanf_s ( text, L"%lli", &currentValue );
 
-    if ( currentValue < minimumValue || currentValue > maximumValue )
+    if ( currentValue < _minimumValue || currentValue > _maximumValue )
     {
-        editBox.SetText ( oldValidText );
+        _editBox.SetText ( _oldValidText );
         return GX_FALSE;
     }
 
-    GXSafeFree ( oldValidText );
-    GXWcsclone ( &oldValidText, text );
+    GXSafeFree ( _oldValidText );
+    GXWcsclone ( &_oldValidText, text );
 
     return GX_TRUE;
 }

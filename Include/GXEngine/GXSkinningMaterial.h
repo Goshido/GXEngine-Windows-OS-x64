@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_SKINNING_MATERIAL
 #define GX_SKINNING_MATERIAL
@@ -11,8 +11,8 @@
 class GXSkinningMaterial final : public GXMemoryInspector, public GXMaterial
 {
     private:
-        const GXSkeleton*       skeletonObject;
-        GLint                   bonesLocation;
+        const GXSkeleton*       _skeletonObject;
+        GLint                   _bonesLocation;
 
     public:
         GXSkinningMaterial ();

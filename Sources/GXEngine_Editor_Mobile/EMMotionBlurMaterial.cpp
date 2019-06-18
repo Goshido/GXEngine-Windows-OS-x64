@@ -34,21 +34,21 @@ EMMotionBlurMaterial::EMMotionBlurMaterial ():
     static const GLuint samplerLocations[ 4 ] = { VELOCITY_NEIGHBOR_MAX_SLOT, VELOCITY_SLOT, DEPTH_SLOT, IMAGE_SLOT };
 
     GXShaderProgramInfo si;
-    si.vertexShader = VERTEX_SHADER;
-    si.geometryShader = GEOMETRY_SHADER;
-    si.fragmentShader = FRAGMENT_SHADER;
-    si.samplers = 4u;
-    si.samplerNames = samplerNames;
-    si.samplerLocations = samplerLocations;
-    si.transformFeedbackOutputs = 0;
-    si.transformFeedbackOutputNames = nullptr;
+    si._vertexShader = VERTEX_SHADER;
+    si._geometryShader = GEOMETRY_SHADER;
+    si._fragmentShader = FRAGMENT_SHADER;
+    si._samplers = 4u;
+    si._samplerNames = samplerNames;
+    si._samplerLocations = samplerLocations;
+    si._transformFeedbackOutputs = 0;
+    si._transformFeedbackOutputNames = nullptr;
 
-    shaderProgram.Init ( si );
+    _shaderProgram.Init ( si );
 
-    inverseDepthLimitLocation = shaderProgram.GetUniform ( "inverseDepthLimit" );
-    maxBlurSamplesLocation = shaderProgram.GetUniform ( "maxBlurSamples" );
-    inverseScreenResolutionLocation = shaderProgram.GetUniform ( "inverseScreenResolution" );
-    inverseProjectionMatrixLocation = shaderProgram.GetUniform ( "inverseProjectionMatrix" );
+    inverseDepthLimitLocation = _shaderProgram.GetUniform ( "inverseDepthLimit" );
+    maxBlurSamplesLocation = _shaderProgram.GetUniform ( "maxBlurSamples" );
+    inverseScreenResolutionLocation = _shaderProgram.GetUniform ( "inverseScreenResolution" );
+    inverseProjectionMatrixLocation = _shaderProgram.GetUniform ( "inverseProjectionMatrix" );
 }
 
 EMMotionBlurMaterial::~EMMotionBlurMaterial ()
@@ -60,7 +60,7 @@ GXVoid EMMotionBlurMaterial::Bind ( const GXTransform& /*transform*/ )
 {
     if ( !velocityNeighborMaxTexture || !velocityTexture || !depthTexture || !imageTexture ) return;
 
-    glUseProgram ( shaderProgram.GetProgram () );
+    glUseProgram ( _shaderProgram.GetProgram () );
 
     const GXMat4& inverseProjectionMatrix = GXCamera::GetActiveCamera ()->GetCurrentFrameInverseProjectionMatrix ();
 

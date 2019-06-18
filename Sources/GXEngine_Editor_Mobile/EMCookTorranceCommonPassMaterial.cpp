@@ -91,32 +91,32 @@ EMCookTorranceCommonPassMaterial::EMCookTorranceCommonPassMaterial ():
 	static const GLuint samplerLocations[ 4 ] = { ALBEDO_SLOT, NORMAL_SLOT, EMISSION_SLOT, PARAMETER_SLOT };
 
 	GXShaderProgramInfo si;
-	si.vertexShader = VERTEX_SHADER;
-	si.geometryShader = GEOMETRY_SHADER;
-	si.fragmentShader = FRAGMENT_SHADER;
-	si.samplers = 4u;
-	si.samplerNames = samplerNames;
-	si.samplerLocations = samplerLocations;
-	si.transformFeedbackOutputs = 0;
-	si.transformFeedbackOutputNames = nullptr;
+	si._vertexShader = VERTEX_SHADER;
+	si._geometryShader = GEOMETRY_SHADER;
+	si._fragmentShader = FRAGMENT_SHADER;
+	si._samplers = 4u;
+	si._samplerNames = samplerNames;
+	si._samplerLocations = samplerLocations;
+	si._transformFeedbackOutputs = 0;
+	si._transformFeedbackOutputNames = nullptr;
 
-	shaderProgram.Init ( si );
+	_shaderProgram.Init ( si );
 
-	albedoTextureScaleOffsetLocation = shaderProgram.GetUniform ( "albedoTextureScaleOffset" );
-	albedoColorLocation = shaderProgram.GetUniform ( "albedoColor" );
-	normalTextureScaleOffsetLocation = shaderProgram.GetUniform ( "normalTextureScaleOffset" );
-	emissionTextureScaleOffsetLocation = shaderProgram.GetUniform ( "emissionTextureScaleOffset" );
-	emissionScaledColorLocation = shaderProgram.GetUniform ( "emissionScaledColor" );
-	parameterTextureScaleOffsetLocation = shaderProgram.GetUniform ( "parameterTextureScaleOffset" );
-	parameterScaleLocation = shaderProgram.GetUniform ( "parameterScale" );
-	inverseDeltaTimeLocation = shaderProgram.GetUniform ( "inverseDeltaTime" );
-	exposureLocation = shaderProgram.GetUniform ( "exposure" );
-	screenResolutionLocation = shaderProgram.GetUniform ( "screenResolution" );
-	maximumBlurSamplesLocation = shaderProgram.GetUniform ( "maximumBlurSamples" );
-	inverseMaximumBlurSamplesLocation = shaderProgram.GetUniform ( "inverseMaximumBlurSamples" );
-	currentFrameModelViewProjectionMatrixLocation = shaderProgram.GetUniform ( "currentFrameModelViewProjectionMatrix" );
-	currentFrameRotationViewMatrixLocation = shaderProgram.GetUniform ( "currentFrameRotationViewMatrix" );
-	lastFrameModelViewProjectionMatrixLocation = shaderProgram.GetUniform ( "lastFrameModelViewProjectionMatrix" );
+	albedoTextureScaleOffsetLocation = _shaderProgram.GetUniform ( "albedoTextureScaleOffset" );
+	albedoColorLocation = _shaderProgram.GetUniform ( "albedoColor" );
+	normalTextureScaleOffsetLocation = _shaderProgram.GetUniform ( "normalTextureScaleOffset" );
+	emissionTextureScaleOffsetLocation = _shaderProgram.GetUniform ( "emissionTextureScaleOffset" );
+	emissionScaledColorLocation = _shaderProgram.GetUniform ( "emissionScaledColor" );
+	parameterTextureScaleOffsetLocation = _shaderProgram.GetUniform ( "parameterTextureScaleOffset" );
+	parameterScaleLocation = _shaderProgram.GetUniform ( "parameterScale" );
+	inverseDeltaTimeLocation = _shaderProgram.GetUniform ( "inverseDeltaTime" );
+	exposureLocation = _shaderProgram.GetUniform ( "exposure" );
+	screenResolutionLocation = _shaderProgram.GetUniform ( "screenResolution" );
+	maximumBlurSamplesLocation = _shaderProgram.GetUniform ( "maximumBlurSamples" );
+	inverseMaximumBlurSamplesLocation = _shaderProgram.GetUniform ( "inverseMaximumBlurSamples" );
+	currentFrameModelViewProjectionMatrixLocation = _shaderProgram.GetUniform ( "currentFrameModelViewProjectionMatrix" );
+	currentFrameRotationViewMatrixLocation = _shaderProgram.GetUniform ( "currentFrameRotationViewMatrix" );
+	lastFrameModelViewProjectionMatrixLocation = _shaderProgram.GetUniform ( "lastFrameModelViewProjectionMatrix" );
 }
 
 EMCookTorranceCommonPassMaterial::~EMCookTorranceCommonPassMaterial ()
@@ -128,7 +128,7 @@ GXVoid EMCookTorranceCommonPassMaterial::Bind ( const GXTransform &transform )
 {
 	if ( !albedoTexture || !normalTexture || !emissionTexture || !parameterTexture ) return;
 
-	glUseProgram ( shaderProgram.GetProgram () );
+	glUseProgram ( _shaderProgram.GetProgram () );
 
 	GXCamera* camera = GXCamera::GetActiveCamera ();
 

@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_ENGINE_SETTINGS
 #define GX_ENGINE_SETTINGS
@@ -9,19 +9,19 @@
 
 struct GXEngineSettings
 {
-    GXUShort    rendererWidth;
-    GXUShort    rendererHeight;
-    GXUShort    potWidth;
-    GXUShort    potHeight;
+    GXUShort    _rendererWidth;
+    GXUShort    _rendererHeight;
+    GXUShort    _potWidth;
+    GXUShort    _potHeight;
 
-    GXBool      windowed;
-    GXBool      vSync;
+    GXBool      _windowed;
+    GXBool      _vSync;
 
-    GXUChar     resampling;
-    GXUChar     anisotropy;
+    GXUChar     _resampling;
+    GXUChar     _anisotropy;
     
-    GXBool      dof;
-    GXBool      motionBlur;
+    GXBool      _dof;
+    GXBool      _motionBlur;
 };
 
 extern GXEngineSettings gx_EngineSettings;

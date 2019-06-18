@@ -61,11 +61,11 @@ GXVoid EMUISeparatorRenderer::OnRefresh ()
     GXFloat y = floorf ( 0.5f * surface->GetHeight () );
 
     GXLineInfo li;
-    li.color.From ( COLOR_R, COLOR_G, COLOR_B, COLOR_A );
-    li.overlayType = eGXImageOverlayType::SimpleReplace;
-    li.thickness = 1.0f;
-    li.startPoint.Init ( 0.0f, y );
-    li.endPoint.Init ( static_cast<GXFloat> ( surface->GetWidth () ), y );
+    li._color.From ( COLOR_R, COLOR_G, COLOR_B, COLOR_A );
+    li._overlayType = eGXImageOverlayType::SimpleReplace;
+    li._thickness = 1.0f;
+    li._startPoint.Init ( 0.0f, y );
+    li._endPoint.Init ( static_cast<GXFloat> ( surface->GetWidth () ), y );
 
     surface->AddLine ( li );
 }

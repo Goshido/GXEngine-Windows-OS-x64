@@ -14,19 +14,19 @@ EMBRDFIntegratorMaterial::EMBRDFIntegratorMaterial ():
     inverseSamples ( 1.0f / static_cast<GXFloat> ( DEFAULT_SAMPLES_PER_PIXEL ) )
 {
     GXShaderProgramInfo si;
-    si.vertexShader = VERTEX_SHADER;
-    si.geometryShader = GEOMETRY_SHADER;
-    si.fragmentShader = FRAGMENT_SHADER;
-    si.samplers = 0u;
-    si.samplerNames = nullptr;
-    si.samplerLocations = nullptr;
-    si.transformFeedbackOutputs = 0;
-    si.transformFeedbackOutputNames = nullptr;
+    si._vertexShader = VERTEX_SHADER;
+    si._geometryShader = GEOMETRY_SHADER;
+    si._fragmentShader = FRAGMENT_SHADER;
+    si._samplers = 0u;
+    si._samplerNames = nullptr;
+    si._samplerLocations = nullptr;
+    si._transformFeedbackOutputs = 0;
+    si._transformFeedbackOutputNames = nullptr;
 
-    shaderProgram.Init ( si );
+    _shaderProgram.Init ( si );
 
-    samplesLocation = shaderProgram.GetUniform ( "samples" );
-    inverseSamplesLocation = shaderProgram.GetUniform ( "inverseSamples" );
+    samplesLocation = _shaderProgram.GetUniform ( "samples" );
+    inverseSamplesLocation = _shaderProgram.GetUniform ( "inverseSamples" );
 }
 
 EMBRDFIntegratorMaterial::~EMBRDFIntegratorMaterial ()
@@ -36,7 +36,7 @@ EMBRDFIntegratorMaterial::~EMBRDFIntegratorMaterial ()
 
 GXVoid EMBRDFIntegratorMaterial::Bind ( const GXTransform& /*transform*/ )
 {
-    glUseProgram ( shaderProgram.GetProgram () );
+    glUseProgram ( _shaderProgram.GetProgram () );
     glUniform1i ( samplesLocation, samples );
     glUniform1f ( inverseSamplesLocation, inverseSamples );
 }

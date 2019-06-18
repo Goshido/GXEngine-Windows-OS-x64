@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXEngine/GXUIEditBoxFloatValidator.h>
 #include <GXCommon/GXMemory.h>
@@ -19,23 +19,23 @@ enum eParserState : GXUByte
 
 GXUIEditBoxFloatValidator::GXUIEditBoxFloatValidator ( const GXWChar* defaultValidText, GXUIEditBox& editBox, GXFloat minimumValue, GXFloat maximumValue ):
     GXTextValidator ( defaultValidText ),
-    editBox ( editBox ),
-    minimumValue ( minimumValue ),
-    maximumValue ( maximumValue )
+    _editBox ( editBox ),
+    _minimumValue ( minimumValue ),
+    _maximumValue ( maximumValue )
 {
-    Validate ( this->editBox.GetText () );
+    Validate ( this->_editBox.GetText () );
 }
 
 GXUIEditBoxFloatValidator::~GXUIEditBoxFloatValidator ()
 {
-    GXSafeFree ( oldValidText );
+    GXSafeFree ( _oldValidText );
 }
 
 GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
 {
     if ( !text )
     {
-        editBox.SetText ( oldValidText );
+        _editBox.SetText ( _oldValidText );
         return GX_FALSE;
     }
 
@@ -130,7 +130,7 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
                 
             case eParserState::InvalidFloatNumber:
             default:
-                editBox.SetText ( oldValidText );
+                _editBox.SetText ( _oldValidText );
             return GX_FALSE;
         }
     }
@@ -138,14 +138,14 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
     GXFloat currentValue;
     swscanf_s ( text, L"%g", &currentValue );
 
-    if ( currentValue < minimumValue || currentValue > maximumValue )
+    if ( currentValue < _minimumValue || currentValue > _maximumValue )
     {
-        editBox.SetText ( oldValidText );
+        _editBox.SetText ( _oldValidText );
         return GX_FALSE;
     }
 
-    GXSafeFree ( oldValidText );
-    GXWcsclone ( &oldValidText, text );
+    GXSafeFree ( _oldValidText );
+    GXWcsclone ( &_oldValidText, text );
 
     return GX_TRUE;
 }

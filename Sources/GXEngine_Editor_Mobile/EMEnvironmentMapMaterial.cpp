@@ -34,20 +34,20 @@ EMEnvironmentMapMaterial::EMEnvironmentMapMaterial () :
 	static const GLuint samplerLocations[ 2 ] = { ENVIRONMENT_SLOT, DEPTH_SLOT };
 
 	GXShaderProgramInfo si;
-	si.vertexShader = VERTEX_SHADER;
-	si.geometryShader = GEOMETRY_SHADER;
-	si.fragmentShader = FRAGMENT_SHADER;
-	si.samplers = 2u;
-	si.samplerNames = samplerNames;
-	si.samplerLocations = samplerLocations;
-	si.transformFeedbackOutputs = 0;
-	si.transformFeedbackOutputNames = nullptr;
+	si._vertexShader = VERTEX_SHADER;
+	si._geometryShader = GEOMETRY_SHADER;
+	si._fragmentShader = FRAGMENT_SHADER;
+	si._samplers = 2u;
+	si._samplerNames = samplerNames;
+	si._samplerLocations = samplerLocations;
+	si._transformFeedbackOutputs = 0;
+	si._transformFeedbackOutputNames = nullptr;
 
-	shaderProgram.Init ( si );
+	_shaderProgram.Init ( si );
 
-	modelViewProjectionMatrixLocation = shaderProgram.GetUniform ( "modelViewProjectionMatrix" );
-	inverseScreenResolutionLocation = shaderProgram.GetUniform ( "inverseScreenResolution" );
-	velocityBlurLocation = shaderProgram.GetUniform ( "velocityBlur" );
+	modelViewProjectionMatrixLocation = _shaderProgram.GetUniform ( "modelViewProjectionMatrix" );
+	inverseScreenResolutionLocation = _shaderProgram.GetUniform ( "inverseScreenResolution" );
+	velocityBlurLocation = _shaderProgram.GetUniform ( "velocityBlur" );
 }
 
 EMEnvironmentMapMaterial::~EMEnvironmentMapMaterial ()
@@ -59,7 +59,7 @@ GXVoid EMEnvironmentMapMaterial::Bind ( const GXTransform &transform )
 {
 	if ( !environmentTexture || !depthTexture ) return;
 
-	glUseProgram ( shaderProgram.GetProgram () );
+	glUseProgram ( _shaderProgram.GetProgram () );
 
 	GXCamera* camera = GXCamera::GetActiveCamera ();
 	const GXMat4& currentFrameViewProjectionMatrix = camera->GetCurrentFrameViewProjectionMatrix ();

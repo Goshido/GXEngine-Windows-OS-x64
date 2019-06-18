@@ -25,19 +25,19 @@ EMDiffuseIrradianceGeneratorMaterial::EMDiffuseIrradianceGeneratorMaterial ():
 	static const GLuint samplerLocations[ 1 ] = { TEXTURE_SLOT };
 
 	GXShaderProgramInfo si;
-	si.vertexShader = VERTEX_SHADER;
-	si.geometryShader = GEOMETRY_SHADER;
-	si.fragmentShader = FRAGMENT_SHADER;
-	si.samplers = 1;
-	si.samplerNames = samplerNames;
-	si.samplerLocations = samplerLocations;
-	si.transformFeedbackOutputs = 0;
-	si.transformFeedbackOutputNames = nullptr;
+	si._vertexShader = VERTEX_SHADER;
+	si._geometryShader = GEOMETRY_SHADER;
+	si._fragmentShader = FRAGMENT_SHADER;
+	si._samplers = 1;
+	si._samplerNames = samplerNames;
+	si._samplerLocations = samplerLocations;
+	si._transformFeedbackOutputs = 0;
+	si._transformFeedbackOutputNames = nullptr;
 
-	shaderProgram.Init ( si );
+	_shaderProgram.Init ( si );
 
-	viewProjectionMatricesLocation = shaderProgram.GetUniform ( "viewProjectionMatrices" );
-	angleStepLocation = shaderProgram.GetUniform ( "angleStep" );
+	viewProjectionMatricesLocation = _shaderProgram.GetUniform ( "viewProjectionMatrices" );
+	angleStepLocation = _shaderProgram.GetUniform ( "angleStep" );
 
 	GXCameraPerspective camera ( PROJECTION_FOV_Y, SQUARE_ASPECT_RATIO, Z_NEAR, Z_FAR );
 	camera.SetRotation ( 0.0f, GX_MATH_HALF_PI, 0.0f );
@@ -68,7 +68,7 @@ GXVoid EMDiffuseIrradianceGeneratorMaterial::Bind ( const GXTransform& /*transfo
 {
 	if ( !environmentMap ) return;
 
-	glUseProgram ( shaderProgram.GetProgram () );
+	glUseProgram ( _shaderProgram.GetProgram () );
 
 	glUniformMatrix4fv ( viewProjectionMatricesLocation, 6, GL_FALSE, (const GLfloat*)viewProjectionMatrices );
 	glUniform1f ( angleStepLocation, angleStep );

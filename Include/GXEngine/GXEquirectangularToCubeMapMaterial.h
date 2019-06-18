@@ -12,14 +12,14 @@
 class GXEquirectangularToCubeMapMaterial final : public GXMaterial
 {
     private:
-        GXTexture2D*    equirectangularTexture;
-        GXSampler       sampler;
+        GXTexture2D*    _equirectangularTexture;
+        GXSampler       _sampler;
 
-        GXMat4          viewProjectionMatrices[ 6u ];
-        GLint           viewProjectionMatricesLocation;
+        GXMat4          _viewProjectionMatrices[ 6u ];
+        GLint           _viewProjectionMatricesLocation;
 
-        GXFloat         gamma;
-        GLint           gammaLocation;
+        GXFloat         _gamma;
+        GLint           _gammaLocation;
 
     public:
         GXEquirectangularToCubeMapMaterial ();

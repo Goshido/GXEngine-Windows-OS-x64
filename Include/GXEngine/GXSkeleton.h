@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #ifndef GX_SKELETON
 #define GX_SKELETON
@@ -11,16 +11,16 @@
 class GXSkeleton final
 {
     private:
-        GXUShort        totalBones;
-        GXUTF8*         boneNames;
-        GXShort*        parentBoneIndices;
+        GXUShort        _totalBones;
+        GXUTF8*         _boneNames;
+        GXShort*        _parentBoneIndices;
 
-        GXBoneJoint*    tempPoseLocal;
-        GXBoneJoint*    tempPoseGlobal;
+        GXBoneJoint*    _tempPoseLocal;
+        GXBoneJoint*    _tempPoseGlobal;
 
-        GXBoneJoint*    referencePose;
-        GXBoneJoint*    inverseBindTransform;
-        GXBoneJoint*    skinTransform;
+        GXBoneJoint*    _referencePose;
+        GXBoneJoint*    _inverseBindTransform;
+        GXBoneJoint*    _skinTransform;
 
     public:
         GXSkeleton ();

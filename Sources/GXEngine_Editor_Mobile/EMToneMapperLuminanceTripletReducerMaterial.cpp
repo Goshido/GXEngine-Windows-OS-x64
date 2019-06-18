@@ -20,17 +20,17 @@ EMToneMapperLuminanceTripletReducerMaterial::EMToneMapperLuminanceTripletReducer
 	static const GLuint samplerLocations[ 1 ] = { TEXTURE_SLOT };
 
 	GXShaderProgramInfo si;
-	si.vertexShader = VERTEX_SHADER;
-	si.geometryShader = GEOMETRY_SHADER;
-	si.fragmentShader = FRAGMENT_SHADER;
-	si.samplers = 1u;
-	si.samplerNames = samplerNames;
-	si.samplerLocations = samplerLocations;
-	si.transformFeedbackOutputs = 0;
-	si.transformFeedbackOutputNames = nullptr;
+	si._vertexShader = VERTEX_SHADER;
+	si._geometryShader = GEOMETRY_SHADER;
+	si._fragmentShader = FRAGMENT_SHADER;
+	si._samplers = 1u;
+	si._samplerNames = samplerNames;
+	si._samplerLocations = samplerLocations;
+	si._transformFeedbackOutputs = 0;
+	si._transformFeedbackOutputNames = nullptr;
 
-	shaderProgram.Init ( si );
-	levelOfDetailLocation = shaderProgram.GetUniform ( "levelOfDetail" );
+	_shaderProgram.Init ( si );
+	levelOfDetailLocation = _shaderProgram.GetUniform ( "levelOfDetail" );
 }
 
 EMToneMapperLuminanceTripletReducerMaterial::~EMToneMapperLuminanceTripletReducerMaterial ()
@@ -42,7 +42,7 @@ GXVoid EMToneMapperLuminanceTripletReducerMaterial::Bind ( const GXTransform& /*
 {
 	if ( !luminanceTripletTexture ) return;
 
-	glUseProgram ( shaderProgram.GetProgram () );
+	glUseProgram ( _shaderProgram.GetProgram () );
 	glUniform1f ( levelOfDetailLocation, levelOfDetail );
 
 	luminanceTripletTexture->Bind ( TEXTURE_SLOT );

@@ -1,4 +1,4 @@
-// version 1.17
+// version 1.18
 
 #ifndef GX_CORE
 #define GX_CORE
@@ -10,8 +10,8 @@
 class GXCore final
 {
     private:
-        static GXBool       loopFlag;
-        static GXCore*      instance;
+        static GXBool       _loopFlag;
+        static GXCore*      _instance;
 
     public:
         static GXCore& GXCALL GetInstance ();

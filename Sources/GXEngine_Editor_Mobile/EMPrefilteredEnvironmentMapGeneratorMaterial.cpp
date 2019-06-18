@@ -29,21 +29,21 @@ EMPrefilteredEnvironmentMapGeneratorMaterial::EMPrefilteredEnvironmentMapGenerat
 	static const GLuint samplerLocations[ 1 ] = { TEXTURE_SLOT };
 
 	GXShaderProgramInfo si;
-	si.vertexShader = VERTEX_SHADER;
-	si.geometryShader = GEOMETRY_SHADER;
-	si.fragmentShader = FRAGMENT_SHADER;
-	si.samplers = 1u;
-	si.samplerNames = samplerNames;
-	si.samplerLocations = samplerLocations;
-	si.transformFeedbackOutputs = 0;
-	si.transformFeedbackOutputNames = nullptr;
+	si._vertexShader = VERTEX_SHADER;
+	si._geometryShader = GEOMETRY_SHADER;
+	si._fragmentShader = FRAGMENT_SHADER;
+	si._samplers = 1u;
+	si._samplerNames = samplerNames;
+	si._samplerLocations = samplerLocations;
+	si._transformFeedbackOutputs = 0;
+	si._transformFeedbackOutputNames = nullptr;
 
-	shaderProgram.Init ( si );
+	_shaderProgram.Init ( si );
 
-	viewProjectionMatricesLocation = shaderProgram.GetUniform ( "viewProjectionMatrices" );
-	roughnessLocation = shaderProgram.GetUniform ( "roughness" );
-	totalSamplesLocation = shaderProgram.GetUniform ( "totalSamples" );
-	inverseTotalSamplesLocation = shaderProgram.GetUniform ( "inverseTotalSamples" );
+	viewProjectionMatricesLocation = _shaderProgram.GetUniform ( "viewProjectionMatrices" );
+	roughnessLocation = _shaderProgram.GetUniform ( "roughness" );
+	totalSamplesLocation = _shaderProgram.GetUniform ( "totalSamples" );
+	inverseTotalSamplesLocation = _shaderProgram.GetUniform ( "inverseTotalSamples" );
 
 	GXCameraPerspective camera ( PROJECTION_FOV_Y, SQUARE_ASPECT_RATIO, Z_NEAR, Z_FAR );
 	camera.SetRotation ( 0.0f, GX_MATH_HALF_PI, 0.0f );
@@ -74,7 +74,7 @@ GXVoid EMPrefilteredEnvironmentMapGeneratorMaterial::Bind ( const GXTransform& /
 {
 	if ( !environmentMap ) return;
 
-	glUseProgram ( shaderProgram.GetProgram () );
+	glUseProgram ( _shaderProgram.GetProgram () );
 
 	glUniformMatrix4fv ( viewProjectionMatricesLocation, 6, GL_FALSE, reinterpret_cast<const GLfloat*> ( viewProjectionMatrices ) );
 	glUniform1f ( roughnessLocation, roughness );

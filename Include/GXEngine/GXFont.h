@@ -1,4 +1,4 @@
-// version 1.14
+// version 1.15
 
 #ifndef GX_FONT
 #define GX_FONT
@@ -10,13 +10,13 @@
 
 struct GXGlyphInfo final
 {
-    GXTexture2D*    atlas;
-    GXVec2          min;
-    GXVec2          max;
-    GXFloat         offsetY;
-    GXFloat         width;
-    GXFloat         height;
-    GXUShort        advance;
+    GXTexture2D*    _atlas;
+    GXVec2          _min;
+    GXVec2          _max;
+    GXFloat         _offsetY;
+    GXFloat         _width;
+    GXFloat         _height;
+    GXUShort        _advance;
 };
 
 // Class handles lazy loading reference counting font resource creation.
@@ -25,7 +25,7 @@ class GXFontEntry;
 class GXFont final : public GXMemoryInspector
 {
     private:
-        GXFontEntry*        fontEntry;
+        GXFontEntry*    _fontEntry;
 
     public:
         explicit GXFont ( const GXWChar* fileName, GXUShort size );

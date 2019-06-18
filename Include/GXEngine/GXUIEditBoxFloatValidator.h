@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_UI_EDIT_BOX_FLOAT_VALIDATOR
 #define GX_UI_EDIT_BOX_FLOAT_VALIDATOR
@@ -11,10 +11,10 @@
 class GXUIEditBoxFloatValidator final : public GXTextValidator
 {
     private:
-        GXUIEditBox&    editBox;
+        GXUIEditBox&    _editBox;
 
-        GXFloat         minimumValue;
-        GXFloat         maximumValue;
+        GXFloat         _minimumValue;
+        GXFloat         _maximumValue;
 
     public:
         explicit GXUIEditBoxFloatValidator ( const GXWChar* defaultValidText, GXUIEditBox& editBox, GXFloat minimumValue, GXFloat maximumValue );

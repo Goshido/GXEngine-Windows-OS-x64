@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #include <GXEngine/GXSoundEmitter.h>
 #include <GXCommon/GXSmartLock.h>
@@ -6,55 +6,55 @@
 
 GXSmartLock* gx_sound_mixer_SmartLock = nullptr;
 
-GXSoundEmitter::GXSoundEmitter ( GXSoundTrack* trackObject, GXBool isTrackLooped, GXBool isTrackStreamed, GXBool isRelative )
+GXSoundEmitter::GXSoundEmitter ( GXSoundTrack* track, GXBool isTrackLooped, GXBool isTrackStreamed, GXBool isRelative )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXSoundEmitter" )
 {
-    if ( !trackObject )
+    if ( !track )
         GXWarningBox ( L"GXSoundEmitter::Error - track равен nullptr!" );
 
     gx_sound_mixer_SmartLock->AcquireExclusive ();
 
-    top = nullptr;
-    next = prev = nullptr;
+    _top = nullptr;
+    _next = _previous = nullptr;
 
-    stopped = GX_TRUE;
-    finished = GX_FALSE;
+    _stopped = GX_TRUE;
+    _finished = GX_FALSE;
 
-    forceUpdate = GX_FALSE;
+    _forceUpdate = GX_FALSE;
 
-    source = 0u;
-    streamBuffers[ 0u ] = streamBuffers[ 1u ] = 0u;
+    _source = 0u;
+    _streamBuffers[ 0u ] = _streamBuffers[ 1u ] = 0u;
 
 
-    track = trackObject;
-    looped = isTrackLooped;
+    _track = track;
+    _looped = isTrackLooped;
 
-    track->AddReference ();
+    _track->AddReference ();
 
-    GXAlGenSources ( 1, &source );
+    GXAlGenSources ( 1, &_source );
 
     if ( isTrackStreamed )
     {
-        streamer = track->GetStreamer ();
-        GXAlGenBuffers ( 2, streamBuffers );
+        _streamer = _track->GetStreamer ();
+        GXAlGenBuffers ( 2, _streamBuffers );
 
-        streamer->FillBuffer ( streamBuffers[ 0u ], looped );
-        streamer->FillBuffer ( streamBuffers[ 1u ], looped );
-        GXAlSourceQueueBuffers ( source, 2, streamBuffers );
+        _streamer->FillBuffer ( _streamBuffers[ 0u ], _looped );
+        _streamer->FillBuffer ( _streamBuffers[ 1u ], _looped );
+        GXAlSourceQueueBuffers ( _source, 2, _streamBuffers );
     }
     else
     {
-        streamer = nullptr;
-        GXAlSourcei ( source, AL_LOOPING, looped ? AL_TRUE : AL_FALSE );
+        _streamer = nullptr;
+        GXAlSourcei ( _source, AL_LOOPING, _looped ? AL_TRUE : AL_FALSE );
 
-        ALuint bfr = track->GetBuffer ();
-        GXAlSourcei ( source, AL_BUFFER, static_cast<ALint> ( bfr ) );
+        ALuint bfr = _track->GetBuffer ();
+        GXAlSourcei ( _source, AL_BUFFER, static_cast<ALint> ( bfr ) );
     }
 
-    ownVolume = 1.0f;
+    _ownVolume = 1.0f;
     SetChannelVolume ( 1.0f );
 
-    GXAlSourcei ( source, AL_SOURCE_RELATIVE, isRelative ? AL_TRUE : AL_FALSE );
+    GXAlSourcei ( _source, AL_SOURCE_RELATIVE, isRelative ? AL_TRUE : AL_FALSE );
 
     gx_sound_mixer_SmartLock->ReleaseExclusive ();
 }
@@ -64,31 +64,31 @@ GXSoundEmitter::~GXSoundEmitter ()
     gx_sound_mixer_SmartLock->AcquireExclusive ();
 
     Stop ();
-    GXAlDeleteSources ( 1, &source );
+    GXAlDeleteSources ( 1, &_source );
     
-    if ( streamer )
+    if ( _streamer )
     {
-        GXAlSourceUnqueueBuffers ( source, 1, streamBuffers );
-        GXAlSourceUnqueueBuffers ( source, 1, streamBuffers + 1u );
-        GXAlDeleteBuffers ( 2, streamBuffers );
+        GXAlSourceUnqueueBuffers ( _source, 1, _streamBuffers );
+        GXAlSourceUnqueueBuffers ( _source, 1, _streamBuffers + 1u );
+        GXAlDeleteBuffers ( 2, _streamBuffers );
 
-        delete streamer;
+        delete _streamer;
     }
 
-    track->Release ();
+    _track->Release ();
 
-    if ( top )
+    if ( _top )
     {
-        if ( next )
-            next->prev = prev;
+        if ( _next )
+            _next->_previous = _previous;
 
-        if ( prev )
+        if ( _previous )
         {
-            prev->next = next;
+            _previous->_next = _next;
         }
         else
         {
-            *top = next;
+            *_top = _next;
         }
     }
 
@@ -97,22 +97,22 @@ GXSoundEmitter::~GXSoundEmitter ()
 
 GXVoid GXSoundEmitter::SetVelocity ( const GXVec3 &velocity )
 {
-    GXAlSourcefv ( source, AL_VELOCITY, velocity.data );
+    GXAlSourcefv ( _source, AL_VELOCITY, velocity.data );
 }
 
 GXVoid GXSoundEmitter::SetVelocity ( GXFloat x, GXFloat y, GXFloat z )
 {
-    GXAlSource3f ( source, AL_VELOCITY, x, y, z );
+    GXAlSource3f ( _source, AL_VELOCITY, x, y, z );
 }
 
 GXVoid GXSoundEmitter::SetLocation ( const GXVec3 &location )
 {
-    GXAlSourcefv ( source, AL_POSITION, location.data );
+    GXAlSourcefv ( _source, AL_POSITION, location.data );
 }
 
 GXVoid GXSoundEmitter::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 {
-    GXAlSource3f ( source, AL_POSITION, x, y, z );
+    GXAlSource3f ( _source, AL_POSITION, x, y, z );
 }
 
 GXVoid GXSoundEmitter::SetRotation ( const GXMat4 &rotation )
@@ -127,7 +127,7 @@ GXVoid GXSoundEmitter::SetRotation ( const GXMat4 &rotation )
     rotation.GetY ( tmp );
     memcpy ( orientation + 3u, &tmp, sizeof ( GXVec3 ) );
 
-    GXAlSourcefv ( source, AL_ORIENTATION, orientation );
+    GXAlSourcefv ( _source, AL_ORIENTATION, orientation );
 }
 
 GXVoid GXSoundEmitter::SetRotation ( const GXEuler &rotation )
@@ -148,20 +148,20 @@ GXVoid GXSoundEmitter::SetRotation ( GXFloat pitchRadians, GXFloat yawRadians, G
 
 GXVoid GXSoundEmitter::SetOwnVolume ( GXFloat ownVolumeLevel )
 {
-    ownVolume = ownVolumeLevel;
-    GXAlSourcef ( source, AL_GAIN, ownVolume * channelVolume );
+    _ownVolume = ownVolumeLevel;
+    GXAlSourcef ( _source, AL_GAIN, _ownVolume * _channelVolume );
 }
 
 GXVoid GXSoundEmitter::SetChannelVolume ( GXFloat channelVolumeLevel )
 {
-    channelVolume = channelVolumeLevel;
-    GXAlSourcef ( source, AL_GAIN, ownVolume * channelVolume );
+    _channelVolume = channelVolumeLevel;
+    GXAlSourcef ( _source, AL_GAIN, _ownVolume * _channelVolume );
 }
 
 GXVoid GXSoundEmitter::SetRange ( GXFloat min, GXFloat max )
 {
-    GXAlSourcef ( source, AL_REFERENCE_DISTANCE, min );
-    GXAlSourcef ( source, AL_MAX_DISTANCE, max );
+    GXAlSourcef ( _source, AL_REFERENCE_DISTANCE, min );
+    GXAlSourcef ( _source, AL_MAX_DISTANCE, max );
 }
 
 GXVoid GXSoundEmitter::ChangeSoundTrack ( GXSoundTrack* trackObject, GXBool isTrackLooped, GXBool isTrackStreamed, GXBool isRelative )
@@ -173,126 +173,126 @@ GXVoid GXSoundEmitter::ChangeSoundTrack ( GXSoundTrack* trackObject, GXBool isTr
 
     Stop ();
 
-    if ( streamer )
+    if ( _streamer )
     {
-        GXAlSourcei ( source, AL_BUFFER, 0 );
+        GXAlSourcei ( _source, AL_BUFFER, 0 );
 
-        GXAlSourceUnqueueBuffers ( source, 1, streamBuffers );
-        GXAlSourceUnqueueBuffers ( source, 1, streamBuffers + 1u );
-        GXAlDeleteBuffers ( 2, streamBuffers );
+        GXAlSourceUnqueueBuffers ( _source, 1, _streamBuffers );
+        GXAlSourceUnqueueBuffers ( _source, 1, _streamBuffers + 1u );
+        GXAlDeleteBuffers ( 2, _streamBuffers );
 
-        GXSafeDelete ( streamer );
+        GXSafeDelete ( _streamer );
     }
     else
     {
-        GXAlSourcei ( source, AL_BUFFER, 0 );
+        GXAlSourcei ( _source, AL_BUFFER, 0 );
     }
 
-    track->Release ();
-    track = trackObject;
-    track->AddReference ();
+    _track->Release ();
+    _track = trackObject;
+    _track->AddReference ();
 
-    looped = isTrackLooped;
+    _looped = isTrackLooped;
 
     if ( isTrackStreamed )
     {
-        streamer = track->GetStreamer ();
-        GXAlGenBuffers ( 2, streamBuffers );
+        _streamer = _track->GetStreamer ();
+        GXAlGenBuffers ( 2, _streamBuffers );
 
-        streamer->FillBuffer ( streamBuffers[ 0u ], looped );
-        streamer->FillBuffer ( streamBuffers[ 1u ], looped );
-        GXAlSourceQueueBuffers ( source, 2, streamBuffers );
+        _streamer->FillBuffer ( _streamBuffers[ 0u ], _looped );
+        _streamer->FillBuffer ( _streamBuffers[ 1u ], _looped );
+        GXAlSourceQueueBuffers ( _source, 2, _streamBuffers );
     }
     else
     {
-        streamer = nullptr;
-        GXAlSourcei ( source, AL_LOOPING, looped ? AL_TRUE : AL_FALSE );
+        _streamer = nullptr;
+        GXAlSourcei ( _source, AL_LOOPING, _looped ? AL_TRUE : AL_FALSE );
 
-        ALuint bfr = track->GetBuffer ();
-        GXAlSourcei ( source, AL_BUFFER, static_cast<ALint> ( bfr ) );
+        ALuint bfr = _track->GetBuffer ();
+        GXAlSourcei ( _source, AL_BUFFER, static_cast<ALint> ( bfr ) );
     }
 
-    GXAlSourcei ( source, AL_SOURCE_RELATIVE, isRelative ? AL_TRUE : AL_FALSE );
+    GXAlSourcei ( _source, AL_SOURCE_RELATIVE, isRelative ? AL_TRUE : AL_FALSE );
 
-    forceUpdate = GX_TRUE;
-    stopped = GX_TRUE;
-    finished = GX_FALSE;
+    _forceUpdate = GX_TRUE;
+    _stopped = GX_TRUE;
+    _finished = GX_FALSE;
 
     gx_sound_mixer_SmartLock->ReleaseExclusive ();
 }
 
 GXSoundTrack* GXSoundEmitter::GetSoundTrack ()
 {
-    return track;
+    return _track;
 }
 
 GXVoid GXSoundEmitter::Play ()
 {
-    GXAlSourcePlay ( source );
+    GXAlSourcePlay ( _source );
 
-    if ( stopped ) return;
+    if ( _stopped ) return;
 
-    stopped = GX_FALSE;
+    _stopped = GX_FALSE;
 
-    if ( !streamer ) return;
+    if ( !_streamer ) return;
 
     Rewind ();
 }
 
 GXVoid GXSoundEmitter::Stop ()
 {
-    GXAlSourceStop ( source );
-    stopped = GX_TRUE;
+    GXAlSourceStop ( _source );
+    _stopped = GX_TRUE;
 }
 
 GXVoid GXSoundEmitter::Pause ()
 {
-    GXAlSourcePause ( source );
+    GXAlSourcePause ( _source );
 }
 
 GXVoid GXSoundEmitter::Rewind ()
 {
-    if ( !streamer )
+    if ( !_streamer )
     {
-        GXAlSourceRewind ( source );
+        GXAlSourceRewind ( _source );
         return;
     }
 
     gx_sound_mixer_SmartLock->AcquireExclusive ();
 
-    GXAlSourceStop ( source );
-    streamer->Reset ();
-    forceUpdate = GX_TRUE;
+    GXAlSourceStop ( _source );
+    _streamer->Reset ();
+    _forceUpdate = GX_TRUE;
     Update ();
-    forceUpdate = GX_FALSE;
-    GXAlSourcePlay ( source );
+    _forceUpdate = GX_FALSE;
+    GXAlSourcePlay ( _source );
 
     gx_sound_mixer_SmartLock->ReleaseExclusive ();
 }
 
 GXVoid GXSoundEmitter::Update ()
 {
-    if ( !streamer ) return;
+    if ( !_streamer ) return;
 
     GXInt temp;
-    GXAlGetSourcei ( source, AL_BUFFERS_PROCESSED, &temp );
+    GXAlGetSourcei ( _source, AL_BUFFERS_PROCESSED, &temp );
 
-    while ( temp || forceUpdate )
+    while ( temp || _forceUpdate )
     {
-        GXAlSourceUnqueueBuffers ( source, 1, streamBuffers );
-        finished = !streamer->FillBuffer ( streamBuffers[ 0u ], looped );
+        GXAlSourceUnqueueBuffers ( _source, 1, _streamBuffers );
+        _finished = !_streamer->FillBuffer ( _streamBuffers[ 0u ], _looped );
 
-        if ( !finished )
-            GXAlSourceQueueBuffers ( source, 1, streamBuffers );
+        if ( !_finished )
+            GXAlSourceQueueBuffers ( _source, 1, _streamBuffers );
 
-        ALuint t = streamBuffers[ 1u ];
-        streamBuffers[ 1u ] = streamBuffers[ 0u ];
-        streamBuffers[ 0u ] = t;
+        ALuint t = _streamBuffers[ 1u ];
+        _streamBuffers[ 1u ] = _streamBuffers[ 0u ];
+        _streamBuffers[ 0u ] = t;
 
-        GXAlGetSourcei ( source, AL_BUFFERS_PROCESSED, &temp );
+        GXAlGetSourcei ( _source, AL_BUFFERS_PROCESSED, &temp );
 
-        if ( !forceUpdate ) continue;
+        if ( !_forceUpdate ) continue;
 
-        forceUpdate = GX_FALSE;
+        _forceUpdate = GX_FALSE;
     }
 }

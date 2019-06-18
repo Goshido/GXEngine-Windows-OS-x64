@@ -79,7 +79,7 @@ const GXSkeleton& EMFluttershy::GetSkeleton () const
 
 GXVoid EMFluttershy::TransformUpdated ()
 {
-	mesh.SetScale ( currentFrameScale );
-	mesh.SetRotation ( currentFrameRotationMatrix );
-	mesh.SetLocation ( currentFrameLocation );
+	mesh.SetScale ( _currentFrameScale );
+	mesh.SetRotation ( _currentFrameRotationMatrix );
+	mesh.SetLocation ( _currentFrameLocation );
 }

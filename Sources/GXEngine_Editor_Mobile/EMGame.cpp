@@ -380,53 +380,53 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
     physicsInfo->Reset ();
 
     GXImageInfo ii;
-    ii.color.From ( 0u, 0u, 0u, 180u );
-    ii.texture = &physicsInfoBackgroundTexture;
-    ii.insertX = 0.0f;
-    ii.insertY = 0.0f;
-    ii.insertWidth = static_cast<GXFloat> ( physicsInfo->GetWidth () );
-    ii.insertHeight = static_cast<GXFloat> ( physicsInfo->GetHeight () );
-    ii.overlayType = eGXImageOverlayType::SimpleReplace;
+    ii._color.From ( 0u, 0u, 0u, 180u );
+    ii._texture = &physicsInfoBackgroundTexture;
+    ii._insertX = 0.0f;
+    ii._insertY = 0.0f;
+    ii._insertWidth = static_cast<GXFloat> ( physicsInfo->GetWidth () );
+    ii._insertHeight = static_cast<GXFloat> ( physicsInfo->GetHeight () );
+    ii._overlayType = eGXImageOverlayType::SimpleReplace;
 
     physicsInfo->AddImage ( ii );
 
     GXPenInfo pi;
-    pi.color.From ( 115u, 185u, 0u, 255u );
-    pi.font = physicsInfoFont;
-    pi.insertX = 0.5f * gx_ui_Scale;
-    pi.insertY = 0.5f * gx_ui_Scale;
-    pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+    pi._color.From ( 115u, 185u, 0u, 255u );
+    pi._font = physicsInfoFont;
+    pi._insertX = 0.5f * gx_ui_Scale;
+    pi._insertY = 0.5f * gx_ui_Scale;
+    pi._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
     physicsInfo->AddText ( pi, 64, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Contacts: %i" ), collisionData.GetTotalContacts () );
 
     GXFloat offset = static_cast<GXFloat> ( physicsInfoFont->GetSize () );
-    pi.insertY += offset;
+    pi._insertY += offset;
     physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Allocated support points: %i" ), collisionDetector.GetAllocatedSupportPoints () );
 
-    pi.insertY += offset;
+    pi._insertY += offset;
     physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Allocated edges: %i" ), collisionDetector.GetAllocatedEdges () );
 
-    pi.insertY += offset;
+    pi._insertY += offset;
     physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Allocated faces: %i" ), collisionDetector.GetAllocatedFaces () );
 
     if ( collisionData.GetTotalContacts () > 0 )
     {
-        pi.insertY += offset;
+        pi._insertY += offset;
         physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Penetration depth: %f" ), contact->GetPenetration () );
 
-        pi.insertY += offset;
+        pi._insertY += offset;
         physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->GJK iterations: %i" ), contact->GetGJKIterations () );
 
-        pi.insertY += offset;
+        pi._insertY += offset;
         physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->EPA iterations: %i" ), contact->GetEPAIterations () );
 
-        pi.insertY += offset;
+        pi._insertY += offset;
         physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Used support points: %i" ), contact->GetSupportPoints () );
 
-        pi.insertY += offset;
+        pi._insertY += offset;
         physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Used edges: %i" ), contact->GetEdges () );
 
-        pi.insertY += offset;
+        pi._insertY += offset;
         physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Used faces: %i" ), contact->GetFaces () );
     }
 
@@ -553,7 +553,7 @@ GXVoid GXCALL EMGame::OnShowToneMapperSettings ( GXVoid* /*handler*/ )
 
 GXVoid GXCALL EMGame::OnMouseButton ( GXVoid* /*handler*/, GXInputMouseFlags mouseflags )
 {
-    if ( !mouseflags.lmb ) return;
+    if ( !mouseflags._leftMouseButton ) return;
 
     const GXVec2& mouse = GXTouchSurface::GetInstance ().GetMousePosition ();
 

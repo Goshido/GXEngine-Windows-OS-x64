@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #include <GXEngine/GXSplashScreen.h>
 #include <GXEngine/GXResource.h>
@@ -29,53 +29,53 @@ enum class eGXStatus : GXUByte
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXSplashScreen* GXSplashScreen::instance = nullptr;
+GXSplashScreen* GXSplashScreen::_instance = nullptr;
 
 GXSplashScreen& GXSplashScreen::GetInstance ()
 {
-    if ( !instance )
+    if ( !_instance )
     {
         GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXSplashScreen" );
-        instance = new GXSplashScreen ();
+        _instance = new GXSplashScreen ();
     }
 
-    return *instance;
+    return *_instance;
 }
 
 GXSplashScreen::~GXSplashScreen ()
 {
-    if ( hwnd == static_cast<HWND> ( INVALID_HANDLE_VALUE ) ) return;
+    if ( _hwnd == static_cast<HWND> ( INVALID_HANDLE_VALUE ) ) return;
 
-    PostMessageW ( hwnd, WM_QUIT, 0, 0 );
-    thread->Join ();
+    PostMessageW ( _hwnd, WM_QUIT, 0, 0 );
+    _thread->Join ();
 
-    delete thread;
+    delete _thread;
 
-    instance = nullptr;
+    _instance = nullptr;
 }
 
 GXVoid GXSplashScreen::Show ()
 {
-    intend = eGXSplashScreenState::Visible;
+    _intend = eGXSplashScreenState::Visible;
 }
 
 GXVoid GXSplashScreen::Hide ()
 {
-    intend = eGXSplashScreenState::Hidden;
+    _intend = eGXSplashScreenState::Hidden;
 }
 
 GXSplashScreen::GXSplashScreen ()
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXSplashScreen" )
-    hwnd ( static_cast<HWND> ( INVALID_HANDLE_VALUE ) ),
-    bitmap ( static_cast<HBITMAP> ( INVALID_HANDLE_VALUE ) ),
-    bitmapWidth ( 0u ),
-    bitmapHeight ( 0u ),
-    pixels ( nullptr ),
-    state ( eGXSplashScreenState::Hidden ),
-    intend ( eGXSplashScreenState::Hidden )
+    _hwnd ( static_cast<HWND> ( INVALID_HANDLE_VALUE ) ),
+    _bitmap ( static_cast<HBITMAP> ( INVALID_HANDLE_VALUE ) ),
+    _bitmapWidth ( 0u ),
+    _bitmapHeight ( 0u ),
+    _pixels ( nullptr ),
+    _state ( eGXSplashScreenState::Hidden ),
+    _intend ( eGXSplashScreenState::Hidden )
 {
-    thread = new GXThread ( &GXSplashScreen::MessageLoop, this );
-    thread->Start ();
+    _thread = new GXThread ( &GXSplashScreen::MessageLoop, this );
+    _thread->Start ();
 }
 
 GXVoid GXSplashScreen::FillRGB ( GXUByte** destination, const GXUByte* source, GXUShort width, GXUShort height )
@@ -137,7 +137,7 @@ GXVoid GXSplashScreen::FillARGB ( GXUByte** destination, const GXUByte* source, 
 GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thread )
 {
     GXSplashScreen* splashScreen = static_cast<GXSplashScreen*> ( arg );
-    splashScreen->hwnd = static_cast<HWND> ( INVALID_HANDLE_VALUE );
+    splashScreen->_hwnd = static_cast<HWND> ( INVALID_HANDLE_VALUE );
 
     eGXStatus status = eGXStatus::Success;
 
@@ -158,32 +158,32 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
             continue;
         }
 
-        splashScreen->bitmapWidth = static_cast<GXUShort> ( w );
-        splashScreen->bitmapHeight = static_cast<GXUShort> ( h );
+        splashScreen->_bitmapWidth = static_cast<GXUShort> ( w );
+        splashScreen->_bitmapHeight = static_cast<GXUShort> ( h );
 
-        splashScreen->pixels = nullptr;
+        splashScreen->_pixels = nullptr;
 
         switch ( numChannels )
         {
             case 3u:
-                splashScreen->FillRGB ( &splashScreen->pixels, data, splashScreen->bitmapWidth, splashScreen->bitmapHeight );
+                splashScreen->FillRGB ( &splashScreen->_pixels, data, splashScreen->_bitmapWidth, splashScreen->_bitmapHeight );
             break;
 
             case 4u:
-                splashScreen->FillARGB ( &splashScreen->pixels, data, splashScreen->bitmapWidth, splashScreen->bitmapHeight );
+                splashScreen->FillARGB ( &splashScreen->_pixels, data, splashScreen->_bitmapWidth, splashScreen->_bitmapHeight );
             break;
 
             default:
-                instance->Free ( data );
+                _instance->Free ( data );
                 status = eGXStatus::InvalidChannels;
                 loopFlag = GX_FALSE;
                 continue;
             break;
         }
 
-        instance->Free ( data );
+        _instance->Free ( data );
 
-        splashScreen->bitmap = CreateBitmap ( (int)splashScreen->bitmapWidth, (int)splashScreen->bitmapHeight, NUMBER_PLANES, BGRA_BYTES_PER_PIXEL * BITS_PER_CHANNEL, splashScreen->pixels );
+        splashScreen->_bitmap = CreateBitmap ( (int)splashScreen->_bitmapWidth, (int)splashScreen->_bitmapHeight, NUMBER_PLANES, BGRA_BYTES_PER_PIXEL * BITS_PER_CHANNEL, splashScreen->_pixels );
 
         HINSTANCE hInst = GetModuleHandle ( 0 );
 
@@ -197,7 +197,7 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
 
         if ( !RegisterClassW ( &windowClass ) )
         {
-            splashScreen->hwnd = static_cast<HWND> ( INVALID_HANDLE_VALUE );
+            splashScreen->_hwnd = static_cast<HWND> ( INVALID_HANDLE_VALUE );
             status = eGXStatus::CanNotRegisterClass;
             loopFlag = GX_FALSE;
 
@@ -213,18 +213,18 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
         monitorinfo.cbSize = sizeof ( monitorinfo );
         GetMonitorInfoW ( primaryMonitor, &monitorinfo );
 
-        GXInt x = monitorinfo.rcWork.left + ( monitorinfo.rcWork.right - monitorinfo.rcWork.left - splashScreen->bitmapWidth ) / 2;
-        GXInt y = monitorinfo.rcWork.top + ( monitorinfo.rcWork.bottom - monitorinfo.rcWork.top - splashScreen->bitmapHeight ) / 2;
+        GXInt x = monitorinfo.rcWork.left + ( monitorinfo.rcWork.right - monitorinfo.rcWork.left - splashScreen->_bitmapWidth ) / 2;
+        GXInt y = monitorinfo.rcWork.top + ( monitorinfo.rcWork.bottom - monitorinfo.rcWork.top - splashScreen->_bitmapHeight ) / 2;
 
         DWORD dwExStyle = WS_EX_APPWINDOW;
         DWORD dwStyle = WS_POPUP;
 
-        splashScreen->hwnd = CreateWindowExW ( dwExStyle, SPLASH_SCREEN_WINDOW_CLASS, nullptr, dwStyle, x, y, (int)splashScreen->bitmapWidth, (int)splashScreen->bitmapHeight, (HWND)0, (HMENU)NULL, hInst, nullptr );
-        SetWindowLongPtrW ( splashScreen->hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR> ( splashScreen ) );
+        splashScreen->_hwnd = CreateWindowExW ( dwExStyle, SPLASH_SCREEN_WINDOW_CLASS, nullptr, dwStyle, x, y, (int)splashScreen->_bitmapWidth, (int)splashScreen->_bitmapHeight, (HWND)0, (HMENU)NULL, hInst, nullptr );
+        SetWindowLongPtrW ( splashScreen->_hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR> ( splashScreen ) );
 
-        if ( !splashScreen->hwnd )
+        if ( !splashScreen->_hwnd )
         {
-            splashScreen->hwnd = static_cast<HWND> ( INVALID_HANDLE_VALUE );
+            splashScreen->_hwnd = static_cast<HWND> ( INVALID_HANDLE_VALUE );
             status = eGXStatus::CanNotCreateWindow;
             loopFlag = GX_FALSE;
 
@@ -234,7 +234,7 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
         while ( loopFlag )
         {
             MSG msg;
-            PeekMessageW ( &msg, splashScreen->hwnd, 0, 0u, PM_REMOVE );
+            PeekMessageW ( &msg, splashScreen->_hwnd, 0, 0u, PM_REMOVE );
 
             TranslateMessage ( &msg );
             DispatchMessageW ( &msg );
@@ -245,18 +245,18 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
                 break;
             }
 
-            if ( splashScreen->state == splashScreen->intend ) continue;
+            if ( splashScreen->_state == splashScreen->_intend ) continue;
 
-            switch ( splashScreen->intend )
+            switch ( splashScreen->_intend )
             {
                 case eGXSplashScreenState::Visible:
-                    ShowWindow ( splashScreen->hwnd, SW_SHOW );
-                    splashScreen->state = splashScreen->intend;
+                    ShowWindow ( splashScreen->_hwnd, SW_SHOW );
+                    splashScreen->_state = splashScreen->_intend;
                 break;
 
                 case eGXSplashScreenState::Hidden:
-                    ShowWindow ( splashScreen->hwnd, SW_HIDE );
-                    splashScreen->state = splashScreen->intend;
+                    ShowWindow ( splashScreen->_hwnd, SW_HIDE );
+                    splashScreen->_state = splashScreen->_intend;
                 break;
 
                 default:
@@ -272,10 +272,10 @@ GXUPointer GXTHREADCALL GXSplashScreen::MessageLoop ( GXVoid* arg, GXThread &thr
     {
         case eGXStatus::Success:
         {
-            DeleteObject ( splashScreen->bitmap );
-            instance->Free ( splashScreen->pixels );
+            DeleteObject ( splashScreen->_bitmap );
+            _instance->Free ( splashScreen->_pixels );
 
-            if ( !DestroyWindow ( splashScreen->hwnd ) )
+            if ( !DestroyWindow ( splashScreen->_hwnd ) )
             {
                 GXLogA ( "GXSplashScreen::MessageLoop::Error - Освобождение HWND провалено.\n" );
                 status = eGXStatus::CanNotFreeWindowResources;
@@ -335,9 +335,9 @@ LRESULT CALLBACK GXSplashScreen::WindowProc ( HWND hwnd, UINT message, WPARAM wP
 
             HDC splashScreenDC = BeginPaint ( hwnd, &paintStruct );
             HDC bitmapDC = CreateCompatibleDC ( splashScreenDC );
-            HBITMAP oldBitmap = static_cast<HBITMAP> ( SelectObject ( bitmapDC, splashScreen->bitmap ) );
+            HBITMAP oldBitmap = static_cast<HBITMAP> ( SelectObject ( bitmapDC, splashScreen->_bitmap ) );
 
-            if ( !BitBlt ( splashScreenDC, 0, 0, static_cast<int> ( splashScreen->bitmapWidth ), static_cast<int> ( splashScreen->bitmapHeight ), bitmapDC, 0, 0, SRCCOPY ) )
+            if ( !BitBlt ( splashScreenDC, 0, 0, static_cast<int> ( splashScreen->_bitmapWidth ), static_cast<int> ( splashScreen->_bitmapHeight ), bitmapDC, 0, 0, SRCCOPY ) )
                 GXLogA ( "GXSplashScreen::WindowProc::Error - BitBlt не выполнилась.\n" );
 
             SelectObject ( bitmapDC, oldBitmap );

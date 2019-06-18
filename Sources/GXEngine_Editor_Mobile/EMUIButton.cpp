@@ -127,67 +127,67 @@ GXVoid EMUIButtonRenderer::OnRefresh ()
     GXImageInfo ii;
     GXPenInfo pi;
 
-    ii.texture = &background;
+    ii._texture = &background;
 
     if ( button->IsDisabled () )
     {
-        ii.color.From ( DISABLE_BACKGROUND_COLOR_R, DISABLE_BACKGROUND_COLOR_G, DISABLE_BACKGROUND_COLOR_B, DISABLE_BACKGROUND_COLOR_A );
-        pi.color.From ( DISABLE_FONT_COLOR_R, DISABLE_FONT_COLOR_G, DISABLE_FONT_COLOR_B, DISABLE_FONT_COLOR_A );
+        ii._color.From ( DISABLE_BACKGROUND_COLOR_R, DISABLE_BACKGROUND_COLOR_G, DISABLE_BACKGROUND_COLOR_B, DISABLE_BACKGROUND_COLOR_A );
+        pi._color.From ( DISABLE_FONT_COLOR_R, DISABLE_FONT_COLOR_G, DISABLE_FONT_COLOR_B, DISABLE_FONT_COLOR_A );
     }
     else if ( !button->IsHighlighted () )
     {
-        ii.color.From ( HIGHLIGHTED_BACKGROUND_COLOR_R, HIGHLIGHTED_BACKGROUND_COLOR_G, HIGHLIGHTED_BACKGROUND_COLOR_B, HIGHLIGHTED_BACKGROUND_COLOR_A );
-        pi.color.From ( HIGHLIGHTED_FONT_COLOR_R, HIGHLIGHTED_FONT_COLOR_G, HIGHLIGHTED_FONT_COLOR_B, HIGHLIGHTED_FONT_COLOR_A );
+        ii._color.From ( HIGHLIGHTED_BACKGROUND_COLOR_R, HIGHLIGHTED_BACKGROUND_COLOR_G, HIGHLIGHTED_BACKGROUND_COLOR_B, HIGHLIGHTED_BACKGROUND_COLOR_A );
+        pi._color.From ( HIGHLIGHTED_FONT_COLOR_R, HIGHLIGHTED_FONT_COLOR_G, HIGHLIGHTED_FONT_COLOR_B, HIGHLIGHTED_FONT_COLOR_A );
     }
     else if ( button->IsPressed () )
     {
-        ii.color.From ( PRESSED_BACKGROUND_COLOR_R, PRESSED_BACKGROUND_COLOR_G, PRESSED_BACKGROUND_COLOR_B, PRESSED_BACKGROUND_COLOR_A );
-        pi.color.From ( PRESSED_FONT_COLOR_R, PRESSED_FONT_COLOR_G, PRESSED_FONT_COLOR_B, PRESSED_FONT_COLOR_A );
+        ii._color.From ( PRESSED_BACKGROUND_COLOR_R, PRESSED_BACKGROUND_COLOR_G, PRESSED_BACKGROUND_COLOR_B, PRESSED_BACKGROUND_COLOR_A );
+        pi._color.From ( PRESSED_FONT_COLOR_R, PRESSED_FONT_COLOR_G, PRESSED_FONT_COLOR_B, PRESSED_FONT_COLOR_A );
     }
     else
     {
-        ii.color.From ( NORMAL_BACKGROUND_COLOR_R, NORMAL_BACKGROUND_COLOR_G, NORMAL_BACKGROUND_COLOR_B, NORMAL_BACKGROUND_COLOR_A );
-        pi.color.From ( NORMAL_FONT_COLOR_R, NORMAL_FONT_COLOR_G, NORMAL_FONT_COLOR_B, NORMAL_FONT_COLOR_A );
+        ii._color.From ( NORMAL_BACKGROUND_COLOR_R, NORMAL_BACKGROUND_COLOR_G, NORMAL_BACKGROUND_COLOR_B, NORMAL_BACKGROUND_COLOR_A );
+        pi._color.From ( NORMAL_FONT_COLOR_R, NORMAL_FONT_COLOR_G, NORMAL_FONT_COLOR_B, NORMAL_FONT_COLOR_A );
     }
 
-    ii.insertX = ii.insertY = 1.5f;
-    ii.insertWidth = w - 2.0f;
-    ii.insertHeight = h - 2.0f;
-    ii.overlayType = eGXImageOverlayType::SimpleReplace;
+    ii._insertX = ii._insertY = 1.5f;
+    ii._insertWidth = w - 2.0f;
+    ii._insertHeight = h - 2.0f;
+    ii._overlayType = eGXImageOverlayType::SimpleReplace;
 
     surface->AddImage ( ii );
 
     if ( !caption ) return;
 
     GXInt len = static_cast<GXInt> ( font.GetTextLength ( 0u, caption ) );
-    pi.font = &font;
-    pi.insertX = ( ii.insertWidth - len ) * 0.5f + PIXEL_PERFECT_TEXT_OFFSET_X;
-    pi.insertY = ( ii.insertHeight - font.GetSize () * 0.61f ) * 0.5f + PIXEL_PERFECT_TEXT_OFFSET_Y;
-    pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+    pi._font = &font;
+    pi._insertX = ( ii._insertWidth - len ) * 0.5f + PIXEL_PERFECT_TEXT_OFFSET_X;
+    pi._insertY = ( ii._insertHeight - font.GetSize () * 0.61f ) * 0.5f + PIXEL_PERFECT_TEXT_OFFSET_Y;
+    pi._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
     surface->AddText ( pi, 0, caption );
 
     GXLineInfo li;
-    li.color.From ( BORDER_COLOR_R, BORDER_COLOR_G, BORDER_COLOR_B, BORDER_COLOR_A );
-    li.thickness = 1.0f;
-    li.startPoint.Init ( 1.5f, 0.5f );
-    li.endPoint.Init ( w - 0.5f, 0.5f );
-    li.overlayType = eGXImageOverlayType::SimpleReplace;
+    li._color.From ( BORDER_COLOR_R, BORDER_COLOR_G, BORDER_COLOR_B, BORDER_COLOR_A );
+    li._thickness = 1.0f;
+    li._startPoint.Init ( 1.5f, 0.5f );
+    li._endPoint.Init ( w - 0.5f, 0.5f );
+    li._overlayType = eGXImageOverlayType::SimpleReplace;
 
     surface->AddLine ( li );
 
-    li.startPoint.Init ( w - 0.5f, 1.5f );
-    li.endPoint.Init ( w - 0.5f, h - 0.5f );
+    li._startPoint.Init ( w - 0.5f, 1.5f );
+    li._endPoint.Init ( w - 0.5f, h - 0.5f );
 
     surface->AddLine ( li );
 
-    li.startPoint.Init ( w - 1.5f, h - 0.5f );
-    li.endPoint.Init ( 0.5f, h - 0.5f );
+    li._startPoint.Init ( w - 1.5f, h - 0.5f );
+    li._endPoint.Init ( 0.5f, h - 0.5f );
 
     surface->AddLine ( li );
 
-    li.startPoint.Init ( 0.5f, h - 1.5f );
-    li.endPoint.Init ( 0.5f, 0.5f );
+    li._startPoint.Init ( 0.5f, h - 1.5f );
+    li._endPoint.Init ( 0.5f, 0.5f );
 
     surface->AddLine ( li );
 }

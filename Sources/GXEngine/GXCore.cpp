@@ -1,4 +1,4 @@
-// version 1.17
+// version 1.18
 
 #include <GXEngine/GXCore.h>
 #include <GXEngine/GXEngineSettings.h>
@@ -27,15 +27,15 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXBool      GXCore::loopFlag = GX_TRUE;
-GXCore*     GXCore::instance = nullptr;
+GXBool      GXCore::_loopFlag = GX_TRUE;
+GXCore*     GXCore::_instance = nullptr;
 
 GXCore& GXCALL GXCore::GetInstance ()
 {
-    if ( !instance )
-        instance = new GXCore ();
+    if ( !_instance )
+        _instance = new GXCore ();
 
-    return *instance;
+    return *_instance;
 }
 
 GXCore::~GXCore ()
@@ -73,7 +73,7 @@ GXVoid GXCore::Start ( GXGame &game )
     GXInput& input = GXInput::GetInstance ();
     input.Start ();
 
-    while ( loopFlag )
+    while ( _loopFlag )
         Sleep ( INPUT_SLEEP );
 
     input.Shutdown ();
@@ -85,7 +85,7 @@ GXVoid GXCore::Start ( GXGame &game )
 
 GXVoid GXCore::Exit ()
 {
-    loopFlag = GX_FALSE;
+    _loopFlag = GX_FALSE;
 }
 
 GXCore::GXCore ()
@@ -97,23 +97,23 @@ GXCore::GXCore ()
     GXEngineConfiguration config;
     GXLoadCFG ( config );
 
-    gx_EngineSettings.rendererWidth = config.usRendererWidthResoluton;
-    gx_EngineSettings.rendererHeight = config.usRendererHeightResoluton;
+    gx_EngineSettings._rendererWidth = config.usRendererWidthResoluton;
+    gx_EngineSettings._rendererHeight = config.usRendererHeightResoluton;
 
-    gx_EngineSettings.potWidth = 1u;
+    gx_EngineSettings._potWidth = 1u;
 
-    for ( ; gx_EngineSettings.potWidth < gx_EngineSettings.rendererWidth; gx_EngineSettings.potWidth <<= 1 );
+    for ( ; gx_EngineSettings._potWidth < gx_EngineSettings._rendererWidth; gx_EngineSettings._potWidth <<= 1 );
 
-    gx_EngineSettings.potHeight = 1u;
+    gx_EngineSettings._potHeight = 1u;
 
-    for ( ; gx_EngineSettings.potHeight < gx_EngineSettings.rendererHeight; gx_EngineSettings.potHeight <<=  1 );
+    for ( ; gx_EngineSettings._potHeight < gx_EngineSettings._rendererHeight; gx_EngineSettings._potHeight <<=  1 );
 
-    gx_EngineSettings.windowed = config.bIsWindowedMode;
-    gx_EngineSettings.vSync = GX_FALSE;
-    gx_EngineSettings.resampling = config.chResampling;
-    gx_EngineSettings.anisotropy = config.chAnisotropy;
-    gx_EngineSettings.dof = config.bDoF;
-    gx_EngineSettings.motionBlur = config.bMotionBlur;
+    gx_EngineSettings._windowed = config.bIsWindowedMode;
+    gx_EngineSettings._vSync = GX_FALSE;
+    gx_EngineSettings._resampling = config.chResampling;
+    gx_EngineSettings._anisotropy = config.chAnisotropy;
+    gx_EngineSettings._dof = config.bDoF;
+    gx_EngineSettings._motionBlur = config.bMotionBlur;
 
     GXInput::GetInstance ();
 
@@ -150,7 +150,7 @@ GXCore::GXCore ()
 
     SetCurrentDirectoryW ( L"../.." );
 
-    loopFlag = GX_TRUE;
+    _loopFlag = GX_TRUE;
 }
 
 GXVoid GXCore::CheckMemoryLeak ()

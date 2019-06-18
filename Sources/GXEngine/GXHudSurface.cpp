@@ -1,4 +1,4 @@
-// version 1.25
+// version 1.26
 
 #include <GXEngine/GXHudSurface.h>
 #include <GXCommon/GXStrings.h>
@@ -16,10 +16,10 @@
 class GXImageRenderable final : public GXMemoryInspector, public GXTransform, public GXRenderable
 {
     private:
-        GXMeshGeometry                  mesh;
+        GXMeshGeometry                  _mesh;
 
-        static GXImageRenderable*       instance;
-        static GXUPointerAtomic         references;
+        static GXImageRenderable*       _instance;
+        static GXUPointerAtomic         _references;
 
     public:
         static GXImageRenderable& GXCALL GetInstance ();
@@ -38,34 +38,34 @@ class GXImageRenderable final : public GXMemoryInspector, public GXTransform, pu
         GXImageRenderable& operator = ( const GXImageRenderable &other ) = delete;
 };
 
-GXImageRenderable*      GXImageRenderable::instance = nullptr;
-GXUPointerAtomic        GXImageRenderable::references ( 0u );
+GXImageRenderable*      GXImageRenderable::_instance = nullptr;
+GXUPointerAtomic        GXImageRenderable::_references ( 0u );
 
 GXImageRenderable& GXCALL GXImageRenderable::GetInstance ()
 {
-    ++references;
+    ++_references;
 
-    if ( !instance )
+    if ( !_instance )
     {
         GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXImageRenderable" );
-        instance = new GXImageRenderable ();
+        _instance = new GXImageRenderable ();
     }
 
-    return *instance;
+    return *_instance;
 }
 
 GXVoid GXImageRenderable::Release ()
 {
-    --references;
+    --_references;
 
-    if ( references > static_cast<GXUPointer> ( 0u ) ) return;
+    if ( _references > static_cast<GXUPointer> ( 0u ) ) return;
 
     delete this;
 }
 
 GXVoid GXImageRenderable::Render ()
 {
-    mesh.Render ();
+    _mesh.Render ();
 }
 
 GXImageRenderable::GXImageRenderable ()
@@ -76,12 +76,12 @@ GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXImageRenderable" )
 
 GXImageRenderable::~GXImageRenderable ()
 {
-    instance = nullptr;
+    _instance = nullptr;
 }
 
 GXVoid GXImageRenderable::InitGraphicResources ()
 {
-    mesh.LoadMesh ( L"Meshes/System/ScreenQuad1x1.stm" );
+    _mesh.LoadMesh ( L"Meshes/System/ScreenQuad1x1.stm" );
 }
 
 GXVoid GXImageRenderable::TransformUpdated ()
@@ -94,10 +94,10 @@ GXVoid GXImageRenderable::TransformUpdated ()
 class GXGlyphRenderable final : public GXMemoryInspector, public GXTransform, public GXRenderable
 {
     private:
-        GXMeshGeometry                  mesh;
+        GXMeshGeometry                  _mesh;
 
-        static GXGlyphRenderable*       instance;
-        static GXUPointerAtomic         references;
+        static GXGlyphRenderable*       _instance;
+        static GXUPointerAtomic         _references;
 
     public:
         static GXGlyphRenderable& GXCALL GetInstance ();
@@ -118,34 +118,34 @@ class GXGlyphRenderable final : public GXMemoryInspector, public GXTransform, pu
         GXGlyphRenderable& operator = ( const GXGlyphRenderable &other ) = delete;
 };
 
-GXGlyphRenderable*      GXGlyphRenderable::instance = nullptr;
-GXUPointerAtomic        GXGlyphRenderable::references ( 0u );
+GXGlyphRenderable*      GXGlyphRenderable::_instance = nullptr;
+GXUPointerAtomic        GXGlyphRenderable::_references ( 0u );
 
 GXGlyphRenderable& GXCALL GXGlyphRenderable::GetInstance ()
 {
-    ++references;
+    ++_references;
 
-    if ( !instance )
+    if ( !_instance )
     {
         GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXGlyphRenderable" );
-        instance = new GXGlyphRenderable ();
+        _instance = new GXGlyphRenderable ();
     }
 
-    return *instance;
+    return *_instance;
 }
 
 GXVoid GXGlyphRenderable::Release ()
 {
-    --references;
+    --_references;
 
-    if ( references > static_cast<GXUPointer> ( 0u ) ) return;
+    if ( _references > static_cast<GXUPointer> ( 0u ) ) return;
 
     delete this;
 }
 
 GXVoid GXGlyphRenderable::Render ()
 {
-    mesh.Render ();
+    _mesh.Render ();
 }
 
 GXVoid GXGlyphRenderable::UpdateGeometry ( const GXVec2 &min, const GXVec2 &max )
@@ -170,7 +170,7 @@ GXVoid GXGlyphRenderable::UpdateGeometry ( const GXVec2 &min, const GXVec2 &max 
     buffer[ 25u ] = 1.0f;               buffer[ 26u ] = 0.0f;               buffer[ 27u ] = 0.0f;
     buffer[ 28u ] = max.data[ 0u ];     buffer[ 29u ] = min.data[ 1u ];
 
-    mesh.FillVertexBuffer ( buffer, 30u * sizeof ( GXFloat ), GL_DYNAMIC_DRAW );
+    _mesh.FillVertexBuffer ( buffer, 30u * sizeof ( GXFloat ), GL_DYNAMIC_DRAW );
 }
 
 GXGlyphRenderable::GXGlyphRenderable ()
@@ -181,16 +181,16 @@ GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXGlyphRenderable" )
 
 GXGlyphRenderable::~GXGlyphRenderable ()
 {
-    instance = nullptr;
+    _instance = nullptr;
 }
 
 GXVoid GXGlyphRenderable::InitGraphicResources ()
 {
     GLsizei stride = sizeof ( GXVec3 ) + sizeof ( GXVec2 );
-    mesh.SetTotalVertices ( 6 );
-    mesh.SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, stride, static_cast<const GLvoid*> ( 0u ) );
-    mesh.SetBufferStream ( eGXMeshStreamIndex::UV, 2, GL_FLOAT, stride, reinterpret_cast<const GLvoid*> ( sizeof ( GXVec3 ) ) );
-    mesh.SetTopology ( GL_TRIANGLES );
+    _mesh.SetTotalVertices ( 6 );
+    _mesh.SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, stride, static_cast<const GLvoid*> ( 0u ) );
+    _mesh.SetBufferStream ( eGXMeshStreamIndex::UV, 2, GL_FLOAT, stride, reinterpret_cast<const GLvoid*> ( sizeof ( GXVec3 ) ) );
+    _mesh.SetTopology ( GL_TRIANGLES );
 }
 
 GXVoid GXGlyphRenderable::TransformUpdated ()
@@ -203,10 +203,10 @@ GXVoid GXGlyphRenderable::TransformUpdated ()
 class GXLineRenderable final : public GXMemoryInspector, public GXTransform, public GXRenderable
 {
     private:
-        GXMeshGeometry              mesh;
+        GXMeshGeometry              _mesh;
 
-        static GXLineRenderable*    instance;
-        static GXUPointerAtomic     references;
+        static GXLineRenderable*    _instance;
+        static GXUPointerAtomic     _references;
 
     public:
         static GXLineRenderable& GXCALL GetInstance ();
@@ -227,34 +227,34 @@ class GXLineRenderable final : public GXMemoryInspector, public GXTransform, pub
         GXLineRenderable& operator = ( const GXLineRenderable &other ) = delete;
 };
 
-GXLineRenderable*       GXLineRenderable::instance = nullptr;
-GXUPointerAtomic        GXLineRenderable::references ( 0u );
+GXLineRenderable*       GXLineRenderable::_instance = nullptr;
+GXUPointerAtomic        GXLineRenderable::_references ( 0u );
 
 GXLineRenderable& GXCALL GXLineRenderable::GetInstance ()
 {
-    ++references;
+    ++_references;
 
-    if ( !instance )
+    if ( !_instance )
     {
         GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXLineRenderable" );
-        instance = new GXLineRenderable ();
+        _instance = new GXLineRenderable ();
     }
 
-    return *instance;
+    return *_instance;
 }
 
 GXVoid GXLineRenderable::Release ()
 {
-    --references;
+    --_references;
 
-    if ( references > static_cast<GXUPointer> ( 0u ) ) return;
+    if ( _references > static_cast<GXUPointer> ( 0u ) ) return;
 
     delete this;
 }
 
 GXVoid GXLineRenderable::Render ()
 {
-    mesh.Render ();
+    _mesh.Render ();
 }
 
 GXVoid GXLineRenderable::UpdateGeometry ( const GXVec2 &start, const GXVec2 &end )
@@ -263,7 +263,7 @@ GXVoid GXLineRenderable::UpdateGeometry ( const GXVec2 &start, const GXVec2 &end
     buffer[ 0u ] = start.data[ 0u ];    buffer[ 1u ] = start.data[ 1u ];    buffer[ 2u ] = RENDER_Z;
     buffer[ 3u ] = end.data[ 0u ];      buffer[ 4u ] = end.data[ 1u ];      buffer[ 5u ] = RENDER_Z;
 
-    mesh.FillVertexBuffer ( buffer, 6u * sizeof ( GXFloat ), GL_DYNAMIC_DRAW );
+    _mesh.FillVertexBuffer ( buffer, 6u * sizeof ( GXFloat ), GL_DYNAMIC_DRAW );
 }
 
 GXLineRenderable::GXLineRenderable ()
@@ -274,14 +274,14 @@ GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXLineRenderable" )
 
 GXLineRenderable::~GXLineRenderable ()
 {
-    instance = nullptr;
+    _instance = nullptr;
 }
 
 GXVoid GXLineRenderable::InitGraphicResources ()
 {
-    mesh.SetTotalVertices ( 2 );
-    mesh.SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, sizeof ( GXVec3 ), static_cast<const GLvoid*> ( 0u ) );
-    mesh.SetTopology ( GL_LINES );
+    _mesh.SetTotalVertices ( 2 );
+    _mesh.SetBufferStream ( eGXMeshStreamIndex::CurrenVertex, 3, GL_FLOAT, sizeof ( GXVec3 ), static_cast<const GLvoid*> ( 0u ) );
+    _mesh.SetTopology ( GL_LINES );
 }
 
 GXVoid GXLineRenderable::TransformUpdated ()
@@ -291,30 +291,30 @@ GXVoid GXLineRenderable::TransformUpdated ()
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXHudSurface::GXHudSurface ( GXUShort imageWidth, GXUShort imageHeight )
+GXHudSurface::GXHudSurface ( GXUShort width, GXUShort height )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXHudSurface" )
-    image ( GXImageRenderable::GetInstance () ),
-    glyph ( GXGlyphRenderable::GetInstance () ),
-    line ( GXLineRenderable::GetInstance () )
+    _image ( GXImageRenderable::GetInstance () ),
+    _glyph ( GXGlyphRenderable::GetInstance () ),
+    _line ( GXLineRenderable::GetInstance () )
 {
-    Resize ( imageWidth, imageHeight );
-    screenQuadMesh.LoadMesh ( L"Meshes/System/ScreenQuad.stm" );
+    Resize ( width, height );
+    _screenQuadMesh.LoadMesh ( L"Meshes/System/ScreenQuad.stm" );
 
-    unlitTexture2DMaterial.SetTextureScale ( 1.0f, 1.0f );
-    unlitTexture2DMaterial.SetTextureOffset ( 0.0f, 0.0f );
+    _unlitTexture2DMaterial.SetTextureScale ( 1.0f, 1.0f );
+    _unlitTexture2DMaterial.SetTextureOffset ( 0.0f, 0.0f );
 
-    unlitColorMaskMaterial.SetMaskScale ( 1.0f, 1.0f );
-    unlitColorMaskMaterial.SetMaskOffset ( 0.0f, 0.0f );
+    _unlitColorMaskMaterial.SetMaskScale ( 1.0f, 1.0f );
+    _unlitColorMaskMaterial.SetMaskOffset ( 0.0f, 0.0f );
 }
 
 GXHudSurface::~GXHudSurface ()
 {
-    image.Release ();
-    glyph.Release ();
-    line.Release ();
+    _image.Release ();
+    _glyph.Release ();
+    _line.Release ();
 
     glBindFramebuffer ( GL_FRAMEBUFFER, 0u );
-    glDeleteFramebuffers ( 1, &fbo );
+    glDeleteFramebuffers ( 1, &_fbo );
 }
 
 GXVoid GXHudSurface::Reset ()
@@ -322,7 +322,7 @@ GXVoid GXHudSurface::Reset ()
     GLint oldFBO;
     glGetIntegerv ( GL_FRAMEBUFFER_BINDING, &oldFBO );
 
-    glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+    glBindFramebuffer ( GL_FRAMEBUFFER, _fbo );
     glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
     static const GXFloat clearDiffuseValue[ 4 ] = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -332,22 +332,22 @@ GXVoid GXHudSurface::Reset ()
     glBindFramebuffer ( GL_FRAMEBUFFER, static_cast<GLuint> ( oldFBO ) );
 }
 
-GXVoid GXHudSurface::Resize ( GXUShort newWidth, GXUShort newHeight )
+GXVoid GXHudSurface::Resize ( GXUShort width, GXUShort height )
 {
-    width = newWidth;
-    height = newHeight;
-    canvasCamera.SetProjection ( static_cast<GXFloat> ( newWidth ), static_cast<GXFloat> ( newHeight ), Z_NEAR, Z_FAR ),
+    _width = width;
+    _height = height;
+    _canvasCamera.SetProjection ( static_cast<GXFloat> ( width ), static_cast<GXFloat> ( height ), Z_NEAR, Z_FAR ),
 
-    SetScale ( width * 0.5f, height * 0.5f, 1.0f );
+    SetScale ( _width * 0.5f, _height * 0.5f, 1.0f );
 
     GLint oldFBO;
     glGetIntegerv ( GL_FRAMEBUFFER_BINDING, &oldFBO );
 
-    glGenFramebuffers ( 1, &fbo );
-    glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+    glGenFramebuffers ( 1, &_fbo );
+    glBindFramebuffer ( GL_FRAMEBUFFER, _fbo );
 
-    canvasTexture.InitResources ( width, height, GL_RGBA8, GX_FALSE );
-    glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, canvasTexture.GetTextureObject (), 0 );
+    _canvasTexture.InitResources ( _width, _height, GL_RGBA8, GX_FALSE );
+    glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _canvasTexture.GetTextureObject (), 0 );
     GLenum buffer = GL_COLOR_ATTACHMENT0;
     glDrawBuffers ( 1, &buffer );
 
@@ -364,26 +364,26 @@ GXVoid GXHudSurface::Resize ( GXUShort newWidth, GXUShort newHeight )
 GXVoid GXHudSurface::AddImage ( const GXImageInfo &imageInfo )
 {
     GXCamera* oldCamera = GXCamera::GetActiveCamera ();
-    GXCamera::SetActiveCamera ( &canvasCamera );
+    GXCamera::SetActiveCamera ( &_canvasCamera );
 
-    openGLState.Save ();
+    _openGLState.Save ();
 
-    glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+    glBindFramebuffer ( GL_FRAMEBUFFER, _fbo );
 
     GLenum buffer = GL_COLOR_ATTACHMENT0;
     glDrawBuffers ( 1, &buffer );
 
-    glViewport ( 0, 0, static_cast<GLsizei> ( width ), static_cast<GLsizei> ( height ) );
+    glViewport ( 0, 0, static_cast<GLsizei> ( _width ), static_cast<GLsizei> ( _height ) );
 
-    image.SetScale ( imageInfo.insertWidth, imageInfo.insertHeight, 1.0f );
-    image.SetLocation ( imageInfo.insertX - width * 0.5f, imageInfo.insertY - height * 0.5f, RENDER_Z );
+    _image.SetScale ( imageInfo._insertWidth, imageInfo._insertHeight, 1.0f );
+    _image.SetLocation ( imageInfo._insertX - _width * 0.5f, imageInfo._insertY - _height * 0.5f, RENDER_Z );
 
-    unlitTexture2DMaterial.SetTexture ( *imageInfo.texture );
-    unlitTexture2DMaterial.SetColor ( imageInfo.color );
+    _unlitTexture2DMaterial.SetTexture ( *imageInfo._texture );
+    _unlitTexture2DMaterial.SetColor ( imageInfo._color );
 
-    unlitTexture2DMaterial.Bind ( image );
+    _unlitTexture2DMaterial.Bind ( _image );
 
-    switch ( imageInfo.overlayType )
+    switch ( imageInfo._overlayType )
     {
         case eGXImageOverlayType::AlphaTransparency:
             glEnable ( GL_BLEND );
@@ -415,11 +415,11 @@ GXVoid GXHudSurface::AddImage ( const GXImageInfo &imageInfo )
     glDisable ( GL_CULL_FACE );
     glDisable ( GL_DEPTH_TEST );
 
-    image.Render ();
+    _image.Render ();
 
-    unlitTexture2DMaterial.Unbind ();
+    _unlitTexture2DMaterial.Unbind ();
 
-    openGLState.Restore ();
+    _openGLState.Restore ();
 
     GXCamera::SetActiveCamera ( oldCamera );
 }
@@ -427,21 +427,21 @@ GXVoid GXHudSurface::AddImage ( const GXImageInfo &imageInfo )
 GXVoid GXHudSurface::AddLine ( const GXLineInfo &lineInfo )
 {
     GXCamera* oldCamera = GXCamera::GetActiveCamera ();
-    GXCamera::SetActiveCamera ( &canvasCamera );
+    GXCamera::SetActiveCamera ( &_canvasCamera );
 
-    openGLState.Save ();
+    _openGLState.Save ();
 
-    glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+    glBindFramebuffer ( GL_FRAMEBUFFER, _fbo );
 
-    glViewport ( 0, 0, static_cast<GLsizei> ( width ), static_cast<GLsizei> ( height ) );
+    glViewport ( 0, 0, static_cast<GLsizei> ( _width ), static_cast<GLsizei> ( _height ) );
 
-    line.UpdateGeometry ( lineInfo.startPoint, lineInfo.endPoint );
-    line.SetLocation ( -0.5f * width, -0.5f * height, RENDER_Z );
+    _line.UpdateGeometry ( lineInfo._startPoint, lineInfo._endPoint );
+    _line.SetLocation ( -0.5f * _width, -0.5f * _height, RENDER_Z );
 
-    unlitColorMaterial.SetColor ( lineInfo.color );
-    unlitColorMaterial.Bind ( line );
+    _unlitColorMaterial.SetColor ( lineInfo._color );
+    _unlitColorMaterial.Bind ( _line );
 
-    switch ( lineInfo.overlayType )
+    switch ( lineInfo._overlayType )
     {
         case eGXImageOverlayType::AlphaTransparency:
             glEnable ( GL_BLEND );
@@ -473,11 +473,11 @@ GXVoid GXHudSurface::AddLine ( const GXLineInfo &lineInfo )
     glDisable ( GL_CULL_FACE );
     glDisable ( GL_DEPTH_TEST );
 
-    line.Render ();
+    _line.Render ();
 
-    unlitColorMaterial.Unbind ();
+    _unlitColorMaterial.Unbind ();
 
-    openGLState.Restore ();
+    _openGLState.Restore ();
 
     GXCamera::SetActiveCamera ( oldCamera );
 }
@@ -485,18 +485,18 @@ GXVoid GXHudSurface::AddLine ( const GXLineInfo &lineInfo )
 GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbols, const GXWChar* format, ... )
 {
     GXCamera* oldCamera = GXCamera::GetActiveCamera ();
-    GXCamera::SetActiveCamera ( &canvasCamera );
+    GXCamera::SetActiveCamera ( &_canvasCamera );
 
-    openGLState.Save ();
+    _openGLState.Save ();
 
-    glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+    glBindFramebuffer ( GL_FRAMEBUFFER, _fbo );
 
     glDisable ( GL_CULL_FACE );
     glDisable ( GL_DEPTH_TEST );
 
-    glViewport ( 0, 0, static_cast<GLsizei> ( width ), static_cast<GLsizei> ( height ) );
+    glViewport ( 0, 0, static_cast<GLsizei> ( _width ), static_cast<GLsizei> ( _height ) );
 
-    switch ( penInfo.overlayType )
+    switch ( penInfo._overlayType )
     {
         case eGXImageOverlayType::AlphaTransparency:
             glEnable ( GL_BLEND );
@@ -525,14 +525,14 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
         break;
     }
 
-    GXFloat startX = -width * 0.5f;
-    GXFloat startY = -height * 0.5f;
+    GXFloat startX = -_width * 0.5f;
+    GXFloat startY = -_height * 0.5f;
 
     GXGlyphInfo info;
 
     GXUInt prevSymbol = 0u;
-    GXFloat penX = penInfo.insertX;
-    GXFloat penY = penInfo.insertY;
+    GXFloat penX = penInfo._insertX;
+    GXFloat penY = penInfo._insertY;
 
     GXWChar* text = nullptr;
 
@@ -559,12 +559,12 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
         switch ( symbol )
         {
             case ' ':
-                penX += static_cast<GXFloat> ( penInfo.font->GetSpaceAdvance () );
+                penX += static_cast<GXFloat> ( penInfo._font->GetSpaceAdvance () );
                 continue;
             break;
 
             case '\t':
-                penX += TAB_FACTOR * penInfo.font->GetSpaceAdvance ();
+                penX += TAB_FACTOR * penInfo._font->GetSpaceAdvance ();
                 continue;
             break;
 
@@ -578,35 +578,35 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
             break;
         }
 
-        penInfo.font->GetGlyph ( symbol, info );
+        penInfo._font->GetGlyph ( symbol, info );
 
-        glyph.UpdateGeometry ( info.min, info.max );
+        _glyph.UpdateGeometry ( info._min, info._max );
 
         if ( prevSymbol != 0u )
-            penX += static_cast<GXFloat> ( penInfo.font->GetKerning ( symbol, prevSymbol ) );
+            penX += static_cast<GXFloat> ( penInfo._font->GetKerning ( symbol, prevSymbol ) );
 
         GXFloat x = startX + penX;
-        GXFloat y = startY + penY + info.offsetY;
+        GXFloat y = startY + penY + info._offsetY;
 
         prevSymbol = symbol;
 
-        glyph.SetScale ( info.width, info.height, 1.0f );
-        glyph.SetLocation ( x, y, RENDER_Z );
+        _glyph.SetScale ( info._width, info._height, 1.0f );
+        _glyph.SetLocation ( x, y, RENDER_Z );
 
-        unlitColorMaskMaterial.SetMaskTexture ( *info.atlas );
-        unlitColorMaskMaterial.SetColor ( penInfo.color );
+        _unlitColorMaskMaterial.SetMaskTexture ( *info._atlas );
+        _unlitColorMaskMaterial.SetColor ( penInfo._color );
 
-        unlitColorMaskMaterial.Bind ( glyph );
-        glyph.Render ();
-        unlitColorMaskMaterial.Unbind ();
+        _unlitColorMaskMaterial.Bind ( _glyph );
+        _glyph.Render ();
+        _unlitColorMaskMaterial.Unbind ();
 
-        penX += static_cast<GXFloat> ( info.advance );
+        penX += static_cast<GXFloat> ( info._advance );
     }
 
     if ( bufferNumSymbols )
         Free ( text );
 
-    openGLState.Restore ();
+    _openGLState.Restore ();
 
     GXCamera::SetActiveCamera ( oldCamera );
 
@@ -615,17 +615,17 @@ GXFloat GXHudSurface::AddText ( const GXPenInfo &penInfo, GXUInt bufferNumSymbol
 
 GXUShort GXHudSurface::GetWidth () const
 {
-    return width;
+    return _width;
 }
 
 GXUShort GXHudSurface::GetHeight () const
 {
-    return height;
+    return _height;
 }
 
 GXVoid GXHudSurface::Render ()
 {
-    openGLState.Save ();
+    _openGLState.Save ();
 
     glDisable ( GL_CULL_FACE );
     glEnable ( GL_BLEND );
@@ -633,16 +633,16 @@ GXVoid GXHudSurface::Render ()
 
     static const GXColorRGB color ( 1.0f, 1.0f, 1.0f, 1.0f );
 
-    unlitTexture2DMaterial.SetColor ( color );
-    unlitTexture2DMaterial.SetTexture ( canvasTexture );
+    _unlitTexture2DMaterial.SetColor ( color );
+    _unlitTexture2DMaterial.SetTexture ( _canvasTexture );
 
-    unlitTexture2DMaterial.Bind ( *this );
+    _unlitTexture2DMaterial.Bind ( *this );
 
-    screenQuadMesh.Render ();
+    _screenQuadMesh.Render ();
 
-    unlitTexture2DMaterial.Unbind ();
+    _unlitTexture2DMaterial.Unbind ();
 
-    openGLState.Restore ();
+    _openGLState.Restore ();
 }
 
 GXVoid GXHudSurface::TransformUpdated ()

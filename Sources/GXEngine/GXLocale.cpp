@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #include <GXEngine/GXLocale.h>
 #include <GXCommon/GXAVLTree.h>
@@ -14,8 +14,8 @@
 class GXStringNode final : public GXAVLTreeNode
 {
     public:
-        GXWChar*    key;
-        GXWChar*    value;
+        GXWChar*    _key;
+        GXWChar*    _value;
 
     public:
         GXStringNode ();
@@ -30,37 +30,37 @@ class GXStringNode final : public GXAVLTreeNode
 
 GXStringNode::GXStringNode ()
 {
-    key = nullptr;
-    value = nullptr;
+    _key = nullptr;
+    _value = nullptr;
 }
 
 GXStringNode::GXStringNode ( const GXUTF8* key, const GXUTF8* value )
 {
-    GXToWcs ( &this->key, key );
-    GXToWcs ( &this->value, value );
+    GXToWcs ( &_key, key );
+    GXToWcs ( &_value, value );
 }
 
 GXStringNode::~GXStringNode ()
 {
-    GXSafeFree ( key );
-    GXSafeFree ( value );
+    GXSafeFree ( _key );
+    GXSafeFree ( _value );
 }
 
 const GXWChar* GXStringNode::GetValue () const
 {
-    return value;
+    return _value;
 }
 
 GXVoid GXCALL GXStringNode::InitFinderNode ( GXStringNode &node, const GXWChar* key )
 {
-    node.key = (GXWChar*)key;
-    node.value = nullptr;
+    node._key = const_cast<GXWChar*> ( key );
+    node._value = nullptr;
 }
 
 GXVoid GXCALL GXStringNode::DestroyFinderNode ( GXStringNode &node )
 {
-    node.key = nullptr;
-    node.value = nullptr;
+    node._key = nullptr;
+    node._value = nullptr;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -115,7 +115,7 @@ GXInt GXCALL GXStringTree::Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode
     GXStringNode& aNode = (GXStringNode&)a;
     GXStringNode& bNode = (GXStringNode&)b;
 
-    return GXWcscmp ( aNode.key, bNode.key );
+    return GXWcscmp ( aNode._key, bNode._key );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -128,31 +128,31 @@ enum eGXParserState : GXUByte
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXLocale* GXLocale::instance = nullptr;
+GXLocale* GXLocale::_instance = nullptr;
 
 GXLocale& GXCALL GXLocale::GetInstance ()
 {
-    if ( !instance )
+    if ( !_instance )
     {
         GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXLocale" );
-        instance = new GXLocale ();
+        _instance = new GXLocale ();
     }
 
-    return *instance;
+    return *_instance;
 }
 
 GXLocale::~GXLocale ()
 {
-    GXUPointer len = storage.GetLength ();
+    GXUPointer len = _storage.GetLength ();
 
     if ( len == 0u ) return;
 
-    GXStringTree** trees = static_cast<GXStringTree**> ( storage.GetData () );
+    GXStringTree** trees = static_cast<GXStringTree**> ( _storage.GetData () );
 
     for ( GXUPointer i = 0u; i < len; ++i )
         GXSafeDelete ( trees[ i ] );
 
-    instance = nullptr;
+    _instance = nullptr;
 }
 
 GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
@@ -166,13 +166,13 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
     GXUTF8* data = reinterpret_cast<GXUTF8*> ( rawData );
 
     GXStringTree* tree = nullptr;
-    GXVoid* tmp = storage.GetValue ( static_cast<GXUInt> ( language ) );
+    GXVoid* tmp = _storage.GetValue ( static_cast<GXUInt> ( language ) );
 
     if ( !tmp )
     {
         GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringTree" );
         tree = new GXStringTree ();
-        storage.SetValue ( static_cast<GXUPointer> ( language ), &tree );
+        _storage.SetValue ( static_cast<GXUPointer> ( language ), &tree );
     }
     else
     {
@@ -230,7 +230,7 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 GXVoid GXLocale::SetLanguage ( eGXLanguage language )
 {
     GXUPointer languageIndex = static_cast<GXUPointer> ( language );
-    GXStringTree** treePointer = static_cast<GXStringTree**> ( storage.GetValue ( languageIndex ) );
+    GXStringTree** treePointer = static_cast<GXStringTree**> ( _storage.GetValue ( languageIndex ) );
 
     if ( *treePointer == nullptr )
     {
@@ -238,18 +238,18 @@ GXVoid GXLocale::SetLanguage ( eGXLanguage language )
         return;
     }
 
-    currentLanguage = language;
+    _currentLanguage = language;
 }
 
 eGXLanguage GXLocale::GetLanguage () const
 {
-    return currentLanguage;
+    return _currentLanguage;
 }
 
 const GXWChar* GXLocale::GetString ( const GXWChar* resName ) const
 {
-    GXUPointer languageIndex = static_cast<GXUPointer> ( currentLanguage );
-    GXStringTree** treePointer = static_cast<GXStringTree**> ( storage.GetValue ( languageIndex ) );
+    GXUPointer languageIndex = static_cast<GXUPointer> ( _currentLanguage );
+    GXStringTree** treePointer = static_cast<GXStringTree**> ( _storage.GetValue ( languageIndex ) );
     GXStringTree* tree = *treePointer;
 
     if ( tree )
@@ -260,8 +260,8 @@ const GXWChar* GXLocale::GetString ( const GXWChar* resName ) const
 
 GXLocale::GXLocale ()
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXLocale" )
-    currentLanguage ( eGXLanguage::Russian ),
-    storage ( sizeof ( GXStringTree* ) )
+    _currentLanguage ( eGXLanguage::Russian ),
+    _storage ( sizeof ( GXStringTree* ) )
 {
     // NOTHING
 }

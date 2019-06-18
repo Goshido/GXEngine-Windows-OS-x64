@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #ifndef GX_OGG_SOUND_PROVIDER
 #define GX_OGG_SOUND_PROVIDER
@@ -11,7 +11,7 @@
 class GXOGGSoundStreamer final : public GXSoundStreamer
 {
     private:
-        OggVorbis_File      vorbisFile;
+        OggVorbis_File      _vorbisFile;
 
     public:
         explicit GXOGGSoundStreamer ( GXVoid* mappedFile, GXUInt totalSize );

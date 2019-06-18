@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #include <GXEngine/GXSampler.h>
 #include <GXCommon/GXMemory.h>
@@ -12,17 +12,17 @@
 class GXSamplerEntry final : public GXMemoryInspector
 {
     private:
-        GXSamplerEntry*             previous;
-        GXSamplerEntry*             next;
-        GXUPointerAtomic            references;
+        GXSamplerEntry*             _previous;
+        GXSamplerEntry*             _next;
+        GXUPointerAtomic            _references;
 
-        GLint                       wrapMode;
-        eGXResampling               resampling;
-        GXFloat                     anisotropy;
+        GLint                       _wrapMode;
+        eGXResampling               _resampling;
+        GXFloat                     _anisotropy;
 
-        GLuint                      samplerObject;
+        GLuint                      _samplerObject;
 
-        static GXSamplerEntry*      top;
+        static GXSamplerEntry*      _top;
 
     public:
         explicit GXSamplerEntry ( GLint wrapMode, eGXResampling resampling, GXFloat anisotrophy );
@@ -46,81 +46,81 @@ class GXSamplerEntry final : public GXMemoryInspector
         GXSamplerEntry& operator = ( const GXSamplerEntry &other ) = delete;
 };
 
-GXSamplerEntry* GXSamplerEntry::top = nullptr;
+GXSamplerEntry* GXSamplerEntry::_top = nullptr;
 
 GXSamplerEntry::GXSamplerEntry ( GLint wrapMode, eGXResampling resampling, GXFloat anisotropy )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXSamplerEntry" )
-    previous ( nullptr ),
-    next ( top ),
-    references ( 1u ),
-    wrapMode ( wrapMode ),
-    resampling ( resampling ),
-    anisotropy ( anisotropy )
+    _previous ( nullptr ),
+    _next ( _top ),
+    _references ( 1u ),
+    _wrapMode ( wrapMode ),
+    _resampling ( resampling ),
+    _anisotropy ( anisotropy )
 {
-    if ( top )
-        top->previous = this;
+    if ( _top )
+        _top->_previous = this;
 
-    top = this;
+    _top = this;
 
-    glGenSamplers ( 1, &samplerObject );
+    glGenSamplers ( 1, &_samplerObject );
 
     switch ( resampling )
     {
         case eGXResampling::Linear:
-            glSamplerParameteri ( samplerObject, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-            glSamplerParameteri ( samplerObject, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+            glSamplerParameteri ( _samplerObject, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+            glSamplerParameteri ( _samplerObject, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
         break;
 
         case eGXResampling::Bilinear:
-            glSamplerParameteri ( samplerObject, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-            glSamplerParameteri ( samplerObject, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
+            glSamplerParameteri ( _samplerObject, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+            glSamplerParameteri ( _samplerObject, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
         break;
 
         case eGXResampling::Trilinear:
-            glSamplerParameteri ( samplerObject, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-            glSamplerParameteri ( samplerObject, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+            glSamplerParameteri ( _samplerObject, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+            glSamplerParameteri ( _samplerObject, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
         break;
 
         case eGXResampling::None:
-            glSamplerParameteri ( samplerObject, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-            glSamplerParameteri ( samplerObject, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+            glSamplerParameteri ( _samplerObject, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+            glSamplerParameteri ( _samplerObject, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
         break;
     }
 
-    glSamplerParameteri ( samplerObject, GL_TEXTURE_WRAP_S, wrapMode );
-    glSamplerParameteri ( samplerObject, GL_TEXTURE_WRAP_T, wrapMode );
-    glSamplerParameteri ( samplerObject, GL_TEXTURE_WRAP_R, wrapMode );
+    glSamplerParameteri ( _samplerObject, GL_TEXTURE_WRAP_S, wrapMode );
+    glSamplerParameteri ( _samplerObject, GL_TEXTURE_WRAP_T, wrapMode );
+    glSamplerParameteri ( _samplerObject, GL_TEXTURE_WRAP_R, wrapMode );
 
     GLfloat maxAnisotropy = 1.0f;
     glGetFloatv ( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy );
     GXFloat supportedAnisotropy = ( anisotropy > maxAnisotropy ) ? maxAnisotropy : anisotropy;
-    glSamplerParameterf ( samplerObject, GL_TEXTURE_MAX_ANISOTROPY_EXT, supportedAnisotropy );
+    glSamplerParameterf ( _samplerObject, GL_TEXTURE_MAX_ANISOTROPY_EXT, supportedAnisotropy );
 }
 
 GLuint GXSamplerEntry::GetSamplerObject () const
 {
-    return samplerObject;
+    return _samplerObject;
 }
 
 GXVoid GXSamplerEntry::AddReference ()
 {
-    ++references;
+    ++_references;
 }
 
 GXVoid GXSamplerEntry::Release ()
 {
-    --references;
+    --_references;
 
-    if ( references > static_cast<GXUPointer> ( 0u ) ) return;
+    if ( _references > static_cast<GXUPointer> ( 0u ) ) return;
 
     delete this;
 }
 
 GXSamplerEntry* GXCALL GXSamplerEntry::Find ( GLint matchWrapMode, eGXResampling matchResampling, GXFloat matchAnisotrophy )
 {
-    for ( GXSamplerEntry* p = top; p; p = p->next )
+    for ( GXSamplerEntry* p = _top; p; p = p->_next )
     {
-        if ( p->wrapMode != matchWrapMode || p->resampling != matchResampling || p->anisotropy != matchAnisotrophy ) continue;
+        if ( p->_wrapMode != matchWrapMode || p->_resampling != matchResampling || p->_anisotropy != matchAnisotrophy ) continue;
 
         return p;
     }
@@ -132,57 +132,57 @@ GXUInt GXCALL GXSamplerEntry::GetTotalSamplers ( GLint &lastWrapMode, eGXResampl
 {
     GXUInt total = 0u;
 
-    for ( GXSamplerEntry* p = top; p; p = p->next )
+    for ( GXSamplerEntry* p = _top; p; p = p->_next )
         ++total;
 
     if ( total == 0u )
         return 0u;
 
-    lastWrapMode = top->wrapMode;
-    lastResampling = top->resampling;
-    lastAnisotropy = top->anisotropy;
+    lastWrapMode = _top->_wrapMode;
+    lastResampling = _top->_resampling;
+    lastAnisotropy = _top->_anisotropy;
 
     return total;
 }
 
 GXSamplerEntry::~GXSamplerEntry ()
 {
-    if ( top == this )
-        top = top->next;
+    if ( _top == this )
+        _top = _top->_next;
 
-    if ( previous )
-        previous->next = next;
+    if ( _previous )
+        _previous->_next = _next;
 
-    if ( next )
-        next->previous = previous;
+    if ( _next )
+        _next->_previous = _previous;
 
-    glDeleteSamplers ( 1, &samplerObject );
+    glDeleteSamplers ( 1, &_samplerObject );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 GXSampler::GXSampler ( GLint wrapMode, eGXResampling resampling, GXFloat anisotropy )
 {
-    samplerEntry = GXSamplerEntry::Find ( wrapMode, resampling, anisotropy );
+    _samplerEntry = GXSamplerEntry::Find ( wrapMode, resampling, anisotropy );
 
-    if ( samplerEntry )
+    if ( _samplerEntry )
     {
-        samplerEntry->AddReference ();
+        _samplerEntry->AddReference ();
         return;
     }
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXSamplerEntry" );
-    samplerEntry = new GXSamplerEntry ( wrapMode, resampling, anisotropy );
+    _samplerEntry = new GXSamplerEntry ( wrapMode, resampling, anisotropy );
 }
 
 GXSampler::~GXSampler ()
 {
-    samplerEntry->Release ();
+    _samplerEntry->Release ();
 }
 
 GXVoid GXSampler::Bind ( GXUByte unit )
 {
-    glBindSampler ( unit, samplerEntry->GetSamplerObject () );
+    glBindSampler ( unit, _samplerEntry->GetSamplerObject () );
 }
 
 GXVoid GXSampler::Unbind ( GXUByte unit )

@@ -1,4 +1,4 @@
-// version 1.14
+// version 1.15
 
 #include <GXEngine/GXCameraPerspective.h>
 
@@ -13,30 +13,30 @@
 GXCameraPerspective::GXCameraPerspective ()
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXCameraPerspective" )
     GXCamera ( DEFAULT_Z_NEAR, DEFAULT_Z_FAR ),
-    fieldOfViewYRadians ( GXDegToRad ( DEFAULT_FIELD_OF_VIEW_Y_DEGREES ) ),
-    aspectRatio ( DEFAULT_PROJECTION_ASPECT_RATIO )
+    _fieldOfViewYRadians ( GXDegToRad ( DEFAULT_FIELD_OF_VIEW_Y_DEGREES ) ),
+    _aspectRatio ( DEFAULT_PROJECTION_ASPECT_RATIO )
 {
-    currentFrameProjectionMatrix.Perspective ( fieldOfViewYRadians, aspectRatio, zNear, zFar );
-    currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );
+    _currentFrameProjectionMatrix.Perspective ( _fieldOfViewYRadians, _aspectRatio, _zNear, _zFar );
+    _currentFrameInverseProjectionMatrix.Inverse ( _currentFrameProjectionMatrix );
 
-    currentFrameViewProjectionMatrix = currentFrameProjectionMatrix;
-    currentFrameInverseViewProjectionMatrix = currentFrameInverseProjectionMatrix;
+    _currentFrameViewProjectionMatrix = _currentFrameProjectionMatrix;
+    _currentFrameInverseViewProjectionMatrix = _currentFrameInverseProjectionMatrix;
 
     UpdateClipPlanes ();
     UpdateLastFrameMatrices ();
 }
 
-GXCameraPerspective::GXCameraPerspective ( GXFloat fieldOfViewYValueRadians, GXFloat aspectRatioValue, GXFloat zNear, GXFloat zFar )
+GXCameraPerspective::GXCameraPerspective ( GXFloat fieldOfViewYRadians, GXFloat aspectRatio, GXFloat zNear, GXFloat zFar )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXCameraPerspective" )
     GXCamera ( zNear, zFar ),
-    fieldOfViewYRadians ( fieldOfViewYValueRadians ),
-    aspectRatio ( aspectRatioValue )
+    _fieldOfViewYRadians ( fieldOfViewYRadians ),
+    _aspectRatio ( aspectRatio )
 {
-    currentFrameProjectionMatrix.Perspective ( fieldOfViewYRadians, aspectRatio, zNear, zFar );
-    currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );
+    _currentFrameProjectionMatrix.Perspective ( _fieldOfViewYRadians, _aspectRatio, zNear, zFar );
+    _currentFrameInverseProjectionMatrix.Inverse ( _currentFrameProjectionMatrix );
 
-    currentFrameViewProjectionMatrix = currentFrameProjectionMatrix;
-    currentFrameInverseViewProjectionMatrix = currentFrameInverseProjectionMatrix;
+    _currentFrameViewProjectionMatrix = _currentFrameProjectionMatrix;
+    _currentFrameInverseViewProjectionMatrix = _currentFrameInverseProjectionMatrix;
 
     UpdateClipPlanes ();
     UpdateLastFrameMatrices ();
@@ -49,62 +49,62 @@ GXCameraPerspective::~GXCameraPerspective ()
 
 GXVoid GXCameraPerspective::SetFieldOfViewY ( GXFloat radians )
 {
-    fieldOfViewYRadians = radians;
+    _fieldOfViewYRadians = radians;
 
-    currentFrameProjectionMatrix.Perspective ( fieldOfViewYRadians, aspectRatio, zNear, zFar );
-    currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );
+    _currentFrameProjectionMatrix.Perspective ( _fieldOfViewYRadians, _aspectRatio, _zNear, _zFar );
+    _currentFrameInverseProjectionMatrix.Inverse ( _currentFrameProjectionMatrix );
 
-    currentFrameViewProjectionMatrix.Multiply ( currentFrameViewMatrix, currentFrameProjectionMatrix );
-    currentFrameInverseViewProjectionMatrix.Inverse ( currentFrameViewProjectionMatrix );
-
-    UpdateClipPlanes ();
-}
-
-GXVoid GXCameraPerspective::SetAspectRatio ( GXFloat projectionAspectRatio )
-{
-    aspectRatio = projectionAspectRatio;
-
-    currentFrameProjectionMatrix.Perspective ( fieldOfViewYRadians, aspectRatio, zNear, zFar );
-    currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );
-
-    currentFrameViewProjectionMatrix.Multiply ( currentFrameViewMatrix, currentFrameProjectionMatrix );
-    currentFrameInverseViewProjectionMatrix.Inverse ( currentFrameViewProjectionMatrix );
+    _currentFrameViewProjectionMatrix.Multiply ( _currentFrameViewMatrix, _currentFrameProjectionMatrix );
+    _currentFrameInverseViewProjectionMatrix.Inverse ( _currentFrameViewProjectionMatrix );
 
     UpdateClipPlanes ();
 }
 
-GXVoid GXCameraPerspective::SetZNear ( GXFloat newZNear )
+GXVoid GXCameraPerspective::SetAspectRatio ( GXFloat aspectRatio )
 {
-    zNear = newZNear;
+    _aspectRatio = aspectRatio;
 
-    currentFrameProjectionMatrix.Perspective ( fieldOfViewYRadians, aspectRatio, zNear, zFar );
-    currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );
+    _currentFrameProjectionMatrix.Perspective ( _fieldOfViewYRadians, _aspectRatio, _zNear, _zFar );
+    _currentFrameInverseProjectionMatrix.Inverse ( _currentFrameProjectionMatrix );
 
-    currentFrameViewProjectionMatrix.Multiply ( currentFrameViewMatrix, currentFrameProjectionMatrix );
-    currentFrameInverseViewProjectionMatrix.Inverse ( currentFrameViewProjectionMatrix );
+    _currentFrameViewProjectionMatrix.Multiply ( _currentFrameViewMatrix, _currentFrameProjectionMatrix );
+    _currentFrameInverseViewProjectionMatrix.Inverse ( _currentFrameViewProjectionMatrix );
 
     UpdateClipPlanes ();
 }
 
-GXVoid GXCameraPerspective::SetZFar ( GXFloat newZFar )
+GXVoid GXCameraPerspective::SetZNear ( GXFloat zNear )
 {
-    zFar = newZFar;
+    _zNear = zNear;
 
-    currentFrameProjectionMatrix.Perspective ( fieldOfViewYRadians, aspectRatio, zNear, zFar );
-    currentFrameInverseProjectionMatrix.Inverse ( currentFrameProjectionMatrix );
+    _currentFrameProjectionMatrix.Perspective ( _fieldOfViewYRadians, _aspectRatio, _zNear, _zFar );
+    _currentFrameInverseProjectionMatrix.Inverse ( _currentFrameProjectionMatrix );
 
-    currentFrameViewProjectionMatrix.Multiply ( currentFrameViewMatrix, currentFrameProjectionMatrix );
-    currentFrameInverseViewProjectionMatrix.Inverse ( currentFrameViewProjectionMatrix );
+    _currentFrameViewProjectionMatrix.Multiply ( _currentFrameViewMatrix, _currentFrameProjectionMatrix );
+    _currentFrameInverseViewProjectionMatrix.Inverse ( _currentFrameViewProjectionMatrix );
+
+    UpdateClipPlanes ();
+}
+
+GXVoid GXCameraPerspective::SetZFar ( GXFloat zFar )
+{
+    _zFar = zFar;
+
+    _currentFrameProjectionMatrix.Perspective ( _fieldOfViewYRadians, _aspectRatio, _zNear, _zFar );
+    _currentFrameInverseProjectionMatrix.Inverse ( _currentFrameProjectionMatrix );
+
+    _currentFrameViewProjectionMatrix.Multiply ( _currentFrameViewMatrix, _currentFrameProjectionMatrix );
+    _currentFrameInverseViewProjectionMatrix.Inverse ( _currentFrameViewProjectionMatrix );
 
     UpdateClipPlanes ();
 }
 
 GXFloat GXCameraPerspective::GetFieldOFViewYRadians () const
 {
-    return fieldOfViewYRadians;
+    return _fieldOfViewYRadians;
 }
 
 GXFloat GXCameraPerspective::GetAspectRatio () const
 {
-    return aspectRatio;
+    return _aspectRatio;
 }

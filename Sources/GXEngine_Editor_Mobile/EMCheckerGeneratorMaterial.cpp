@@ -27,21 +27,21 @@ EMCheckerGeneratorMaterial::EMCheckerGeneratorMaterial ():
 	doubleElementSize ( DEFAULT_ELEMENT_WIDTH * 2.0f, DEFAULT_ELEMENT_HEIGHT * 2.0f )
 {
 	GXShaderProgramInfo si;
-	si.vertexShader = VERTEX_SHADER;
-	si.geometryShader = GEOMETRY_SHADER;
-	si.fragmentShader = FRAGMENT_SHADER;
-	si.samplers = 0u;
-	si.samplerNames = nullptr;
-	si.samplerLocations = nullptr;
-	si.transformFeedbackOutputs = 0;
-	si.transformFeedbackOutputNames = nullptr;
+	si._vertexShader = VERTEX_SHADER;
+	si._geometryShader = GEOMETRY_SHADER;
+	si._fragmentShader = FRAGMENT_SHADER;
+	si._samplers = 0u;
+	si._samplerNames = nullptr;
+	si._samplerLocations = nullptr;
+	si._transformFeedbackOutputs = 0;
+	si._transformFeedbackOutputNames = nullptr;
 
-	shaderProgram.Init ( si );
+	_shaderProgram.Init ( si );
 
-	colorOneLocation = shaderProgram.GetUniform ( "colorOne" );
-	colorTwoLocation = shaderProgram.GetUniform ( "colorTwo" );
-	elementSizeLocation = shaderProgram.GetUniform ( "elementSize" );
-	doubleElementSizeLocation = shaderProgram.GetUniform ( "doubleElementSize" );
+	colorOneLocation = _shaderProgram.GetUniform ( "colorOne" );
+	colorTwoLocation = _shaderProgram.GetUniform ( "colorTwo" );
+	elementSizeLocation = _shaderProgram.GetUniform ( "elementSize" );
+	doubleElementSizeLocation = _shaderProgram.GetUniform ( "doubleElementSize" );
 }
 
 EMCheckerGeneratorMaterial::~EMCheckerGeneratorMaterial ()
@@ -51,7 +51,7 @@ EMCheckerGeneratorMaterial::~EMCheckerGeneratorMaterial ()
 
 GXVoid EMCheckerGeneratorMaterial::Bind ( const GXTransform& /*transform*/ )
 {
-	glUseProgram ( shaderProgram.GetProgram () );
+	glUseProgram ( _shaderProgram.GetProgram () );
 
 	glUniform4fv ( colorOneLocation, 1, colorOne.data );
 	glUniform4fv ( colorTwoLocation, 1, colorTwo.data );

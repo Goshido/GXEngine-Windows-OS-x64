@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_SPLASH_SCREEN
 #define GX_SPLASH_SCREEN
@@ -17,17 +17,17 @@ enum class eGXSplashScreenState : GXUByte
 class GXSplashScreen final : public GXMemoryInspector
 {
     private:
-        HWND                        hwnd;
-        HBITMAP                     bitmap;
-        GXUShort                    bitmapWidth;
-        GXUShort                    bitmapHeight;
-        GXUByte*                    pixels;
+        HWND                        _hwnd;
+        HBITMAP                     _bitmap;
+        GXUShort                    _bitmapWidth;
+        GXUShort                    _bitmapHeight;
+        GXUByte*                    _pixels;
 
-        eGXSplashScreenState        state;
-        eGXSplashScreenState        intend;
+        eGXSplashScreenState        _state;
+        eGXSplashScreenState        _intend;
 
-        GXThread*                   thread;
-        static GXSplashScreen*      instance;
+        GXThread*                   _thread;
+        static GXSplashScreen*      _instance;
 
     public:
         static GXSplashScreen& GXCALL GetInstance ();

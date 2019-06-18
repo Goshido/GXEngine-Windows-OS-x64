@@ -35,20 +35,20 @@ EMToneMapperMaterial::EMToneMapperMaterial ():
 	static const GLuint samplerLocations[ 1u ] = { TEXTURE_SLOT };
 
 	GXShaderProgramInfo si;
-	si.vertexShader = VERTEX_SHADER;
-	si.geometryShader = GEOMETRY_SHADER;
-	si.fragmentShader = FRAGMENT_SHADER;
-	si.samplers = 1u;
-	si.samplerNames = samplerNames;
-	si.samplerLocations = samplerLocations;
-	si.transformFeedbackOutputs = 0;
-	si.transformFeedbackOutputNames = nullptr;
+	si._vertexShader = VERTEX_SHADER;
+	si._geometryShader = GEOMETRY_SHADER;
+	si._fragmentShader = FRAGMENT_SHADER;
+	si._samplers = 1u;
+	si._samplerNames = samplerNames;
+	si._samplerLocations = samplerLocations;
+	si._transformFeedbackOutputs = 0;
+	si._transformFeedbackOutputNames = nullptr;
 
-	shaderProgram.Init ( si );
+	_shaderProgram.Init ( si );
 
-	inverseGammaLocation = shaderProgram.GetUniform ( "inverseGamma" );
-	prescaleFactorLocation = shaderProgram.GetUniform ( "prescaleFactor" );
-	inverseAbsoluteWhiteSquareIntensityLocation = shaderProgram.GetUniform ( "inverseAbsoluteWhiteSquareIntensity" );
+	inverseGammaLocation = _shaderProgram.GetUniform ( "inverseGamma" );
+	prescaleFactorLocation = _shaderProgram.GetUniform ( "prescaleFactor" );
+	inverseAbsoluteWhiteSquareIntensityLocation = _shaderProgram.GetUniform ( "inverseAbsoluteWhiteSquareIntensity" );
 
 	SetLuminanceTriplet ( DEFAULT_AVERAGE_LUMINANCE, DEFAULT_MINIMUM_LUMINANCE, DEFAULT_MAXIMUM_LUMINANCE );
 	SetAbsoluteWhiteIntensity ( DEFAULT_ABSOLUTE_WHITE_INTENSITY );
@@ -63,7 +63,7 @@ GXVoid EMToneMapperMaterial::Bind ( const GXTransform& /*transform*/ )
 {
 	if ( !linearSpaceTexture ) return;
 
-	glUseProgram ( shaderProgram.GetProgram () );
+	glUseProgram ( _shaderProgram.GetProgram () );
 
 	glUniform1f ( inverseGammaLocation, inverseGamma );
 	glUniform1f ( prescaleFactorLocation, prescaleFactor );

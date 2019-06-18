@@ -11,18 +11,18 @@
 EMVertexColorMaterial::EMVertexColorMaterial ()
 {
 	GXShaderProgramInfo si;
-	si.vertexShader = VERTEX_SHADER;
-	si.geometryShader = GEOMETRY_SHADER;
-	si.fragmentShader = FRAGMENT_SHADER;
-	si.samplers = 0u;
-	si.samplerNames = nullptr;
-	si.samplerLocations = nullptr;
-	si.transformFeedbackOutputs = 0;
-	si.transformFeedbackOutputNames = nullptr;
+	si._vertexShader = VERTEX_SHADER;
+	si._geometryShader = GEOMETRY_SHADER;
+	si._fragmentShader = FRAGMENT_SHADER;
+	si._samplers = 0u;
+	si._samplerNames = nullptr;
+	si._samplerLocations = nullptr;
+	si._transformFeedbackOutputs = 0;
+	si._transformFeedbackOutputNames = nullptr;
 
-	shaderProgram.Init ( si );
+	_shaderProgram.Init ( si );
 
-	currentFrameModelViewProjectionMatrixLocation = shaderProgram.GetUniform ( "currentFrameModelViewProjectionMatrix" );
+	currentFrameModelViewProjectionMatrixLocation = _shaderProgram.GetUniform ( "currentFrameModelViewProjectionMatrix" );
 }
 
 EMVertexColorMaterial::~EMVertexColorMaterial ()
@@ -32,7 +32,7 @@ EMVertexColorMaterial::~EMVertexColorMaterial ()
 
 GXVoid EMVertexColorMaterial::Bind ( const GXTransform &transform )
 {
-	glUseProgram ( shaderProgram.GetProgram () );
+	glUseProgram ( _shaderProgram.GetProgram () );
 
 	GXMat4 currentFrameModelViewProjectionMatrix;
 	currentFrameModelViewProjectionMatrix.Multiply ( transform.GetCurrentFrameModelMatrix (), GXCamera::GetActiveCamera ()->GetCurrentFrameViewProjectionMatrix () );

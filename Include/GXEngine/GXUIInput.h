@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_UI_INPUT
 #define GX_UI_INPUT
@@ -19,53 +19,53 @@ typedef GXVoid ( GXCALL* PFNGXUIINPUTNONKEYPROC ) ( GXVoid* handler, GXUIInput& 
 
 class GXUIInput final : public GXWidget
 {
-	private:
-		PFNGXUIINPUTONMOUSEBUTTONPROC		OnLMBDown;
-		PFNGXUIINPUTONMOUSEBUTTONPROC		OnLMBUp;
-		PFNGXUIINPUTONMOUSEBUTTONPROC		OnMMBDown;
-		PFNGXUIINPUTONMOUSEBUTTONPROC		OnMMBUp;
-		PFNGXUIINPUTONMOUSEBUTTONPROC		OnRMBDown;
-		PFNGXUIINPUTONMOUSEBUTTONPROC		OnRMBUp;
+    private:
+        PFNGXUIINPUTONMOUSEBUTTONPROC       _onLMBDown;
+        PFNGXUIINPUTONMOUSEBUTTONPROC       _onLMBUp;
+        PFNGXUIINPUTONMOUSEBUTTONPROC       _onMMBDown;
+        PFNGXUIINPUTONMOUSEBUTTONPROC       _onMMBUp;
+        PFNGXUIINPUTONMOUSEBUTTONPROC       _onRMBDown;
+        PFNGXUIINPUTONMOUSEBUTTONPROC       _onRMBUp;
 
-		PFNGXUIINPUTNONDOUBLECLICKPROC		OnDoubleClick;
-		PFNGXUIINPUTNSCROLLPROC				OnMouseScroll;
-		PFNGXUIINPUTONMOUSEMOVEPROC			OnMouseMove;
-		PFNGXUIINPUTNMOUSEOVERPROC			OnMouseOver;
-		PFNGXUIINPUTNMOUSELEAVEPROC			OnMouseLeave;
+        PFNGXUIINPUTNONDOUBLECLICKPROC      _onDoubleClick;
+        PFNGXUIINPUTNSCROLLPROC             _onMouseScroll;
+        PFNGXUIINPUTONMOUSEMOVEPROC         _onMouseMove;
+        PFNGXUIINPUTNMOUSEOVERPROC          _onMouseOver;
+        PFNGXUIINPUTNMOUSELEAVEPROC         _onMouseLeave;
 
-		PFNGXUIINPUTNONKEYPROC				OnKeyDown;
-		PFNGXUIINPUTNONKEYPROC				OnKeyUp;
+        PFNGXUIINPUTNONKEYPROC              _onKeyDown;
+        PFNGXUIINPUTNONKEYPROC              _onKeyUp;
 
-		GXVoid*								handler;
+        GXVoid*                             _handler;
 
-	public:
-		explicit GXUIInput ( GXWidget* parent, GXBool isNeedRegister );
-		~GXUIInput () override;
+    public:
+        explicit GXUIInput ( GXWidget* parent, GXBool isNeedRegister );
+        ~GXUIInput () override;
 
-		GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
+        GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
 
-		GXVoid SetOnLeftMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
-		GXVoid SetOnLeftMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
-		GXVoid SetOnMiddleMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
-		GXVoid SetOnMiddleMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
-		GXVoid SetOnRightMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
-		GXVoid SetOnRightMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
+        GXVoid SetOnLeftMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
+        GXVoid SetOnLeftMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
+        GXVoid SetOnMiddleMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
+        GXVoid SetOnMiddleMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
+        GXVoid SetOnRightMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
+        GXVoid SetOnRightMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
 
-		GXVoid SetOnDoubleClickCallback ( PFNGXUIINPUTNONDOUBLECLICKPROC callback );
-		GXVoid SetOnMouseMoveCallback ( PFNGXUIINPUTONMOUSEMOVEPROC callback );
-		GXVoid SetOnMouseScrollCallback ( PFNGXUIINPUTNSCROLLPROC callback );
-		GXVoid SetOnMouseOverCallback ( PFNGXUIINPUTNMOUSEOVERPROC callback );
-		GXVoid SetOnMouseLeaveCallback ( PFNGXUIINPUTNMOUSELEAVEPROC callback );
+        GXVoid SetOnDoubleClickCallback ( PFNGXUIINPUTNONDOUBLECLICKPROC callback );
+        GXVoid SetOnMouseMoveCallback ( PFNGXUIINPUTONMOUSEMOVEPROC callback );
+        GXVoid SetOnMouseScrollCallback ( PFNGXUIINPUTNSCROLLPROC callback );
+        GXVoid SetOnMouseOverCallback ( PFNGXUIINPUTNMOUSEOVERPROC callback );
+        GXVoid SetOnMouseLeaveCallback ( PFNGXUIINPUTNMOUSELEAVEPROC callback );
 
-		GXVoid SetOnKeyDownCallback ( PFNGXUIINPUTNONKEYPROC callback );
-		GXVoid SetOnKeyUpCallback ( PFNGXUIINPUTNONKEYPROC callback );
+        GXVoid SetOnKeyDownCallback ( PFNGXUIINPUTNONKEYPROC callback );
+        GXVoid SetOnKeyUpCallback ( PFNGXUIINPUTNONKEYPROC callback );
 
-		GXVoid SetHandler ( GXVoid* handlerObject );
+        GXVoid SetHandler ( GXVoid* handler );
 
-	private:
-		GXUIInput () = delete;
-		GXUIInput ( const GXUIInput &other ) = delete;
-		GXUIInput& operator = ( const GXUIInput &other ) = delete;
+    private:
+        GXUIInput () = delete;
+        GXUIInput ( const GXUIInput &other ) = delete;
+        GXUIInput& operator = ( const GXUIInput &other ) = delete;
 };
 
 

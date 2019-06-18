@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_UI_MENU_EXT
 #define GX_UI_MENU_EXT
@@ -14,9 +14,9 @@
 class GXUIMenu final : public GXWidget
 {
     private:
-        GXDynamicArray      items;
-        GXUByte             selectedItemIndex;
-        GXUByte             highlightedItemIndex;
+        GXDynamicArray      _items;
+        GXUByte             _selectedItemIndex;
+        GXUByte             _highlightedItemIndex;
 
     public:
         explicit GXUIMenu ( GXWidget* parent );

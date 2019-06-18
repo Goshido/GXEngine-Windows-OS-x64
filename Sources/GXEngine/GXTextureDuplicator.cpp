@@ -1,38 +1,38 @@
-// version 1.2
+// version 1.3
 
 #include <GXEngine/GXTextureDuplicator.h>
 
 
-GXTextureDuplicator* GXTextureDuplicator::instance = nullptr;
+GXTextureDuplicator* GXTextureDuplicator::_instance = nullptr;
 
 GXTextureDuplicator* GXTextureDuplicator::GetInstance ()
 {
-	if ( !instance )
-		instance = new GXTextureDuplicator ();
+    if ( !_instance )
+        _instance = new GXTextureDuplicator ();
 
-	return instance;
+    return _instance;
 }
 
 GXTextureDuplicator::~GXTextureDuplicator ()
 {
-	if ( fbo == 0u ) return;
+    if ( _fbo == 0u ) return;
 
-	glDeleteFramebuffers ( 1, &fbo );
+    glDeleteFramebuffers ( 1, &_fbo );
 }
 
 GXVoid GXTextureDuplicator::Duplicate ( GLuint out, GXUInt /*source*/ )
 {
-	if ( fbo == 0u )
-		glGenFramebuffers ( 1, &fbo );
+    if ( _fbo == 0u )
+        glGenFramebuffers ( 1, &_fbo );
 
-	glBindFramebuffer ( GL_DRAW_FRAMEBUFFER, fbo );
-	glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, out, 0 );
-	const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
-	glDrawBuffers ( 1, buffers );
+    glBindFramebuffer ( GL_DRAW_FRAMEBUFFER, _fbo );
+    glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, out, 0 );
+    const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
+    glDrawBuffers ( 1, buffers );
 }
 
 GXTextureDuplicator::GXTextureDuplicator ():
-	fbo ( 0u )
+    _fbo ( 0u )
 {
-	// NOTHING
+    // NOTHING
 }
