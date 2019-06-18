@@ -50,7 +50,7 @@ GXVoid GXCALL GXLogDestroy ()
 GXVoid GXCDECLCALL GXLogA ( const GXMBChar* format, ... )
 {
     // Note console font is important. For example Win7 x64 can't render cyrillic characters
-    // with Raster font. »„Â Consolas font works properly.
+    // with Raster font. But Consolas font works properly.
 
     if ( !gx_logger_SmartLock ) return;
 

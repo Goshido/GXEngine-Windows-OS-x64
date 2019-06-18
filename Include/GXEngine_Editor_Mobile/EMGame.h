@@ -48,13 +48,8 @@ class EMGame final : public GXGame
         EMPhysicsDrivenActor*       colliderOne;
         EMPhysicsDrivenActor*       colliderTwo;
         EMPhysicsDrivenActor*       kinematicPlane;
-        EMMeshActor*                plasticSphere;
-        EMMeshActor*                goldSphere;
-        EMMeshActor*                silverSphere;
 
         EMMoveTool*                 moveTool;
-
-        EMFluttershy*               fluttershy;
 
         GXMeshGeometry*             contactLocationMesh;
         GXUnlitColorMaterial*       contactLocationMaterial;

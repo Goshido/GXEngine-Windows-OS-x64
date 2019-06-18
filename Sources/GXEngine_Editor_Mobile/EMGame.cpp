@@ -44,11 +44,7 @@ EMGame::EMGame ():
     colliderOne ( nullptr ),
     colliderTwo ( nullptr ),
     kinematicPlane ( nullptr ),
-    plasticSphere ( nullptr ),
-    goldSphere ( nullptr ),
-    silverSphere ( nullptr ),
     moveTool ( nullptr ),
-    fluttershy ( nullptr ),
     contactLocationMesh ( nullptr ),
     contactLocationMaterial ( nullptr ),
     contactNormalMesh ( nullptr ),
@@ -151,7 +147,7 @@ GXVoid EMGame::OnInit ()
     physicsContactPointMaterial = new GXUnlitColorMaterial ();
     physicsContactPointMaterial->SetColor ( 255u, 0u, 0u, 255u );
 
-    GXPhysicsEngine::GetInstance ().SetTimeMultiplier ( 1.0f );
+    GXPhysicsEngine::GetInstance ().SetTimeMultiplier ( 0.5f );
     GXPhysicsEngine& physicsEngine = GXPhysicsEngine::GetInstance ();
     GXWorld& world = physicsEngine.GetWorld ();
 
@@ -212,9 +208,9 @@ GXVoid EMGame::OnInit ()
     transform.SetScale ( 50.0f, 1.0, 50.0f );
     kinematicPlane = new EMPhysicsDrivenActor ( L"Kinematic Plane", transform );
     GXBoxShape* kinematicPlaneShape = new GXBoxShape ( &( kinematicPlane->GetRigidBody () ), 50.0f, 1.0f, 50.0f );
-    kinematicPlane->GetRigidBody ().SetMass ( 777.777e+7f );
+    kinematicPlane->GetRigidBody ().SetMass ( 777.777e+3f );
     kinematicPlane->GetRigidBody ().SetShape ( *kinematicPlaneShape );
-    kinematicPlane->GetRigidBody ().EnableKinematic ();
+    //kinematicPlane->GetRigidBody ().EnableKinematic ();
     //kinematicPlane->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, 0.1f, 0.0f ) );
     //kinematicPlane->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 0.0f, 0.2f ) );
     kinematicPlaneShape->SetRestitution ( 0.95f );
@@ -229,40 +225,7 @@ GXVoid EMGame::OnInit ()
     texture->LoadImage ( L"Textures/System/GXEngine Logo 4k.png", GX_TRUE, GX_TRUE );
     kinematicPlane->EnablePhysicsDebug ();
 
-    transform.SetLocation ( -2.0f, 0.0f, 0.0f );
-    transform.SetScale ( 1.0f, 1.0, 1.0f );
-    plasticSphere = new EMMeshActor ( L"Plastic sphere", transform );
-    plasticSphere->SetMesh ( L"Meshes/System/Unit Sphere.obj" );
-    EMCookTorranceCommonPassMaterial& plasticSphereMaterial = plasticSphere->GetMaterial ();
-    plasticSphereMaterial.SetAlbedoColor ( 115u, 185u, 0u, 255u );
-    plasticSphereMaterial.SetRoughnessScale ( 0.5f );
-    plasticSphereMaterial.SetIndexOfRefractionScale ( 0.292f );
-    plasticSphereMaterial.SetSpecularIntensityScale ( 0.75f );
-    plasticSphereMaterial.SetMetallicScale ( 1.0f );
-    plasticSphereMaterial.SetEmissionColorScale ( 0.0f );
-
-    transform.SetLocation ( 4.0f, 0.0f, 0.0f );
-    goldSphere = new EMMeshActor ( L"Gold sphere", transform );
-    goldSphere->SetMesh ( L"Meshes/System/Unit Sphere.obj" );
-    EMCookTorranceCommonPassMaterial& goldSphereMaterial = goldSphere->GetMaterial ();
-    goldSphereMaterial.SetAlbedoColor ( 253u, 180u, 17u, 255u );
-    goldSphereMaterial.SetRoughnessScale ( 0.25f );
-    goldSphereMaterial.SetIndexOfRefractionScale ( 0.094f );
-    goldSphereMaterial.SetSpecularIntensityScale ( 0.998f );
-    goldSphereMaterial.SetMetallicScale ( 1.0f );
-    goldSphereMaterial.SetEmissionColorScale ( 0.0f );
-
     transform.SetLocation ( 6.0f, 0.0f, 0.0f );
-    silverSphere = new EMMeshActor ( L"Silver sphere", transform );
-    silverSphere->SetMesh ( L"Meshes/System/Unit Sphere.obj" );
-    EMCookTorranceCommonPassMaterial& silverSphereMaterial = silverSphere->GetMaterial ();
-    silverSphereMaterial.SetAlbedoColor ( 247u, 244u, 233u, 255u );
-    silverSphereMaterial.SetRoughnessScale ( 0.19f );
-    silverSphereMaterial.SetIndexOfRefractionScale ( 0.1f );
-    silverSphereMaterial.SetSpecularIntensityScale ( 0.998f );
-    silverSphereMaterial.SetMetallicScale ( 1.0f );
-    silverSphereMaterial.SetEmissionColorScale ( 0.0f );
-
     transform.SetScale ( 1.0f, 1.0f, 1.0f );
     transform.SetRotation ( GXDegToRad ( 30.0f ), GXDegToRad ( 30.0f ), 0.0f );
     directedLight = new EMDirectedLightActor ( L"Directed light 01", transform );
@@ -281,10 +244,6 @@ GXVoid EMGame::OnInit ()
     GXCamera::SetActiveCamera ( &viewer->GetCamera () );
 
     EMTool::SetActiveTool ( moveTool );
-
-    fluttershy = new EMFluttershy ();
-    fluttershy->SetScale ( FLUTTERSHY_SCALE, FLUTTERSHY_SCALE, FLUTTERSHY_SCALE );
-    // fluttershy->SetRotation ( -GX_MATH_HALF_PI, 0.0f, 0.0f );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMeshGeometry" );
     contactLocationMesh = new GXMeshGeometry ();
@@ -319,8 +278,8 @@ GXVoid EMGame::OnInit ()
     EMUIFPSCounter::GetInstance ();
     EMUIColorPicker::GetInstance ();
 
-    ShowCursor ( 1 );
-    SetCursor ( LoadCursorW ( 0, IDC_ARROW ) );
+    ShowCursor ( TRUE );
+    SetCursor ( LoadCursorW ( nullptr, IDC_ARROW ) );
 
     physicsEngine.Start ();
 }
@@ -337,8 +296,6 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
     /*if ( deltaTime < 0.2f )
         GXPhysicsEngine::GetInstance ().RunSimulateLoop ( deltaTime );*/
 
-    fluttershy->UpdatePose ( deltaTime );
-
     GXCamera& viewerCamera = EMViewer::GetInstance ()->GetCamera ();
     GXCamera::SetActiveCamera ( &viewerCamera );
 
@@ -349,10 +306,6 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
     colliderOne->OnDrawCommonPass ( deltaTime );
     colliderTwo->OnDrawCommonPass ( deltaTime );
     kinematicPlane->OnDrawCommonPass ( deltaTime );
-    plasticSphere->OnDrawCommonPass ( deltaTime );
-    goldSphere->OnDrawCommonPass ( deltaTime );
-    silverSphere->OnDrawCommonPass ( deltaTime );
-    fluttershy->Render ( deltaTime );
 
     renderer.StartEnvironmentPass ();
 
@@ -527,12 +480,7 @@ GXVoid EMGame::OnDestroy ()
     GXSafeDelete ( contactLocationMaterial );
     GXSafeDelete ( contactLocationMesh );
 
-    GXSafeDelete ( fluttershy );
     GXSafeDelete ( moveTool );
-
-    GXSafeDelete ( silverSphere );
-    GXSafeDelete ( goldSphere );
-    GXSafeDelete ( plasticSphere );
 
     GXWorld& world = GXPhysicsEngine::GetInstance ().GetWorld ();
 
@@ -629,17 +577,18 @@ GXVoid GXCALL EMGame::OnMouseButton ( GXVoid* /*handler*/, GXInputMouseFlags mou
 
     GXGetRayFromViewer ( rayOrigin, rayDirection, x, y, static_cast<GXUShort> ( renderer.GetWidth () ), static_cast<GXUShort> ( renderer.GetHeight () ), viewerLocation, camera.GetCurrentFrameViewProjectionMatrix () );
 
-    const GXFloat rayLength = 10000.0f;
+    constexpr GXFloat rayLength = 10000.0f;
     GXVec3 contactLocation;
     GXVec3 contactNormal;
     const GXShape* contactShape;
 
     isContact = GXPhysicsEngine::GetInstance ().GetWorld ().Raycast ( rayOrigin, rayDirection, rayLength, contactLocation, contactNormal, &contactShape );
+
     if ( !isContact ) return;
 
     contactNormalTransform.From ( contactNormal, contactLocation );
 
-    const GXFloat impulseModule = 3.0f;
+    constexpr GXFloat impulseModule = 3.0f;
     GXVec3 impulseWorld;
     impulseWorld.Multiply ( rayDirection, impulseModule );
 
@@ -649,6 +598,7 @@ GXVoid GXCALL EMGame::OnMouseButton ( GXVoid* /*handler*/, GXInputMouseFlags mou
 GXVoid GXCALL EMGame::OnObject ( GXVoid* handler, GXVoid* object )
 {
     EMGame* game = static_cast<EMGame*> ( handler );
+
     if ( game->moveTool->OnObject ( object ) ) return;
 
     EMActor* actor = static_cast<EMActor*> ( object );
