@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #include <GXCommon/GXOBJLoader.h>
 #include <GXCommon/GXFile.h>
@@ -77,9 +77,9 @@ static GXOBJLoaderMemoryInspector gx_OBJLoaderMemoryInspector;
 
 struct GXOBJIndex final
 {
-    GXInt       v;
-    GXInt       vn;
-    GXInt       vt;
+    GXInt       _v;
+    GXInt       _vn;
+    GXInt       _vt;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -87,8 +87,8 @@ struct GXOBJIndex final
 class GXOBJVertex final : public GXMemoryInspector
 {
     public:
-        GXVec3              position;
-        GXOBJVertex*        next;
+        GXVec3              _position;
+        GXOBJVertex*        _next;
 
     public:
         GXOBJVertex ();
@@ -115,8 +115,8 @@ GXOBJVertex::~GXOBJVertex ()
 class GXOBJNormals final : public GXMemoryInspector
 {
     public:
-        GXVec3              normal;
-        GXOBJNormals*       next;
+        GXVec3              _normal;
+        GXOBJNormals*       _next;
 
     public:
         GXOBJNormals ();
@@ -143,8 +143,8 @@ GXOBJNormals::~GXOBJNormals ()
 class GXOBJUV_s final : public GXMemoryInspector
 {
     public:
-        GXVec2          uv;
-        GXOBJUV_s*      next;
+        GXVec2          _uv;
+        GXOBJUV_s*      _next;
 
     public:
         GXOBJUV_s ();
@@ -171,8 +171,8 @@ GXOBJUV_s::~GXOBJUV_s ()
 class GXOBJTriangle final : public GXMemoryInspector
 {
     public:
-        GXOBJIndex          dat[ 3u ];
-        GXOBJTriangle*      next;
+        GXOBJIndex          _dat[ 3u ];
+        GXOBJTriangle*      _next;
 
     public:
         GXOBJTriangle ();
@@ -202,7 +202,7 @@ GXVoid GXDeleteList ( Pointer top )
     while ( top )
     {
         Pointer p = top;
-        top = top->next;
+        top = top->_next;
         delete p;
         p = top;
     }
@@ -221,14 +221,14 @@ GXOBJVertex* GXCALL GXParseVertices ()
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJVertex" );
     vTop = new GXOBJVertex ();
     vTek = vTop;
-    vTek->next = nullptr;
+    vTek->_next = nullptr;
 
     for ( ; ; )
     {
         GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJVertex" );
-        vTek->next = new GXOBJVertex ();
-        vTek = vTek->next;
-        vTek->next = nullptr;
+        vTek->_next = new GXOBJVertex ();
+        vTek = vTek->_next;
+        vTek->_next = nullptr;
 
         ++gx_objLoaderTotalVertices;
 
@@ -243,7 +243,7 @@ GXOBJVertex* GXCALL GXParseVertices ()
         }
 
         gx_objLoaderWorkingArray[ i ] = '\0';
-        vTek->position.SetX ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
+        vTek->_position.SetX ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
 
         SKIP_GAPS ();
         i = 0;
@@ -256,7 +256,7 @@ GXOBJVertex* GXCALL GXParseVertices ()
         }
 
         gx_objLoaderWorkingArray[ i ] = '\0';
-        vTek->position.SetY ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
+        vTek->_position.SetY ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
 
         SKIP_GAPS ();
         i = 0;
@@ -269,7 +269,7 @@ GXOBJVertex* GXCALL GXParseVertices ()
         }
 
         gx_objLoaderWorkingArray[ i ] = '\0';
-        vTek->position.SetZ ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
+        vTek->_position.SetZ ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
 
         SKIP_COMMENT ();
         SKIP_GAPS ();
@@ -281,7 +281,7 @@ GXOBJVertex* GXCALL GXParseVertices ()
     }
     
     vTek = vTop; 
-    vTop = vTop->next; 
+    vTop = vTop->_next; 
     delete vTek;
 
     #ifdef DEBUG_TO_LOG
@@ -300,7 +300,7 @@ GXOBJNormals* GXCALL GXParseNormals ()
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJNormals" );
     GXOBJNormals* nTop = new GXOBJNormals ();
     GXOBJNormals* nTek = nTop;
-    nTek->next = nullptr;
+    nTek->_next = nullptr;
     GXInt i = 0;
 
     ++gx_objLoaderIndex;
@@ -310,9 +310,9 @@ GXOBJNormals* GXCALL GXParseNormals ()
         SKIP_GAPS ();
 
         GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJNormals" );
-        nTek->next = new GXOBJNormals ();
-        nTek = nTek->next;
-        nTek->next = nullptr;
+        nTek->_next = new GXOBJNormals ();
+        nTek = nTek->_next;
+        nTek->_next = nullptr;
 
         ++gx_objLoaderTotalNormals;
 
@@ -326,7 +326,7 @@ GXOBJNormals* GXCALL GXParseNormals ()
         }
 
         gx_objLoaderWorkingArray[ i ] = '\0';
-        nTek->normal.SetX ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
+        nTek->_normal.SetX ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
 
         SKIP_GAPS ();
         i = 0;
@@ -339,7 +339,7 @@ GXOBJNormals* GXCALL GXParseNormals ()
         }
 
         gx_objLoaderWorkingArray[ i ] = '\0';
-        nTek->normal.SetY ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
+        nTek->_normal.SetY ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
 
         SKIP_GAPS ();
         i = 0;
@@ -352,7 +352,7 @@ GXOBJNormals* GXCALL GXParseNormals ()
         }
 
         gx_objLoaderWorkingArray[ i ] = '\0';
-        nTek->normal.SetZ ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
+        nTek->_normal.SetZ ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
 
         SKIP_COMMENT ();
         SKIP_GAPS ();
@@ -366,7 +366,7 @@ GXOBJNormals* GXCALL GXParseNormals ()
     }
 
     nTek = nTop; 
-    nTop = nTop->next; 
+    nTop = nTop->_next; 
     delete nTek;
 
     #ifdef DEBUG_TO_LOG
@@ -385,7 +385,7 @@ GXOBJUV_s* GXCALL GXParseUVs ()
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJUV_s" );
     GXOBJUV_s* uvTop = new GXOBJUV_s ();
     GXOBJUV_s* uvTek = uvTop;
-    uvTek->next = nullptr;
+    uvTek->_next = nullptr;
     GXInt i = 0;
     ++gx_objLoaderIndex;
 
@@ -394,9 +394,9 @@ GXOBJUV_s* GXCALL GXParseUVs ()
         SKIP_GAPS ();
 
         GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJUV_s" );
-        uvTek->next = new GXOBJUV_s ();
-        uvTek = uvTek->next;
-        uvTek->next = nullptr;
+        uvTek->_next = new GXOBJUV_s ();
+        uvTek = uvTek->_next;
+        uvTek->_next = nullptr;
 
         ++gx_objLoaderTotalUVs;
 
@@ -410,7 +410,7 @@ GXOBJUV_s* GXCALL GXParseUVs ()
         }
 
         gx_objLoaderWorkingArray[ i ] = '\0';
-        uvTek->uv.SetX ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
+        uvTek->_uv.SetX ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
 
         SKIP_GAPS ();
         i = 0;
@@ -423,7 +423,7 @@ GXOBJUV_s* GXCALL GXParseUVs ()
         }
 
         gx_objLoaderWorkingArray[ i ] = '\0';
-        uvTek->uv.SetY ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
+        uvTek->_uv.SetY ( static_cast<GXFloat> ( atof ( gx_objLoaderWorkingArray ) ) );
 
         SKIP_COMMENT ();
         SKIP_GAPS ();
@@ -437,7 +437,7 @@ GXOBJUV_s* GXCALL GXParseUVs ()
     }
 
     uvTek = uvTop; 
-    uvTop = uvTop->next; 
+    uvTop = uvTop->_next; 
     delete uvTek;
 
     #ifdef DEBUG_TO_LOG
@@ -456,15 +456,15 @@ GXOBJTriangle* GXCALL GXParseTriangles ()
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJTriangle" );
     GXOBJTriangle* tgTop = new GXOBJTriangle ();
     GXOBJTriangle* tgTek = tgTop;
-    tgTek->next = nullptr;
+    tgTek->_next = nullptr;
     GXInt i = 0;
 
     for ( ; ; )
     {
         GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJTriangle" );
-        tgTek->next = new GXOBJTriangle ();
-        tgTek = tgTek->next;
-        tgTek->next = nullptr;
+        tgTek->_next = new GXOBJTriangle ();
+        tgTek = tgTek->_next;
+        tgTek->_next = nullptr;
         
         ++gx_objLoaderTotalTriangles;
 
@@ -481,7 +481,7 @@ GXOBJTriangle* GXCALL GXParseTriangles ()
             }
 
             gx_objLoaderWorkingArray[ i ] = '\0';
-            tgTek->dat[ j ].v = atoi ( gx_objLoaderWorkingArray ); 
+            tgTek->_dat[ j ]._v = atoi ( gx_objLoaderWorkingArray ); 
 
             ++gx_objLoaderIndex;
             SKIP_GAPS ();
@@ -495,7 +495,7 @@ GXOBJTriangle* GXCALL GXParseTriangles ()
             }
 
             gx_objLoaderWorkingArray[ i ] = '\0';
-            tgTek->dat[ j ].vt = atoi ( gx_objLoaderWorkingArray );
+            tgTek->_dat[ j ]._vt = atoi ( gx_objLoaderWorkingArray );
 
             ++gx_objLoaderIndex;
             SKIP_GAPS ();
@@ -509,7 +509,7 @@ GXOBJTriangle* GXCALL GXParseTriangles ()
             }
 
             gx_objLoaderWorkingArray[ i ] = '\0';
-            tgTek->dat[ j ].vn = atoi ( gx_objLoaderWorkingArray );
+            tgTek->_dat[ j ]._vn = atoi ( gx_objLoaderWorkingArray );
         }
 
         SKIP_COMMENT ();
@@ -522,7 +522,7 @@ GXOBJTriangle* GXCALL GXParseTriangles ()
     }
 
     tgTek = tgTop;
-    tgTop = tgTop->next;
+    tgTop = tgTop->_next;
     delete tgTek;
 
     #ifdef DEBUG_TO_LOG
@@ -608,24 +608,24 @@ GXInt GXCALL GXLoadOBJ ( const GXWChar* fileName, GXOBJPoint*& points )
     GXVec3* vertexes = static_cast<GXVec3*> ( gx_OBJLoaderMemoryInspector.Malloc ( gx_objLoaderTotalVertices * sizeof ( GXVec3 ) ) );
     GXOBJVertex* t = vTop;
 
-    for ( GXUInt i = 0u; i < gx_objLoaderTotalVertices; ++i, t = t->next )
-        vertexes[ i ] = t->position;
+    for ( GXUInt i = 0u; i < gx_objLoaderTotalVertices; ++i, t = t->_next )
+        vertexes[ i ] = t->_position;
 
     GXDeleteList ( vTop );
 
     GXVec3* normals = static_cast<GXVec3*> ( gx_OBJLoaderMemoryInspector.Malloc ( gx_objLoaderTotalNormals * sizeof ( GXVec3 ) ) );
     GXOBJNormals* n = nTop;
 
-    for ( GXUInt i = 0u; i < gx_objLoaderTotalNormals; ++i, n = n->next )
-        normals[ i ] = n->normal;
+    for ( GXUInt i = 0u; i < gx_objLoaderTotalNormals; ++i, n = n->_next )
+        normals[ i ] = n->_normal;
 
     GXDeleteList ( nTop );
 
     GXVec2* uv_s = static_cast<GXVec2*> ( gx_OBJLoaderMemoryInspector.Malloc ( gx_objLoaderTotalUVs * sizeof ( GXVec2 ) ) );
     GXOBJUV_s* u = uvTop;
 
-    for ( GXUInt i = 0u; i < gx_objLoaderTotalUVs; ++i, u = u->next )
-        uv_s[ i ] = u->uv;
+    for ( GXUInt i = 0u; i < gx_objLoaderTotalUVs; ++i, u = u->_next )
+        uv_s[ i ] = u->_uv;
 
     GXDeleteList ( uvTop );
 
@@ -644,19 +644,19 @@ GXInt GXCALL GXLoadOBJ ( const GXWChar* fileName, GXOBJPoint*& points )
                 GXLogA ( "GXLoadOBJ::Info - Processed %i points\n", totalElements );
             #endif
 
-            GXInt offset = tgTek->dat[ j ].v - 1;
-            outPoints[ totalElements ].vertex = vertexes[ offset ];
+            GXInt offset = tgTek->_dat[ j ]._v - 1;
+            outPoints[ totalElements ]._vertex = vertexes[ offset ];
 
-            offset = tgTek->dat[ j ].vt - 1;
-            outPoints[ totalElements ].uv = uv_s[ offset ];
+            offset = tgTek->_dat[ j ]._vt - 1;
+            outPoints[ totalElements ]._uv = uv_s[ offset ];
 
-            offset = tgTek->dat[ j ].vn - 1;
-            outPoints[ totalElements ].normal = normals[ offset ];
+            offset = tgTek->_dat[ j ]._vn - 1;
+            outPoints[ totalElements ]._normal = normals[ offset ];
 
             ++totalElements;
         }
 
-        tgTek = tgTek->next;
+        tgTek = tgTek->_next;
     }
 
     #ifdef DEBUG_TO_LOG

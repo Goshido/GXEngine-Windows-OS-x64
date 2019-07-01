@@ -9,8 +9,8 @@
 
 struct GXPhysicsGeometryHeader final
 {
-	GXUInt		numVertices;
-	GXUInt		numIndices;
+    GXUInt      _numVertices;
+    GXUInt      _numIndices;
 };
 
 

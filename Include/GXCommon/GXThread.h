@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_THREAD
 #define GX_THREAD
@@ -20,9 +20,9 @@ enum class eGXThreadState : GXUByte
 class GXAbstractThread
 {
     protected:
-        PFNGXTHREADPROC     Procedure;
-        GXVoid*             argument;
-        eGXThreadState      state;
+        PFNGXTHREADPROC     _procedure;
+        GXVoid*             _argument;
+        eGXThreadState      _state;
 
     public:
         eGXThreadState GetState () const;

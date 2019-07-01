@@ -17,8 +17,8 @@
 
 struct GXBoneJoint
 {
-	GXQuat	rotation;
-	GXVec3	location;
+	GXQuat	_rotation;
+	GXVec3	_location;
 };
 
 

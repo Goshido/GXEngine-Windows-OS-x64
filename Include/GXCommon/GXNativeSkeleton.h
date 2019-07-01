@@ -1,4 +1,4 @@
-//version 1.0
+//version 1.1
 
 #ifndef GX_NATIVE_SKELETON
 #define GX_NATIVE_SKELETON
@@ -12,25 +12,25 @@
 
 struct GXNativeSkeletonHeader
 {
-	GXUShort	totalBones;
-	GXUBigInt	boneNamesOffset;				//array of totalBones elements: 64 byte slot with zero terminated UTF8 string.
-	GXUBigInt	parentBoneIndicesOffset;		//array of totalBones elements: zero based index (GXUShort).
-	GXUBigInt	referensePoseOffset;			//array of totalBones elements: GXBoneJoint. Relative parent.
-	GXUBigInt	inverseBindTransformOffset;		//array of totalBones elements: GXBoneJoint.
+    GXUShort        _totalBones;
+    GXUBigInt       _boneNamesOffset;               //array of totalBones elements: 64 byte slot with zero terminated UTF8 string.
+    GXUBigInt       _parentBoneIndicesOffset;       //array of totalBones elements: zero based index (GXUShort).
+    GXUBigInt       _referensePoseOffset;           //array of totalBones elements: GXBoneJoint. Relative parent.
+    GXUBigInt       _inverseBindTransformOffset;    //array of totalBones elements: GXBoneJoint.
 };
 
 #pragma pack ( pop )
 
 struct GXSkeletonInfo
 {
-	GXUShort		totalBones;
-	GXUTF8*			boneNames;
-	GXUShort*		parentBoneIndices;
-	GXBoneJoint*	referencePose;
-	GXBoneJoint*	inverseBindTransform;
+    GXUShort        _totalBones;
+    GXUTF8*         _boneNames;
+    GXUShort*       _parentBoneIndices;
+    GXBoneJoint*    _referencePose;
+    GXBoneJoint*    _inverseBindTransform;
 
-	GXSkeletonInfo ();
-	GXVoid Cleanup ();
+    GXSkeletonInfo ();
+    GXVoid Cleanup ();
 };
 
 //------------------------------------------------------------------------------------

@@ -236,56 +236,56 @@ GXBool GXMesh::LoadFromOBJ ( const GXWChar* fileName )
     GXAABB bounds;
 
     GXNativeStaticMeshDesc descriptor;
-    descriptor.numVertices = static_cast<GXUInt> ( _totalVertices );
-    descriptor.numNormals = static_cast<GXUInt> ( _totalVertices );
-    descriptor.numTBPairs = static_cast<GXUInt> ( _totalVertices );
-    descriptor.numUVs = static_cast<GXUInt> ( _totalVertices );
-    descriptor.numElements = 0u;
+    descriptor._numVertices = static_cast<GXUInt> ( _totalVertices );
+    descriptor._numNormals = static_cast<GXUInt> ( _totalVertices );
+    descriptor._numTBPairs = static_cast<GXUInt> ( _totalVertices );
+    descriptor._numUVs = static_cast<GXUInt> ( _totalVertices );
+    descriptor._numElements = 0u;
 
     GXUInt alpha = _totalVertices * sizeof ( GXVec3 );
     GXUInt betta = _totalVertices * sizeof ( GXVec2 );
-    descriptor.vertices = static_cast<GXVec3*> ( Malloc ( alpha ) );
-    descriptor.uvs = static_cast<GXVec2*> ( Malloc ( betta ) );
-    descriptor.normals = static_cast<GXVec3*> ( Malloc ( alpha ) );
-    descriptor.tangents = static_cast<GXVec3*> ( Malloc ( alpha ) );
-    descriptor.bitangents = static_cast<GXVec3*> ( Malloc ( alpha ) );
-    descriptor.elements = nullptr;
+    descriptor._vertices = static_cast<GXVec3*> ( Malloc ( alpha ) );
+    descriptor._uvs = static_cast<GXVec2*> ( Malloc ( betta ) );
+    descriptor._normals = static_cast<GXVec3*> ( Malloc ( alpha ) );
+    descriptor._tangents = static_cast<GXVec3*> ( Malloc ( alpha ) );
+    descriptor._bitangents = static_cast<GXVec3*> ( Malloc ( alpha ) );
+    descriptor._elements = nullptr;
 
     _vboSize = static_cast<GLsizeiptr> ( alpha + betta + alpha + alpha + alpha );
     GXUByte* cache = static_cast<GXUByte*> ( Malloc ( static_cast<GXUPointer> ( _vboSize ) ) );
     GXUPointer offset = 0u;
 
-    for ( GXUInt i = 0u; i < descriptor.numVertices; ++i )
+    for ( GXUInt i = 0u; i < descriptor._numVertices; ++i )
     {
-        bounds.AddVertex ( points[ i ].vertex );
+        bounds.AddVertex ( points[ i ]._vertex );
 
-        descriptor.vertices[ i ] = points[ i ].vertex;
-        descriptor.uvs[ i ] = points[ i ].uv;
-        descriptor.normals[ i ] = points[ i ].normal;
+        descriptor._vertices[ i ] = points[ i ]._vertex;
+        descriptor._uvs[ i ] = points[ i ]._uv;
+        descriptor._normals[ i ] = points[ i ]._normal;
 
-        const GXUByte* vertices = reinterpret_cast<const GXUByte*> ( &points[ 3 * ( i / 3 ) ].vertex );
-        const GXUByte* uvs = reinterpret_cast<const GXUByte*> ( &points[ 3 * ( i / 3 ) ].uv );
+        const GXUByte* vertices = reinterpret_cast<const GXUByte*> ( &points[ 3 * ( i / 3 ) ]._vertex );
+        const GXUByte* uvs = reinterpret_cast<const GXUByte*> ( &points[ 3 * ( i / 3 ) ]._uv );
 
-        GXGetTangentBitangent ( descriptor.tangents[ i ], descriptor.bitangents[ i ], i % 3, vertices, sizeof ( GXOBJPoint ), uvs, sizeof ( GXOBJPoint ) );
+        GXGetTangentBitangent ( descriptor._tangents[ i ], descriptor._bitangents[ i ], i % 3, vertices, sizeof ( GXOBJPoint ), uvs, sizeof ( GXOBJPoint ) );
 
         GXVec3* gamma = reinterpret_cast<GXVec3*> ( cache + offset );
-        *gamma = descriptor.vertices[ i ];
+        *gamma = descriptor._vertices[ i ];
         offset += sizeof ( GXVec3 );
 
         GXVec2* zeta = reinterpret_cast<GXVec2*> ( cache + offset );
-        *zeta = descriptor.uvs[ i ];
+        *zeta = descriptor._uvs[ i ];
         offset += sizeof ( GXVec2 );
 
         gamma = reinterpret_cast<GXVec3*> ( cache + offset );
-        *gamma = descriptor.normals[ i ];
+        *gamma = descriptor._normals[ i ];
         offset += sizeof ( GXVec3 );
 
         gamma = reinterpret_cast<GXVec3*> ( cache + offset );
-        *gamma = descriptor.tangents[ i ];
+        *gamma = descriptor._tangents[ i ];
         offset += sizeof ( GXVec3 );
 
         gamma = reinterpret_cast<GXVec3*> ( cache + offset );
-        *gamma = descriptor.bitangents[ i ];
+        *gamma = descriptor._bitangents[ i ];
         offset += sizeof ( GXVec3 );
     }
 
@@ -299,11 +299,11 @@ GXBool GXMesh::LoadFromOBJ ( const GXWChar* fileName )
 
     GXExportNativeStaticMesh ( cacheFileName, descriptor );
 
-    Free ( descriptor.vertices );
-    Free ( descriptor.uvs );
-    Free ( descriptor.normals );
-    Free ( descriptor.tangents );
-    Free ( descriptor.bitangents );
+    Free ( descriptor._vertices );
+    Free ( descriptor._uvs );
+    Free ( descriptor._normals );
+    Free ( descriptor._tangents );
+    Free ( descriptor._bitangents );
 
     free ( path );
     free ( baseFileName );
@@ -327,14 +327,14 @@ GXBool GXMesh::LoadFromSTM ( const GXWChar* fileName )
     GXNativeStaticMeshInfo info;
     GXLoadNativeStaticMesh ( fileName, info );
 
-    _totalVertices = static_cast<GLsizei> ( info.numVertices );
+    _totalVertices = static_cast<GLsizei> ( info._numVertices );
     _vboSize = static_cast<GLsizeiptr> ( _totalVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) ) );
     _vboUsage = GL_STATIC_DRAW;
 
     glGenBuffers ( 1, &_meshVBO );
     glBindBuffer ( GL_ARRAY_BUFFER, _meshVBO );
     // {
-        glBufferData ( GL_ARRAY_BUFFER, _vboSize, info.vboData, _vboUsage );
+        glBufferData ( GL_ARRAY_BUFFER, _vboSize, info._vboData, _vboUsage );
     // }
     glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 
@@ -348,8 +348,8 @@ GXBool GXMesh::LoadFromSKM ( const GXWChar* fileName )
     GXSkeletalMeshData skeletalMeshData;
     GXLoadNativeSkeletalMesh ( skeletalMeshData, fileName );
 
-    _totalVertices = static_cast<GLsizei> ( skeletalMeshData.totalVertices );
-    const GXUByte* source = reinterpret_cast<const GXUByte*> ( skeletalMeshData.vboData );
+    _totalVertices = static_cast<GLsizei> ( skeletalMeshData._totalVertices );
+    const GXUByte* source = reinterpret_cast<const GXUByte*> ( skeletalMeshData._vboData );
     static const GXUPointer meshVBOStride = sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 );
     static const GXUPointer skeletalMeshVBOStride = sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec4 ) + sizeof ( GXVec4 );
 
@@ -535,8 +535,8 @@ GXBool GXSkin::LoadFromSKM ( const GXWChar* fileName )
     GXSkeletalMeshData skeletalMeshData;
     GXLoadNativeSkeletalMesh ( skeletalMeshData, fileName );
 
-    _totalVertices = static_cast<GLsizei> ( skeletalMeshData.totalVertices );
-    const GXUByte* source = reinterpret_cast<const GXUByte*> ( skeletalMeshData.vboData ) + sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 );
+    _totalVertices = static_cast<GLsizei> ( skeletalMeshData._totalVertices );
+    const GXUByte* source = reinterpret_cast<const GXUByte*> ( skeletalMeshData._vboData ) + sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 );
     static const GXUPointer skinVBOStride = sizeof ( GXVec4 ) + sizeof ( GXVec4 );
     static const GXUPointer skeletalMeshVBOStride = sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec4 ) + sizeof ( GXVec4 );
 
@@ -572,12 +572,12 @@ GXBool GXSkin::LoadFromSKIN ( const GXWChar* fileName )
     GXSkinInfo skinInfo;
     GXLoadNativeSkin ( skinInfo, fileName );
 
-    _totalVertices = static_cast<GLsizei> ( skinInfo.totalVertices );
+    _totalVertices = static_cast<GLsizei> ( skinInfo._totalVertices );
 
     glGenBuffers ( 1, &_skinVBO );
     glBindBuffer ( GL_ARRAY_BUFFER, _skinVBO );
     // {
-        glBufferData ( GL_ARRAY_BUFFER, static_cast<GLsizeiptr> ( skinInfo.totalVertices * ( sizeof ( GXVec4 ) + sizeof ( GXVec4 ) ) ), skinInfo.vboData, GL_STATIC_DRAW );
+        glBufferData ( GL_ARRAY_BUFFER, static_cast<GLsizeiptr> ( skinInfo._totalVertices * ( sizeof ( GXVec4 ) + sizeof ( GXVec4 ) ) ), skinInfo._vboData, GL_STATIC_DRAW );
     // }
     glBindBuffer ( GL_ARRAY_BUFFER, 0u );
 

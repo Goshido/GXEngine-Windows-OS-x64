@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #include <GXCommon/GXNativeSkin.h>
 #include <GXCommon/GXFile.h>
@@ -13,8 +13,8 @@ public:
     ~GXNativeSkinLoaderMemoryInspector () override;
 
 private:
-    GXNativeSkinLoaderMemoryInspector ( const GXNativeSkinLoaderMemoryInspector &other );
-    GXNativeSkinLoaderMemoryInspector& operator = ( const GXNativeSkinLoaderMemoryInspector &other );
+    GXNativeSkinLoaderMemoryInspector ( const GXNativeSkinLoaderMemoryInspector &other ) = delete;
+    GXNativeSkinLoaderMemoryInspector& operator = ( const GXNativeSkinLoaderMemoryInspector &other ) = delete;
 };
 
 GXNativeSkinLoaderMemoryInspector::GXNativeSkinLoaderMemoryInspector ()
@@ -34,13 +34,13 @@ static GXNativeSkinLoaderMemoryInspector gx_NativeSkinLoaderMemoryInspector;
 
 GXSkinInfo::GXSkinInfo ()
 {
-    totalVertices = 0u;
-    vboData = nullptr;
+    _totalVertices = 0u;
+    _vboData = nullptr;
 }
 
 GXVoid GXSkinInfo::Cleanup ()
 {
-    gx_NativeSkinLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &vboData ) );
+    gx_NativeSkinLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &_vboData ) );
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -56,9 +56,9 @@ GXVoid GXCALL GXLoadNativeSkin ( GXSkinInfo &info, const GXWChar* fileName )
 
     GXNativeSkinHeader* h = reinterpret_cast<GXNativeSkinHeader*> ( data );
 
-    info.totalVertices = h->totalVertices;
+    info._totalVertices = h->_totalVertices;
 
-    GXUPointer size = info.totalVertices * ( sizeof ( GXVec4 ) + sizeof ( GXVec4 ) );
-    info.vboData = static_cast<GXFloat*> ( gx_NativeSkinLoaderMemoryInspector.Malloc ( size ) );
-    memcpy ( info.vboData, data + h->vboOffset, size );
+    GXUPointer size = info._totalVertices * ( sizeof ( GXVec4 ) + sizeof ( GXVec4 ) );
+    info._vboData = static_cast<GXFloat*> ( gx_NativeSkinLoaderMemoryInspector.Malloc ( size ) );
+    memcpy ( info._vboData, data + h->_vboOffset, size );
 }

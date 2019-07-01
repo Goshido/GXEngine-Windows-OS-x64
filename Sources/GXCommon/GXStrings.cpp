@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXLogger.h>
@@ -9,8 +9,8 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 GXUTF8Parser::GXUTF8Parser ( const GXUTF8* string ):
-    string ( string ),
-    totalSymbols ( GXUTF8len ( string ) )
+    _string ( string ),
+    _totalSymbols ( GXUTF8len ( string ) )
 {
     // NOTHING
 }
@@ -22,52 +22,52 @@ GXUTF8Parser::~GXUTF8Parser ()
 
 GXUInt GXUTF8Parser::GetSymbol ( GXUPointer position )
 {
-    if ( position >= totalSymbols )
+    if ( position >= _totalSymbols )
         return INVALID_SYMBOL;
 
     GXUPointer offset = GetOffset ( position );
 
-    if ( ( string[ offset ] & 0x80 ) == 0x00 )
-        return static_cast<GXUInt> ( string[ offset ] );
+    if ( ( _string[ offset ] & 0x80 ) == 0x00 )
+        return static_cast<GXUInt> ( _string[ offset ] );
 
-    if ( ( string[ offset ] & 0xE0 ) == 0xC0 )
+    if ( ( _string[ offset ] & 0xE0 ) == 0xC0 )
     {
-        return ( ( static_cast<GXUInt>( string[ offset ] ) & 0x0000001Fu ) << 6 ) |
-                ( static_cast<GXUInt> ( string[ offset + 1u ] ) & 0x0000003Fu );
+        return ( ( static_cast<GXUInt>( _string[ offset ] ) & 0x0000001Fu ) << 6 ) |
+                ( static_cast<GXUInt> ( _string[ offset + 1u ] ) & 0x0000003Fu );
     }
 
-    if ( ( string[ offset ] & 0xF0 ) == 0xE0 )
+    if ( ( _string[ offset ] & 0xF0 ) == 0xE0 )
     {
-        return ( ( static_cast<GXUInt> ( string[ offset ] ) & 0x0000000Fu ) << 12 ) |
-                ( ( static_cast<GXUInt> ( string[ offset + 1u ] ) & 0x0000003Fu ) << 6 ) |
-                ( static_cast<GXUInt> ( string[ offset + 2u ] ) & 0x0000003Fu );
+        return ( ( static_cast<GXUInt> ( _string[ offset ] ) & 0x0000000Fu ) << 12 ) |
+                ( ( static_cast<GXUInt> ( _string[ offset + 1u ] ) & 0x0000003Fu ) << 6 ) |
+                ( static_cast<GXUInt> ( _string[ offset + 2u ] ) & 0x0000003Fu );
     }
 
-    if ( ( string[ offset ] & 0xF8 ) == 0xF0 )
+    if ( ( _string[ offset ] & 0xF8 ) == 0xF0 )
     {
-        return ( ( static_cast<GXUInt> ( string[ offset ] ) & 0x00000007u ) << 18 ) |
-                ( ( static_cast<GXUInt> ( string[ offset + 1u ] ) & 0x0000003Fu ) << 12 ) |
-                ( ( static_cast<GXUInt> ( string[ offset + 2u ] ) & 0x0000003F ) << 6 ) |
-                ( static_cast<GXUInt> ( string[ offset + 3u ] ) & 0x0000003F );
+        return ( ( static_cast<GXUInt> ( _string[ offset ] ) & 0x00000007u ) << 18 ) |
+                ( ( static_cast<GXUInt> ( _string[ offset + 1u ] ) & 0x0000003Fu ) << 12 ) |
+                ( ( static_cast<GXUInt> ( _string[ offset + 2u ] ) & 0x0000003F ) << 6 ) |
+                ( static_cast<GXUInt> ( _string[ offset + 3u ] ) & 0x0000003F );
     }
 
-    if ( ( string[ offset ] & 0xFC ) == 0xF8 )
+    if ( ( _string[ offset ] & 0xFC ) == 0xF8 )
     {
-        return ( ( static_cast<GXUInt> ( string[ offset ] ) & 0x00000003u ) << 24 ) |
-                ( ( static_cast<GXUInt> ( string[ offset + 1u ] ) & 0x0000003Fu ) << 18 ) |
-                ( ( static_cast<GXUInt> ( string[ offset + 2u ] ) & 0x0000003Fu ) << 12 ) |
-                ( ( static_cast<GXUInt> ( string[ offset + 3u ] ) & 0x0000003Fu ) << 6 ) |
-                ( static_cast<GXUInt> ( string[ offset + 4u ] ) & 0x0000003Fu );
+        return ( ( static_cast<GXUInt> ( _string[ offset ] ) & 0x00000003u ) << 24 ) |
+                ( ( static_cast<GXUInt> ( _string[ offset + 1u ] ) & 0x0000003Fu ) << 18 ) |
+                ( ( static_cast<GXUInt> ( _string[ offset + 2u ] ) & 0x0000003Fu ) << 12 ) |
+                ( ( static_cast<GXUInt> ( _string[ offset + 3u ] ) & 0x0000003Fu ) << 6 ) |
+                ( static_cast<GXUInt> ( _string[ offset + 4u ] ) & 0x0000003Fu );
     }
 
-    if ( ( string[ offset ] & 0xFE ) == 0xFC )
+    if ( ( _string[ offset ] & 0xFE ) == 0xFC )
     {
-        return ( ( static_cast<GXUInt> ( string[ offset ] ) & 0x00000001u ) << 30 ) |
-                ( ( static_cast<GXUInt> ( string[ offset + 1u ] ) & 0x0000003Fu ) << 24 ) |
-                ( ( static_cast<GXUInt> ( string[ offset + 2u ] ) & 0x0000003Fu ) << 18 ) |
-                ( ( static_cast<GXUInt> ( string[ offset + 3u ] ) & 0x0000003Fu ) << 12 ) |
-                ( ( static_cast<GXUInt> ( string[ offset + 4u ] ) & 0x0000003Fu ) << 6 ) |
-                ( static_cast<GXUInt> ( string[ offset + 5u ] ) & 0x0000003F );
+        return ( ( static_cast<GXUInt> ( _string[ offset ] ) & 0x00000001u ) << 30 ) |
+                ( ( static_cast<GXUInt> ( _string[ offset + 1u ] ) & 0x0000003Fu ) << 24 ) |
+                ( ( static_cast<GXUInt> ( _string[ offset + 2u ] ) & 0x0000003Fu ) << 18 ) |
+                ( ( static_cast<GXUInt> ( _string[ offset + 3u ] ) & 0x0000003Fu ) << 12 ) |
+                ( ( static_cast<GXUInt> ( _string[ offset + 4u ] ) & 0x0000003Fu ) << 6 ) |
+                ( static_cast<GXUInt> ( _string[ offset + 5u ] ) & 0x0000003F );
     }
 
     GXLogA ( "GXUTF8Parser::GetSymbol::Error - Can't parse symbol [position %i]\n", position );
@@ -76,12 +76,12 @@ GXUInt GXUTF8Parser::GetSymbol ( GXUPointer position )
 
 GXUPointer GXUTF8Parser::GetLength ()
 {
-    return totalSymbols;
+    return _totalSymbols;
 }
 
 GXVoid GXUTF8Parser::Copy ( GXUTF8* dest, GXUPointer startPos, GXUPointer endPos )
 {
-    if ( endPos >= totalSymbols ) return;
+    if ( endPos >= _totalSymbols ) return;
 
     GXUPointer offset = 0u;
     GXUPointer baseOffset = GetOffset ( startPos );
@@ -90,109 +90,109 @@ GXVoid GXUTF8Parser::Copy ( GXUTF8* dest, GXUPointer startPos, GXUPointer endPos
     {
         GXUPointer ind = baseOffset + offset;
 
-        if ( ( string[ ind ] & 0x80 ) == 0x00 )
+        if ( ( _string[ ind ] & 0x80 ) == 0x00 )
         {
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
 
             continue;
         }
 
-        if ( ( string[ ind ] & 0xE0 ) == 0xC0 )
+        if ( ( _string[ ind ] & 0xE0 ) == 0xC0 )
         {
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
             ++ind;
 
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
 
             continue;
         }
 
-        if ( ( string[ ind ] & 0xF0 ) == 0xE0 )
+        if ( ( _string[ ind ] & 0xF0 ) == 0xE0 )
         {
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
             ++ind;
 
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
             ++ind;
 
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
 
             continue;
         }
 
-        if ( ( string[ ind ] & 0xF8 ) == 0xF0 )
+        if ( ( _string[ ind ] & 0xF8 ) == 0xF0 )
         {
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
             ++ind;
 
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
             ++ind;
 
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
             ++ind;
 
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
 
             continue;
         }
 
-        if ( ( string[ ind ] & 0xFC ) == 0xF8 )
+        if ( ( _string[ ind ] & 0xFC ) == 0xF8 )
         {
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
             ++ind;
 
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
             ++ind;
 
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
             ++ind;
 
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
             ++ind;
 
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
 
             continue;
         }
 
-        if ( ( string[ ind ] & 0xFE ) == 0xFC )
+        if ( ( _string[ ind ] & 0xFE ) == 0xFC )
         {
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
             ++ind;
 
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
             ++ind;
 
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
             ++ind;
 
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
             ++ind;
 
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
             ++ind;
 
-            dest[ offset ] = string[ ind ];
+            dest[ offset ] = _string[ ind ];
             ++offset;
         }
     }
@@ -208,7 +208,7 @@ GXUPointer GXUTF8Parser::GetOffset ( GXUPointer position )
 
     for ( ; ; )
     {
-        if ( ( string[ offset ] & 0xC0 ) == 0x80 )
+        if ( ( _string[ offset ] & 0xC0 ) == 0x80 )
         {
             ++offset;
             continue;
@@ -221,7 +221,7 @@ GXUPointer GXUTF8Parser::GetOffset ( GXUPointer position )
 
         for ( ; ; )
         {
-            if ( ( string[ offset ] & 0xC0 ) != 0x80 ) break;
+            if ( ( _string[ offset ] & 0xC0 ) != 0x80 ) break;
 
             ++offset;
         }
@@ -234,16 +234,16 @@ GXUPointer GXUTF8Parser::GetOffset ( GXUPointer position )
 
 GXVoid GXUTF8Parser::Debug ()
 {
-    for ( GXUInt i = 0u; string[ i ]; ++i )
+    for ( GXUInt i = 0u; _string[ i ]; ++i )
     {
-        GXUByte bit0 = static_cast<GXUByte> ( string[ i ] & 0x01 );
-        GXUByte bit1 = static_cast<GXUByte> ( ( string[ i ] & 0x02 ) >> 1 );
-        GXUByte bit2 = static_cast<GXUByte> ( ( string[ i ] & 0x04 ) >> 2 );
-        GXUByte bit3 = static_cast<GXUByte> ( ( string[ i ] & 0x08 ) >> 3 );
-        GXUByte bit4 = static_cast<GXUByte> ( ( string[ i ] & 0x10 ) >> 4 );
-        GXUByte bit5 = static_cast<GXUByte> ( ( string[ i ] & 0x20 ) >> 5 );
-        GXUByte bit6 = static_cast<GXUByte> ( ( string[ i ] & 0x40 ) >> 6 );
-        GXUByte bit7 = static_cast<GXUByte> ( ( string[ i ] & 0x80 ) >> 7 );
+        GXUByte bit0 = static_cast<GXUByte> ( _string[ i ] & 0x01 );
+        GXUByte bit1 = static_cast<GXUByte> ( ( _string[ i ] & 0x02 ) >> 1 );
+        GXUByte bit2 = static_cast<GXUByte> ( ( _string[ i ] & 0x04 ) >> 2 );
+        GXUByte bit3 = static_cast<GXUByte> ( ( _string[ i ] & 0x08 ) >> 3 );
+        GXUByte bit4 = static_cast<GXUByte> ( ( _string[ i ] & 0x10 ) >> 4 );
+        GXUByte bit5 = static_cast<GXUByte> ( ( _string[ i ] & 0x20 ) >> 5 );
+        GXUByte bit6 = static_cast<GXUByte> ( ( _string[ i ] & 0x40 ) >> 6 );
+        GXUByte bit7 = static_cast<GXUByte> ( ( _string[ i ] & 0x80 ) >> 7 );
 
         GXLogA ( "GXUTF8Parser::Debug::Info - %i%i%i%i %i%i%i%i\n", bit7, bit6, bit5, bit4, bit3, bit2, bit1, bit0 );
     }

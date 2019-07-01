@@ -35,22 +35,22 @@ GXVoid GXSkeleton::LoadFromSkm ( const GXWChar* fileName )
     GXSkeletalMeshData skeletalMeshData;
     GXLoadNativeSkeletalMesh ( skeletalMeshData, fileName );
 
-    _totalBones = skeletalMeshData.totalBones;
+    _totalBones = skeletalMeshData._totalBones;
 
     GXUPointer size = _totalBones * GX_BONE_NAME_SIZE * sizeof ( GXUTF8 );
     _boneNames = static_cast<GXUTF8*> ( malloc ( size ) );
-    memcpy ( _boneNames, skeletalMeshData.boneNames, size );
+    memcpy ( _boneNames, skeletalMeshData._boneNames, size );
 
     size = _totalBones * sizeof ( GXShort );
     _parentBoneIndices = static_cast<GXShort*> ( malloc ( size ) );
-    memcpy ( _parentBoneIndices, skeletalMeshData.parentBoneIndices, size );
+    memcpy ( _parentBoneIndices, skeletalMeshData._parentBoneIndices, size );
 
     size = _totalBones * sizeof ( GXBoneJoint );
     _referencePose = static_cast<GXBoneJoint*> ( malloc ( size ) );
-    memcpy ( _referencePose, skeletalMeshData.referencePose, size );
+    memcpy ( _referencePose, skeletalMeshData._referencePose, size );
 
     _inverseBindTransform = static_cast<GXBoneJoint*> ( malloc ( size ) );
-    memcpy ( _inverseBindTransform, skeletalMeshData.inverseBindTransform, size );
+    memcpy ( _inverseBindTransform, skeletalMeshData._inverseBindTransform, size );
 
     _tempPoseLocal = static_cast<GXBoneJoint*> ( malloc ( size ) );
     memcpy ( _tempPoseLocal, _referencePose, size );
@@ -108,10 +108,10 @@ GXVoid GXSkeleton::CalculatePose ()
     // So we need to do multiplication in reverse order to calculate skin transform.
 
     _tempPoseGlobal[ 0u ] = _tempPoseLocal[ 0u ];
-    _skinTransform[ 0u ].rotation.Multiply ( _tempPoseGlobal[ 0u ].rotation, _inverseBindTransform[ 0u ].rotation );
+    _skinTransform[ 0u ]._rotation.Multiply ( _tempPoseGlobal[ 0u ]._rotation, _inverseBindTransform[ 0u ]._rotation );
     GXVec3 buffer;
-    _tempPoseGlobal[ 0u ].rotation.TransformFast ( buffer, _inverseBindTransform[ 0u ].location );
-    _skinTransform[ 0u ].location.Sum ( buffer, _tempPoseGlobal[ 0u ].location );
+    _tempPoseGlobal[ 0u ]._rotation.TransformFast ( buffer, _inverseBindTransform[ 0u ]._location );
+    _skinTransform[ 0u ]._location.Sum ( buffer, _tempPoseGlobal[ 0u ]._location );
 
     for ( GXUShort i = 1u; i < _totalBones; ++i )
     {
@@ -121,12 +121,12 @@ GXVoid GXSkeleton::CalculatePose ()
         GXBoneJoint& boneTransformGlobal = _tempPoseGlobal[ i ];
         GXBoneJoint& boneSkinTransform = _skinTransform[ i ];
 
-        boneTransformGlobal.rotation.Multiply ( parentBoneTransformGlobal.rotation, boneTransformLocal.rotation );
-        parentBoneTransformGlobal.rotation.TransformFast ( buffer, boneTransformLocal.location );
-        boneTransformGlobal.location.Sum ( parentBoneTransformGlobal.location, buffer );
+        boneTransformGlobal._rotation.Multiply ( parentBoneTransformGlobal._rotation, boneTransformLocal._rotation );
+        parentBoneTransformGlobal._rotation.TransformFast ( buffer, boneTransformLocal._location );
+        boneTransformGlobal._location.Sum ( parentBoneTransformGlobal._location, buffer );
 
-        boneSkinTransform.rotation.Multiply ( boneTransformGlobal.rotation, boneInverseBindTransform.rotation );
-        boneTransformGlobal.rotation.TransformFast ( buffer, boneInverseBindTransform.location );
-        boneSkinTransform.location.Sum ( boneTransformGlobal.location, buffer );
+        boneSkinTransform._rotation.Multiply ( boneTransformGlobal._rotation, boneInverseBindTransform._rotation );
+        boneTransformGlobal._rotation.TransformFast ( buffer, boneInverseBindTransform._location );
+        boneSkinTransform._location.Sum ( boneTransformGlobal._location, buffer );
     }
 }

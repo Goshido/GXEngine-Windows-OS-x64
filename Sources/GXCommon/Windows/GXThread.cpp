@@ -18,7 +18,7 @@ GXThread::GXThread ( PFNGXTHREADPROC procedure, GXVoid* argument ):
 
 GXThread::~GXThread ()
 {
-    if ( thread == INVALID_HANDLE_VALUE || state != eGXThreadState::Started ) return;
+    if ( thread == INVALID_HANDLE_VALUE || _state != eGXThreadState::Started ) return;
 
     GXLogA ( "GXThread::~GXThread::Warning - Поток завершён неверно\n" );
     system ( "pause" );
@@ -27,7 +27,7 @@ GXThread::~GXThread ()
 
 GXVoid GXThread::Start ()
 {
-    if ( state == eGXThreadState::Started ) return;
+    if ( _state == eGXThreadState::Started ) return;
 
     thread = reinterpret_cast<HANDLE> ( _beginthreadex ( nullptr, 0u, &GXThread::RootThreadStarter, this, 0, nullptr ) );
 
@@ -37,7 +37,7 @@ GXVoid GXThread::Start ()
         return;
     }
 
-    state = eGXThreadState::Started;
+    _state = eGXThreadState::Started;
 }
 
 GXVoid GXThread::Switch ()
@@ -52,7 +52,7 @@ GXVoid GXThread::Sleep ( GXUInt milliseconds )
 
 GXVoid GXThread::Join ()
 {
-    if ( state == eGXThreadState::Waiting )
+    if ( _state == eGXThreadState::Waiting )
     {
         GXLogA ( "GXThread::Join::Warning - Поток не запущен\n" );
         return;
@@ -68,7 +68,7 @@ GXVoid GXThread::Join ()
 unsigned __stdcall GXThread::RootThreadStarter ( void* lpThreadParameter )
 {
     GXThread* thread = reinterpret_cast<GXThread*> ( lpThreadParameter );
-    GXUPointer result = thread->Procedure ( thread->argument, *thread );
+    GXUPointer result = thread->_procedure ( thread->_argument, *thread );
     GXLogA ( "GXThread::RootThreadStarter::Info - Поток 0x%p завершился с кодом %X\n", lpThreadParameter, result );
 
     return 0u;

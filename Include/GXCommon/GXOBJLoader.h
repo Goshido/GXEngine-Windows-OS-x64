@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #ifndef GX_OBJ_LOADER
 #define GX_OBJ_LOADER
@@ -11,9 +11,9 @@
 
 struct GXOBJPoint final
 {
-    GXVec3      vertex;
-    GXVec3      normal;
-    GXVec2      uv;
+    GXVec3      _vertex;
+    GXVec3      _normal;
+    GXVec2      _uv;
 };
 
 // Function returns total vertices.

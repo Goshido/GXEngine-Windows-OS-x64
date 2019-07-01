@@ -71,7 +71,7 @@ GXBool GXCALL GXLoadLDRImage ( const GXWChar* fileName, GXUInt &width, GXUInt &h
     GXInt w;
     GXInt h;
 
-    *data = static_cast<GXUByte*> ( stbi_load_from_memory ( static_cast<const stbi_uc*> ( content ), static_cast<int>( len ), &w, &h, &comp, 0 ) );
+    *data = static_cast<GXUByte*> ( stbi_load_from_memory ( static_cast<const stbi_uc*> ( content ), static_cast<int> ( len ), &w, &h, &comp, 0 ) );
     file.Close ();
 
     if ( !( *data ) )

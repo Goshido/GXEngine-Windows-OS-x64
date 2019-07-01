@@ -77,11 +77,11 @@ GXBoneFinder::GXBoneFinder ( const GXAnimationInfo &animInfo )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXBoneFinder" )
     GXAVLTree ( &GXBoneFinderNode::Compare, GX_FALSE )
 {
-    _cacheFriendlyNodes = static_cast<GXBoneFinderNode*> ( Malloc ( sizeof ( GXBoneFinderNode ) * animInfo.totalBones ) );
+    _cacheFriendlyNodes = static_cast<GXBoneFinderNode*> ( Malloc ( sizeof ( GXBoneFinderNode ) * animInfo._totalBones ) );
 
-    for ( GXUShort i = 0u; i < animInfo.totalBones; ++i )
+    for ( GXUShort i = 0u; i < animInfo._totalBones; ++i )
     {
-        ::new ( _cacheFriendlyNodes + i ) GXBoneFinderNode ( animInfo.boneNames + i * GX_BONE_NAME_SIZE, i );
+        ::new ( _cacheFriendlyNodes + i ) GXBoneFinderNode ( animInfo._boneNames + i * GX_BONE_NAME_SIZE, i );
         Add ( *( _cacheFriendlyNodes + i ) );
     }
 }
@@ -130,26 +130,26 @@ GXBool GXAnimationSolverPlayer::GetBoneJoint ( GXBoneJoint &joint, const GXUTF8*
 
     if ( boneIndex == GX_UNKNOWN_BONE_INDEX ) return GX_FALSE;
 
-    GXUInt doneFrame = static_cast<GXUInt> ( _animPos * _animationInfo->totalFrames );
+    GXUInt doneFrame = static_cast<GXUInt> ( _animPos * _animationInfo->_totalFrames );
 
-    if ( doneFrame >= _animationInfo->totalFrames )
-        doneFrame = _animationInfo->totalFrames - 1;
+    if ( doneFrame >= _animationInfo->_totalFrames )
+        doneFrame = _animationInfo->_totalFrames - 1;
 
     GXUInt nextFrame = doneFrame + 1;
 
-    if ( nextFrame >= _animationInfo->totalFrames )
+    if ( nextFrame >= _animationInfo->_totalFrames )
         nextFrame = 0;
 
-    const GXBoneJoint* doneJoint = _animationInfo->keys + doneFrame * _animationInfo->totalBones + boneIndex;
-    const GXBoneJoint* nextJoint = _animationInfo->keys + nextFrame * _animationInfo->totalBones + boneIndex;
+    const GXBoneJoint* doneJoint = _animationInfo->_keys + doneFrame * _animationInfo->_totalBones + boneIndex;
+    const GXBoneJoint* nextJoint = _animationInfo->_keys + nextFrame * _animationInfo->_totalBones + boneIndex;
 
-    GXFloat alpha = _frameInterpolationFactor * _animationInfo->fps;
+    GXFloat alpha = _frameInterpolationFactor * _animationInfo->_fps;
 
-    joint.location.LinearInterpolation ( doneJoint->location, nextJoint->location, alpha );
-    joint.rotation.SphericalLinearInterpolation ( doneJoint->rotation, nextJoint->rotation, alpha );
+    joint._location.LinearInterpolation ( doneJoint->_location, nextJoint->_location, alpha );
+    joint._rotation.SphericalLinearInterpolation ( doneJoint->_rotation, nextJoint->_rotation, alpha );
 
     if ( _isNormalize )
-        joint.rotation.Normalize ();
+        joint._rotation.Normalize ();
 
     return GX_TRUE;
 }
@@ -203,9 +203,9 @@ GXVoid GXAnimationSolverPlayer::SetAnimationSequence ( const GXAnimationInfo* an
 
     _animationInfo = animData;
 
-    _frameInterval = 1.0f / animData->fps;
+    _frameInterval = 1.0f / animData->_fps;
     _frameInterpolationFactor = 0.0f;
-    GXFloat totalTime = animData->totalFrames * _frameInterval;
+    GXFloat totalTime = animData->_totalFrames * _frameInterval;
     _deltaToPartFactor = 1.0f / totalTime;
 }
 
