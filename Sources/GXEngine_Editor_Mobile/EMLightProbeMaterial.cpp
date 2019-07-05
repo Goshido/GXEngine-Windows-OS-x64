@@ -69,12 +69,12 @@ GXVoid EMLightProbeMaterial::Bind ( const GXTransform& /*transform*/ )
 	const GXMat4& viewerModelMatrix = camera->GetCurrentFrameModelMatrix ();
 	GXVec3 viewerLocationWorld;
 	viewerModelMatrix.GetW ( viewerLocationWorld );
-	glUniform3fv ( viewerLocationWorldLocation, 1, viewerLocationWorld.data );
+	glUniform3fv ( viewerLocationWorldLocation, 1, viewerLocationWorld._data );
 	glUniform1f ( prefilteredEnvironmentMapLODsLocation, static_cast<GXFloat> ( prefilteredEnvironmentMapTexture->GetLevelOfDetailNumber () ) );
 
 	GXMat3 inverseViewMatrix ( viewerModelMatrix );
-	glUniformMatrix3fv ( inverseViewMatrixLocation, 1, GL_FALSE, inverseViewMatrix.data );
-	glUniformMatrix4fv ( inverseViewProjectionMatrixLocation, 1, GL_FALSE, camera->GetCurrentFrameInverseViewProjectionMatrix ().data );
+	glUniformMatrix3fv ( inverseViewMatrixLocation, 1, GL_FALSE, inverseViewMatrix._data );
+	glUniformMatrix4fv ( inverseViewProjectionMatrixLocation, 1, GL_FALSE, camera->GetCurrentFrameInverseViewProjectionMatrix ()._data );
 
 	diffuseIrradianceTexture->Bind ( DIFFUSE_IRRADIANCE_SLOT );
 	diffuseIrradianceSampler.Bind ( DIFFUSE_IRRADIANCE_SLOT );

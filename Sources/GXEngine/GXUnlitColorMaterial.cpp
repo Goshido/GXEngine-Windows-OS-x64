@@ -47,8 +47,8 @@ GXVoid GXUnlitColorMaterial::Bind ( const GXTransform &transform )
     GXCamera* activeCamera = GXCamera::GetActiveCamera ();
     GXMat4 mod_view_proj_mat;
     mod_view_proj_mat.Multiply ( transform.GetCurrentFrameModelMatrix (), activeCamera->GetCurrentFrameViewProjectionMatrix () );
-    glUniformMatrix4fv ( _mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.data );
-    glUniform4fv ( _colorLocation, 1, _color.data );
+    glUniformMatrix4fv ( _mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat._data );
+    glUniform4fv ( _colorLocation, 1, _color._data );
 }
 
 GXVoid GXUnlitColorMaterial::Unbind ()

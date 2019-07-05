@@ -455,8 +455,8 @@ GXUIListBoxItem* GXUIListBox::FindItem ( const GXVec2 &mousePosition )
     for ( GXUInt i = 0u; i < _totalItems; ++i )
     {
         GXAABB itemBounds;
-        itemBounds.AddVertex ( _boundsWorld.min.GetX (), _boundsWorld.max.GetY () + offset - _itemHeight, _boundsWorld.min.GetZ () );
-        itemBounds.AddVertex ( _boundsWorld.max.GetX (), _boundsWorld.max.GetY () + offset, _boundsWorld.max.GetZ () );
+        itemBounds.AddVertex ( _boundsWorld._min.GetX (), _boundsWorld._max.GetY () + offset - _itemHeight, _boundsWorld._min.GetZ () );
+        itemBounds.AddVertex ( _boundsWorld._max.GetX (), _boundsWorld._max.GetY () + offset, _boundsWorld._max.GetZ () );
 
         if ( itemBounds.IsOverlaped ( mousePosition.GetX (), mousePosition.GetY (), 0.0f ) )
              return p;

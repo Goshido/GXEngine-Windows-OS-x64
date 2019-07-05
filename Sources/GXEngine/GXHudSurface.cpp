@@ -153,22 +153,22 @@ GXVoid GXGlyphRenderable::UpdateGeometry ( const GXVec2 &min, const GXVec2 &max 
     static GXFloat buffer[ 30u ];
 
     buffer[ 0u ] = 0.0f;                buffer[ 1u ] = 1.0f;                buffer[ 2u ] = 0.0f;
-    buffer[ 3u ] = min.data[ 0u ];      buffer[ 4u ] = max.data[ 1u ];
+    buffer[ 3u ] = min._data[ 0u ];      buffer[ 4u ] = max._data[ 1u ];
 
     buffer[ 5u ] = 1.0f;                buffer[ 6u ] = 0.0f;                buffer[ 7u ] = 0.0f;
-    buffer[ 8u ] = max.data[ 0u ];      buffer[ 9u ] = min.data[ 1u ];
+    buffer[ 8u ] = max._data[ 0u ];      buffer[ 9u ] = min._data[ 1u ];
 
     buffer[ 10u ] = 0.0f;               buffer[ 11u ] = 0.0f;               buffer[ 12u ] = 0.0f;
-    buffer[ 13u ] = min.data[ 0u ];     buffer[ 14u ] = min.data[ 1u ];
+    buffer[ 13u ] = min._data[ 0u ];     buffer[ 14u ] = min._data[ 1u ];
 
     buffer[ 15u ] = 0.0f;               buffer[ 16u ] = 1.0f;               buffer[ 17u ] = 0.0f;
-    buffer[ 18u ] = min.data[ 0u ];     buffer[ 19u ] = max.data[ 1u ];
+    buffer[ 18u ] = min._data[ 0u ];     buffer[ 19u ] = max._data[ 1u ];
 
     buffer[ 20u ] = 1.0f;               buffer[ 21u ] = 1.0f;               buffer[ 22u ] = 0.0f;
-    buffer[ 23u ] = max.data[ 0u ];     buffer[ 24u ] = max.data[ 1u ];
+    buffer[ 23u ] = max._data[ 0u ];     buffer[ 24u ] = max._data[ 1u ];
 
     buffer[ 25u ] = 1.0f;               buffer[ 26u ] = 0.0f;               buffer[ 27u ] = 0.0f;
-    buffer[ 28u ] = max.data[ 0u ];     buffer[ 29u ] = min.data[ 1u ];
+    buffer[ 28u ] = max._data[ 0u ];     buffer[ 29u ] = min._data[ 1u ];
 
     _mesh.FillVertexBuffer ( buffer, 30u * sizeof ( GXFloat ), GL_DYNAMIC_DRAW );
 }
@@ -260,8 +260,8 @@ GXVoid GXLineRenderable::Render ()
 GXVoid GXLineRenderable::UpdateGeometry ( const GXVec2 &start, const GXVec2 &end )
 {
     static GXFloat buffer[ 6u ];
-    buffer[ 0u ] = start.data[ 0u ];    buffer[ 1u ] = start.data[ 1u ];    buffer[ 2u ] = RENDER_Z;
-    buffer[ 3u ] = end.data[ 0u ];      buffer[ 4u ] = end.data[ 1u ];      buffer[ 5u ] = RENDER_Z;
+    buffer[ 0u ] = start._data[ 0u ];    buffer[ 1u ] = start._data[ 1u ];    buffer[ 2u ] = RENDER_Z;
+    buffer[ 3u ] = end._data[ 0u ];      buffer[ 4u ] = end._data[ 1u ];      buffer[ 5u ] = RENDER_Z;
 
     _mesh.FillVertexBuffer ( buffer, 6u * sizeof ( GXFloat ), GL_DYNAMIC_DRAW );
 }

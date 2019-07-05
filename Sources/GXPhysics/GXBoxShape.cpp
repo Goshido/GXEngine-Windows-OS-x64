@@ -32,13 +32,13 @@ GXVoid GXBoxShape::CalculateInertiaTensor ( GXFloat mass )
 	GXFloat hh = height * height;
 	GXFloat dd = depth * depth;
 
-	inertiaTensor.m[ 0 ][ 0 ] = factor * ( hh + dd );
-	inertiaTensor.m[ 1 ][ 1 ] = factor * ( ww + dd );
-	inertiaTensor.m[ 2 ][ 2 ] = factor * ( ww + hh );
+	inertiaTensor._m[ 0 ][ 0 ] = factor * ( hh + dd );
+	inertiaTensor._m[ 1 ][ 1 ] = factor * ( ww + dd );
+	inertiaTensor._m[ 2 ][ 2 ] = factor * ( ww + hh );
 
-	inertiaTensor.m[ 0 ][ 1 ] = inertiaTensor.m[ 0 ][ 2 ] = 0.0f;
-	inertiaTensor.m[ 1 ][ 0 ] = inertiaTensor.m[ 1 ][ 2 ] = 0.0f;
-	inertiaTensor.m[ 2 ][ 0 ] = inertiaTensor.m[ 2 ][ 1 ] = 0.0f;
+	inertiaTensor._m[ 0 ][ 1 ] = inertiaTensor._m[ 0 ][ 2 ] = 0.0f;
+	inertiaTensor._m[ 1 ][ 0 ] = inertiaTensor._m[ 1 ][ 2 ] = 0.0f;
+	inertiaTensor._m[ 2 ][ 0 ] = inertiaTensor._m[ 2 ][ 1 ] = 0.0f;
 }
 
 GXVoid GXBoxShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const

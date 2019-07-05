@@ -786,11 +786,11 @@ GXBool GXCollisionDetector::RunGJK ( GXSimplex &simplex, GXUInt &usedIterations,
                 {
                     case eGXPlaneClassifyVertex::On:
                     case eGXPlaneClassifyVertex::InFront:
-                        direction.Init ( simplexPlane.a, simplexPlane.b, simplexPlane.c );
+                        direction.Init ( simplexPlane._a, simplexPlane._b, simplexPlane._c );
                     break;
 
                     case eGXPlaneClassifyVertex::Behind:
-                        direction.Init ( -simplexPlane.a, -simplexPlane.b, -simplexPlane.c );
+                        direction.Init ( -simplexPlane._a, -simplexPlane._b, -simplexPlane._c );
                     break;
 
                     default:
@@ -811,7 +811,7 @@ GXBool GXCollisionDetector::RunGJK ( GXSimplex &simplex, GXUInt &usedIterations,
 
                     if ( simplexPlane.ClassifyVertex ( origin ) != eGXPlaneClassifyVertex::Behind ) continue;
 
-                    direction.Init ( -simplexPlane.a, -simplexPlane.b, -simplexPlane.c );
+                    direction.Init ( -simplexPlane._a, -simplexPlane._b, -simplexPlane._c );
 
                     GXSupportPoint a = simplex.supportPoints[ simplex.faces[ i ].pointA ];
                     GXSupportPoint b = simplex.supportPoints[ simplex.faces[ i ].pointB ];
@@ -862,7 +862,7 @@ GXBool GXCollisionDetector::RunEPA ( GXVec3 &contactNormal, GXFloat &contactPene
     GXFace& alphaFace = simplex.faces[ 0 ];
     GXPlane plane;
     plane.From ( supportPointArray[ alphaFace.pointA ].difference, supportPointArray[ alphaFace.pointB ].difference, supportPointArray[ alphaFace.pointC ].difference );
-    alphaFace.normal.Init ( plane.a, plane.b, plane.c );
+    alphaFace.normal.Init ( plane._a, plane._b, plane._c );
     alphaFace.next = INVALID_INDEX;
     alphaFace.prev = INVALID_INDEX;
     GXUInt lastFaceIndex = 0u;
@@ -873,7 +873,7 @@ GXBool GXCollisionDetector::RunEPA ( GXVec3 &contactNormal, GXFloat &contactPene
     {
         GXFace& bettaFace = simplex.faces[ i ];
         plane.From ( supportPointArray[ bettaFace.pointA ].difference, supportPointArray[ bettaFace.pointB ].difference, supportPointArray[ bettaFace.pointC ].difference );
-        bettaFace.normal.Init ( plane.a, plane.b, plane.c );
+        bettaFace.normal.Init ( plane._a, plane._b, plane._c );
         bettaFace.next = INVALID_INDEX;
         bettaFace.prev = lastFaceIndex;
         lastFaceIndex = totalFaces;
@@ -992,7 +992,7 @@ GXBool GXCollisionDetector::RunEPA ( GXVec3 &contactNormal, GXFloat &contactPene
             const GXEdge& edge = edgeArray[ i ];
 
             plane.From ( supportPointArray[ newSupportPointIndex ].difference, supportPointArray[ edge.startPoint ].difference, supportPointArray[ edge.endPoint ].difference );
-            GXFace omegaFace ( newSupportPointIndex, edge.startPoint, edge.endPoint, GXVec3 ( plane.a, plane.b, plane.c ) );
+            GXFace omegaFace ( newSupportPointIndex, edge.startPoint, edge.endPoint, GXVec3 ( plane._a, plane._b, plane._c ) );
 
             if ( plane.ClassifyVertex ( origin ) == eGXPlaneClassifyVertex::Behind )
                 omegaFace.ChangeOrder ();
@@ -1290,10 +1290,10 @@ GXVoid GXCollisionDetector::GetIntersectionGeometryCoordinates ( GXVec3* out, co
 {
     for ( GXUInt i = 0u; i < totalIntersectionPointNumber; ++i )
     {
-        out[ i ].Multiply ( xAxis, planarIntersectionGeometryArray[ i ].data[ 0 ] );
+        out[ i ].Multiply ( xAxis, planarIntersectionGeometryArray[ i ]._data[ 0 ] );
 
         GXVec3 alpha;
-        alpha.Multiply ( yAxis, planarIntersectionGeometryArray[ i ].data[ 1 ] );
+        alpha.Multiply ( yAxis, planarIntersectionGeometryArray[ i ]._data[ 1 ] );
 
         out[ i ].Sum ( out[ i ], alpha );
     }
@@ -1329,16 +1329,16 @@ GXVoid GXCollisionDetector::UpdateDeviationAxes ()
 GXVoid GXCollisionDetector::UpdateDebugData ( const GXVec2* planarIntersectionGeometryArray )
 {
     for ( GXUInt i = 0u; i < totalShapeAContactGeometryPoints; ++i )
-        shapeAPlanarContactGeometryDebug[ i ].Init ( shapeAPlanarContactGeometry[ i ].data[ 0 ], shapeAPlanarContactGeometry[ i ].data[ 1 ], 0.0f );
+        shapeAPlanarContactGeometryDebug[ i ].Init ( shapeAPlanarContactGeometry[ i ]._data[ 0 ], shapeAPlanarContactGeometry[ i ]._data[ 1 ], 0.0f );
 
     for ( GXUInt i = 0u; i < totalShapeBContactGeometryPoints; ++i )
-        shapeBPlanarContactGeometryDebug[ i ].Init ( shapeBPlanarContactGeometry[ i ].data[ 0 ], shapeBPlanarContactGeometry[ i ].data[ 1 ], 0.0f );
+        shapeBPlanarContactGeometryDebug[ i ].Init ( shapeBPlanarContactGeometry[ i ]._data[ 0 ], shapeBPlanarContactGeometry[ i ]._data[ 1 ], 0.0f );
 
     if ( !planarIntersectionGeometryArray ) return;
 
     for ( GXUInt i = 0u; i < totalIntersectionPoints; ++i )
     {
-        GXVec3 v ( planarIntersectionGeometryArray[ i ].data[ 0 ], planarIntersectionGeometryArray[ i ].data[ 1 ], 0.0f );
+        GXVec3 v ( planarIntersectionGeometryArray[ i ]._data[ 0 ], planarIntersectionGeometryArray[ i ]._data[ 1 ], 0.0f );
         planarIntersectionGeometry.SetValue ( i, &v );
     }
 }

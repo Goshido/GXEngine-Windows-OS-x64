@@ -207,7 +207,7 @@ GXVoid EMUIEditBoxRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GX
 
     GXVec3 location;
     surface->GetLocation ( location );
-    surface->SetLocation ( x, y, location.data[ 2 ] );
+    surface->SetLocation ( x, y, location._data[ 2 ] );
 }
 
 GXVoid EMUIEditBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -217,7 +217,7 @@ GXVoid EMUIEditBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
 
     GXVec3 location;
     surface->GetLocation ( location );
-    surface->SetLocation ( x, y, location.data[ 2 ] );
+    surface->SetLocation ( x, y, location._data[ 2 ] );
 }
 
 //---------------------------------------------------------------------------------------------------------------------

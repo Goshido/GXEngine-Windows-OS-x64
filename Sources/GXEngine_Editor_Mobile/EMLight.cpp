@@ -80,18 +80,18 @@ eEMLightEmitterType EMLightEmitter::GetType () const
 
 GXVoid EMLightEmitter::GetBaseColor ( GXUByte &red, GXUByte &green, GXUByte &blue ) const
 {
-	red = static_cast<GXUByte> ( baseColor.data[ 0 ] * 255.0f );
-	green = static_cast<GXUByte> ( baseColor.data[ 1 ] * 255.0f );
-	blue = static_cast<GXUByte> ( baseColor.data[ 2 ] * 255.0f );
+	red = static_cast<GXUByte> ( baseColor._data[ 0 ] * 255.0f );
+	green = static_cast<GXUByte> ( baseColor._data[ 1 ] * 255.0f );
+	blue = static_cast<GXUByte> ( baseColor._data[ 2 ] * 255.0f );
 }
 
 GXVoid EMLightEmitter::SetBaseColor ( GXUByte red, GXUByte green, GXUByte blue )
 {
 	baseColor.From ( red, green, blue, static_cast<GXUByte> ( DEFAULT_COLOR_ALPHA ) );
 
-	color.data[ 0 ] = ( baseColor.data[ 0 ] * intensity );
-	color.data[ 1 ] = ( baseColor.data[ 1 ] * intensity );
-	color.data[ 2 ] = ( baseColor.data[ 2 ] * intensity );
+	color._data[ 0 ] = ( baseColor._data[ 0 ] * intensity );
+	color._data[ 1 ] = ( baseColor._data[ 1 ] * intensity );
+	color._data[ 2 ] = ( baseColor._data[ 2 ] * intensity );
 }
 
 GXFloat EMLightEmitter::GetIntensity () const
@@ -103,9 +103,9 @@ GXVoid EMLightEmitter::SetIntensity ( GXFloat newIntensity )
 {
 	intensity = newIntensity;
 
-	color.data[ 0 ] = ( baseColor.data[ 0 ] * intensity );
-	color.data[ 1 ] = ( baseColor.data[ 1 ] * intensity );
-	color.data[ 2 ] = ( baseColor.data[ 2 ] * intensity );
+	color._data[ 0 ] = ( baseColor._data[ 0 ] * intensity );
+	color._data[ 1 ] = ( baseColor._data[ 1 ] * intensity );
+	color._data[ 2 ] = ( baseColor._data[ 2 ] * intensity );
 }
 
 const GXColorRGB& EMLightEmitter::GetColor () const
@@ -138,19 +138,19 @@ eEMLightEmitterType EMBulp::GetType () const
 
 GXVoid EMBulp::SetInfluenceDistance ( GXFloat newDistance )
 {
-	modelMatrix.m[ 0 ][ 0 ] = modelMatrix.m[ 1 ][ 1 ] = modelMatrix.m[ 2 ][ 2 ] = newDistance;
+	modelMatrix._m[ 0 ][ 0 ] = modelMatrix._m[ 1 ][ 1 ] = modelMatrix._m[ 2 ][ 2 ] = newDistance;
 }
 
 GXFloat EMBulp::GetInfluenceDistance ()
 {
-	return modelMatrix.m[ 1 ][ 1 ];
+	return modelMatrix._m[ 1 ][ 1 ];
 }
 
 GXVoid EMBulp::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 {
-	modelMatrix.m[ 3 ][ 0 ] = x;
-	modelMatrix.m[ 3 ][ 1 ] = y;
-	modelMatrix.m[ 3 ][ 2 ] = z;
+	modelMatrix._m[ 3 ][ 0 ] = x;
+	modelMatrix._m[ 3 ][ 1 ] = y;
+	modelMatrix._m[ 3 ][ 2 ] = z;
 }
 
 GXVoid EMBulp::SetLocation ( const GXVec3 &location )
@@ -174,9 +174,9 @@ EMSpotlight::EMSpotlight ():
 	coneAngle ( GXDegToRad ( DEFAULT_SPOT_LIGHT_CONE_ANGLE ) ),
 	compressionXY ( DEFAULT_SPOT_LIGHT_COMPRESSION_XY )
 {
-	modelMatrix.m[ 3 ][ 0 ] = DEFAULT_SPOT_LIGHT_LOCATION_X;
-	modelMatrix.m[ 3 ][ 1 ] = DEFAULT_SPOT_LIGHT_LOCATION_Y;
-	modelMatrix.m[ 3 ][ 2 ] = DEFAULT_SPOT_LIGHT_LOCATION_Z;
+	modelMatrix._m[ 3 ][ 0 ] = DEFAULT_SPOT_LIGHT_LOCATION_X;
+	modelMatrix._m[ 3 ][ 1 ] = DEFAULT_SPOT_LIGHT_LOCATION_Y;
+	modelMatrix._m[ 3 ][ 2 ] = DEFAULT_SPOT_LIGHT_LOCATION_Z;
 
 	rotationMatrix.RotationXYZ ( DEFAULT_SPOT_LIGHT_ROTATION_PITCH, DEFAULT_SPOT_LIGHT_ROTATION_YAW, DEFAULT_SPOT_LIGHT_ROTATION_ROLL );
 
@@ -232,9 +232,9 @@ GXVoid EMSpotlight::GetLocation ( GXVec3 &out ) const
 
 GXVoid EMSpotlight::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 {
-	modelMatrix.m[ 3 ][ 0 ] = x;
-	modelMatrix.m[ 3 ][ 1 ] = y;
-	modelMatrix.m[ 3 ][ 2 ] = z;
+	modelMatrix._m[ 3 ][ 0 ] = x;
+	modelMatrix._m[ 3 ][ 1 ] = y;
+	modelMatrix._m[ 3 ][ 2 ] = z;
 }
 
 GXVoid EMSpotlight::SetLocation ( const GXVec3 &location )
@@ -287,25 +287,25 @@ GXVoid EMDirectedLight::SetAmbientBaseColor ( GXUByte red, GXUByte green, GXUByt
 {
 	ambientBase.From ( red, green, blue, static_cast<GXUByte> ( DEFAULT_AMBIENT_COLOR_ALPHA ) );
 
-	ambientColor.data[ 0 ] = ambientBase.data[ 0 ] * ambientIntensity;
-	ambientColor.data[ 1 ] = ambientBase.data[ 1 ] * ambientIntensity;
-	ambientColor.data[ 2 ] = ambientBase.data[ 2 ] * ambientIntensity;
+	ambientColor._data[ 0 ] = ambientBase._data[ 0 ] * ambientIntensity;
+	ambientColor._data[ 1 ] = ambientBase._data[ 1 ] * ambientIntensity;
+	ambientColor._data[ 2 ] = ambientBase._data[ 2 ] * ambientIntensity;
 }
 
 GXVoid EMDirectedLight::SetAmbientIntensity ( GXFloat newIntensity )
 {
 	ambientIntensity = newIntensity;
 
-	ambientColor.data[ 0 ] = ambientBase.data[ 0 ] * ambientIntensity;
-	ambientColor.data[ 1 ] = ambientBase.data[ 1 ] * ambientIntensity;
-	ambientColor.data[ 2 ] = ambientBase.data[ 2 ] * ambientIntensity;
+	ambientColor._data[ 0 ] = ambientBase._data[ 0 ] * ambientIntensity;
+	ambientColor._data[ 1 ] = ambientBase._data[ 1 ] * ambientIntensity;
+	ambientColor._data[ 2 ] = ambientBase._data[ 2 ] * ambientIntensity;
 }
 
 GXVoid EMDirectedLight::GetAmbientBaseColor ( GXUByte &red, GXUByte &green, GXUByte &blue )
 {
-	red = static_cast<GXUByte> ( ambientBase.data[ 0 ] * 255.0f );
-	green = static_cast<GXUByte> ( ambientBase.data[ 1 ] * 255.0f );
-	blue = static_cast<GXUByte> ( ambientBase.data[ 2 ] * 255.0f );
+	red = static_cast<GXUByte> ( ambientBase._data[ 0 ] * 255.0f );
+	green = static_cast<GXUByte> ( ambientBase._data[ 1 ] * 255.0f );
+	blue = static_cast<GXUByte> ( ambientBase._data[ 2 ] * 255.0f );
 }
 
 const GXColorRGB& EMDirectedLight::GetAmbientColor ()

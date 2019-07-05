@@ -44,7 +44,7 @@ GXVoid GXTransform::SetLocation ( const GXVec3 &loc )
 
 GXVoid GXTransform::SetRotation ( const GXEuler &rotation  )
 {
-    SetRotation ( rotation.pitchRadians, rotation.yawRadians, rotation.rollRadians );
+    SetRotation ( rotation._pitchRadians, rotation._yawRadians, rotation._rollRadians );
 }
 
 GXVoid GXTransform::SetRotation ( const GXMat4 &rot )
@@ -55,15 +55,15 @@ GXVoid GXTransform::SetRotation ( const GXMat4 &rot )
     GXVec3 tmpB;
 
     _currentFrameRotationMatrix.GetX ( tmpA );
-    tmpB.Multiply ( tmpA, _currentFrameScale.data[ 0u ] );
+    tmpB.Multiply ( tmpA, _currentFrameScale._data[ 0u ] );
     _currentFrameModelMatrix.SetX ( tmpB );
 
     _currentFrameRotationMatrix.GetY ( tmpA );
-    tmpB.Multiply ( tmpA, _currentFrameScale.data[ 1u ] );
+    tmpB.Multiply ( tmpA, _currentFrameScale._data[ 1u ] );
     _currentFrameModelMatrix.SetY ( tmpB );
 
     _currentFrameRotationMatrix.GetZ ( tmpA );
-    tmpB.Multiply ( tmpA, _currentFrameScale.data[ 2u ] );
+    tmpB.Multiply ( tmpA, _currentFrameScale._data[ 2u ] );
     _currentFrameModelMatrix.SetZ ( tmpB );
 
     TransformUpdated ();
@@ -77,15 +77,15 @@ GXVoid GXTransform::SetRotation ( GXFloat pitchRadians, GXFloat yawRadians, GXFl
     GXVec3 tmpB;
 
     _currentFrameRotationMatrix.GetX ( tmpA );
-    tmpB.Multiply ( tmpA, _currentFrameScale.data[ 0u ] );
+    tmpB.Multiply ( tmpA, _currentFrameScale._data[ 0u ] );
     _currentFrameModelMatrix.SetX ( tmpB );
 
     _currentFrameRotationMatrix.GetY ( tmpA );
-    tmpB.Multiply ( tmpA, _currentFrameScale.data[ 1u ] );
+    tmpB.Multiply ( tmpA, _currentFrameScale._data[ 1u ] );
     _currentFrameModelMatrix.SetY ( tmpB );
 
     _currentFrameRotationMatrix.GetZ ( tmpA );
-    tmpB.Multiply ( tmpA, _currentFrameScale.data[ 2u ] );
+    tmpB.Multiply ( tmpA, _currentFrameScale._data[ 2u ] );
     _currentFrameModelMatrix.SetZ ( tmpB );
 
     TransformUpdated ();
@@ -99,15 +99,15 @@ GXVoid GXTransform::SetRotation ( const GXQuat &quaternion )
     GXVec3 tmpB;
 
     _currentFrameRotationMatrix.GetX ( tmpA );
-    tmpB.Multiply ( tmpA, _currentFrameScale.data[ 0u ] );
+    tmpB.Multiply ( tmpA, _currentFrameScale._data[ 0u ] );
     _currentFrameModelMatrix.SetX ( tmpB );
 
     _currentFrameRotationMatrix.GetY ( tmpA );
-    tmpB.Multiply ( tmpA, _currentFrameScale.data[ 1u ] );
+    tmpB.Multiply ( tmpA, _currentFrameScale._data[ 1u ] );
     _currentFrameModelMatrix.SetY ( tmpB );
 
     _currentFrameRotationMatrix.GetZ ( tmpA );
-    tmpB.Multiply ( tmpA, _currentFrameScale.data[ 2u ] );
+    tmpB.Multiply ( tmpA, _currentFrameScale._data[ 2u ] );
     _currentFrameModelMatrix.SetZ ( tmpB );
 
     TransformUpdated ();
@@ -121,15 +121,15 @@ GXVoid GXTransform::SetScale ( GXFloat x, GXFloat y, GXFloat z )
     GXVec3 tmpB;
 
     _currentFrameRotationMatrix.GetX ( tmpA );
-    tmpB.Multiply ( tmpA, _currentFrameScale.data[ 0u ] );
+    tmpB.Multiply ( tmpA, _currentFrameScale._data[ 0u ] );
     _currentFrameModelMatrix.SetX ( tmpB );
 
     _currentFrameRotationMatrix.GetY ( tmpA );
-    tmpB.Multiply ( tmpA, _currentFrameScale.data[ 1u ] );
+    tmpB.Multiply ( tmpA, _currentFrameScale._data[ 1u ] );
     _currentFrameModelMatrix.SetY ( tmpB );
 
     _currentFrameRotationMatrix.GetZ ( tmpA );
-    tmpB.Multiply ( tmpA, _currentFrameScale.data[ 2u ] );
+    tmpB.Multiply ( tmpA, _currentFrameScale._data[ 2u ] );
     _currentFrameModelMatrix.SetZ ( tmpB );
 
     TransformUpdated ();
@@ -143,15 +143,15 @@ GXVoid GXTransform::SetScale ( const GXVec3 &scale )
     GXVec3 tmpB;
 
     _currentFrameRotationMatrix.GetX ( tmpA );
-    tmpB.Multiply ( tmpA, _currentFrameScale.data[ 0u ] );
+    tmpB.Multiply ( tmpA, _currentFrameScale._data[ 0u ] );
     _currentFrameModelMatrix.SetX ( tmpB );
 
     _currentFrameRotationMatrix.GetY ( tmpA );
-    tmpB.Multiply ( tmpA, _currentFrameScale.data[ 1u ] );
+    tmpB.Multiply ( tmpA, _currentFrameScale._data[ 1u ] );
     _currentFrameModelMatrix.SetY ( tmpB );
 
     _currentFrameRotationMatrix.GetZ ( tmpA );
-    tmpB.Multiply ( tmpA, _currentFrameScale.data[ 2u ] );
+    tmpB.Multiply ( tmpA, _currentFrameScale._data[ 2u ] );
     _currentFrameModelMatrix.SetZ ( tmpB );
 
     TransformUpdated ();

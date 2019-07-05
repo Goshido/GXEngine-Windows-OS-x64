@@ -322,8 +322,8 @@ GXVoid GXWidget::UpdateBoundsWorld ( const GXAABB &boundsLocal )
     {
         const GXAABB& originWorld = _parent->GetBoundsWorld ();
         _boundsWorld.Empty ();
-        _boundsWorld.AddVertex ( originWorld.min.GetX () + _boundsLocal.min.GetX (), originWorld.min.GetY () + _boundsLocal.min.GetY (), originWorld.min.GetZ () );
-        _boundsWorld.AddVertex ( originWorld.min.GetX () + _boundsLocal.max.GetX (), originWorld.min.GetY () + _boundsLocal.max.GetY (), originWorld.max.GetZ () );
+        _boundsWorld.AddVertex ( originWorld._min.GetX () + _boundsLocal._min.GetX (), originWorld._min.GetY () + _boundsLocal._min.GetY (), originWorld._min.GetZ () );
+        _boundsWorld.AddVertex ( originWorld._min.GetX () + _boundsLocal._max.GetX (), originWorld._min.GetY () + _boundsLocal._max.GetY (), originWorld._max.GetZ () );
 
         return;
     }
@@ -445,8 +445,8 @@ GXVoid GXWidgetRenderer::OnUpdate ()
         GXVec3 center;
         boundsWorld.GetCenter ( center );
         GXRenderer& renderer = GXRenderer::GetInstance ();
-        center.data[ 0u ] -= 0.5f * renderer.GetWidth ();
-        center.data[ 1u ] -= 0.5f * renderer.GetHeight ();
+        center._data[ 0u ] -= 0.5f * renderer.GetWidth ();
+        center._data[ 1u ] -= 0.5f * renderer.GetHeight ();
 
         OnResized ( center.GetX (), center.GetY (), width, height );
         OnRefresh ();
@@ -463,8 +463,8 @@ GXVoid GXWidgetRenderer::OnUpdate ()
     GXVec3 center;
     widget->GetBoundsWorld ().GetCenter ( center );
     GXRenderer& renderer = GXRenderer::GetInstance ();
-    center.data[ 0u ] -= 0.5f * renderer.GetWidth ();
-    center.data[ 1u ] -= 0.5f * renderer.GetHeight ();
+    center._data[ 0u ] -= 0.5f * renderer.GetWidth ();
+    center._data[ 1u ] -= 0.5f * renderer.GetHeight ();
 
     OnMoved ( center.GetX (), center.GetY () );
 }
@@ -513,13 +513,13 @@ GXBool GXWidgetRenderer::IsMoved ()
 
     const GXAABB& bounds = widget->GetBoundsWorld ();
 
-    if ( fabs ( bounds.min.GetX () - oldBounds.min.GetX () ) >= GX_WIDGET_RENDERER_RESIZE_EPSILON )
+    if ( fabs ( bounds._min.GetX () - oldBounds._min.GetX () ) >= GX_WIDGET_RENDERER_RESIZE_EPSILON )
     {
         oldBounds = bounds;
         return GX_TRUE;
     }
 
-    if ( fabs ( bounds.min.GetY () - oldBounds.min.GetY () ) < GX_WIDGET_RENDERER_RESIZE_EPSILON ) return GX_FALSE;
+    if ( fabs ( bounds._min.GetY () - oldBounds._min.GetY () ) < GX_WIDGET_RENDERER_RESIZE_EPSILON ) return GX_FALSE;
 
     oldBounds = bounds;
     return GX_TRUE;

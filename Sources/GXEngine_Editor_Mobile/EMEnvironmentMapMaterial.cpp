@@ -119,9 +119,9 @@ GXVoid EMEnvironmentMapMaterial::Bind ( const GXTransform &transform )
 		velocityBlur.Multiply ( velocityBlur, halfSpreadVelocityMagnitudeImage / maximumMotionBlurSamples );
 	}
 
-	glUniformMatrix4fv ( modelViewProjectionMatrixLocation, 1, GL_FALSE, modelViewProjectionMatrix.data );
-	glUniform2fv ( inverseScreenResolutionLocation, 1, inverseScreenResolution.data );
-	glUniform2fv ( velocityBlurLocation, 1, velocityBlur.data );
+	glUniformMatrix4fv ( modelViewProjectionMatrixLocation, 1, GL_FALSE, modelViewProjectionMatrix._data );
+	glUniform2fv ( inverseScreenResolutionLocation, 1, inverseScreenResolution._data );
+	glUniform2fv ( velocityBlurLocation, 1, velocityBlur._data );
 
 	environmentTexture->Bind ( ENVIRONMENT_SLOT );
 	environmentSampler.Bind ( ENVIRONMENT_SLOT );
@@ -156,7 +156,7 @@ GXVoid EMEnvironmentMapMaterial::SetDepthTexture ( GXTexture2D &texture )
 GXVoid EMEnvironmentMapMaterial::SetScreenResolution ( GXUShort width, GXUShort height )
 {
 	screenResolution.Init ( static_cast<GXFloat> ( width ), static_cast<GXFloat> ( height ) );
-	inverseScreenResolution.Init ( 1.0f / screenResolution.data[ 0 ], 1.0f / screenResolution.data[ 1 ] );
+	inverseScreenResolution.Init ( 1.0f / screenResolution._data[ 0 ], 1.0f / screenResolution._data[ 1 ] );
 }
 
 GXVoid EMEnvironmentMapMaterial::SetDeltaTime ( GXFloat seconds )

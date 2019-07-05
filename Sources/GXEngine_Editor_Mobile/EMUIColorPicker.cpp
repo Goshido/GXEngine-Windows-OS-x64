@@ -286,7 +286,7 @@ GXVoid EMColorRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUSho
 
     GXVec3 location;
     surface->GetLocation ( location );
-    surface->SetLocation ( x, y, location.data[ 2 ] );
+    surface->SetLocation ( x, y, location._data[ 2 ] );
 
     UpdateCheckerTexture ();
 }
@@ -298,7 +298,7 @@ GXVoid EMColorRenderer::OnMoved ( GXFloat x, GXFloat y )
 
     GXVec3 location;
     surface->GetLocation ( location );
-    surface->SetLocation ( x, y, location.data[ 2 ] );
+    surface->SetLocation ( x, y, location._data[ 2 ] );
 }
 
 GXVoid EMColorRenderer::UpdateCheckerTexture ()
@@ -517,7 +517,7 @@ GXVoid EMColorSelectorRenderer::OnRefresh ()
     GXColorHSV borderColorHSVA ( colorHSVA.GetHue () + 180.0f, 100.0f, 100.0f, 100.0f );
 
     if ( borderColorHSVA.GetHue () > 360.0f )
-        borderColorHSVA.data[ 0 ] -= 360.0f;
+        borderColorHSVA._data[ 0 ] -= 360.0f;
 
     GXFloat borderSideFactor = floorf ( COLOR_SELECTOR_SAMPLE_BORDER_SIDE * gx_ui_Scale * 0.5f + 0.5f );
     colorCoordsSurface.Init ( floorf ( colorCoordsSurface.GetX () + 0.5f ), floorf ( colorCoordsSurface.GetY () + 0.5f ), colorCoordsSurface.GetZ () );
@@ -1370,17 +1370,17 @@ GXVoid GXCALL EMUIColorPicker::OnFinishEditing ( GXVoid* handler, GXUIEditBox& e
 
     if ( &editBox == colorPicker->h->GetWidget () )
     {
-        swscanf_s ( colorPicker->h->GetText (), L"%g", &( newCurrentColor.data[ 0 ] ) );
+        swscanf_s ( colorPicker->h->GetText (), L"%g", &( newCurrentColor._data[ 0 ] ) );
         colorPicker->UpdateCurrentColor ( newCurrentColor.GetHue (), newCurrentColor.GetSaturation (), newCurrentColor.GetValue (), newCurrentColor.GetAlpha () );
     }
     else if ( &editBox == colorPicker->s->GetWidget () )
     {
-        swscanf_s ( colorPicker->s->GetText (), L"%g", &( newCurrentColor.data[ 1 ] ) );
+        swscanf_s ( colorPicker->s->GetText (), L"%g", &( newCurrentColor._data[ 1 ] ) );
         colorPicker->UpdateCurrentColor ( newCurrentColor.GetHue (), newCurrentColor.GetSaturation (), newCurrentColor.GetValue (), newCurrentColor.GetAlpha () );
     }
     else if ( &editBox == colorPicker->v->GetWidget () )
     {
-        swscanf_s ( colorPicker->v->GetText (), L"%g", &( newCurrentColor.data[ 2 ] ) );
+        swscanf_s ( colorPicker->v->GetText (), L"%g", &( newCurrentColor._data[ 2 ] ) );
         colorPicker->UpdateCurrentColor ( newCurrentColor.GetHue (), newCurrentColor.GetSaturation (), newCurrentColor.GetValue (), newCurrentColor.GetAlpha () );
     }
     else if ( &editBox == colorPicker->r->GetWidget () || &editBox == colorPicker->g->GetWidget () || &editBox == colorPicker->b->GetWidget () || &editBox == colorPicker->transparency->GetWidget () )

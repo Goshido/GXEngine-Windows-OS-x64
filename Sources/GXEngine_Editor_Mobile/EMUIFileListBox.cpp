@@ -263,7 +263,7 @@ GXVoid EMUIFileListBoxRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width
 
     GXVec3 location;
     surface->GetLocation ( location );
-    surface->SetLocation ( x, y, location.data[ 2 ] );
+    surface->SetLocation ( x, y, location._data[ 2 ] );
 }
 
 GXVoid EMUIFileListBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -273,7 +273,7 @@ GXVoid EMUIFileListBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
 
     GXVec3 location;
     surface->GetLocation ( location );
-    surface->SetLocation ( x, y, location.data[ 2 ] );
+    surface->SetLocation ( x, y, location._data[ 2 ] );
 }
 
 //---------------------------------------------------------------------------------------------------------------------

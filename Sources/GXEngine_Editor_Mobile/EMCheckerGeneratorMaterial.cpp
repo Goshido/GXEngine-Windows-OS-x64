@@ -53,10 +53,10 @@ GXVoid EMCheckerGeneratorMaterial::Bind ( const GXTransform& /*transform*/ )
 {
 	glUseProgram ( _shaderProgram.GetProgram () );
 
-	glUniform4fv ( colorOneLocation, 1, colorOne.data );
-	glUniform4fv ( colorTwoLocation, 1, colorTwo.data );
-	glUniform2fv ( elementSizeLocation, 1, elementSize.data );
-	glUniform2fv ( doubleElementSizeLocation, 1, doubleElementSize.data );
+	glUniform4fv ( colorOneLocation, 1, colorOne._data );
+	glUniform4fv ( colorTwoLocation, 1, colorTwo._data );
+	glUniform2fv ( elementSizeLocation, 1, elementSize._data );
+	glUniform2fv ( doubleElementSizeLocation, 1, doubleElementSize._data );
 }
 
 GXVoid EMCheckerGeneratorMaterial::Unbind ()

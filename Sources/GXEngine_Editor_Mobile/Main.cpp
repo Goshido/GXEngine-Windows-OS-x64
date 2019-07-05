@@ -6,22 +6,24 @@
 
 int wmain ( int /*argc*/, LPWSTR /*commandline*/ )
 {
-	GXCore& core = GXCore::GetInstance ();
-	EMGame* game = new EMGame ();
-	core.Start ( *game );
+    constexpr GXVec2 pointOf77Degrees ( 0.22495f, 0.97437f );
 
-	delete &core;
-	return 0;
+    GXCore& core = GXCore::GetInstance ();
+    EMGame* game = new EMGame ();
+    core.Start ( *game );
+
+    delete &core;
+    return 0;
 }
 
 //----------------------------------------------------------------------------------
 
 int WINAPI wWinMain ( HINSTANCE /*hinst*/, HINSTANCE /*hprev*/, LPWSTR /*cmdLine*/, int /*mode*/ )
 {
-	GXCore& core = GXCore::GetInstance ();
-	EMGame* game = new EMGame ();
-	core.Start ( *game );
+    GXCore& core = GXCore::GetInstance ();
+    EMGame* game = new EMGame ();
+    core.Start ( *game );
 
-	delete &core;
-	return 0;
+    delete &core;
+    return 0;
 }

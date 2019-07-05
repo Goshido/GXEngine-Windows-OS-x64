@@ -37,7 +37,7 @@ GXVoid EMVertexColorMaterial::Bind ( const GXTransform &transform )
 	GXMat4 currentFrameModelViewProjectionMatrix;
 	currentFrameModelViewProjectionMatrix.Multiply ( transform.GetCurrentFrameModelMatrix (), GXCamera::GetActiveCamera ()->GetCurrentFrameViewProjectionMatrix () );
 
-	glUniformMatrix4fv ( currentFrameModelViewProjectionMatrixLocation, 1, GL_FALSE, currentFrameModelViewProjectionMatrix.data );
+	glUniformMatrix4fv ( currentFrameModelViewProjectionMatrixLocation, 1, GL_FALSE, currentFrameModelViewProjectionMatrix._data );
 }
 
 GXVoid EMVertexColorMaterial::Unbind ()

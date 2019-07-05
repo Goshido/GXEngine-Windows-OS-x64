@@ -562,7 +562,7 @@ GXVoid EMRenderer::ApplyToneMapping ( GXFloat deltaTime )
     glReadBuffer ( GL_COLOR_ATTACHMENT0 );
 
     GXVec3 luminanceTriplet;
-    glReadPixels ( 0, 0, 1, 1, GL_RGB, GL_FLOAT, luminanceTriplet.data );
+    glReadPixels ( 0, 0, 1, 1, GL_RGB, GL_FLOAT, luminanceTriplet._data );
 
     glFramebufferTexture ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0u, 0 );
     glReadBuffer ( GL_NONE );

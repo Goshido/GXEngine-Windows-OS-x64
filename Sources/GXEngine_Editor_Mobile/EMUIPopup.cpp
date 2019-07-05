@@ -200,7 +200,7 @@ GXVoid EMUIPopupRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUS
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
     surface = new GXHudSurface ( width, height );
 
-    surface->SetLocation ( x, y, location.data[ 2u ] );
+    surface->SetLocation ( x, y, location._data[ 2u ] );
 }
 
 GXVoid EMUIPopupRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -210,7 +210,7 @@ GXVoid EMUIPopupRenderer::OnMoved ( GXFloat x, GXFloat y )
 
     GXVec3 location;
     surface->GetLocation ( location );
-    surface->SetLocation ( x, y, location.data[ 2 ] );
+    surface->SetLocation ( x, y, location._data[ 2 ] );
 }
 
 //-------------------------------------------------------

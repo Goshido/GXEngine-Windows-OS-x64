@@ -80,13 +80,13 @@ GXVoid EMCookTorranceDirectedLightMaterial::Bind ( const GXTransform& /*transfor
 	glUseProgram ( _shaderProgram.GetProgram () );
 
 	const GXMat4& inverseProjectionMatrix = GXCamera::GetActiveCamera ()->GetCurrentFrameInverseProjectionMatrix ();
-	glUniformMatrix4fv ( inverseProjectionMatrixLocation, 1, GL_FALSE, inverseProjectionMatrix.data );
+	glUniformMatrix4fv ( inverseProjectionMatrixLocation, 1, GL_FALSE, inverseProjectionMatrix._data );
 
-	glUniform3fv ( hueLocation, 1, hue.data );
+	glUniform3fv ( hueLocation, 1, hue._data );
 	glUniform1f ( intensityLocation, intensity );
-	glUniform3fv ( hdrColorLocation, 1, hdrColor.data );
-	glUniform3fv ( ambientColorLocation, 1, ambientColor.data );
-	glUniform3fv ( toLightDirectionViewLocation, 1, toLightDirectionView.data );
+	glUniform3fv ( hdrColorLocation, 1, hdrColor._data );
+	glUniform3fv ( ambientColorLocation, 1, ambientColor._data );
+	glUniform3fv ( toLightDirectionViewLocation, 1, toLightDirectionView._data );
 
 	albedoTexture->Bind ( ALBEDO_SLOT );
 	sampler.Bind ( ALBEDO_SLOT );
@@ -160,17 +160,17 @@ GXVoid EMCookTorranceDirectedLightMaterial::SetLightDirectionView ( const GXVec3
 GXVoid EMCookTorranceDirectedLightMaterial::SetHue ( GXUByte red, GXUByte green, GXUByte blue )
 {
 	hue.From ( red, green, blue, ANY_ALPHA );
-	hdrColor.data[ 0 ] = hue.data[ 0 ] * intensity;
-	hdrColor.data[ 1 ] = hue.data[ 1 ] * intensity;
-	hdrColor.data[ 2 ] = hue.data[ 2 ] * intensity;
+	hdrColor._data[ 0 ] = hue._data[ 0 ] * intensity;
+	hdrColor._data[ 1 ] = hue._data[ 1 ] * intensity;
+	hdrColor._data[ 2 ] = hue._data[ 2 ] * intensity;
 }
 
 GXVoid EMCookTorranceDirectedLightMaterial::SetIntencity ( GXFloat intencity )
 {
 	this->intensity = intencity;
-	hdrColor.data[ 0 ] = hue.data[ 0 ] * intensity;
-	hdrColor.data[ 1 ] = hue.data[ 1 ] * intensity;
-	hdrColor.data[ 2 ] = hue.data[ 2 ] * intensity;
+	hdrColor._data[ 0 ] = hue._data[ 0 ] * intensity;
+	hdrColor._data[ 1 ] = hue._data[ 1 ] * intensity;
+	hdrColor._data[ 2 ] = hue._data[ 2 ] * intensity;
 }
 
 GXVoid EMCookTorranceDirectedLightMaterial::SetAmbientColor ( const GXColorRGB &color )

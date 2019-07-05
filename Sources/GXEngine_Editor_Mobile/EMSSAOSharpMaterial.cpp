@@ -74,13 +74,13 @@ GXVoid EMSSAOSharpMaterial::Bind ( const GXTransform& /*transform*/ )
     const GXMat4& projectionMatrix = camera->GetCurrentFrameProjectionMatrix ();
     const GXMat4& inverseProjectionMatrix = camera->GetCurrentFrameInverseProjectionMatrix ();
 
-    glUniformMatrix4fv ( projectionMatrixLocation, 1, GL_FALSE, projectionMatrix.data );
-    glUniformMatrix4fv ( inverseProjectionMatrixLocation, 1, GL_FALSE, inverseProjectionMatrix.data );
+    glUniformMatrix4fv ( projectionMatrixLocation, 1, GL_FALSE, projectionMatrix._data );
+    glUniformMatrix4fv ( inverseProjectionMatrixLocation, 1, GL_FALSE, inverseProjectionMatrix._data );
     glUniform3fv ( kernelLocation, EM_MAX_SSAO_SAMPLES, reinterpret_cast<const GLfloat*> ( kernel ) );
     glUniform1f ( checkRadiusLocation, checkRadius );
     glUniform1i ( samplesLocation, samples );
     glUniform1f ( inverseSamplesLocation, inverseSamples );
-    glUniform2fv ( noiseScaleLocation, 1, noiseScale.data );
+    glUniform2fv ( noiseScaleLocation, 1, noiseScale._data );
     glUniform1f ( maxDistanceLocation, maxDistance );
 
     depthTexture->Bind ( DEPTH_SLOT );
@@ -202,10 +202,10 @@ GXVoid EMSSAOSharpMaterial::SetNoiseTextureResolution ( GXUShort resolution )
         else
             v.Normalize ();
 
-        noiseData[ offset ] = static_cast<GXUByte> ( v.data[ 0 ] * 128.0f + 127.0f );
+        noiseData[ offset ] = static_cast<GXUByte> ( v._data[ 0 ] * 128.0f + 127.0f );
         ++offset;
 
-        noiseData[ offset ] = static_cast<GXUByte> ( v.data[ 1 ] * 128.0f + 127.0f );
+        noiseData[ offset ] = static_cast<GXUByte> ( v._data[ 1 ] * 128.0f + 127.0f );
         ++offset;
     }
 
@@ -217,8 +217,8 @@ GXVoid EMSSAOSharpMaterial::SetNoiseTextureResolution ( GXUShort resolution )
     GXRenderer& renderer = GXRenderer::GetInstance ();
     GXFloat inverseResolution = 1.0f / static_cast<GXFloat> ( resolution );
 
-    noiseScale.data[ 0u ] = renderer.GetWidth () * inverseResolution;
-    noiseScale.data[ 1u ] = renderer.GetHeight () * inverseResolution;
+    noiseScale._data[ 0u ] = renderer.GetWidth () * inverseResolution;
+    noiseScale._data[ 1u ] = renderer.GetHeight () * inverseResolution;
 }
 
 GXUShort EMSSAOSharpMaterial::GetNoiseTextureResolution () const

@@ -23,7 +23,7 @@ GXSoundMixer::~GXSoundMixer ()
 
 GXVoid GXSoundMixer::SetListenerVelocity ( const GXVec3 &velocity )
 {
-    GXAlListenerfv ( AL_VELOCITY, velocity.data );
+    GXAlListenerfv ( AL_VELOCITY, velocity._data );
 }
 
 GXVoid GXSoundMixer::SetListenerVelocity ( GXFloat x, GXFloat y, GXFloat z )
@@ -33,7 +33,7 @@ GXVoid GXSoundMixer::SetListenerVelocity ( GXFloat x, GXFloat y, GXFloat z )
 
 GXVoid GXSoundMixer::SetListenerLocation ( const GXVec3 &location )
 {
-    GXAlListenerfv ( AL_POSITION, location.data );
+    GXAlListenerfv ( AL_POSITION, location._data );
 }
 
 GXVoid GXSoundMixer::SetListenerLocation ( GXFloat x, GXFloat y, GXFloat z )
@@ -63,7 +63,7 @@ GXVoid GXSoundMixer::SetListenerRotation ( const GXMat4 &rotation )
 GXVoid GXSoundMixer::SetListenerRotation ( const GXEuler &rotation )
 {
     GXMat4 orientation;
-    orientation.RotationXYZ ( rotation.pitchRadians, rotation.yawRadians, rotation.rollRadians );
+    orientation.RotationXYZ ( rotation._pitchRadians, rotation._yawRadians, rotation._rollRadians );
 
     SetListenerRotation ( orientation );
 }

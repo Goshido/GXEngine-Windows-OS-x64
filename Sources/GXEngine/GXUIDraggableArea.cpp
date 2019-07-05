@@ -101,14 +101,14 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
             case eGXDraggableAreaResizeMode::WidthLockLeft:
             {
                 GXAABB bounds ( _boundsLocal );
-                bounds.max.data[ 0 ] += pos->data[ 0 ] - _lastMousePosition.data[ 0 ];
+                bounds._max._data[ 0 ] += pos->_data[ 0 ] - _lastMousePosition._data[ 0 ];
 
                 if ( bounds.GetWidth () < _minimumSize.GetX () )
                 {
                     if ( fabs ( _boundsLocal.GetWidth () - _minimumSize.GetX () ) < TOLERANCE_FACTOR ) break;
 
-                    bounds.max.SetX ( bounds.min.GetX () + _minimumSize.GetX () );
-                    _lastMousePosition.SetX ( _boundsWorld.min.GetX () + _minimumSize.GetX () );
+                    bounds._max.SetX ( bounds._min.GetX () + _minimumSize.GetX () );
+                    _lastMousePosition.SetX ( _boundsWorld._min.GetX () + _minimumSize.GetX () );
                 }
                 else
                 {
@@ -129,14 +129,14 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
             case eGXDraggableAreaResizeMode::WidthLockRight:
             {
                 GXAABB bounds ( _boundsLocal );
-                bounds.min.data[ 0 ] += pos->data[ 0 ] - _lastMousePosition.data[ 0 ];
+                bounds._min._data[ 0 ] += pos->_data[ 0 ] - _lastMousePosition._data[ 0 ];
 
                 if ( bounds.GetWidth () < _minimumSize.GetX () )
                 {
                     if ( fabs ( _boundsLocal.GetWidth () - _minimumSize.GetX () ) < TOLERANCE_FACTOR ) break;
 
-                    bounds.min.SetX ( bounds.max.GetX () - _minimumSize.GetX () );
-                    _lastMousePosition.SetX ( _boundsWorld.max.GetX () - _minimumSize.GetX () );
+                    bounds._min.SetX ( bounds._max.GetX () - _minimumSize.GetX () );
+                    _lastMousePosition.SetX ( _boundsWorld._max.GetX () - _minimumSize.GetX () );
                 }
                 else
                 {
@@ -157,14 +157,14 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
             case eGXDraggableAreaResizeMode::HeightLockBottom:
             {
                 GXAABB bounds ( _boundsLocal );
-                bounds.max.data[ 1 ] += pos->data[ 1 ] - _lastMousePosition.data[ 1 ];
+                bounds._max._data[ 1 ] += pos->_data[ 1 ] - _lastMousePosition._data[ 1 ];
 
                 if ( bounds.GetHeight () < _minimumSize.GetY () )
                 {
                     if ( fabs ( _boundsLocal .GetHeight ()- _minimumSize.GetY () ) < TOLERANCE_FACTOR ) break;
 
-                    bounds.max.SetY ( bounds.min.GetY () + _minimumSize.GetY () );
-                    _lastMousePosition.SetY ( _boundsWorld.min.GetY () + _minimumSize.GetY () );
+                    bounds._max.SetY ( bounds._min.GetY () + _minimumSize.GetY () );
+                    _lastMousePosition.SetY ( _boundsWorld._min.GetY () + _minimumSize.GetY () );
                 }
                 else
                 {
@@ -185,14 +185,14 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
             case eGXDraggableAreaResizeMode::HeightLockTop:
             {
                 GXAABB bounds ( _boundsLocal );
-                bounds.min.data[ 1 ] += pos->data[ 1 ] - _lastMousePosition.data[ 1 ];
+                bounds._min._data[ 1 ] += pos->_data[ 1 ] - _lastMousePosition._data[ 1 ];
 
                 if ( bounds.GetHeight () < _minimumSize.GetY () )
                 {
                     if ( fabs ( _boundsLocal.GetHeight () - _minimumSize.GetY () ) < TOLERANCE_FACTOR ) break;
 
-                    bounds.min.SetY ( bounds.max.GetY () - _minimumSize.GetY () );
-                    _lastMousePosition.SetY ( _boundsWorld.max.GetY () - _minimumSize.GetY () );
+                    bounds._min.SetY ( bounds._max.GetY () - _minimumSize.GetY () );
+                    _lastMousePosition.SetY ( _boundsWorld._max.GetY () - _minimumSize.GetY () );
                 }
                 else
                 {
@@ -216,8 +216,8 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
                 delta.Substract ( *pos, _lastMousePosition );
 
                 GXAABB bounds ( _boundsLocal );
-                bounds.max.data[ 0 ] += delta.data[ 0 ];
-                bounds.max.data[ 1 ] += delta.data[ 1 ];
+                bounds._max._data[ 0 ] += delta._data[ 0 ];
+                bounds._max._data[ 1 ] += delta._data[ 1 ];
 
                 GXFloat width = bounds.GetWidth ();
                 GXFloat heigth = bounds.GetHeight ();
@@ -226,8 +226,8 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
                 if ( width < _minimumSize.GetX () )
                 {
-                    bounds.max.SetX ( _boundsLocal.min.GetX () + _minimumSize.GetX () );
-                    _lastMousePosition.SetX ( _boundsWorld.min.GetX () + _minimumSize.GetX () );
+                    bounds._max.SetX ( _boundsLocal._min.GetX () + _minimumSize.GetX () );
+                    _lastMousePosition.SetX ( _boundsWorld._min.GetX () + _minimumSize.GetX () );
                 }
                 else
                 {
@@ -236,8 +236,8 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
                 if ( heigth < _minimumSize.GetY () )
                 {
-                    bounds.max.SetY ( _boundsLocal.min.GetY () + _minimumSize.GetY () );
-                    _lastMousePosition.SetY ( _boundsWorld.min.GetY () + _minimumSize.GetY () );
+                    bounds._max.SetY ( _boundsLocal._min.GetY () + _minimumSize.GetY () );
+                    _lastMousePosition.SetY ( _boundsWorld._min.GetY () + _minimumSize.GetY () );
                 }
                 else
                 {
@@ -261,8 +261,8 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
                 delta.Substract ( *pos, _lastMousePosition );
 
                 GXAABB bounds ( _boundsLocal );
-                bounds.min.data[ 0 ] += delta.data[ 0 ];
-                bounds.max.data[ 1 ] += delta.data[ 1 ];
+                bounds._min._data[ 0 ] += delta._data[ 0 ];
+                bounds._max._data[ 1 ] += delta._data[ 1 ];
 
                 GXFloat width = bounds.GetWidth ();
                 GXFloat heigth = bounds.GetHeight ();
@@ -271,8 +271,8 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
                 if ( width < _minimumSize.GetX () )
                 {
-                    bounds.min.SetX ( _boundsLocal.max.GetX () - _minimumSize.GetX () );
-                    _lastMousePosition.SetX ( _boundsWorld.max.GetX () - _minimumSize.GetX () );
+                    bounds._min.SetX ( _boundsLocal._max.GetX () - _minimumSize.GetX () );
+                    _lastMousePosition.SetX ( _boundsWorld._max.GetX () - _minimumSize.GetX () );
                 }
                 else
                 {
@@ -281,8 +281,8 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
                 if ( heigth < _minimumSize.GetY () )
                 {
-                    bounds.max.SetY ( _boundsLocal.min.GetY () + _minimumSize.GetY () );
-                    _lastMousePosition.SetY ( _boundsWorld.min.GetY () + _minimumSize.GetY () );
+                    bounds._max.SetY ( _boundsLocal._min.GetY () + _minimumSize.GetY () );
+                    _lastMousePosition.SetY ( _boundsWorld._min.GetY () + _minimumSize.GetY () );
                 }
                 else
                 {
@@ -306,8 +306,8 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
                 delta.Substract ( *pos, _lastMousePosition );
 
                 GXAABB bounds ( _boundsLocal );
-                bounds.max.data[ 0 ] += delta.data[ 0 ];
-                bounds.min.data[ 1 ] += delta.data[ 1 ];
+                bounds._max._data[ 0 ] += delta._data[ 0 ];
+                bounds._min._data[ 1 ] += delta._data[ 1 ];
 
                 GXFloat width = bounds.GetWidth ();
                 GXFloat heigth = bounds.GetHeight ();
@@ -316,8 +316,8 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
                 if ( width < _minimumSize.GetX () )
                 {
-                    bounds.max.SetX ( _boundsLocal.min.GetX () + _minimumSize.GetX () );
-                    _lastMousePosition.SetX ( _boundsWorld.min.GetX () + _minimumSize.GetX () );
+                    bounds._max.SetX ( _boundsLocal._min.GetX () + _minimumSize.GetX () );
+                    _lastMousePosition.SetX ( _boundsWorld._min.GetX () + _minimumSize.GetX () );
                 }
                 else
                 {
@@ -326,8 +326,8 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
                 if ( heigth < _minimumSize.GetY () )
                 {
-                    bounds.min.SetY ( _boundsLocal.max.GetY () - _minimumSize.GetY () );
-                    _lastMousePosition.SetY ( _boundsWorld.max.GetY () - _minimumSize.GetY () );
+                    bounds._min.SetY ( _boundsLocal._max.GetY () - _minimumSize.GetY () );
+                    _lastMousePosition.SetY ( _boundsWorld._max.GetY () - _minimumSize.GetY () );
                 }
                 else
                 {
@@ -351,8 +351,8 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
                 delta.Substract ( *pos, _lastMousePosition );
 
                 GXAABB bounds ( _boundsLocal );
-                bounds.min.data[ 0 ] += delta.data[ 0 ];
-                bounds.min.data[ 1 ] += delta.data[ 1 ];
+                bounds._min._data[ 0 ] += delta._data[ 0 ];
+                bounds._min._data[ 1 ] += delta._data[ 1 ];
 
                 GXFloat width = bounds.GetWidth ();
                 GXFloat heigth = bounds.GetHeight ();
@@ -361,8 +361,8 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
                 if ( width < _minimumSize.GetX () )
                 {
-                    bounds.min.SetX ( _boundsLocal.max.GetX () - _minimumSize.GetX () );
-                    _lastMousePosition.SetX ( _boundsWorld.max.GetX () - _minimumSize.GetX () );
+                    bounds._min.SetX ( _boundsLocal._max.GetX () - _minimumSize.GetX () );
+                    _lastMousePosition.SetX ( _boundsWorld._max.GetX () - _minimumSize.GetX () );
                 }
                 else
                 {
@@ -371,8 +371,8 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
                 if ( heigth < _minimumSize.GetY () )
                 {
-                    bounds.min.SetY ( _boundsLocal.max.GetY () - _minimumSize.GetY () );
-                    _lastMousePosition.SetY ( _boundsWorld.max.GetY () - _minimumSize.GetY () );
+                    bounds._min.SetY ( _boundsLocal._max.GetY () - _minimumSize.GetY () );
+                    _lastMousePosition.SetY ( _boundsWorld._max.GetY () - _minimumSize.GetY () );
                 }
                 else
                 {
@@ -407,18 +407,18 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
         const GXAABB* bounds = static_cast<const GXAABB*> ( data );
 
         GXAABB correctedBounds;
-        correctedBounds.AddVertex ( bounds->min );
+        correctedBounds.AddVertex ( bounds->_min );
 
-        GXVec3 maxPoint ( bounds->max );
+        GXVec3 maxPoint ( bounds->_max );
         GXFloat length = bounds->GetWidth ();
 
         if ( length < _minimumSize.GetX () )
-            maxPoint.SetX ( bounds->min.GetX () + length );
+            maxPoint.SetX ( bounds->_min.GetX () + length );
 
         length = bounds->GetHeight ();
 
         if ( length < _minimumSize.GetY () )
-            maxPoint.SetY ( bounds->min.GetY () + length );
+            maxPoint.SetY ( bounds->_min.GetY () + length );
 
         correctedBounds.AddVertex ( maxPoint );
 
@@ -467,7 +467,7 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
         if ( _boundsLocal.GetWidth () >= _minimumSize.GetX () ) return;
 
-        Resize ( _boundsLocal.min.GetX (), _boundsLocal.min.GetY (), _minimumSize.GetX (), _boundsLocal.GetHeight () );
+        Resize ( _boundsLocal._min.GetX (), _boundsLocal._min.GetY (), _minimumSize.GetX (), _boundsLocal.GetHeight () );
 
         return;
     }
@@ -479,7 +479,7 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
         if ( _boundsLocal.GetHeight () >= _minimumSize.GetY () ) return;
 
-        Resize ( _boundsLocal.min.GetX (), _boundsLocal.min.GetY (), _boundsLocal.GetWidth (), _minimumSize.GetY () );
+        Resize ( _boundsLocal._min.GetX (), _boundsLocal._min.GetY (), _boundsLocal.GetWidth (), _minimumSize.GetY () );
         return;
     }
 
@@ -488,8 +488,8 @@ GXVoid GXUIDragableArea::OnMessage ( eGXUIMessage message, const GXVoid* data )
         const GXVec2* delta = static_cast<const GXVec2*> ( data );
 
         GXAABB newBounds;
-        newBounds.AddVertex ( _boundsLocal.min.GetX () + delta->GetX (), _boundsLocal.min.GetY () + delta->GetY (), _boundsLocal.min.GetZ () );
-        newBounds.AddVertex ( _boundsLocal.max.GetX () + delta->GetX (), _boundsLocal.max.GetY () + delta->GetY (), _boundsLocal.max.GetZ () );
+        newBounds.AddVertex ( _boundsLocal._min.GetX () + delta->GetX (), _boundsLocal._min.GetY () + delta->GetY (), _boundsLocal._min.GetZ () );
+        newBounds.AddVertex ( _boundsLocal._max.GetX () + delta->GetX (), _boundsLocal._max.GetY () + delta->GetY (), _boundsLocal._max.GetZ () );
 
         UpdateBoundsWorld ( newBounds );
         UpdateAreas ();
@@ -594,42 +594,42 @@ GXVoid GXUIDragableArea::UpdateAreas ()
     _cornerBottomLeft.Empty ();
     _cornerBottomRight.Empty ();
 
-    _cornerBottomLeft.AddVertex ( _boundsLocal.min );
-    _cornerBottomLeft.AddVertex ( _boundsLocal.min.GetX () + _borderThickness, _boundsLocal.min.GetY () + _borderThickness, _boundsLocal.max.GetZ () );
+    _cornerBottomLeft.AddVertex ( _boundsLocal._min );
+    _cornerBottomLeft.AddVertex ( _boundsLocal._min.GetX () + _borderThickness, _boundsLocal._min.GetY () + _borderThickness, _boundsLocal._max.GetZ () );
 
-    _cornerTopRight.AddVertex ( _boundsLocal.max );
-    _cornerTopRight.AddVertex ( _boundsLocal.max.GetX () - _borderThickness, _boundsLocal.max.GetY () - _borderThickness, _boundsLocal.min.GetZ () );
+    _cornerTopRight.AddVertex ( _boundsLocal._max );
+    _cornerTopRight.AddVertex ( _boundsLocal._max.GetX () - _borderThickness, _boundsLocal._max.GetY () - _borderThickness, _boundsLocal._min.GetZ () );
 
-    _cornerTopLeft.AddVertex ( _boundsLocal.min.GetX (), _boundsLocal.max.GetY () - _borderThickness, _boundsLocal.min.GetZ () );
-    _cornerTopLeft.AddVertex ( _boundsLocal.min.GetX () + _borderThickness, _boundsLocal.max.GetY (), _boundsLocal.max.GetZ () );
+    _cornerTopLeft.AddVertex ( _boundsLocal._min.GetX (), _boundsLocal._max.GetY () - _borderThickness, _boundsLocal._min.GetZ () );
+    _cornerTopLeft.AddVertex ( _boundsLocal._min.GetX () + _borderThickness, _boundsLocal._max.GetY (), _boundsLocal._max.GetZ () );
 
-    _cornerBottomRight.AddVertex ( _boundsLocal.max.GetX () - _borderThickness, _boundsLocal.min.GetY (),  _boundsLocal.min.GetZ () );
-    _cornerBottomRight.AddVertex ( _boundsLocal.max.GetX (), _boundsLocal.min.GetY () + _borderThickness, _boundsLocal.max.GetZ () );
+    _cornerBottomRight.AddVertex ( _boundsLocal._max.GetX () - _borderThickness, _boundsLocal._min.GetY (),  _boundsLocal._min.GetZ () );
+    _cornerBottomRight.AddVertex ( _boundsLocal._max.GetX (), _boundsLocal._min.GetY () + _borderThickness, _boundsLocal._max.GetZ () );
 
     _borderBottom.Empty ();
     _borderTop.Empty ();
     _borderLeft.Empty ();
     _borderRight.Empty ();
 
-    _borderLeft.AddVertex ( _boundsLocal.min.GetX (), _boundsLocal.min.GetY () + _borderThickness, _boundsLocal.min.GetZ () );
-    _borderLeft.AddVertex ( _boundsLocal.min.GetX () + _borderThickness, _boundsLocal.max.GetY () - _borderThickness, _boundsLocal.max.GetZ () );
+    _borderLeft.AddVertex ( _boundsLocal._min.GetX (), _boundsLocal._min.GetY () + _borderThickness, _boundsLocal._min.GetZ () );
+    _borderLeft.AddVertex ( _boundsLocal._min.GetX () + _borderThickness, _boundsLocal._max.GetY () - _borderThickness, _boundsLocal._max.GetZ () );
 
-    _borderTop.AddVertex ( _boundsLocal.min.GetX () + _borderThickness, _boundsLocal.max.GetY () - _borderThickness, _boundsLocal.min.GetZ () );
-    _borderTop.AddVertex ( _boundsLocal.max.GetX () - _borderThickness, _boundsLocal.max.GetY (), _boundsLocal.max.GetZ () );
+    _borderTop.AddVertex ( _boundsLocal._min.GetX () + _borderThickness, _boundsLocal._max.GetY () - _borderThickness, _boundsLocal._min.GetZ () );
+    _borderTop.AddVertex ( _boundsLocal._max.GetX () - _borderThickness, _boundsLocal._max.GetY (), _boundsLocal._max.GetZ () );
 
-    _borderRight.AddVertex ( _boundsLocal.max.GetX () - _borderThickness, _boundsLocal.min.GetY () + _borderThickness, _boundsLocal.min.GetZ () );
-    _borderRight.AddVertex ( _boundsLocal.max.GetX (), _boundsLocal.max.GetY () - _borderThickness, _boundsLocal.max.GetZ () );
+    _borderRight.AddVertex ( _boundsLocal._max.GetX () - _borderThickness, _boundsLocal._min.GetY () + _borderThickness, _boundsLocal._min.GetZ () );
+    _borderRight.AddVertex ( _boundsLocal._max.GetX (), _boundsLocal._max.GetY () - _borderThickness, _boundsLocal._max.GetZ () );
 
-    _borderBottom.AddVertex ( _boundsLocal.min.GetX () + _borderThickness, _boundsLocal.min.GetY (), _boundsLocal.min.GetZ () );
-    _borderBottom.AddVertex ( _boundsLocal.max.GetX () - _borderThickness, _boundsLocal.min.GetY () + _borderThickness, _boundsLocal.max.GetZ () );
+    _borderBottom.AddVertex ( _boundsLocal._min.GetX () + _borderThickness, _boundsLocal._min.GetY (), _boundsLocal._min.GetZ () );
+    _borderBottom.AddVertex ( _boundsLocal._max.GetX () - _borderThickness, _boundsLocal._min.GetY () + _borderThickness, _boundsLocal._max.GetZ () );
 
     _headerArea.Empty ();
-    _headerArea.AddVertex ( _boundsLocal.min.GetX () + _borderThickness, _boundsLocal.max.GetY () - _borderThickness - _headerHeight, _boundsLocal.min.GetZ () );
-    _headerArea.AddVertex ( _boundsLocal.max.GetX () - _borderThickness, _boundsLocal.max.GetY () - _borderThickness, _boundsLocal.max.GetZ () );
+    _headerArea.AddVertex ( _boundsLocal._min.GetX () + _borderThickness, _boundsLocal._max.GetY () - _borderThickness - _headerHeight, _boundsLocal._min.GetZ () );
+    _headerArea.AddVertex ( _boundsLocal._max.GetX () - _borderThickness, _boundsLocal._max.GetY () - _borderThickness, _boundsLocal._max.GetZ () );
 
     _clientArea.Empty ();
-    _clientArea.AddVertex ( _boundsLocal.min.GetX () + _borderThickness, _boundsLocal.min.GetY () + _borderThickness, _boundsLocal.min.GetZ () );
-    _clientArea.AddVertex ( _boundsLocal.max.GetX () - _borderThickness, _boundsLocal.max.GetY () - _borderThickness - _headerHeight, _boundsLocal.max.GetZ () );
+    _clientArea.AddVertex ( _boundsLocal._min.GetX () + _borderThickness, _boundsLocal._min.GetY () + _borderThickness, _boundsLocal._min.GetZ () );
+    _clientArea.AddVertex ( _boundsLocal._max.GetX () - _borderThickness, _boundsLocal._max.GetY () - _borderThickness - _headerHeight, _boundsLocal._max.GetZ () );
 }
 
 GXVoid GXUIDragableArea::UpdateCursor ( const GXVec2 &mousePosition )

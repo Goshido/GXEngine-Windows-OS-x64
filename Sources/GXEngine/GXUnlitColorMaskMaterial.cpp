@@ -62,9 +62,9 @@ GXVoid GXUnlitColorMaskMaterial::Bind ( const GXTransform &transform )
 
     glUseProgram ( _shaderProgram.GetProgram () );
 
-    glUniformMatrix4fv ( _mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.data );
-    glUniform4fv ( _uvScaleOffsetLocation, 1, _uvScaleOffset.data );
-    glUniform4fv ( _colorLocation, 1, _color.data );
+    glUniformMatrix4fv ( _mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat._data );
+    glUniform4fv ( _uvScaleOffsetLocation, 1, _uvScaleOffset._data );
+    glUniform4fv ( _colorLocation, 1, _color._data );
 
     _mask->Bind ( MASK_SLOT );
     _sampler.Bind ( MASK_SLOT );
@@ -87,14 +87,14 @@ GXVoid GXUnlitColorMaskMaterial::SetMaskTexture ( GXTexture2D &texture )
 
 GXVoid GXUnlitColorMaskMaterial::SetMaskScale ( GXFloat x, GXFloat y )
 {
-    _uvScaleOffset.data[ 0u ] = x;
-    _uvScaleOffset.data[ 1u ] = y;
+    _uvScaleOffset._data[ 0u ] = x;
+    _uvScaleOffset._data[ 1u ] = y;
 }
 
 GXVoid GXUnlitColorMaskMaterial::SetMaskOffset ( GXFloat x, GXFloat y )
 {
-    _uvScaleOffset.data[ 2u ] = x;
-    _uvScaleOffset.data[ 3u ] = y;
+    _uvScaleOffset._data[ 2u ] = x;
+    _uvScaleOffset._data[ 3u ] = y;
 }
 
 GXVoid GXUnlitColorMaskMaterial::SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )

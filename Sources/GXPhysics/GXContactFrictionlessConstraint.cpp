@@ -23,8 +23,8 @@ GXContactFrictionlessConstraint::GXContactFrictionlessConstraint ( GXContact &co
 	GXVec3 tmp;
 	tmp.CrossProduct ( toPoint, reverseNormal );
 
-	memcpy ( jacobian[ 1 ].data, &reverseNormal, sizeof ( GXVec3 ) );
-	memcpy ( jacobian[ 1 ].data + 3, &tmp, sizeof ( GXVec3 ) );
+	memcpy ( jacobian[ 1 ]._data, &reverseNormal, sizeof ( GXVec3 ) );
+	memcpy ( jacobian[ 1 ]._data + 3, &tmp, sizeof ( GXVec3 ) );
 
 	tmp.CrossProduct ( secondBody.GetAngularVelocity (), toPoint );
 
@@ -34,8 +34,8 @@ GXContactFrictionlessConstraint::GXContactFrictionlessConstraint ( GXContact &co
 	toPoint.Substract ( contactPoint, firstBody.GetLocation () );
 	tmp.CrossProduct ( toPoint, normal );
 
-	memcpy ( jacobian[ 0 ].data, &normal, sizeof ( GXVec3 ) );
-	memcpy ( jacobian[ 0 ].data + 3, &tmp, sizeof ( GXVec3 ) );
+	memcpy ( jacobian[ 0 ]._data, &normal, sizeof ( GXVec3 ) );
+	memcpy ( jacobian[ 0 ]._data + 3, &tmp, sizeof ( GXVec3 ) );
 
 	tmp.CrossProduct ( firstBody.GetAngularVelocity (), toPoint );
 

@@ -48,18 +48,18 @@ GXVoid GXUIPopup::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
         if ( totalItems == 0u )
         {
-            item._boundsWorld.AddVertex ( _boundsLocal.min.GetX (), _boundsLocal.max.GetY () - _itemHeight, _boundsLocal.min.GetZ () );
-            item._boundsWorld.AddVertex ( _boundsLocal.max.GetX (), _boundsLocal.max.GetY (), _boundsLocal.max.GetZ () );
+            item._boundsWorld.AddVertex ( _boundsLocal._min.GetX (), _boundsLocal._max.GetY () - _itemHeight, _boundsLocal._min.GetZ () );
+            item._boundsWorld.AddVertex ( _boundsLocal._max.GetX (), _boundsLocal._max.GetY (), _boundsLocal._max.GetZ () );
 
             UpdateBoundsWorld ( item._boundsWorld );
         }
         else
         {
-            item._boundsWorld.AddVertex ( _boundsLocal.min.GetX (), _boundsLocal.min.GetY () - _itemHeight, _boundsLocal.min.GetZ () );
-            item._boundsWorld.AddVertex ( _boundsLocal.max.GetX (), _boundsLocal.min.GetY (), _boundsLocal.max.GetZ () );
+            item._boundsWorld.AddVertex ( _boundsLocal._min.GetX (), _boundsLocal._min.GetY () - _itemHeight, _boundsLocal._min.GetZ () );
+            item._boundsWorld.AddVertex ( _boundsLocal._max.GetX (), _boundsLocal._min.GetY (), _boundsLocal._max.GetZ () );
 
             GXAABB newBoundsLocal ( _boundsLocal );
-            newBoundsLocal.min.data[ 1 ] -= _itemHeight;
+            newBoundsLocal._min._data[ 1 ] -= _itemHeight;
             UpdateBoundsWorld ( newBoundsLocal );
         }
 
@@ -84,14 +84,14 @@ GXVoid GXUIPopup::OnMessage ( eGXUIMessage message, const GXVoid* data )
             GXUIPopupItem* itemStorage = static_cast<GXUIPopupItem*> ( _items.GetData () );
 
             GXAABB newBoundsLocal ( _boundsLocal );
-            newBoundsLocal.min.SetY ( newBoundsLocal.max.GetY () );
+            newBoundsLocal._min.SetY ( newBoundsLocal._max.GetY () );
 
             for ( GXUInt i = 0u; i < totalItems; ++i )
             {
                 itemStorage[ i ]._boundsWorld.Empty ();
-                itemStorage[ i ]._boundsWorld.AddVertex ( newBoundsLocal.max.GetX (), newBoundsLocal.min.GetY (), newBoundsLocal.max.GetZ () );
-                newBoundsLocal.min.data[ 1 ] -= _itemHeight;
-                itemStorage[ i ]._boundsWorld.AddVertex ( newBoundsLocal.min.GetX (), newBoundsLocal.min.GetY (), newBoundsLocal.min.GetZ () );
+                itemStorage[ i ]._boundsWorld.AddVertex ( newBoundsLocal._max.GetX (), newBoundsLocal._min.GetY (), newBoundsLocal._max.GetZ () );
+                newBoundsLocal._min._data[ 1 ] -= _itemHeight;
+                itemStorage[ i ]._boundsWorld.AddVertex ( newBoundsLocal._min.GetX (), newBoundsLocal._min.GetY (), newBoundsLocal._min.GetZ () );
             }
 
             UpdateBoundsWorld ( newBoundsLocal );
@@ -221,7 +221,7 @@ GXVoid GXUIPopup::OnMessage ( eGXUIMessage message, const GXVoid* data )
     {
         const GXAABB* newBoundsLocal = static_cast<const GXAABB*> ( data );
         GXFloat newWidth = newBoundsLocal->GetWidth ();
-        GXVec2 newPosition ( newBoundsLocal->min.GetX (), newBoundsLocal->min.GetY () );
+        GXVec2 newPosition ( newBoundsLocal->_min.GetX (), newBoundsLocal->_min.GetY () );
 
         GXUByte totalItems = static_cast<GXUByte> ( _items.GetLength () );
         GXFloat top = newPosition.GetY () + totalItems * _itemHeight;

@@ -61,9 +61,9 @@ GXVoid GXUnlitTexture2DMaterial::Bind ( const GXTransform &transfrom )
     mod_view_proj_mat.Multiply ( transfrom.GetCurrentFrameModelMatrix (), GXCamera::GetActiveCamera ()->GetCurrentFrameViewProjectionMatrix () );
     
     glUseProgram ( _shaderProgram.GetProgram () );
-    glUniformMatrix4fv ( _mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.data );
-    glUniform4fv ( _uvScaleOffsetLocation, 1, _uvScaleOffset.data );
-    glUniform4fv ( _colorLocation, 1, _color.data );
+    glUniformMatrix4fv ( _mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat._data );
+    glUniform4fv ( _uvScaleOffsetLocation, 1, _uvScaleOffset._data );
+    glUniform4fv ( _colorLocation, 1, _color._data );
 
     _texture->Bind ( TEXTURE_SLOT );
     _sampler.Bind ( TEXTURE_SLOT );
@@ -85,14 +85,14 @@ GXVoid GXUnlitTexture2DMaterial::SetTexture ( GXTexture2D &textureObject )
 
 GXVoid GXUnlitTexture2DMaterial::SetTextureScale ( GXFloat x, GXFloat y )
 {
-    _uvScaleOffset.data[ 0u ] = x;
-    _uvScaleOffset.data[ 1u ] = y;
+    _uvScaleOffset._data[ 0u ] = x;
+    _uvScaleOffset._data[ 1u ] = y;
 }
 
 GXVoid GXUnlitTexture2DMaterial::SetTextureOffset ( GXFloat x, GXFloat y )
 {
-    _uvScaleOffset.data[ 2u ] = x;
-    _uvScaleOffset.data[ 3u ] = y;
+    _uvScaleOffset._data[ 2u ] = x;
+    _uvScaleOffset._data[ 3u ] = y;
 }
 
 GXVoid GXUnlitTexture2DMaterial::SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )

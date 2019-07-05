@@ -97,7 +97,7 @@ GXSoundEmitter::~GXSoundEmitter ()
 
 GXVoid GXSoundEmitter::SetVelocity ( const GXVec3 &velocity )
 {
-    GXAlSourcefv ( _source, AL_VELOCITY, velocity.data );
+    GXAlSourcefv ( _source, AL_VELOCITY, velocity._data );
 }
 
 GXVoid GXSoundEmitter::SetVelocity ( GXFloat x, GXFloat y, GXFloat z )
@@ -107,7 +107,7 @@ GXVoid GXSoundEmitter::SetVelocity ( GXFloat x, GXFloat y, GXFloat z )
 
 GXVoid GXSoundEmitter::SetLocation ( const GXVec3 &location )
 {
-    GXAlSourcefv ( _source, AL_POSITION, location.data );
+    GXAlSourcefv ( _source, AL_POSITION, location._data );
 }
 
 GXVoid GXSoundEmitter::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
@@ -133,7 +133,7 @@ GXVoid GXSoundEmitter::SetRotation ( const GXMat4 &rotation )
 GXVoid GXSoundEmitter::SetRotation ( const GXEuler &rotation )
 {
     GXMat4 orientation;
-    orientation.RotationXYZ ( rotation.pitchRadians, rotation.yawRadians, rotation.rollRadians );
+    orientation.RotationXYZ ( rotation._pitchRadians, rotation._yawRadians, rotation._rollRadians );
 
     SetRotation ( orientation );
 }

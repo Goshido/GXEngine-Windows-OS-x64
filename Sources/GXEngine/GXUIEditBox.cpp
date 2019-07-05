@@ -533,20 +533,20 @@ GXInt GXUIEditBox::GetSelectionPosition ( const GXVec2 &mousePosition ) const
         case  eGXUITextAlignment::Center:
         {
             GXFloat textOffset = ( width - textLength ) * 0.5f;
-            offset = GXClampf ( mousePosition.GetX () - _boundsWorld.min.GetX (), textOffset, width - textOffset ) - textOffset;
+            offset = GXClampf ( mousePosition.GetX () - _boundsWorld._min.GetX (), textOffset, width - textOffset ) - textOffset;
         }
         break;
 
         case  eGXUITextAlignment::Right:
         {
             GXFloat textOffset = width - textLength;
-            offset = GXClampf ( mousePosition.GetX () - _boundsWorld.min.GetX () - _textRightOffset, textOffset, width ) - textOffset;
+            offset = GXClampf ( mousePosition.GetX () - _boundsWorld._min.GetX () - _textRightOffset, textOffset, width ) - textOffset;
         }
         break;
 
         case eGXUITextAlignment::Left:
             textLength = static_cast<GXFloat> ( _font->GetTextLength ( 0u, _text ) );
-            offset = GXClampf ( mousePosition.GetX () - _boundsWorld.min.GetX () + _textLeftOffset, _textLeftOffset, textLength );
+            offset = GXClampf ( mousePosition.GetX () - _boundsWorld._min.GetX () + _textLeftOffset, _textLeftOffset, textLength );
         break;
     }
 

@@ -20,8 +20,8 @@ GXContactBitangentConstraint::GXContactBitangentConstraint ( GXContact &contact,
 	GXVec3 tmp;
 	tmp.CrossProduct ( toPoint, bitangent );
 
-	memcpy ( jacobian[ 0 ].data, &bitangent, sizeof ( GXVec3 ) );
-	memcpy ( jacobian[ 0 ].data + 3, &tmp, sizeof ( GXVec3 ) );
+	memcpy ( jacobian[ 0 ]._data, &bitangent, sizeof ( GXVec3 ) );
+	memcpy ( jacobian[ 0 ]._data + 3, &tmp, sizeof ( GXVec3 ) );
 
 	GXVec3 relativeVelocity ( firstBody.GetLinearVelocity () );
 	tmp.CrossProduct ( firstBody.GetAngularVelocity (), toPoint );
@@ -34,8 +34,8 @@ GXContactBitangentConstraint::GXContactBitangentConstraint ( GXContact &contact,
 
 	tmp.CrossProduct ( toPoint, reverseBitengent );
 
-	memcpy ( jacobian[ 1 ].data, &reverseBitengent, sizeof ( GXVec3 ) );
-	memcpy ( jacobian[ 1 ].data + 3, &tmp, sizeof ( GXVec3 ) );
+	memcpy ( jacobian[ 1 ]._data, &reverseBitengent, sizeof ( GXVec3 ) );
+	memcpy ( jacobian[ 1 ]._data + 3, &tmp, sizeof ( GXVec3 ) );
 
 	relativeVelocity.Substract ( relativeVelocity, secondBody.GetLinearVelocity () );
 	tmp.CrossProduct ( secondBody.GetAngularVelocity (), toPoint );
@@ -50,7 +50,7 @@ GXContactBitangentConstraint::GXContactBitangentConstraint ( GXContact &contact,
 
 	toContactSpace.MultiplyMatrixVector ( tmp, relativeVelocity );
 
-	GXVec2 planarVelocity ( tmp.data[ 0 ], tmp.data[ 1 ] );
+	GXVec2 planarVelocity ( tmp._data[ 0 ], tmp._data[ 1 ] );
 	GXFloat friction;
 
 	if ( planarVelocity.SquaredLength () < squareThreshold )

@@ -119,7 +119,7 @@ GXVoid EMUIDraggableAreaRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort wid
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
     surface = new GXHudSurface ( width, height );
 
-    surface->SetLocation ( x, y, location.data[ 2 ] );
+    surface->SetLocation ( x, y, location._data[ 2 ] );
 }
 
 GXVoid EMUIDraggableAreaRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -129,7 +129,7 @@ GXVoid EMUIDraggableAreaRenderer::OnMoved ( GXFloat x, GXFloat y )
 
     GXVec3 location;
     surface->GetLocation ( location );
-    surface->SetLocation ( x, y, location.data[ 2 ] );
+    surface->SetLocation ( x, y, location._data[ 2 ] );
 }
 
 //---------------------------------------------------------------------------------------------------------------------

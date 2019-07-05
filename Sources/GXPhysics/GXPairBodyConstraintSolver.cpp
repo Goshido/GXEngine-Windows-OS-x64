@@ -104,7 +104,7 @@ GXVoid GXPairBodyConstraintSolver::End ()
 			GXFloat deltaLambda = ( etaData[ i ] - a[ 0 ].DotProduct ( GetJacobianElement ( i, 0u ) ) - a[ 1 ].DotProduct ( GetJacobianElement ( i, 1u ) ) ) / dData[ i ];
 			GXFloat oldLambda = lambdaData[ i ];
 
-			lambdaData[ i ] = GXMaxf ( lambdaRangeData[ i ].data[ 0 ], GXMinf ( lambdaData[ i ] + deltaLambda, lambdaRangeData[ i ].data[ 1 ] ) );
+			lambdaData[ i ] = GXMaxf ( lambdaRangeData[ i ]._data[ 0 ], GXMinf ( lambdaData[ i ] + deltaLambda, lambdaRangeData[ i ]._data[ 1 ] ) );
 			deltaLambda = lambdaData[ i ] - oldLambda;
 
 			GXVec6 alpha;
@@ -136,22 +136,22 @@ GXVoid GXPairBodyConstraintSolver::UpdateB ()
 	{
 		const GXVec6& j0 = GetJacobianElement ( i, 0u );
 
-		bData->data[ 0u ] = firstInverseMass * j0.data[ 0u ];
-		bData->data[ 1u ] = firstInverseMass * j0.data[ 1u ];
-		bData->data[ 2u ] = firstInverseMass * j0.data[ 2u ];
-		bData->data[ 3u ] = firstInverseInertia.m[ 0u ][ 0u ] * j0.data[ 3u ] + firstInverseInertia.m[ 0u ][ 1u ] * j0.data[ 4u ] + firstInverseInertia.m[ 0u ][ 2u ] * j0.data[ 5u ];
-		bData->data[ 4u ] = firstInverseInertia.m[ 1u ][ 0u ] * j0.data[ 3u ] + firstInverseInertia.m[ 1u ][ 1u ] * j0.data[ 4u ] + firstInverseInertia.m[ 1u ][ 2u ] * j0.data[ 5u ];
-		bData->data[ 5u ] = firstInverseInertia.m[ 2u ][ 0u ] * j0.data[ 3u ] + firstInverseInertia.m[ 2u ][ 1u ] * j0.data[ 4u ] + firstInverseInertia.m[ 2u ][ 2u ] * j0.data[ 5u ];
+		bData->_data[ 0u ] = firstInverseMass * j0._data[ 0u ];
+		bData->_data[ 1u ] = firstInverseMass * j0._data[ 1u ];
+		bData->_data[ 2u ] = firstInverseMass * j0._data[ 2u ];
+		bData->_data[ 3u ] = firstInverseInertia._m[ 0u ][ 0u ] * j0._data[ 3u ] + firstInverseInertia._m[ 0u ][ 1u ] * j0._data[ 4u ] + firstInverseInertia._m[ 0u ][ 2u ] * j0._data[ 5u ];
+		bData->_data[ 4u ] = firstInverseInertia._m[ 1u ][ 0u ] * j0._data[ 3u ] + firstInverseInertia._m[ 1u ][ 1u ] * j0._data[ 4u ] + firstInverseInertia._m[ 1u ][ 2u ] * j0._data[ 5u ];
+		bData->_data[ 5u ] = firstInverseInertia._m[ 2u ][ 0u ] * j0._data[ 3u ] + firstInverseInertia._m[ 2u ][ 1u ] * j0._data[ 4u ] + firstInverseInertia._m[ 2u ][ 2u ] * j0._data[ 5u ];
 
 		const GXVec6& j1 = GetJacobianElement ( i, 1u );
 		++bData;
 
-		bData->data[ 0u ] = secondInverseMass * j1.data[ 0u ];
-		bData->data[ 1u ] = secondInverseMass * j1.data[ 1u ];
-		bData->data[ 2u ] = secondInverseMass * j1.data[ 2u ];
-		bData->data[ 3u ] = secondInverseInertia.m[ 0u ][ 0u ] * j1.data[ 3u ] + secondInverseInertia.m[ 0u ][ 1u ] * j1.data[ 4u ] + secondInverseInertia.m[ 0u ][ 2u ] * j1.data[ 5u ];
-		bData->data[ 4u ] = secondInverseInertia.m[ 1u ][ 0u ] * j1.data[ 3u ] + secondInverseInertia.m[ 1u ][ 1u ] * j1.data[ 4u ] + secondInverseInertia.m[ 1u ][ 2u ] * j1.data[ 5u ];
-		bData->data[ 5u ] = secondInverseInertia.m[ 2u ][ 0u ] * j1.data[ 3u ] + secondInverseInertia.m[ 2u ][ 1u ] * j1.data[ 4u ] + secondInverseInertia.m[ 2u ][ 2u ] * j1.data[ 5u ];
+		bData->_data[ 0u ] = secondInverseMass * j1._data[ 0u ];
+		bData->_data[ 1u ] = secondInverseMass * j1._data[ 1u ];
+		bData->_data[ 2u ] = secondInverseMass * j1._data[ 2u ];
+		bData->_data[ 3u ] = secondInverseInertia._m[ 0u ][ 0u ] * j1._data[ 3u ] + secondInverseInertia._m[ 0u ][ 1u ] * j1._data[ 4u ] + secondInverseInertia._m[ 0u ][ 2u ] * j1._data[ 5u ];
+		bData->_data[ 4u ] = secondInverseInertia._m[ 1u ][ 0u ] * j1._data[ 3u ] + secondInverseInertia._m[ 1u ][ 1u ] * j1._data[ 4u ] + secondInverseInertia._m[ 1u ][ 2u ] * j1._data[ 5u ];
+		bData->_data[ 5u ] = secondInverseInertia._m[ 2u ][ 0u ] * j1._data[ 3u ] + secondInverseInertia._m[ 2u ][ 1u ] * j1._data[ 4u ] + secondInverseInertia._m[ 2u ][ 2u ] * j1._data[ 5u ];
 
 		++bData;
 	}
@@ -185,19 +185,19 @@ GXVoid GXPairBodyConstraintSolver::UpdateEta ()
 	const GXVec3& secondForce = secondBody->GetTotalForce ();
 	const GXVec3& secondTorque = secondBody->GetTotalTorque ();
 
-	betta0.data[ 0 ] = firstInverseMass * firstForce.data[ 0 ];
-	betta0.data[ 1 ] = firstInverseMass * firstForce.data[ 1 ];
-	betta0.data[ 2 ] = firstInverseMass * firstForce.data[ 2 ];
-	betta0.data[ 3 ] = firstInverseInertia.m[ 0 ][ 0 ] * firstTorque.data[ 0 ] + firstInverseInertia.m[ 0 ][ 1 ] * firstTorque.data[ 1 ] + firstInverseInertia.m[ 0 ][ 2 ] * firstTorque.data[ 2 ];
-	betta0.data[ 4 ] = firstInverseInertia.m[ 1 ][ 0 ] * firstTorque.data[ 0 ] + firstInverseInertia.m[ 1 ][ 1 ] * firstTorque.data[ 1 ] + firstInverseInertia.m[ 1 ][ 2 ] * firstTorque.data[ 2 ];
-	betta0.data[ 5 ] = firstInverseInertia.m[ 2 ][ 0 ] * firstTorque.data[ 0 ] + firstInverseInertia.m[ 2 ][ 1 ] * firstTorque.data[ 1 ] + firstInverseInertia.m[ 2 ][ 2 ] * firstTorque.data[ 2 ];
+	betta0._data[ 0 ] = firstInverseMass * firstForce._data[ 0 ];
+	betta0._data[ 1 ] = firstInverseMass * firstForce._data[ 1 ];
+	betta0._data[ 2 ] = firstInverseMass * firstForce._data[ 2 ];
+	betta0._data[ 3 ] = firstInverseInertia._m[ 0 ][ 0 ] * firstTorque._data[ 0 ] + firstInverseInertia._m[ 0 ][ 1 ] * firstTorque._data[ 1 ] + firstInverseInertia._m[ 0 ][ 2 ] * firstTorque._data[ 2 ];
+	betta0._data[ 4 ] = firstInverseInertia._m[ 1 ][ 0 ] * firstTorque._data[ 0 ] + firstInverseInertia._m[ 1 ][ 1 ] * firstTorque._data[ 1 ] + firstInverseInertia._m[ 1 ][ 2 ] * firstTorque._data[ 2 ];
+	betta0._data[ 5 ] = firstInverseInertia._m[ 2 ][ 0 ] * firstTorque._data[ 0 ] + firstInverseInertia._m[ 2 ][ 1 ] * firstTorque._data[ 1 ] + firstInverseInertia._m[ 2 ][ 2 ] * firstTorque._data[ 2 ];
 
-	betta1.data[ 0 ] = secondInverseMass * secondForce.data[ 0 ];
-	betta1.data[ 1 ] = secondInverseMass * secondForce.data[ 1 ];
-	betta1.data[ 2 ] = secondInverseMass * secondForce.data[ 2 ];
-	betta1.data[ 3 ] = secondInverseInertia.m[ 0 ][ 0 ] * secondTorque.data[ 0 ] + secondInverseInertia.m[ 0 ][ 1 ] * secondTorque.data[ 1 ] + secondInverseInertia.m[ 0 ][ 2 ] * secondTorque.data[ 2 ];
-	betta1.data[ 4 ] = secondInverseInertia.m[ 1 ][ 0 ] * secondTorque.data[ 0 ] + secondInverseInertia.m[ 1 ][ 1 ] * secondTorque.data[ 1 ] + secondInverseInertia.m[ 1 ][ 2 ] * secondTorque.data[ 2 ];
-	betta1.data[ 5 ] = secondInverseInertia.m[ 2 ][ 0 ] * secondTorque.data[ 0 ] + secondInverseInertia.m[ 2 ][ 1 ] * secondTorque.data[ 1 ] + secondInverseInertia.m[ 2 ][ 2 ] * secondTorque.data[ 2 ];
+	betta1._data[ 0 ] = secondInverseMass * secondForce._data[ 0 ];
+	betta1._data[ 1 ] = secondInverseMass * secondForce._data[ 1 ];
+	betta1._data[ 2 ] = secondInverseMass * secondForce._data[ 2 ];
+	betta1._data[ 3 ] = secondInverseInertia._m[ 0 ][ 0 ] * secondTorque._data[ 0 ] + secondInverseInertia._m[ 0 ][ 1 ] * secondTorque._data[ 1 ] + secondInverseInertia._m[ 0 ][ 2 ] * secondTorque._data[ 2 ];
+	betta1._data[ 4 ] = secondInverseInertia._m[ 1 ][ 0 ] * secondTorque._data[ 0 ] + secondInverseInertia._m[ 1 ][ 1 ] * secondTorque._data[ 1 ] + secondInverseInertia._m[ 1 ][ 2 ] * secondTorque._data[ 2 ];
+	betta1._data[ 5 ] = secondInverseInertia._m[ 2 ][ 0 ] * secondTorque._data[ 0 ] + secondInverseInertia._m[ 2 ][ 1 ] * secondTorque._data[ 1 ] + secondInverseInertia._m[ 2 ][ 2 ] * secondTorque._data[ 2 ];
 
 	alpha0.Sum ( alpha0, betta0 );
 	alpha1.Sum ( alpha1, betta1 );
@@ -258,19 +258,19 @@ GXVoid GXPairBodyConstraintSolver::UpdateBodyVelocities ()
 	alpha0.Sum ( alpha0, betta0 );
 	alpha1.Sum ( alpha1, betta1 );
 
-	betta0.data[ 0u ] = firstInverseMass * alpha0.data[ 0u ];
-	betta0.data[ 1u ] = firstInverseMass * alpha0.data[ 1u ];
-	betta0.data[ 2u ] = firstInverseMass * alpha0.data[ 2u ];
-	betta0.data[ 3u ] = firstInverseInertia.m[ 0u ][ 0u ] * alpha0.data[ 3u ] + firstInverseInertia.m[ 0u ][ 1u ] * alpha0.data[ 4u ] + firstInverseInertia.m[ 0u ][ 2u ] * alpha0.data[ 5u ];
-	betta0.data[ 4u ] = firstInverseInertia.m[ 1u ][ 0u ] * alpha0.data[ 3u ] + firstInverseInertia.m[ 1u ][ 1u ] * alpha0.data[ 4u ] + firstInverseInertia.m[ 1u ][ 2u ] * alpha0.data[ 5u ];
-	betta0.data[ 5u ] = firstInverseInertia.m[ 2u ][ 0u ] * alpha0.data[ 3u ] + firstInverseInertia.m[ 2u ][ 1u ] * alpha0.data[ 4u ] + firstInverseInertia.m[ 2u ][ 2u ] * alpha0.data[ 5u ];
+	betta0._data[ 0u ] = firstInverseMass * alpha0._data[ 0u ];
+	betta0._data[ 1u ] = firstInverseMass * alpha0._data[ 1u ];
+	betta0._data[ 2u ] = firstInverseMass * alpha0._data[ 2u ];
+	betta0._data[ 3u ] = firstInverseInertia._m[ 0u ][ 0u ] * alpha0._data[ 3u ] + firstInverseInertia._m[ 0u ][ 1u ] * alpha0._data[ 4u ] + firstInverseInertia._m[ 0u ][ 2u ] * alpha0._data[ 5u ];
+	betta0._data[ 4u ] = firstInverseInertia._m[ 1u ][ 0u ] * alpha0._data[ 3u ] + firstInverseInertia._m[ 1u ][ 1u ] * alpha0._data[ 4u ] + firstInverseInertia._m[ 1u ][ 2u ] * alpha0._data[ 5u ];
+	betta0._data[ 5u ] = firstInverseInertia._m[ 2u ][ 0u ] * alpha0._data[ 3u ] + firstInverseInertia._m[ 2u ][ 1u ] * alpha0._data[ 4u ] + firstInverseInertia._m[ 2u ][ 2u ] * alpha0._data[ 5u ];
 
-	betta1.data[ 0u ] = secondInverseMass * alpha1.data[ 0u ];
-	betta1.data[ 1u ] = secondInverseMass * alpha1.data[ 1u ];
-	betta1.data[ 2u ] = secondInverseMass * alpha1.data[ 2u ];
-	betta1.data[ 3u ] = secondInverseInertia.m[ 0u ][ 0u ] * alpha1.data[ 3u ] + secondInverseInertia.m[ 0u ][ 1u ] * alpha1.data[ 4u ] + secondInverseInertia.m[ 0u ][ 2u ] * alpha1.data[ 5u ];
-	betta1.data[ 4u ] = secondInverseInertia.m[ 1u ][ 0u ] * alpha1.data[ 3u ] + secondInverseInertia.m[ 1u ][ 1u ] * alpha1.data[ 4u ] + secondInverseInertia.m[ 1u ][ 2u ] * alpha1.data[ 5u ];
-	betta1.data[ 5u ] = secondInverseInertia.m[ 2u ][ 0u ] * alpha1.data[ 3u ] + secondInverseInertia.m[ 2u ][ 1u ] * alpha1.data[ 4u ] + secondInverseInertia.m[ 2u ][ 2u ] * alpha1.data[ 5u ];
+	betta1._data[ 0u ] = secondInverseMass * alpha1._data[ 0u ];
+	betta1._data[ 1u ] = secondInverseMass * alpha1._data[ 1u ];
+	betta1._data[ 2u ] = secondInverseMass * alpha1._data[ 2u ];
+	betta1._data[ 3u ] = secondInverseInertia._m[ 0u ][ 0u ] * alpha1._data[ 3u ] + secondInverseInertia._m[ 0u ][ 1u ] * alpha1._data[ 4u ] + secondInverseInertia._m[ 0u ][ 2u ] * alpha1._data[ 5u ];
+	betta1._data[ 4u ] = secondInverseInertia._m[ 1u ][ 0u ] * alpha1._data[ 3u ] + secondInverseInertia._m[ 1u ][ 1u ] * alpha1._data[ 4u ] + secondInverseInertia._m[ 1u ][ 2u ] * alpha1._data[ 5u ];
+	betta1._data[ 5u ] = secondInverseInertia._m[ 2u ][ 0u ] * alpha1._data[ 3u ] + secondInverseInertia._m[ 2u ][ 1u ] * alpha1._data[ 4u ] + secondInverseInertia._m[ 2u ][ 2u ] * alpha1._data[ 5u ];
 
 	GXFloat deltaTime = GXPhysicsEngine::GetInstance ().GetTimeStep ();
 
@@ -283,11 +283,11 @@ GXVoid GXPairBodyConstraintSolver::UpdateBodyVelocities ()
 	alpha0.Sum ( alpha0, betta0 );
 	alpha1.Sum ( alpha1, betta1 );
 
-	firstBody->SetLinearVelocity ( GXVec3 ( alpha0.data[ 0u ], alpha0.data[ 1u ], alpha0.data[ 2u ] ) );
-	firstBody->SetAngularVelocity ( GXVec3 ( alpha0.data[ 3u ], alpha0.data[ 4u ], alpha0.data[ 5u ] ) );
+	firstBody->SetLinearVelocity ( GXVec3 ( alpha0._data[ 0u ], alpha0._data[ 1u ], alpha0._data[ 2u ] ) );
+	firstBody->SetAngularVelocity ( GXVec3 ( alpha0._data[ 3u ], alpha0._data[ 4u ], alpha0._data[ 5u ] ) );
 
-	secondBody->SetLinearVelocity ( GXVec3 ( alpha1.data[ 0u ], alpha1.data[ 1u ], alpha1.data[ 2u ] ) );
-	secondBody->SetAngularVelocity ( GXVec3 ( alpha1.data[ 3u ], alpha1.data[ 4u ], alpha1.data[ 5u ] ) );
+	secondBody->SetLinearVelocity ( GXVec3 ( alpha1._data[ 0u ], alpha1._data[ 1u ], alpha1._data[ 2u ] ) );
+	secondBody->SetAngularVelocity ( GXVec3 ( alpha1._data[ 3u ], alpha1._data[ 4u ], alpha1._data[ 5u ] ) );
 }
 
 const GXVec6& GXPairBodyConstraintSolver::GetJacobianElement ( GXUInt constraint, GXUByte bodyIndex ) const

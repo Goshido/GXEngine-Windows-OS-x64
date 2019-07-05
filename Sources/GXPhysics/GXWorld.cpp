@@ -281,12 +281,12 @@ GXBool GXWorld::Raycast ( const GXVec3 &origin, const GXVec3 &direction, GXFloat
         GXShape& shape = p->body->GetShape ();
         const GXAABB& shapeBounds = shape.GetBoundsWorld ();
 
-        GXFloat t1 = ( shapeBounds.min.GetX () - origin.GetX () ) * inverseX;
-        GXFloat t2 = ( shapeBounds.max.GetX () - origin.GetX () ) * inverseX;
-        GXFloat t3 = ( shapeBounds.min.GetY () - origin.GetY () ) * inverseY;
-        GXFloat t4 = ( shapeBounds.max.GetY () - origin.GetY () ) * inverseY;
-        GXFloat t5 = ( shapeBounds.min.GetZ () - origin.GetZ () ) * inverseZ;
-        GXFloat t6 = ( shapeBounds.max.GetZ () - origin.GetZ () ) * inverseZ;
+        GXFloat t1 = ( shapeBounds._min.GetX () - origin.GetX () ) * inverseX;
+        GXFloat t2 = ( shapeBounds._max.GetX () - origin.GetX () ) * inverseX;
+        GXFloat t3 = ( shapeBounds._min.GetY () - origin.GetY () ) * inverseY;
+        GXFloat t4 = ( shapeBounds._max.GetY () - origin.GetY () ) * inverseY;
+        GXFloat t5 = ( shapeBounds._min.GetZ () - origin.GetZ () ) * inverseZ;
+        GXFloat t6 = ( shapeBounds._max.GetZ () - origin.GetZ () ) * inverseZ;
 
         GXFloat tMin = GXMaxf ( GXMaxf ( GXMinf ( t1, t2 ), GXMinf ( t3, t4 ) ), GXMinf ( t5, t6 ) );
         GXFloat tMax = GXMinf ( GXMinf ( GXMaxf ( t1, t2 ), GXMaxf ( t3, t4 ) ), GXMaxf ( t5, t6 ) );
@@ -366,14 +366,14 @@ GXBool GXWorld::Raycast ( const GXVec3 &origin, const GXVec3 &direction, GXFloat
                 const GXAABB boundsLocal ( shape.GetBoundsLocal () );
 
                 GXVec3 geometryLocal[ 8u ];
-                geometryLocal[ 0u ] = boundsLocal.min;
-                geometryLocal[ 1u ].Init ( boundsLocal.min.GetX (), boundsLocal.min.GetY (), boundsLocal.max.GetZ () );
-                geometryLocal[ 2u ].Init ( boundsLocal.max.GetX (), boundsLocal.min.GetY (), boundsLocal.max.GetZ () );
-                geometryLocal[ 3u ].Init ( boundsLocal.max.GetX (), boundsLocal.min.GetY (), boundsLocal.min.GetZ () );
-                geometryLocal[ 4u ].Init ( boundsLocal.min.GetX (), boundsLocal.max.GetY (), boundsLocal.min.GetZ () );
-                geometryLocal[ 5u ].Init ( boundsLocal.min.GetX (), boundsLocal.max.GetY (), boundsLocal.max.GetZ () );
-                geometryLocal[ 6u ] = boundsLocal.max;
-                geometryLocal[ 7u ].Init ( boundsLocal.max.GetX (), boundsLocal.max.GetY (), boundsLocal.min.GetZ () );
+                geometryLocal[ 0u ] = boundsLocal._min;
+                geometryLocal[ 1u ].Init ( boundsLocal._min.GetX (), boundsLocal._min.GetY (), boundsLocal._max.GetZ () );
+                geometryLocal[ 2u ].Init ( boundsLocal._max.GetX (), boundsLocal._min.GetY (), boundsLocal._max.GetZ () );
+                geometryLocal[ 3u ].Init ( boundsLocal._max.GetX (), boundsLocal._min.GetY (), boundsLocal._min.GetZ () );
+                geometryLocal[ 4u ].Init ( boundsLocal._min.GetX (), boundsLocal._max.GetY (), boundsLocal._min.GetZ () );
+                geometryLocal[ 5u ].Init ( boundsLocal._min.GetX (), boundsLocal._max.GetY (), boundsLocal._max.GetZ () );
+                geometryLocal[ 6u ] = boundsLocal._max;
+                geometryLocal[ 7u ].Init ( boundsLocal._max.GetX (), boundsLocal._max.GetY (), boundsLocal._min.GetZ () );
 
                 const GXUByte indices[ 36u ] =
                 {
@@ -420,7 +420,7 @@ GXBool GXWorld::Raycast ( const GXVec3 &origin, const GXVec3 &direction, GXFloat
                         GXPlane plane;
                         plane.From ( a, b, c );
 
-                        contactNormal.Init ( plane.a, plane.b, plane.c );
+                        contactNormal.Init ( plane._a, plane._b, plane._c );
                         *contactShape = &shape;
 
                         continue;
@@ -434,7 +434,7 @@ GXBool GXWorld::Raycast ( const GXVec3 &origin, const GXVec3 &direction, GXFloat
                     GXPlane plane;
                     plane.From ( a, b, c );
 
-                    contactNormal.Init ( plane.a, plane.b, plane.c );
+                    contactNormal.Init ( plane._a, plane._b, plane._c );
                     *contactShape = &shape;
                 }
             }
