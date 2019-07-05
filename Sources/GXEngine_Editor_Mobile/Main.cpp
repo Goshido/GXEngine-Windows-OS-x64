@@ -6,8 +6,6 @@
 
 int wmain ( int /*argc*/, LPWSTR /*commandline*/ )
 {
-    constexpr GXVec2 pointOf77Degrees ( 0.22495f, 0.97437f );
-
     GXCore& core = GXCore::GetInstance ();
     EMGame* game = new EMGame ();
     core.Start ( *game );
