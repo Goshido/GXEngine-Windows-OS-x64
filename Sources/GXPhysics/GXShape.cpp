@@ -1,94 +1,94 @@
-// version 1.0
+// version 1.1
 
 #include <GXPhysics/GXShape.h>
 #include <GXPhysics/GXRigidBody.h>
 #include <GXCommon/GXLogger.h>
 
 
-#define DEFAULT_STATIC_FRICTION		0.9f
-#define DEFAULT_DYNAMIC_FRICTION	0.4f
-#define DEFAULT_RESTITUTION			0.5f
+#define DEFAULT_STATIC_FRICTION     0.9f
+#define DEFAULT_DYNAMIC_FRICTION    0.4f
+#define DEFAULT_RESTITUTION         0.5f
 
 
-GXShape::GXShape ( eGXShapeType type, GXRigidBody* body )
+GXShape::GXShape ( eGXShapeType type, GXRigidBody* body ):
+    _type ( type ),
+    _body ( body )
 {
-	this->type = type;
-	this->body = body;
 
-	SetFriction ( DEFAULT_STATIC_FRICTION, DEFAULT_DYNAMIC_FRICTION );
-	SetRestitution ( DEFAULT_RESTITUTION );
+    SetFriction ( DEFAULT_STATIC_FRICTION, DEFAULT_DYNAMIC_FRICTION );
+    SetRestitution ( DEFAULT_RESTITUTION );
 
-	transformRigidBody.Identity ();
-	transformWorld.Identity ();
+    _transformRigidBody.Identity ();
+    _transformWorld.Identity ();
 }
 
 GXShape::~GXShape ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 eGXShapeType GXShape::GetType () const
 {
-	return type;
+    return _type;
 }
 
 const GXMat4& GXShape::GetTransformWorld () const
 {
-	return transformWorld;
+    return _transformWorld;
 }
 
 GXVoid GXShape::CalculateCacheData ()
 {
-	if ( !body ) return;
+    if ( !_body ) return;
 
-	const GXMat4& matrix = body->GetTransform ();
-	transformWorld.Multiply ( transformRigidBody, matrix );
+    const GXMat4& matrix = _body->GetTransform ();
+    _transformWorld.Multiply ( _transformRigidBody, matrix );
 
-	UpdateBoundsWorld ();
+    UpdateBoundsWorld ();
 }
 
 GXRigidBody& GXShape::GetRigidBody () const
 {
-	return *body;
+    return *_body;
 }
 
 const GXMat3& GXShape::GetInertiaTensor () const
 {
-	return inertiaTensor;
+    return _inertiaTensor;
 }
 
-GXVoid GXShape::SetFriction ( GXFloat newStaticFriction, GXFloat newDynamicFriction )
+GXVoid GXShape::SetFriction ( GXFloat staticFriction, GXFloat dynamicFriction )
 {
-	staticFriction = newStaticFriction;
-	dynamicFriction = newDynamicFriction;
+    _staticFriction = staticFriction;
+    _dynamicFriction = dynamicFriction;
 }
 
 GXFloat GXShape::GetStaticFriction () const
 {
-	return staticFriction;
+    return _staticFriction;
 }
 
 GXFloat GXShape::GetDynamicFriction () const
 {
-	return dynamicFriction;
+    return _dynamicFriction;
 }
 
-GXVoid GXShape::SetRestitution ( GXFloat newRestitution )
+GXVoid GXShape::SetRestitution ( GXFloat restitution )
 {
-	restitution = newRestitution;
+    _restitution = restitution;
 }
 
 GXFloat GXShape::GetRestitution () const
 {
-	return restitution;
+    return _restitution;
 }
 
 const GXAABB& GXShape::GetBoundsLocal () const
 {
-	return boundsLocal;
+    return _boundsLocal;
 }
 
 const GXAABB& GXShape::GetBoundsWorld () const
 {
-	return boundsWorld;
+    return _boundsWorld;
 }

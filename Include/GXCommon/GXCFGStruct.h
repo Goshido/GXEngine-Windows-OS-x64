@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_CFG_STRUCT
 #define GX_CFG_STRUCT
@@ -9,14 +9,14 @@
 
 struct GXEngineConfiguration final
 {
-	GXUShort		usRendererWidthResoluton;
-	GXUShort		usRendererHeightResoluton;
-	GXUChar			chResampling;
-	GXUChar			chAnisotropy;
-	GXBool			bIsWindowedMode;
-	GXBool			bVSync;
-	GXBool			bDoF;
-	GXBool			bMotionBlur;
+    GXUShort        usRendererWidthResoluton;
+    GXUShort        usRendererHeightResoluton;
+    GXUChar         chResampling;
+    GXUChar         chAnisotropy;
+    GXBool          bIsWindowedMode;
+    GXBool          bVSync;
+    GXBool          bDoF;
+    GXBool          bMotionBlur;
 };
 
 

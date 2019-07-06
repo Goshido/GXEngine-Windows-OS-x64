@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #include <GXCommon/Windows/GXThread.h>
 #include <GXCommon/GXLogger.h>
@@ -13,25 +13,25 @@ GX_RESTORE_WARNING_STATE
 GXThread::GXThread ( PFNGXTHREADPROC procedure, GXVoid* argument ):
     GXAbstractThread ( procedure, argument )
 {
-    thread = INVALID_HANDLE_VALUE;
+    _thread = INVALID_HANDLE_VALUE;
 }
 
 GXThread::~GXThread ()
 {
-    if ( thread == INVALID_HANDLE_VALUE || _state != eGXThreadState::Started ) return;
+    if ( _thread == INVALID_HANDLE_VALUE || _state != eGXThreadState::Started ) return;
 
     GXLogA ( "GXThread::~GXThread::Warning - Поток завершён неверно\n" );
     system ( "pause" );
-    CloseHandle ( thread );
+    CloseHandle ( _thread );
 }
 
 GXVoid GXThread::Start ()
 {
     if ( _state == eGXThreadState::Started ) return;
 
-    thread = reinterpret_cast<HANDLE> ( _beginthreadex ( nullptr, 0u, &GXThread::RootThreadStarter, this, 0, nullptr ) );
+    _thread = reinterpret_cast<HANDLE> ( _beginthreadex ( nullptr, 0u, &GXThread::RootThreadStarter, this, 0, nullptr ) );
 
-    if ( thread == INVALID_HANDLE_VALUE )
+    if ( _thread == INVALID_HANDLE_VALUE )
     {
         GXLogA ( "GXThread::Start::Error - Не удалось создать поток\n" );
         return;
@@ -58,11 +58,11 @@ GXVoid GXThread::Join ()
         return;
     }
 
-    if ( thread == INVALID_HANDLE_VALUE ) return;
+    if ( _thread == INVALID_HANDLE_VALUE ) return;
 
-    WaitForSingleObject ( thread, INFINITE );
-    CloseHandle ( thread );
-    thread = INVALID_HANDLE_VALUE;
+    WaitForSingleObject ( _thread, INFINITE );
+    CloseHandle ( _thread );
+    _thread = INVALID_HANDLE_VALUE;
 }
 
 unsigned __stdcall GXThread::RootThreadStarter ( void* lpThreadParameter )

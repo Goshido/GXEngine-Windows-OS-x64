@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_COLLISION_DATA
 #define GX_COLLISION_DATA
@@ -9,38 +9,38 @@
 
 class GXCollisionData final
 {
-	private:
-		GXUInt			maxContacts;
+    private:
+        GXUInt          _maxContacts;
 
-		GXContact*		contactArray;
-		GXContact*		contacts;
-		GXUInt			contactsLeft;
-		GXUInt			contactCount;
+        GXContact*      _contactArray;
+        GXContact*      _contacts;
+        GXUInt          _contactsLeft;
+        GXUInt          _contactCount;
 
-		GXFloat			friction;
-		GXFloat			restitution;
-		GXFloat			tolerance;
+        GXFloat         _friction;
+        GXFloat         _restitution;
+        GXFloat         _tolerance;
 
-	public:
-		explicit GXCollisionData ( GXUInt maxContacts );
-		~GXCollisionData ();
+    public:
+        explicit GXCollisionData ( GXUInt maxContacts );
+        ~GXCollisionData ();
 
-		GXBool HasMoreContacts () const;
-		GXVoid Reset ();
-		GXVoid AddContacts ( GXUInt count );
+        GXBool HasMoreContacts () const;
+        GXVoid Reset ();
+        GXVoid AddContacts ( GXUInt count );
 
-		GXContact* GetContactsBegin () const;
-		GXContact* GetAllContacts () const;
-		GXUInt GetTotalContacts () const;
-		GXUInt GetContactsLeft () const;
+        GXContact* GetContactsBegin () const;
+        GXContact* GetAllContacts () const;
+        GXUInt GetTotalContacts () const;
+        GXUInt GetContactsLeft () const;
 
-		GXFloat GetFriction () const;
-		GXFloat GetRestitution () const;
-		GXFloat GetTolerance () const;
+        GXFloat GetFriction () const;
+        GXFloat GetRestitution () const;
+        GXFloat GetTolerance () const;
 
-	private:
-		GXCollisionData ( const GXCollisionData &other ) = delete;
-		GXCollisionData& operator = ( const GXCollisionData &other ) = delete;
+    private:
+        GXCollisionData ( const GXCollisionData &other ) = delete;
+        GXCollisionData& operator = ( const GXCollisionData &other ) = delete;
 };
 
 

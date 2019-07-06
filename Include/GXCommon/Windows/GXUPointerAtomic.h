@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.2
 
 #ifndef GX_UPOINTER_ATOMIC_WINDOWS
 #define GX_UPOINTER_ATOMIC_WINDOWS
@@ -17,7 +17,7 @@ class GXUPointerAtomic final : public GXAbstractUPointerAtomic
         typedef LONG                GXAtomicType;
 #endif
 
-        volatile GXAtomicType       v;
+        volatile GXAtomicType       _value;
 
     public:
         GXUPointerAtomic ();
@@ -29,9 +29,9 @@ class GXUPointerAtomic final : public GXAbstractUPointerAtomic
         GXUPointer CompareExchange ( GXUPointer compareValue, GXUPointer exchangeValue ) override;
 
         GXUPointer Read () const override;
-        GXVoid Write ( GXUPointer newValue ) override;
+        GXVoid Write ( GXUPointer value ) override;
 
-        GXVoid operator = ( GXUPointer newValue ) override;
+        GXVoid operator = ( GXUPointer value ) override;
 
         // Note it is cast operator to GXUPointer.
         operator GXUPointer () const override;

@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #ifndef GX_AVL_TREE
 #define GX_AVL_TREE
@@ -10,9 +10,9 @@
 class GXAVLTreeNode : public GXMemoryInspector
 {
     public:
-        GXAVLTreeNode*      left;
-        GXAVLTreeNode*      right;
-        GXUInt              height;
+        GXAVLTreeNode*      _left;
+        GXAVLTreeNode*      _right;
+        GXUInt              _height;
 
     public:
         GXAVLTreeNode ();
@@ -35,12 +35,12 @@ enum class eGXAVLTreeSide : GXUByte
 class GXAVLTree
 {
     protected:
-        GXAVLTreeNode*              root;
-        GXUInt                      totalNodes;
+        GXAVLTreeNode*              _root;
+        GXUInt                      _totalNodes;
 
     private:
-        PFNGXAVLTREECOMPAREPROC     Compare;
-        GXBool                      isAutoClean;
+        PFNGXAVLTREECOMPAREPROC     _comparator;
+        GXBool                      _isAutoClean;
 
     public:
         GXUInt GetTotalNodes () const;

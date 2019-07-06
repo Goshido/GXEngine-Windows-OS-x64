@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_SHAPE
 #define GX_SHAPE
@@ -9,59 +9,60 @@
 
 enum class eGXShapeType : GXUByte
 {
-	Sphere = 0u,
-	Box = 1u,
-	Rectangle = 2u
+    Sphere = 0u,
+    Box = 1u,
+    Rectangle = 2u
 };
 
 class GXRigidBody;
 class GXShape
 {
-	protected:
-		eGXShapeType	type;
-		GXRigidBody*	body;
-		GXMat4			transformRigidBody;
-		GXMat4			transformWorld;
-		GXMat3			inertiaTensor;
+    protected:
+        eGXShapeType    _type;
+        GXRigidBody*    _body;
 
-		GXFloat			staticFriction;
-		GXFloat			dynamicFriction;
-		GXFloat			restitution;
+        GXMat4          _transformRigidBody;
+        GXMat4          _transformWorld;
+        GXMat3          _inertiaTensor;
 
-		GXAABB			boundsLocal;
-		GXAABB			boundsWorld;
+        GXFloat         _staticFriction;
+        GXFloat         _dynamicFriction;
+        GXFloat         _restitution;
 
-	public:
-		explicit GXShape ( eGXShapeType type, GXRigidBody* body );
-		virtual ~GXShape ();
+        GXAABB          _boundsLocal;
+        GXAABB          _boundsWorld;
 
-		eGXShapeType GetType () const;
+    public:
+        explicit GXShape ( eGXShapeType type, GXRigidBody* body );
+        virtual ~GXShape ();
 
-		const GXMat4& GetTransformWorld () const;
-		GXVoid CalculateCacheData ();
-		GXRigidBody& GetRigidBody () const;
+        eGXShapeType GetType () const;
 
-		virtual GXVoid CalculateInertiaTensor ( GXFloat mass ) = 0;
-		const GXMat3& GetInertiaTensor () const;
+        const GXMat4& GetTransformWorld () const;
+        GXVoid CalculateCacheData ();
+        GXRigidBody& GetRigidBody () const;
 
-		virtual GXVoid GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const = 0;
+        virtual GXVoid CalculateInertiaTensor ( GXFloat mass ) = 0;
+        const GXMat3& GetInertiaTensor () const;
 
-		GXVoid SetFriction ( GXFloat newStaticFriction, GXFloat newDynamicFriction );
-		GXFloat GetStaticFriction () const;
-		GXFloat GetDynamicFriction () const;
+        virtual GXVoid GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const = 0;
 
-		GXVoid SetRestitution ( GXFloat newRestitution );
-		GXFloat GetRestitution () const;
+        GXVoid SetFriction ( GXFloat staticFriction, GXFloat dynamicFriction );
+        GXFloat GetStaticFriction () const;
+        GXFloat GetDynamicFriction () const;
 
-		const GXAABB& GetBoundsLocal () const;
-		const GXAABB& GetBoundsWorld () const;
+        GXVoid SetRestitution ( GXFloat restitution );
+        GXFloat GetRestitution () const;
 
-	protected:
-		virtual GXVoid UpdateBoundsWorld () = 0;
+        const GXAABB& GetBoundsLocal () const;
+        const GXAABB& GetBoundsWorld () const;
 
-	private:
-		GXShape ( const GXShape &other ) = delete;
-		GXShape& operator = ( const GXShape &other ) = delete;
+    protected:
+        virtual GXVoid UpdateBoundsWorld () = 0;
+
+    private:
+        GXShape ( const GXShape &other ) = delete;
+        GXShape& operator = ( const GXShape &other ) = delete;
 };
 
 

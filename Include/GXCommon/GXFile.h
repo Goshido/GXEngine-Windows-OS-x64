@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_FILE
 #define GX_FILE
@@ -16,10 +16,10 @@ enum class eGXFileContentOwner : GXUByte
 class GXFile final: public GXMemoryInspector
 {
     protected:
-        GXString                path;
-        GXUByte*                content;
-        GXUPointer              size;
-        eGXFileContentOwner     owner;
+        GXString                _path;
+        GXUByte*                _content;
+        GXUPointer              _size;
+        eGXFileContentOwner     _owner;
 
     public:
         explicit GXFile ( GXString fileName );

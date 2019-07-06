@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #include <GXCommon/Windows/GXUPointerAtomic.h>
 
@@ -26,13 +26,13 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 GXUPointerAtomic::GXUPointerAtomic ():
-    v ( DEFAULT_VALUE )
+    _value ( DEFAULT_VALUE )
 {
     // NOTHING
 }
 
 GXUPointerAtomic::GXUPointerAtomic ( GXUPointer value ):
-    v ( static_cast<GXAtomicType> ( value ) )
+    _value ( static_cast<GXAtomicType> ( value ) )
 {
     // NOTHING
 }
@@ -44,7 +44,7 @@ GXUPointerAtomic::~GXUPointerAtomic ()
 
 GXUPointer GXUPointerAtomic::CompareExchange ( GXUPointer compareValue, GXUPointer exchangeValue )
 {
-    return static_cast<GXUPointer> ( GXInterlockedCompareExchange ( &v, static_cast<GXAtomicType> ( exchangeValue ), static_cast<GXAtomicType> ( compareValue ) ) );
+    return static_cast<GXUPointer> ( GXInterlockedCompareExchange ( &_value, static_cast<GXAtomicType> ( exchangeValue ), static_cast<GXAtomicType> ( compareValue ) ) );
 }
 
 GXUPointer GXUPointerAtomic::Read () const
@@ -52,14 +52,14 @@ GXUPointer GXUPointerAtomic::Read () const
     return static_cast<GXUPointer> ( *this );
 }
 
-GXVoid GXUPointerAtomic::Write ( GXUPointer newValue )
+GXVoid GXUPointerAtomic::Write ( GXUPointer value )
 {
-    GXInterlockedExchange ( &v, static_cast<GXAtomicType> ( newValue ) );
+    GXInterlockedExchange ( &_value, static_cast<GXAtomicType> ( value ) );
 }
 
-GXVoid GXUPointerAtomic::operator = ( GXUPointer newValue )
+GXVoid GXUPointerAtomic::operator = ( GXUPointer value )
 {
-    Write ( newValue );
+    Write ( value );
 }
 
 GXUPointer GXUPointerAtomic::operator + ( GXUPointer value )
@@ -69,12 +69,12 @@ GXUPointer GXUPointerAtomic::operator + ( GXUPointer value )
 
 GXUPointer GXUPointerAtomic::operator += ( GXUPointer value )
 {
-    return static_cast<GXUPointer> ( GXInterlockedAdd ( &v, static_cast<GXAtomicType> ( value ) ) );
+    return static_cast<GXUPointer> ( GXInterlockedAdd ( &_value, static_cast<GXAtomicType> ( value ) ) );
 }
 
 GXUPointer GXUPointerAtomic::operator ++ ()
 {
-    return static_cast<GXUPointer> ( GXInterlockedIncrement ( &v ) );
+    return static_cast<GXUPointer> ( GXInterlockedIncrement ( &_value ) );
 }
 
 GXUPointer GXUPointerAtomic::operator - ( GXUPointer value )
@@ -84,12 +84,12 @@ GXUPointer GXUPointerAtomic::operator - ( GXUPointer value )
 
 GXUPointer GXUPointerAtomic::operator -= ( GXUPointer value )
 {
-    return static_cast<GXUPointer> ( GXInterlockedAdd ( &v, -static_cast<GXAtomicType> ( value ) ) );
+    return static_cast<GXUPointer> ( GXInterlockedAdd ( &_value, -static_cast<GXAtomicType> ( value ) ) );
 }
 
 GXUPointer GXUPointerAtomic::operator -- ()
 {
-    return static_cast<GXUPointer> ( GXInterlockedDecrement ( &v ) );
+    return static_cast<GXUPointer> ( GXInterlockedDecrement ( &_value ) );
 }
 
 GXBool GXUPointerAtomic::operator == ( GXUPointer testValue ) const
@@ -124,7 +124,7 @@ GXBool GXUPointerAtomic::operator <= ( GXUPointer testValue ) const
 
 GXUPointerAtomic::operator GXUPointer () const
 {
-    GXUPointer result = static_cast<GXUPointer> ( v );
+    GXUPointer result = static_cast<GXUPointer> ( _value );
 
 #ifdef _M_X64
 

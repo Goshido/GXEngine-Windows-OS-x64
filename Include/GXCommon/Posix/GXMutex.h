@@ -11,7 +11,7 @@
 class GXMutex
 {
 	private:
-		pthread_mutex_t		mutex;
+		pthread_mutex_t		_mutex;
 
 	public:
 		GXMutex ();

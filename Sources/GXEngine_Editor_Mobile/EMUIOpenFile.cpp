@@ -125,13 +125,13 @@ GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
     if ( GXGetDirectoryInfo ( directoryInfo, currentDirectory ) )
     {
         free ( currentDirectory );
-        GXWcsclone ( &currentDirectory, directoryInfo.absolutePath );
+        GXWcsclone ( &currentDirectory, directoryInfo._absolutePath );
         fileListBox->Clear ();
         filePathStaticText->SetText ( GetRelativePath () );
 
-        if ( GXWcscmp ( directoryInfo.absolutePath, rootDirectory ) == 0 )
+        if ( GXWcscmp ( directoryInfo._absolutePath, rootDirectory ) == 0 )
         {
-            totalItems = directoryInfo.totalFiles + directoryInfo.totalFolders - 2; // Exclude . and .. directories
+            totalItems = directoryInfo._totalFiles + directoryInfo._totalFolders - 2; // Exclude . and .. directories
 
             if ( totalItems == 0u ) return;
 
@@ -139,52 +139,52 @@ GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
             GXBool isRootNotExcluded = GX_TRUE;
             GXBool isWorkingDirectoryNotExcluded = GX_TRUE;
 
-            for ( GXUInt i = 0u; i < directoryInfo.totalFolders; ++i )
+            for ( GXUInt i = 0u; i < directoryInfo._totalFolders; ++i )
             {
-                if ( isRootNotExcluded && GXWcscmp ( directoryInfo.folderNames[ i ], L".." ) == 0 )
+                if ( isRootNotExcluded && GXWcscmp ( directoryInfo._folderNames[ i ], L".." ) == 0 )
                 {
                     isRootNotExcluded = GX_FALSE;
                     continue;
                 }
 
-                if ( isWorkingDirectoryNotExcluded && GXWcscmp ( directoryInfo.folderNames[ i ], L"." ) == 0 )
+                if ( isWorkingDirectoryNotExcluded && GXWcscmp ( directoryInfo._folderNames[ i ], L"." ) == 0 )
                 {
                     isWorkingDirectoryNotExcluded = GX_FALSE;
                     continue;
                 }
 
                 items[ itemIndex ].SetType ( eEMUIFileListBoxItemType::Folder );
-                items[ itemIndex ].SetName ( directoryInfo.folderNames[ i ] );
+                items[ itemIndex ].SetName ( directoryInfo._folderNames[ i ] );
                 ++itemIndex;
             }
         }
         else
         {
-            totalItems = directoryInfo.totalFiles + directoryInfo.totalFolders - 1; // Exclude . directory
+            totalItems = directoryInfo._totalFiles + directoryInfo._totalFolders - 1; // Exclude . directory
 
             if ( totalItems == 0u ) return;
 
             items = static_cast<EMUIFileListBoxItem*> ( malloc ( totalItems * sizeof ( EMUIFileListBoxItem ) ) );
             GXBool isWorkingDirectoryNotExcluded = GX_TRUE;
 
-            for ( GXUInt i = 0u; i < directoryInfo.totalFolders; ++i )
+            for ( GXUInt i = 0u; i < directoryInfo._totalFolders; ++i )
             {
-                if ( isWorkingDirectoryNotExcluded && GXWcscmp ( directoryInfo.folderNames[ i ], L"." ) == 0 )
+                if ( isWorkingDirectoryNotExcluded && GXWcscmp ( directoryInfo._folderNames[ i ], L"." ) == 0 )
                 {
                     isWorkingDirectoryNotExcluded = GX_FALSE;
                     continue;
                 }
 
                 items[ itemIndex ].SetType ( eEMUIFileListBoxItemType::Folder );
-                items[ itemIndex ].SetName ( directoryInfo.folderNames[ i ] );
+                items[ itemIndex ].SetName ( directoryInfo._folderNames[ i ] );
                 ++itemIndex;
             }
         }
 
-        for ( GXUInt i = 0u; i < directoryInfo.totalFiles; ++i )
+        for ( GXUInt i = 0u; i < directoryInfo._totalFiles; ++i )
         {
             items[ itemIndex ].SetType ( eEMUIFileListBoxItemType::File );
-            items[ itemIndex ].SetName ( directoryInfo.fileNames[ i ] );
+            items[ itemIndex ].SetName ( directoryInfo._fileNames[ i ] );
             ++itemIndex;
         }
 

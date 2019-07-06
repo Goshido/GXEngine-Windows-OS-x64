@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXPhysics/GXRigidBody.h>
 #include <GXPhysics/GXShape.h>
@@ -7,424 +7,429 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define DEFAULT_MASS				1.0f
+#define DEFAULT_MASS                    1.0f
 
-#define DEFAULT_LOCATION_X			0.0f
-#define DEFAULT_LOCATION_Y			0.0f
-#define DEFAULT_LOCATION_Z			0.0f
+#define DEFAULT_LOCATION_X              0.0f
+#define DEFAULT_LOCATION_Y              0.0f
+#define DEFAULT_LOCATION_Z              0.0f
 
-#define DEFAULT_ROTATION_AXIS_X		0.0f
-#define DEFAULT_ROTATION_AXIS_Y		0.0f
-#define DEFAULT_ROTATION_AXIS_Z		1.0f
-#define DEFAULT_ROTATION_ANGLE		0.0f
+#define DEFAULT_ROTATION_AXIS_X         0.0f
+#define DEFAULT_ROTATION_AXIS_Y         0.0f
+#define DEFAULT_ROTATION_AXIS_Z         1.0f
+#define DEFAULT_ROTATION_ANGLE          0.0f
 
-#define DEFAULT_LINEAR_VELOCITY_X	0.0f
-#define DEFAULT_LINEAR_VELOCITY_Y	0.0f
-#define DEFAULT_LINEAR_VELOCITY_Z	0.0f
+#define DEFAULT_LINEAR_VELOCITY_X       0.0f
+#define DEFAULT_LINEAR_VELOCITY_Y       0.0f
+#define DEFAULT_LINEAR_VELOCITY_Z       0.0f
 
-#define DEFAULT_ANGULAR_VELOCITY_X	0.0f
-#define DEFAULT_ANGULAR_VELOCITY_Y	0.0f
-#define DEFAULT_ANGULAR_VELOCITY_Z	0.0f
+#define DEFAULT_ANGULAR_VELOCITY_X      0.0f
+#define DEFAULT_ANGULAR_VELOCITY_Y      0.0f
+#define DEFAULT_ANGULAR_VELOCITY_Z      0.0f
 
-#define DEFALUT_LINEAR_DAMPING		0.8f
-#define DEFAULT_ANGULAR_DAMPING		0.8f
+#define DEFALUT_LINEAR_DAMPING          0.8f
+#define DEFAULT_ANGULAR_DAMPING         0.8f
 
+//---------------------------------------------------------------------------------------------------------------------
 
-GXRigidBody::GXRigidBody ()
+GXRigidBody::GXRigidBody ():
+    _shape ( nullptr ),
+    _handler ( nullptr ),
+    _OnTransformChanged ( nullptr )
 {
-	SetMass ( DEFAULT_MASS );
+    SetMass ( DEFAULT_MASS );
 
-	shape = nullptr;
+    constexpr GXVec3 defaultLocation ( DEFAULT_LOCATION_X, DEFAULT_LOCATION_Y, DEFAULT_LOCATION_Z );
+    SetLocation ( defaultLocation );
 
-	handler = nullptr;
-	OnTransformChanged = nullptr;
+    GXQuat rot;
+    constexpr GXVec3 defaultRotationDirection ( DEFAULT_ROTATION_AXIS_X, DEFAULT_ROTATION_AXIS_Y, DEFAULT_ROTATION_AXIS_Z );
+    rot.FromAxisAngle ( defaultRotationDirection, DEFAULT_ROTATION_ANGLE );
+    SetRotaton ( rot );
 
-	GXVec3 vec ( DEFAULT_LOCATION_X, DEFAULT_LOCATION_Y, DEFAULT_LOCATION_Z );
-	SetLocation ( vec );
+    constexpr GXVec3 defaultLinearVelocity ( DEFAULT_LINEAR_VELOCITY_X, DEFAULT_LINEAR_VELOCITY_Y, DEFAULT_LINEAR_VELOCITY_Z );
+    SetLinearVelocity ( defaultLinearVelocity );
 
-	GXQuat rot;
-	vec.Init ( DEFAULT_ROTATION_AXIS_X, DEFAULT_ROTATION_AXIS_Y, DEFAULT_ROTATION_AXIS_Z );
-	rot.FromAxisAngle ( vec, DEFAULT_ROTATION_ANGLE );
-	SetRotaton ( rot );
+    constexpr GXVec3 defaultAngularVelocity ( DEFAULT_ANGULAR_VELOCITY_X, DEFAULT_ANGULAR_VELOCITY_Y, DEFAULT_ANGULAR_VELOCITY_Z );
+    SetAngularVelocity ( defaultAngularVelocity );
 
-	vec.Init ( DEFAULT_LINEAR_VELOCITY_X, DEFAULT_LINEAR_VELOCITY_Y, DEFAULT_LINEAR_VELOCITY_Z );
-	SetLinearVelocity ( vec );
+    SetLinearDamping ( DEFALUT_LINEAR_DAMPING );
+    SetAngularDamping ( DEFAULT_ANGULAR_DAMPING );
 
-	vec.Init ( DEFAULT_ANGULAR_VELOCITY_X, DEFAULT_ANGULAR_VELOCITY_Y, DEFAULT_ANGULAR_VELOCITY_Z );
-	SetAngularVelocity ( vec );
-
-	SetLinearDamping ( DEFALUT_LINEAR_DAMPING );
-	SetAngularDamping ( DEFAULT_ANGULAR_DAMPING );
-
-	DisableKinematic ();
-	ClearAccumulators ();
-	
-	SetAwake ();
-	SetCanSleep ( GX_TRUE );
+    DisableKinematic ();
+    ClearAccumulators ();
+    
+    SetAwake ();
+    SetCanSleep ( GX_TRUE );
 }
 
 GXRigidBody::~GXRigidBody ()
 {
-	GXSafeDelete ( shape );
+    GXSafeDelete ( _shape );
 }
 
 GXVoid GXRigidBody::SetOnTransformChangedCallback ( GXVoid* handlerObject, PFNRIGIDBODYONTRANSFORMCHANGED callback )
 {
-	handler = handlerObject;
-	OnTransformChanged = callback;
+    _handler = handlerObject;
+    _OnTransformChanged = callback;
 }
 
 GXVoid GXRigidBody::CalculateCachedData ()
 {
-	rotation.Normalize ();
-	transform.FromFast ( rotation, location );
+    _rotation.Normalize ();
+    _transform.FromFast ( _rotation, _location );
 
-	if ( OnTransformChanged )
-		OnTransformChanged ( handler, *this );
+    if ( _OnTransformChanged )
+        _OnTransformChanged ( _handler, *this );
 
-	GXMat3 alpha ( transform );
-	inverseTransform.Transponse ( alpha );
+    GXMat3 alpha ( _transform );
+    _inverseTransform.Transponse ( alpha );
 
-	GXMat3 betta;
-	betta.Multiply ( alpha, shape->GetInertiaTensor () );
+    GXMat3 betta;
+    betta.Multiply ( alpha, _shape->GetInertiaTensor () );
 
-	GXMat3 inertiaTensorWorld;
-	inertiaTensorWorld.Multiply ( betta, inverseTransform );
+    GXMat3 inertiaTensorWorld;
+    inertiaTensorWorld.Multiply ( betta, _inverseTransform );
 
-	inverseInertiaTensorWorld.Inverse ( inertiaTensorWorld );
+    _inverseInertiaTensorWorld.Inverse ( inertiaTensorWorld );
 
-	shape->CalculateCacheData ();
+    _shape->CalculateCacheData ();
 }
 
 GXVoid GXRigidBody::ClearAccumulators ()
 {
-	const GXVec3 zero ( 0.0f, 0.0f, 0.0f );
+    constexpr GXVec3 zero ( 0.0f, 0.0f, 0.0f );
 
-	totalForce = zero;
-	totalTorque = zero;
+    _totalForce = zero;
+    _totalTorque = zero;
 }
 
 const GXMat3& GXRigidBody::GetInverseInertiaTensorWorld () const
 {
-	return inverseInertiaTensorWorld;
+    return _inverseInertiaTensorWorld;
 }
 
 GXVoid GXRigidBody::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 {
-	location.Init ( x, y, z );
-	transform.SetW ( location );
+    _location.Init ( x, y, z );
+    _transform.SetW ( _location );
 
-	if ( OnTransformChanged )
-		OnTransformChanged ( handler, *this );
+    if ( _OnTransformChanged )
+        _OnTransformChanged ( _handler, *this );
 
-	if ( shape )
-		shape->CalculateCacheData ();
+    if ( !_shape ) return;
+
+    _shape->CalculateCacheData ();
 }
 
 GXVoid GXRigidBody::SetLocation ( const GXVec3 &newLocation )
 {
-	location = newLocation;
-	transform.SetW ( location );
+    _location = newLocation;
+    _transform.SetW ( _location );
 
-	if ( OnTransformChanged )
-		OnTransformChanged ( handler, *this );
+    if ( _OnTransformChanged )
+        _OnTransformChanged ( _handler, *this );
 
-	if ( shape )
-		shape->CalculateCacheData ();
+    if ( !_shape ) return;
+
+    _shape->CalculateCacheData ();
 }
 
 const GXVec3& GXRigidBody::GetLocation () const
 {
-	return location;
+    return _location;
 }
 
 GXVoid GXRigidBody::SetRotaton ( const GXQuat &newRotation )
 {
-	rotation = newRotation;
-	transform.From ( rotation, location );
+    _rotation = newRotation;
+    _transform.From ( _rotation, _location );
 
-	if ( OnTransformChanged )
-		OnTransformChanged ( handler, *this );
+    if ( _OnTransformChanged )
+        _OnTransformChanged ( _handler, *this );
 
-	if ( shape )
-	{
-		shape->CalculateCacheData ();
-		CalculateCachedData ();
-	}
+    if ( !_shape ) return;
+
+    _shape->CalculateCacheData ();
+    CalculateCachedData ();
 }
 
 const GXQuat& GXRigidBody::GetRotation () const
 {
-	return rotation;
+    return _rotation;
 }
 
 GXVoid GXRigidBody::SetLinearVelocity ( const GXVec3 &velocity )
 {
-	linearVelocity = velocity;
+    _linearVelocity = velocity;
 }
 
 const GXVec3& GXRigidBody::GetLinearVelocity () const
 {
-	return linearVelocity;
+    return _linearVelocity;
 }
 
 GXVoid GXRigidBody::AddLinearVelocity ( const GXVec3 &velocity )
 {
-	linearVelocity.Sum ( linearVelocity, velocity );
+    _linearVelocity.Sum ( _linearVelocity, velocity );
 }
 
 GXVoid GXRigidBody::SetAngularVelocity ( const GXVec3 &velocity )
 {
-	angularVelocity = velocity;
+    _angularVelocity = velocity;
 }
 
 const GXVec3& GXRigidBody::GetAngularVelocity () const
 {
-	return angularVelocity;
+    return _angularVelocity;
 }
 
 GXVoid GXRigidBody::AddAngularVelocity ( const GXVec3 &velocity )
 {
-	angularVelocity.Sum ( angularVelocity, velocity );
+    _angularVelocity.Sum ( _angularVelocity, velocity );
 }
 
 GXVoid GXRigidBody::SetMass ( GXFloat newMass )
 {
-	mass = newMass;
-	inverseMass = 1.0f / mass;
+    _mass = newMass;
+    _inverseMass = 1.0f / _mass;
 }
 
 GXFloat GXRigidBody::GetMass () const
 {
-	return mass;
+    return _mass;
 }
 
 GXFloat GXRigidBody::GetInverseMass () const
 {
-	return inverseMass;
+    return _inverseMass;
 }
 
 GXVoid GXRigidBody::SetLinearDamping ( GXFloat damping )
 {
-	linearDamping = damping;
+    _linearDamping = damping;
 }
 
 GXFloat GXRigidBody::GetLinearDamping () const
 {
-	return linearDamping;
+    return _linearDamping;
 }
 
 GXVoid GXRigidBody::SetAngularDamping ( GXFloat damping )
 {
-	angularDamping = damping;
+    _angularDamping = damping;
 }
 
 GXFloat GXRigidBody::GetAngularDamping () const
 {
-	return angularDamping;
+    return _angularDamping;
 }
 
 GXVoid GXRigidBody::SetShape ( GXShape &newShape )
 {
-	shape = &newShape;
-	shape->CalculateInertiaTensor ( mass );
-	shape->CalculateCacheData ();
-	CalculateCachedData ();
+    _shape = &newShape;
+    _shape->CalculateInertiaTensor ( _mass );
+    _shape->CalculateCacheData ();
+    CalculateCachedData ();
 }
 
 GXShape& GXRigidBody::GetShape ()
 {
-	return *shape;
+    return *_shape;
 }
 
 const GXVec3& GXRigidBody::GetLastFrameAcceleration () const
 {
-	return lastFrameAcceleration;
+    return _lastFrameAcceleration;
 }
 
 GXVoid GXRigidBody::TranslatePointToWorld ( GXVec3 &out, const GXVec3 &pointLocal )
 {
-	transform.MultiplyAsPoint ( out, pointLocal );
+    _transform.MultiplyAsPoint ( out, pointLocal );
 }
 
 const GXMat4& GXRigidBody::GetTransform () const
 {
-	return transform;
+    return _transform;
 }
 
 GXVoid GXRigidBody::SetAwake ()
 {
-	isAwake = GX_TRUE;
-	sleepTimeout = 0.0f;
+    _isAwake = GX_TRUE;
+    _sleepTimeout = 0.0f;
 }
 
 GXVoid GXRigidBody::SetSleep ()
 {
-	isAwake = GX_FALSE;
-	linearVelocity.Init ( 0.0f, 0.0f, 0.0f );
-	angularVelocity.Init ( 0.0f, 0.0f, 0.0f );
+    constexpr GXVec3 zero ( 0.0f, 0.0f, 0.0f );
+
+    _isAwake = GX_FALSE;
+    _linearVelocity = zero;
+    _angularVelocity = zero;
 }
 
 GXBool GXRigidBody::IsAwake () const
 {
-	return isAwake;
+    return _isAwake;
 }
 
 GXVoid GXRigidBody::EnableKinematic ()
 {
-	isKinematic = GX_TRUE;
+    _isKinematic = GX_TRUE;
 }
 
 GXVoid GXRigidBody::DisableKinematic ()
 {
-	isKinematic = GX_FALSE;
+    _isKinematic = GX_FALSE;
 }
 
 GXBool GXRigidBody::IsKinematic () const
 {
-	return isKinematic;
+    return _isKinematic;
 }
 
 GXVoid GXRigidBody::AddForce ( const GXVec3 &forceWorld )
 {
-	totalForce.Sum ( totalForce, forceWorld );
+    _totalForce.Sum ( _totalForce, forceWorld );
 }
 
 GXVoid GXRigidBody::SetCanSleep ( GXBool isCanSleep )
 {
-	canSleep = isCanSleep;
+    _canSleep = isCanSleep;
 
-	if ( !canSleep && !isAwake )
-		SetAwake ();
+    if ( !_canSleep && !_isAwake )
+    {
+        SetAwake ();
+    }
 }
 
 GXVoid GXRigidBody::AddForceAtPointLocal ( const GXVec3 &forceWorld, const GXVec3 &pointLocal )
 {
-	GXVec3 pointWorld;
-	TranslatePointToWorld ( pointWorld, pointLocal );
-	AddForceAtPointWorld ( forceWorld, pointWorld );
+    GXVec3 pointWorld;
+    TranslatePointToWorld ( pointWorld, pointLocal );
+    AddForceAtPointWorld ( forceWorld, pointWorld );
 }
 
 GXVoid GXRigidBody::AddForceAtPointWorld ( const GXVec3 &forceWorld, const GXVec3 &pointWorld )
 {
-	totalForce.Sum ( totalForce, forceWorld );
+    _totalForce.Sum ( _totalForce, forceWorld );
 
-	GXVec3 p;
-	p.Substract ( pointWorld, location );
+    GXVec3 p;
+    p.Substract ( pointWorld, _location );
 
-	GXVec3 torque;
-	torque.CrossProduct ( p, forceWorld );
-	totalTorque.Sum ( totalTorque, torque );
+    GXVec3 torque;
+    torque.CrossProduct ( p, forceWorld );
+    _totalTorque.Sum ( _totalTorque, torque );
 
-	isAwake = GX_TRUE;
+    _isAwake = GX_TRUE;
 }
 
 const GXVec3& GXRigidBody::GetTotalForce () const
 {
-	return totalForce;
+    return _totalForce;
 }
 
 const GXVec3& GXRigidBody::GetTotalTorque () const
 {
-	return totalTorque;
+    return _totalTorque;
 }
 
 GXVoid GXRigidBody::AddImpulseAtPointWorld ( const GXVec3 &impulseWorld, const GXVec3 &pointWorld )
 {
-	if ( isKinematic ) return;
+    if ( _isKinematic ) return;
 
-	GXVec3 centerOfMassToPointWorld;
-	centerOfMassToPointWorld.Substract ( pointWorld, location );
+    GXVec3 centerOfMassToPointWorld;
+    centerOfMassToPointWorld.Substract ( pointWorld, _location );
 
-	GXVec3 alpha ( centerOfMassToPointWorld );
-	alpha.Normalize ();
+    GXVec3 alpha ( centerOfMassToPointWorld );
+    alpha.Normalize ();
 
-	GXVec3 betta ( impulseWorld );
-	betta.Normalize ();
+    GXVec3 betta ( impulseWorld );
+    betta.Normalize ();
 
-	GXVec3 gamma;
-	gamma.Multiply ( impulseWorld, -alpha.DotProduct ( betta ) * inverseMass );
+    GXVec3 gamma;
+    gamma.Multiply ( impulseWorld, -alpha.DotProduct ( betta ) * _inverseMass );
 
-	linearVelocity.Sum ( linearVelocity, gamma );
+    _linearVelocity.Sum ( _linearVelocity, gamma );
 
-	if ( !isAwake )
-		isAwake = GX_TRUE;
-	// TODO
+    if ( _isAwake ) return;
+
+    _isAwake = GX_TRUE;
+    // TODO
 }
 
 GXVoid GXRigidBody::Integrate ( GXFloat deltaTime )
 {
-	if ( isKinematic )
-	{
-		location.Sum ( location, deltaTime, linearVelocity );
+    if ( _isKinematic )
+    {
+        _location.Sum ( _location, deltaTime, _linearVelocity );
 
-		GXQuat betta ( 0.0f, angularVelocity.GetX (), angularVelocity.GetY (), angularVelocity.GetZ () );
-		betta.Multiply ( betta, deltaTime * 0.5f );
+        GXQuat betta ( 0.0f, _angularVelocity.GetX (), _angularVelocity.GetY (), _angularVelocity.GetZ () );
+        betta.Multiply ( betta, deltaTime * 0.5f );
 
-		GXQuat gamma;
-		gamma.Multiply ( betta, rotation );
+        GXQuat gamma;
+        gamma.Multiply ( betta, _rotation );
 
-		rotation.Sum ( rotation, gamma );
+        _rotation.Sum ( _rotation, gamma );
 
-		CalculateCachedData ();
-		return;
-	}
+        CalculateCachedData ();
+        return;
+    }
 
-	if ( !isAwake ) return;
+    if ( !_isAwake ) return;
 
-	lastFrameAcceleration.Sum ( acceleration, inverseMass, totalForce );
+    _lastFrameAcceleration.Sum ( _acceleration, _inverseMass, _totalForce );
 
-	GXVec3 angularAcceleration;
-	inverseInertiaTensorWorld.MultiplyMatrixVector ( angularAcceleration, totalTorque );
+    GXVec3 angularAcceleration;
+    _inverseInertiaTensorWorld.MultiplyMatrixVector ( angularAcceleration, _totalTorque );
 
-	linearVelocity.Sum ( linearVelocity, deltaTime, lastFrameAcceleration );
-	angularVelocity.Sum ( angularVelocity, deltaTime, angularAcceleration );
+    _linearVelocity.Sum ( _linearVelocity, deltaTime, _lastFrameAcceleration );
+    _angularVelocity.Sum ( _angularVelocity, deltaTime, angularAcceleration );
 
-	linearVelocity.Multiply ( linearVelocity, powf ( linearDamping, deltaTime ) );
-	angularVelocity.Multiply ( angularVelocity, powf ( angularDamping, deltaTime ) );
+    _linearVelocity.Multiply ( _linearVelocity, powf ( _linearDamping, deltaTime ) );
+    _angularVelocity.Multiply ( _angularVelocity, powf ( _angularDamping, deltaTime ) );
 
-	lastFrameLocation = location;
-	location.Sum ( location, deltaTime, linearVelocity );
+    _lastFrameLocation = _location;
+    _location.Sum ( _location, deltaTime, _linearVelocity );
 
-	GXQuat betta ( 0.0f, angularVelocity.GetX (), angularVelocity.GetY (), angularVelocity.GetZ () );
-	betta.Multiply ( betta, deltaTime * 0.5f );
+    GXQuat betta ( 0.0f, _angularVelocity.GetX (), _angularVelocity.GetY (), _angularVelocity.GetZ () );
+    betta.Multiply ( betta, deltaTime * 0.5f );
 
-	GXQuat gamma;
-	gamma.Multiply ( betta, rotation );
+    GXQuat gamma;
+    gamma.Multiply ( betta, _rotation );
 
-	lastFrameRotation = rotation;
-	rotation.Sum ( rotation, gamma );
-	
-	CalculateCachedData ();
+    _lastFrameRotation = _rotation;
+    _rotation.Sum ( _rotation, gamma );
+    
+    CalculateCachedData ();
 
-	if ( !canSleep ) return;
+    if ( !_canSleep ) return;
 
-	GXPhysicsEngine& physicsEngine = GXPhysicsEngine::GetInstance ();
+    GXPhysicsEngine& physicsEngine = GXPhysicsEngine::GetInstance ();
 
-	GXVec3 locationDifference;
-	locationDifference.Substract ( location, lastFrameLocation );
+    GXVec3 locationDifference;
+    locationDifference.Substract ( _location, _lastFrameLocation );
 
-	if ( locationDifference.SquaredLength () > physicsEngine.GetMaximumLocationChangeSquaredDeviation () )
-	{
-		sleepTimeout = 0.0f;
-		return;
-	}
+    if ( locationDifference.SquaredLength () > physicsEngine.GetMaximumLocationChangeSquaredDeviation () )
+    {
+        _sleepTimeout = 0.0f;
+        return;
+    }
 
-	GXVec4 yotta ( rotation.GetA (), rotation.GetB (), rotation.GetC (), rotation.GetR () );
-	GXVec4 phi ( lastFrameRotation.GetA (), lastFrameRotation.GetB (), lastFrameRotation.GetC (), lastFrameRotation.GetR () );
+    const GXVec4 yotta ( _rotation.GetA (), _rotation.GetB (), _rotation.GetC (), _rotation.GetR () );
+    const GXVec4 phi ( _lastFrameRotation.GetA (), _lastFrameRotation.GetB (), _lastFrameRotation.GetC (), _lastFrameRotation.GetR () );
 
-	GXVec4 difference;
-	difference.Substract ( yotta, phi );
+    GXVec4 difference;
+    difference.Substract ( yotta, phi );
 
-	if ( difference.SquaredLength () > physicsEngine.GetMaximumRotationChangeSquaredDeviation () )
-	{
-		sleepTimeout = 0.0f;
-		return;
-	}
+    if ( difference.SquaredLength () > physicsEngine.GetMaximumRotationChangeSquaredDeviation () )
+    {
+        _sleepTimeout = 0.0f;
+        return;
+    }
 
-	sleepTimeout += deltaTime;
+    _sleepTimeout += deltaTime;
 
-	if ( sleepTimeout < physicsEngine.GetSleepTimeout () ) return;
+    if ( _sleepTimeout < physicsEngine.GetSleepTimeout () ) return;
 
-	SetSleep ();
+    SetSleep ();
 }

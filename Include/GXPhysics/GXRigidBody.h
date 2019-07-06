@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_RIGID_BODY
 #define GX_RIGID_BODY
@@ -13,105 +13,105 @@ typedef GXVoid ( GXCALL* PFNRIGIDBODYONTRANSFORMCHANGED ) ( GXVoid* handler, con
 class GXShape;
 class GXRigidBody final
 {
-	private:
-		GXFloat							mass;
-		GXFloat							inverseMass;
+    private:
+        GXShape*                            _shape;
 
-		GXVec3							location;
-		GXVec3							lastFrameLocation;
+        GXVoid*                             _handler;
+        PFNRIGIDBODYONTRANSFORMCHANGED      _OnTransformChanged;
 
-		GXQuat							rotation;
-		GXQuat							lastFrameRotation;
+        GXFloat                             _mass;
+        GXFloat                             _inverseMass;
 
-		GXVec3							linearVelocity;
-		GXVec3							angularVelocity;
+        GXVec3                              _location;
+        GXVec3                              _lastFrameLocation;
 
-		GXVec3							totalForce;
-		GXVec3							totalTorque;
+        GXQuat                              _rotation;
+        GXQuat                              _lastFrameRotation;
 
-		GXFloat							linearDamping;
-		GXFloat							angularDamping;
+        GXVec3                              _linearVelocity;
+        GXVec3                              _angularVelocity;
 
-		GXBool							isAwake;
-		GXBool							canSleep;
-		GXFloat							sleepTimeout;
-		GXBool							isKinematic;
+        GXVec3                              _totalForce;
+        GXVec3                              _totalTorque;
 
-		GXVec3							acceleration;
-		GXVec3							lastFrameAcceleration;
+        GXFloat                             _linearDamping;
+        GXFloat                             _angularDamping;
 
-		GXMat4							transform;
-		GXMat3							inverseTransform;
-		GXMat3							inverseInertiaTensorWorld;
+        GXBool                              _isAwake;
+        GXBool                              _canSleep;
+        GXFloat                             _sleepTimeout;
+        GXBool                              _isKinematic;
 
-		GXShape*						shape;
+        GXVec3                              _acceleration;
+        GXVec3                              _lastFrameAcceleration;
 
-		GXVoid*							handler;
-		PFNRIGIDBODYONTRANSFORMCHANGED	OnTransformChanged;
+        GXMat4                              _transform;
+        GXMat3                              _inverseTransform;
+        GXMat3                              _inverseInertiaTensorWorld;
 
-	public:
-		GXRigidBody ();
-		~GXRigidBody ();
+    public:
+        GXRigidBody ();
+        ~GXRigidBody ();
 
-		GXVoid SetOnTransformChangedCallback ( GXVoid* handlerObject, PFNRIGIDBODYONTRANSFORMCHANGED callback );
+        GXVoid SetOnTransformChangedCallback ( GXVoid* handlerObject, PFNRIGIDBODYONTRANSFORMCHANGED callback );
 
-		GXVoid CalculateCachedData ();
-		GXVoid ClearAccumulators ();
+        GXVoid CalculateCachedData ();
+        GXVoid ClearAccumulators ();
 
-		const GXMat3& GetInverseInertiaTensorWorld () const;
+        const GXMat3& GetInverseInertiaTensorWorld () const;
 
-		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
-		GXVoid SetLocation ( const GXVec3 &newLocation );
-		const GXVec3& GetLocation () const;
+        GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
+        GXVoid SetLocation ( const GXVec3 &newLocation );
+        const GXVec3& GetLocation () const;
 
-		GXVoid SetRotaton ( const GXQuat &newRotation );
-		const GXQuat& GetRotation () const;
+        GXVoid SetRotaton ( const GXQuat &newRotation );
+        const GXQuat& GetRotation () const;
 
-		GXVoid SetLinearVelocity ( const GXVec3 &velocity );
-		const GXVec3& GetLinearVelocity () const;
-		GXVoid AddLinearVelocity ( const GXVec3 &velocity );
+        GXVoid SetLinearVelocity ( const GXVec3 &velocity );
+        const GXVec3& GetLinearVelocity () const;
+        GXVoid AddLinearVelocity ( const GXVec3 &velocity );
 
-		GXVoid SetAngularVelocity ( const GXVec3 &velocity );
-		const GXVec3& GetAngularVelocity () const;
-		GXVoid AddAngularVelocity ( const GXVec3 &velocity );
-		
-		GXVoid SetMass ( GXFloat newMass );
-		GXFloat GetMass () const;
-		GXFloat GetInverseMass () const;
+        GXVoid SetAngularVelocity ( const GXVec3 &velocity );
+        const GXVec3& GetAngularVelocity () const;
+        GXVoid AddAngularVelocity ( const GXVec3 &velocity );
+        
+        GXVoid SetMass ( GXFloat newMass );
+        GXFloat GetMass () const;
+        GXFloat GetInverseMass () const;
 
-		GXVoid SetLinearDamping ( GXFloat damping );
-		GXFloat GetLinearDamping () const;
+        GXVoid SetLinearDamping ( GXFloat damping );
+        GXFloat GetLinearDamping () const;
 
-		GXVoid SetAngularDamping ( GXFloat damping );
-		GXFloat GetAngularDamping () const;
+        GXVoid SetAngularDamping ( GXFloat damping );
+        GXFloat GetAngularDamping () const;
 
-		GXVoid SetShape ( GXShape &newShape );
-		GXShape& GetShape ();
+        GXVoid SetShape ( GXShape &newShape );
+        GXShape& GetShape ();
 
-		const GXVec3& GetLastFrameAcceleration () const;
+        const GXVec3& GetLastFrameAcceleration () const;
 
-		GXVoid TranslatePointToWorld ( GXVec3 &out, const GXVec3 &pointLocal );
-		const GXMat4& GetTransform () const;
+        GXVoid TranslatePointToWorld ( GXVec3 &out, const GXVec3 &pointLocal );
+        const GXMat4& GetTransform () const;
 
-		GXVoid SetAwake ();
-		GXVoid SetSleep ();
-		GXBool IsAwake () const;
-		GXVoid SetCanSleep ( GXBool isCanSleep );
+        GXVoid SetAwake ();
+        GXVoid SetSleep ();
+        GXBool IsAwake () const;
+        GXVoid SetCanSleep ( GXBool isCanSleep );
 
-		GXVoid EnableKinematic ();
-		GXVoid DisableKinematic ();
-		GXBool IsKinematic () const;
+        GXVoid EnableKinematic ();
+        GXVoid DisableKinematic ();
+        GXBool IsKinematic () const;
 
-		GXVoid AddForce ( const GXVec3 &forceWorld );
-		GXVoid AddForceAtPointLocal ( const GXVec3 &forceWorld, const GXVec3 &pointLocal );
-		GXVoid AddForceAtPointWorld ( const GXVec3 &forceWorld, const GXVec3 &pointWorld );
-		const GXVec3& GetTotalForce () const;
+        GXVoid AddForce ( const GXVec3 &forceWorld );
+        GXVoid AddForceAtPointLocal ( const GXVec3 &forceWorld, const GXVec3 &pointLocal );
+        GXVoid AddForceAtPointWorld ( const GXVec3 &forceWorld, const GXVec3 &pointWorld );
+        const GXVec3& GetTotalForce () const;
 
-		const GXVec3& GetTotalTorque () const;
+        const GXVec3& GetTotalTorque () const;
 
-		GXVoid AddImpulseAtPointWorld ( const GXVec3 &impulseWorld, const GXVec3 &pointWorld );
+        GXVoid AddImpulseAtPointWorld ( const GXVec3 &impulseWorld, const GXVec3 &pointWorld );
 
-		GXVoid Integrate ( GXFloat deltaTime );
+        GXVoid Integrate ( GXFloat deltaTime );
 };
 
 

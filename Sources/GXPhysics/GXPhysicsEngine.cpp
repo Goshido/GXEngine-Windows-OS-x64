@@ -1,128 +1,134 @@
-// version 1.3
+// version 1.4
 
 #include <GXPhysics/GXPhysicsEngine.h>
 #include <GXCommon/GXTime.h>
 
-#define DEFAULT_SLEEP_TIMEOUT								0.2f
-#define DEFAULT_MAXIMUM_LOCATION_CHANGE_SQUARED_DEVIATION	2.0e-5f
-#define DEFAULT_MAXIMUM_ROTATION_CHANGE_SQUARED_DEVIATION	1.5e-5f
-#define DEFAULT_TIME_STEP									0.016f	// 60 iterations per second
-#define DEFAULT_TIME_MULTIPLIER								1.0f
 
-#define MAX_CONTACTS										16384
-#define WORLD_ITERATIONS									50
-#define THREAD_IDLE											5u		// simulate over 200 iterations per second is not practical
+#define DEFAULT_SLEEP_TIMEOUT                                   0.2f
+#define DEFAULT_MAXIMUM_LOCATION_CHANGE_SQUARED_DEVIATION       2.0e-5f
+#define DEFAULT_MAXIMUM_ROTATION_CHANGE_SQUARED_DEVIATION       1.5e-5f
+#define DEFAULT_TIME_STEP                                       0.016f      // 60 iterations per second
+#define DEFAULT_TIME_MULTIPLIER                                 1.0f
 
+#define MAX_CONTACTS                                            16384
+#define WORLD_ITERATIONS                                        50
+#define THREAD_IDLE                                             5u          // simulate over 200 iterations per second is not practical
 
-GXPhysicsEngine* GXPhysicsEngine::instance = nullptr;
+//---------------------------------------------------------------------------------------------------------------------
 
-GXPhysicsEngine::~GXPhysicsEngine ()
-{
-	loopFlag = GX_FALSE;
-	thread->Join ();
-	delete thread;
-}
+GXPhysicsEngine* GXPhysicsEngine::_instance = nullptr;
 
 GXPhysicsEngine& GXPhysicsEngine::GetInstance ()
 {
-	if ( !instance )
-		instance = new GXPhysicsEngine ();
+    if ( !_instance )
+    {
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXPhysicsEngine" );
+        _instance = new GXPhysicsEngine ();
+    }
 
-	return *instance;
+    return *_instance;
+}
+
+GXPhysicsEngine::~GXPhysicsEngine ()
+{
+    _loopFlag = GX_FALSE;
+    _thread->Join ();
+    delete _thread;
 }
 
 GXVoid GXPhysicsEngine::SetSleepTimeout ( GXFloat seconds )
 {
-	sleepTimeout = seconds;
+    _sleepTimeout = seconds;
 }
 
 GXFloat GXPhysicsEngine::GetSleepTimeout () const
 {
-	return sleepTimeout;
+    return _sleepTimeout;
 }
 
 GXVoid GXPhysicsEngine::SetMaximumLocationChangeSquaredDeviation ( GXFloat squaredDeviation )
 {
-	maximumLocationChangeSquaredDeviation = squaredDeviation;
+    _maximumLocationChangeSquaredDeviation = squaredDeviation;
 }
 
 GXFloat GXPhysicsEngine::GetMaximumLocationChangeSquaredDeviation () const
 {
-	return maximumLocationChangeSquaredDeviation;
+    return _maximumLocationChangeSquaredDeviation;
 }
 
 GXVoid GXPhysicsEngine::SetMaximumRotationChangeSquaredDeviation ( GXFloat squaredDeviation )
 {
-	maximumRotationChangeSquaredDeviation = squaredDeviation;
+    _maximumRotationChangeSquaredDeviation = squaredDeviation;
 }
 
 GXFloat GXPhysicsEngine::GetMaximumRotationChangeSquaredDeviation () const
 {
-	return maximumRotationChangeSquaredDeviation;
+    return _maximumRotationChangeSquaredDeviation;
 }
 
 GXVoid GXPhysicsEngine::SetTimeStep ( GXFloat step )
 {
-	timeStep = step;
-	adjustedTimeStep = static_cast<GXDouble> ( step * timeMultiplier );
+    _timeStep = step;
+    _adjustedTimeStep = static_cast<GXDouble> ( step * _timeMultiplier );
 }
 
 GXFloat GXPhysicsEngine::GetTimeStep () const
 {
-	return timeStep;
+    return _timeStep;
 }
 
 GXVoid GXPhysicsEngine::SetTimeMultiplier ( GXFloat multiplier )
 {
-	timeMultiplier = static_cast<GXDouble> ( multiplier );
-	adjustedTimeStep = static_cast<GXDouble> ( timeStep * multiplier );
+    _timeMultiplier = static_cast<GXDouble> ( multiplier );
+    _adjustedTimeStep = static_cast<GXDouble> ( _timeStep * multiplier );
 }
 
 GXWorld& GXPhysicsEngine::GetWorld ()
 {
-	return world;
+    return _world;
 }
 
 GXVoid GXPhysicsEngine::Start ()
 {
-	thread->Start ();
+    _thread->Start ();
 }
 
-GXPhysicsEngine::GXPhysicsEngine ():
-	world ( MAX_CONTACTS, WORLD_ITERATIONS ),
-	time ( 0.0f ),
-	loopFlag ( GX_TRUE )
+GXPhysicsEngine::GXPhysicsEngine ()
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXPhysicsEngine" )
+    _world ( MAX_CONTACTS, WORLD_ITERATIONS ),
+    _time ( 0.0f ),
+    _loopFlag ( GX_TRUE )
 {
-	thread = new GXThread ( &GXPhysicsEngine::Simulate, this );
-	SetSleepTimeout ( DEFAULT_SLEEP_TIMEOUT );
-	SetMaximumLocationChangeSquaredDeviation ( DEFAULT_MAXIMUM_LOCATION_CHANGE_SQUARED_DEVIATION );
-	SetMaximumRotationChangeSquaredDeviation ( DEFAULT_MAXIMUM_ROTATION_CHANGE_SQUARED_DEVIATION );
-	SetTimeStep ( DEFAULT_TIME_STEP );
-	SetTimeMultiplier ( DEFAULT_TIME_MULTIPLIER );
+    _thread = new GXThread ( &GXPhysicsEngine::Simulate, this );
+    SetSleepTimeout ( DEFAULT_SLEEP_TIMEOUT );
+    SetMaximumLocationChangeSquaredDeviation ( DEFAULT_MAXIMUM_LOCATION_CHANGE_SQUARED_DEVIATION );
+    SetMaximumRotationChangeSquaredDeviation ( DEFAULT_MAXIMUM_ROTATION_CHANGE_SQUARED_DEVIATION );
+    SetTimeStep ( DEFAULT_TIME_STEP );
+    SetTimeMultiplier ( DEFAULT_TIME_MULTIPLIER );
 }
 
 GXUPointer GXTHREADCALL GXPhysicsEngine::Simulate ( GXVoid* argument, GXThread &thread )
 {
-	GXPhysicsEngine* physicsEngine = static_cast<GXPhysicsEngine*> ( argument );
+    GXPhysicsEngine* physicsEngine = static_cast<GXPhysicsEngine*> ( argument );
 
-	GXDouble tickToSeconds = 1.0 / GXGetProcessorTicksPerSecond ();
-	GXDouble lastTicks = GXGetProcessorTicks ();
-	GXDouble time = 0.0;
+    const GXDouble tickToSeconds = 1.0 / GXGetProcessorTicksPerSecond ();
+    GXDouble lastTicks = GXGetProcessorTicks ();
+    GXDouble time = 0.0;
 
-	while ( physicsEngine->loopFlag )
-	{
-		GXDouble currentTicks = GXGetProcessorTicks ();
-		time += ( currentTicks - lastTicks ) * tickToSeconds * physicsEngine->timeMultiplier;
-		lastTicks = currentTicks;
+    while ( physicsEngine->_loopFlag )
+    {
+        const GXDouble currentTicks = GXGetProcessorTicks ();
+        time += ( currentTicks - lastTicks ) * tickToSeconds * physicsEngine->_timeMultiplier;
+        lastTicks = currentTicks;
 
-		while ( time > physicsEngine->adjustedTimeStep )
-		{
-			physicsEngine->world.RunPhysics ( static_cast<GXFloat> ( physicsEngine->adjustedTimeStep ) );
-			time -= physicsEngine->adjustedTimeStep;
-		}
+        while ( time > physicsEngine->_adjustedTimeStep )
+        {
+            physicsEngine->_world.RunPhysics ( static_cast<GXFloat> ( physicsEngine->_adjustedTimeStep ) );
+            time -= physicsEngine->_adjustedTimeStep;
+        }
 
-		thread.Sleep ( THREAD_IDLE );
-	}
+        thread.Sleep ( THREAD_IDLE );
+    }
 
-	return 0u;
+    return 0u;
 }

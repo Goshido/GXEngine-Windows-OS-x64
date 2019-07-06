@@ -1,4 +1,4 @@
-// version 1.13
+// version 1.14
 
 #ifndef GX_FILE_SYSTEM
 #define GX_FILE_SYSTEM
@@ -13,16 +13,16 @@ GX_DISABLE_COMMON_WARNINGS
 GX_RESTORE_WARNING_STATE
 
 
-struct GXDirectoryInfo
+struct GXDirectoryInfo final
 {
-    const GXWChar*      absolutePath;
+    const GXWChar*      _absolutePath;
 
-    GXUInt              totalFolders;
-    const GXWChar**     folderNames;
+    GXUInt              _totalFolders;
+    const GXWChar**     _folderNames;
 
-    GXUInt              totalFiles;
-    const GXWChar**     fileNames;
-    const GXUBigInt*    fileSizes;
+    GXUInt              _totalFiles;
+    const GXWChar**     _fileNames;
+    const GXUBigInt*    _fileSizes;
 
     GXDirectoryInfo ();
     ~GXDirectoryInfo ();
@@ -35,7 +35,10 @@ GXBool GXCALL GXWriteToFile ( const GXWChar* fileName, const GXVoid* buffer, GXU
 GXBool GXCALL GXDoesFileExist ( const GXWChar* fileName );
 GXVoid GXCALL GXGetCurrentDirectory ( GXWChar** currentDirectory );
 GXBool GXCALL GXDoesDirectoryExist ( const GXWChar* directory );
+
+// Directory could be created recursively.
 GXBool GXCALL GXCreateDirectory ( const GXWChar* directory );
+
 GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar* directory );
 GXVoid GXCALL GXGetFileDirectoryPath ( GXWChar** path, const GXWChar* fileName );
 GXVoid GXCALL GXGetBaseFileName ( GXWChar** baseFileName, const GXWChar* fileName );
@@ -44,7 +47,7 @@ GXVoid GXCALL GXGetFileExtension ( GXWChar** extension, const GXWChar* fileName 
 class GXWriteFileStream
 {
     private:
-        FILE*       file;
+        FILE*       _file;
 
     public:
         explicit GXWriteFileStream ( const GXWChar* fileName );

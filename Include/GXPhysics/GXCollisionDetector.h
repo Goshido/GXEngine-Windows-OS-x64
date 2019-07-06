@@ -1,4 +1,4 @@
-//version 1.6
+//version 1.7
 
 #ifndef GX_COLLISION_DETECTOR
 #define GX_COLLISION_DETECTOR
@@ -13,44 +13,44 @@ struct GXEdge;
 struct GXSimplex;
 struct GXSupportPoint;
 
-class GXCollisionDetector final
+class GXCollisionDetector final : public GXMemoryInspector
 {
     private:
-        GXDynamicArray                  supportPoints;
-        GXUInt                          totalSupportPoints;
+        GXDynamicArray                  _supportPoints;
+        GXUInt                          _totalSupportPoints;
 
-        GXDynamicArray                  edges;
-        GXUInt                          totalEdges;
+        GXDynamicArray                  _edges;
+        GXUInt                          _totalEdges;
 
-        GXDynamicArray                  faces;
-        GXUInt                          totalFaces;
+        GXDynamicArray                  _faces;
+        GXUInt                          _totalFaces;
 
-        GXVec3*                         deviationAxesLocal;
-        GXUShort                        totalDeviationAxes;
-        GXFloat                         deviationAngle;
+        GXVec3*                         _deviationAxesLocal;
+        GXUShort                        _totalDeviationAxes;
+        GXFloat                         _deviationAngle;
 
-        GXVec3*                         shapeAContactGeometry;
-        GXUInt                          totalShapeAContactGeometryPoints;
+        GXVec3*                         _shapeAContactGeometry;
+        GXUInt                          _totalShapeAContactGeometryPoints;
 
-        GXVec3*                         shapeBContactGeometry;
-        GXUInt                          totalShapeBContactGeometryPoints;
+        GXVec3*                         _shapeBContactGeometry;
+        GXUInt                          _totalShapeBContactGeometryPoints;
 
-        GXVec3*                         shapeAProjectedContactGeometry;
-        GXVec3*                         shapeBProjectedContactGeometry;
+        GXVec3*                         _shapeAProjectedContactGeometry;
+        GXVec3*                         _shapeBProjectedContactGeometry;
 
-        GXVec2*                         shapeAPlanarContactGeometry;
-        GXVec3*                         shapeAPlanarContactGeometryDebug;
+        GXVec2*                         _shapeAPlanarContactGeometry;
+        GXVec3*                         _shapeAPlanarContactGeometryDebug;
 
-        GXVec2*                         shapeBPlanarContactGeometry;
-        GXVec3*                         shapeBPlanarContactGeometryDebug;
+        GXVec2*                         _shapeBPlanarContactGeometry;
+        GXVec3*                         _shapeBPlanarContactGeometryDebug;
 
-        GXDynamicArray                  alphaPlanarIntersectionGeometry;
-        GXDynamicArray                  bettaPlanarIntersectionGeometry;
-        GXDynamicArray                  planarIntersectionGeometry;
-        GXDynamicArray                  intersectionGeometry;
-        GXUInt                          totalIntersectionPoints;
+        GXDynamicArray                  _alphaPlanarIntersectionGeometry;
+        GXDynamicArray                  _bettaPlanarIntersectionGeometry;
+        GXDynamicArray                  _planarIntersectionGeometry;
+        GXDynamicArray                  _intersectionGeometry;
+        GXUInt                          _totalIntersectionPoints;
 
-        static GXCollisionDetector*     instance;
+        static GXCollisionDetector*     _instance;
 
     public:
         static GXCollisionDetector& GXCALL GetInstance ();

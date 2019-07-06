@@ -286,14 +286,14 @@ GXVoid GXPrecompiledShaderProgramFinder::AddProgram ( const GXWChar* vertexShade
     Add ( *node );
 
     GXUBigInt size = 0u;
-    DoPostfix ( root, &GXPrecompiledShaderProgramFinder::GetDictionarySize, &size );
+    DoPostfix ( _root, &GXPrecompiledShaderProgramFinder::GetDictionarySize, &size );
 
     size += sizeof ( GXDictionaryHeader );
 
     GXUByte* dictionary = static_cast<GXUByte*> ( Malloc ( size ) );
     GXDictionaryHeader* header = reinterpret_cast<GXDictionaryHeader*> ( dictionary );
     header->_counter = _counter;
-    header->_totalPrecompiledPrograms = totalNodes;
+    header->_totalPrecompiledPrograms = _totalNodes;
     header->_chunkOffset = sizeof ( GXDictionaryHeader );
 
     GXSaveState state ( PRECOMPILED_SHADER_PROGRAM_INFO );
@@ -301,7 +301,7 @@ GXVoid GXPrecompiledShaderProgramFinder::AddProgram ( const GXWChar* vertexShade
     state._chunckOffset = header->_chunkOffset;
     state._utf8StringOffset = sizeof ( GXDictionaryHeader ) + header->_totalPrecompiledPrograms * sizeof ( GXChunk );
 
-    DoPostfix ( root, &GXPrecompiledShaderProgramFinder::SaveDictionary, &state );
+    DoPostfix ( _root, &GXPrecompiledShaderProgramFinder::SaveDictionary, &state );
 
     if ( !GXWriteToFile ( PRECOMPILED_SHADER_PROGRAM_DICTIONARY, reinterpret_cast<const GXVoid*> ( dictionary ), static_cast<GXUInt> ( size ) ) )
         GXLogA ( "GXPrecompiledShaderProgramFinder::AddProgram::Error - Не могу сохранить файл словаря прекомпилированных шейдерных программ.\n" );

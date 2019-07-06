@@ -1,38 +1,39 @@
-// version 1.2
+// version 1.3
 
 #include <GXPhysics/GXSpring.h>
 
 
-GXSpring::GXSpring ( const GXVec3 &connectionPointLocal, GXRigidBody &otherBody, const GXVec3 &otherConnectionPointLocal, GXFloat hardness, GXFloat restLength )
+GXSpring::GXSpring ( const GXVec3 &connectionPointLocal, GXRigidBody &otherBody, const GXVec3 &otherConnectionPointLocal, GXFloat hardness, GXFloat restLength ):
+    _connectionPointLocal ( connectionPointLocal ),
+    _otherBody ( &otherBody ),
+    _otherConnectionPointLocal ( otherConnectionPointLocal ),
+    _hardness ( hardness ),
+    _restLength ( restLength )
 {
-	this->connectionPointLocal = connectionPointLocal;
-	this->otherBody = &otherBody;
-	this->otherConnectionPointLocal = otherConnectionPointLocal;
-	this->hardness = hardness;
-	this->restLength = restLength;
+    // NOTHING
 }
 
 GXSpring::~GXSpring ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXVoid GXSpring::UpdateForce ( GXRigidBody &body, GXFloat /*deltaTime*/ )
 {
-	GXVec3 a;
-	body.TranslatePointToWorld ( a, connectionPointLocal );
+    GXVec3 a;
+    body.TranslatePointToWorld ( a, _connectionPointLocal );
 
-	GXVec3 b;
-	otherBody->TranslatePointToWorld ( b, otherConnectionPointLocal );
+    GXVec3 b;
+    _otherBody->TranslatePointToWorld ( b, _otherConnectionPointLocal );
 
-	GXVec3 delta;
-	delta.Substract ( a, b );
+    GXVec3 delta;
+    delta.Substract ( a, b );
 
-	GXFloat stress = fabsf ( delta.Length () - restLength ) * hardness;
-	delta.Normalize ();
+    const GXFloat stress = fabsf ( delta.Length () - _restLength ) * _hardness;
+    delta.Normalize ();
 
-	GXVec3 force;
-	force.Multiply ( delta, -stress );
+    GXVec3 force;
+    force.Multiply ( delta, -stress );
 
-	body.AddForceAtPointWorld ( force, a );
+    body.AddForceAtPointWorld ( force, a );
 }
