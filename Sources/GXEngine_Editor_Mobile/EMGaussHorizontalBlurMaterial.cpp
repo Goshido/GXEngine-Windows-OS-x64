@@ -11,12 +11,12 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 EMGaussHorizontalBlurMaterial::EMGaussHorizontalBlurMaterial ( eEMGaussHorizontalBlurKernelType kernelType ):
-    kernelType ( kernelType ),
-    imageTexture ( nullptr ),
-    sampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f )
+    _kernelType ( kernelType ),
+    _imageTexture ( nullptr ),
+    _sampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f )
 {
-    static const GLchar* samplerNames[ 1 ] = { "imageSampler" };
-    static const GLuint samplerLocations[ 1 ] = { IMAGE_SLOT };
+    constexpr GLchar* samplerNames[ 1u ] = { "imageSampler" };
+    constexpr GLuint samplerLocations[ 1u ] = { IMAGE_SLOT };
 
     GXShaderProgramInfo si;
     si._samplers = 1u;
@@ -48,32 +48,32 @@ EMGaussHorizontalBlurMaterial::~EMGaussHorizontalBlurMaterial ()
 
 GXVoid EMGaussHorizontalBlurMaterial::Bind ( const GXTransform& /*transform*/ )
 {
-    if ( !imageTexture ) return;
+    if ( !_imageTexture ) return;
 
     glUseProgram ( _shaderProgram.GetProgram () );
 
-    imageTexture->Bind ( IMAGE_SLOT );
-    sampler.Bind ( IMAGE_SLOT );
+    _imageTexture->Bind ( IMAGE_SLOT );
+    _sampler.Bind ( IMAGE_SLOT );
 }
 
 GXVoid EMGaussHorizontalBlurMaterial::Unbind ()
 {
-    if ( !imageTexture ) return;
+    if ( !_imageTexture ) return;
 
-    sampler.Unbind ( IMAGE_SLOT );
-    imageTexture->Unbind ();
+    _sampler.Unbind ( IMAGE_SLOT );
+    _imageTexture->Unbind ();
 
     glUseProgram ( 0u );
 }
 
 GXVoid EMGaussHorizontalBlurMaterial::SetImageTexture ( GXTexture2D &texture )
 {
-    switch ( kernelType )
+    switch ( _kernelType )
     {
         case eEMGaussHorizontalBlurKernelType::OneChannelFivePixel:
             if ( texture.GetChannelNumber () != 1u ) break;
 
-            imageTexture = &texture;
+            _imageTexture = &texture;
             return;
         break;
 

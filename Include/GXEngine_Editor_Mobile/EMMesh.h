@@ -5,33 +5,34 @@
 #include <GXEngine/GXTransform.h>
 #include <GXEngine/GXRenderable.h>
 #include <GXEngine/GXMeshGeometry.h>
+#include <GXCommon/GXStrings.h>
 
 
 class EMMesh final : public GXTransform, public GXRenderable
 {
-	private:
-		GXWChar*		skinFileName;
-		GXWChar*		meshFileName;
-		GXMeshGeometry	meshGeometry;
-		GXAABB			boundsWorld;
+    private:
+        const GXString      _meshFileName;
+        const GXString      _skinFileName;
+        GXMeshGeometry      _meshGeometry;
+        GXAABB              _boundsWorld;
 
-	public:
-		explicit EMMesh ( const GXWChar* meshFileName );
-		explicit EMMesh ( const GXWChar* meshFileName, const GXWChar* skinFileName );
-		~EMMesh () override;
+    public:
+        explicit EMMesh ( const GXWChar* meshFileName );
+        explicit EMMesh ( const GXWChar* meshFileName, const GXWChar* skinFileName );
+        ~EMMesh () override;
 
-		GXVoid Render () override;
+        GXVoid Render () override;
 
-		GXVoid UpdatePose ( GXSkeleton &skeleton );
+        GXVoid UpdatePose ( GXSkeleton &skeleton );
 
-	protected:
-		GXVoid InitGraphicResources () override;
-		GXVoid TransformUpdated () override;
+    protected:
+        GXVoid InitGraphicResources () override;
+        GXVoid TransformUpdated () override;
 
-	private:
-		EMMesh () = delete;
-		EMMesh ( const EMMesh &other ) = delete;
-		EMMesh& operator = ( const EMMesh &other ) = delete;
+    private:
+        EMMesh () = delete;
+        EMMesh ( const EMMesh &other ) = delete;
+        EMMesh& operator = ( const EMMesh &other ) = delete;
 };
 
 

@@ -9,26 +9,26 @@
 
 class EMImportantAreaFilterMaterial final : public GXMaterial
 {
-	private:
-		GXTexture2D*		imageTexture;
-		GXSampler			sampler;
+    private:
+        GXTexture2D*    _imageTexture;
+        GXSampler       _sampler;
 
-		GXTexture2D			retinaFilterTexture;
+        GXTexture2D     _retinaFilterTexture;
 
-	public:
-		EMImportantAreaFilterMaterial ();
-		~EMImportantAreaFilterMaterial () override;
+    public:
+        EMImportantAreaFilterMaterial ();
+        ~EMImportantAreaFilterMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) override;
-		GXVoid Unbind () override;
+        GXVoid Bind ( const GXTransform &transform ) override;
+        GXVoid Unbind () override;
 
-		GXVoid SetImageTexture ( GXTexture2D &texture );
+        GXVoid SetImageTexture ( GXTexture2D &texture );
 
-	private:
-		GXVoid GenerateRetinaFilterTexture ( GXUShort effectiveLength );
+    private:
+        GXVoid GenerateRetinaFilterTexture ( GXUShort effectiveLength );
 
-		EMImportantAreaFilterMaterial ( const EMImportantAreaFilterMaterial &other ) = delete;
-		EMImportantAreaFilterMaterial& operator = ( const EMImportantAreaFilterMaterial &other ) = delete;
+        EMImportantAreaFilterMaterial ( const EMImportantAreaFilterMaterial &other ) = delete;
+        EMImportantAreaFilterMaterial& operator = ( const EMImportantAreaFilterMaterial &other ) = delete;
 };
 
 

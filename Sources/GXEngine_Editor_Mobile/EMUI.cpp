@@ -8,34 +8,38 @@ static EMUI* em_UIElements = nullptr;
 
 
 EMUI::EMUI ( EMUI* parent ):
-	next ( em_UIElements ),
-	prev ( nullptr ),
-	parent ( parent )
+    _next ( em_UIElements ),
+    _previous ( nullptr ),
+    _parent ( parent )
 {
-	if ( em_UIElements )
-		em_UIElements->prev = this;
+    if ( em_UIElements )
+        em_UIElements->_previous = this;
 
-	em_UIElements = this;
+    em_UIElements = this;
 }
 
 EMUI::~EMUI ()
 {
-	if ( next ) next->prev = prev;
+    if ( _next )
+        _next->_previous = _previous;
 
-	if ( prev ) 
-		prev->next = next;
-	else
-		em_UIElements = next;
+    if ( _previous )
+    {
+        _previous->_next = _next;
+        return;
+    }
+
+    em_UIElements = _next;
 }
 
 GXVoid EMUI::ToForeground ()
 {
-	GetWidget ()->ToForeground ();
+    GetWidget ()->ToForeground ();
 }
 
 //--------------------------------------------------------------
 
 GXVoid GXCALL EMDrawUI ()
 {
-	GXTouchSurface::GetInstance ().DrawWidgets ();
+    GXTouchSurface::GetInstance ().DrawWidgets ();
 }

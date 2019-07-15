@@ -3,90 +3,90 @@
 #include <GXCommon/GXMemory.h>
 
 
-EMTool* EMTool::activeTool = nullptr;
+EMTool* EMTool::_activeTool = nullptr;
 
 EMTool::EMTool ():
-	actor ( nullptr )
+    _actor ( nullptr )
 {
-	// NOTHING
+    // NOTHING
 }
 
 EMTool::~EMTool ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXVoid EMTool::Bind ()
 {
-	actor = nullptr;
+    _actor = nullptr;
 }
 
 GXVoid EMTool::SetActor ( EMActor* newActor )
 {
-	actor = newActor;
+    _actor = newActor;
 }
 
 GXVoid EMTool::UnBind ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXVoid EMTool::OnViewerTransformChanged ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXVoid EMTool::OnDrawCommonPass ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXVoid EMTool::OnDrawHudColorPass ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXVoid EMTool::OnDrawHudMaskPass ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXBool EMTool::OnLeftMouseButtonDown ( GXFloat /*x*/, GXFloat /*y*/ )
 {
-	return GX_FALSE;
+    return GX_FALSE;
 }
 
 GXBool EMTool::OnLeftMouseButtonUp ( GXFloat /*x*/, GXFloat /*y*/ )
 {
-	return GX_FALSE;
+    return GX_FALSE;
 }
 
 GXBool EMTool::OnMouseMove ( GXFloat /*x*/, GXFloat /*y*/ )
 {
-	return GX_FALSE;
+    return GX_FALSE;
 }
 
 GXBool EMTool::OnMouseScroll ( GXFloat /*x*/, GXFloat /*y*/, GXFloat /*scroll*/ )
 {
-	return GX_FALSE;
+    return GX_FALSE;
 }
 
 GXBool EMTool::OnKeyDown ( GXInt /*keyCode*/ )
 {
-	return GX_FALSE;
+    return GX_FALSE;
 }
 
 GXBool EMTool::OnKeyUp ( GXInt /*keyCode*/ )
 {
-	return GX_FALSE;
+    return GX_FALSE;
 }
 
 EMTool* GXCALL EMTool::GetActiveTool ()
 {
-	return activeTool;
+    return _activeTool;
 }
 
 GXVoid GXCALL EMTool::SetActiveTool ( EMTool* tool )
 {
-	activeTool = tool;
+    _activeTool = tool;
 }

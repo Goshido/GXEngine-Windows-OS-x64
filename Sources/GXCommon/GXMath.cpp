@@ -191,10 +191,6 @@ eGXLineRelationship GXCALL GXLineIntersection2D ( GXVec2 &intersectionPoint, con
 
 //------------------------------------------------------------------------------------------------
 
-static GXVec3 absoluteX ( 1.0f, 0.0f, 0.0 );
-static GXVec3 absoluteY ( 0.0f, 1.0f, 0.0 );
-static GXVec3 absoluteZ ( 0.0f, 0.0f, 1.0 );
-
 GXVec3::GXVec3 ()
 {
     memset ( _data, 0, sizeof ( GXVec3 ) );
@@ -353,16 +349,19 @@ GXBool GXVec3::IsEqual ( const GXVec3 &other )
 
 const GXVec3& GXVec3::GetAbsoluteX ()
 {
+    static constexpr GXVec3 absoluteX ( 1.0f, 0.0f, 0.0 );
     return absoluteX;
 }
 
 const GXVec3& GXVec3::GetAbsoluteY ()
 {
+    static constexpr GXVec3 absoluteY ( 0.0f, 1.0f, 0.0 );
     return absoluteY;
 }
 
 const GXVec3& GXVec3::GetAbsoluteZ ()
 {
+    static constexpr GXVec3 absoluteZ ( 0.0f, 0.0f, 1.0 );
     return absoluteZ;
 }
 

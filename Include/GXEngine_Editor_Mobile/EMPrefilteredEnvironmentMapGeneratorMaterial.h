@@ -9,38 +9,38 @@
 
 class EMPrefilteredEnvironmentMapGeneratorMaterial final : public GXMaterial
 {
-	private:
-		GXTextureCubeMap*		environmentMap;
-		GXSampler				sampler;
-		GXFloat					roughness;
+    private:
+        GXTextureCubeMap*       _environmentMap;
+        GXSampler               _sampler;
+        GXFloat                 _roughness;
 
-		GXInt					totalSamples;
-		GXFloat					inverseTotalSamples;
+        GXInt                   _totalSamples;
+        GXFloat                 _inverseTotalSamples;
 
-		GXMat4					viewProjectionMatrices[ 6 ];
+        GXMat4                  _viewProjectionMatrices[ 6u ];
 
-		GLint					viewProjectionMatricesLocation;
-		GLint					roughnessLocation;
-		GLint					totalSamplesLocation;
-		GLint					inverseTotalSamplesLocation;
+        GLint                   _viewProjectionMatricesLocation;
+        GLint                   _roughnessLocation;
+        GLint                   _totalSamplesLocation;
+        GLint                   _inverseTotalSamplesLocation;
 
-	public:
-		EMPrefilteredEnvironmentMapGeneratorMaterial ();
-		~EMPrefilteredEnvironmentMapGeneratorMaterial () override;
+    public:
+        EMPrefilteredEnvironmentMapGeneratorMaterial ();
+        ~EMPrefilteredEnvironmentMapGeneratorMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) override;
-		GXVoid Unbind () override;
+        GXVoid Bind ( const GXTransform &transform ) override;
+        GXVoid Unbind () override;
 
-		GXVoid SetEnvironmentMap ( GXTextureCubeMap &cubeMap );
+        GXVoid SetEnvironmentMap ( GXTextureCubeMap &cubeMap );
 
-		// Remapping to [0.0f, 1.0f] and take square.
-		GXVoid SetRoughness ( GXFloat newRoughness );
+        // Remapping to [0.0f, 1.0f] and take square.
+        GXVoid SetRoughness ( GXFloat newRoughness );
 
-		GXVoid SetTotalSamples ( GXUShort samples );
+        GXVoid SetTotalSamples ( GXUShort samples );
 
-	private:
-		EMPrefilteredEnvironmentMapGeneratorMaterial ( const EMPrefilteredEnvironmentMapGeneratorMaterial &other ) = delete;
-		EMPrefilteredEnvironmentMapGeneratorMaterial& operator = ( const EMPrefilteredEnvironmentMapGeneratorMaterial &other ) = delete;
+    private:
+        EMPrefilteredEnvironmentMapGeneratorMaterial ( const EMPrefilteredEnvironmentMapGeneratorMaterial &other ) = delete;
+        EMPrefilteredEnvironmentMapGeneratorMaterial& operator = ( const EMPrefilteredEnvironmentMapGeneratorMaterial &other ) = delete;
 };
 
 

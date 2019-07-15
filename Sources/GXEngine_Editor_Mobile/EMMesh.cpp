@@ -1,51 +1,48 @@
 #include <GXEngine_Editor_Mobile/EMMesh.h>
 #include <GXEngine_Editor_Mobile/EMRenderer.h>
 #include <GXCommon/GXFileSystem.h>
-#include <GXCommon/GXStrings.h>
 #include <GXCommon/GXMemory.h>
 
 
 EMMesh::EMMesh ( const GXWChar* meshFileName ):
-	skinFileName ( nullptr )
+    _meshFileName ( meshFileName )
 {
-	GXWcsclone ( &this->meshFileName, meshFileName );
-	InitGraphicResources ();
+    InitGraphicResources ();
 }
 
-EMMesh::EMMesh ( const GXWChar* meshFileName, const GXWChar* skinFileName )
+EMMesh::EMMesh ( const GXWChar* meshFileName, const GXWChar* skinFileName ):
+    _meshFileName ( meshFileName ),
+    _skinFileName ( skinFileName )
 {
-	GXWcsclone ( &this->skinFileName, skinFileName );
-	GXWcsclone ( &this->meshFileName, meshFileName );
-	InitGraphicResources ();
+    InitGraphicResources ();
 }
 
 EMMesh::~EMMesh ()
 {
-	free ( meshFileName );
-	GXSafeFree ( skinFileName );
+    // NOTHING
 }
 
 GXVoid EMMesh::Render ()
 {
-	meshGeometry.Render ();
+    _meshGeometry.Render ();
 }
 
 GXVoid EMMesh::UpdatePose ( GXSkeleton &skeleton )
 {
-	meshGeometry.UpdatePose ( skeleton );
+    _meshGeometry.UpdatePose ( skeleton );
 }
 
 GXVoid EMMesh::InitGraphicResources ()
 {
-	meshGeometry.LoadMesh ( meshFileName );
+    _meshGeometry.LoadMesh ( _meshFileName );
 
-	if ( skinFileName )
-		meshGeometry.LoadSkin ( skinFileName );
+    if ( !_skinFileName.IsNull () )
+        _meshGeometry.LoadSkin ( _skinFileName );
 
-	TransformUpdated ();
+    TransformUpdated ();
 }
 
 GXVoid EMMesh::TransformUpdated ()
 {
-	meshGeometry.GetBoundsLocal ().Transform ( boundsWorld, _currentFrameModelMatrix );
+    _meshGeometry.GetBoundsLocal ().Transform ( _boundsWorld, _currentFrameModelMatrix );
 }

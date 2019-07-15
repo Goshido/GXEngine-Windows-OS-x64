@@ -7,30 +7,30 @@
 
 class EMHueCircleGeneratorMaterial final : public GXMaterial
 {
-	private:
-		GXFloat		innerRadius;
-		GXFloat		outerRadius;
-		GXVec2		halfResolution;
+    private:
+        GXFloat     _innerRadius;
+        GXFloat     _outerRadius;
+        GXVec2      _halfResolution;
 
-		GLint		innerRadiusLocation;
-		GLint		outerRadiusLocation;
-		GLint		halfResolutionLocation;
+        GLint       _innerRadiusLocation;
+        GLint       _outerRadiusLocation;
+        GLint       _halfResolutionLocation;
 
-	public:
-		EMHueCircleGeneratorMaterial ();
-		~EMHueCircleGeneratorMaterial () override;
+    public:
+        EMHueCircleGeneratorMaterial ();
+        ~EMHueCircleGeneratorMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) override;
-		GXVoid Unbind () override;
+        GXVoid Bind ( const GXTransform &transform ) override;
+        GXVoid Unbind () override;
 
-		GXVoid SetInnerRadius ( GXFloat radius );
-		GXVoid SetOuterRadius ( GXFloat radius );
+        GXVoid SetInnerRadius ( GXFloat radius );
+        GXVoid SetOuterRadius ( GXFloat radius );
 
-		GXVoid SetResolution ( GXUShort width, GXUShort height );
+        GXVoid SetResolution ( GXUShort width, GXUShort height );
 
-	private:
-		EMHueCircleGeneratorMaterial ( const EMHueCircleGeneratorMaterial &other ) = delete;
-		EMHueCircleGeneratorMaterial& operator = ( const EMHueCircleGeneratorMaterial &other ) = delete;
+    private:
+        EMHueCircleGeneratorMaterial ( const EMHueCircleGeneratorMaterial &other ) = delete;
+        EMHueCircleGeneratorMaterial& operator = ( const EMHueCircleGeneratorMaterial &other ) = delete;
 };
 
 

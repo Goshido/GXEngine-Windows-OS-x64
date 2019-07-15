@@ -1,62 +1,60 @@
 #include <GXEngine_Editor_Mobile/EMScaleGismo.h>
 
 
-#define TEXTURE_COLOR_R		255
-#define TEXTURE_COLOR_G		255
-#define TEXTURE_COLOR_B		255
-#define TEXTURE_COLOR_A		255
+#define TEXTURE_COLOR_R     255u
+#define TEXTURE_COLOR_G     255u
+#define TEXTURE_COLOR_B     255u
+#define TEXTURE_COLOR_A     255u
 
-#define TEXTURE_SCALE_X		1.0f
-#define TEXTURE_SCALE_Y		1.0f
-#define TEXTURE_OFFSET_X	0.0f
-#define TEXTURE_OFFSET_Y	0.0f
+#define TEXTURE_SCALE_X     1.0f
+#define TEXTURE_SCALE_Y     1.0f
+#define TEXTURE_OFFSET_X    0.0f
+#define TEXTURE_OFFSET_Y    0.0f
 
-#define TEXTURE_SLOT		0u
+#define TEXTURE_SLOT        0u
 
-#define SCALE_GISMO_MESH	L"Meshes/Editor Mobile/Scale Gismo.stm"
+#define SCALE_GISMO_MESH    L"Meshes/Editor Mobile/Scale Gismo.stm"
 
 //---------------------------------------------------------------------------------------------------------------------
 
 EMScaleGismo::EMScaleGismo () :
-	isVisible ( GX_TRUE ),
-	mesh ( SCALE_GISMO_MESH ),
-	texture ( L"Textures/Editor Mobile/Gismo Texture.tex", GX_FALSE, GX_FALSE )
+    _isVisible ( GX_TRUE ),
+    _mesh ( SCALE_GISMO_MESH ),
+    _texture ( L"Textures/Editor Mobile/Gismo Texture.tex", GX_FALSE, GX_FALSE )
 {
-	unlitMaterial.SetColor ( TEXTURE_COLOR_R, TEXTURE_COLOR_G, TEXTURE_COLOR_B, TEXTURE_COLOR_A );
-	unlitMaterial.SetTexture ( texture );
-	unlitMaterial.SetTextureScale ( TEXTURE_SCALE_X, TEXTURE_SCALE_Y );
-	unlitMaterial.SetTextureOffset ( TEXTURE_OFFSET_X, TEXTURE_OFFSET_Y );
+    _unlitMaterial.SetColor ( TEXTURE_COLOR_R, TEXTURE_COLOR_G, TEXTURE_COLOR_B, TEXTURE_COLOR_A );
+    _unlitMaterial.SetTexture ( _texture );
+    _unlitMaterial.SetTextureScale ( TEXTURE_SCALE_X, TEXTURE_SCALE_Y );
+    _unlitMaterial.SetTextureOffset ( TEXTURE_OFFSET_X, TEXTURE_OFFSET_Y );
 }
 
 EMScaleGismo::~EMScaleGismo ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXVoid EMScaleGismo::Hide ()
 {
-	isVisible = GX_FALSE;
+    _isVisible = GX_FALSE;
 }
 
 GXVoid EMScaleGismo::Show ()
 {
-	isVisible = GX_TRUE;
+    _isVisible = GX_TRUE;
 }
 
 GXVoid EMScaleGismo::Render ()
 {
-	if ( !isVisible ) return;
+    if ( !_isVisible ) return;
 
-	unlitMaterial.Bind ( mesh );
-
-	mesh.Render ();
-
-	unlitMaterial.Unbind ();
+    _unlitMaterial.Bind ( _mesh );
+    _mesh.Render ();
+    _unlitMaterial.Unbind ();
 }
 
 GXVoid EMScaleGismo::TransformUpdated ()
 {
-	mesh.SetRotation ( _currentFrameRotationMatrix );
-	mesh.SetScale ( _currentFrameScale );
-	mesh.SetLocation ( _currentFrameLocation );
+    _mesh.SetRotation ( _currentFrameRotationMatrix );
+    _mesh.SetScale ( _currentFrameScale );
+    _mesh.SetLocation ( _currentFrameLocation );
 }

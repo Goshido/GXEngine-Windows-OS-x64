@@ -1,130 +1,130 @@
 #include <GXEngine_Editor_Mobile/EMToneMapperMaterial.h>
 
 
-#define DEFAULT_GAMMA						2.2f
-#define DEFAULT_ABSOLUTE_WHITE_INTENSITY	1.0e+5f
+#define DEFAULT_GAMMA                       2.2f
+#define DEFAULT_ABSOLUTE_WHITE_INTENSITY    1.0e+5f
 
-#define DEFAULT_AVERAGE_LUMINANCE			0.5f
-#define DEFAULT_MINIMUM_LUMINANCE			0.5f
-#define DEFAULT_MAXIMUM_LUMINANCE			0.5f
+#define DEFAULT_AVERAGE_LUMINANCE           0.5f
+#define DEFAULT_MINIMUM_LUMINANCE           0.5f
+#define DEFAULT_MAXIMUM_LUMINANCE           0.5f
 
-#define DEFAULT_EYE_SENSETIVITY				0.0072f
+#define DEFAULT_EYE_SENSETIVITY             0.0072f
 
-#define EPSILON								1.0e-4f
+#define EPSILON                             1.0e-4f
 
-#define LIMINANCE_RED_FACTOR				0.27f
-#define LIMINANCE_GREEN_FACTOR				0.67f
-#define LIMINANCE_BLUE_FACTOR				0.06f
+#define LIMINANCE_RED_FACTOR                0.27f
+#define LIMINANCE_GREEN_FACTOR              0.67f
+#define LIMINANCE_BLUE_FACTOR               0.06f
 
-#define TEXTURE_SLOT						0u
+#define TEXTURE_SLOT                        0u
 
-#define VERTEX_SHADER						L"Shaders/System/ScreenQuad_vs.txt"
-#define GEOMETRY_SHADER						nullptr
-#define FRAGMENT_SHADER						L"Shaders/Editor Mobile/ToneMapper_fs.txt"
+#define VERTEX_SHADER                       L"Shaders/System/ScreenQuad_vs.txt"
+#define GEOMETRY_SHADER                     nullptr
+#define FRAGMENT_SHADER                     L"Shaders/Editor Mobile/ToneMapper_fs.txt"
 
 //---------------------------------------------------------------------------------------------------------------------
 
 EMToneMapperMaterial::EMToneMapperMaterial ():
-	linearSpaceTexture ( nullptr ),
-	sampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f ),
-	gamma ( DEFAULT_GAMMA ),
-	inverseGamma ( 1.0f / DEFAULT_GAMMA ),
-	eyeSensitivity ( DEFAULT_EYE_SENSETIVITY )
+    _linearSpaceTexture ( nullptr ),
+    _sampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f ),
+    _gamma ( DEFAULT_GAMMA ),
+    _inverseGamma ( 1.0f / DEFAULT_GAMMA ),
+    _eyeSensitivity ( DEFAULT_EYE_SENSETIVITY )
 {
-	static const GLchar* samplerNames[ 1u ] = { "linearSpaceSampler" };
-	static const GLuint samplerLocations[ 1u ] = { TEXTURE_SLOT };
+    constexpr GLchar* samplerNames[ 1u ] = { "linearSpaceSampler" };
+    constexpr GLuint samplerLocations[ 1u ] = { TEXTURE_SLOT };
 
-	GXShaderProgramInfo si;
-	si._vertexShader = VERTEX_SHADER;
-	si._geometryShader = GEOMETRY_SHADER;
-	si._fragmentShader = FRAGMENT_SHADER;
-	si._samplers = 1u;
-	si._samplerNames = samplerNames;
-	si._samplerLocations = samplerLocations;
-	si._transformFeedbackOutputs = 0;
-	si._transformFeedbackOutputNames = nullptr;
+    GXShaderProgramInfo si;
+    si._vertexShader = VERTEX_SHADER;
+    si._geometryShader = GEOMETRY_SHADER;
+    si._fragmentShader = FRAGMENT_SHADER;
+    si._samplers = 1u;
+    si._samplerNames = samplerNames;
+    si._samplerLocations = samplerLocations;
+    si._transformFeedbackOutputs = 0;
+    si._transformFeedbackOutputNames = nullptr;
 
-	_shaderProgram.Init ( si );
+    _shaderProgram.Init ( si );
 
-	inverseGammaLocation = _shaderProgram.GetUniform ( "inverseGamma" );
-	prescaleFactorLocation = _shaderProgram.GetUniform ( "prescaleFactor" );
-	inverseAbsoluteWhiteSquareIntensityLocation = _shaderProgram.GetUniform ( "inverseAbsoluteWhiteSquareIntensity" );
+    _inverseGammaLocation = _shaderProgram.GetUniform ( "inverseGamma" );
+    _prescaleFactorLocation = _shaderProgram.GetUniform ( "prescaleFactor" );
+    _inverseAbsoluteWhiteSquareIntensityLocation = _shaderProgram.GetUniform ( "inverseAbsoluteWhiteSquareIntensity" );
 
-	SetLuminanceTriplet ( DEFAULT_AVERAGE_LUMINANCE, DEFAULT_MINIMUM_LUMINANCE, DEFAULT_MAXIMUM_LUMINANCE );
-	SetAbsoluteWhiteIntensity ( DEFAULT_ABSOLUTE_WHITE_INTENSITY );
+    SetLuminanceTriplet ( DEFAULT_AVERAGE_LUMINANCE, DEFAULT_MINIMUM_LUMINANCE, DEFAULT_MAXIMUM_LUMINANCE );
+    SetAbsoluteWhiteIntensity ( DEFAULT_ABSOLUTE_WHITE_INTENSITY );
 }
 
 EMToneMapperMaterial::~EMToneMapperMaterial ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXVoid EMToneMapperMaterial::Bind ( const GXTransform& /*transform*/ )
 {
-	if ( !linearSpaceTexture ) return;
+    if ( !_linearSpaceTexture ) return;
 
-	glUseProgram ( _shaderProgram.GetProgram () );
+    glUseProgram ( _shaderProgram.GetProgram () );
 
-	glUniform1f ( inverseGammaLocation, inverseGamma );
-	glUniform1f ( prescaleFactorLocation, prescaleFactor );
-	glUniform1f ( inverseAbsoluteWhiteSquareIntensityLocation, inverseAbsoluteWhiteSquareIntensity );
+    glUniform1f ( _inverseGammaLocation, _inverseGamma );
+    glUniform1f ( _prescaleFactorLocation, _prescaleFactor );
+    glUniform1f ( _inverseAbsoluteWhiteSquareIntensityLocation, _inverseAbsoluteWhiteSquareIntensity );
 
-	linearSpaceTexture->Bind ( TEXTURE_SLOT );
-	sampler.Bind ( TEXTURE_SLOT );
+    _linearSpaceTexture->Bind ( TEXTURE_SLOT );
+    _sampler.Bind ( TEXTURE_SLOT );
 }
 
 GXVoid EMToneMapperMaterial::Unbind ()
 {
-	if ( !linearSpaceTexture ) return;
+    if ( !_linearSpaceTexture ) return;
 
-	sampler.Unbind ( TEXTURE_SLOT );
-	linearSpaceTexture->Unbind ();
+    _sampler.Unbind ( TEXTURE_SLOT );
+    _linearSpaceTexture->Unbind ();
 
-	glUseProgram ( 0u );
+    glUseProgram ( 0u );
 }
 
 GXVoid EMToneMapperMaterial::SetLinearSpaceTexture ( GXTexture2D &texture )
 {
-	linearSpaceTexture = &texture;
+    _linearSpaceTexture = &texture;
 }
 
 GXVoid EMToneMapperMaterial::SetLuminanceTriplet ( GXFloat averageLuminance, GXFloat minimumLuminance, GXFloat maximumLuminance )
 {
-	GXFloat alpha = ( maximumLuminance - averageLuminance );
-	GXFloat betta = ( averageLuminance - minimumLuminance );
-	GXFloat yotta = eyeSensitivity * powf ( 2.0f, 2.0f * ( betta - alpha ) / ( alpha + betta + EPSILON ) );
+    GXFloat alpha = ( maximumLuminance - averageLuminance );
+    GXFloat betta = ( averageLuminance - minimumLuminance );
+    GXFloat yotta = _eyeSensitivity * powf ( 2.0f, 2.0f * ( betta - alpha ) / ( alpha + betta + EPSILON ) );
 
-	prescaleFactor = yotta / ( averageLuminance + EPSILON );
+    _prescaleFactor = yotta / ( averageLuminance + EPSILON );
 }
 
 GXVoid EMToneMapperMaterial::SetGamma ( GXFloat newGamma )
 {
-	gamma = newGamma;
-	inverseGamma = 1.0f / gamma;
+    _gamma = newGamma;
+    _inverseGamma = 1.0f / _gamma;
 }
 
 GXFloat EMToneMapperMaterial::GetGamma () const
 {
-	return gamma;
+    return _gamma;
 }
 
 GXVoid EMToneMapperMaterial::SetEyeSensitivity ( GXFloat sensitivity )
 {
-	eyeSensitivity = sensitivity;
+    _eyeSensitivity = sensitivity;
 }
 
 GXFloat EMToneMapperMaterial::GetEyeSensitivity () const
 {
-	return eyeSensitivity;
+    return _eyeSensitivity;
 }
 
 GXVoid EMToneMapperMaterial::SetAbsoluteWhiteIntensity ( GXFloat intensity )
 {
-	absoluteWhiteIntensity = intensity;
-	inverseAbsoluteWhiteSquareIntensity = 1.0f / ( intensity * intensity + EPSILON );
+    _absoluteWhiteIntensity = intensity;
+    _inverseAbsoluteWhiteSquareIntensity = 1.0f / ( intensity * intensity + EPSILON );
 }
 
 GXFloat EMToneMapperMaterial::GetAbsoluteWhiteIntensity () const
 {
-	return absoluteWhiteIntensity;
+    return _absoluteWhiteIntensity;
 }

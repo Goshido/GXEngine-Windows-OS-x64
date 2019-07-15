@@ -9,31 +9,31 @@
 
 class EMEnvironment final
 {
-	private:
-		EMMesh						cube;
-		GXTextureCubeMap*			environment;
+    private:
+        EMMesh                      _cube;
+        GXTextureCubeMap*           _environment;
 
-		EMEnvironmentMapMaterial	environmentMapMaterial;
+        EMEnvironmentMapMaterial    _environmentMapMaterial;
 
-		static EMEnvironment*		instance;
+        static EMEnvironment*       _instance;
 
-	public:
-		static EMEnvironment& GXCALL GetInstance ();
-		~EMEnvironment ();
+    public:
+        static EMEnvironment& GXCALL GetInstance ();
+        ~EMEnvironment ();
 
-		GXVoid SetEnvironmentMap ( GXTextureCubeMap& cubeMap );
-		GXVoid SetEnvironmentQuasiDistance ( GXFloat meters );
+        GXVoid SetEnvironmentMap ( GXTextureCubeMap& cubeMap );
+        GXVoid SetEnvironmentQuasiDistance ( GXFloat meters );
 
-		GXTextureCubeMap& GetEnvironmentMap ();
+        GXTextureCubeMap& GetEnvironmentMap ();
 
-		GXVoid Render ( GXFloat deltaTime );
-		GXVoid OnViewerLocationChanged ();
+        GXVoid Render ( GXFloat deltaTime );
+        GXVoid OnViewerLocationChanged ();
 
-	private:
-		EMEnvironment ();
+    private:
+        EMEnvironment ();
 
-		EMEnvironment ( const EMEnvironment &other ) = delete;
-		EMEnvironment& operator = ( const EMEnvironment &other ) = delete;
+        EMEnvironment ( const EMEnvironment &other ) = delete;
+        EMEnvironment& operator = ( const EMEnvironment &other ) = delete;
 };
 
 

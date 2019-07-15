@@ -52,7 +52,7 @@ EMUnitActor::~EMUnitActor ()
 
 GXVoid EMUnitActor::OnDrawCommonPass ( GXFloat deltaTime )
 {
-	if ( !isVisible ) return;
+	if ( !_isVisible ) return;
 
 	EMRenderer& renderer = EMRenderer::GetInstance ();
 	renderer.SetObjectMask ( this );
@@ -89,6 +89,6 @@ GXUPointer EMUnitActor::OnRequeredSaveSize () const
 
 GXVoid EMUnitActor::OnTransformChanged ()
 {
-	mesh.SetLocation ( transform.GetLocation () );
-	mesh.SetRotation ( transform.GetRotation () );
+	mesh.SetLocation ( _transform.GetLocation () );
+	mesh.SetRotation ( _transform.GetRotation () );
 }

@@ -6,100 +6,100 @@
 EMActor* em_Actors = nullptr;
 
 EMActor::EMActor ( const GXWChar* name, eEMActorType type, const GXTransform &transform ):
-	next ( em_Actors ),
-	prev ( nullptr ),
-	type ( type ),
-	transform ( transform ),
-	isVisible ( GX_TRUE )
+    _next ( em_Actors ),
+    _previous ( nullptr ),
+    _type ( type ),
+    _transform ( transform ),
+    _isVisible ( GX_TRUE )
 {
-	GXWcsclone ( &this->name, name );
+    GXWcsclone ( &this->_name, name );
 
-	if ( em_Actors )
-		em_Actors->prev = this;
+    if ( em_Actors )
+        em_Actors->_previous = this;
 
-	em_Actors = this;
+    em_Actors = this;
 }
 
 EMActor::~EMActor ()
 {
-	if ( next ) next->prev = prev;
+    if ( _next ) _next->_previous = _previous;
 
-	if ( prev ) 
-		prev->next = next;
-	else
-		em_Actors = next;
+    if ( _previous ) 
+        _previous->_next = _next;
+    else
+        em_Actors = _next;
 
-	free ( name );
+    free ( _name );
 }
 
 GXVoid EMActor::OnDrawCommonPass ( GXFloat /*deltaTime*/ )
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXVoid EMActor::OnDrawHudColorPass ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXVoid EMActor::OnDrawHudMaskPass ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXVoid EMActor::OnUpdate ( GXFloat /*deltaTime*/ )
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXVoid EMActor::OnSave ( GXUByte** /*data*/ )
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXVoid EMActor::OnLoad ( const GXUByte* /*data*/ )
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXUPointer EMActor::OnRequeredSaveSize () const
 {
-	// NOTHING
-	return 0u;
+    // NOTHING
+    return 0u;
 }
 
 GXVoid EMActor::OnTransformChanged ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 const GXWChar* EMActor::GetName ()
 {
-	return name;
+    return _name;
 }
 
 eEMActorType EMActor::GetType ()
 {
-	return type;
+    return _type;
 }
 
 const GXTransform& EMActor::GetTransform ()
 {
-	return transform;
+    return _transform;
 }
 
 GXVoid EMActor::SetTransform ( const GXTransform &newTransform )
 {
-	transform = newTransform;
-	OnTransformChanged ();
+    _transform = newTransform;
+    OnTransformChanged ();
 }
 
 GXVoid EMActor::Show ()
 {
-	isVisible = GX_TRUE;
+    _isVisible = GX_TRUE;
 }
 
 GXVoid EMActor::Hide ()
 {
-	isVisible = GX_FALSE;
+    _isVisible = GX_FALSE;
 }

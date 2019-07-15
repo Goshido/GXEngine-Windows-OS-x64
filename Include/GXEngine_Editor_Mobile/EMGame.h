@@ -25,50 +25,50 @@
 class EMGame final : public GXGame
 {
     private:
-        GXCameraOrthographic*       hudCamera;
+        GXCameraOrthographic*       _hudCamera;
 
-        EMUIOpenFile*               openFile;
+        EMUIOpenFile*               _openFile;
 
-        EMUIMenu*                   menu;
-        EMUIPopup*                  filePopup;
-        EMUIPopup*                  createPopup;
-        EMUIPopup*                  toolsPopup;
-        EMUIPopup*                  utilityPopup;
-        EMUIPopup*                  effectsPopup;
+        EMUIMenu*                   _menu;
+        EMUIPopup*                  _filePopup;
+        EMUIPopup*                  _createPopup;
+        EMUIPopup*                  _toolsPopup;
+        EMUIPopup*                  _utilityPopup;
+        EMUIPopup*                  _effectsPopup;
 
-        GXHudSurface*               physicsInfo;
-        GXMeshGeometry*             physicsContactPointMesh;
-        GXUnlitColorMaterial*       physicsContactPointMaterial;
+        GXHudSurface*               _physicsInfo;
+        GXMeshGeometry*             _physicsContactPointMesh;
+        GXUnlitColorMaterial*       _physicsContactPointMaterial;
 
-        GXGravity                   gravity;
+        GXGravity                   _gravity;
 
-        EMDirectedLightActor*       directedLight;
+        EMDirectedLightActor*       _directedLight;
 
-        EMUnitActor*                unitActor;
-        EMPhysicsDrivenActor*       colliderOne;
-        EMPhysicsDrivenActor*       colliderTwo;
-        EMPhysicsDrivenActor*       kinematicPlane;
+        EMUnitActor*                _unitActor;
+        EMPhysicsDrivenActor*       _colliderOne;
+        EMPhysicsDrivenActor*       _colliderTwo;
+        EMPhysicsDrivenActor*       _kinematicPlane;
 
-        EMMoveTool*                 moveTool;
+        EMMoveTool*                 _moveTool;
 
-        GXMeshGeometry*             contactLocationMesh;
-        GXUnlitColorMaterial*       contactLocationMaterial;
+        GXMeshGeometry*             _contactLocationMesh;
+        GXUnlitColorMaterial*       _contactLocationMaterial;
 
-        GXMeshGeometry*             contactNormalMesh;
-        GXUnlitColorMaterial*       contactNormalMaterial;
+        GXMeshGeometry*             _contactNormalMesh;
+        GXUnlitColorMaterial*       _contactNormalMaterial;
 
-        GXTextureCubeMap*           environmentMap;
-        GXTextureCubeMap*           lightProbeSourceTexture;
+        GXTextureCubeMap*           _environmentMap;
+        GXTextureCubeMap*           _lightProbeSourceTexture;
 
-        EMLightProbe*               lightProbe;
+        EMLightProbe*               _lightProbe;
 
-        GXUIInput*                  uiInput;
+        GXUIInput*                  _uiInput;
 
-        GXFont*                     physicsInfoFont;
-        GXTexture2D                 physicsInfoBackgroundTexture;
+        GXFont*                     _physicsInfoFont;
+        GXTexture2D                 _physicsInfoBackgroundTexture;
 
-        static GXBool               isContact;
-        static GXMat4               contactNormalTransform;
+        static GXBool               _isContact;
+        static GXMat4               _contactNormalTransform;
 
     public:
         EMGame ();

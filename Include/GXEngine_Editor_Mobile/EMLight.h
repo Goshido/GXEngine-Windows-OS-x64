@@ -10,141 +10,141 @@
 
 enum class eEMLightEmitterType
 {
-	Bulp,
-	Directed,
-	Spot,
-	Unknown
+    Bulp,
+    Directed,
+    Spot,
+    Unknown
 };
 
 class EMLightEmitter
 {
-	friend class EMRenderer;
+    friend class EMRenderer;
 
-	private:
-		GXColorRGB				baseColor;
-		EMLightEmitter*			prev;
+    private:
+        GXColorRGB                  _baseColor;
+        EMLightEmitter*             _previous;
 
-		EMLightEmitter*			next;
-		GXFloat					intensity;		// [ 0.0f, +inf )
-		GXColorRGB				color;
-		static EMLightEmitter*	emitters;
+        EMLightEmitter*             _next;
+        GXFloat                     _intensity;     // [ 0.0f, +inf )
+        GXColorRGB                  _color;
+        static EMLightEmitter*      _emitters;
 
-	protected:
-		GXMat4					modelMatrix;
+    protected:
+        GXMat4                      _modelMatrix;
 
-	public:
-		EMLightEmitter ();
-		virtual ~EMLightEmitter ();
+    public:
+        EMLightEmitter ();
+        virtual ~EMLightEmitter ();
 
-		// Must be implemented in derived class.
-		virtual eEMLightEmitterType GetType () const;
+        // Must be implemented in derived class.
+        virtual eEMLightEmitterType GetType () const;
 
-		GXVoid GetBaseColor ( GXUByte &red, GXUByte &green, GXUByte &blue ) const;
-		GXVoid SetBaseColor ( GXUByte red, GXUByte green, GXUByte blue );
+        GXVoid GetBaseColor ( GXUByte &red, GXUByte &green, GXUByte &blue ) const;
+        GXVoid SetBaseColor ( GXUByte red, GXUByte green, GXUByte blue );
 
-		GXFloat GetIntensity () const;
-		GXVoid SetIntensity ( GXFloat newIntensity );
+        GXFloat GetIntensity () const;
+        GXVoid SetIntensity ( GXFloat newIntensity );
 
-		const GXColorRGB& GetColor () const;
+        const GXColorRGB& GetColor () const;
 
-	private:
-		static EMLightEmitter* GetEmitters ();
+    private:
+        static EMLightEmitter* GetEmitters ();
 
-		EMLightEmitter ( const EMLightEmitter &other ) = delete;
-		EMLightEmitter& operator = ( const EMLightEmitter &other ) = delete;
+        EMLightEmitter ( const EMLightEmitter &other ) = delete;
+        EMLightEmitter& operator = ( const EMLightEmitter &other ) = delete;
 };
 
 class EMBulp final : public EMLightEmitter
 {
-	private:
-		GXMeshGeometry	lightVolume;
+    private:
+        GXMeshGeometry      _lightVolume;
 
-	public:
-		EMBulp ();
-		~EMBulp () override;
+    public:
+        EMBulp ();
+        ~EMBulp () override;
 
-		eEMLightEmitterType GetType () const override;
+        eEMLightEmitterType GetType () const override;
 
-		GXVoid SetInfluenceDistance ( GXFloat newDistance );
-		GXFloat GetInfluenceDistance ();
+        GXVoid SetInfluenceDistance ( GXFloat newDistance );
+        GXFloat GetInfluenceDistance ();
 
-		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
-		GXVoid SetLocation ( const GXVec3 &location );
-		GXVoid GetLocation ( GXVec3& location );
+        GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
+        GXVoid SetLocation ( const GXVec3 &location );
+        GXVoid GetLocation ( GXVec3& location );
 
-		GXVoid DrawLightVolume ();
+        GXVoid DrawLightVolume ();
 
-	private:
-		EMBulp ( const EMBulp &other ) = delete;
-		EMBulp& operator = ( const EMBulp &other ) = delete;
+    private:
+        EMBulp ( const EMBulp &other ) = delete;
+        EMBulp& operator = ( const EMBulp &other ) = delete;
 };
 
 class EMSpotlight final : public EMLightEmitter
 {
-	private:
-		GXFloat			coneAngle;
-		GXFloat			compressionXY;
+    private:
+        GXFloat             _coneAngle;
+        GXFloat             _compressionXY;
 
-		GXFloat			distance;
-		GXMat4			rotationMatrix;
-		GXMeshGeometry	lightVolume;
+        GXFloat             _distance;
+        GXMat4              _rotationMatrix;
+        GXMeshGeometry      _lightVolume;
 
-	public:
-		EMSpotlight ();
-		~EMSpotlight () override;
+    public:
+        EMSpotlight ();
+        ~EMSpotlight () override;
 
-		eEMLightEmitterType GetType () const override;
+        eEMLightEmitterType GetType () const override;
 
-		GXFloat GetConeAngle () const;
-		GXVoid SetConeAngle ( GXFloat radians );
+        GXFloat GetConeAngle () const;
+        GXVoid SetConeAngle ( GXFloat radians );
 
-		GXFloat GetInfluenceDistance ();
-		GXVoid SetInfluenceDistance ( GXFloat newDistance );
+        GXFloat GetInfluenceDistance ();
+        GXVoid SetInfluenceDistance ( GXFloat newDistance );
 
-		GXVoid GetLocation ( GXVec3& out ) const;
-		GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
-		GXVoid SetLocation ( const GXVec3 &location );
+        GXVoid GetLocation ( GXVec3& out ) const;
+        GXVoid SetLocation ( GXFloat x, GXFloat y, GXFloat z );
+        GXVoid SetLocation ( const GXVec3 &location );
 
-		const GXMat4& GetRotation () const;
-		GXVoid SetRotation ( const GXMat4 &rotation );
-		GXVoid SetRotation ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians );
+        const GXMat4& GetRotation () const;
+        GXVoid SetRotation ( const GXMat4 &rotation );
+        GXVoid SetRotation ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians );
 
-		GXVoid DrawLightVolume ();
+        GXVoid DrawLightVolume ();
 
-	private:
-		EMSpotlight ( const EMSpotlight &other ) = delete;
-		EMSpotlight& operator = ( const EMSpotlight &other ) = delete;
+    private:
+        EMSpotlight ( const EMSpotlight &other ) = delete;
+        EMSpotlight& operator = ( const EMSpotlight &other ) = delete;
 };
 
 class EMDirectedLight final : public EMLightEmitter
 {
-	private:
-		GXColorRGB	ambientBase;
+    private:
+        GXColorRGB      _ambientBase;
 
-		GXFloat		ambientIntensity;
-		GXColorRGB	ambientColor;
+        GXFloat         _ambientIntensity;
+        GXColorRGB      _ambientColor;
 
-	public:
-		EMDirectedLight ();
-		~EMDirectedLight () override;
+    public:
+        EMDirectedLight ();
+        ~EMDirectedLight () override;
 
-		eEMLightEmitterType GetType () const override;
+        eEMLightEmitterType GetType () const override;
 
-		GXVoid SetAmbientBaseColor ( GXUByte red, GXUByte green, GXUByte blue );
-		GXVoid SetAmbientIntensity ( GXFloat newIntensity );
+        GXVoid SetAmbientBaseColor ( GXUByte red, GXUByte green, GXUByte blue );
+        GXVoid SetAmbientIntensity ( GXFloat newIntensity );
 
-		GXVoid GetAmbientBaseColor ( GXUByte &red, GXUByte &green, GXUByte &blue );
-		const GXColorRGB& GetAmbientColor ();
-		GXFloat GetAmbientIntensity ();
+        GXVoid GetAmbientBaseColor ( GXUByte &red, GXUByte &green, GXUByte &blue );
+        const GXColorRGB& GetAmbientColor ();
+        GXFloat GetAmbientIntensity ();
 
-		GXVoid SetRotation ( const GXMat4 &rotation );
-		GXVoid SetRotation ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians );
+        GXVoid SetRotation ( const GXMat4 &rotation );
+        GXVoid SetRotation ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians );
 
-		const GXMat4& GetRotation ();
+        const GXMat4& GetRotation ();
 
-	private:
-		EMDirectedLight ( const EMDirectedLight &other ) = delete;
-		EMDirectedLight& operator = ( const EMDirectedLight &other ) = delete;
+    private:
+        EMDirectedLight ( const EMDirectedLight &other ) = delete;
+        EMDirectedLight& operator = ( const EMDirectedLight &other ) = delete;
 };
 
 

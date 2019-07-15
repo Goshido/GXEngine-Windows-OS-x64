@@ -13,27 +13,27 @@ class EMLightProbe final
     friend class EMRenderer;
 
     private:
-        EMLightProbe*                                   next;
-        EMLightProbe*                                   prev;
+        EMLightProbe*                                   _next;
+        EMLightProbe*                                   _previous;
 
-        GXVec3                                          locationWorld;
-        GXAABB                                          boundsWorld;
+        GXVec3                                          _locationWorld;
+        GXAABB                                          _boundsWorld;
 
-        GXTextureCubeMap*                               environmentMap;
+        GXTextureCubeMap*                               _environmentMap;
 
-        GXTextureCubeMap                                diffuseIrradiance;
-        EMDiffuseIrradianceGeneratorMaterial            diffuseIrradianceGeneratorMaterial;
+        GXTextureCubeMap                                _diffuseIrradiance;
+        EMDiffuseIrradianceGeneratorMaterial            _diffuseIrradianceGeneratorMaterial;
 
-        GXTextureCubeMap                                prefilteredEnvironmentMap;
-        EMPrefilteredEnvironmentMapGeneratorMaterial    prefilteredEnvironmentMapGeneratorMaterial;
+        GXTextureCubeMap                                _prefilteredEnvironmentMap;
+        EMPrefilteredEnvironmentMapGeneratorMaterial    _prefilteredEnvironmentMapGeneratorMaterial;
 
-        static GXTexture2D                              brdfIntegrationMap;
-        EMBRDFIntegratorMaterial                        brdfIntegratorMaterial;
+        static GXTexture2D                              _brdfIntegrationMap;
+        EMBRDFIntegratorMaterial                        _brdfIntegratorMaterial;
 
-        GXMeshGeometry                                  cube;
-        GXMeshGeometry                                  screenQuad;
+        GXMeshGeometry                                  _cube;
+        GXMeshGeometry                                  _screenQuad;
 
-        static EMLightProbe*                            probes;
+        static EMLightProbe*                            _probes;
 
     public:
         EMLightProbe ();

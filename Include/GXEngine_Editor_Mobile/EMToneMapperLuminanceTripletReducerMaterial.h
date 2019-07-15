@@ -9,26 +9,26 @@
 
 class EMToneMapperLuminanceTripletReducerMaterial final : public GXMaterial
 {
-	private:
-		GXTexture2D*		luminanceTripletTexture;
-		GXSampler			sampler;
-		GXFloat				levelOfDetail;
+    private:
+        GXTexture2D*    _luminanceTripletTexture;
+        GXSampler       _sampler;
+        GXFloat         _levelOfDetail;
 
-		GLint				levelOfDetailLocation;
+        GLint           _levelOfDetailLocation;
 
-	public:
-		EMToneMapperLuminanceTripletReducerMaterial ();
-		~EMToneMapperLuminanceTripletReducerMaterial () override;
+    public:
+        EMToneMapperLuminanceTripletReducerMaterial ();
+        ~EMToneMapperLuminanceTripletReducerMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) override;
-		GXVoid Unbind () override;
+        GXVoid Bind ( const GXTransform &transform ) override;
+        GXVoid Unbind () override;
 
-		GXVoid SetLuminanceTripletTexture ( GXTexture2D &texture );
-		GXVoid SetLevelOfDetailToReduce ( GXUByte newLevelOfDetail );
+        GXVoid SetLuminanceTripletTexture ( GXTexture2D &texture );
+        GXVoid SetLevelOfDetailToReduce ( GXUByte newLevelOfDetail );
 
-	private:
-		EMToneMapperLuminanceTripletReducerMaterial ( const EMToneMapperLuminanceTripletReducerMaterial &other ) = delete;
-		EMToneMapperLuminanceTripletReducerMaterial& operator = ( const EMToneMapperLuminanceTripletReducerMaterial &other ) = delete;
+    private:
+        EMToneMapperLuminanceTripletReducerMaterial ( const EMToneMapperLuminanceTripletReducerMaterial &other ) = delete;
+        EMToneMapperLuminanceTripletReducerMaterial& operator = ( const EMToneMapperLuminanceTripletReducerMaterial &other ) = delete;
 };
 
 

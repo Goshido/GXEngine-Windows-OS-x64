@@ -9,45 +9,45 @@
 
 class EMToneMapperMaterial final : public GXMaterial
 {
-	private:
-		GXTexture2D*		linearSpaceTexture;
-		GXSampler			sampler;
+    private:
+        GXTexture2D*    _linearSpaceTexture;
+        GXSampler       _sampler;
 
-		GXFloat				gamma;
-		GXFloat				inverseGamma;
-		GXFloat				eyeSensitivity;
+        GXFloat         _gamma;
+        GXFloat         _inverseGamma;
+        GXFloat         _eyeSensitivity;
 
-		GXFloat				absoluteWhiteIntensity;
-		GXFloat				inverseAbsoluteWhiteSquareIntensity;
-		GXFloat				prescaleFactor;
+        GXFloat         _absoluteWhiteIntensity;
+        GXFloat         _inverseAbsoluteWhiteSquareIntensity;
+        GXFloat         _prescaleFactor;
 
-		GLint				inverseGammaLocation;
-		GLint				prescaleFactorLocation;
-		GLint				inverseAbsoluteWhiteSquareIntensityLocation;
+        GLint           _inverseGammaLocation;
+        GLint           _prescaleFactorLocation;
+        GLint           _inverseAbsoluteWhiteSquareIntensityLocation;
 
-	public:
-		EMToneMapperMaterial ();
-		~EMToneMapperMaterial () override;
+    public:
+        EMToneMapperMaterial ();
+        ~EMToneMapperMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) override;
-		GXVoid Unbind () override;
+        GXVoid Bind ( const GXTransform &transform ) override;
+        GXVoid Unbind () override;
 
-		GXVoid SetLinearSpaceTexture ( GXTexture2D &texture );
-		GXVoid SetLuminanceTriplet ( GXFloat averageLuminance, GXFloat minimumLuminance, GXFloat maximumLuminance );
+        GXVoid SetLinearSpaceTexture ( GXTexture2D &texture );
+        GXVoid SetLuminanceTriplet ( GXFloat averageLuminance, GXFloat minimumLuminance, GXFloat maximumLuminance );
 
-		GXVoid SetGamma ( GXFloat newGamma );
-		GXFloat GetGamma () const;
+        GXVoid SetGamma ( GXFloat newGamma );
+        GXFloat GetGamma () const;
 
-		// Artistic purpose parameter. There is no physical explanation.
-		GXVoid SetEyeSensitivity ( GXFloat sensitivity );
-		GXFloat GetEyeSensitivity () const;
+        // Artistic purpose parameter. There is no physical explanation.
+        GXVoid SetEyeSensitivity ( GXFloat sensitivity );
+        GXFloat GetEyeSensitivity () const;
 
-		GXVoid SetAbsoluteWhiteIntensity ( GXFloat intensity );
-		GXFloat GetAbsoluteWhiteIntensity () const;
+        GXVoid SetAbsoluteWhiteIntensity ( GXFloat intensity );
+        GXFloat GetAbsoluteWhiteIntensity () const;
 
-	private:
-		EMToneMapperMaterial ( const EMToneMapperMaterial &other ) = delete;
-		EMToneMapperMaterial& operator = ( const EMToneMapperMaterial &other ) = delete;
+    private:
+        EMToneMapperMaterial ( const EMToneMapperMaterial &other ) = delete;
+        EMToneMapperMaterial& operator = ( const EMToneMapperMaterial &other ) = delete;
 };
 
 
