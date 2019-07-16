@@ -1,4 +1,4 @@
-﻿// version 1.55
+﻿// version 1.56
 
 #include <GXCommon/GXMath.h>
 #include <GXCommon/GXLogger.h>
@@ -425,8 +425,8 @@ GXBool GXCALL GXRayTriangleIntersection3D ( GXFloat &outT, const GXVec3 &origin,
     else
         selector = omega > yotta ? 1u : 2u;
 
-    GXUByte i1;
-    GXUByte i2;
+    GXUByte i1 = 0xFFu;
+    GXUByte i2 = 0xFFu;
 
     switch ( selector )
     {

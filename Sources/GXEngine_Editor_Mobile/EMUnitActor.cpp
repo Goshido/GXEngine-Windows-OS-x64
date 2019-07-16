@@ -8,87 +8,87 @@
 #include <GXCommon/GXMemory.h>
 
 
-#define ALBEDO_TEXTURE				L"Textures/System/Checker.tga"
-#define NORMAL_TEXTURE				L"Textures/Editor Mobile/Default Normals.tex"
-#define EMISSION_TEXTURE			L"Textures/System/Checker.tga"
-#define PARAMETER_TEXTURE			L"Textures/Editor Mobile/Default Diffuse.tex"
+#define ALBEDO_TEXTURE              L"Textures/System/Checker.tga"
+#define NORMAL_TEXTURE              L"Textures/Editor Mobile/Default Normals.tex"
+#define EMISSION_TEXTURE            L"Textures/System/Checker.tga"
+#define PARAMETER_TEXTURE           L"Textures/Editor Mobile/Default Diffuse.tex"
 
-#define ALBEDO_TEXTURE_SCALE		0.25f
-#define EMISSION_TEXTURE_SCALE		0.25f
-#define EMISSION_SCALE				0.0777f
-#define SPECULAR_INTENSITY_SCALE	0.2f
-#define METALLIC_SCALE				1.0f
+#define ALBEDO_TEXTURE_SCALE        0.25f
+#define EMISSION_TEXTURE_SCALE      0.25f
+#define EMISSION_SCALE              0.0777f
+#define SPECULAR_INTENSITY_SCALE    0.2f
+#define METALLIC_SCALE              1.0f
 
-#define CUBE_MESH					L"Meshes/System/Unit Cube.stm"
+#define CUBE_MESH                   L"Meshes/System/Unit Cube.stm"
 
 //---------------------------------------------------------------------------------------------------------------------
 
 EMUnitActor::EMUnitActor ( const GXWChar* name, const GXTransform &transform ):
-	EMActor ( name, eEMActorType::UnitCube, transform ),
-	mesh ( CUBE_MESH ),
-	albedoTexture ( ALBEDO_TEXTURE, GX_FALSE, GX_TRUE ),
-	normalTexture ( NORMAL_TEXTURE, GX_FALSE, GX_FALSE ),
-	emissionTexture ( EMISSION_TEXTURE, GX_FALSE, GX_FALSE ),
-	parameterTexture ( PARAMETER_TEXTURE, GX_FALSE, GX_FALSE )
+    EMActor ( name, eEMActorType::UnitCube, transform ),
+    _mesh ( CUBE_MESH ),
+    _albedoTexture ( ALBEDO_TEXTURE, GX_FALSE, GX_TRUE ),
+    _normalTexture ( NORMAL_TEXTURE, GX_FALSE, GX_FALSE ),
+    _emissionTexture ( EMISSION_TEXTURE, GX_FALSE, GX_FALSE ),
+    _parameterTexture ( PARAMETER_TEXTURE, GX_FALSE, GX_FALSE )
 {
-	OnTransformChanged ();
-	
-	commonPassMaterial.SetAlbedoTexture ( albedoTexture );
-	commonPassMaterial.SetNormalTexture ( normalTexture );
-	commonPassMaterial.SetEmissionTexture ( emissionTexture );
-	commonPassMaterial.SetParameterTexture ( parameterTexture );
+    OnTransformChanged ();
 
-	commonPassMaterial.SetAlbedoTextureScale ( ALBEDO_TEXTURE_SCALE, ALBEDO_TEXTURE_SCALE );
-	commonPassMaterial.SetEmissionTextureScale ( EMISSION_TEXTURE_SCALE, EMISSION_TEXTURE_SCALE );
-	commonPassMaterial.SetEmissionColorScale ( EMISSION_SCALE );
-	commonPassMaterial.SetSpecularIntensityScale ( SPECULAR_INTENSITY_SCALE );
-	commonPassMaterial.SetMetallicScale ( METALLIC_SCALE );
+    _commonPassMaterial.SetAlbedoTexture ( _albedoTexture );
+    _commonPassMaterial.SetNormalTexture ( _normalTexture );
+    _commonPassMaterial.SetEmissionTexture ( _emissionTexture );
+    _commonPassMaterial.SetParameterTexture ( _parameterTexture );
+
+    _commonPassMaterial.SetAlbedoTextureScale ( ALBEDO_TEXTURE_SCALE, ALBEDO_TEXTURE_SCALE );
+    _commonPassMaterial.SetEmissionTextureScale ( EMISSION_TEXTURE_SCALE, EMISSION_TEXTURE_SCALE );
+    _commonPassMaterial.SetEmissionColorScale ( EMISSION_SCALE );
+    _commonPassMaterial.SetSpecularIntensityScale ( SPECULAR_INTENSITY_SCALE );
+    _commonPassMaterial.SetMetallicScale ( METALLIC_SCALE );
 }
 
 EMUnitActor::~EMUnitActor ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXVoid EMUnitActor::OnDrawCommonPass ( GXFloat deltaTime )
 {
-	if ( !_isVisible ) return;
+    if ( !_isVisible ) return;
 
-	EMRenderer& renderer = EMRenderer::GetInstance ();
-	renderer.SetObjectMask ( this );
+    EMRenderer& renderer = EMRenderer::GetInstance ();
+    renderer.SetObjectMask ( this );
 
-	GXRenderer& coreRenderer = GXRenderer::GetInstance ();
+    const GXRenderer& coreRenderer = GXRenderer::GetInstance ();
 
-	commonPassMaterial.SetMaximumBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
-	commonPassMaterial.SetExposure ( renderer.GetMotionBlurExposure () );
-	commonPassMaterial.SetDeltaTime ( deltaTime );
-	commonPassMaterial.SetScreenResolution ( static_cast<GXUShort> ( coreRenderer.GetWidth () ), static_cast<GXUShort> ( coreRenderer.GetHeight () ) );
-	commonPassMaterial.Bind ( mesh );
-	mesh.Render ();
-	commonPassMaterial.Unbind ();
+    _commonPassMaterial.SetMaximumBlurSamples ( renderer.GetMaximumMotionBlurSamples () );
+    _commonPassMaterial.SetExposure ( renderer.GetMotionBlurExposure () );
+    _commonPassMaterial.SetDeltaTime ( deltaTime );
+    _commonPassMaterial.SetScreenResolution ( static_cast<GXUShort> ( coreRenderer.GetWidth () ), static_cast<GXUShort> ( coreRenderer.GetHeight () ) );
+    _commonPassMaterial.Bind ( _mesh );
+    _mesh.Render ();
+    _commonPassMaterial.Unbind ();
 
-	mesh.UpdateLastFrameModelMatrix ();
+    _mesh.UpdateLastFrameModelMatrix ();
 }
 
 GXVoid EMUnitActor::OnSave ( GXUByte** /*data*/ )
 {
-	// TODO
+    // TODO
 }
 
 GXVoid EMUnitActor::OnLoad ( const GXUByte* /*data*/ )
 {
-	// TODO
+    // TODO
 }
 
 GXUPointer EMUnitActor::OnRequeredSaveSize () const
 {
-	// TODO
+    // TODO
 
-	return 0u;
+    return 0u;
 }
 
 GXVoid EMUnitActor::OnTransformChanged ()
 {
-	mesh.SetLocation ( _transform.GetLocation () );
-	mesh.SetRotation ( _transform.GetRotation () );
+    _mesh.SetLocation ( _transform.GetLocation () );
+    _mesh.SetRotation ( _transform.GetRotation () );
 }

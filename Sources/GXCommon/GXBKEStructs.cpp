@@ -4,13 +4,15 @@
 #include <GXCommon/GXMemory.h>
 
 
-GXBakeInfo::GXBakeInfo ()
+GXBakeInfo::GXBakeInfo ():
+    _fileName ( nullptr ),
+    _cacheFileName ( nullptr )
 {
-	fileName = cacheFileName = 0;
+    // NOTHING
 }
 
 GXVoid GXCALL GXBakeInfo::Cleanup ()
 {
-	if ( fileName ) free ( fileName );
-	if ( cacheFileName ) free ( cacheFileName );
+    GXSafeFree ( _fileName );
+    GXSafeFree ( _fileName );
 }

@@ -4,328 +4,332 @@
 #include <GXEngine/GXUICommon.h>
 
 
-#define EM_VIEWER_ZOOM_MODE				0u
-#define EM_VIEWER_ROTATE_MODE			1u
-#define EM_VIEWER_PAN_MODE				2u
-#define EM_VIEWER_NOTHING_MODE			0xFFu
+#define VIEWER_ZOOM_MODE            0u
+#define VIEWER_ROTATE_MODE          1u
+#define VIEWER_PAN_MODE             2u
+#define VIEWER_NOTHING_MODE         0xFFu
 
-#define EM_VIEWER_ZOOM_STEP				2.0f
-#define EM_VIEWER_MIN_DISTANCE			0.1f
-#define EM_VIEWER_MAX_DISTANCE			1.0e+30f
-#define EM_VIEWER_ROTATION_SPEED		45.0f		// 45 degrees per centimeter
-#define EM_VIEWER_PAN_SPEED				0.2f		// 0.2 unit per centimeter
-#define EM_VIEWER_FOVY_DEGREES			60.0f
+#define VIEWER_ZOOM_STEP            2.0f
+#define VIEWER_MIN_DISTANCE         0.1f
+#define VIEWER_MAX_DISTANCE         .0e+30f
+#define VIEWER_ROTATION_SPEED       45.0f       // 45 degrees per centimeter
+#define VIEWER_PAN_SPEED            0.2f        // 0.2 unit per centimeter
+#define VIEWER_FOVY_DEGREES         60.0f
 
-#define EM_DEFAULT_DISTANCE				7.0f
+#define DEFAULT_DISTANCE            7.0f
 
-#define EM_DEFAULT_ORIGIN_X				2.0f
-#define EM_DEFAULT_ORIGIN_Y				-1.0f
-#define EM_DEFAULT_ORIGIN_Z				0.0f
+#define DEFAULT_ORIGIN_X            2.0f
+#define DEFAULT_ORIGIN_Y            -1.0f
+#define DEFAULT_ORIGIN_Z            0.0f
 
-#define EM_DEFAULT_PITCH_RAD			0.0f
-#define EM_DEFAULT_YAW_RAD				0.0f
+#define DEFAULT_PITCH_RAD           0.0f
+#define DEFAULT_YAW_RAD             0.0f
 
-#define EM_VIEWER_Z_NEAR				0.1f
-#define EM_VIEWER_Z_FAR					1000.0f
+#define VIEWER_Z_NEAR               0.1f
+#define VIEWER_Z_FAR                1000.0f
 
+//---------------------------------------------------------------------------------------------------------------------
 
-EMViewer* EMViewer::instance = nullptr;
+EMViewer* EMViewer::_instance = nullptr;
 
 EMViewer::~EMViewer ()
 {
-	if ( inputWidget )
-	{
-		inputWidget->SetOnLeftMouseButtonDownCallback ( nullptr );
-		inputWidget->SetOnLeftMouseButtonUpCallback ( nullptr );
-		inputWidget->SetOnMiddleMouseButtonDownCallback ( nullptr );
-		inputWidget->SetOnMiddleMouseButtonUpCallback ( nullptr );
-		inputWidget->SetOnRightMouseButtonDownCallback ( nullptr );
-		inputWidget->SetOnRightMouseButtonUpCallback ( nullptr );
-		inputWidget->SetOnDoubleClickCallback ( nullptr );
-		inputWidget->SetOnMouseMoveCallback ( nullptr );
-		inputWidget->SetOnMouseScrollCallback ( nullptr );
-		inputWidget->SetOnKeyDownCallback ( nullptr );
-		inputWidget->SetOnKeyUpCallback ( nullptr );
+    if ( !_inputWidget ) return;
 
-		inputWidget->SetHandler ( nullptr );
-	}
+    _inputWidget->SetOnLeftMouseButtonDownCallback ( nullptr );
+    _inputWidget->SetOnLeftMouseButtonUpCallback ( nullptr );
+    _inputWidget->SetOnMiddleMouseButtonDownCallback ( nullptr );
+    _inputWidget->SetOnMiddleMouseButtonUpCallback ( nullptr );
+    _inputWidget->SetOnRightMouseButtonDownCallback ( nullptr );
+    _inputWidget->SetOnRightMouseButtonUpCallback ( nullptr );
+    _inputWidget->SetOnDoubleClickCallback ( nullptr );
+    _inputWidget->SetOnMouseMoveCallback ( nullptr );
+    _inputWidget->SetOnMouseScrollCallback ( nullptr );
+    _inputWidget->SetOnKeyDownCallback ( nullptr );
+    _inputWidget->SetOnKeyUpCallback ( nullptr );
 
-	instance = nullptr;
+    _inputWidget->SetHandler ( nullptr );
+    _instance = nullptr;
 }
 
-GXVoid EMViewer::SetInputWidget ( GXUIInput &newInputWidget )
+GXVoid EMViewer::SetInputWidget ( GXUIInput &inputWidget )
 {
-	inputWidget = &newInputWidget;
+    _inputWidget = &inputWidget;
 
-	inputWidget->SetOnLeftMouseButtonDownCallback ( &EMViewer::OnLMBDownCallback );
-	inputWidget->SetOnLeftMouseButtonUpCallback ( &EMViewer::OnLMBUpCallback );
-	inputWidget->SetOnMiddleMouseButtonDownCallback ( &EMViewer::OnMMBDownCallback );
-	inputWidget->SetOnMiddleMouseButtonUpCallback ( &EMViewer::OnMMBUpCallback );
-	inputWidget->SetOnMouseMoveCallback ( &EMViewer::OnMouseMoveCallback );
-	inputWidget->SetOnMouseScrollCallback ( &EMViewer::OnMouseScrollCallback );
-	inputWidget->SetOnKeyDownCallback ( &EMViewer::OnKeyDownCallback );
-	inputWidget->SetOnKeyUpCallback ( &EMViewer::OnKeyUpCallback );
+    _inputWidget->SetOnLeftMouseButtonDownCallback ( &EMViewer::OnLMBDownCallback );
+    _inputWidget->SetOnLeftMouseButtonUpCallback ( &EMViewer::OnLMBUpCallback );
+    _inputWidget->SetOnMiddleMouseButtonDownCallback ( &EMViewer::OnMMBDownCallback );
+    _inputWidget->SetOnMiddleMouseButtonUpCallback ( &EMViewer::OnMMBUpCallback );
+    _inputWidget->SetOnMouseMoveCallback ( &EMViewer::OnMouseMoveCallback );
+    _inputWidget->SetOnMouseScrollCallback ( &EMViewer::OnMouseScrollCallback );
+    _inputWidget->SetOnKeyDownCallback ( &EMViewer::OnKeyDownCallback );
+    _inputWidget->SetOnKeyUpCallback ( &EMViewer::OnKeyUpCallback );
 
-	inputWidget->SetHandler ( this );
+    _inputWidget->SetHandler ( this );
 }
 
 GXVoid EMViewer::SetTarget ( EMActor* actor )
 {
-	this->target = actor;
+    _target = actor;
 }
 
-GXVoid EMViewer::SetOnViewerTransformChangedCallback ( GXVoid* handlerObject, PFNEMONVIEWERTRANSFORMCHANGEDPROC callback )
+GXVoid EMViewer::SetOnViewerTransformChangedCallback ( GXVoid* handler, PFNEMONVIEWERTRANSFORMCHANGEDPROC callback )
 {
-	handler = handlerObject;
-	OnViewerTransformChanged = callback;
+    _handler = handler;
+    _onViewerTransformChanged = callback;
 }
 
 GXCamera& EMViewer::GetCamera ()
 {
-	return camera;
+    return _camera;
 }
 
 GXVoid EMViewer::UpdateMouse ( const GXVec2 &position )
 {
-	memcpy ( &mousePosition, &position, sizeof ( GXVec2 ) );
+    memcpy ( &_mousePosition, &position, sizeof ( GXVec2 ) );
 }
 
 EMViewer* EMViewer::GetInstance ()
 {
-	if ( !instance )
-		instance = new EMViewer ();
+    if ( !_instance )
+        _instance = new EMViewer ();
 
-	return instance;
+    return _instance;
 }
 
 EMViewer::EMViewer ():
-	inputWidget ( nullptr ),
-	handler ( nullptr ),
-	OnViewerTransformChanged ( nullptr ),
-	pitch ( EM_DEFAULT_PITCH_RAD ),
-	yaw ( EM_DEFAULT_YAW_RAD ),
-	distance ( EM_DEFAULT_DISTANCE ),
-	origin ( EM_DEFAULT_ORIGIN_X, EM_DEFAULT_ORIGIN_Y, EM_DEFAULT_ORIGIN_Z ),
-	target ( nullptr ),
-	rotationSpeed ( GXDegToRad ( EM_VIEWER_ROTATION_SPEED ) / gx_ui_Scale ),
-	panSpeed ( EM_VIEWER_PAN_SPEED / gx_ui_Scale ),
-	zoomSpeed ( EM_VIEWER_ZOOM_STEP ),
-	camera ( GXDegToRad ( EM_VIEWER_FOVY_DEGREES ), 1.0f, EM_VIEWER_Z_NEAR, EM_VIEWER_Z_FAR ),
-	isAltPressed ( GX_FALSE ),
-	isMMBPressed ( GX_FALSE )
+    _inputWidget ( nullptr ),
+    _handler ( nullptr ),
+    _onViewerTransformChanged ( nullptr ),
+    _pitch ( DEFAULT_PITCH_RAD ),
+    _yaw ( DEFAULT_YAW_RAD ),
+    _distance ( DEFAULT_DISTANCE ),
+    _origin ( DEFAULT_ORIGIN_X, DEFAULT_ORIGIN_Y, DEFAULT_ORIGIN_Z ),
+    _target ( nullptr ),
+    _rotationSpeed ( GXDegToRad ( VIEWER_ROTATION_SPEED ) / gx_ui_Scale ),
+    _panSpeed ( VIEWER_PAN_SPEED / gx_ui_Scale ),
+    _zoomSpeed ( VIEWER_ZOOM_STEP ),
+    _camera ( GXDegToRad ( VIEWER_FOVY_DEGREES ), 1.0f, VIEWER_Z_NEAR, VIEWER_Z_FAR ),
+    _isAltPressed ( GX_FALSE ),
+    _isMMBPressed ( GX_FALSE )
 {
-	GXRenderer& renderer = GXRenderer::GetInstance ();
-	camera.SetAspectRatio ( renderer.GetWidth () / static_cast<GXFloat> ( renderer.GetHeight () ) );
+    GXRenderer& renderer = GXRenderer::GetInstance ();
+    _camera.SetAspectRatio ( renderer.GetWidth () / static_cast<GXFloat> ( renderer.GetHeight () ) );
 
-	UpdateCamera ();
+    UpdateCamera ();
 }
 
 GXVoid EMViewer::OnPan ( const GXVec2& mouseDelta )
 {
-	const GXMat4& cameraTransform = camera.GetCurrentFrameModelMatrix ();
+    const GXMat4& cameraTransform = _camera.GetCurrentFrameModelMatrix ();
 
-	GXVec3 deltaRight;
-	GXVec3 tmp;
-	cameraTransform.GetX ( tmp );
-	deltaRight.Multiply ( tmp, -mouseDelta.GetX () * panSpeed );
+    GXVec3 deltaRight;
+    GXVec3 tmp;
+    cameraTransform.GetX ( tmp );
+    deltaRight.Multiply ( tmp, -mouseDelta.GetX () * _panSpeed );
 
-	GXVec3 deltaUp;
-	cameraTransform.GetY ( tmp );
-	deltaUp.Multiply ( tmp, -mouseDelta.GetY () * panSpeed );
+    GXVec3 deltaUp;
+    cameraTransform.GetY ( tmp );
+    deltaUp.Multiply ( tmp, -mouseDelta.GetY () * _panSpeed );
 
-	origin.Sum ( origin, deltaRight );
-	origin.Sum ( origin, deltaUp );
+    _origin.Sum ( _origin, deltaRight );
+    _origin.Sum ( _origin, deltaUp );
 
-	UpdateCamera ();
+    UpdateCamera ();
 
-	if ( !OnViewerTransformChanged ) return;
+    if ( !_onViewerTransformChanged ) return;
 
-	OnViewerTransformChanged ( handler );
+    _onViewerTransformChanged ( _handler );
 }
 
 GXVoid EMViewer::OnRotate ( const GXVec2& mouseDelta )
 {
-	GXFloat pitchDelta = -mouseDelta.GetY () * rotationSpeed;
-	GXFloat yawDelta = mouseDelta.GetX () * rotationSpeed;
+    const GXFloat pitchDelta = -mouseDelta.GetY () * _rotationSpeed;
+    const GXFloat yawDelta = mouseDelta.GetX () * _rotationSpeed;
 
-	pitch = FixPitch ( pitch + pitchDelta );
-	yaw = FixYaw ( yaw + yawDelta );
+    _pitch = FixPitch ( _pitch + pitchDelta );
+    _yaw = FixYaw ( _yaw + yawDelta );
 
-	GXVec3 targetLocation;
+    GXVec3 targetLocation;
 
-	if ( target )
-		target->GetTransform ().GetLocation ( targetLocation );
-	else
-		targetLocation = origin;
+    if ( _target )
+        _target->GetTransform ().GetLocation ( targetLocation );
+    else
+        targetLocation = _origin;
 
-	GXVec3 targetOriginView;
-	camera.GetCurrentFrameViewMatrix ().MultiplyAsPoint ( targetOriginView, targetLocation );
+    GXVec3 targetOriginView;
+    _camera.GetCurrentFrameViewMatrix ().MultiplyAsPoint ( targetOriginView, targetLocation );
 
-	UpdateCamera ();
-	GXVec3 tempTargetWorld;
-	camera.GetCurrentFrameModelMatrix ().MultiplyAsPoint ( tempTargetWorld, targetOriginView );
+    UpdateCamera ();
+    GXVec3 tempTargetWorld;
+    _camera.GetCurrentFrameModelMatrix ().MultiplyAsPoint ( tempTargetWorld, targetOriginView );
 
-	GXVec3 deltaTargetWorld;
-	deltaTargetWorld.Substract ( targetLocation, tempTargetWorld );
+    GXVec3 deltaTargetWorld;
+    deltaTargetWorld.Substract ( targetLocation, tempTargetWorld );
 
-	origin.Sum ( origin, deltaTargetWorld );
+    _origin.Sum ( _origin, deltaTargetWorld );
 
-	UpdateCamera ();
-	
-	if ( !OnViewerTransformChanged ) return;
+    UpdateCamera ();
+    
+    if ( !_onViewerTransformChanged ) return;
 
-	OnViewerTransformChanged ( handler );
+    _onViewerTransformChanged ( _handler );
 }
 
 GXVoid EMViewer::OnZoom ( GXFloat mouseWheelSteps )
 {
-	distance = GXClampf ( distance - EM_VIEWER_ZOOM_STEP * mouseWheelSteps, EM_VIEWER_MIN_DISTANCE, EM_VIEWER_MAX_DISTANCE );
-	UpdateCamera ();
+    _distance = GXClampf ( _distance - VIEWER_ZOOM_STEP * mouseWheelSteps, VIEWER_MIN_DISTANCE, VIEWER_MAX_DISTANCE );
+    UpdateCamera ();
 
-	if ( !OnViewerTransformChanged ) return;
+    if ( !_onViewerTransformChanged ) return;
 
-	OnViewerTransformChanged ( handler );
+    _onViewerTransformChanged ( _handler );
 }
 
 GXVoid EMViewer::UpdateCamera ()
 {
-	GXMat4 matrix;
-	matrix.RotationXY ( pitch, yaw );
+    GXMat4 matrix;
+    matrix.RotationXY ( _pitch, _yaw );
 
-	GXVec3 tmp;
-	GXVec3 stick;
-	matrix.GetZ ( tmp );
-	stick.Multiply ( tmp, distance );
+    GXVec3 tmp;
+    GXVec3 stick;
+    matrix.GetZ ( tmp );
+    stick.Multiply ( tmp, _distance );
 
-	tmp.Substract ( origin, stick );
-	matrix.SetW ( tmp );
+    tmp.Substract ( _origin, stick );
+    matrix.SetW ( tmp );
 
-	camera.SetCurrentFrameModelMatrix ( matrix );
+    _camera.SetCurrentFrameModelMatrix ( matrix );
 }
 
 GXFloat EMViewer::FixPitch ( GXFloat currentPitch )
 {
-	return GXClampf ( currentPitch, -GX_MATH_HALF_PI, GX_MATH_HALF_PI );
+    return GXClampf ( currentPitch, -GX_MATH_HALF_PI, GX_MATH_HALF_PI );
 }
 
 GXFloat EMViewer::FixYaw ( GXFloat currentYaw )
 {
-	while ( currentYaw < -GX_MATH_PI ) currentYaw += GX_MATH_DOUBLE_PI;
+    while ( currentYaw < -GX_MATH_PI )
+        currentYaw += GX_MATH_DOUBLE_PI;
 
-	while ( currentYaw > GX_MATH_PI ) currentYaw -= GX_MATH_DOUBLE_PI;
+    while ( currentYaw > GX_MATH_PI )
+        currentYaw -= GX_MATH_DOUBLE_PI;
 
-	return currentYaw;
+    return currentYaw;
 }
 
 GXUByte EMViewer::ResolveMode ( GXBool isAltDown, GXBool isMMBDown, GXBool isWheel )
 {
-	if ( isWheel ) return EM_VIEWER_ZOOM_MODE;
+    if ( isWheel )
+        return VIEWER_ZOOM_MODE;
 
-	if ( isAltDown && isMMBDown ) return EM_VIEWER_ROTATE_MODE;
+    if ( isAltDown && isMMBDown )
+        return VIEWER_ROTATE_MODE;
 
-	if ( isMMBDown ) return EM_VIEWER_PAN_MODE;
+    if ( isMMBDown )
+        return VIEWER_PAN_MODE;
 
-	return EM_VIEWER_NOTHING_MODE;
+    return VIEWER_NOTHING_MODE;
 }
 
 GXVoid GXCALL EMViewer::OnLMBDownCallback ( GXVoid* /*handler*/, GXUIInput& /*input*/, GXFloat x, GXFloat y )
 {
-	EMTool* tool = EMTool::GetActiveTool ();
+    EMTool* tool = EMTool::GetActiveTool ();
 
-	if ( !tool ) return;
+    if ( !tool ) return;
 
-	tool->OnLeftMouseButtonDown ( x, y );
+    tool->OnLeftMouseButtonDown ( x, y );
 }
 
 GXVoid GXCALL EMViewer::OnLMBUpCallback ( GXVoid* /*handler*/, GXUIInput& /*input*/, GXFloat x, GXFloat y )
 {
-	EMTool* tool = EMTool::GetActiveTool ();
+    EMTool* tool = EMTool::GetActiveTool ();
 
-	if ( !tool ) return;
+    if ( !tool ) return;
 
-	tool->OnLeftMouseButtonUp ( x, y );
+    tool->OnLeftMouseButtonUp ( x, y );
 }
 
 GXVoid GXCALL EMViewer::OnMMBDownCallback ( GXVoid* handler, GXUIInput& /*input*/, GXFloat /*x*/, GXFloat /*y*/ )
 {
-	EMViewer* viewer = static_cast<EMViewer*> ( handler );
-	viewer->isMMBPressed = GX_TRUE;
+    EMViewer* viewer = static_cast<EMViewer*> ( handler );
+    viewer->_isMMBPressed = GX_TRUE;
 }
 
 GXVoid GXCALL EMViewer::OnMMBUpCallback ( GXVoid* handler, GXUIInput& /*input*/, GXFloat /*x*/, GXFloat /*y*/ )
 {
-	EMViewer* viewer = static_cast<EMViewer*> ( handler );
-	viewer->isMMBPressed = GX_FALSE;
+    EMViewer* viewer = static_cast<EMViewer*> ( handler );
+    viewer->_isMMBPressed = GX_FALSE;
 }
 
 GXVoid GXCALL EMViewer::OnMouseScrollCallback ( GXVoid* handler, GXUIInput& /*input*/, GXFloat x, GXFloat y, GXFloat scroll )
 {
-	EMTool* tool = EMTool::GetActiveTool ();
+    EMTool* tool = EMTool::GetActiveTool ();
 
-	if ( tool && tool->OnMouseScroll ( x, y, scroll ) ) return;
+    if ( tool && tool->OnMouseScroll ( x, y, scroll ) ) return;
 
-	EMViewer* viewer = static_cast<EMViewer*> ( handler );
+    EMViewer* viewer = static_cast<EMViewer*> ( handler );
 
-	if ( viewer->ResolveMode ( viewer->isAltPressed, viewer->isMMBPressed, GX_TRUE ) != EM_VIEWER_ZOOM_MODE ) return;
+    if ( viewer->ResolveMode ( viewer->_isAltPressed, viewer->_isMMBPressed, GX_TRUE ) != VIEWER_ZOOM_MODE ) return;
 
-	viewer->OnZoom ( scroll );
+    viewer->OnZoom ( scroll );
 }
 
 GXVoid GXCALL EMViewer::OnMouseMoveCallback ( GXVoid* handler, GXUIInput& /*input*/, GXFloat x, GXFloat y )
 {
-	EMTool* tool = EMTool::GetActiveTool ();
+    EMTool* tool = EMTool::GetActiveTool ();
 
-	if ( tool && tool->OnMouseMove ( x, y ) ) return;
+    if ( tool && tool->OnMouseMove ( x, y ) ) return;
 
-	EMViewer* viewer = static_cast<EMViewer*> ( handler );
-	GXVec2 mousePosition ( x, y );
+    EMViewer* viewer = static_cast<EMViewer*> ( handler );
+    const GXVec2 mousePosition ( x, y );
 
-	switch ( viewer->ResolveMode ( viewer->isAltPressed, viewer->isMMBPressed, GX_FALSE ) )
-	{
-		case EM_VIEWER_ROTATE_MODE:
-		{
-			GXVec2 delta;
-			delta.Substract ( mousePosition, viewer->mousePosition );
-			viewer->OnRotate ( delta );
-		}
-		break;
+    switch ( viewer->ResolveMode ( viewer->_isAltPressed, viewer->_isMMBPressed, GX_FALSE ) )
+    {
+        case VIEWER_ROTATE_MODE:
+        {
+            GXVec2 delta;
+            delta.Substract ( mousePosition, viewer->_mousePosition );
+            viewer->OnRotate ( delta );
+        }
+        break;
 
-		case EM_VIEWER_PAN_MODE:
-		{
-			GXVec2 delta;
-			delta.Substract ( mousePosition, viewer->mousePosition );
-			viewer->OnPan ( delta );
-		}
-		break;
+        case VIEWER_PAN_MODE:
+        {
+            GXVec2 delta;
+            delta.Substract ( mousePosition, viewer->_mousePosition );
+            viewer->OnPan ( delta );
+        }
+        break;
 
-		default:
-			// NOTHING
-		break;
-	}
+        default:
+            // NOTHING
+        break;
+    }
 
-	viewer->UpdateMouse ( mousePosition );
+    viewer->UpdateMouse ( mousePosition );
 }
 
 GXVoid GXCALL EMViewer::OnKeyDownCallback ( GXVoid* handler, GXUIInput& /*input*/, GXInt keyCode )
 {
-	EMTool* tool = EMTool::GetActiveTool ();
+    EMTool* tool = EMTool::GetActiveTool ();
 
-	if ( tool && tool->OnKeyDown ( keyCode ) ) return;
+    if ( tool && tool->OnKeyDown ( keyCode ) ) return;
 
-	if ( keyCode != VK_MENU ) return;
+    if ( keyCode != VK_MENU ) return;
 
-	EMViewer* viewer = static_cast<EMViewer*> ( handler );
-	viewer->isAltPressed = GX_TRUE;
+    EMViewer* viewer = static_cast<EMViewer*> ( handler );
+    viewer->_isAltPressed = GX_TRUE;
 }
 
 GXVoid GXCALL EMViewer::OnKeyUpCallback ( GXVoid* handler, GXUIInput& /*input*/, GXInt keyCode )
 {
-	EMTool* tool = EMTool::GetActiveTool ();
+    EMTool* tool = EMTool::GetActiveTool ();
 
-	if ( tool && tool->OnKeyUp ( keyCode ) ) return;
+    if ( tool && tool->OnKeyUp ( keyCode ) ) return;
 
-	if ( keyCode != VK_MENU ) return;
+    if ( keyCode != VK_MENU ) return;
 
-	EMViewer* viewer = static_cast<EMViewer*> ( handler );
-	viewer->isAltPressed = GX_FALSE;
+    EMViewer* viewer = static_cast<EMViewer*> ( handler );
+    viewer->_isAltPressed = GX_FALSE;
 }

@@ -15,20 +15,20 @@ typedef GXVoid ( GXCALL* PFNEMONBROWSEFILEPROC ) ( const GXWChar* filePath );
 class EMUIOpenFile final : public EMUI
 {
     private:
-        GXWChar*                    currentDirectory;
+        GXWChar*                    _currentDirectory;
 
-        GXWChar*                    rootDirectory;
-        GXUPointer                  rootDirectoryPathOffset;
+        GXWChar*                    _rootDirectory;
+        GXUPointer                  _rootDirectoryPathOffset;
 
-        EMUIDraggableArea*          mainPanel;
-        EMUIButton*                 okButton;
-        EMUIButton*                 cancelButton;
-        EMUIStaticText*             filePathStaticText;
-        EMUISeparator*              bottomSeparator;
-        EMUISeparator*              topSeparator;
-        EMUIFileListBox*            fileListBox;
+        EMUIDraggableArea*          _mainPanel;
+        EMUIButton*                 _okButton;
+        EMUIButton*                 _cancelButton;
+        EMUIStaticText*             _filePathStaticText;
+        EMUISeparator*              _bottomSeparator;
+        EMUISeparator*              _topSeparator;
+        EMUIFileListBox*            _fileListBox;
 
-        PFNEMONBROWSEFILEPROC       OnBrowseFile;
+        PFNEMONBROWSEFILEPROC       _onBrowseFile;
 
     public:
         EMUIOpenFile ();

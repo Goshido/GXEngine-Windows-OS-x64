@@ -7,26 +7,26 @@
 
 class EMUIFPSCounter final
 {
-	private:
-		GXUInt					lastFPS;
-		GXFont					font;
+    private:
+        GXUInt                      _lastFPS;
+        GXFont                      _font;
 
-		GXHudSurface*			surface;
-		GXWChar					fpsBuffer[ 16 ];
+        GXHudSurface*               _surface;
+        GXWChar                     _fpsBuffer[ 16u ];
 
-		static EMUIFPSCounter*	instance;
+        static EMUIFPSCounter*      _instance;
 
-	public:
-		static EMUIFPSCounter& GetInstance ();
-		~EMUIFPSCounter ();
+    public:
+        static EMUIFPSCounter& GetInstance ();
+        ~EMUIFPSCounter ();
 
-		void Render ();
+        void Render ();
 
-	private:
-		EMUIFPSCounter ();
+    private:
+        EMUIFPSCounter ();
 
-		EMUIFPSCounter ( const EMUIFPSCounter &other ) = delete;
-		EMUIFPSCounter& operator = ( const EMUIFPSCounter &other ) = delete;
+        EMUIFPSCounter ( const EMUIFPSCounter &other ) = delete;
+        EMUIFPSCounter& operator = ( const EMUIFPSCounter &other ) = delete;
 };
 
 

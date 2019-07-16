@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_OGG_VORBIS
 #define GX_OGG_VORBIS
@@ -22,11 +22,11 @@ typedef	int ( *PFNOVCLEAR ) ( OggVorbis_File *vf );
 
 struct GXOGGVorbisFunctions
 {
-	PFNOVOPENCALLBACKS*	ov_open_callbacks;
-	PFNOVREAD*			ov_read;
-	PFNOVPCMSEEK*		ov_pcm_seek;
-	PFNOVPCMTOTAL*		ov_pcm_total;
-	PFNOVCLEAR*			ov_clear;
+    PFNOVOPENCALLBACKS*     ov_open_callbacks;
+    PFNOVREAD*              ov_read;
+    PFNOVPCMSEEK*           ov_pcm_seek;
+    PFNOVPCMTOTAL*          ov_pcm_total;
+    PFNOVCLEAR*             ov_clear;
 };
 
 

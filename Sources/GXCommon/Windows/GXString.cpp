@@ -233,7 +233,7 @@ GXStringData GXStringData::nullStringData ( nullptr, GX_FALSE );
 //---------------------------------------------------------------------------------------------------------------------
 
 GXString::GXString ()
-    GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXString" ),
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXString" )
     _stringData ( &( GXStringData::GetNullStringData () ) )
 {
     // NOTHING

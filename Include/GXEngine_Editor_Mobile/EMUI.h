@@ -13,11 +13,13 @@
 class EMUI
 {
     private:
-        EMUI*       _next;
-        EMUI*       _previous;
+        EMUI*           _next;
+        EMUI*           _previous;
+
+        static EMUI*    _uiElements;
 
     protected:
-        EMUI*       _parent;
+        EMUI*           _parent;
 
     public:
         explicit EMUI ( EMUI* parent );

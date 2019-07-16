@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_XINPUT
 #define GX_XINPUT
@@ -19,8 +19,8 @@ typedef void ( WINAPI* PFNXINPUTENABLEPROC ) ( BOOL enable );
 
 struct GXXInputFunctions
 {
-	PFNXINPUTGETSTATEPROC*	XInputGetState;
-	PFNXINPUTENABLEPROC*	XInputEnable;
+    PFNXINPUTGETSTATEPROC*      XInputGetState;
+    PFNXINPUTENABLEPROC*        XInputEnable;
 };
 
 

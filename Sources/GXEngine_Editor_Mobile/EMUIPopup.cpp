@@ -50,11 +50,11 @@
 class EMUIPopupRenderer final : public GXWidgetRenderer
 {
     private:
-        GXFont              font;
-        GXDynamicArray      itemNames;
-        GXTexture2D         texture;
+        GXFont              _font;
+        GXDynamicArray      _itemNames;
+        GXTexture2D         _texture;
 
-        GXHudSurface*       surface;
+        GXHudSurface*       _surface;
 
     public:
         explicit EMUIPopupRenderer ( GXUIPopup* widget );
@@ -76,52 +76,54 @@ class EMUIPopupRenderer final : public GXWidgetRenderer
 
 EMUIPopupRenderer::EMUIPopupRenderer ( GXUIPopup* widget ):
     GXWidgetRenderer ( widget ),
-    font ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) ),
-    itemNames ( sizeof ( GXWChar* ) ),
-    texture ( DEFAULT_TEXTURE, GX_FALSE, GX_FALSE )
+    _font ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) ),
+    _itemNames ( sizeof ( GXWChar* ) ),
+    _texture ( DEFAULT_TEXTURE, GX_FALSE, GX_FALSE )
 {
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
-    surface = new GXHudSurface ( static_cast<GXUShort> ( widget->GetItemWidth () ), static_cast<GXUShort> ( widget->GetItemHeight () ) );
+    _surface = new GXHudSurface ( static_cast<GXUShort> ( widget->GetItemWidth () ), static_cast<GXUShort> ( widget->GetItemHeight () ) );
 }
 
 EMUIPopupRenderer::~EMUIPopupRenderer ()
 {
-    delete surface;
+    delete _surface;
 
-    GXWChar** names = reinterpret_cast<GXWChar**> ( itemNames.GetData () );
-    GXUByte totalNames = static_cast<GXUByte> ( itemNames.GetLength () );
+    GXWChar** names = reinterpret_cast<GXWChar**> ( _itemNames.GetData () );
+    const GXUByte totalNames = static_cast<const GXUByte> ( _itemNames.GetLength () );
 
     for ( GXUByte i = 0u; i < totalNames; ++i )
+    {
         free ( names[ i ] );
+    }
 }
 
 GXVoid EMUIPopupRenderer::AddItem ( const GXWChar* name )
 {
     GXWChar* newItem = nullptr;
     GXWcsclone ( &newItem, name );
-    itemNames.SetValue ( itemNames.GetLength (), &newItem );
+    _itemNames.SetValue ( _itemNames.GetLength (), &newItem );
 }
 
 GXVoid EMUIPopupRenderer::OnRefresh ()
 {
-    GXUIPopup* popup = static_cast<GXUIPopup*> ( widget );
-    GXUByte totalItems = popup->GetTotalItems ();
-    GXFloat itemHeight = popup->GetItemHeight ();
-    GXFloat itemWidth = floorf ( popup->GetItemWidth () );
-    GXFloat totalHeight = floorf ( popup->GetBoundsLocal ().GetHeight () );
+    const GXUIPopup* popup = static_cast<GXUIPopup*> ( widget );
+    const GXUByte totalItems = popup->GetTotalItems ();
+    const GXFloat itemHeight = popup->GetItemHeight ();
+    const GXFloat itemWidth = floorf ( popup->GetItemWidth () );
+    const GXFloat totalHeight = floorf ( popup->GetBoundsLocal ().GetHeight () );
 
-    surface->Reset ();
+    _surface->Reset ();
 
     GXImageInfo ii;
     ii._color.From ( static_cast<GXUByte> ( BACKGROUND_COLOR_R ), static_cast<GXUByte> ( BACKGROUND_COLOR_G ), static_cast<GXUByte> ( BACKGROUND_COLOR_B ), static_cast<GXUByte> ( BACKGROUND_COLOR_A ) );
-    ii._texture = &texture;
+    ii._texture = &_texture;
     ii._overlayType = eGXImageOverlayType::SimpleReplace;
     ii._insertX = 1.0f + 0.1f;
     ii._insertY = 1.0f + 0.1f;
     ii._insertWidth = itemWidth - 2.0f - 0.2f;
     ii._insertHeight = totalHeight - 2.0f - 0.2f;
     
-    surface->AddImage ( ii );
+    _surface->AddImage ( ii );
 
     GXLineInfo li;
     li._color.From ( static_cast<GXUByte> ( BORDER_COLOR_R ), static_cast<GXUByte> ( BORDER_COLOR_G ), static_cast<GXUByte> ( BORDER_COLOR_B ), static_cast<GXUByte> ( BORDER_COLOR_A ) );
@@ -130,24 +132,24 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
     li._startPoint.Init (1.0f + 0.1f, 0.1f );
     li._endPoint.Init ( itemWidth - 2.0f + 0.9f, 0.1f );
 
-    surface->AddLine ( li );
+    _surface->AddLine ( li );
 
     li._startPoint.Init ( itemWidth - 1.0f + 0.9f, 1.0f + 0.1f );
     li._endPoint.Init ( itemWidth - 1.0f + 0.9f, totalHeight - 2.0f + 0.9f );
 
-    surface->AddLine ( li );
+    _surface->AddLine ( li );
 
     li._startPoint.Init ( itemWidth - 2.0f + 0.9f, totalHeight - 1.0f + 0.9f );
     li._endPoint.Init ( 1.0f + 0.1f, totalHeight - 1.0f + 0.9f );
 
-    surface->AddLine ( li );
+    _surface->AddLine ( li );
 
     li._startPoint.Init ( 0.1f, totalHeight - 2.0f + 0.9f );
     li._endPoint.Init ( 0.1f, 1.0f + 0.1f );
 
-    surface->AddLine ( li );
+    _surface->AddLine ( li );
 
-    GXUByte hightlighted = popup->GetSelectedItemIndex ();
+    const GXUByte hightlighted = popup->GetSelectedItemIndex ();
 
     if ( hightlighted != static_cast<GXUByte> ( GX_UI_POPUP_INVALID_INDEX ) )
     {
@@ -158,49 +160,49 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
         ii._insertWidth = itemWidth;
         ii._insertHeight = itemHeight;
         
-        surface->AddImage ( ii );
+        _surface->AddImage ( ii );
     }
 
-    const GXWChar** names = reinterpret_cast<const GXWChar**> ( itemNames.GetData () );
+    const GXWChar** names = reinterpret_cast<const GXWChar**> ( _itemNames.GetData () );
     GXPenInfo pi;
-    pi._font = &font;
+    pi._font = &_font;
     pi._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
     pi._insertX = TEXT_OFFSET_X * gx_ui_Scale;
-    pi._insertY = totalHeight - itemHeight + ( itemHeight - (GXFloat)font.GetSize () ) * 0.5f;
+    pi._insertY = totalHeight - itemHeight + ( itemHeight - (GXFloat)_font.GetSize () ) * 0.5f;
 
-    for ( GXUByte i = 0; i < totalItems; ++i )
+    for ( GXUByte i = 0u; i < totalItems; ++i )
     {
         if ( popup->IsItemActive ( i ) )
             pi._color.From ( static_cast<GXUByte> ( ENABLE_ITEM_COLOR_R ), static_cast<GXUByte> ( ENABLE_ITEM_COLOR_G ), static_cast<GXUByte> ( ENABLE_ITEM_COLOR_B ), static_cast<GXUByte> ( ENABLE_ITEM_COLOR_A ) );
         else
             pi._color.From ( static_cast<GXUByte> ( DISABLE_ITEM_COLOR_R ), static_cast<GXUByte> ( DISABLE_ITEM_COLOR_G ), static_cast<GXUByte> ( DISABLE_ITEM_COLOR_B ), static_cast<GXUByte> ( DISABLE_ITEM_COLOR_A ) );
 
-        surface->AddText ( pi, 0, names[ i ] );
+        _surface->AddText ( pi, 0u, names[ i ] );
         pi._insertY -= itemHeight;
     }
 }
 
 GXVoid EMUIPopupRenderer::OnDraw ()
 {
-    surface->Render ();
+    _surface->Render ();
 }
 
 GXVoid EMUIPopupRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
 {
-    if ( height == 0 ) return;
+    if ( height == 0u ) return;
 
     x = truncf ( x ) + PIXEL_PERFECT_LOCATION_OFFSET_X;
     y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
     GXVec3 location;
-    surface->GetLocation ( location );
+    _surface->GetLocation ( location );
 
-    delete surface;
+    delete _surface;
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
-    surface = new GXHudSurface ( width, height );
+    _surface = new GXHudSurface ( width, height );
 
-    surface->SetLocation ( x, y, location._data[ 2u ] );
+    _surface->SetLocation ( x, y, location._data[ 2u ] );
 }
 
 GXVoid EMUIPopupRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -209,57 +211,57 @@ GXVoid EMUIPopupRenderer::OnMoved ( GXFloat x, GXFloat y )
     y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
     GXVec3 location;
-    surface->GetLocation ( location );
-    surface->SetLocation ( x, y, location._data[ 2 ] );
+    _surface->GetLocation ( location );
+    _surface->SetLocation ( x, y, location._data[ 2 ] );
 }
 
 //-------------------------------------------------------
 
 EMUIPopup::EMUIPopup ( EMUI* parent ):
     EMUI ( parent ),
-    widget ( new GXUIPopup ( parent ? parent->GetWidget () : nullptr ) )
+    _widget ( new GXUIPopup ( parent ? parent->GetWidget () : nullptr ) )
 {
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopupRenderer" );
-    widget->SetRenderer ( new EMUIPopupRenderer ( widget ) );
-    widget->Resize ( BOTTOM_LEFT_X * gx_ui_Scale, BOTTOM_LEFT_Y * gx_ui_Scale, ITEM_WIDTH * gx_ui_Scale, ANY_HEIGHT * gx_ui_Scale );
-    widget->SetItemHeight ( ITEM_HEIGHT * gx_ui_Scale );
+    _widget->SetRenderer ( new EMUIPopupRenderer ( _widget ) );
+    _widget->Resize ( BOTTOM_LEFT_X * gx_ui_Scale, BOTTOM_LEFT_Y * gx_ui_Scale, ITEM_WIDTH * gx_ui_Scale, ANY_HEIGHT * gx_ui_Scale );
+    _widget->SetItemHeight ( ITEM_HEIGHT * gx_ui_Scale );
 }
 
 EMUIPopup::~EMUIPopup ()
 {
-    delete widget->GetRenderer ();
-    delete widget;
+    delete _widget->GetRenderer ();
+    delete _widget;
 }
 
 GXWidget* EMUIPopup::GetWidget () const
 {
-    return widget;
+    return _widget;
 }
 
 GXVoid EMUIPopup::AddItem ( const GXWChar* name, GXVoid* handler, PFNGXONUIPOPUPACTIONPROC action )
 {
-    EMUIPopupRenderer* renderer = static_cast<EMUIPopupRenderer*> ( widget->GetRenderer () );
+    EMUIPopupRenderer* renderer = static_cast<EMUIPopupRenderer*> ( _widget->GetRenderer () );
     renderer->AddItem ( name );
-    widget->AddItem ( handler, action );
+    _widget->AddItem ( handler, action );
 }
 
 GXVoid EMUIPopup::EnableItem ( GXUByte itemIndex )
 {
-    GXUIPopup* popup = static_cast<GXUIPopup*> ( widget );
+    GXUIPopup* popup = static_cast<GXUIPopup*> ( _widget );
     popup->EnableItem ( itemIndex );
 }
 
 GXVoid EMUIPopup::DisableItem ( GXUByte itemIndex )
 {
-    widget->DisableItem ( itemIndex );
+    _widget->DisableItem ( itemIndex );
 }
 
 GXVoid EMUIPopup::SetLocation ( GXFloat x, GXFloat y )
 {
-    widget->Resize ( x, y, ITEM_WIDTH * gx_ui_Scale, ANY_HEIGHT );
+    _widget->Resize ( x, y, ITEM_WIDTH * gx_ui_Scale, ANY_HEIGHT );
 }
 
 GXVoid EMUIPopup::Show ( EMUI* owner )
 {
-    widget->Show ( owner->GetWidget () );
+    _widget->Show ( owner->GetWidget () );
 }

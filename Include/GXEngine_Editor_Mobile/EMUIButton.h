@@ -8,31 +8,31 @@
 
 class EMUIButton final : public EMUI
 {
-	private:
-		GXUIButton*		widget;
+    private:
+        GXUIButton*     _widget;
 
-	public:
-		explicit EMUIButton ( EMUI* parent );
-		~EMUIButton () override;
+    public:
+        explicit EMUIButton ( EMUI* parent );
+        ~EMUIButton () override;
 
-		GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () const override;
 
-		GXVoid Enable ();
-		GXVoid Disable ();
+        GXVoid Enable ();
+        GXVoid Disable ();
 
-		GXVoid Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height );
+        GXVoid Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height );
 
-		GXVoid SetCaption ( const GXWChar* caption );
+        GXVoid SetCaption ( const GXWChar* caption );
 
-		GXVoid Show ();
-		GXVoid Hide ();
+        GXVoid Show ();
+        GXVoid Hide ();
 
-		GXVoid SetOnLeftMouseButtonCallback ( GXVoid* handler, PFNGXONMOUSEBUTTONPROC callback );
+        GXVoid SetOnLeftMouseButtonCallback ( GXVoid* handler, PFNGXONMOUSEBUTTONPROC callback );
 
-	private:
-		EMUIButton () = delete;
-		EMUIButton ( const EMUIButton &other ) = delete;
-		EMUIButton& operator = ( const EMUIButton &other ) = delete;
+    private:
+        EMUIButton () = delete;
+        EMUIButton ( const EMUIButton &other ) = delete;
+        EMUIButton& operator = ( const EMUIButton &other ) = delete;
 };
 
 

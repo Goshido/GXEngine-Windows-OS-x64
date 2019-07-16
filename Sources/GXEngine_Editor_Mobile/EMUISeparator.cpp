@@ -22,7 +22,7 @@
 class EMUISeparatorRenderer final : public GXWidgetRenderer
 {
     private:
-        GXHudSurface*       surface;
+        GXHudSurface*       _surface;
 
     public:
         explicit EMUISeparatorRenderer ( GXWidget* widget );
@@ -47,33 +47,33 @@ EMUISeparatorRenderer::EMUISeparatorRenderer ( GXWidget* widget ):
     const GXAABB& boundsLocal = widget->GetBoundsWorld ();
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
-    surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
+    _surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
 EMUISeparatorRenderer::~EMUISeparatorRenderer ()
 {
-    delete surface;
+    delete _surface;
 }
 
 GXVoid EMUISeparatorRenderer::OnRefresh ()
 {
-    surface->Reset ();
-    GXFloat y = floorf ( 0.5f * surface->GetHeight () );
+    _surface->Reset ();
+    const GXFloat y = floorf ( 0.5f * _surface->GetHeight () );
 
     GXLineInfo li;
     li._color.From ( COLOR_R, COLOR_G, COLOR_B, COLOR_A );
     li._overlayType = eGXImageOverlayType::SimpleReplace;
     li._thickness = 1.0f;
     li._startPoint.Init ( 0.0f, y );
-    li._endPoint.Init ( static_cast<GXFloat> ( surface->GetWidth () ), y );
+    li._endPoint.Init ( static_cast<GXFloat> ( _surface->GetWidth () ), y );
 
-    surface->AddLine ( li );
+    _surface->AddLine ( li );
 }
 
 GXVoid EMUISeparatorRenderer::OnDraw ()
 {
     glDisable ( GL_DEPTH_TEST );
-    surface->Render ();
+    _surface->Render ();
     glEnable ( GL_DEPTH_TEST );
 }
 
@@ -82,14 +82,14 @@ GXVoid EMUISeparatorRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, 
     x = truncf ( x ) + PIXEL_PERFECT_LOCATION_OFFSET_X;
     y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
-    GXSafeDelete ( surface );
+    GXSafeDelete ( _surface );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
-    surface = new GXHudSurface ( width, height );
+    _surface = new GXHudSurface ( width, height );
 
     GXVec3 location;
-    surface->GetLocation ( location );
-    surface->SetLocation ( x, y, location._data[ 2 ] );
+    _surface->GetLocation ( location );
+    _surface->SetLocation ( x, y, location._data[ 2u ] );
 }
 
 GXVoid EMUISeparatorRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -98,34 +98,34 @@ GXVoid EMUISeparatorRenderer::OnMoved ( GXFloat x, GXFloat y )
     y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
     GXVec3 location;
-    surface->GetLocation ( location );
-    surface->SetLocation ( x, y, location._data[ 2 ] );
+    _surface->GetLocation ( location );
+    _surface->SetLocation ( x, y, location._data[ 2u ] );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 EMUISeparator::EMUISeparator ( EMUI* parent ):
     EMUI ( parent ),
-    widget ( new GXWidget ( parent ? parent->GetWidget () : nullptr ) )
+    _widget ( new GXWidget ( parent ? parent->GetWidget () : nullptr ) )
 {
-    widget->Resize ( DEFAULT_BOTTOM_X * gx_ui_Scale, DEFAULT_BOTTOM_Y * gx_ui_Scale, DEFAULT_WIDHT * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
+    _widget->Resize ( DEFAULT_BOTTOM_X * gx_ui_Scale, DEFAULT_BOTTOM_Y * gx_ui_Scale, DEFAULT_WIDHT * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISeparatorRenderer" );
-    widget->SetRenderer ( new EMUISeparatorRenderer ( widget ) );
+    _widget->SetRenderer ( new EMUISeparatorRenderer ( _widget ) );
 }
 
 EMUISeparator::~EMUISeparator ()
 {
-    delete widget->GetRenderer ();
-    delete widget;
+    delete _widget->GetRenderer ();
+    delete _widget;
 }
 
 GXWidget* EMUISeparator::GetWidget () const
 {
-    return widget;
+    return _widget;
 }
 
 GXVoid EMUISeparator::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height )
 {
-    widget->Resize ( bottomLeftX, bottomLeftY, width, height );
+    _widget->Resize ( bottomLeftX, bottomLeftY, width, height );
 }

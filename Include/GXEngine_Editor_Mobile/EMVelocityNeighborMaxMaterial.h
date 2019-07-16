@@ -9,27 +9,27 @@
 
 class EMVelocityNeighborMaxMaterial final : public GXMaterial
 {
-	private:
-		GXTexture2D*	velocityTileMaxTexture;
-		GXSampler		sampler;
+    private:
+        GXTexture2D*    _velocityTileMaxTexture;
+        GXSampler       _sampler;
 
-		GXVec2			inverseVelocityTileMaxTextureResolution;
+        GXVec2          _inverseVelocityTileMaxTextureResolution;
 
-		GLint			inverseVelocityTileMaxTextureResolutionLocation;
+        GLint           _inverseVelocityTileMaxTextureResolutionLocation;
 
-	public:
-		EMVelocityNeighborMaxMaterial ();
-		~EMVelocityNeighborMaxMaterial () override;
+    public:
+        EMVelocityNeighborMaxMaterial ();
+        ~EMVelocityNeighborMaxMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) override;
-		GXVoid Unbind () override;
+        GXVoid Bind ( const GXTransform &transform ) override;
+        GXVoid Unbind () override;
 
-		GXVoid SetVelocityTileMaxTexture ( GXTexture2D &texture );
-		GXVoid SetVelocityTileMaxTextureResolution ( GXUShort width, GXUShort height );
+        GXVoid SetVelocityTileMaxTexture ( GXTexture2D &texture );
+        GXVoid SetVelocityTileMaxTextureResolution ( GXUShort width, GXUShort height );
 
-	private:
-		EMVelocityNeighborMaxMaterial ( const EMVelocityNeighborMaxMaterial &other ) = delete;
-		EMVelocityNeighborMaxMaterial& operator = ( const EMVelocityNeighborMaxMaterial &other ) = delete;
+    private:
+        EMVelocityNeighborMaxMaterial ( const EMVelocityNeighborMaxMaterial &other ) = delete;
+        EMVelocityNeighborMaxMaterial& operator = ( const EMVelocityNeighborMaxMaterial &other ) = delete;
 };
 
 

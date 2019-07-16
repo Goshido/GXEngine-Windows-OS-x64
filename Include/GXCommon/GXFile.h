@@ -13,7 +13,7 @@ enum class eGXFileContentOwner : GXUByte
     User
 };
 
-class GXFile final: public GXMemoryInspector
+class GXFile final : public GXMemoryInspector
 {
     protected:
         GXString                _path;
@@ -28,7 +28,7 @@ class GXFile final: public GXMemoryInspector
         // Method returns GX_TRUE if file was successfuly loaded.
         // Note warning message box will appear if file content
         // could be not readed and notSilent equals GX_TRUE.
-        // Cotent will be freed on GXFile destructor or Close method
+        // Content will be freed on GXFile destructor or Close method
         // if contentOwner equals eGXFileContentOwner::GXFile. Otherwise
         // user code MUST free content itself by GXMemoryInspector::Free API.
         // Freeing content by ::free IS NOT allowed!

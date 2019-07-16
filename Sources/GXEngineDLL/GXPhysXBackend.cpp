@@ -1,1121 +1,1062 @@
-//version 1.10
+//version 1.12
 
 #include <GXEngineDLL/GXEngineDLL.h>
 #include <GXEngineDLL/GXPhysXAdapter.h>
-#include <GXCommon/GXOBJLoader.h>
 #include <GXCommon/GXBKELoader.h>
-#include <GXCommon/GXPHGStructs.h>
-#include <GXCommon/GXNativeStaticMeshLoader.h>
-#include <GXCommon/GXLogger.h>
-#include <GXCommon/GXTime.h>
+#include <GXCommon/GXFile.h>
 #include <GXCommon/GXFileSystem.h>
+#include <GXCommon/GXLogger.h>
 #include <GXCommon/GXMemory.h>
+#include <GXCommon/GXNativeStaticMeshLoader.h>
+#include <GXCommon/GXOBJLoader.h>
+#include <GXCommon/GXPHGStructs.h>
+#include <GXCommon/GXTime.h>
 
 
-#define GX_PHYSICS_NB_THREADS				1
-#define GX_PHYSICS_SIMULATE_DELAY			0.007
-#define GX_PHYSICS_TOLERANCE_LENGTH			1.0f
-#define GX_PHYSICS_TOLERANCE_MASS			1000.0f
-#define GX_PHYSICS_TOLERANCE_SPEED			9.81f
+#define PHYSICS_NB_THREADS          1u
+#define PHYSICS_SIMULATE_DELAY      0.007
+#define PHYSICS_TOLERANCE_LENGTH    1.0f
+#define PHYSICS_TOLERANCE_MASS      1000.0f
+#define PHYSICS_TOLERANCE_SPEED     9.81f
 
+//---------------------------------------------------------------------------------------------------------------------
 
 class GXPhysicsErrorCallback : public physx::PxErrorCallback
 {
-	public:
-		virtual GXVoid reportError ( PxErrorCode::Enum code, const GXChar* message, const GXChar* file, GXInt line );
+    public:
+        GXVoid reportError ( PxErrorCode::Enum code, const GXChar* message, const GXChar* file, GXInt line ) override;
 };
 
-GXVoid GXPhysicsErrorCallback::reportError ( PxErrorCode::Enum code, const GXChar* message, const GXChar* file, GXInt line )
+GXVoid GXPhysicsErrorCallback::reportError ( PxErrorCode::Enum code, const GXChar* message, const GXChar* /*file*/, GXInt /*line*/ )
 {
-	GXChar kind [ 30 ] = { 0 };
-	switch ( code )
-	{
-		case PxErrorCode::eNO_ERROR:
-			sprintf_s ( kind, "NO_ERROR" );
-		break;
+    GXChar kind [ 30u ] = { 0 };
 
-		//! \brief An informational message.
-		case PxErrorCode::eDEBUG_INFO:
-			sprintf_s ( kind, "DEBUG_INFO" );
-		break;
+    switch ( code )
+    {
+        case PxErrorCode::eNO_ERROR:
+            sprintf_s ( kind, "NO_ERROR" );
+        break;
 
-		//! \brief a warning message for the user to help with debugging
-		case PxErrorCode::eDEBUG_WARNING:
-			sprintf_s ( kind, "DEBUG_WARNING" );
-		break;
+        //! \brief An informational message.
+        case PxErrorCode::eDEBUG_INFO:
+            sprintf_s ( kind, "DEBUG_INFO" );
+        break;
 
-		//! \brief method called with invalid parameter(s)
-		case PxErrorCode::eINVALID_PARAMETER:
-			sprintf_s ( kind, "INVALID_PARAMETER" );
-		break;
+        //! \brief a warning message for the user to help with debugging
+        case PxErrorCode::eDEBUG_WARNING:
+            sprintf_s ( kind, "DEBUG_WARNING" );
+        break;
 
-		//! \brief method was called at a time when an operation is not possible
-		case PxErrorCode::eINVALID_OPERATION:
-			sprintf_s ( kind, "INVALID_OPERATION" );
-		break;
+        //! \brief method called with invalid parameter(s)
+        case PxErrorCode::eINVALID_PARAMETER:
+            sprintf_s ( kind, "INVALID_PARAMETER" );
+        break;
 
-		//! \brief method failed to allocate some memory
-		case PxErrorCode::eOUT_OF_MEMORY:
-			sprintf_s ( kind, "OUT_OF_MEMORY" );
-		break;
+        //! \brief method was called at a time when an operation is not possible
+        case PxErrorCode::eINVALID_OPERATION:
+            sprintf_s ( kind, "INVALID_OPERATION" );
+        break;
 
-		/** \brief The library failed for some reason.
-		Possibly you have passed invalid values like NaNs, which are not checked for.
-		*/
-		case PxErrorCode::eINTERNAL_ERROR:
-			sprintf_s ( kind, "INTERNAL_ERROR" );
-		break;
+        //! \brief method failed to allocate some memory
+        case PxErrorCode::eOUT_OF_MEMORY:
+            sprintf_s ( kind, "OUT_OF_MEMORY" );
+        break;
 
-		//! \brief An unrecoverable error, execution should be halted and log output flushed 
-		case PxErrorCode::eABORT:
-			sprintf_s ( kind, "ABORT" );
-		break;
+        /** \brief The library failed for some reason.
+        Possibly you have passed invalid values like NaNs, which are not checked for.
+        */
+        case PxErrorCode::eINTERNAL_ERROR:
+            sprintf_s ( kind, "INTERNAL_ERROR" );
+        break;
 
-		//! \brief The SDK has determined that an operation may result in poor performance. 
-		case PxErrorCode::ePERF_WARNING:
-			sprintf_s ( kind, "PERF_WARNING" );
-		break;
+        //! \brief An unrecoverable error, execution should be halted and log output flushed 
+        case PxErrorCode::eABORT:
+            sprintf_s ( kind, "ABORT" );
+        break;
 
-		//! \brief A bit mask for including all errors
-		case PxErrorCode::eMASK_ALL:
-			sprintf_s ( kind, "MASK_ALL" );
-		break;
-	}
+        //! \brief The SDK has determined that an operation may result in poor performance. 
+        case PxErrorCode::ePERF_WARNING:
+            sprintf_s ( kind, "PERF_WARNING" );
+        break;
 
-	GXLogA ( "PhysX::%s - %s\n", kind, message );
+        //! \brief A bit mask for including all errors
+        case PxErrorCode::eMASK_ALL:
+            sprintf_s ( kind, "MASK_ALL" );
+        break;
+    }
+
+    GXLogA ( "PhysX::%s - %s\n", kind, message );
 }
 
-//----------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
-class MemoryOutputStream: public PxOutputStream
+class MemoryOutputStream : public PxOutputStream
 {
-	private:
-		PxU8*		mData;
-		PxU32		mSize;
-		PxU32		mCapacity;
+    private:
+        PxU8*       _data;
+        PxU32       _size;
+        PxU32       _capacity;
 
-	public:
-		MemoryOutputStream ();
-		virtual	~MemoryOutputStream ();
-		PxU32 write ( const GXVoid* src, PxU32 count );
-		PxU32 getSize () const;
-		PxU8* getData () const;
-		GXVoid CacheToDisk ( GXWChar* filepath );
+    public:
+        MemoryOutputStream ();
+        ~MemoryOutputStream () override;
+
+        PxU32 write ( const GXVoid* src, PxU32 count ) override;
+
+        PxU32 getSize () const;
+        PxU8* getData () const;
+        GXVoid CacheToDisk ( GXWChar* filepath );
 };
 
 
-MemoryOutputStream::MemoryOutputStream ()
+MemoryOutputStream::MemoryOutputStream ():
+    _data ( nullptr ),
+    _size ( 0u ),
+    _capacity ( 0 )
 {
-	mData = 0;
-	mSize = 0;
-	mCapacity = 0;
+    // NOTHING
 }
 
 MemoryOutputStream::~MemoryOutputStream()
 {
-	if ( mData )
-		delete [] mData;
+    if ( !_data ) return;
+
+    delete [] _data;
 }
 
 PxU32 MemoryOutputStream::write ( const GXVoid* src, PxU32 size )
 {
-	PxU32 expectedSize = mSize + size;
-	if ( expectedSize > mCapacity )
-	{
-		mCapacity = expectedSize + 4096;
+    const PxU32 expectedSize = _size + size;
 
-		PxU8* newData = new PxU8 [ mCapacity ];
-		PX_ASSERT ( newData != 0 );
+    if ( expectedSize > _capacity )
+    {
+        _capacity = expectedSize + 4096u;
 
-		if ( newData )
-		{
-			memcpy ( newData, mData, mSize );
-			delete [] mData;
-		}
-		mData = newData;
-	}
-	memcpy ( mData + mSize, src, size );
-	mSize += size;
-	return size;
+        PxU8* newData = new PxU8[ _capacity ];
+        PX_ASSERT ( newData != 0 );
+
+        if ( newData )
+        {
+            memcpy ( newData, _data, _size );
+            delete [] _data;
+        }
+
+        _data = newData;
+    }
+
+    memcpy ( _data + _size, src, size );
+    _size += size;
+    return size;
 }
 
-PxU32 MemoryOutputStream::getSize () const	
-{	
-	return mSize; 
-}
-
-PxU8* MemoryOutputStream::getData () const	
+PxU32 MemoryOutputStream::getSize () const
 {
-	return mData;
+    return _size; 
+}
+
+PxU8* MemoryOutputStream::getData () const
+{
+    return _data;
 }
 
 GXVoid MemoryOutputStream::CacheToDisk ( GXWChar* filepath )
 {
-	GXWriteToFile ( filepath, ( GXChar* )mData, mSize );
+    GXWriteToFile ( filepath, reinterpret_cast<const GXChar*> ( _data ), _size );
 }
 
-//----------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 class MemoryInputData: public PxInputData
 {
-	private:
-		PxU32		mSize;
-		const PxU8*	mData;
-		PxU32		mPos;
+    private:
+        PxU32           _size;
+        const PxU8*     _data;
+        PxU32           _pos;
 
-	public:
-		MemoryInputData ( PxU8* data, PxU32 length );
-		PxU32 read ( GXVoid* dest, PxU32 count );
-		PxU32 getLength () const;
-		GXVoid seek ( PxU32 pos );
-		PxU32 tell () const;
+    public:
+        explicit MemoryInputData ( PxU8* data, PxU32 length );
+
+        PxU32 read ( GXVoid* dest, PxU32 count );
+        PxU32 getLength () const;
+        GXVoid seek ( PxU32 pos );
+        PxU32 tell () const;
 };
 
-MemoryInputData::MemoryInputData ( PxU8* data, PxU32 length)
+MemoryInputData::MemoryInputData ( PxU8* data, PxU32 length ):
+    _size ( length ),
+    _data ( data ),
+    _pos ( 0u )
 {
-	mSize = length;
-	mData = data;
-	mPos = 0;
+    // NOTHING
 }
 
 PxU32 MemoryInputData::read ( GXVoid* dest, PxU32 count )
 {
-	PxU32 length = PxMin< PxU32 >( count, mSize-mPos );
-	memcpy ( dest, mData + mPos, length );
-	mPos += length;
-	return length;
+    PxU32 length = PxMin< PxU32 >( count, _size-_pos );
+    memcpy ( dest, _data + _pos, length );
+    _pos += length;
+    return length;
 }
 
 PxU32 MemoryInputData::getLength () const
 {
-	return mSize;
+    return _size;
 }
 
 GXVoid MemoryInputData::seek ( PxU32 offset )
 {
-	mPos = PxMin< PxU32 >( mSize, offset );
+    _pos = PxMin< PxU32 >( _size, offset );
 }
 
 PxU32 MemoryInputData::tell () const
 {
-	return mPos;
+    return _pos;
 }
 
-//----------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 PxFilterFlags DefaultFilterShader ( PxFilterObjectAttributes attributes0, PxFilterData filterData0, PxFilterObjectAttributes attributes1, PxFilterData filterData1, PxPairFlags& pairFlags, const GXVoid* constantBlock, PxU32 constantBlockSize )
 {
-	PxFilterFlags f = PxDefaultSimulationFilterShader ( attributes0, filterData0, attributes1, filterData1, pairFlags, constantBlock, constantBlockSize );
-	return f;
+    PxFilterFlags f = PxDefaultSimulationFilterShader ( attributes0, filterData0, attributes1, filterData1, pairFlags, constantBlock, constantBlockSize );
+    return f;
 }
 
-//----------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
-static GXPhysicsErrorCallback			gGXPhysicsErrorCallback;
-static PxDefaultAllocator				gGXPhysicsAllocatorCallback;
+static GXPhysicsErrorCallback       gGXPhysicsErrorCallback;
+static PxDefaultAllocator           gGXPhysicsAllocatorCallback;
 
-//----------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 
-class GXPhysXBackend: public GXPhysXAdapter
+class GXPhysXBackend : public GXPhysXAdapter
 {
-	private:
-		static GXBool									bIsSimulating;
-		static PxFoundation*							pFoundation;
-		static PxPhysics*								pPhysics;
-		static PxScene*									pScene;
-		static PxCooking*								pCooking;
-		static PxDefaultCpuDispatcher*					pCpuDispatcher;
-		static PxControllerManager*						pControllerManager;
-		static PxVec3									gravity;
-		static PxTolerancesScale						toleranceScale;
-		static PLONPHYSXPROC							OnPhysics;
-		static HANDLE									hSimulateMutex;
-		static GXDouble									lastTime;
-		static GXDouble									accumulator;
+    private:
+        static GXBool                                   _isSimulating;
+        static PxFoundation*                            _foundation;
+        static PxPhysics*                               _physics;
+        static PxScene*                                 _scene;
+        static PxCooking*                               _cooking;
+        static PxDefaultCpuDispatcher*                  _cpuDispatcher;
+        static PxControllerManager*                     _controllerManager;
+        static PxVec3                                   _gravity;
+        static PxTolerancesScale                        _toleranceScale;
+        static PLONPHYSXPROC                            _onPhysics;
+        static HANDLE                                   _simulateMutex;
+        static GXDouble                                 _lastTime;
+        static GXDouble                                 _accumulator;
 
-		PxVisualDebuggerConnection*						pvdConnection;
+        PxVisualDebuggerConnection*                     _pvdConnection;
 
-		GXUInt											maxVehicles;
-		GXUInt											numVehicles;
-		PxVehicleWheels**								vehicles;
+        GXUInt                                          _maxVehicles;
+        GXUInt                                          _numVehicles;
+        PxVehicleWheels**                               _vehicles;
 
-		PxVehicleDrivableSurfaceToTireFrictionPairs*	tireSurfacePairs;
+        PxVehicleDrivableSurfaceToTireFrictionPairs*    _tireSurfacePairs;
 
-		GXUInt											maxQueries;
-		GXUInt											numQueries;
-		PxRaycastQueryResult*							queryResults;
-		PxRaycastHit*									queryHits;
-		PxBatchQueryPreFilterShader						queryFilterShader;
-		PxBatchQuery*									batchQuery;
+        GXUInt                                          _maxQueries;
+        GXUInt                                          _numQueries;
+        PxRaycastQueryResult*                           _queryResults;
+        PxRaycastHit*                                   _queryHits;
+        PxBatchQueryPreFilterShader                     _queryFilterShader;
+        PxBatchQuery*                                   _batchQuery;
 
-	public:
-		GXPhysXBackend ();
-		virtual ~GXPhysXBackend ();
+    public:
+        GXPhysXBackend ();
+        ~GXPhysXBackend () override;
 
-		virtual GXBool IsSumulating ();
+        GXBool IsSumulating () override;
 
-		virtual GXBool SetLinearVelocity ( PxRigidDynamic* actor, PxVec3 &vel );
-		virtual GXVoid SetOnPhysicsFunc ( PLONPHYSXPROC func );
+        GXBool SetLinearVelocity ( PxRigidDynamic* actor, PxVec3 &vel ) override;
+        GXVoid SetOnPhysicsFunc ( PLONPHYSXPROC func ) override;
 
-		virtual PxRigidDynamic* CreateRigidDynamic ( GXVoid* address, PxTransform& location );
-		virtual PxRigidStatic* CreateRigidStatic ( GXVoid* address, PxTransform &location );
-		virtual PxVehicleDrive4W* CreateVehicle ( const GXVehicleInfo &info );
-		virtual GXVoid DeleteVehicle ( PxVehicleDrive4W* vehicle );
-		virtual PxController* CreateCharacterController ( PxCapsuleControllerDesc desc );
+        PxRigidDynamic* CreateRigidDynamic ( GXVoid* address, PxTransform& location ) override;
+        PxRigidStatic* CreateRigidStatic ( GXVoid* address, PxTransform &location ) override;
+        PxVehicleDrive4W* CreateVehicle ( const GXVehicleInfo &info ) override;
+        GXVoid DeleteVehicle ( PxVehicleDrive4W* vehicle ) override;
+        PxController* CreateCharacterController ( PxCapsuleControllerDesc desc ) override;
 
-		virtual GXVoid SetRigidActorOrigin ( PxRigidActor* actor, const GXVec3 &location, const GXQuat &rotation );
+        GXVoid SetRigidActorOrigin ( PxRigidActor* actor, const GXVec3 &location, const GXQuat &rotation ) override;
 
-		virtual GXVoid AddActor ( PxActor &actor );
-		virtual GXVoid RemoveActor ( PxActor &actor );
+        GXVoid AddActor ( PxActor &actor ) override;
+        GXVoid RemoveActor ( PxActor &actor ) override;
 
-		virtual PxMaterial* CreateMaterial ( GXFloat staticFriction, GXFloat dynamicFriction, GXFloat restitution );
-		
-		virtual PxTriangleMesh* CreateTriangleMesh ( const GXWChar* bke_file_name );
-		virtual PxConvexMesh* CreateConvexMesh ( const GXWChar* bke_file_name );
+        PxMaterial* CreateMaterial ( GXFloat staticFriction, GXFloat dynamicFriction, GXFloat restitution ) override;
+        
+        PxTriangleMesh* CreateTriangleMesh ( const GXWChar* bke_file_name ) override;
+        PxConvexMesh* CreateConvexMesh ( const GXWChar* bke_file_name ) override;
 
-		virtual PxParticleSystem* CreateParticleSystem ( GXUInt maxCountParticles, GXBool particleRestOffset = GX_FALSE );
-		virtual GXVoid AddParticleSystem ( PxParticleSystem &ps );
+        PxParticleSystem* CreateParticleSystem ( GXUInt maxCountParticles, GXBool particleRestOffset = GX_FALSE ) override;
+        GXVoid AddParticleSystem ( PxParticleSystem &ps ) override;
 
-		virtual GXVec3 GetGravityAcceleration ();
-		virtual GXFloat GetSimulationDelay ();
-		virtual GXFloat GetToleranceLength ();
+        GXVec3 GetGravityAcceleration () override;
+        GXFloat GetSimulationDelay () override;
+        GXFloat GetToleranceLength () override;
 
-		virtual GXBool RaycastSingle ( const GXVec3 &start, const GXVec3 &direction, const GXFloat maxDistance, PxRaycastHit &hit );
-		virtual GXVoid DoSimulate ();
+        GXBool RaycastSingle ( const GXVec3 &start, const GXVec3 &direction, const GXFloat maxDistance, PxRaycastHit &hit ) override;
+        GXVoid DoSimulate () override;
 
-		virtual GXVoid ControlVehicle ( PxVehicleDrive4W* vehicle, GXUInt controlType, GXFloat value );
+        GXVoid ControlVehicle ( PxVehicleDrive4W* vehicle, GXUInt controlType, GXFloat value ) override;
 
-	private:
-		PxConvexMesh* CreateCylinderConvex ( GXFloat width, GXFloat radius, GXUInt numCirclePoints );
-		
-		static PxQueryHitType::Enum BatchQueryPreFilterShader ( PxFilterData filterData0, PxFilterData filterData1, const void* constantBlock, PxU32 constantBlockSize, PxHitFlags &filterFlags );
-		static PxFilterFlags FilterShader ( PxFilterObjectAttributes attributes0, PxFilterData filterData0, PxFilterObjectAttributes attributes1, PxFilterData filterData1, PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize );
+    private:
+        PxConvexMesh* CreateCylinderConvex ( GXFloat width, GXFloat radius, GXUInt numCirclePoints );
+
+        static PxQueryHitType::Enum BatchQueryPreFilterShader ( PxFilterData filterData0, PxFilterData filterData1, const void* constantBlock, PxU32 constantBlockSize, PxHitFlags &filterFlags );
+        static PxFilterFlags FilterShader ( PxFilterObjectAttributes attributes0, PxFilterData filterData0, PxFilterObjectAttributes attributes1, PxFilterData filterData1, PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize );
 };
 
-GXBool							GXPhysXBackend::bIsSimulating;
-PxFoundation*					GXPhysXBackend::pFoundation;
-PxPhysics*						GXPhysXBackend::pPhysics;
-PxControllerManager*			GXPhysXBackend::pControllerManager;
-PxCooking*						GXPhysXBackend::pCooking;
-PxScene*						GXPhysXBackend::pScene;
-PxDefaultCpuDispatcher*			GXPhysXBackend::pCpuDispatcher;
-PxTolerancesScale				GXPhysXBackend::toleranceScale;
-PxVec3							GXPhysXBackend::gravity;
-PLONPHYSXPROC					GXPhysXBackend::OnPhysics;
-HANDLE							GXPhysXBackend::hSimulateMutex;
-GXDouble						GXPhysXBackend::lastTime;
-GXDouble						GXPhysXBackend::accumulator = 0.0;
+GXBool                      GXPhysXBackend::_isSimulating;
+PxFoundation*               GXPhysXBackend::_foundation;
+PxPhysics*                  GXPhysXBackend::_physics;
+PxControllerManager*        GXPhysXBackend::_controllerManager;
+PxCooking*                  GXPhysXBackend::_cooking;
+PxScene*                    GXPhysXBackend::_scene;
+PxDefaultCpuDispatcher*     GXPhysXBackend::_cpuDispatcher;
+PxTolerancesScale           GXPhysXBackend::_toleranceScale;
+PxVec3                      GXPhysXBackend::_gravity;
+PLONPHYSXPROC               GXPhysXBackend::_onPhysics;
+HANDLE                      GXPhysXBackend::_simulateMutex;
+GXDouble                    GXPhysXBackend::_lastTime;
+GXDouble                    GXPhysXBackend::_accumulator = 0.0;
 
 GXPhysXBackend::GXPhysXBackend ()
 {
-	GXLogInit ();
+    GXLogInit ();
 
-	lastTime = GXGetProcessorTicks ();
+    _lastTime = GXGetProcessorTicks ();
 
-	pScene = 0;
-	OnPhysics = 0;
+    _scene = nullptr;
+    _onPhysics = nullptr;
 
-	if ( !( pFoundation = PxCreateFoundation ( PX_PHYSICS_VERSION, gGXPhysicsAllocatorCallback, gGXPhysicsErrorCallback ) ) )
-	{
-		GXDebugBox ( L"pFoundation не создано" );
-		GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - pFoundation не создано\n" );
-	}
+    _foundation = PxCreateFoundation ( PX_PHYSICS_VERSION, gGXPhysicsAllocatorCallback, gGXPhysicsErrorCallback );
 
-	toleranceScale.length = GX_PHYSICS_TOLERANCE_LENGTH;
-	toleranceScale.mass = GX_PHYSICS_TOLERANCE_MASS;
-	toleranceScale.speed = GX_PHYSICS_TOLERANCE_SPEED;
-	gravity.x = 0.0f;
-	gravity.y = GX_PHYSICS_GRAVITY_FACTOR;
-	gravity.z = 0.0f;
-	if ( !( pPhysics = PxCreatePhysics ( PX_PHYSICS_VERSION, *pFoundation, toleranceScale ) ) )
-	{
-		GXDebugBox ( L"pPhysics не создано" );
-		GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - pPhysics не создано\n" );
-	}
+    if ( !_foundation )
+        GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - pFoundation не создано\n" );
 
-	if ( !PxInitExtensions ( *pPhysics ) )
-	{
-		GXDebugBox ( L"PxInitExtensions провалено" );
-		GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - PxInitExtensions провалено\n" );
-	}
+    _toleranceScale.length = PHYSICS_TOLERANCE_LENGTH;
+    _toleranceScale.mass = PHYSICS_TOLERANCE_MASS;
+    _toleranceScale.speed = PHYSICS_TOLERANCE_SPEED;
+    _gravity.x = 0.0f;
+    _gravity.y = GX_PHYSICS_GRAVITY_FACTOR;
+    _gravity.z = 0.0f;
 
-	if ( !( pCooking = PxCreateCooking ( PX_PHYSICS_VERSION, *pFoundation, PxCookingParams ( toleranceScale ) ) ) )
-	{
-		GXDebugBox ( L"pCooking не создано" );
-		GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - pCooking не создано\n" );
-	}
+    _physics = PxCreatePhysics ( PX_PHYSICS_VERSION, *_foundation, _toleranceScale );
 
-	PxSceneDesc sceneDesc ( pPhysics->getTolerancesScale () );
-	sceneDesc.gravity = gravity;
-	if ( !sceneDesc.cpuDispatcher )
-	{
-		if ( !( pCpuDispatcher = PxDefaultCpuDispatcherCreate ( GX_PHYSICS_NB_THREADS ) ) )
-		{
-			GXDebugBox ( L"pCpuDispatcher не создано" );
-			GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - pCpuDispatcher не создано\n" );
-		}
-		else
-			sceneDesc.cpuDispatcher = pCpuDispatcher;
-	}
-	if ( !sceneDesc.filterShader )
-	{
-		sceneDesc.filterShader = &FilterShader;
-		sceneDesc.flags = PxSceneFlag::eENABLE_ACTIVETRANSFORMS;
-	}
-	if ( !( pScene = pPhysics->createScene ( sceneDesc ) ) )
-	{
-		GXDebugBox ( L"pScene не создано" );
-		GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - pScene не создано\n" );
-	}
+    if ( !_physics )
+        GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - pPhysics не создано\n" );
 
-	if ( !( pControllerManager = PxCreateControllerManager ( *pScene ) ) )
-	{
-		GXDebugBox ( L"pControllerManager не создано" );
-		GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - pControllerManager не создано\n" );
-	}
+    if ( !PxInitExtensions ( *_physics ) )
+        GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - PxInitExtensions провалено\n" );
 
-	if ( !PxInitVehicleSDK ( *pPhysics ) )
-	{
-		GXDebugBox ( L"PxInitVehicleSDK провалено" );
-		GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - PxInitVehicleSDK провалено\n" );
-	}
+    _cooking = PxCreateCooking ( PX_PHYSICS_VERSION, *_foundation, PxCookingParams ( _toleranceScale ) );
 
-	PxVehicleSetBasisVectors ( PxVec3 ( 0.0f, 1.0f, 0.0f ), PxVec3 ( 0.0f, 0.0f, 1.0f ) );
-	PxVehicleSetUpdateMode ( PxVehicleUpdateMode::eVELOCITY_CHANGE );
+    if ( !_cooking )
+    {
+        GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - pCooking не создано\n" );
+    }
 
-	maxVehicles = 8;
-	numVehicles = 0;
-	vehicles = (PxVehicleWheels**)malloc ( maxVehicles * sizeof ( PxVehicleWheels* ) );
+    PxSceneDesc sceneDesc ( _physics->getTolerancesScale () );
+    sceneDesc.gravity = _gravity;
 
-	maxQueries = 8 * 6;	//8 машин с 6 колёсами
-	numQueries = 0;
+    if ( !sceneDesc.cpuDispatcher )
+    {
+        _cpuDispatcher = PxDefaultCpuDispatcherCreate ( PHYSICS_NB_THREADS );
 
-	queryResults = (PxRaycastQueryResult*)malloc ( maxQueries * sizeof ( PxRaycastQueryResult ) );
-	queryHits = (PxRaycastHit*)malloc ( maxQueries * sizeof ( PxRaycastHit ) );
+        if ( !_cpuDispatcher )
+        {
+            GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - pCpuDispatcher не создано\n" );
+        }
+        else
+        {
+            sceneDesc.cpuDispatcher = _cpuDispatcher;
+        }
+    }
 
-	GXFloat frictionPairs[ 4 ][ 4 ] =
-	{
-		//	Сырые	Скользкие	Зимние	Внедорожные
-		{	1.10f,	0.95f,		0.95f,	0.95f	},         //Грязь
-		{	1.10f,	1.15f,		1.10f,	1.10f	},         //Асфальт
-		{	0.70f,	0.70f,		0.70f,	0.70f	},         //Лёд
-		{	0.80f,	0.80f,		0.80f,	0.80f	}          //Трава
+    if ( !sceneDesc.filterShader )
+    {
+        sceneDesc.filterShader = &FilterShader;
+        sceneDesc.flags = PxSceneFlag::eENABLE_ACTIVETRANSFORMS;
+    }
 
-	};
+    _scene = _physics->createScene ( sceneDesc );
+
+    if ( !_scene )
+        GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - pScene не создано\n" );
+
+    _controllerManager = PxCreateControllerManager ( *_scene );
+
+    if ( !_controllerManager )
+        GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - pControllerManager не создано\n" );
+
+    if ( !PxInitVehicleSDK ( *_physics ) )
+        GXLogW ( L"GXPhysXBackend::GXPhysXBackend::Error - PxInitVehicleSDK провалено\n" );
+
+    PxVehicleSetBasisVectors ( PxVec3 ( 0.0f, 1.0f, 0.0f ), PxVec3 ( 0.0f, 0.0f, 1.0f ) );
+    PxVehicleSetUpdateMode ( PxVehicleUpdateMode::eVELOCITY_CHANGE );
+
+    _maxVehicles = 8u;
+    _numVehicles = 0u;
+    _vehicles = static_cast<PxVehicleWheels**> ( malloc ( _maxVehicles * sizeof ( PxVehicleWheels* ) ) );
+
+    _maxQueries = 8u * 6u;	//8 машин с 6 колёсами
+    _numQueries = 0u;
+
+    _queryResults = static_cast<PxRaycastQueryResult*> ( malloc ( _maxQueries * sizeof ( PxRaycastQueryResult ) ) );
+    _queryHits = static_cast<PxRaycastHit*> ( malloc ( _maxQueries * sizeof ( PxRaycastHit ) ) );
+
+    constexpr GXFloat frictionPairs[ 4u ][ 4u ] =
+    {
+        //  Сырые   Скользкие   Зимние  Внедорожные
+        {   1.10f,  0.95f,      0.95f,  0.95f   },         // Грязь
+        {   1.10f,  1.15f,      1.10f,  1.10f   },         // Асфальт
+        {   0.70f,  0.70f,      0.70f,  0.70f   },         // Лёд
+        {   0.80f,  0.80f,      0.80f,  0.80f   }          // Трава
+    };
 
 
-	PxMaterial* surfaceMaterials[ 4 ];
-	surfaceMaterials[ 0 ] = pPhysics->createMaterial ( 0.2f, 0.5f, 0.5f );
-	surfaceMaterials[ 1 ] = pPhysics->createMaterial ( 0.2f, 0.5f, 0.5f );
-	surfaceMaterials[ 2 ] = pPhysics->createMaterial ( 0.2f, 0.5f, 0.5f );
-	surfaceMaterials[ 3 ] = pPhysics->createMaterial ( 0.2f, 0.5f, 0.5f );
+    PxMaterial* surfaceMaterials[ 4u ];
+    surfaceMaterials[ 0u ] = _physics->createMaterial ( 0.2f, 0.5f, 0.5f );
+    surfaceMaterials[ 1u ] = _physics->createMaterial ( 0.2f, 0.5f, 0.5f );
+    surfaceMaterials[ 2u ] = _physics->createMaterial ( 0.2f, 0.5f, 0.5f );
+    surfaceMaterials[ 3u ] = _physics->createMaterial ( 0.2f, 0.5f, 0.5f );
 
-	PxVehicleDrivableSurfaceType surfaceTypes[ 4 ];
-	for ( GXUChar i = 0; i < 4; i++ )
-		surfaceTypes[ i ].mType = i;
+    PxVehicleDrivableSurfaceType surfaceTypes[ 4 ];
 
-	tireSurfacePairs = PxVehicleDrivableSurfaceToTireFrictionPairs::allocate ( 4, 4 ); 
-	tireSurfacePairs->setup ( 4, 4, (const PxMaterial**)surfaceMaterials, surfaceTypes );
+    for ( PxU32 i = 0u; i < 4u; ++i )
+        surfaceTypes[ i ].mType = i;
 
-	for ( GXUChar i = 0; i < 4; i++ )
-		for ( GXUChar j = 0; j < 4; j++ )
-			tireSurfacePairs->setTypePairFriction ( i, j, frictionPairs[ i ][ j ] );
+    _tireSurfacePairs = PxVehicleDrivableSurfaceToTireFrictionPairs::allocate ( 4, 4 ); 
+    _tireSurfacePairs->setup ( 4u, 4u, reinterpret_cast<const PxMaterial**> ( static_cast<GXVoid*> ( surfaceMaterials ) ), surfaceTypes );
 
-	PxBatchQueryDesc batchQueryDesc ( maxQueries, 0, 0 );
-	batchQueryDesc.queryMemory.userRaycastResultBuffer = queryResults;
-	batchQueryDesc.queryMemory.userRaycastTouchBuffer = queryHits;
-	batchQueryDesc.queryMemory.raycastTouchBufferSize = maxQueries;
-	batchQueryDesc.preFilterShader = BatchQueryPreFilterShader;
-	batchQueryDesc.spuPreFilterShader = 0;
-	batchQueryDesc.spuPreFilterShaderSize = 0;
-	batchQuery = pScene->createBatchQuery ( batchQueryDesc );
+    for ( PxU32 i = 0u; i < 4u; ++i )
+    {
+        for ( PxU32 j = 0u; j < 4u; ++j )
+        {
+            _tireSurfacePairs->setTypePairFriction ( i, j, frictionPairs[ i ][ j ] );
+        }
+    }
 
-	pvdConnection = 0;
-	if ( pPhysics->getPvdConnectionManager () )
-	{
-		const GXChar pvd_host_ip[] = "localhost";
-		GXInt port = 5425;
-		GXUInt timeout = 100;
+    PxBatchQueryDesc batchQueryDesc ( _maxQueries, 0u, 0u );
+    batchQueryDesc.queryMemory.userRaycastResultBuffer = _queryResults;
+    batchQueryDesc.queryMemory.userRaycastTouchBuffer = _queryHits;
+    batchQueryDesc.queryMemory.raycastTouchBufferSize = _maxQueries;
+    batchQueryDesc.preFilterShader = BatchQueryPreFilterShader;
+    batchQueryDesc.spuPreFilterShader = nullptr;
+    batchQueryDesc.spuPreFilterShaderSize = 0u;
+    _batchQuery = _scene->createBatchQuery ( batchQueryDesc );
 
-		PxVisualDebuggerConnectionFlags connectionFlags = PxVisualDebuggerExt::getAllConnectionFlags ();
+    _pvdConnection = nullptr;
 
-		pvdConnection = PxVisualDebuggerExt::createConnection ( pPhysics->getPvdConnectionManager (), pvd_host_ip, port, timeout, connectionFlags );
-	}
+    if ( _physics->getPvdConnectionManager () )
+    {
+        const GXChar pvd_host_ip[] = "localhost";
+        const GXInt port = 5425;
+        const GXUInt timeout = 100u;
 
-	hSimulateMutex = CreateMutexW ( 0, GX_FALSE, L"GX_PHYSICS_SIMULATE_MUTEX" );
+        PxVisualDebuggerConnectionFlags connectionFlags = PxVisualDebuggerExt::getAllConnectionFlags ();
+        _pvdConnection = PxVisualDebuggerExt::createConnection ( _physics->getPvdConnectionManager (), pvd_host_ip, port, timeout, connectionFlags );
+    }
+
+    _simulateMutex = CreateMutexW ( nullptr, GX_FALSE, L"GX_PHYSICS_SIMULATE_MUTEX" );
 }
 
 GXPhysXBackend::~GXPhysXBackend ()
 {
-	if ( pvdConnection )
-		pvdConnection->release ();
+    if ( _pvdConnection )
+        _pvdConnection->release ();
 
-	GXSafeFree ( vehicles );
-	GXSafeFree ( queryResults );
-	GXSafeFree ( queryHits );
-	tireSurfacePairs->release ();
+    GXSafeFree ( _vehicles );
+    GXSafeFree ( _queryResults );
+    GXSafeFree ( _queryHits );
+    _tireSurfacePairs->release ();
 
-	pScene->release ();
-	pControllerManager->release ();
-	PxCloseVehicleSDK ();
-	pPhysics->release ();
-	PxCloseExtensions ();
-	pCooking->release ();
-	pFoundation->release ();
-	CloseHandle ( hSimulateMutex );
+    _scene->release ();
+    _controllerManager->release ();
+    PxCloseVehicleSDK ();
+    _physics->release ();
+    PxCloseExtensions ();
+    _cooking->release ();
+    _foundation->release ();
+    CloseHandle ( _simulateMutex );
 }
 
 GXBool GXPhysXBackend::IsSumulating ()
 {
-	return bIsSimulating;
+    return _isSimulating;
 }
 
 GXBool GXPhysXBackend::SetLinearVelocity ( PxRigidDynamic* actor, PxVec3 &vel )
 {
-	if ( bIsSimulating ) return GX_FALSE;
-	actor->setLinearVelocity ( vel );
-	return GX_TRUE;
+    if ( _isSimulating ) return GX_FALSE;
+    actor->setLinearVelocity ( vel );
+    return GX_TRUE;
 }
 
 GXVoid GXPhysXBackend::SetOnPhysicsFunc ( PLONPHYSXPROC func )
 {
-	OnPhysics = func;
+    _onPhysics = func;
 }
 
 PxRigidDynamic* GXPhysXBackend::CreateRigidDynamic ( GXVoid* address, PxTransform& location )
 {
-	PxRigidDynamic* rigidDynamic = pPhysics->createRigidDynamic ( location );
-	rigidDynamic->setLinearDamping ( 0.001f );
-	rigidDynamic->userData = address;
-	return rigidDynamic;
+    PxRigidDynamic* rigidDynamic = _physics->createRigidDynamic ( location );
+    rigidDynamic->setLinearDamping ( 0.001f );
+    rigidDynamic->userData = address;
+    return rigidDynamic;
 }
 
 PxRigidStatic* GXPhysXBackend::CreateRigidStatic ( GXVoid* address, PxTransform &location )
 {
-	PxRigidStatic* rigidStatic = pPhysics->createRigidStatic ( location );
-	rigidStatic->userData = address;
-	return rigidStatic;
+    PxRigidStatic* rigidStatic = _physics->createRigidStatic ( location );
+    rigidStatic->userData = address;
+    return rigidStatic;
 }
 
 PxVehicleDrive4W* GXPhysXBackend::CreateVehicle ( const GXVehicleInfo &info )
 {
-	if ( ( numVehicles + 1 ) > maxVehicles )
-		return 0;
+    if ( ( _numVehicles + 1 ) > _maxVehicles )
+        return nullptr;
 
-	PxVehicleWheelsSimData* wheelsSimData = PxVehicleWheelsSimData::allocate ( info.numWheels );
-	PxVehicleDriveSimData4W driveSimData;
-	PxVehicleChassisData chassisData;
+    PxVehicleWheelsSimData* wheelsSimData = PxVehicleWheelsSimData::allocate ( info.numWheels );
+    PxVehicleDriveSimData4W driveSimData;
+    PxVehicleChassisData chassisData;
 
-	PxVec3 chassisCMOffset = PxVec3 ( info.chassisCoMOffset.x, info.chassisCoMOffset.y, info.chassisCoMOffset.z );
-	PxVec3 chassisMOI ( info.chassisMoI.x, info.chassisMoI.y, info.chassisMoI.z );
+    PxVec3 chassisCMOffset = PxVec3 ( info.chassisCoMOffset._data[ 1u ], info.chassisCoMOffset._data[ 1u ], info.chassisCoMOffset._data[ 2u ] );
+    PxVec3 chassisMOI ( info.chassisMoI._data[ 0u ], info.chassisMoI._data[ 1u ], info.chassisMoI._data[ 2u ] );
 
-	chassisData.mMass = info.chassisMass;
-	chassisData.mMOI = chassisMOI;
-	chassisData.mCMOffset = chassisCMOffset;
+    chassisData.mMass = info.chassisMass;
+    chassisData.mMOI = chassisMOI;
+    chassisData.mCMOffset = chassisCMOffset;
 
-	PxVehicleWheelData* wheelData = (PxVehicleWheelData*)malloc ( info.numWheels * sizeof ( PxVehicleWheelData ) );
-	PxVehicleTireData* tireData = (PxVehicleTireData*)malloc ( info.numWheels * sizeof ( PxVehicleTireData ) );
-	PxVehicleSuspensionData* suspensionData = (PxVehicleSuspensionData*)malloc ( info.numWheels * sizeof ( PxVehicleSuspensionData ) );
-	PxVec3* suspensionTravelDirections = (PxVec3*)malloc ( info.numWheels * sizeof ( PxVec3 ) );
+    PxVehicleWheelData* wheelData = (PxVehicleWheelData*)malloc ( info.numWheels * sizeof ( PxVehicleWheelData ) );
+    PxVehicleTireData* tireData = (PxVehicleTireData*)malloc ( info.numWheels * sizeof ( PxVehicleTireData ) );
+    PxVehicleSuspensionData* suspensionData = (PxVehicleSuspensionData*)malloc ( info.numWheels * sizeof ( PxVehicleSuspensionData ) );
+    PxVec3* suspensionTravelDirections = (PxVec3*)malloc ( info.numWheels * sizeof ( PxVec3 ) );
 
-	PxVec3* wheelCentreCoMOffsets = (PxVec3*)malloc ( info.numWheels * sizeof ( PxVec3 ) );
-	PxVec3* suspensionForceAppCoMOffsets = (PxVec3*)malloc ( info.numWheels * sizeof ( PxVec3 ) );
-	PxVec3* tireForceAppCoMOffsets = (PxVec3*)malloc ( info.numWheels * sizeof ( PxVec3 ) );
+    PxVec3* wheelCentreCoMOffsets = (PxVec3*)malloc ( info.numWheels * sizeof ( PxVec3 ) );
+    PxVec3* suspensionForceAppCoMOffsets = (PxVec3*)malloc ( info.numWheels * sizeof ( PxVec3 ) );
+    PxVec3* tireForceAppCoMOffsets = (PxVec3*)malloc ( info.numWheels * sizeof ( PxVec3 ) );
 
-	for ( GXUChar i = 0; i < info.numWheels; i++ )
-	{
-		wheelData[ i ].PxVehicleWheelData::PxVehicleWheelData ();
-		wheelData[ i ].mRadius = info.wheelRadiuses[ i ];
-		wheelData[ i ].mMass = info.wheelMasses[ i ];
-		wheelData[ i ].mMOI = info.wheelMoIs[ i ];
-		wheelData[ i ].mWidth = info.wheelWidths[ i ];
-		wheelData[ i ].mMaxBrakeTorque = info.wheelBreaks[ i ];
-		wheelData[ i ].mMaxHandBrakeTorque = info.wheelHandBreaks[ i ]; 
-		wheelData[ i ].mMaxSteer = info.wheelSteers[ i ];
+    for ( GXUChar i = 0; i < info.numWheels; ++i )
+    {
+        wheelData[ i ].PxVehicleWheelData::PxVehicleWheelData ();
+        wheelData[ i ].mRadius = info.wheelRadiuses[ i ];
+        wheelData[ i ].mMass = info.wheelMasses[ i ];
+        wheelData[ i ].mMOI = info.wheelMoIs[ i ];
+        wheelData[ i ].mWidth = info.wheelWidths[ i ];
+        wheelData[ i ].mMaxBrakeTorque = info.wheelBreaks[ i ];
+        wheelData[ i ].mMaxHandBrakeTorque = info.wheelHandBreaks[ i ]; 
+        wheelData[ i ].mMaxSteer = info.wheelSteers[ i ];
 
-		tireData[ i ].PxVehicleTireData::PxVehicleTireData ();
+        tireData[ i ].PxVehicleTireData::PxVehicleTireData ();
 
-		suspensionData[ i ].PxVehicleSuspensionData::PxVehicleSuspensionData ();
-		suspensionData[ i ].mSprungMass = info.suspensionSprungMasses[ i ];
-		suspensionData[ i ].mSpringStrength = info.suspensionSpringForces[ i ];
-		suspensionData[ i ].mSpringDamperRate = info.suspensionSpringDampers[ i ];
-		suspensionData[ i ].mMaxCompression = info.suspensionCompressions[ i ];
-		suspensionData[ i ].mMaxDroop = info.suspensionDroops[ i ];
+        suspensionData[ i ].PxVehicleSuspensionData::PxVehicleSuspensionData ();
+        suspensionData[ i ].mSprungMass = info.suspensionSprungMasses[ i ];
+        suspensionData[ i ].mSpringStrength = info.suspensionSpringForces[ i ];
+        suspensionData[ i ].mSpringDamperRate = info.suspensionSpringDampers[ i ];
+        suspensionData[ i ].mMaxCompression = info.suspensionCompressions[ i ];
+        suspensionData[ i ].mMaxDroop = info.suspensionDroops[ i ];
 
-		suspensionTravelDirections[ i ] = PxVec3 ( info.suspensionTraverses[ i ].x, info.suspensionTraverses[ i ].y, info.suspensionTraverses[ i ].z );
-		wheelCentreCoMOffsets[ i ] = PxVec3 ( info.wheelLocalCentres[ i ].x - info.chassisCoMOffset.x, info.wheelLocalCentres[ i ].y - info.chassisCoMOffset.y,  info.wheelLocalCentres[ i ].z - info.chassisCoMOffset.z );
-		suspensionForceAppCoMOffsets[ i ] = wheelCentreCoMOffsets[ i ];
-		tireForceAppCoMOffsets[ i ] = wheelCentreCoMOffsets[ i ];
+        suspensionTravelDirections[ i ] = PxVec3 ( info.suspensionTraverses[ i ]._data[ 0u ], info.suspensionTraverses[ i ]._data[ 1u ], info.suspensionTraverses[ i ]._data[ 2u ] );
+        wheelCentreCoMOffsets[ i ] = PxVec3 ( info.wheelLocalCentres[ i ]._data[ 0u ] - info.chassisCoMOffset._data[ 0u ], info.wheelLocalCentres[ i ]._data[ 1u ] - info.chassisCoMOffset._data[ 1u ],  info.wheelLocalCentres[ i ]._data[ 2u ] - info.chassisCoMOffset._data[ 2u ] );
+        suspensionForceAppCoMOffsets[ i ] = wheelCentreCoMOffsets[ i ];
+        tireForceAppCoMOffsets[ i ] = wheelCentreCoMOffsets[ i ];
 
-		wheelsSimData->setWheelData ( i, wheelData[ i ] );
-		wheelsSimData->setTireData ( i, tireData[ i ] );
-		wheelsSimData->setSuspensionData ( i, suspensionData[ i ] );
-		wheelsSimData->setSuspTravelDirection ( i, suspensionTravelDirections[ i ] );
-		wheelsSimData->setWheelCentreOffset ( i, wheelCentreCoMOffsets[ i ] );
-		wheelsSimData->setSuspForceAppPointOffset ( i, suspensionForceAppCoMOffsets[ i ] );
-		wheelsSimData->setTireForceAppPointOffset ( i, tireForceAppCoMOffsets[ i ] );
-	}
+        wheelsSimData->setWheelData ( i, wheelData[ i ] );
+        wheelsSimData->setTireData ( i, tireData[ i ] );
+        wheelsSimData->setSuspensionData ( i, suspensionData[ i ] );
+        wheelsSimData->setSuspTravelDirection ( i, suspensionTravelDirections[ i ] );
+        wheelsSimData->setWheelCentreOffset ( i, wheelCentreCoMOffsets[ i ] );
+        wheelsSimData->setSuspForceAppPointOffset ( i, suspensionForceAppCoMOffsets[ i ] );
+        wheelsSimData->setTireForceAppPointOffset ( i, tireForceAppCoMOffsets[ i ] );
+    }
 
-	PxVehicleDifferential4WData differentialData;
-	switch ( info.differentialType )
-	{
-		case GX_PHYSICS_DIFFERENTIAL_LS_4WD:
-			differentialData.mType = PxVehicleDifferential4WData::eDIFF_TYPE_LS_4WD;
-		break;
+    PxVehicleDifferential4WData differentialData;
 
-		case GX_PHYSICS_DIFFERENTIAL_LS_FRONTWD:
-			differentialData.mType = PxVehicleDifferential4WData::eDIFF_TYPE_LS_FRONTWD;
-		break;
+    switch ( info.differentialType )
+    {
+        case GX_PHYSICS_DIFFERENTIAL_LS_4WD:
+            differentialData.mType = PxVehicleDifferential4WData::eDIFF_TYPE_LS_4WD;
+        break;
 
-		case GX_PHYSICS_DIFFERENTIAL_LS_REARWD:
-			differentialData.mType = PxVehicleDifferential4WData::eDIFF_TYPE_LS_REARWD;
-		break;
+        case GX_PHYSICS_DIFFERENTIAL_LS_FRONTWD:
+            differentialData.mType = PxVehicleDifferential4WData::eDIFF_TYPE_LS_FRONTWD;
+        break;
 
-		case GX_PHYSICS_DIFFERENTIAL_OPEN_4WD:
-			differentialData.mType = PxVehicleDifferential4WData::eDIFF_TYPE_OPEN_4WD;
-		break;
+        case GX_PHYSICS_DIFFERENTIAL_LS_REARWD:
+            differentialData.mType = PxVehicleDifferential4WData::eDIFF_TYPE_LS_REARWD;
+        break;
 
-		case GX_PHYSICS_DIFFERENTIAL_OPEN_FRONTWD:
-			differentialData.mType = PxVehicleDifferential4WData::eDIFF_TYPE_OPEN_FRONTWD;
-		break;
+        case GX_PHYSICS_DIFFERENTIAL_OPEN_4WD:
+            differentialData.mType = PxVehicleDifferential4WData::eDIFF_TYPE_OPEN_4WD;
+        break;
 
-		case GX_PHYSICS_DIFFERENTIAL_OPEN_REARWD:
-			differentialData.mType = PxVehicleDifferential4WData::eDIFF_TYPE_OPEN_REARWD;
-		break;
+        case GX_PHYSICS_DIFFERENTIAL_OPEN_FRONTWD:
+            differentialData.mType = PxVehicleDifferential4WData::eDIFF_TYPE_OPEN_FRONTWD;
+        break;
 
-		default:
-		break;
-	}
+        case GX_PHYSICS_DIFFERENTIAL_OPEN_REARWD:
+            differentialData.mType = PxVehicleDifferential4WData::eDIFF_TYPE_OPEN_REARWD;
+        break;
 
-	driveSimData.setDiffData ( differentialData );
+        default:
+            // NOTHING
+        break;
+    }
 
-	PxVehicleEngineData engineData;
-	engineData.mPeakTorque = info.enginePeakTorque;
-	engineData.mMaxOmega = info.engineRotation;
-	driveSimData.setEngineData ( engineData );
+    driveSimData.setDiffData ( differentialData );
 
-	PxVehicleGearsData gearData;
-	gearData.mSwitchTime = info.gearboxSwitchTime;
-	gearData.mNbRatios = info.numGears;
-	for ( GXUChar i = 0; i < info.numGears; i++ )
-		gearData.mRatios[ i ] = info.gearboxRatios[ i ];
+    PxVehicleEngineData engineData;
+    engineData.mPeakTorque = info.enginePeakTorque;
+    engineData.mMaxOmega = info.engineRotation;
+    driveSimData.setEngineData ( engineData );
 
-	driveSimData.setGearsData ( gearData );
+    PxVehicleGearsData gearData;
+    gearData.mSwitchTime = info.gearboxSwitchTime;
+    gearData.mNbRatios = info.numGears;
 
-	PxVehicleClutchData clutchData;
-	clutchData.mStrength = info.clutchStrength;
-	driveSimData.setClutchData ( clutchData );
+    for ( GXUChar i = 0u; i < info.numGears; ++i )
+        gearData.mRatios[ i ] = info.gearboxRatios[ i ];
 
-	PxVehicleAckermannGeometryData ackermannData;
-	ackermannData.mAccuracy = info.ackermannAccuracy;
-	ackermannData.mFrontWidth = info.ackermannFrontWidth;
-	ackermannData.mRearWidth = info.ackermannRearWidth;
-	ackermannData.mAxleSeparation = info.ackermannAxleSeparation;
-	driveSimData.setAckermannGeometryData ( ackermannData );
+    driveSimData.setGearsData ( gearData );
 
-	GXQuat physXRotation = info.spawnRotation;
-	GXQuatRehandCoordinateSystem ( physXRotation );
-	PxRigidDynamic* rigidVehicle = pPhysics->createRigidDynamic ( PxTransform ( PxVec3 ( info.spawnLocation.x, info.spawnLocation.y, info.spawnLocation.z ), PxQuat ( physXRotation.x, physXRotation.y, physXRotation.z, physXRotation.w ) ) );
-	rigidVehicle->userData = info.renderCarAddress;
-	
-	PxMaterial* mtr = pPhysics->createMaterial ( 0.8f, 0.5f, 0.4f );
-	for ( GXUChar i = 0; i < info.numWheels; i++ )
-	{
-		PxConvexMesh* wheelConvex = CreateCylinderConvex ( info.wheelWidths[ i ], info.wheelRadiuses[ i ], 16 );
-		PxConvexMeshGeometry wheelGeometry ( wheelConvex );
-		PxShape* wheelShape = rigidVehicle->createShape ( wheelGeometry, *mtr );
-			
-		PxFilterData filterData;
-		filterData.word0 = GX_PHYSICS_COLLUSION_GROUP_WHEEL;
-		filterData.word1 = GX_PHYSICS_COLLUSION_GROUP_WHEEL | GX_PHYSICS_COLLUSION_GROUP_OBSTACLE /*| GX_PHYSICS_COLLUSION_GROUP_CHASSIS*/;
-		filterData.word3 = GX_PHYSICS_RAYCAST_UNDRIVABLE_SURFACE;
+    PxVehicleClutchData clutchData;
+    clutchData.mStrength = info.clutchStrength;
+    driveSimData.setClutchData ( clutchData );
 
-		wheelShape->setQueryFilterData ( filterData );
-		wheelShape->setSimulationFilterData ( filterData );
+    PxVehicleAckermannGeometryData ackermannData;
+    ackermannData.mAccuracy = info.ackermannAccuracy;
+    ackermannData.mFrontWidth = info.ackermannFrontWidth;
+    ackermannData.mRearWidth = info.ackermannRearWidth;
+    ackermannData.mAxleSeparation = info.ackermannAxleSeparation;
+    driveSimData.setAckermannGeometryData ( ackermannData );
 
-		wheelShape->setLocalPose ( PxTransform::createIdentity () );
-	}
+    const GXQuat& spawnRotation = info.spawnRotation;
+    PxRigidDynamic* rigidVehicle = _physics->createRigidDynamic ( PxTransform ( PxVec3 ( info.spawnLocation._data[ 0u ], info.spawnLocation._data[ 1u ], info.spawnLocation._data[ 2u ] ), PxQuat ( spawnRotation._data[ 1u ], spawnRotation._data[ 2u ], spawnRotation._data[ 3u ], spawnRotation._data[ 0u ] ) ) );
+    rigidVehicle->userData = info.renderCarAddress;
 
-	PxConvexMesh* convex = CreateConvexMesh ( info.bodyBakeFile );
-	PxConvexMeshGeometry convexGeometry ( convex );
-	PxShape* chassisShape = rigidVehicle->createShape ( convexGeometry, *mtr );
-	chassisShape->setLocalPose ( PxTransform ( PxVec3 ( info.bodyConvexOffset.x, info.bodyConvexOffset.y, info.bodyConvexOffset.z ) ) );
+    const PxMaterial* mtr = _physics->createMaterial ( 0.8f, 0.5f, 0.4f );
 
-	PxFilterData filterData;
-	filterData.word0 = GX_PHYSICS_COLLUSION_GROUP_CHASSIS;
-	filterData.word1 = GX_PHYSICS_COLLUSION_GROUP_CHASSIS | GX_PHYSICS_COLLUSION_GROUP_DRIVABLE | GX_PHYSICS_COLLUSION_GROUP_OBSTACLE | GX_PHYSICS_COLLUSION_GROUP_WHEEL;
-	filterData.word3 = GX_PHYSICS_RAYCAST_UNDRIVABLE_SURFACE;
+    for ( GXUChar i = 0u; i < info.numWheels; i++ )
+    {
+        PxConvexMesh* wheelConvex = CreateCylinderConvex ( info.wheelWidths[ i ], info.wheelRadiuses[ i ], 16 );
+        PxConvexMeshGeometry wheelGeometry ( wheelConvex );
+        PxShape* wheelShape = rigidVehicle->createShape ( wheelGeometry, *mtr );
+            
+        PxFilterData filterData;
+        filterData.word0 = GX_PHYSICS_COLLUSION_GROUP_WHEEL;
+        filterData.word1 = GX_PHYSICS_COLLUSION_GROUP_WHEEL | GX_PHYSICS_COLLUSION_GROUP_OBSTACLE;
+        filterData.word3 = GX_PHYSICS_RAYCAST_UNDRIVABLE_SURFACE;
 
-	chassisShape->setSimulationFilterData ( filterData );
-	chassisShape->setQueryFilterData ( filterData );
+        wheelShape->setQueryFilterData ( filterData );
+        wheelShape->setSimulationFilterData ( filterData );
 
-	rigidVehicle->setLinearDamping ( 0.001f );
-	rigidVehicle->setMass ( info.chassisMass );
-	rigidVehicle->setMassSpaceInertiaTensor ( PxVec3 ( info.chassisMoI.x, info.chassisMoI.y, info.chassisMoI.z ) );
-	rigidVehicle->setCMassLocalPose ( PxTransform ( PxVec3 ( info.chassisCoMOffset.x, info.chassisCoMOffset.y, info.chassisCoMOffset.z ) ) );
-	PxVec3 offset ( info.chassisCoMOffset.x, info.chassisCoMOffset.y, info.chassisCoMOffset.z );
+        wheelShape->setLocalPose ( PxTransform::createIdentity () );
+    }
 
-	PxVehicleDrive4W* vehicle = PxVehicleDrive4W::allocate ( info.numWheels );
-	vehicle->setup ( pPhysics, rigidVehicle, *wheelsSimData, driveSimData, 0 );
-	
-	for ( GXUChar i = 0; i < info.numWheels; i++ )
-	{
-		wheelsSimData->setWheelShapeMapping ( i, i );
-		wheelsSimData->setSceneQueryFilterData ( i, filterData );
-	}
-	
-	pScene->addActor ( *rigidVehicle );
+    PxConvexMesh* convex = CreateConvexMesh ( info.bodyBakeFile );
+    PxConvexMeshGeometry convexGeometry ( convex );
+    PxShape* chassisShape = rigidVehicle->createShape ( convexGeometry, *mtr );
+    chassisShape->setLocalPose ( PxTransform ( PxVec3 ( info.bodyConvexOffset._data[ 0u ], info.bodyConvexOffset._data[ 1u ], info.bodyConvexOffset._data[ 2u ] ) ) );
 
-	vehicle->mDriveDynData.setToRestState ();
-	vehicle->mDriveDynData.setUseAutoGears ( GX_TRUE );
+    PxFilterData filterData;
+    filterData.word0 = GX_PHYSICS_COLLUSION_GROUP_CHASSIS;
+    filterData.word1 = GX_PHYSICS_COLLUSION_GROUP_CHASSIS | GX_PHYSICS_COLLUSION_GROUP_DRIVABLE | GX_PHYSICS_COLLUSION_GROUP_OBSTACLE | GX_PHYSICS_COLLUSION_GROUP_WHEEL;
+    filterData.word3 = GX_PHYSICS_RAYCAST_UNDRIVABLE_SURFACE;
 
-	vehicles[ numVehicles ] = vehicle;
-	numVehicles++;
+    chassisShape->setSimulationFilterData ( filterData );
+    chassisShape->setQueryFilterData ( filterData );
 
-	free ( wheelData );
-	free ( tireData );
-	free ( suspensionData );
-	free ( suspensionTravelDirections );
+    rigidVehicle->setLinearDamping ( 0.001f );
+    rigidVehicle->setMass ( info.chassisMass );
+    rigidVehicle->setMassSpaceInertiaTensor ( PxVec3 ( info.chassisMoI._data[ 0u ], info.chassisMoI._data[ 1u ], info.chassisMoI._data[ 2u ] ) );
+    rigidVehicle->setCMassLocalPose ( PxTransform ( PxVec3 ( info.chassisCoMOffset._data[ 0u ], info.chassisCoMOffset._data[ 1u ], info.chassisCoMOffset._data[ 2u ] ) ) );
+    PxVec3 offset ( info.chassisCoMOffset._data[ 0u ], info.chassisCoMOffset._data[ 1u ], info.chassisCoMOffset._data[ 2u ] );
 
-	free ( wheelCentreCoMOffsets );
-	free ( suspensionForceAppCoMOffsets );
-	free ( tireForceAppCoMOffsets );
-	
-	wheelsSimData->free ();
+    PxVehicleDrive4W* vehicle = PxVehicleDrive4W::allocate ( info.numWheels );
+    vehicle->setup ( _physics, rigidVehicle, *wheelsSimData, driveSimData, 0 );
+    
+    for ( GXUChar i = 0u; i < info.numWheels; ++i )
+    {
+        wheelsSimData->setWheelShapeMapping ( i, i );
+        wheelsSimData->setSceneQueryFilterData ( i, filterData );
+    }
+    
+    _scene->addActor ( *rigidVehicle );
 
-	return vehicle;
+    vehicle->mDriveDynData.setToRestState ();
+    vehicle->mDriveDynData.setUseAutoGears ( GX_TRUE );
+
+    _vehicles[ _numVehicles ] = vehicle;
+    ++_numVehicles;
+
+    free ( wheelData );
+    free ( tireData );
+    free ( suspensionData );
+    free ( suspensionTravelDirections );
+
+    free ( wheelCentreCoMOffsets );
+    free ( suspensionForceAppCoMOffsets );
+    free ( tireForceAppCoMOffsets );
+    
+    wheelsSimData->free ();
+
+    return vehicle;
 }
 
 GXVoid GXPhysXBackend::DeleteVehicle ( PxVehicleDrive4W* vehicle )
 {
-	GXUInt id = 0;
-	for ( ; id < maxVehicles; id++ )
-	{
-		if ( vehicles[ id ] == vehicle )
-			break;
-	}
+    GXUInt id = 0u;
 
-	vehicle->getRigidDynamicActor ()->release ();
+    for ( ; id < _maxVehicles; ++id )
+    {
+        if ( _vehicles[ id ] != vehicle ) continue;
 
-	numVehicles--;
+        break;
+    }
 
-	if ( id < numVehicles )
-	{
-		memcpy ( vehicles + id, vehicles + id + 1, numVehicles * sizeof ( PxVehicleWheels* ) );
-	}
+    vehicle->getRigidDynamicActor ()->release ();
+    --_numVehicles;
+
+    if ( id >= _numVehicles ) return;
+
+    memcpy ( _vehicles + id, _vehicles + id + 1, _numVehicles * sizeof ( PxVehicleWheels* ) );
 }
 
 PxController* GXPhysXBackend::CreateCharacterController ( PxCapsuleControllerDesc desc )
 {
-	return pControllerManager->createController ( *pPhysics, pScene, desc );
+    return _controllerManager->createController ( *_physics, _scene, desc );
 }
 
 GXVoid GXPhysXBackend::SetRigidActorOrigin ( PxRigidActor* actor, const GXVec3 &location, const GXQuat &rotation )
 {
-	GXQuat physXRotation = rotation;
-	GXQuatRehandCoordinateSystem ( physXRotation );
-	actor->setGlobalPose ( PxTransform ( PxVec3 ( location.x, location.y, location.z ), PxQuat ( physXRotation.x, physXRotation.y, physXRotation.z, physXRotation.w ) ) );
+    actor->setGlobalPose ( PxTransform ( PxVec3 ( location._data[ 0u ], location._data[ 1u ], location._data[ 2u ] ), PxQuat ( rotation._data[ 1u ], rotation._data[ 2u ], rotation._data[ 3u ], rotation._data[ 0u ] ) ) );
 }
 
 GXVoid GXPhysXBackend::AddActor ( PxActor &actor )
 {
-	pScene->addActor ( actor );
+    _scene->addActor ( actor );
 }
 
 GXVoid GXPhysXBackend::RemoveActor ( PxActor &actor )
 {
-	pScene->removeActor ( actor );
+    _scene->removeActor ( actor );
 }
 
 PxMaterial* GXPhysXBackend::CreateMaterial ( GXFloat staticFriction, GXFloat dynamicFriction, GXFloat restitution )
 {
-	return pPhysics->createMaterial ( staticFriction, dynamicFriction, restitution );
+    return _physics->createMaterial ( staticFriction, dynamicFriction, restitution );
 }
 
 PxTriangleMesh* GXPhysXBackend::CreateTriangleMesh ( const GXWChar* bke_file_name )
 {
-	GXBakeInfo info;
-	GXLoadBKE ( bke_file_name, info );
+    GXBakeInfo info;
+    GXLoadBKE ( bke_file_name, info );
 
-	GXUInt size;
-	GXUByte* cache_source;
+    GXUPointer size;
+    GXUByte* cacheSource;
 
-	//Есть ли запечёная геометрия?
-	if ( GXLoadFile ( info.cacheFileName, (GXVoid**)&cache_source, size, GX_FALSE ) )
-	{
-		MemoryOutputStream	writebuffer;
-		writebuffer.write ( cache_source, size );
-		MemoryInputData readBuffer ( writebuffer.getData (), writebuffer.getSize () );
-		GXSafeFree ( cache_source );
-		return pPhysics->createTriangleMesh ( readBuffer );
-	}
+    GXFile file ( bke_file_name );
 
-	//Запечённой геометрии не оказалось. Запекаем геометрию и сбрасываем на диск.
-	GXNativeStaticMeshInfo meshInfo;
-	GXLoadNativeStaticMesh ( info.fileName, meshInfo );
+    if ( file.LoadContent ( cacheSource, size, eGXFileContentOwner::GXFile, GX_FALSE ) )
+    {
+        MemoryOutputStream	writebuffer;
+        writebuffer.write ( cacheSource, static_cast<PxU32> ( size ) );
+        MemoryInputData readBuffer ( writebuffer.getData (), writebuffer.getSize () );
+        return _physics->createTriangleMesh ( readBuffer );
+    }
 
-	PxTriangleMeshDesc meshDesc;
-	meshDesc.points.count = meshInfo.numVertices;
-	meshDesc.points.stride = sizeof ( PxVec3 );
-	meshDesc.points.data = meshInfo.vboData;
+    // Запечённой геометрии не оказалось. Запекаем геометрию и сбрасываем на диск.
+    GXNativeStaticMeshInfo meshInfo;
+    GXLoadNativeStaticMesh ( info._fileName, meshInfo );
 
-	meshDesc.triangles.count = meshInfo.numElements / 3;
-	meshDesc.triangles.stride = 3 * sizeof ( PxU32 );
-	meshDesc.triangles.data = meshInfo.eboData;
+    PxTriangleMeshDesc meshDesc;
+    meshDesc.points.count = meshInfo._numVertices;
+    meshDesc.points.stride = sizeof ( PxVec3 );
+    meshDesc.points.data = meshInfo._vboData;
 
-	MemoryOutputStream	writebuffer;
-	GXBool status = pCooking->cookTriangleMesh ( meshDesc, writebuffer );
-	if( !status )
-	{
-		GXLogW ( L"GXPhysXBackend::CreateTriangleMesh::Error - Запекание файла %s провалено\n", info.fileName );
-		GXDebugBox ( L"Что-то не так с triangle mesh" );
-		return 0;
-	}
+    meshDesc.triangles.count = meshInfo._numElements / 3u;
+    meshDesc.triangles.stride = 3u * sizeof ( PxU32 );
+    meshDesc.triangles.data = meshInfo._eboData;
 
-	MemoryInputData readBuffer ( writebuffer.getData (), writebuffer.getSize () );
+    MemoryOutputStream	writebuffer;
 
-	writebuffer.CacheToDisk ( info.cacheFileName );
-	info.Cleanup ();
-	meshInfo.Cleanup ();
+    if ( !_cooking->cookTriangleMesh ( meshDesc, writebuffer ) )
+    {
+        GXLogW ( L"GXPhysXBackend::CreateTriangleMesh::Error - Запекание файла %s провалено\n", info._fileName );
+        return nullptr;
+    }
 
-	return pPhysics->createTriangleMesh ( readBuffer );
+    MemoryInputData readBuffer ( writebuffer.getData (), writebuffer.getSize () );
 
-	/*
-	GXOBJPoint* rawGeometry;	
-	GXInt totalVerts = GXLoadOBJ ( info.fileName, &rawGeometry );
-	PxVec3* vertexBuffer = (PxVec3*)malloc ( totalVerts * sizeof ( PxVec3 ) );
-	PxU32* indexBuffer = (PxU32*)malloc ( totalVerts * sizeof ( PxU32 ) );
+    writebuffer.CacheToDisk ( info._cacheFileName );
+    info.Cleanup ();
+    meshInfo.Cleanup ();
 
-	PxU32 i = 0;
-	while ( i < (PxU32)totalVerts )
-	{
-		PxVec3 v1 ( rawGeometry[ i ].vertex.x, rawGeometry[ i ].vertex.y, rawGeometry[ i ].vertex.z );
-		memcpy ( vertexBuffer + i, &v1, sizeof ( PxVec3 ) );
-		indexBuffer[ i ] = i++;
-
-		PxVec3 v2 ( rawGeometry[ i ].vertex.x, rawGeometry[ i ].vertex.y, rawGeometry[ i ].vertex.z );
-		memcpy ( vertexBuffer + i, &v2, sizeof ( PxVec3 ) );
-		indexBuffer[ i ] = i++;
-
-		PxVec3 v3 ( rawGeometry[ i ].vertex.x, rawGeometry[ i ].vertex.y, rawGeometry[ i ].vertex.z );
-		memcpy ( vertexBuffer + i, &v3, sizeof ( PxVec3 ) );
-		indexBuffer[ i ] = i++;
-	}
-
-	PxTriangleMeshDesc meshDesc;
-	meshDesc.points.count           = totalVerts;
-	meshDesc.points.stride          = sizeof ( PxVec3 );
-	meshDesc.points.data			= vertexBuffer;
-	meshDesc.triangles.count        = totalVerts / 3;
-	meshDesc.triangles.stride       = 3 * sizeof ( PxU32 );
-	meshDesc.triangles.data			= indexBuffer;
-
-	MemoryOutputStream	writebuffer;
-	GXBool status = pCooking->cookTriangleMesh ( meshDesc, writebuffer );
-	if( !status )
-	{
-		GXLogW ( L"GXPhysXBackend::CreateTriangleMesh::Error - Запекание файла %s провалено\n", info.fileName );
-		GXDebugBox ( L"Что-то не так с triangle mesh" );
-		return 0;
-	}
-
-	MemoryInputData readBuffer ( writebuffer.getData (), writebuffer.getSize () );
-
-	free ( vertexBuffer );
-	free ( indexBuffer );
-
-	free ( rawGeometry );
-
-	writebuffer.CacheToDisk ( info.cacheFileName );
-	info.Cleanup ();
-
-	return pPhysics->createTriangleMesh ( readBuffer );
-
-	*/
+    return _physics->createTriangleMesh ( readBuffer );
 }
 
 PxConvexMesh* GXPhysXBackend::CreateConvexMesh ( const GXWChar* bke_file_name )
 {
-	GXBakeInfo info;
-	GXLoadBKE ( bke_file_name, info );
+    GXBakeInfo info;
+    GXLoadBKE ( bke_file_name, info );
 
-	GXUInt size;
-	GXUChar* data;
+    GXUPointer size;
+    GXUByte* data;
 
-	//Запечённая геометрия есть в кеше
+    GXFile cacheFile ( bke_file_name );
 
-	if ( GXLoadFile ( info.cacheFileName, (GXVoid**)&data, size, GX_FALSE ) )
-	{
-		MemoryOutputStream	writebuffer;
-		writebuffer.write ( data, size );
-		MemoryInputData readBuffer ( writebuffer.getData (), writebuffer.getSize () );
-		GXSafeFree ( data );
-		return pPhysics->createConvexMesh ( readBuffer );
-	}
+    if ( cacheFile.LoadContent ( data, size, eGXFileContentOwner::GXFile, GX_FALSE ) )
+    {
+        // Запечённая геометрия есть в кеше
+        MemoryOutputStream	writebuffer;
+        writebuffer.write ( data, static_cast<PxU32> ( size ) );
+        MemoryInputData readBuffer ( writebuffer.getData (), writebuffer.getSize () );
+        return _physics->createConvexMesh ( readBuffer );
+    }
 
-	//Запечённой геометрии в кеше не оказалось. Запекаем и сбрасывает кеш на диск.
+    //Запечённой геометрии в кеше не оказалось. Запекаем и сбрасывает кеш на диск.
 
-	GXLoadFile ( info.fileName, (GXVoid**)&data, size, GX_TRUE );
-	GXPhysicsGeometryHeader* h = (GXPhysicsGeometryHeader*)data;
+    GXFile rawFile ( info._fileName );
+    rawFile.LoadContent ( data, size, eGXFileContentOwner::GXFile, GX_TRUE );
 
-	PxConvexMeshDesc convexDesc;
-	convexDesc.points.count	= h->numVertices;
-	convexDesc.points.stride = sizeof ( PxVec3 );
-	convexDesc.points.data = data + sizeof ( GXPhysicsGeometryHeader );
-	convexDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX | PxConvexFlag::eINFLATE_CONVEX;
+    const GXPhysicsGeometryHeader* h = reinterpret_cast<const GXPhysicsGeometryHeader*> ( data );
 
-	PxConvexMesh* convexMesh = 0;
-	MemoryOutputStream buf;
-	if ( pCooking->cookConvexMesh ( convexDesc, buf ) )
-	{
-		MemoryInputData id ( buf.getData(), buf.getSize () );
-		convexMesh = pPhysics->createConvexMesh ( id );
-	}
-	else
-	{
-		GXLogW ( L"GXPhysXBackend::CreateConvexMesh::Error - Запекание файла %s провалено\n", info.fileName );
-		GXDebugBox ( L"Что-то не так с конвексом" );
-		return 0;
-	}
+    PxConvexMeshDesc convexDesc;
+    convexDesc.points.count	= h->_numVertices;
+    convexDesc.points.stride = sizeof ( PxVec3 );
+    convexDesc.points.data = data + sizeof ( GXPhysicsGeometryHeader );
+    convexDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX | PxConvexFlag::eINFLATE_CONVEX;
 
-	free ( data );
+    PxConvexMesh* convexMesh = nullptr;
+    MemoryOutputStream buf;
 
-	buf.CacheToDisk ( info.cacheFileName );
-	info.Cleanup ();
+    if ( _cooking->cookConvexMesh ( convexDesc, buf ) )
+    {
+        MemoryInputData id ( buf.getData(), buf.getSize () );
+        convexMesh = _physics->createConvexMesh ( id );
+    }
+    else
+    {
+        GXLogW ( L"GXPhysXBackend::CreateConvexMesh::Error - Запекание файла %s провалено\n", info._fileName );
+        return nullptr;
+    }
 
-	return convexMesh;
+    buf.CacheToDisk ( info._cacheFileName );
+    info.Cleanup ();
+
+    return convexMesh;
 }
 
 PxParticleSystem* GXPhysXBackend::CreateParticleSystem ( GXUInt maxCountParticles, GXBool particleRestOffset )
 {
-	if ( !pPhysics ) return 0;
-
-	return pPhysics->createParticleSystem ( maxCountParticles, particleRestOffset );
+    return _physics ? _physics->createParticleSystem ( maxCountParticles, particleRestOffset ) : nullptr;
 }
 
 GXVoid GXPhysXBackend::AddParticleSystem ( PxParticleSystem &ps )
 {
-	if ( !pScene ) return;
-	pScene->addActor ( ps );
+    if ( !_scene ) return;
+    _scene->addActor ( ps );
 }
 
 GXVec3 GXPhysXBackend::GetGravityAcceleration ()
 {
-	GXVec3 g;
-	g.x = gravity.x;
-	g.y = gravity.y;
-	g.z = gravity.z;
-	return g;
+    return GXVec3 ( _gravity.x, _gravity.y, _gravity.z );
 }
 
 GXFloat GXPhysXBackend::GetSimulationDelay ()
 {
-	return (GXFloat)GX_PHYSICS_SIMULATE_DELAY;
+    constexpr GXFloat delay = static_cast<GXFloat> ( PHYSICS_SIMULATE_DELAY );
+    return delay;
 }
 
 GXFloat GXPhysXBackend::GetToleranceLength ()
 {
-	return toleranceScale.length;
+    return _toleranceScale.length;
 }
 
 GXBool GXPhysXBackend::RaycastSingle ( const GXVec3 &start, const GXVec3 &direction, const GXFloat maxDistance, PxRaycastHit &hit )
 {
-	WaitForSingleObject ( hSimulateMutex, INFINITE );		
-	const PxSceneQueryFlags outputFlags = PxSceneQueryFlag::eDISTANCE | PxSceneQueryFlag::eIMPACT | PxSceneQueryFlag::eNORMAL;
-	if ( !pScene )
-	{
-		ReleaseMutex ( hSimulateMutex );
-		return GX_FALSE;
-	}
+    WaitForSingleObject ( _simulateMutex, INFINITE );
+    static const PxSceneQueryFlags outputFlags = PxSceneQueryFlag::eDISTANCE | PxSceneQueryFlag::eIMPACT | PxSceneQueryFlag::eNORMAL;
 
-	PxVec3 begin ( start.x, start.y, start.z );
-	PxVec3 dir ( direction.x, direction.y, direction.z );
-	GXBool status =  pScene->raycastSingle ( begin, dir, maxDistance, outputFlags, hit );
-	ReleaseMutex ( hSimulateMutex );
+    if ( !_scene )
+    {
+        ReleaseMutex ( _simulateMutex );
+        return GX_FALSE;
+    }
 
-	return status;
+    const GXBool status =  _scene->raycastSingle ( PxVec3 ( start._data[ 0u ], start._data[ 1u ], start._data[ 2u ] ), PxVec3 ( direction._data[ 0u ], direction._data[ 1u ], direction._data[ 2u ] ), maxDistance, outputFlags, hit );
+    ReleaseMutex ( _simulateMutex );
+
+    return status;
 }
 
 GXBool gx_physiscs_Flag = GX_TRUE;
 
 GXVoid GXPhysXBackend::DoSimulate ()
 {
-	if ( gx_physiscs_Flag )
-	{
-		lastTime = GXGetProcessorTicks ();
-		accumulator = 0.0;
-		gx_physiscs_Flag = GX_FALSE;
-		return;
-	}
+    if ( gx_physiscs_Flag )
+    {
+        _lastTime = GXGetProcessorTicks ();
+        _accumulator = 0.0;
+        gx_physiscs_Flag = GX_FALSE;
+        return;
+    }
 
-	GXDouble newtime = GXGetProcessorTicks ();
-	accumulator += ( newtime - lastTime ) / GXGetProcessorTicksPerSecond ();
-	lastTime = newtime;
+    GXDouble newtime = GXGetProcessorTicks ();
+    _accumulator += ( newtime - _lastTime ) / GXGetProcessorTicksPerSecond ();
+    _lastTime = newtime;
 
-	WaitForSingleObject ( hSimulateMutex, INFINITE );
-	bIsSimulating = GX_TRUE;
+    WaitForSingleObject ( _simulateMutex, INFINITE );
+    _isSimulating = GX_TRUE;
+    constexpr PxReal delay = static_cast<GXFloat> ( PHYSICS_SIMULATE_DELAY );
 
-	while ( accumulator >= GX_PHYSICS_SIMULATE_DELAY )
-	{
-		if ( pScene )
-		{
-			pScene->simulate ( (GXFloat)GX_PHYSICS_SIMULATE_DELAY );
-			pScene->checkResults ( GX_TRUE );
-			pScene->fetchResults ();
+    while ( _accumulator >= PHYSICS_SIMULATE_DELAY )
+    {
+        if ( _scene )
+        {
+            _scene->simulate ( delay );
+            _scene->checkResults ( GX_TRUE );
+            _scene->fetchResults ();
 
-			if ( numVehicles )
-			{
-				PxVehicleSuspensionRaycasts ( batchQuery, numVehicles, vehicles, maxQueries, queryResults );
-				PxVehicleUpdates ( (GXFloat)GX_PHYSICS_SIMULATE_DELAY, gravity, *tireSurfacePairs, numVehicles, vehicles, 0 );
-			}
+            if ( _numVehicles )
+            {
+                PxVehicleSuspensionRaycasts ( _batchQuery, _numVehicles, _vehicles, _maxQueries, _queryResults );
+                PxVehicleUpdates ( delay, _gravity, *_tireSurfacePairs, _numVehicles, _vehicles, 0 );
+            }
 
-			PxU32 nbActiveTransforms;
-			const PxActiveTransform* activeTransforms = pScene->getActiveTransforms ( nbActiveTransforms );
-			for ( PxU32 i = 0; i < nbActiveTransforms; i++ )
-			{
-				if ( activeTransforms [ i ].userData && activeTransforms [ i ].actor->isRigidBody () )
-				{
-					GXPhysXActorState* renderObject = (GXPhysXActorState*)activeTransforms [ i ].userData;
-					GXVec3 location = GXCreateVec3 ( activeTransforms [ i ].actor2World.p.x, activeTransforms [ i ].actor2World.p.y, activeTransforms [ i ].actor2World.p.z );
+            PxU32 nbActiveTransforms;
+            const PxActiveTransform* activeTransforms = _scene->getActiveTransforms ( nbActiveTransforms );
 
-					//PhysX - левосторонняя система координат. 
-					//Графические вычисления в правосторонней системе координат, поэтому
-					//кватернион надо преобразовать.
-					GXQuat rotationPhysX, rotation;
-					rotationPhysX.x = activeTransforms [ i ].actor2World.q.x;
-					rotationPhysX.y = activeTransforms [ i ].actor2World.q.y;
-					rotationPhysX.z = activeTransforms [ i ].actor2World.q.z;
-					rotationPhysX.w = activeTransforms [ i ].actor2World.q.w;
-					GXQuatRehandCoordinateSystem ( rotationPhysX );
-					renderObject->SetPivotOrigin ( location, rotation );
-				}
-			}
+            for ( PxU32 i = 0u; i < nbActiveTransforms; ++i )
+            {
+                const PxActiveTransform& activeTransform = activeTransforms[ i ];
 
-			PxShape* carShapes[ 7 ];		//6 колёс и корпус. Уйти от констант!!!!!
-			for ( GXUInt i = 0; i < numVehicles; i++ )
-			{
-				PxRigidDynamic* rigidVihicle = vehicles[ i ]->getRigidDynamicActor ();
-				GXUInt numShapes = rigidVihicle->getNbShapes ();
-				rigidVihicle->getShapes ( carShapes, numShapes );
-				GXPhysXActorState* vehicle = (GXPhysXActorState*)rigidVihicle->userData;
+                if ( activeTransform.userData && activeTransform.actor->isRigidBody () )
+                {
+                    const PxVec3& location = activeTransform.actor2World.p;
+                    const PxQuat& rotation = activeTransform.actor2World.q;
 
-				for ( GXUInt shapeID = 0; shapeID < numShapes; shapeID++ )
-				{
-					PxTransform trans = PxShapeExt::getGlobalPose ( *carShapes[ shapeID ], *rigidVihicle );
-					GXVec3 location = GXCreateVec3 ( trans.p.x, trans.p.y, trans.p.z );
+                    GXPhysXActorState* renderObject = static_cast<GXPhysXActorState*> ( activeTransform.userData );
+                    renderObject->SetPivotOrigin ( GXVec3 ( location.x, location.y, location.z ), GXQuat ( rotation.w, rotation.x, rotation.y, rotation.z ) );
+                }
+            }
 
-					GXQuat physXRotation;
-					physXRotation.x = trans.q.x;
-					physXRotation.y = trans.q.y;
-					physXRotation.z = trans.q.z;
-					physXRotation.w = trans.q.w;
+            PxShape* carShapes[ 7u ];   // 6 колёс и корпус. Уйти от констант!!!!!
 
-					GXQuatRehandCoordinateSystem ( physXRotation );
+            for ( GXUInt i = 0u; i < _numVehicles; ++i )
+            {
+                const PxRigidDynamic* rigidVihicle = _vehicles[ i ]->getRigidDynamicActor ();
+                const GXUInt numShapes = rigidVihicle->getNbShapes ();
+                rigidVihicle->getShapes ( carShapes, numShapes );
+                GXPhysXActorState* vehicle = static_cast<GXPhysXActorState*> ( rigidVihicle->userData );
 
-					vehicle->SetShapeOrigin ( shapeID, location, physXRotation );
-				}
-			}
-		}
+                for ( GXUInt shapeID = 0u; shapeID < numShapes; ++shapeID )
+                {
+                    const PxTransform transform = PxShapeExt::getGlobalPose ( *carShapes[ shapeID ], *rigidVihicle );
+                    const PxVec3& location = transform.p;
+                    const PxQuat& rotation = transform.q;
 
-		if ( OnPhysics )
-			OnPhysics ( (GXFloat)GX_PHYSICS_SIMULATE_DELAY );
-		
-		accumulator -= GX_PHYSICS_SIMULATE_DELAY;
-	}
+                    vehicle->SetShapeOrigin ( static_cast<GXUShort> ( shapeID ), GXVec3 ( location.x, location.y, location.z ), GXQuat ( rotation.w, rotation.x, rotation.y, rotation.z ) );
+                }
+            }
+        }
 
-	ReleaseMutex ( hSimulateMutex );
-	bIsSimulating = GX_FALSE;
+        if ( _onPhysics )
+            _onPhysics ( delay );
+        
+        _accumulator -= PHYSICS_SIMULATE_DELAY;
+    }
+
+    ReleaseMutex ( _simulateMutex );
+    _isSimulating = GX_FALSE;
 }
 
 GXVoid GXPhysXBackend::ControlVehicle ( PxVehicleDrive4W* vehicle, GXUInt controlType, GXFloat value )
 {
-	vehicle->mDriveDynData.setAnalogInput ( controlType, value );
+    vehicle->mDriveDynData.setAnalogInput ( controlType, value );
 }
 
 PxConvexMesh* GXPhysXBackend::CreateCylinderConvex ( GXFloat width, GXFloat radius, GXUInt numCirclePoints )
 {
-	#define  MAX_NUM_VERTS_IN_CIRCLE 8
 
-	if ( numCirclePoints < MAX_NUM_VERTS_IN_CIRCLE )
-		numCirclePoints = MAX_NUM_VERTS_IN_CIRCLE;
+#define  MAX_NUM_VERTS_IN_CIRCLE 8
 
-	GXUInt numVerts = 2 * numCirclePoints;
-	PxVec3* verts = (PxVec3*)malloc ( numVerts * sizeof ( PxVec3 ) );
-	
-	GXFloat dtheta = 2.0f * GX_MATH_PI / numCirclePoints;
-	for( GXUInt i = 0; i < numCirclePoints; i++ )
-	{
-		GXFloat theta = dtheta * i;
-		GXFloat cosTheta = radius * cosf ( theta );
-		GXFloat sinTheta = radius * sinf ( theta );
+    if ( numCirclePoints < MAX_NUM_VERTS_IN_CIRCLE )
+        numCirclePoints = MAX_NUM_VERTS_IN_CIRCLE;
 
-		verts[ i << 1 ] = PxVec3 ( -0.5f * width, cosTheta, sinTheta );
-		verts[ ( i << 1 ) + 1 ] = PxVec3 ( 0.5f * width, cosTheta, sinTheta );
-	}
+    const GXUInt numVerts = 2u * numCirclePoints;
+    PxVec3* verts = static_cast<PxVec3*> ( malloc ( numVerts * sizeof ( PxVec3 ) ) );
+    
+    const GXFloat dtheta = 2.0f * GX_MATH_PI / numCirclePoints;
 
-	PxConvexMeshDesc convexDesc;
-	convexDesc.points.count	= numVerts;
-	convexDesc.points.stride = sizeof ( PxVec3 );
-	convexDesc.points.data = verts;
-	convexDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX | PxConvexFlag::eINFLATE_CONVEX;
+    for( GXUInt i = 0u; i < numCirclePoints; ++i )
+    {
+        const GXFloat theta = dtheta * i;
+        const GXFloat cosTheta = radius * cosf ( theta );
+        const GXFloat sinTheta = radius * sinf ( theta );
 
-	PxConvexMesh* convexMesh = 0;
-	MemoryOutputStream buf;
-	if ( pCooking->cookConvexMesh ( convexDesc, buf ) )
-	{
-		MemoryInputData id ( buf.getData(), buf.getSize () );
-		convexMesh = pPhysics->createConvexMesh ( id );
-	}
+        verts[ i << 1 ] = PxVec3 ( -0.5f * width, cosTheta, sinTheta );
+        verts[ ( i << 1 ) + 1 ] = PxVec3 ( 0.5f * width, cosTheta, sinTheta );
+    }
 
-	free ( verts );
-	return convexMesh;
+    PxConvexMeshDesc convexDesc;
+    convexDesc.points.count	= numVerts;
+    convexDesc.points.stride = sizeof ( PxVec3 );
+    convexDesc.points.data = verts;
+    convexDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX | PxConvexFlag::eINFLATE_CONVEX;
 
-	#undef MAX_NUM_VERTS_IN_CIRCLE
+    PxConvexMesh* convexMesh = nullptr;
+    MemoryOutputStream buf;
+
+    if ( _cooking->cookConvexMesh ( convexDesc, buf ) )
+    {
+        MemoryInputData id ( buf.getData(), buf.getSize () );
+        convexMesh = _physics->createConvexMesh ( id );
+    }
+
+    free ( verts );
+    return convexMesh;
+
+#undef MAX_NUM_VERTS_IN_CIRCLE
+
 }
 
-PxQueryHitType::Enum GXPhysXBackend::BatchQueryPreFilterShader ( PxFilterData filterData0, PxFilterData filterData1, const void* constantBlock, PxU32 constantBlockSize, PxHitFlags &filterFlags )
+PxQueryHitType::Enum GXPhysXBackend::BatchQueryPreFilterShader ( PxFilterData /*filterData0*/, PxFilterData filterData1, const void* /*constantBlock*/, PxU32 /*constantBlockSize*/, PxHitFlags& /*filterFlags*/ )
 {
-	PX_UNUSED ( filterFlags );
-	PX_UNUSED ( constantBlockSize );
-	PX_UNUSED ( constantBlock );
-	PX_UNUSED ( filterData0 );
+    if ( filterData1.word3 == GX_PHYSICS_RAYCAST_DRIVABLE_SURFACE )
+        return PxQueryHitType::eBLOCK;
 
-	if ( filterData1.word3 == GX_PHYSICS_RAYCAST_DRIVABLE_SURFACE )
-		return PxQueryHitType::eBLOCK;
-
-	return PxQueryHitType::eNONE;
+    return PxQueryHitType::eNONE;
 }
 
 PxFilterFlags GXPhysXBackend::FilterShader ( PxFilterObjectAttributes attributes0, PxFilterData filterData0, PxFilterObjectAttributes attributes1, PxFilterData filterData1, PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize )
 {
-	PX_UNUSED ( constantBlock );
-	PX_UNUSED ( constantBlockSize );
+    if ( ( filterData0.word0 == 0 ) && ( filterData1.word0 == 0 ) )
+        return PxDefaultSimulationFilterShader ( attributes0, filterData0, attributes1, filterData1, pairFlags, constantBlock, constantBlockSize ); 
 
-	if ( ( filterData0.word0 == 0 ) && ( filterData1.word0 == 0 ) )
-		return PxDefaultSimulationFilterShader ( attributes0, filterData0, attributes1, filterData1, pairFlags, constantBlock, constantBlockSize ); 
+    if ( !( ( filterData0.word0 & filterData1.word1 ) || ( filterData1.word0 & filterData0.word1 ) ) )
+        return PxFilterFlag::eSUPPRESS;
 
-	if ( !( ( filterData0.word0 & filterData1.word1 ) || ( filterData1.word0 & filterData0.word1 ) ) )
-		return PxFilterFlag::eSUPPRESS;
+    pairFlags = PxPairFlag::eCONTACT_DEFAULT;
 
-	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+    GXDword sweptIntegration = 0x00000001;
+    if ( ( filterData0.word3 | filterData1.word3 ) & sweptIntegration )
+        pairFlags |= PxPairFlag::eDETECT_CCD_CONTACT | PxPairFlag::eSOLVE_CONTACT;
 
-	GXDword sweptIntegration = 0x00000001;
-	if ( ( filterData0.word3 | filterData1.word3 ) & sweptIntegration )
-		pairFlags |= PxPairFlag::eDETECT_CCD_CONTACT | PxPairFlag::eSOLVE_CONTACT;
-
-	pairFlags |= PxPairFlags ( PxU16 ( filterData0.word2 | filterData1.word2 ) );
-	return PxFilterFlags ();
+    pairFlags |= PxPairFlags ( PxU16 ( filterData0.word2 | filterData1.word2 ) );
+    return PxFilterFlags ();
 }
 
 //----------------------------------------------------------------------
 
 GXDLLEXPORT GXPhysXAdapter* GXCALL GXPhysXCreate ()
 {
-	return new GXPhysXBackend ();
+    return new GXPhysXBackend ();
 }
 
 GXDLLEXPORT GXVoid GXCALL GXPhysXDestroy ( GXPhysXAdapter* physics )
 {
-	GXSafeDelete ( physics );
+    GXSafeDelete ( physics );
 }

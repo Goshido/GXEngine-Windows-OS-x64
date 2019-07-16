@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_FREETYPE
 #define GX_FREETYPE
@@ -27,19 +27,19 @@ typedef FT_Error ( *PFNFTRENDERGLYPH ) ( FT_GlyphSlot slot, FT_Render_Mode rende
 
 struct GXFreeTypeFunctions
 {
-	PFNFTNEWMEMORYFACE*		FT_New_Memory_Face;
-	PFNFTDONEFACE*			FT_Done_Face;
+    PFNFTNEWMEMORYFACE*         FT_New_Memory_Face;
+    PFNFTDONEFACE*              FT_Done_Face;
 
-	PFNFTSETCHARSIZE*		FT_Set_Char_Size;
-	PFNFTSETPIXELSIZES*		FT_Set_Pixel_Sizes;
+    PFNFTSETCHARSIZE*           FT_Set_Char_Size;
+    PFNFTSETPIXELSIZES*         FT_Set_Pixel_Sizes;
 
-	PFNFTGETCHARINDEX*		FT_Get_Char_Index;
-	PFNFTGETKERNING*		FT_Get_Kerning;
+    PFNFTGETCHARINDEX*          FT_Get_Char_Index;
+    PFNFTGETKERNING*            FT_Get_Kerning;
 
-	PFNFTLOADGLYPH*			FT_Load_Glyph;
-	PFNFTRENDERGLYPH*		FT_Render_Glyph;
+    PFNFTLOADGLYPH*             FT_Load_Glyph;
+    PFNFTRENDERGLYPH*           FT_Render_Glyph;
 
-	PFNGXFREETYPEDESTROY*	GXFreeTypeDestroy;
+    PFNGXFREETYPEDESTROY*       GXFreeTypeDestroy;
 };
 
 

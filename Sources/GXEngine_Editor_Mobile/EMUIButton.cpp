@@ -72,10 +72,10 @@
 class EMUIButtonRenderer final : public GXWidgetRenderer
 {
     private:
-        GXFont              font;
-        GXTexture2D         background;
-        GXHudSurface*       surface;
-        GXWChar*            caption;
+        GXFont              _font;
+        GXTexture2D         _background;
+        GXString            _caption;
+        GXHudSurface*       _surface;
 
     public:
         explicit EMUIButtonRenderer ( GXUIButton* buttonWidget );
@@ -84,7 +84,7 @@ class EMUIButtonRenderer final : public GXWidgetRenderer
         GXVoid OnRefresh () override;
         GXVoid OnDraw () override;
 
-        GXVoid SetCaption ( const GXWChar* newCaption );
+        GXVoid SetCaption ( const GXWChar* caption );
 
     protected:
         GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
@@ -98,36 +98,33 @@ class EMUIButtonRenderer final : public GXWidgetRenderer
 
 EMUIButtonRenderer::EMUIButtonRenderer ( GXUIButton* buttonWidget ):
     GXWidgetRenderer ( buttonWidget ),
-    font ( DEFAULT_FONT, static_cast<GXUShort> ( DEFAULT_FONT_SIZE * gx_ui_Scale ) ),
-    background ( BACKGROUND_TEXTURE, GX_FALSE, GX_FALSE )
+    _font ( DEFAULT_FONT, static_cast<GXUShort> ( DEFAULT_FONT_SIZE * gx_ui_Scale ) ),
+    _background ( BACKGROUND_TEXTURE, GX_FALSE, GX_FALSE ),
+    _caption ( DEFAULT_CAPTION )
 {
     const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
-    surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
-
-    GXWcsclone ( &caption, DEFAULT_CAPTION );
+    _surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
 EMUIButtonRenderer::~EMUIButtonRenderer ()
 {
-    GXSafeFree ( caption );
-
-    delete surface;
+    delete _surface;
 }
 
 GXVoid EMUIButtonRenderer::OnRefresh ()
 {
     GXUIButton* button = static_cast<GXUIButton*> ( widget );
 
-    surface->Reset ();
-    GXFloat w = static_cast<GXFloat> ( surface->GetWidth () );
-    GXFloat h = static_cast<GXFloat> ( surface->GetHeight () );
+    _surface->Reset ();
+    const GXFloat w = static_cast<GXFloat> ( _surface->GetWidth () );
+    const GXFloat h = static_cast<GXFloat> ( _surface->GetHeight () );
 
     GXImageInfo ii;
     GXPenInfo pi;
 
-    ii._texture = &background;
+    ii._texture = &_background;
 
     if ( button->IsDisabled () )
     {
@@ -155,17 +152,17 @@ GXVoid EMUIButtonRenderer::OnRefresh ()
     ii._insertHeight = h - 2.0f;
     ii._overlayType = eGXImageOverlayType::SimpleReplace;
 
-    surface->AddImage ( ii );
+    _surface->AddImage ( ii );
 
-    if ( !caption ) return;
+    if ( _caption.IsNull () ) return;
 
-    GXInt len = static_cast<GXInt> ( font.GetTextLength ( 0u, caption ) );
-    pi._font = &font;
+    const GXInt len = static_cast<GXInt> ( _font.GetTextLength ( 0u, _caption ) );
+    pi._font = &_font;
     pi._insertX = ( ii._insertWidth - len ) * 0.5f + PIXEL_PERFECT_TEXT_OFFSET_X;
-    pi._insertY = ( ii._insertHeight - font.GetSize () * 0.61f ) * 0.5f + PIXEL_PERFECT_TEXT_OFFSET_Y;
+    pi._insertY = ( ii._insertHeight - _font.GetSize () * 0.61f ) * 0.5f + PIXEL_PERFECT_TEXT_OFFSET_Y;
     pi._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
-    surface->AddText ( pi, 0, caption );
+    _surface->AddText ( pi, 0, _caption );
 
     GXLineInfo li;
     li._color.From ( BORDER_COLOR_R, BORDER_COLOR_G, BORDER_COLOR_B, BORDER_COLOR_A );
@@ -174,42 +171,40 @@ GXVoid EMUIButtonRenderer::OnRefresh ()
     li._endPoint.Init ( w - 0.5f, 0.5f );
     li._overlayType = eGXImageOverlayType::SimpleReplace;
 
-    surface->AddLine ( li );
+    _surface->AddLine ( li );
 
     li._startPoint.Init ( w - 0.5f, 1.5f );
     li._endPoint.Init ( w - 0.5f, h - 0.5f );
 
-    surface->AddLine ( li );
+    _surface->AddLine ( li );
 
     li._startPoint.Init ( w - 1.5f, h - 0.5f );
     li._endPoint.Init ( 0.5f, h - 0.5f );
 
-    surface->AddLine ( li );
+    _surface->AddLine ( li );
 
     li._startPoint.Init ( 0.5f, h - 1.5f );
     li._endPoint.Init ( 0.5f, 0.5f );
 
-    surface->AddLine ( li );
+    _surface->AddLine ( li );
 }
 
 GXVoid EMUIButtonRenderer::OnDraw ()
 {
     glDisable ( GL_DEPTH_TEST );
-    surface->Render ();
+    _surface->Render ();
     glEnable ( GL_DEPTH_TEST );
 }
 
-GXVoid EMUIButtonRenderer::SetCaption ( const GXWChar* newCaption )
+GXVoid EMUIButtonRenderer::SetCaption ( const GXWChar* caption )
 {
-    GXSafeFree ( caption );
-
-    if ( newCaption )
+    if ( caption )
     {
-        GXWcsclone ( &caption, newCaption );
+        _caption = caption;
         return;
     }
 
-    caption = nullptr;
+    _caption.Clear ();
 }
 
 GXVoid EMUIButtonRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
@@ -217,14 +212,14 @@ GXVoid EMUIButtonRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXU
     x = truncf ( x ) + PIXEL_PERFECT_LOCATION_OFFSET_X;
     y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
-    GXSafeDelete ( surface );
+    GXSafeDelete ( _surface );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
-    surface = new GXHudSurface ( width, height );
+    _surface = new GXHudSurface ( width, height );
 
     GXVec3 location;
-    surface->GetLocation ( location );
-    surface->SetLocation ( x, y, location._data[ 2 ] );
+    _surface->GetLocation ( location );
+    _surface->SetLocation ( x, y, location._data[ 2u ] );
 }
 
 GXVoid EMUIButtonRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -233,66 +228,66 @@ GXVoid EMUIButtonRenderer::OnMoved ( GXFloat x, GXFloat y )
     y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
     GXVec3 location;
-    surface->GetLocation ( location );
-    surface->SetLocation ( x, y, location._data[ 2 ] );
+    _surface->GetLocation ( location );
+    _surface->SetLocation ( x, y, location._data[ 2u ] );
 }
 
 //----------------------------------------------------------------------------------
 
 EMUIButton::EMUIButton ( EMUI* parent ):
     EMUI ( parent ),
-    widget ( new GXUIButton ( parent ? parent->GetWidget () : nullptr ) )
+    _widget ( new GXUIButton ( parent ? parent->GetWidget () : nullptr ) )
 {
-    widget->Resize ( DEFAULT_LEFT_BOTTOM_X * gx_ui_Scale, DEFAULT_LEFT_BOTTOM_Y * gx_ui_Scale, DEFAULT_WIDTH * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
+    _widget->Resize ( DEFAULT_LEFT_BOTTOM_X * gx_ui_Scale, DEFAULT_LEFT_BOTTOM_Y * gx_ui_Scale, DEFAULT_WIDTH * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIButtonRenderer" );
-    widget->SetRenderer ( new EMUIButtonRenderer ( widget ) );
+    _widget->SetRenderer ( new EMUIButtonRenderer ( _widget ) );
 }
 
 EMUIButton::~EMUIButton ()
 {
-    delete widget->GetRenderer ();
-    delete widget;
+    delete _widget->GetRenderer ();
+    delete _widget;
 }
 
 GXWidget* EMUIButton::GetWidget () const
 {
-    return widget;
+    return _widget;
 }
 
 GXVoid EMUIButton::Enable ()
 {
-    widget->Enable ();
+    _widget->Enable ();
 }
 
 GXVoid EMUIButton::Disable ()
 {
-    widget->Disable ();
+    _widget->Disable ();
 }
 
 GXVoid EMUIButton::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height )
 {
-    widget->Resize ( bottomLeftX, bottomLeftY, width, height );
+    _widget->Resize ( bottomLeftX, bottomLeftY, width, height );
 }
 
 GXVoid EMUIButton::SetCaption ( const GXWChar* caption )
 {
-    EMUIButtonRenderer* renderer = static_cast<EMUIButtonRenderer*> ( widget->GetRenderer () );
+    EMUIButtonRenderer* renderer = static_cast<EMUIButtonRenderer*> ( _widget->GetRenderer () );
     renderer->SetCaption ( caption );
-    widget->Redraw ();
+    _widget->Redraw ();
 }
 
 GXVoid EMUIButton::Show ()
 {
-    widget->Show ();
+    _widget->Show ();
 }
 
 GXVoid EMUIButton::Hide ()
 {
-    widget->Hide ();
+    _widget->Hide ();
 }
 
 GXVoid EMUIButton::SetOnLeftMouseButtonCallback ( GXVoid* handler, PFNGXONMOUSEBUTTONPROC callback )
 {
-    widget->SetOnLeftMouseButtonCallback ( handler, callback );
+    _widget->SetOnLeftMouseButtonCallback ( handler, callback );
 }

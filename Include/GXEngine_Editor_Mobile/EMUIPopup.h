@@ -8,27 +8,27 @@
 
 class EMUIPopup final : public EMUI
 {
-	private:
-		GXUIPopup*		widget;
+    private:
+        GXUIPopup*      _widget;
 
-	public:
-		explicit EMUIPopup ( EMUI* parent );
-		~EMUIPopup () override;
+    public:
+        explicit EMUIPopup ( EMUI* parent );
+        ~EMUIPopup () override;
 
-		GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () const override;
 
-		GXVoid AddItem ( const GXWChar* name, GXVoid* handler, PFNGXONUIPOPUPACTIONPROC action );
+        GXVoid AddItem ( const GXWChar* name, GXVoid* handler, PFNGXONUIPOPUPACTIONPROC action );
 
-		GXVoid EnableItem ( GXUByte itemIndex );
-		GXVoid DisableItem ( GXUByte itemIndex );
+        GXVoid EnableItem ( GXUByte itemIndex );
+        GXVoid DisableItem ( GXUByte itemIndex );
 
-		GXVoid SetLocation ( GXFloat x, GXFloat y );
+        GXVoid SetLocation ( GXFloat x, GXFloat y );
 
-		GXVoid Show ( EMUI* owner );
+        GXVoid Show ( EMUI* owner );
 
-	private:
-		EMUIPopup ( const EMUIPopup & other ) = delete;
-		EMUIPopup& operator = ( const EMUIPopup & other ) = delete;
+    private:
+        EMUIPopup ( const EMUIPopup & other ) = delete;
+        EMUIPopup& operator = ( const EMUIPopup & other ) = delete;
 };
 
 

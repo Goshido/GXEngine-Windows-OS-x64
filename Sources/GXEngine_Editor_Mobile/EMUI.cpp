@@ -4,18 +4,17 @@
 #include <GXCommon/GXLogger.h>
 
 
-static EMUI* em_UIElements = nullptr;
-
+EMUI* EMUI::_uiElements = nullptr;
 
 EMUI::EMUI ( EMUI* parent ):
-    _next ( em_UIElements ),
+    _next ( _uiElements ),
     _previous ( nullptr ),
     _parent ( parent )
 {
-    if ( em_UIElements )
-        em_UIElements->_previous = this;
+    if ( _uiElements )
+        _uiElements->_previous = this;
 
-    em_UIElements = this;
+    _uiElements = this;
 }
 
 EMUI::~EMUI ()
@@ -29,7 +28,7 @@ EMUI::~EMUI ()
         return;
     }
 
-    em_UIElements = _next;
+    _uiElements = _next;
 }
 
 GXVoid EMUI::ToForeground ()

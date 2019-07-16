@@ -8,35 +8,35 @@
 
 class EMUIEditBox final : public EMUI
 {
-	private:
-		GXUIEditBox*	widget;
+    private:
+        GXUIEditBox*    _widget;
 
-	public:
-		explicit EMUIEditBox ( EMUI* parent );
-		~EMUIEditBox () override;
+    public:
+        explicit EMUIEditBox ( EMUI* parent );
+        ~EMUIEditBox () override;
 
-		GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () const override;
 
-		GXVoid Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height );
+        GXVoid Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height );
 
-		GXVoid SetText ( const GXWChar* text );
-		const GXWChar* GetText () const;
+        GXVoid SetText ( const GXWChar* text );
+        const GXWChar* GetText () const;
 
-		GXVoid SetAlignment ( eGXUITextAlignment alignment );
-		eGXUITextAlignment GetAlignment () const;
+        GXVoid SetAlignment ( eGXUITextAlignment alignment );
+        eGXUITextAlignment GetAlignment () const;
 
-		GXVoid SetFont ( const GXWChar* fontFile, GXUShort fontSize );
-		GXFont* GetFont () const;
+        GXVoid SetFont ( const GXWChar* fontFile, GXUShort fontSize );
+        GXFont* GetFont () const;
 
-		GXVoid SetValidator ( GXTextValidator& validator );
-		GXTextValidator* GetValidator () const;
+        GXVoid SetValidator ( GXTextValidator& validator );
+        GXTextValidator* GetValidator () const;
 
-		GXVoid SetOnFinishEditingCallback ( GXVoid* handler, PFNGXUIEDITBOXONFINISHEDITINGPROC callback );
+        GXVoid SetOnFinishEditingCallback ( GXVoid* handler, PFNGXUIEDITBOXONFINISHEDITINGPROC callback );
 
-	private:
-		EMUIEditBox () = delete;
-		EMUIEditBox ( const EMUIEditBox &other ) = delete;
-		EMUIEditBox& operator = ( const EMUIEditBox &other ) = delete;
+    private:
+        EMUIEditBox () = delete;
+        EMUIEditBox ( const EMUIEditBox &other ) = delete;
+        EMUIEditBox& operator = ( const EMUIEditBox &other ) = delete;
 };
 
 
