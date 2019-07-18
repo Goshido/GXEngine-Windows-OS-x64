@@ -291,7 +291,7 @@ GXTextValidator* EMUIEditBox::GetValidator () const
     return _widget->GetValidator ();
 }
 
-GXVoid EMUIEditBox::SetOnFinishEditingCallback ( GXVoid* handler, PFNGXUIEDITBOXONFINISHEDITINGPROC callback )
+GXVoid EMUIEditBox::SetOnFinishEditingCallback ( GXVoid* context, GXUIEditBoxOnCommitHandler callback )
 {
-    _widget->SetOnFinishEditingCallback ( handler, callback );
+    _widget->SetOnFinishEditingCallback ( context, callback );
 }

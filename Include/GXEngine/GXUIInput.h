@@ -8,33 +8,33 @@
 
 
 class GXUIInput;
-typedef GXVoid ( GXCALL* PFNGXUIINPUTONMOUSEMOVEPROC ) ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
-typedef GXVoid ( GXCALL* PFNGXUIINPUTONMOUSEBUTTONPROC ) ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
-typedef GXVoid ( GXCALL* PFNGXUIINPUTNONDOUBLECLICKPROC ) ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
-typedef GXVoid ( GXCALL* PFNGXUIINPUTNSCROLLPROC ) ( GXVoid* handler, GXUIInput& input, GXFloat scroll, GXFloat x, GXFloat y );
-typedef GXVoid ( GXCALL* PFNGXUIINPUTNMOUSEOVERPROC ) ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
-typedef GXVoid ( GXCALL* PFNGXUIINPUTNMOUSELEAVEPROC ) ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
-typedef GXVoid ( GXCALL* PFNGXUIINPUTNONKEYPROC ) ( GXVoid* handler, GXUIInput& input, GXInt key );
+typedef GXVoid ( GXCALL* GXUIInputOnMouseMoveHandler ) ( GXVoid* context, GXUIInput &input, GXFloat x, GXFloat y );
+typedef GXVoid ( GXCALL* GXUIInputOnMouseButtonHandler ) ( GXVoid* context, GXUIInput &input, GXFloat x, GXFloat y );
+typedef GXVoid ( GXCALL* GXUIInputOnDoubleClickHandler ) ( GXVoid* handler, GXUIInput &input, GXFloat x, GXFloat y );
+typedef GXVoid ( GXCALL* GXUIInputOnScrollHandler ) ( GXVoid* handler, GXUIInput &input, GXFloat scroll, GXFloat x, GXFloat y );
+typedef GXVoid ( GXCALL* GXUIInputOnMouseOverHandler ) ( GXVoid* handler, GXUIInput &input, GXFloat x, GXFloat y );
+typedef GXVoid ( GXCALL* GXUIInputOnMouseLeaveHandler ) ( GXVoid* handler, GXUIInput &input, GXFloat x, GXFloat y );
+typedef GXVoid ( GXCALL* GXUIInputOnKeyHandler ) ( GXVoid* handler, GXUIInput &input, GXInt key );
 
 
 class GXUIInput final : public GXWidget
 {
     private:
-        PFNGXUIINPUTONMOUSEBUTTONPROC       _onLMBDown;
-        PFNGXUIINPUTONMOUSEBUTTONPROC       _onLMBUp;
-        PFNGXUIINPUTONMOUSEBUTTONPROC       _onMMBDown;
-        PFNGXUIINPUTONMOUSEBUTTONPROC       _onMMBUp;
-        PFNGXUIINPUTONMOUSEBUTTONPROC       _onRMBDown;
-        PFNGXUIINPUTONMOUSEBUTTONPROC       _onRMBUp;
+        GXUIInputOnMouseButtonHandler       _onLMBDown;
+        GXUIInputOnMouseButtonHandler       _onLMBUp;
+        GXUIInputOnMouseButtonHandler       _onMMBDown;
+        GXUIInputOnMouseButtonHandler       _onMMBUp;
+        GXUIInputOnMouseButtonHandler       _onRMBDown;
+        GXUIInputOnMouseButtonHandler       _onRMBUp;
 
-        PFNGXUIINPUTNONDOUBLECLICKPROC      _onDoubleClick;
-        PFNGXUIINPUTNSCROLLPROC             _onMouseScroll;
-        PFNGXUIINPUTONMOUSEMOVEPROC         _onMouseMove;
-        PFNGXUIINPUTNMOUSEOVERPROC          _onMouseOver;
-        PFNGXUIINPUTNMOUSELEAVEPROC         _onMouseLeave;
+        GXUIInputOnDoubleClickHandler       _onDoubleClick;
+        GXUIInputOnScrollHandler            _onMouseScroll;
+        GXUIInputOnMouseMoveHandler         _onMouseMove;
+        GXUIInputOnMouseOverHandler         _onMouseOver;
+        GXUIInputOnMouseLeaveHandler        _onMouseLeave;
 
-        PFNGXUIINPUTNONKEYPROC              _onKeyDown;
-        PFNGXUIINPUTNONKEYPROC              _onKeyUp;
+        GXUIInputOnKeyHandler               _onKeyDown;
+        GXUIInputOnKeyHandler               _onKeyUp;
 
         GXVoid*                             _handler;
 
@@ -44,21 +44,21 @@ class GXUIInput final : public GXWidget
 
         GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
 
-        GXVoid SetOnLeftMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
-        GXVoid SetOnLeftMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
-        GXVoid SetOnMiddleMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
-        GXVoid SetOnMiddleMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
-        GXVoid SetOnRightMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
-        GXVoid SetOnRightMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback );
+        GXVoid SetOnLeftMouseButtonDownCallback ( GXUIInputOnMouseButtonHandler callback );
+        GXVoid SetOnLeftMouseButtonUpCallback ( GXUIInputOnMouseButtonHandler callback );
+        GXVoid SetOnMiddleMouseButtonDownCallback ( GXUIInputOnMouseButtonHandler callback );
+        GXVoid SetOnMiddleMouseButtonUpCallback ( GXUIInputOnMouseButtonHandler callback );
+        GXVoid SetOnRightMouseButtonDownCallback ( GXUIInputOnMouseButtonHandler callback );
+        GXVoid SetOnRightMouseButtonUpCallback ( GXUIInputOnMouseButtonHandler callback );
 
-        GXVoid SetOnDoubleClickCallback ( PFNGXUIINPUTNONDOUBLECLICKPROC callback );
-        GXVoid SetOnMouseMoveCallback ( PFNGXUIINPUTONMOUSEMOVEPROC callback );
-        GXVoid SetOnMouseScrollCallback ( PFNGXUIINPUTNSCROLLPROC callback );
-        GXVoid SetOnMouseOverCallback ( PFNGXUIINPUTNMOUSEOVERPROC callback );
-        GXVoid SetOnMouseLeaveCallback ( PFNGXUIINPUTNMOUSELEAVEPROC callback );
+        GXVoid SetOnDoubleClickCallback ( GXUIInputOnDoubleClickHandler callback );
+        GXVoid SetOnMouseMoveCallback ( GXUIInputOnMouseMoveHandler callback );
+        GXVoid SetOnMouseScrollCallback ( GXUIInputOnScrollHandler callback );
+        GXVoid SetOnMouseOverCallback ( GXUIInputOnMouseOverHandler callback );
+        GXVoid SetOnMouseLeaveCallback ( GXUIInputOnMouseLeaveHandler callback );
 
-        GXVoid SetOnKeyDownCallback ( PFNGXUIINPUTNONKEYPROC callback );
-        GXVoid SetOnKeyUpCallback ( PFNGXUIINPUTNONKEYPROC callback );
+        GXVoid SetOnKeyDownCallback ( GXUIInputOnKeyHandler callback );
+        GXVoid SetOnKeyUpCallback ( GXUIInputOnKeyHandler callback );
 
         GXVoid SetHandler ( GXVoid* handler );
 

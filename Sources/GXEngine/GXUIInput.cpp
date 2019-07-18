@@ -153,67 +153,67 @@ GXVoid GXUIInput::OnMessage ( eGXUIMessage message, const GXVoid* data )
     GXWidget::OnMessage ( message, data );
 }
 
-GXVoid GXUIInput::SetOnLeftMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback )
+GXVoid GXUIInput::SetOnLeftMouseButtonDownCallback ( GXUIInputOnMouseButtonHandler callback )
 {
     _onLMBDown = callback;
 }
 
-GXVoid GXUIInput::SetOnLeftMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback )
+GXVoid GXUIInput::SetOnLeftMouseButtonUpCallback ( GXUIInputOnMouseButtonHandler callback )
 {
     _onLMBUp = callback;
 }
 
-GXVoid GXUIInput::SetOnMiddleMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback )
+GXVoid GXUIInput::SetOnMiddleMouseButtonDownCallback ( GXUIInputOnMouseButtonHandler callback )
 {
     _onMMBDown = callback;
 }
 
-GXVoid GXUIInput::SetOnMiddleMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback )
+GXVoid GXUIInput::SetOnMiddleMouseButtonUpCallback ( GXUIInputOnMouseButtonHandler callback )
 {
     _onMMBUp = callback;
 }
 
-GXVoid GXUIInput::SetOnRightMouseButtonDownCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback )
+GXVoid GXUIInput::SetOnRightMouseButtonDownCallback ( GXUIInputOnMouseButtonHandler callback )
 {
     _onRMBDown = callback;
 }
 
-GXVoid GXUIInput::SetOnRightMouseButtonUpCallback ( PFNGXUIINPUTONMOUSEBUTTONPROC callback )
+GXVoid GXUIInput::SetOnRightMouseButtonUpCallback ( GXUIInputOnMouseButtonHandler callback )
 {
     _onRMBUp = callback;
 }
 
-GXVoid GXUIInput::SetOnDoubleClickCallback ( PFNGXUIINPUTNONDOUBLECLICKPROC callback )
+GXVoid GXUIInput::SetOnDoubleClickCallback ( GXUIInputOnDoubleClickHandler callback )
 {
     _onDoubleClick = callback;
 }
 
-GXVoid GXUIInput::SetOnMouseMoveCallback ( PFNGXUIINPUTONMOUSEMOVEPROC callback )
+GXVoid GXUIInput::SetOnMouseMoveCallback ( GXUIInputOnMouseMoveHandler callback )
 {
     _onMouseMove = callback;
 }
 
-GXVoid GXUIInput::SetOnMouseScrollCallback ( PFNGXUIINPUTNSCROLLPROC callback )
+GXVoid GXUIInput::SetOnMouseScrollCallback ( GXUIInputOnScrollHandler callback )
 {
     _onMouseScroll = callback;
 }
 
-GXVoid GXUIInput::SetOnMouseOverCallback ( PFNGXUIINPUTNMOUSEOVERPROC callback )
+GXVoid GXUIInput::SetOnMouseOverCallback ( GXUIInputOnMouseOverHandler callback )
 {
     _onMouseOver = callback;
 }
 
-GXVoid GXUIInput::SetOnMouseLeaveCallback ( PFNGXUIINPUTNMOUSELEAVEPROC callback )
+GXVoid GXUIInput::SetOnMouseLeaveCallback ( GXUIInputOnMouseLeaveHandler callback )
 {
     _onMouseLeave = callback;
 }
 
-GXVoid GXUIInput::SetOnKeyDownCallback ( PFNGXUIINPUTNONKEYPROC callback )
+GXVoid GXUIInput::SetOnKeyDownCallback ( GXUIInputOnKeyHandler callback )
 {
     _onKeyDown = callback;
 }
 
-GXVoid GXUIInput::SetOnKeyUpCallback ( PFNGXUIINPUTNONKEYPROC callback )
+GXVoid GXUIInput::SetOnKeyUpCallback ( GXUIInputOnKeyHandler callback )
 {
     _onKeyUp = callback;
 }

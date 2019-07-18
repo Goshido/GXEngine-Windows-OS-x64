@@ -27,7 +27,7 @@ class EMUIButton final : public EMUI
         GXVoid Show ();
         GXVoid Hide ();
 
-        GXVoid SetOnLeftMouseButtonCallback ( GXVoid* handler, PFNGXONMOUSEBUTTONPROC callback );
+        GXVoid SetOnLeftMouseButtonCallback ( GXVoid* context, GXUIButtonOnMouseButtonHandler callback );
 
     private:
         EMUIButton () = delete;

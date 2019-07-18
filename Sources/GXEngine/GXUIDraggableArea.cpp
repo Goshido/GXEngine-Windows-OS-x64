@@ -562,7 +562,7 @@ GXFloat GXUIDragableArea::GetBorderThickness () const
     return _borderThickness;
 }
 
-GXVoid GXUIDragableArea::SetOnResizeCallback ( GXVoid* context, PFNGXUIDRAGABLEAREAONRESIZEPROC callback )
+GXVoid GXUIDragableArea::SetOnResizeCallback ( GXVoid* context, GXUIDraggableAreaOnResizeHandler callback )
 {
     _context = context;
     _onResize = callback;

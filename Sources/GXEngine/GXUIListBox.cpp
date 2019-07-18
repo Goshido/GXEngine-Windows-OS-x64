@@ -24,7 +24,7 @@ struct GXUIListBoxRawItem final
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXUIListBox::GXUIListBox ( GXWidget* parent, PFNGXUILISTBOXITEMDESTRUCTORPROC itemDestructor ):
+GXUIListBox::GXUIListBox ( GXWidget* parent, GXUIListBoxItemDestructorHandler itemDestructor ):
     GXWidget ( parent ),
     _itemHead ( nullptr ),
     _itemTail ( nullptr ),
@@ -405,13 +405,13 @@ GXVoid GXUIListBox::Redraw ()
     GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::Redraw, 0, 0 );
 }
 
-GXVoid GXUIListBox::SetOnItemSelectedCallback ( GXVoid* context, PFNGXUILISTBOXONITEMSELECTEDPROC callback )
+GXVoid GXUIListBox::SetOnItemSelectedCallback ( GXVoid* context, GXUIListBoxItemOnItemSelectHandler callback )
 {
     _itemSelectedContext = context;
     _onItemSelected = callback;
 }
 
-GXVoid GXUIListBox::SetOnItemDoubleClickedCallback ( GXVoid* context, PFNGXUILISTBOXONITEMDOUBLECLICKEDPROC callback )
+GXVoid GXUIListBox::SetOnItemDoubleClickedCallback ( GXVoid* context, GXUIListBoxItemOnItemDoubleClickHandler callback )
 {
     _itemDoubleClickedContext = context;
     _onItemDoubleClicked = callback;

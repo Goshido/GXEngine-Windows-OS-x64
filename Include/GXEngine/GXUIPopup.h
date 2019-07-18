@@ -12,7 +12,7 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-typedef GXVoid ( GXCALL* PFNGXONUIPOPUPACTIONPROC ) ( GXVoid* handler );
+typedef GXVoid ( GXCALL* GXUIPopupActionHandler ) ( GXVoid* context );
 
 class GXUIPopup final : public GXWidget
 {
@@ -28,7 +28,7 @@ class GXUIPopup final : public GXWidget
 
         GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
 
-        GXVoid AddItem ( GXVoid* handler, PFNGXONUIPOPUPACTIONPROC action );
+        GXVoid AddItem ( GXVoid* context, GXUIPopupActionHandler action );
         GXUByte GetTotalItems () const;
 
         GXVoid EnableItem ( GXUByte itemIndex );

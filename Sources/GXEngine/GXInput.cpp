@@ -66,8 +66,8 @@ GXInputMouseFlags           GXInput::_mouseflags;
 
 eGXInputDevice              GXInput::_activeInputDevice = eGXInputDevice::Keyboard;
 
-PFNXINPUTGETSTATEPROC       GXInput::_xInputGetState = nullptr;
-PFNXINPUTENABLEPROC         GXInput::_xInputEnable = nullptr;
+XIXInputGetState            GXInput::_xInputGetState = nullptr;
+XIXInputEnable              GXInput::_xInputEnable = nullptr;
 
 GXInput*                    GXInput::_instance = nullptr;
 
@@ -615,7 +615,7 @@ GXBool GXCALL GXInput::InitXInputLibrary ()
         return GX_FALSE;
     }
 
-    PFNGXXINPUTINITPROC GXXInputInit = reinterpret_cast<PFNGXXINPUTINITPROC> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXXInputInit" ) ) );
+    GXXInputInitFunc GXXInputInit = reinterpret_cast<GXXInputInitFunc> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXXInputInit" ) ) );
 
     if ( !GXXInputInit )
     {

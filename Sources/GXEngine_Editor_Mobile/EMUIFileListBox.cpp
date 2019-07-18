@@ -344,14 +344,14 @@ const GXVoid* EMUIFileListBox::GetSelectedItem () const
     return _widget->GetSelectedItem ();
 }
 
-GXVoid EMUIFileListBox::SetOnItemSelectedCallback ( GXVoid* handler, PFNGXUILISTBOXONITEMSELECTEDPROC callback )
+GXVoid EMUIFileListBox::SetOnItemSelectedCallback ( GXVoid* context, GXUIListBoxItemOnItemSelectHandler callback )
 {
-    _widget->SetOnItemSelectedCallback ( handler, callback );
+    _widget->SetOnItemSelectedCallback ( context, callback );
 }
 
-GXVoid EMUIFileListBox::SetOnItemDoubleClickedCallbak ( GXVoid* handler, PFNGXUILISTBOXONITEMDOUBLECLICKEDPROC callback )
+GXVoid EMUIFileListBox::SetOnItemDoubleClickedCallbak ( GXVoid* context, GXUIListBoxItemOnItemDoubleClickHandler callback )
 {
-    _widget->SetOnItemDoubleClickedCallback ( handler, callback );
+    _widget->SetOnItemDoubleClickedCallback ( context, callback );
 }
 
 GXVoid GXCALL EMUIFileListBox::ItemDestructor ( GXVoid* itemData )

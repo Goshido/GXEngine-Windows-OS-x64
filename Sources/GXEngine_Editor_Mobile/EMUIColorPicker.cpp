@@ -783,13 +783,13 @@ GXWidget* EMUIColorPicker::GetWidget () const
     return _mainPanel->GetWidget ();
 }
 
-GXVoid EMUIColorPicker::PickColor ( GXVoid* handlerObject, PFNEMONHSVACOLORPROC callback, const GXColorHSV &oldColorHSVAValue )
+GXVoid EMUIColorPicker::PickColor ( GXVoid* context, EMColorPickerOnHSVAColorHandler callback, const GXColorHSV &oldColorHSVAValue )
 {
     EMColorRenderer* renderer = static_cast<EMColorRenderer*> ( _oldColor->GetRenderer () );
     renderer->SetColor ( oldColorHSVAValue );
     _oldColor->Refresh ();
 
-    _handler = handlerObject;
+    _context = context;
     _onHSVColor = callback;
     _onRGBColor = nullptr;
     _onRGBUByteColor = nullptr;
@@ -797,14 +797,14 @@ GXVoid EMUIColorPicker::PickColor ( GXVoid* handlerObject, PFNEMONHSVACOLORPROC 
     _mainPanel->Show ();
 }
 
-GXVoid EMUIColorPicker::PickColor ( GXVoid* handlerObject, PFNEMONRGBACOLORPROC callback, const GXColorRGB &oldColorValue )
+GXVoid EMUIColorPicker::PickColor ( GXVoid* context, EMColorPickerOnRGBAColorHandler callback, const GXColorRGB &oldColorValue )
 {
     GXColorHSV oldColorHSV ( oldColorValue );
     EMColorRenderer* renderer = static_cast<EMColorRenderer*> ( _oldColor->GetRenderer () );
     renderer->SetColor ( oldColorHSV );
     _oldColor->Refresh ();
 
-    _handler = handlerObject;
+    _context = context;
     _onRGBColor = callback;
     _onHSVColor = nullptr;
     _onRGBUByteColor = nullptr;
@@ -812,7 +812,7 @@ GXVoid EMUIColorPicker::PickColor ( GXVoid* handlerObject, PFNEMONRGBACOLORPROC 
     _mainPanel->Show ();
 }
 
-GXVoid EMUIColorPicker::PickColor ( GXVoid* handlerObject, PFNEMONRGBAUBYTECOLORPROC callback, GXUByte oldRed, GXUByte oldGreen, GXUByte oldBlue, GXUByte oldAlpha )
+GXVoid EMUIColorPicker::PickColor ( GXVoid* context, EMColorPickerOnHSVAColorUByteHandler callback, GXUByte oldRed, GXUByte oldGreen, GXUByte oldBlue, GXUByte oldAlpha )
 {
     GXColorHSV oldHSVA;
     GXColorRGB oldRGBA ( oldRed, oldGreen, oldBlue, oldAlpha );
@@ -821,7 +821,7 @@ GXVoid EMUIColorPicker::PickColor ( GXVoid* handlerObject, PFNEMONRGBAUBYTECOLOR
     renderer->SetColor ( oldHSVA );
     _oldColor->Refresh ();
 
-    _handler = handlerObject;
+    _context = context;
     _onRGBUByteColor = callback;
     _onRGBColor = nullptr;
     _onHSVColor = nullptr;
@@ -835,7 +835,7 @@ EMUIColorPicker::EMUIColorPicker ():
     _onHSVColor ( nullptr ),
     _onRGBColor ( nullptr ),
     _onRGBUByteColor ( nullptr ),
-    _handler ( nullptr ),
+    _context ( nullptr ),
     _buffer ( static_cast<GXWChar*> ( malloc ( MAX_BUFFER_SYMBOLS * sizeof ( GXWChar ) ) ) )
 {
     _caption = new EMUIStaticText ( _mainPanel );
@@ -1160,13 +1160,13 @@ GXVoid GXCALL EMUIColorPicker::OnButton ( GXVoid* handler, GXUIButton& button, G
         {
             EMColorRenderer* currentColorRenderer = static_cast<EMColorRenderer*> ( colorPicker->_currentColor->GetRenderer () );
             const GXColorHSV& currentColor = currentColorRenderer->GetColor ();
-            colorPicker->_onHSVColor ( colorPicker->_handler, currentColor );
+            colorPicker->_onHSVColor ( colorPicker->_context, currentColor );
         }
         else if ( colorPicker->_onRGBColor )
         {
             EMColorRenderer* currentColorRenderer = static_cast<EMColorRenderer*> ( colorPicker->_currentColor->GetRenderer () );
             const GXColorHSV& currentColor = currentColorRenderer->GetColor ();
-            colorPicker->_onRGBColor ( colorPicker->_handler, GXColorRGB ( currentColor ) );
+            colorPicker->_onRGBColor ( colorPicker->_context, GXColorRGB ( currentColor ) );
         }
         else
         {

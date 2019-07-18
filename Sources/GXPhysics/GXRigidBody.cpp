@@ -33,8 +33,8 @@
 
 GXRigidBody::GXRigidBody ():
     _shape ( nullptr ),
-    _handler ( nullptr ),
-    _OnTransformChanged ( nullptr )
+    _onTransformContext ( nullptr ),
+    _onTransformChanged ( nullptr )
 {
     SetMass ( DEFAULT_MASS );
 
@@ -67,10 +67,10 @@ GXRigidBody::~GXRigidBody ()
     GXSafeDelete ( _shape );
 }
 
-GXVoid GXRigidBody::SetOnTransformChangedCallback ( GXVoid* handlerObject, PFNRIGIDBODYONTRANSFORMCHANGED callback )
+GXVoid GXRigidBody::SetOnTransformChangedCallback ( GXVoid* context, GXRigidBodyOnTransformHandler callback )
 {
-    _handler = handlerObject;
-    _OnTransformChanged = callback;
+    _onTransformContext = context;
+    _onTransformChanged = callback;
 }
 
 GXVoid GXRigidBody::CalculateCachedData ()
@@ -78,8 +78,8 @@ GXVoid GXRigidBody::CalculateCachedData ()
     _rotation.Normalize ();
     _transform.FromFast ( _rotation, _location );
 
-    if ( _OnTransformChanged )
-        _OnTransformChanged ( _handler, *this );
+    if ( _onTransformChanged )
+        _onTransformChanged ( _onTransformContext, *this );
 
     GXMat3 alpha ( _transform );
     _inverseTransform.Transponse ( alpha );
@@ -113,8 +113,8 @@ GXVoid GXRigidBody::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
     _location.Init ( x, y, z );
     _transform.SetW ( _location );
 
-    if ( _OnTransformChanged )
-        _OnTransformChanged ( _handler, *this );
+    if ( _onTransformChanged )
+        _onTransformChanged ( _onTransformContext, *this );
 
     if ( !_shape ) return;
 
@@ -126,8 +126,8 @@ GXVoid GXRigidBody::SetLocation ( const GXVec3 &newLocation )
     _location = newLocation;
     _transform.SetW ( _location );
 
-    if ( _OnTransformChanged )
-        _OnTransformChanged ( _handler, *this );
+    if ( _onTransformChanged )
+        _onTransformChanged ( _onTransformContext, *this );
 
     if ( !_shape ) return;
 
@@ -144,8 +144,8 @@ GXVoid GXRigidBody::SetRotaton ( const GXQuat &newRotation )
     _rotation = newRotation;
     _transform.From ( _rotation, _location );
 
-    if ( _OnTransformChanged )
-        _OnTransformChanged ( _handler, *this );
+    if ( _onTransformChanged )
+        _onTransformChanged ( _onTransformContext, *this );
 
     if ( !_shape ) return;
 

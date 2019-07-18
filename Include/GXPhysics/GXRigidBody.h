@@ -8,7 +8,7 @@
 
 
 class GXRigidBody;
-typedef GXVoid ( GXCALL* PFNRIGIDBODYONTRANSFORMCHANGED ) ( GXVoid* handler, const GXRigidBody &rigidBody );
+typedef GXVoid ( GXCALL* GXRigidBodyOnTransformHandler ) ( GXVoid* context, const GXRigidBody &rigidBody );
 
 class GXShape;
 class GXRigidBody final
@@ -16,8 +16,8 @@ class GXRigidBody final
     private:
         GXShape*                            _shape;
 
-        GXVoid*                             _handler;
-        PFNRIGIDBODYONTRANSFORMCHANGED      _OnTransformChanged;
+        GXVoid*                             _onTransformContext;
+        GXRigidBodyOnTransformHandler       _onTransformChanged;
 
         GXFloat                             _mass;
         GXFloat                             _inverseMass;
@@ -53,7 +53,7 @@ class GXRigidBody final
         GXRigidBody ();
         ~GXRigidBody ();
 
-        GXVoid SetOnTransformChangedCallback ( GXVoid* handlerObject, PFNRIGIDBODYONTRANSFORMCHANGED callback );
+        GXVoid SetOnTransformChangedCallback ( GXVoid* context, GXRigidBodyOnTransformHandler callback );
 
         GXVoid CalculateCachedData ();
         GXVoid ClearAccumulators ();

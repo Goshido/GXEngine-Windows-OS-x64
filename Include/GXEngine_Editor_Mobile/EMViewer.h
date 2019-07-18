@@ -7,43 +7,43 @@
 #include <GXEngine/GXUIInput.h>
 
 
-typedef GXVoid ( GXCALL* PFNEMONVIEWERTRANSFORMCHANGEDPROC ) ( GXVoid* handler );
+typedef GXVoid ( GXCALL* EMViewerOnTransformHandler ) ( GXVoid* context );
 
 
 class EMViewer final
 {
     private:
-        GXUIInput*                              _inputWidget;
+        GXUIInput*                      _inputWidget;
 
-        GXVoid*                                 _handler;
-        PFNEMONVIEWERTRANSFORMCHANGEDPROC       _onViewerTransformChanged;
+        GXVoid*                         _transformChangedContext;
+        EMViewerOnTransformHandler      _onViewerTransformChanged;
 
-        GXFloat                                 _pitch;
-        GXFloat                                 _yaw;
-        GXFloat                                 _distance;
-        GXVec3                                  _origin;
+        GXFloat                         _pitch;
+        GXFloat                         _yaw;
+        GXFloat                         _distance;
+        GXVec3                          _origin;
 
-        EMActor*                                _target;
+        EMActor*                        _target;
 
-        GXFloat                                 _rotationSpeed;
-        GXFloat                                 _panSpeed;
-        GXFloat                                 _zoomSpeed;
+        GXFloat                         _rotationSpeed;
+        GXFloat                         _panSpeed;
+        GXFloat                         _zoomSpeed;
 
-        GXCameraPerspective                     _camera;
+        GXCameraPerspective             _camera;
 
-        GXBool                                  _isAltPressed;
-        GXBool                                  _isMMBPressed;
+        GXBool                          _isAltPressed;
+        GXBool                          _isMMBPressed;
 
-        GXVec2                                  _mousePosition;
+        GXVec2                          _mousePosition;
 
-        static EMViewer*                        _instance;
+        static EMViewer*                _instance;
 
     public:
         ~EMViewer ();
 
         GXVoid SetInputWidget ( GXUIInput &inputWidget );
         GXVoid SetTarget ( EMActor* actor );
-        GXVoid SetOnViewerTransformChangedCallback ( GXVoid* handler, PFNEMONVIEWERTRANSFORMCHANGEDPROC callback );
+        GXVoid SetOnViewerTransformChangedCallback ( GXVoid* context, EMViewerOnTransformHandler callback );
         GXCamera& GetCamera ();
         GXVoid UpdateMouse ( const GXVec2 &position );
 

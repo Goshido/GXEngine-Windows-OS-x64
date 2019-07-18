@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_UI_BUTTON
 #define GX_UI_BUTTON
@@ -9,18 +9,18 @@
 
 
 class GXUIButton;
-typedef GXVoid ( GXCALL* PFNGXONMOUSEBUTTONPROC ) ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state );
+typedef GXVoid ( GXCALL* GXUIButtonOnMouseButtonHandler ) ( GXVoid* context, GXUIButton &button, GXFloat x, GXFloat y, eGXMouseButtonState state );
 
 
 class GXUIButton final : public GXWidget
 {
     private:
-        PFNGXONMOUSEBUTTONPROC      _onLeftMouseButton;
-        GXVoid*                     _context;
+        GXUIButtonOnMouseButtonHandler      _onLeftMouseButton;
+        GXVoid*                             _context;
 
-        GXBool                      _isPressed;
-        GXBool                      _isHighlighted;
-        GXBool                      _isDisabled;
+        GXBool                              _isPressed;
+        GXBool                              _isHighlighted;
+        GXBool                              _isDisabled;
 
     public:
         explicit GXUIButton ( GXWidget* parent );
@@ -28,7 +28,7 @@ class GXUIButton final : public GXWidget
 
         GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
 
-        GXVoid SetOnLeftMouseButtonCallback ( GXVoid* context, PFNGXONMOUSEBUTTONPROC callback );
+        GXVoid SetOnLeftMouseButtonCallback ( GXVoid* context, GXUIButtonOnMouseButtonHandler callback );
 
         GXVoid Enable ();
         GXVoid Disable ();

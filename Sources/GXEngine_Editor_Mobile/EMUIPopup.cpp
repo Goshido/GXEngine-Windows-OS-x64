@@ -238,11 +238,11 @@ GXWidget* EMUIPopup::GetWidget () const
     return _widget;
 }
 
-GXVoid EMUIPopup::AddItem ( const GXWChar* name, GXVoid* handler, PFNGXONUIPOPUPACTIONPROC action )
+GXVoid EMUIPopup::AddItem ( const GXWChar* name, GXVoid* context, GXUIPopupActionHandler action )
 {
     EMUIPopupRenderer* renderer = static_cast<EMUIPopupRenderer*> ( _widget->GetRenderer () );
     renderer->AddItem ( name );
-    _widget->AddItem ( handler, action );
+    _widget->AddItem ( context, action );
 }
 
 GXVoid EMUIPopup::EnableItem ( GXUByte itemIndex )

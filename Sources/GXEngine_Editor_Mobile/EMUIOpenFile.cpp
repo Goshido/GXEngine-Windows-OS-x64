@@ -93,7 +93,7 @@ GXWidget* EMUIOpenFile::GetWidget () const
     return _mainPanel->GetWidget ();
 }
 
-GXVoid EMUIOpenFile::Browse ( PFNEMONBROWSEFILEPROC callback )
+GXVoid EMUIOpenFile::Browse ( EMUIOpenFileBrowseFileHandler callback )
 {
     if ( !callback ) return;
 

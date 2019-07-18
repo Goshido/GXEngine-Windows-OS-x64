@@ -183,7 +183,7 @@ GXVoid EMUIDraggableArea::SetMinimumHeight ( GXFloat height )
     _widget->SetMinimumHeight ( height );
 }
 
-GXVoid EMUIDraggableArea::SetOnResizeCallback ( GXVoid* handler, PFNGXUIDRAGABLEAREAONRESIZEPROC callback )
+GXVoid EMUIDraggableArea::SetOnResizeCallback ( GXVoid* context, GXUIDraggableAreaOnResizeHandler callback )
 {
-    _widget->SetOnResizeCallback ( handler, callback );
+    _widget->SetOnResizeCallback ( context, callback );
 }

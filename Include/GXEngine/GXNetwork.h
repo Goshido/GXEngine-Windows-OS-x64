@@ -14,15 +14,15 @@ GX_DISABLE_COMMON_WARNINGS
 GX_RESTORE_WARNING_STATE
 
 
-#define GX_MAX_NETWORK_CLIENTS      64u
-#define GX_SOCKET_BUFFER_SIZE       4194304u    // 4 Mb
+#define GX_NETWORK_MAX_NETWORK_CLIENTS      64u
+#define GX_NETWORK_SOCKET_BUFFER_SIZE       4194304u    // 4 Mb
 
 
-typedef GXVoid ( GXCALL* PFNGXONSERVERPMESSAGETCPPROC ) ( GXUInt clientID, GXVoid* data, GXUInt size );
-typedef GXVoid ( GXCALL* PFNGXONSERVERPMESSAGEUDPPROC ) ( const sockaddr_in &fromClient, GXVoid* data, GXUInt size );
-typedef GXVoid ( GXCALL* PFNGXONSERVERNEWTCPCONNECTIONPROC ) ( GXUInt clientID );
-typedef GXVoid ( GXCALL* PFNGXONSERVERDISCONNECTPROC ) ( GXUInt clientID );
-typedef GXVoid ( GXCALL* PFNGXONCLIENTMESSAGEPROC ) ( const GXVoid* data, GXUInt size );
+typedef GXVoid ( GXCALL* GXNetworkOnMessageTCPHandler ) ( GXUInt clientID, GXVoid* data, GXUInt size );
+typedef GXVoid ( GXCALL* GXNetworkOnMessageUDPHandler ) ( const sockaddr_in &fromClient, GXVoid* data, GXUInt size );
+typedef GXVoid ( GXCALL* GXNetworkOnNewTCPConectionHandler ) ( GXUInt clientID );
+typedef GXVoid ( GXCALL* GXNetworkOnServerDisconnectedHandler ) ( GXUInt clientID );
+typedef GXVoid ( GXCALL* GXNetworkOnClientMessageHandler ) ( const GXVoid* data, GXUInt size );
 
 
 class GXNetConnectionTCP final
@@ -50,26 +50,26 @@ class GXNetConnectionTCP final
 class GXNetServer final
 {
     private:
-        GXThread*                                   _threadTCP;
-        GXThread*                                   _threadUDP;
+        GXThread*                                       _threadTCP;
+        GXThread*                                       _threadUDP;
 
-        static SOCKET                               _listenerTCP;
-        static SOCKET                               _listenerUDP;
+        static SOCKET                                   _listenerTCP;
+        static SOCKET                                   _listenerUDP;
 
-        static GXUInt                               _numClientsTCP;
+        static GXUInt                                   _numClientsTCP;
 
-        static GXNetConnectionTCP                   _clientsTCP[ GX_MAX_NETWORK_CLIENTS ];
+        static GXNetConnectionTCP                       _clientsTCP[ GX_NETWORK_MAX_NETWORK_CLIENTS ];
 
-        static PFNGXONSERVERNEWTCPCONNECTIONPROC    _onNewConnectionTCP;
-        static PFNGXONSERVERDISCONNECTPROC          _onDisconnect;
+        static GXNetworkOnNewTCPConectionHandler        _onNewConnectionTCP;
+        static GXNetworkOnServerDisconnectedHandler     _onDisconnect;
 
-        static PFNGXONSERVERPMESSAGETCPPROC         _onMessageTCP;
-        static PFNGXONSERVERPMESSAGEUDPPROC         _onMessageUDP;
+        static GXNetworkOnMessageTCPHandler             _onMessageTCP;
+        static GXNetworkOnMessageUDPHandler             _onMessageUDP;
 
-        static GXUByte                              _bufferTCP[ GX_SOCKET_BUFFER_SIZE ];
-        static GXUByte                              _bufferUDP[ GX_SOCKET_BUFFER_SIZE ];
+        static GXUByte                                  _bufferTCP[ GX_NETWORK_SOCKET_BUFFER_SIZE ];
+        static GXUByte                                  _bufferUDP[ GX_NETWORK_SOCKET_BUFFER_SIZE ];
 
-        static GXNetServer*                         _instance;
+        static GXNetServer*                             _instance;
 
     public:
         static GXNetServer& GXCALL GetInstance ();
@@ -90,11 +90,11 @@ class GXNetServer final
         GXBool IsDeployedTCP ();
         GXBool IsDeployedUDP ();
 
-        GXVoid SetOnNewTCPConnection ( PFNGXONSERVERNEWTCPCONNECTIONPROC callback );
-        GXVoid SetOnDisconnectFunc ( PFNGXONSERVERDISCONNECTPROC callback );
+        GXVoid SetOnNewTCPConnection ( GXNetworkOnNewTCPConectionHandler callback );
+        GXVoid SetOnDisconnectFunc ( GXNetworkOnServerDisconnectedHandler callback );
 
-        GXVoid SetOnMessageFuncTCP ( PFNGXONSERVERPMESSAGETCPPROC callback );
-        GXVoid SetOnMessageFuncUDP ( PFNGXONSERVERPMESSAGEUDPPROC callback );
+        GXVoid SetOnMessageFuncTCP ( GXNetworkOnMessageTCPHandler callback );
+        GXVoid SetOnMessageFuncUDP ( GXNetworkOnMessageUDPHandler callback );
 
     private:
         GXNetServer ();
@@ -115,21 +115,21 @@ class GXNetServer final
 class GXNetClient final
 {
     private:
-        sockaddr_in                         _serverAddressUDP;
+        sockaddr_in                                 _serverAddressUDP;
 
-        static SOCKET                       _socketTCP;
-        static SOCKET                       _socketUDP;
+        static SOCKET                               _socketTCP;
+        static SOCKET                               _socketUDP;
 
-        static GXThread*                    _threadTCP;
-        static GXThread*                    _threadUDP;
+        static GXThread*                            _threadTCP;
+        static GXThread*                            _threadUDP;
 
-        static PFNGXONCLIENTMESSAGEPROC     _onMessageTCP;
-        static PFNGXONCLIENTMESSAGEPROC     _onMessageUDP;
+        static GXNetworkOnClientMessageHandler      _onMessageTCP;
+        static GXNetworkOnClientMessageHandler      _onMessageUDP;
 
-        static GXUByte                      _bufferTCP[ GX_SOCKET_BUFFER_SIZE ];
-        static GXUByte                      _bufferUDP[ GX_SOCKET_BUFFER_SIZE ];
+        static GXUByte                              _bufferTCP[ GX_NETWORK_SOCKET_BUFFER_SIZE ];
+        static GXUByte                              _bufferUDP[ GX_NETWORK_SOCKET_BUFFER_SIZE ];
 
-        static GXNetClient*                 _instance;
+        static GXNetClient*                         _instance;
 
     public:
         static GXNetClient& GXCALL GetInstance ();
@@ -147,8 +147,8 @@ class GXNetClient final
         GXBool IsConnectedTCP ();
         GXBool IsDeployedUDP ();
 
-        GXVoid SetOnMessageTCPFunc ( PFNGXONCLIENTMESSAGEPROC onMessageFunc );
-        GXVoid SetOnMessageUDPFunc ( PFNGXONCLIENTMESSAGEPROC onMessageFunc );
+        GXVoid SetOnMessageTCPFunc ( GXNetworkOnClientMessageHandler callback );
+        GXVoid SetOnMessageUDPFunc ( GXNetworkOnClientMessageHandler callback );
 
     private:
         GXNetClient ();

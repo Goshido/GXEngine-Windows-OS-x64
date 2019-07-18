@@ -41,9 +41,9 @@ typedef void ( AL_APIENTRY* PFNALSOURCESTOP ) ( ALuint sid );
 typedef void ( AL_APIENTRY* PFNALSOURCEPAUSE ) ( ALuint sid );
 typedef void ( AL_APIENTRY* PFNALSOURCEREWIND ) ( ALuint sid );
 
-typedef GXVoid ( GXCALL* PFNGXOPENALDESTROY ) ();
-typedef ALboolean ( GXCALL* PFNGXOPENALCHECKCONTEXTERROR ) ();
-typedef ALboolean ( GXCALL* PFNGXOPENALCHECKERROR ) ();
+typedef GXVoid ( GXCALL* GXOpenALDestroyFunc ) ();
+typedef ALboolean ( GXCALL* GXOpenALCheckContextErrorFunc ) ();
+typedef ALboolean ( GXCALL* GXOpenALCheckErrorFunc ) ();
 
 
 struct GXOpenALFunctions
@@ -74,9 +74,9 @@ struct GXOpenALFunctions
     PFNALSOURCEPAUSE*                   alSourcePause;
     PFNALSOURCEREWIND*                  alSourceRewind;
 
-    PFNGXOPENALDESTROY*                 GXOpenALDestroy;
-    PFNGXOPENALCHECKCONTEXTERROR*       GXOpenALCheckContextError;
-    PFNGXOPENALCHECKERROR*              GXOpenALCheckError;
+    GXOpenALDestroyFunc*                GXOpenALDestroy;
+    GXOpenALCheckContextErrorFunc*      GXOpenALCheckContextError;
+    GXOpenALCheckErrorFunc*             GXOpenALCheckError;
 };
 
 

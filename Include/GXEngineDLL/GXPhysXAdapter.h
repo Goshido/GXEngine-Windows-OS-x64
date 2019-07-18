@@ -1,4 +1,4 @@
-//version 1.12
+//version 1.13
 
 #ifndef GX_PHYSX
 #define GX_PHYSX
@@ -15,42 +15,40 @@ GX_RESTORE_WARNING_STATE
 
 #define GX_PHYSICS_GRAVITY_FACTOR       -9.81f
 
+//---------------------------------------------------------------------------------------------------------------------
 
-typedef GXVoid ( GXCALL* PLONPHYSXPROC ) ( GXFloat deltatime );
-
+typedef GXVoid ( GXCALL* GXPhysXOnPhysics ) ( GXFloat deltatime );
 
 using namespace physx;
-
-//----------------------------------------------------------------------
 
 class GXPhysXActorState
 {
     public:
-        virtual ~GXPhysXActorState (){ /*PURE VIRTUAL*/ };
+        virtual ~GXPhysXActorState () { /*PURE VIRTUAL*/ };
 
         virtual GXVoid SetPivotOrigin ( const GXVec3 &location, const GXQuat &rotation ) = 0;
         virtual GXVoid SetShapeOrigin ( GXUShort shapeID, const GXVec3 &location, const GXQuat &rotation ) = 0;
 };
 
-//----------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
-#define GX_PHYSICS_COLLUSION_GROUP_DEFAULT		0x00000000
-#define GX_PHYSICS_COLLUSION_GROUP_DRIVABLE		0x00000001
-#define GX_PHYSICS_COLLUSION_GROUP_WHEEL		0x00000002
-#define GX_PHYSICS_COLLUSION_GROUP_CHASSIS		0x00000004
-#define GX_PHYSICS_COLLUSION_GROUP_OBSTACLE		0x00000008
+#define GX_PHYSICS_COLLUSION_GROUP_DEFAULT          0x00000000
+#define GX_PHYSICS_COLLUSION_GROUP_DRIVABLE         0x00000001
+#define GX_PHYSICS_COLLUSION_GROUP_WHEEL            0x00000002
+#define GX_PHYSICS_COLLUSION_GROUP_CHASSIS          0x00000004
+#define GX_PHYSICS_COLLUSION_GROUP_OBSTACLE         0x00000008
 
-#define GX_PHYSICS_RAYCAST_DRIVABLE_SURFACE		0xFFFF0000
-#define GX_PHYSICS_RAYCAST_UNDRIVABLE_SURFACE	0x0000FFFF
+#define GX_PHYSICS_RAYCAST_DRIVABLE_SURFACE         0xFFFF0000
+#define GX_PHYSICS_RAYCAST_UNDRIVABLE_SURFACE       0x0000FFFF
 
-#define GX_PHYSICS_DIFFERENTIAL_LS_4WD			0	//limited slip differential for car with 4 driven wheels
-#define GX_PHYSICS_DIFFERENTIAL_LS_FRONTWD		1	//limited slip differential for car with front-wheel drive
-#define GX_PHYSICS_DIFFERENTIAL_LS_REARWD		2	//limited slip differential for car with rear-wheel drive
-#define GX_PHYSICS_DIFFERENTIAL_OPEN_4WD		3	//open differential for car with 4 driven wheels 
-#define GX_PHYSICS_DIFFERENTIAL_OPEN_FRONTWD	4	//open differential for car with front-wheel drive
-#define GX_PHYSICS_DIFFERENTIAL_OPEN_REARWD		5	//open differentila for car with rear-wheel drive
+#define GX_PHYSICS_DIFFERENTIAL_LS_4WD              0    // limited slip differential for car with 4 driven wheels
+#define GX_PHYSICS_DIFFERENTIAL_LS_FRONTWD          1    // limited slip differential for car with front-wheel drive
+#define GX_PHYSICS_DIFFERENTIAL_LS_REARWD           2    // limited slip differential for car with rear-wheel drive
+#define GX_PHYSICS_DIFFERENTIAL_OPEN_4WD            3    // open differential for car with 4 driven wheels 
+#define GX_PHYSICS_DIFFERENTIAL_OPEN_FRONTWD        4    // open differential for car with front-wheel drive
+#define GX_PHYSICS_DIFFERENTIAL_OPEN_REARWD         5    // open differentila for car with rear-wheel drive
 
-//----------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 #define GX_PHYSICS_VEHICLE_ACCELERATE   0
 #define GX_PHYSICS_VEHICLE_BRAKE        1
@@ -120,7 +118,7 @@ class GXPhysXAdapter
         virtual GXBool IsSumulating () = 0;
 
         virtual GXBool SetLinearVelocity ( PxRigidDynamic* actor, PxVec3 &vel ) = 0;
-        virtual GXVoid SetOnPhysicsFunc ( PLONPHYSXPROC func ) = 0;
+        virtual GXVoid SetOnPhysicsFunc ( GXPhysXOnPhysics func ) = 0;
 
         virtual PxRigidDynamic* CreateRigidDynamic ( GXVoid* address, PxTransform &location ) = 0;
         virtual PxRigidStatic* CreateRigidStatic ( GXVoid* address, PxTransform &location ) = 0;

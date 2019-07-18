@@ -8,7 +8,7 @@
 
 
 class GXUIDragableArea;
-typedef GXVoid ( GXCALL* PFNGXUIDRAGABLEAREAONRESIZEPROC ) ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
+typedef GXVoid ( GXCALL* GXUIDraggableAreaOnResizeHandler ) ( GXVoid* context, GXUIDragableArea& area, GXFloat width, GXFloat height );
 
 enum eGXDraggableAreaResizeMode : GXUByte
 {
@@ -41,7 +41,7 @@ class GXUIDragableArea final : public GXWidget
 
         GXVec2                              _lastMousePosition;
         eGXDraggableAreaResizeMode          _resizeMode;
-        PFNGXUIDRAGABLEAREAONRESIZEPROC     _onResize;
+        GXUIDraggableAreaOnResizeHandler    _onResize;
         GXVoid*                             _context;
 
         GXAABB                              _headerArea;
@@ -77,7 +77,7 @@ class GXUIDragableArea final : public GXWidget
         GXVoid SetBorderThickness ( GXFloat thickness );
         GXFloat GetBorderThickness () const;
 
-        GXVoid SetOnResizeCallback ( GXVoid* context, PFNGXUIDRAGABLEAREAONRESIZEPROC callback );
+        GXVoid SetOnResizeCallback ( GXVoid* context, GXUIDraggableAreaOnResizeHandler callback );
 
     private:
         eGXDraggableAreaResizeMode GetResizeMode ( const GXVec2 &mousePosition ) const;

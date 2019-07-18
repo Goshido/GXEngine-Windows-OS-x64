@@ -8,9 +8,9 @@
 
 
 class GXUIListBox;
-typedef GXVoid ( GXCALL* PFNGXUILISTBOXITEMDESTRUCTORPROC ) ( GXVoid* itemData );
-typedef GXVoid ( GXCALL* PFNGXUILISTBOXONITEMSELECTEDPROC ) ( GXVoid* handler, GXUIListBox& listBox, const GXVoid* item );
-typedef GXVoid ( GXCALL* PFNGXUILISTBOXONITEMDOUBLECLICKEDPROC ) ( GXVoid* handler, GXUIListBox& listBox, const GXVoid* item );
+typedef GXVoid ( GXCALL* GXUIListBoxItemDestructorHandler ) ( GXVoid* itemData );
+typedef GXVoid ( GXCALL* GXUIListBoxItemOnItemSelectHandler ) ( GXVoid* context, GXUIListBox& listBox, const GXVoid* item );
+typedef GXVoid ( GXCALL* GXUIListBoxItemOnItemDoubleClickHandler ) ( GXVoid* handler, GXUIListBox& listBox, const GXVoid* item );
 
 struct GXUIListBoxItem final
 {
@@ -30,9 +30,9 @@ class GXUIListBox final : public GXWidget
         GXUIListBoxItem*                            _itemTail;
         GXFloat                                     _itemHeight;
         GXUInt                                      _totalItems;
-        PFNGXUILISTBOXITEMDESTRUCTORPROC            _destroyItem;
-        PFNGXUILISTBOXONITEMSELECTEDPROC            _onItemSelected;
-        PFNGXUILISTBOXONITEMDOUBLECLICKEDPROC       _onItemDoubleClicked;
+        GXUIListBoxItemDestructorHandler            _destroyItem;
+        GXUIListBoxItemOnItemSelectHandler          _onItemSelected;
+        GXUIListBoxItemOnItemDoubleClickHandler     _onItemDoubleClicked;
         GXVoid*                                     _itemSelectedContext;
         GXVoid*                                     _itemDoubleClickedContext;
 
@@ -40,7 +40,7 @@ class GXUIListBox final : public GXWidget
         GXFloat                                     _viewportSize;
 
     public:
-        explicit GXUIListBox ( GXWidget* parent, PFNGXUILISTBOXITEMDESTRUCTORPROC itemDestructor );
+        explicit GXUIListBox ( GXWidget* parent, GXUIListBoxItemDestructorHandler itemDestructor );
         ~GXUIListBox () override;
 
         GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
@@ -57,8 +57,8 @@ class GXUIListBox final : public GXWidget
 
         GXVoid Redraw ();
 
-        GXVoid SetOnItemSelectedCallback ( GXVoid* context, PFNGXUILISTBOXONITEMSELECTEDPROC callback );
-        GXVoid SetOnItemDoubleClickedCallback ( GXVoid* context, PFNGXUILISTBOXONITEMDOUBLECLICKEDPROC callback );
+        GXVoid SetOnItemSelectedCallback ( GXVoid* context, GXUIListBoxItemOnItemSelectHandler callback );
+        GXVoid SetOnItemDoubleClickedCallback ( GXVoid* context, GXUIListBoxItemOnItemDoubleClickHandler callback );
 
         GXFloat GetViewportOffset () const;
         GXFloat GetViewportSize () const;

@@ -12,8 +12,8 @@
 struct GXUIPopupItem final
 {
     GXBool                      _isActive;
-    GXVoid*                     _handler;
-    PFNGXONUIPOPUPACTIONPROC    _action;
+    GXVoid*                     _context;
+    GXUIPopupActionHandler      _action;
     GXAABB                      _boundsWorld;
 };
 
@@ -42,7 +42,7 @@ GXVoid GXUIPopup::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
         GXUByte totalItems = static_cast<GXUByte> ( _items.GetLength () );
         GXUIPopupItem item;
-        item._handler = pi->_handler;
+        item._context = pi->_context;
         item._action = pi->_action;
         item._isActive = GX_TRUE;
 
@@ -156,7 +156,7 @@ GXVoid GXUIPopup::OnMessage ( eGXUIMessage message, const GXVoid* data )
             GXUIPopupItem* itemStorage = static_cast<GXUIPopupItem*> ( _items.GetData () );
 
             if ( itemStorage[ _selectedItemIndex ]._action )
-                itemStorage[ _selectedItemIndex ]._action ( itemStorage[ _selectedItemIndex ]._handler );
+                itemStorage[ _selectedItemIndex ]._action ( itemStorage[ _selectedItemIndex ]._context );
 
             if ( _owner )
             {
@@ -253,10 +253,10 @@ GXVoid GXUIPopup::OnMessage ( eGXUIMessage message, const GXVoid* data )
     GXWidget::OnMessage ( message, data );
 }
 
-GXVoid GXUIPopup::AddItem ( GXVoid* handler, PFNGXONUIPOPUPACTIONPROC action )
+GXVoid GXUIPopup::AddItem ( GXVoid* context, GXUIPopupActionHandler action )
 {
     GXUIPopupItem pi;
-    pi._handler = handler;
+    pi._context = context;
     pi._action = action;
     GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::PopupAddItem, &pi, sizeof ( GXUIPopupItem ) );
 }

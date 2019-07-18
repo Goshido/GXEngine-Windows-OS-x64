@@ -20,7 +20,7 @@
 #include <GXEngine/GXCameraOrthographic.h>
 
 
-typedef GXVoid ( GXCALL* PFNEMRENDERERONOBJECTPROC ) ( GXVoid* handler, GXVoid* object );
+typedef GXVoid ( GXCALL* EMRendererOnObjectHandler ) ( GXVoid* context, GXVoid* object );
 
 enum class eEMRenderTarget : GXUShort
 {
@@ -42,8 +42,8 @@ class EMRenderer final
         GXInt                                           _mouseX;
         GXInt                                           _mouseY;
 
-        PFNEMRENDERERONOBJECTPROC                       _onObject;
-        GXVoid*                                         _handler;
+        EMRendererOnObjectHandler                       _onObject;
+        GXVoid*                                         _onObjectContext;
 
         GXUByte                                         _newMaxMotionBlurSamples;
         GXFloat                                         _newMotionBlurDepthLimit;
@@ -121,7 +121,7 @@ class EMRenderer final
 
         GXVoid PresentFrame ( eEMRenderTarget target );
 
-        GXVoid SetOnObjectCallback ( GXVoid* handlerObject, PFNEMRENDERERONOBJECTPROC callback );
+        GXVoid SetOnObjectCallback ( GXVoid* context, EMRendererOnObjectHandler callback );
         GXVoid GetObject ( GXUShort x, GXUShort y );
 
         GXVoid SetMaximumMotionBlurSamples ( GXUByte samples );

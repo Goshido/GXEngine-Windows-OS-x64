@@ -126,7 +126,7 @@ GXVoid EMRenderer::StartCommonPass ()
 {
     if ( ( _mouseX != -1 || _mouseY != -1 ) && _onObject )
     {
-        _onObject ( _handler, SampleObject () );
+        _onObject ( _onObjectContext, SampleObject () );
         _mouseX = _mouseY = -1;
     }
 
@@ -689,10 +689,10 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
     GXCamera::SetActiveCamera ( oldCamera );
 }
 
-GXVoid EMRenderer::SetOnObjectCallback ( GXVoid* handlerObject, PFNEMRENDERERONOBJECTPROC callback )
+GXVoid EMRenderer::SetOnObjectCallback ( GXVoid* context, EMRendererOnObjectHandler callback )
 {
     _onObject = callback;
-    _handler = handlerObject;
+    _onObjectContext = context;
 }
 
 GXVoid EMRenderer::GetObject ( GXUShort x, GXUShort y )
@@ -867,7 +867,7 @@ EMRenderer::EMRenderer ():
     _mouseX ( -1 ),
     _mouseY ( -1 ),
     _onObject ( nullptr ),
-    _handler ( nullptr ),
+    _onObjectContext ( nullptr ),
     _newMaxMotionBlurSamples ( static_cast<GXUByte> ( DEFAULT_MAX_MOTION_BLUR_SAMPLES ) ),
     _newMotionBlurDepthLimit ( DEFAULT_MOTION_BLUR_DEPTH_LIMIT ),
     _motionBlurExposure ( DEFAULT_MOTION_BLUR_EXPLOSURE ),

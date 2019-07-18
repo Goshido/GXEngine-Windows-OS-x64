@@ -31,7 +31,7 @@ class EMUIEditBox final : public EMUI
         GXVoid SetValidator ( GXTextValidator& validator );
         GXTextValidator* GetValidator () const;
 
-        GXVoid SetOnFinishEditingCallback ( GXVoid* handler, PFNGXUIEDITBOXONFINISHEDITINGPROC callback );
+        GXVoid SetOnFinishEditingCallback ( GXVoid* context, GXUIEditBoxOnCommitHandler callback );
 
     private:
         EMUIEditBox () = delete;

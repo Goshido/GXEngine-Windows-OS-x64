@@ -241,7 +241,7 @@ class GXPhysXBackend : public GXPhysXAdapter
         static PxControllerManager*                     _controllerManager;
         static PxVec3                                   _gravity;
         static PxTolerancesScale                        _toleranceScale;
-        static PLONPHYSXPROC                            _onPhysics;
+        static GXPhysXOnPhysics                         _onPhysics;
         static HANDLE                                   _simulateMutex;
         static GXDouble                                 _lastTime;
         static GXDouble                                 _accumulator;
@@ -268,7 +268,7 @@ class GXPhysXBackend : public GXPhysXAdapter
         GXBool IsSumulating () override;
 
         GXBool SetLinearVelocity ( PxRigidDynamic* actor, PxVec3 &vel ) override;
-        GXVoid SetOnPhysicsFunc ( PLONPHYSXPROC func ) override;
+        GXVoid SetOnPhysicsFunc ( GXPhysXOnPhysics callback ) override;
 
         PxRigidDynamic* CreateRigidDynamic ( GXVoid* address, PxTransform& location ) override;
         PxRigidStatic* CreateRigidStatic ( GXVoid* address, PxTransform &location ) override;
@@ -314,7 +314,7 @@ PxScene*                    GXPhysXBackend::_scene;
 PxDefaultCpuDispatcher*     GXPhysXBackend::_cpuDispatcher;
 PxTolerancesScale           GXPhysXBackend::_toleranceScale;
 PxVec3                      GXPhysXBackend::_gravity;
-PLONPHYSXPROC               GXPhysXBackend::_onPhysics;
+GXPhysXOnPhysics            GXPhysXBackend::_onPhysics;
 HANDLE                      GXPhysXBackend::_simulateMutex;
 GXDouble                    GXPhysXBackend::_lastTime;
 GXDouble                    GXPhysXBackend::_accumulator = 0.0;
@@ -492,9 +492,9 @@ GXBool GXPhysXBackend::SetLinearVelocity ( PxRigidDynamic* actor, PxVec3 &vel )
     return GX_TRUE;
 }
 
-GXVoid GXPhysXBackend::SetOnPhysicsFunc ( PLONPHYSXPROC func )
+GXVoid GXPhysXBackend::SetOnPhysicsFunc ( GXPhysXOnPhysics callback )
 {
-    _onPhysics = func;
+    _onPhysics = callback;
 }
 
 PxRigidDynamic* GXPhysXBackend::CreateRigidDynamic ( GXVoid* address, PxTransform& location )

@@ -21,25 +21,25 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-extern HMODULE gx_GXEngineDLLModuleHandle;
+extern HMODULE              gx_GXEngineDLLModuleHandle;
 
-static FT_Library               gx_ft_Library = nullptr;
+static FT_Library           gx_ft_Library = nullptr;
 
-static PFNFTNEWMEMORYFACE       GXFtNewMemoryFace = nullptr;
-static PFNFTDONEFACE            GXFtDoneFace = nullptr;
+static FTNewMemoryFace      GXFtNewMemoryFace = nullptr;
+static FTDoneFace           GXFtDoneFace = nullptr;
 
-static PFNFTSETCHARSIZE         GXFtSetCharSize = nullptr;
-static PFNFTSETPIXELSIZES       GXFtSetPixelSizes = nullptr;
+static FTSetCharSize        GXFtSetCharSize = nullptr;
+static FTSetPixelSizes      GXFtSetPixelSizes = nullptr;
 
-static PFNFTGETCHARINDEX        GXFtGetCharIndex = nullptr;
-static PFNFTGETKERNING          GXFtGetKerning = nullptr;
+static FTGetCharIndex       GXFtGetCharIndex = nullptr;
+static FTGetKerning         GXFtGetKerning = nullptr;
 
-static PFNFTLOADGLYPH           GXFtLoadGlyph = nullptr;
-static PFNFTRENDERGLYPH         GXFtRenderGlyph = nullptr;
+static FTLoadGlyph          GXFtLoadGlyph = nullptr;
+static FTRenderGlyph        GXFtRenderGlyph = nullptr;
 
-static PFNGXFREETYPEDESTROY     GXFreeTypeDestroy = nullptr;
+static FTDestroy            GXFreeTypeDestroy = nullptr;
 
-static GXFontEntry*             gx_FontEntries = nullptr;
+static GXFontEntry*         gx_FontEntries = nullptr;
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -510,8 +510,8 @@ GXBool GXCALL GXFont::InitFreeTypeLibrary ()
         return GX_FALSE;
     }
 
-    PFNGXFREETYPEINIT GXFreeTypeInit;
-    GXFreeTypeInit = reinterpret_cast<PFNGXFREETYPEINIT> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXFreeTypeInit" ) ) );
+    GXFreeTypeInitFunc GXFreeTypeInit;
+    GXFreeTypeInit = reinterpret_cast<GXFreeTypeInitFunc> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXFreeTypeInit" ) ) );
 
     if ( !GXFreeTypeInit )
     {

@@ -287,7 +287,7 @@ GXVoid EMUIButton::Hide ()
     _widget->Hide ();
 }
 
-GXVoid EMUIButton::SetOnLeftMouseButtonCallback ( GXVoid* handler, PFNGXONMOUSEBUTTONPROC callback )
+GXVoid EMUIButton::SetOnLeftMouseButtonCallback ( GXVoid* context, GXUIButtonOnMouseButtonHandler callback )
 {
-    _widget->SetOnLeftMouseButtonCallback ( handler, callback );
+    _widget->SetOnLeftMouseButtonCallback ( context, callback );
 }

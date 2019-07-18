@@ -454,11 +454,11 @@ GXFloat GXUIEditBox::GetTextRightOffset () const
     return _textRightOffset;
 }
 
-GXVoid GXUIEditBox::SetText ( const GXWChar* newText )
+GXVoid GXUIEditBox::SetText ( const GXWChar* text )
 {
-    if ( newText )
+    if ( text )
     {
-        GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::SetText, newText, static_cast<GXUInt> ( ( GXWcslen ( newText ) + 1u ) * sizeof ( GXWChar ) ) );
+        GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::SetText, text, static_cast<GXUInt> ( ( GXWcslen ( text ) + 1u ) * sizeof ( GXWChar ) ) );
         return;
     }
 
@@ -470,9 +470,9 @@ const GXWChar* GXUIEditBox::GetText () const
     return _text;
 }
 
-GXVoid GXUIEditBox::SetAlignment ( eGXUITextAlignment newAlignment )
+GXVoid GXUIEditBox::SetAlignment ( eGXUITextAlignment alignment )
 {
-    GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::SetTextAlignment, &newAlignment, sizeof ( eGXUITextAlignment ) );
+    GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::SetTextAlignment, &alignment, sizeof ( eGXUITextAlignment ) );
 }
 
 eGXUITextAlignment GXUIEditBox::GetAlignment () const
@@ -504,9 +504,9 @@ GXBool GXUIEditBox::IsActive ()
     return GXTouchSurface::GetInstance ().GetLockedCursorWidget () == this;
 }
 
-GXVoid GXUIEditBox::SetValidator ( GXTextValidator &validatorObject )
+GXVoid GXUIEditBox::SetValidator ( GXTextValidator &validator )
 {
-    _validator = &validatorObject;
+    _validator = &validator;
 }
 
 GXTextValidator* GXUIEditBox::GetValidator () const
@@ -514,9 +514,9 @@ GXTextValidator* GXUIEditBox::GetValidator () const
     return _validator;
 }
 
-GXVoid GXUIEditBox::SetOnFinishEditingCallback ( GXVoid* handlerObject, PFNGXUIEDITBOXONFINISHEDITINGPROC callback )
+GXVoid GXUIEditBox::SetOnFinishEditingCallback ( GXVoid* context, GXUIEditBoxOnCommitHandler callback )
 {
-    _context = handlerObject;
+    _context = context;
     _onFinishEditing = callback;
 }
 
@@ -624,9 +624,9 @@ GXVoid GXUIEditBox::ReleaseInput ()
     input.UnbindTypeCallback ();
 }
 
-GXVoid GXUIEditBox::UpdateCursor ( GXInt newCursor )
+GXVoid GXUIEditBox::UpdateCursor ( GXInt cursor )
 {
-    GXInt c = GXClampi ( newCursor, 0, static_cast<GXInt> ( _textSymbols ) );
+    const GXInt c = GXClampi ( cursor, 0, static_cast<GXInt> ( _textSymbols ) );
 
     if ( GetKeyState ( VK_SHIFT ) & GX_UI_KEYSTATE_MASK )
     {
@@ -645,8 +645,9 @@ GXVoid GXUIEditBox::UpdateCursor ( GXInt newCursor )
     {
         _cursor = _selection = c;
 
-        if ( _renderer )
-            _renderer->OnUpdate ();
+        if ( !_renderer ) return;
+
+        _renderer->OnUpdate ();
     }
 }
 
@@ -739,43 +740,43 @@ GXBool GXUIEditBox::DeleteText ()
     return GX_TRUE;
 }
 
-GXVoid GXCALL GXUIEditBox::OnEnd ( GXVoid* handler )
+GXVoid GXCALL GXUIEditBox::OnEnd ( GXVoid* context )
 {
     static const GXWChar symbol = GX_END;
-    GXTouchSurface::GetInstance ().SendMessage ( static_cast<GXWidget*> ( handler ), eGXUIMessage::AddSumbol, &symbol, sizeof ( GXWChar ) );
+    GXTouchSurface::GetInstance ().SendMessage ( static_cast<GXWidget*> ( context ), eGXUIMessage::AddSumbol, &symbol, sizeof ( GXWChar ) );
 }
 
-GXVoid GXCALL GXUIEditBox::OnHome ( GXVoid* handler )
+GXVoid GXCALL GXUIEditBox::OnHome ( GXVoid* context )
 {
     static const GXWChar symbol = GX_HOME;
-    GXTouchSurface::GetInstance ().SendMessage ( static_cast<GXWidget*> ( handler ), eGXUIMessage::AddSumbol, &symbol, sizeof ( GXWChar ) );
+    GXTouchSurface::GetInstance ().SendMessage ( static_cast<GXWidget*> ( context ), eGXUIMessage::AddSumbol, &symbol, sizeof ( GXWChar ) );
 }
 
-GXVoid GXCALL GXUIEditBox::OnDel ( GXVoid* handler )
+GXVoid GXCALL GXUIEditBox::OnDel ( GXVoid* context )
 {
     static const GXWChar symbol = GX_DEL;
-    GXTouchSurface::GetInstance ().SendMessage ( static_cast<GXWidget*> ( handler ), eGXUIMessage::AddSumbol, &symbol, sizeof ( GXWChar ) );
+    GXTouchSurface::GetInstance ().SendMessage ( static_cast<GXWidget*> ( context ), eGXUIMessage::AddSumbol, &symbol, sizeof ( GXWChar ) );
 }
 
-GXVoid GXCALL GXUIEditBox::OnBackspace ( GXVoid* handler )
+GXVoid GXCALL GXUIEditBox::OnBackspace ( GXVoid* context )
 {
     static const GXWChar symbol = GX_BACKSPACE;
-    GXTouchSurface::GetInstance ().SendMessage ( static_cast<GXWidget*> ( handler ), eGXUIMessage::AddSumbol, &symbol, sizeof ( GXWChar ) );
+    GXTouchSurface::GetInstance ().SendMessage ( static_cast<GXWidget*> ( context ), eGXUIMessage::AddSumbol, &symbol, sizeof ( GXWChar ) );
 }
 
-GXVoid GXCALL GXUIEditBox::OnLeftArrow ( GXVoid* handler )
+GXVoid GXCALL GXUIEditBox::OnLeftArrow ( GXVoid* context )
 {
     static const GXWChar symbol = GX_LEFT_ARROW;
-    GXTouchSurface::GetInstance ().SendMessage ( static_cast<GXWidget*> ( handler ), eGXUIMessage::AddSumbol, &symbol, sizeof ( GXWChar ) );
+    GXTouchSurface::GetInstance ().SendMessage ( static_cast<GXWidget*> ( context ), eGXUIMessage::AddSumbol, &symbol, sizeof ( GXWChar ) );
 }
 
-GXVoid GXCALL GXUIEditBox::OnRightArrow ( GXVoid* handler )
+GXVoid GXCALL GXUIEditBox::OnRightArrow ( GXVoid* context )
 {
     static const GXWChar symbol = GX_RIGHT_ARROW;
-    GXTouchSurface::GetInstance ().SendMessage ( static_cast<GXWidget*> ( handler ), eGXUIMessage::AddSumbol, &symbol, sizeof ( GXWChar ) );
+    GXTouchSurface::GetInstance ().SendMessage ( static_cast<GXWidget*> ( context ), eGXUIMessage::AddSumbol, &symbol, sizeof ( GXWChar ) );
 }
 
-GXVoid GXCALL GXUIEditBox::OnType ( GXVoid* handler, GXWChar symbol )
+GXVoid GXCALL GXUIEditBox::OnType ( GXVoid* context, GXWChar symbol )
 {
-    GXTouchSurface::GetInstance ().SendMessage ( static_cast<GXWidget*> ( handler ), eGXUIMessage::AddSumbol, &symbol, sizeof ( GXWChar ) );
+    GXTouchSurface::GetInstance ().SendMessage ( static_cast<GXWidget*> ( context ), eGXUIMessage::AddSumbol, &symbol, sizeof ( GXWChar ) );
 }

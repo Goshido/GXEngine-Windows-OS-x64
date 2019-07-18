@@ -52,8 +52,8 @@ class EMUIFileListBox final : public EMUI
         GXVoid Clear ();
         GXVoid Redraw ();
         const GXVoid* GetSelectedItem () const;
-        GXVoid SetOnItemSelectedCallback ( GXVoid* handler, PFNGXUILISTBOXONITEMSELECTEDPROC callback );
-        GXVoid SetOnItemDoubleClickedCallbak ( GXVoid* handler, PFNGXUILISTBOXONITEMDOUBLECLICKEDPROC callback );
+        GXVoid SetOnItemSelectedCallback ( GXVoid* context, GXUIListBoxItemOnItemSelectHandler callback );
+        GXVoid SetOnItemDoubleClickedCallbak ( GXVoid* context, GXUIListBoxItemOnItemDoubleClickHandler callback );
 
     private:
         static GXVoid GXCALL ItemDestructor ( GXVoid* itemData );

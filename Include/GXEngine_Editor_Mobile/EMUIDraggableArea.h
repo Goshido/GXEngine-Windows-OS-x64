@@ -25,7 +25,7 @@ class EMUIDraggableArea final : public EMUI
         GXVoid SetHeaderHeight ( GXFloat headerHeight );
         GXVoid SetMinimumWidth ( GXFloat width );
         GXVoid SetMinimumHeight ( GXFloat height );
-        GXVoid SetOnResizeCallback ( GXVoid* handler, PFNGXUIDRAGABLEAREAONRESIZEPROC callback );
+        GXVoid SetOnResizeCallback ( GXVoid* context, GXUIDraggableAreaOnResizeHandler callback );
 
     private:
         EMUIDraggableArea () = delete;

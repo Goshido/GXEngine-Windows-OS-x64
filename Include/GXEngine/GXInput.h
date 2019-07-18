@@ -142,8 +142,8 @@ class GXInput final
 
         static eGXInputDevice               _activeInputDevice;
 
-        static PFNXINPUTGETSTATEPROC        _xInputGetState;
-        static PFNXINPUTENABLEPROC          _xInputEnable;
+        static XIXInputGetState             _xInputGetState;
+        static XIXInputEnable               _xInputEnable;
 
         static GXInput*                     _instance;
 

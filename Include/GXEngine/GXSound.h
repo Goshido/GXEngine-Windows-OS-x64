@@ -33,18 +33,18 @@ extern PFNALSOURCESTOP                  GXAlSourceStop;
 extern PFNALSOURCEPAUSE                 GXAlSourcePause;
 extern PFNALSOURCEREWIND                GXAlSourceRewind;
 
-extern PFNGXOPENALCHECKERROR            GXOpenALCheckError;
-extern PFNGXOPENALCHECKCONTEXTERROR     GXOpenALCheckContextError;
+extern GXOpenALCheckErrorFunc           GXOpenALCheckError;
+extern GXOpenALCheckContextErrorFunc    GXOpenALCheckContextError;
 
-//--------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
-extern PFNOVOPENCALLBACKS               GXOvOpenCallbacks;
-extern PFNOVREAD                        GXOvRead;
-extern PFNOVPCMSEEK                     GXOvPcmSeek;
-extern PFNOVCLEAR                       GXOvClear;
-extern PFNOVPCMTOTAL                    GXOvPcmTotal;
+extern OVOpenCallbacks                  GXOvOpenCallbacks;
+extern OVRead                           GXOvRead;
+extern OVPCMSeek                        GXOvPcmSeek;
+extern OVClear                          GXOvClear;
+extern OVPCMTotal                       GXOvPcmTotal;
 
-//--------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXBool GXCALL GXSoundInit ();
 GXBool GXCALL GXSoundDestroy ();

@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #include <GXEngine/GXUIButton.h>
 #include <GXEngine/GXUIMessage.h>
@@ -118,7 +118,7 @@ GXVoid GXUIButton::OnMessage ( eGXUIMessage message, const GXVoid* data )
     GXWidget::OnMessage ( message, data );
 }
 
-GXVoid GXUIButton::SetOnLeftMouseButtonCallback ( GXVoid* context, PFNGXONMOUSEBUTTONPROC callback )
+GXVoid GXUIButton::SetOnLeftMouseButtonCallback ( GXVoid* context, GXUIButtonOnMouseButtonHandler callback )
 {
     _context = context;
     _onLeftMouseButton = callback;
