@@ -4,7 +4,7 @@
 #define GX_FILE_SYSTEM
 
 
-#include "GXTypes.h"
+#include "GXStrings.h"
 
 GX_DISABLE_COMMON_WARNINGS
 
@@ -36,13 +36,16 @@ GXBool GXCALL GXDoesFileExist ( const GXWChar* fileName );
 GXVoid GXCALL GXGetCurrentDirectory ( GXWChar** currentDirectory );
 GXBool GXCALL GXDoesDirectoryExist ( const GXWChar* directory );
 
-// Directory could be created recursively.
+// Directory can be created recursively.
 GXBool GXCALL GXCreateDirectory ( const GXWChar* directory );
+GXBool GXCALL GXCreateDirectory ( GXString directory );
 
 GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar* directory );
 GXVoid GXCALL GXGetFileDirectoryPath ( GXWChar** path, const GXWChar* fileName );
 GXVoid GXCALL GXGetBaseFileName ( GXWChar** baseFileName, const GXWChar* fileName );
 GXVoid GXCALL GXGetFileExtension ( GXWChar** extension, const GXWChar* fileName );
+
+GXString GXCALL GXWordExp ( GXString expression );
 
 class GXWriteFileStream
 {
