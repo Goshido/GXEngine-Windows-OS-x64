@@ -544,7 +544,7 @@
       <Filter>Source Files\GXEngine\Windows</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFileSystemExt.cpp">
-      <Filter>Header Files\GXCommon\Windows</Filter>
+      <Filter>Source Files\GXCommon\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
