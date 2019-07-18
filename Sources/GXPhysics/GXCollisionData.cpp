@@ -1,71 +1,71 @@
-// version 1.2
+// version 1.3
 
 #include <GXPhysics/GXCollisionData.h>
 #include <GXCommon/GXMemory.h>
 
 
 GXCollisionData::GXCollisionData ( GXUInt maxContacts ):
-	maxContacts ( maxContacts )
+    _maxContacts ( maxContacts )
 {
-	contactArray = static_cast<GXContact*> ( malloc ( maxContacts * sizeof ( GXContact ) ) );
-	Reset ();
+    _contactArray = static_cast<GXContact*> ( malloc ( maxContacts * sizeof ( GXContact ) ) );
+    Reset ();
 }
 
 GXCollisionData::~GXCollisionData ()
 {
-	free ( contactArray );
+    free ( _contactArray );
 }
 
 GXBool GXCollisionData::HasMoreContacts () const
 {
-	return contactsLeft > 0;
+    return _contactsLeft > 0;
 }
 
 GXVoid GXCollisionData::Reset ()
 {
-	contactsLeft = maxContacts;
-	contactCount = 0;
-	contacts = contactArray;
+    _contactsLeft = _maxContacts;
+    _contactCount = 0;
+    _contacts = _contactArray;
 }
 
 GXVoid GXCollisionData::AddContacts ( GXUInt count )
 {
-	contactsLeft -= count;
-	contactCount += count;
-	contacts += count;
+    _contactsLeft -= count;
+    _contactCount += count;
+    _contacts += count;
 }
 
 GXContact* GXCollisionData::GetContactsBegin () const
 {
-	return contacts;
+    return _contacts;
 }
 
 GXContact* GXCollisionData::GetAllContacts () const
 {
-	return contactArray;
+    return _contactArray;
 }
 
 GXUInt GXCollisionData::GetTotalContacts () const
 {
-	return contactCount;
+    return _contactCount;
 }
 
 GXUInt GXCollisionData::GetContactsLeft () const
 {
-	return contactsLeft;
+    return _contactsLeft;
 }
 
 GXFloat GXCollisionData::GetFriction () const
 {
-	return friction;
+    return _friction;
 }
 
 GXFloat GXCollisionData::GetRestitution () const
 {
-	return restitution;
+    return _restitution;
 }
 
 GXFloat GXCollisionData::GetTolerance () const
 {
-	return tolerance;
+    return _tolerance;
 }

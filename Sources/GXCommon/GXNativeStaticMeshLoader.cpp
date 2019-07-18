@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXCommon/GXNativeStaticMeshLoader.h>
 #include <GXCommon/GXFile.h>
@@ -13,8 +13,8 @@ public:
     ~GXNativeStaticMeshLoaderMemoryInspector () override;
 
 private:
-    GXNativeStaticMeshLoaderMemoryInspector ( const GXNativeStaticMeshLoaderMemoryInspector &other );
-    GXNativeStaticMeshLoaderMemoryInspector& operator = ( const GXNativeStaticMeshLoaderMemoryInspector &other );
+    GXNativeStaticMeshLoaderMemoryInspector ( const GXNativeStaticMeshLoaderMemoryInspector &other ) = delete;
+    GXNativeStaticMeshLoaderMemoryInspector& operator = ( const GXNativeStaticMeshLoaderMemoryInspector &other ) = delete;
 };
 
 GXNativeStaticMeshLoaderMemoryInspector::GXNativeStaticMeshLoaderMemoryInspector ()
@@ -33,16 +33,16 @@ static GXNativeStaticMeshLoaderMemoryInspector gx_NativeMeshLoaderMemoryInspecto
 //-------------------------------------------------------------------------------------------------------------
 
 GXNativeStaticMeshInfo::GXNativeStaticMeshInfo ():
-    vboData ( nullptr ),
-    eboData ( nullptr )
+    _vboData ( nullptr ),
+    _eboData ( nullptr )
 {
     // NOTHING
 }
 
 GXVoid GXNativeStaticMeshInfo::Cleanup ()
 {
-    gx_NativeMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &vboData ) );
-    gx_NativeMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &eboData ) );
+    gx_NativeMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &_vboData ) );
+    gx_NativeMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &_eboData ) );
 }
 
 //----------------------------------------------------------------------------------------------
@@ -58,22 +58,22 @@ GXVoid GXCALL GXLoadNativeStaticMesh ( const GXWChar* fileName, GXNativeStaticMe
 
     const GXNativeStaticMeshHeader* h = reinterpret_cast<const GXNativeStaticMeshHeader*> ( data );
 
-    info.bounds = h->bounds;
+    info._bounds = h->_bounds;
 
-    info.numVertices = h->numVertices;
-    info.numUVs = h->numUVs;
-    info.numNormals = h->numNormals;
-    info.numTBPairs = h->numTBPairs;
+    info._numVertices = h->_numVertices;
+    info._numUVs = h->_numUVs;
+    info._numNormals = h->_numNormals;
+    info._numTBPairs = h->_numTBPairs;
 
-    size = info.numVertices * sizeof ( GXVec3 ) + info.numUVs * sizeof ( GXVec2 ) + info.numNormals * sizeof ( GXVec3 ) + info.numTBPairs * 2 * sizeof ( GXVec3 );
-    info.vboData = static_cast<GXUByte*> ( gx_NativeMeshLoaderMemoryInspector.Malloc ( size ) );
-    memcpy ( info.vboData, data + sizeof ( GXNativeStaticMeshHeader ), size );
+    size = info._numVertices * sizeof ( GXVec3 ) + info._numUVs * sizeof ( GXVec2 ) + info._numNormals * sizeof ( GXVec3 ) + info._numTBPairs * 2 * sizeof ( GXVec3 );
+    info._vboData = static_cast<GXUByte*> ( gx_NativeMeshLoaderMemoryInspector.Malloc ( size ) );
+    memcpy ( info._vboData, data + sizeof ( GXNativeStaticMeshHeader ), size );
 
-    info.numElements = h->numElements;
+    info._numElements = h->_numElements;
 
-    if ( info.numElements < 1u ) return;
+    if ( info._numElements < 1u ) return;
 
-    size = info.numElements * sizeof ( GXUInt );
-    info.eboData = static_cast<GXUByte*> ( gx_NativeMeshLoaderMemoryInspector.Malloc ( size ) );
-    memcpy ( info.eboData, data + h->elementOffset, size );
+    size = info._numElements * sizeof ( GXUInt );
+    info._eboData = static_cast<GXUByte*> ( gx_NativeMeshLoaderMemoryInspector.Malloc ( size ) );
+    memcpy ( info._eboData, data + h->_elementOffset, size );
 }

@@ -15,9 +15,9 @@ enum class eEMGaussHorizontalBlurKernelType : GXUShort
 class EMGaussHorizontalBlurMaterial final : public GXMaterial
 {
     private:
-        eEMGaussHorizontalBlurKernelType    kernelType;
-        GXTexture2D*                        imageTexture;
-        GXSampler                           sampler;
+        eEMGaussHorizontalBlurKernelType    _kernelType;
+        GXTexture2D*                        _imageTexture;
+        GXSampler                           _sampler;
 
     public:
         EMGaussHorizontalBlurMaterial ( eEMGaussHorizontalBlurKernelType kernelType );

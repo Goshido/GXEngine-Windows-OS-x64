@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_NATIVE_STATIC_MESH_SAVER
 #define GX_NATIVE_STATIC_MESH_SAVER
@@ -9,19 +9,19 @@
 
 struct GXNativeStaticMeshDesc final
 {
-    GXUInt      numVertices;
-    GXUInt      numUVs;
-    GXUInt      numNormals;
-    GXUInt      numTBPairs;     // Tangent and Bitangent pairs
-    GXUInt      numElements;
+    GXUInt      _numVertices;
+    GXUInt      _numUVs;
+    GXUInt      _numNormals;
+    GXUInt      _numTBPairs;    // Tangent and Bitangent pairs
+    GXUInt      _numElements;
 
-    GXVec3*     vertices;
-    GXVec2*     uvs;
-    GXVec3*     normals;
-    GXVec3*     tangents;
-    GXVec3*     bitangents;
+    GXVec3*     _vertices;
+    GXVec2*     _uvs;
+    GXVec3*     _normals;
+    GXVec3*     _tangents;
+    GXVec3*     _bitangents;
 
-    GXUInt*     elements;
+    GXUInt*     _elements;
 };
 
 

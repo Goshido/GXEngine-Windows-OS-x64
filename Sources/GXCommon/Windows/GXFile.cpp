@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #include <GXCommon/GXFile.h>
 #include <GXCommon/GXLogger.h>
@@ -6,10 +6,10 @@
 
 GXFile::GXFile ( GXString fileName )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXFile" )
-    path ( fileName ),
-    content ( nullptr ),
-    size ( 0u ),
-    owner ( eGXFileContentOwner::GXFile )
+    _path ( fileName ),
+    _content ( nullptr ),
+    _size ( 0u ),
+    _owner ( eGXFileContentOwner::GXFile )
 {
     // NOTHING
 }
@@ -21,31 +21,31 @@ GXFile::~GXFile ()
 
 GXBool GXFile::LoadContent ( GXUByte*& fileContent, GXUPointer &fileSize, eGXFileContentOwner contentOwner, GXBool notSilent )
 {
-    if ( content )
+    if ( _content )
     {
         if ( contentOwner == eGXFileContentOwner::User )
         {
-            fileContent = static_cast<GXUByte*> ( Malloc ( size ) );
-            memcpy ( fileContent, content, size );
+            fileContent = static_cast<GXUByte*> ( Malloc ( _size ) );
+            memcpy ( fileContent, _content, _size );
         }
         else
         {
-            fileContent = content;
+            fileContent = _content;
         }
 
-        fileSize = size;
+        fileSize = _size;
         return GX_TRUE;
     }
 
     FILE* file = nullptr;
-    _wfopen_s ( &file, path, L"rb" );
+    _wfopen_s ( &file, _path, L"rb" );
 
     if ( !file )
     {
         if ( notSilent )
         {
             GXString errorMessage;
-            errorMessage.Format ( "GXFile::LoadContent::Error - Не могу открыть файл %s.\n", static_cast<const GXMBChar*> ( path ) );
+            errorMessage.Format ( "GXFile::LoadContent::Error - Не могу открыть файл %s.\n", static_cast<const GXMBChar*> ( _path ) );
 
             GXLogA ( errorMessage );
             GXWarningBox ( errorMessage );
@@ -66,7 +66,7 @@ GXBool GXFile::LoadContent ( GXUByte*& fileContent, GXUPointer &fileSize, eGXFil
         if ( notSilent )
         {
             GXString errorMessage;
-            errorMessage.Format ( "GXFile::LoadContent::Error - Файл %s пуст.\n", static_cast<const GXMBChar*> ( path ) );
+            errorMessage.Format ( "GXFile::LoadContent::Error - Файл %s пуст.\n", static_cast<const GXMBChar*> ( _path ) );
 
             GXLogA ( errorMessage );
             GXWarningBox ( errorMessage );
@@ -90,9 +90,9 @@ GXBool GXFile::LoadContent ( GXUByte*& fileContent, GXUPointer &fileSize, eGXFil
     {
         Close ();
 
-        fileContent = content = newContent;
-        fileSize = size = newSize;
-        owner = contentOwner;
+        fileContent = _content = newContent;
+        fileSize = _size = newSize;
+        _owner = contentOwner;
 
         return GX_TRUE;
     }
@@ -100,7 +100,7 @@ GXBool GXFile::LoadContent ( GXUByte*& fileContent, GXUPointer &fileSize, eGXFil
     if ( notSilent )
     {
         GXString errorMessage;
-        errorMessage.Format ( "GXFile::LoadContent::Error - Не могу прочесть файл %s.\n", static_cast<const GXMBChar*> ( path ) );
+        errorMessage.Format ( "GXFile::LoadContent::Error - Не могу прочесть файл %s.\n", static_cast<const GXMBChar*> ( _path ) );
 
         GXLogA ( errorMessage );
         GXWarningBox ( errorMessage );
@@ -116,13 +116,13 @@ GXBool GXFile::LoadContent ( GXUByte*& fileContent, GXUPointer &fileSize, eGXFil
 
 GXString GXFile::GetPath () const
 {
-    return path;
+    return _path;
 }
 
 GXVoid GXFile::Close ()
 {
-    if ( !content || owner != eGXFileContentOwner::GXFile ) return;
+    if ( !_content || _owner != eGXFileContentOwner::GXFile ) return;
 
-    SafeFree ( reinterpret_cast<GXVoid**> ( &content ) );
-    size = 0u;
+    SafeFree ( reinterpret_cast<GXVoid**> ( &_content ) );
+    _size = 0u;
 }

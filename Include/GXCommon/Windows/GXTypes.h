@@ -16,12 +16,12 @@ GX_DISABLE_COMMON_WARNINGS
 GX_RESTORE_WARNING_STATE
 
 
-#define GXCALL          WINAPI
+#define GXCALL                  WINAPI
 #define GXCDECLCALL
-#define GXTHREADCALL    WINAPI
+#define GXTHREADCALL            WINAPI
 
-#define GX_TRUE         true
-#define GX_FALSE        false
+#define GX_TRUE                 true
+#define GX_FALSE                false
 
 
 typedef int16_t                 GXShort;

@@ -10,22 +10,22 @@
 class EMMotionBlurMaterial final : public GXMaterial
 {
     private:
-        GXTexture2D*    velocityNeighborMaxTexture;
-        GXTexture2D*    velocityTexture;
-        GXTexture2D*    depthTexture;
-        GXTexture2D*    imageTexture;
+        GXTexture2D*    _velocityNeighborMaxTexture;
+        GXTexture2D*    _velocityTexture;
+        GXTexture2D*    _depthTexture;
+        GXTexture2D*    _imageTexture;
 
-        GXSampler       sampler;
+        GXSampler       _sampler;
 
-        GXFloat         depthLimit;
-        GXFloat         inverseDepthLimit;
-        GXFloat         maxBlurSamples;
-        GXVec2          inverseScreenResolution;
+        GXFloat         _depthLimit;
+        GXFloat         _inverseDepthLimit;
+        GXFloat         _maxBlurSamples;
+        GXVec2          _inverseScreenResolution;
 
-        GLint           inverseDepthLimitLocation;
-        GLint           maxBlurSamplesLocation;
-        GLint           inverseScreenResolutionLocation;
-        GLint           inverseProjectionMatrixLocation;
+        GLint           _inverseDepthLimitLocation;
+        GLint           _maxBlurSamplesLocation;
+        GLint           _inverseScreenResolutionLocation;
+        GLint           _inverseProjectionMatrixLocation;
 
     public:
         EMMotionBlurMaterial ();

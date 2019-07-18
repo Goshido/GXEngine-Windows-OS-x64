@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #ifndef GX_SHADER_PROGRAM
 #define GX_SHADER_PROGRAM
@@ -10,16 +10,16 @@
 
 struct GXShaderProgramInfo final
 {
-    const GXWChar*      vertexShader;
-    const GXWChar*      geometryShader;
-    const GXWChar*      fragmentShader;
+    const GXWChar*          _vertexShader;
+    const GXWChar*          _geometryShader;
+    const GXWChar*          _fragmentShader;
 
-    const GLchar**      samplerNames;
-    const GLuint*       samplerLocations;
-    GXUInt              samplers;
+    const GLchar* const*    _samplerNames;
+    const GLuint*           _samplerLocations;
+    GXUInt                  _samplers;
 
-    const GLchar**      transformFeedbackOutputNames;
-    GLsizei             transformFeedbackOutputs;
+    const GLchar* const*    _transformFeedbackOutputNames;
+    GLsizei                 _transformFeedbackOutputs;
 };
 
 // Class handles lazy loading reference counting shader program resource creation.
@@ -28,7 +28,7 @@ class GXShaderProgramEntry;
 class GXShaderProgram final : public GXMemoryInspector
 {
     private:
-        GXShaderProgramEntry*       shaderProgramEntry;
+        GXShaderProgramEntry*       _shaderProgramEntry;
 
     public:
         GXShaderProgram ();

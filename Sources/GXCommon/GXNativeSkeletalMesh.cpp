@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.9
 
 #include <GXCommon/GXNativeSkeletalMesh.h>
 #include <GXCommon/GXFile.h>
@@ -38,49 +38,49 @@ static GXNativeSkeletalMeshLoaderMemoryInspector gx_NativeSkeletalMeshLoaderMemo
 //---------------------------------------------------------------------------------------------------------------------
 
 GXSkeletalMeshData::GXSkeletalMeshData ():
-    totalVertices ( 0u ),
-    vboData ( nullptr ),
-    totalBones ( 0u ),
-    boneNames ( nullptr ),
-    parentBoneIndices ( nullptr ),
-    referencePose ( nullptr ),
-    inverseBindTransform ( nullptr )
+    _totalVertices ( 0u ),
+    _vboData ( nullptr ),
+    _totalBones ( 0u ),
+    _boneNames ( nullptr ),
+    _parentBoneIndices ( nullptr ),
+    _referencePose ( nullptr ),
+    _inverseBindTransform ( nullptr )
 {
     // NOTHING
 }
 
 GXVoid GXSkeletalMeshData::Cleanup ()
 {
-    totalVertices = 0u;
-    gx_NativeSkeletalMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &vboData ) );
+    _totalVertices = 0u;
+    gx_NativeSkeletalMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &_vboData ) );
 
-    totalBones = 0u;
-    gx_NativeSkeletalMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &boneNames ) );
-    gx_NativeSkeletalMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &parentBoneIndices ) );
-    gx_NativeSkeletalMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &referencePose ) );
-    gx_NativeSkeletalMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &inverseBindTransform ) );
+    _totalBones = 0u;
+    gx_NativeSkeletalMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &_boneNames ) );
+    gx_NativeSkeletalMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &_parentBoneIndices ) );
+    gx_NativeSkeletalMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &_referencePose ) );
+    gx_NativeSkeletalMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &_inverseBindTransform ) );
 }
 
 //-------------------------------------------------------------------------------------------------------------
 
 GXAnimationInfo::GXAnimationInfo ():
-    totalBones ( 0u ),
-    boneNames ( nullptr ),
-    fps ( DEFAULT_FPS ),
-    totalFrames ( 0u ),
-    keys ( nullptr )
+    _totalBones ( 0u ),
+    _boneNames ( nullptr ),
+    _fps ( DEFAULT_FPS ),
+    _totalFrames ( 0u ),
+    _keys ( nullptr )
 {
     // NOTHING
 }
 
 GXVoid GXAnimationInfo::Cleanup ()
 {
-    totalBones = 0u;
-    gx_NativeSkeletalMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &boneNames ) );
+    _totalBones = 0u;
+    gx_NativeSkeletalMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &_boneNames ) );
 
-    fps = DEFAULT_FPS;
-    totalFrames = 0u;
-    gx_NativeSkeletalMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &keys ) );
+    _fps = DEFAULT_FPS;
+    _totalFrames = 0u;
+    gx_NativeSkeletalMeshLoaderMemoryInspector.SafeFree ( reinterpret_cast<GXVoid**> ( &_keys ) );
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -97,28 +97,28 @@ GXVoid GXCALL GXLoadNativeSkeletalMesh ( GXSkeletalMeshData &info, const GXWChar
     GXUPointer size = 0u;
     const GXNativeSkeletalMeshHeader* h = reinterpret_cast<const GXNativeSkeletalMeshHeader*> ( data );
 
-    info.totalVertices = h->totalVertices;
+    info._totalVertices = h->_totalVertices;
 
-    size = info.totalVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec4 ) + sizeof ( GXVec4 ) );
-    info.vboData = static_cast<GXFloat*> ( gx_NativeSkeletalMeshLoaderMemoryInspector.Malloc ( size ) );
-    memcpy ( info.vboData, data + h->vboOffset, size );
+    size = info._totalVertices * ( sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec4 ) + sizeof ( GXVec4 ) );
+    info._vboData = static_cast<GXFloat*> ( gx_NativeSkeletalMeshLoaderMemoryInspector.Malloc ( size ) );
+    memcpy ( info._vboData, data + h->_vboOffset, size );
 
-    info.totalBones = h->totalBones;
+    info._totalBones = h->_totalBones;
 
-    size = info.totalBones * GX_BONE_NAME_SIZE * sizeof ( GXUTF8 );
-    info.boneNames = static_cast<GXUTF8*> ( gx_NativeSkeletalMeshLoaderMemoryInspector.Malloc ( size ) );
-    memcpy ( info.boneNames, data + h->boneNamesOffset, size );
+    size = info._totalBones * GX_BONE_NAME_SIZE * sizeof ( GXUTF8 );
+    info._boneNames = static_cast<GXUTF8*> ( gx_NativeSkeletalMeshLoaderMemoryInspector.Malloc ( size ) );
+    memcpy ( info._boneNames, data + h->_boneNamesOffset, size );
 
-    size = info.totalBones * sizeof ( GXShort );
-    info.parentBoneIndices = static_cast<GXUShort*> ( gx_NativeSkeletalMeshLoaderMemoryInspector.Malloc ( size ) );
-    memcpy ( info.parentBoneIndices, data + h->parentBoneIndicesOffset, size );
+    size = info._totalBones * sizeof ( GXShort );
+    info._parentBoneIndices = static_cast<GXUShort*> ( gx_NativeSkeletalMeshLoaderMemoryInspector.Malloc ( size ) );
+    memcpy ( info._parentBoneIndices, data + h->_parentBoneIndicesOffset, size );
 
-    size = info.totalBones * sizeof ( GXBoneJoint );
-    info.referencePose = static_cast<GXBoneJoint*> ( gx_NativeSkeletalMeshLoaderMemoryInspector.Malloc ( size ) );
-    memcpy ( info.referencePose, data + h->referensePoseOffset, size );
+    size = info._totalBones * sizeof ( GXBoneJoint );
+    info._referencePose = static_cast<GXBoneJoint*> ( gx_NativeSkeletalMeshLoaderMemoryInspector.Malloc ( size ) );
+    memcpy ( info._referencePose, data + h->_referensePoseOffset, size );
 
-    info.inverseBindTransform = static_cast<GXBoneJoint*> ( gx_NativeSkeletalMeshLoaderMemoryInspector.Malloc ( size ) );
-    memcpy ( info.inverseBindTransform, data + h->inverseBindTransformOffset, size );
+    info._inverseBindTransform = static_cast<GXBoneJoint*> ( gx_NativeSkeletalMeshLoaderMemoryInspector.Malloc ( size ) );
+    memcpy ( info._inverseBindTransform, data + h->_inverseBindTransformOffset, size );
 }
 
 GXVoid GXCALL GXLoadNativeAnimation ( GXAnimationInfo &info, const GXWChar* fileName )
@@ -132,15 +132,15 @@ GXVoid GXCALL GXLoadNativeAnimation ( GXAnimationInfo &info, const GXWChar* file
 
     const GXNativeAnimationHeader* h = reinterpret_cast<const GXNativeAnimationHeader*> ( data );
 
-    info.fps = h->fps;
-    info.totalBones = h->totalBones;
-    info.totalFrames = h->totalFrames;
+    info._fps = h->_fps;
+    info._totalBones = h->_totalBones;
+    info._totalFrames = h->_totalFrames;
     
-    size = h->totalBones * GX_BONE_NAME_SIZE * sizeof ( GXUTF8 );
-    info.boneNames = static_cast<GXUTF8*> ( gx_NativeSkeletalMeshLoaderMemoryInspector.Malloc ( size ) );
-    memcpy ( info.boneNames, data + h->boneNamesOffset, size );
+    size = h->_totalBones * GX_BONE_NAME_SIZE * sizeof ( GXUTF8 );
+    info._boneNames = static_cast<GXUTF8*> ( gx_NativeSkeletalMeshLoaderMemoryInspector.Malloc ( size ) );
+    memcpy ( info._boneNames, data + h->_boneNamesOffset, size );
 
-    size = h->totalBones * h->totalFrames * sizeof ( GXBoneJoint );
-    info.keys = static_cast<GXBoneJoint*> ( gx_NativeSkeletalMeshLoaderMemoryInspector.Malloc ( size ) );
-    memcpy ( info.keys, data + h->keysOffset, size );
+    size = h->_totalBones * h->_totalFrames * sizeof ( GXBoneJoint );
+    info._keys = static_cast<GXBoneJoint*> ( gx_NativeSkeletalMeshLoaderMemoryInspector.Malloc ( size ) );
+    memcpy ( info._keys, data + h->_keysOffset, size );
 }

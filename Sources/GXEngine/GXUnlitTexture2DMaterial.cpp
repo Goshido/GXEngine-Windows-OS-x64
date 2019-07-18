@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXEngine/GXUnlitTexture2DMaterial.h>
 #include <GXEngine/GXCamera.h>
@@ -23,29 +23,29 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 GXUnlitTexture2DMaterial::GXUnlitTexture2DMaterial ():
-    texture ( nullptr ),
-    sampler ( GL_REPEAT, eGXResampling::None, 1.0f ),
-    color ( static_cast<GXUByte> ( DEFAULT_COLOR_RED ), static_cast<GXUByte> ( DEFAULT_COLOR_GREEN ), static_cast<GXUByte> ( DEFAULT_COLOR_BLUE ), static_cast<GXUByte> ( DEFAULT_COLOR_ALPHA ) ),
-    uvScaleOffset ( DEFAULT_UV_SCALE_X, DEFAULT_UV_SCALE_Y, DEFAULT_UV_OFFSET_X, DEFAULT_UV_OFFSET_Y )
+    _texture ( nullptr ),
+    _sampler ( GL_REPEAT, eGXResampling::None, 1.0f ),
+    _color ( static_cast<GXUByte> ( DEFAULT_COLOR_RED ), static_cast<GXUByte> ( DEFAULT_COLOR_GREEN ), static_cast<GXUByte> ( DEFAULT_COLOR_BLUE ), static_cast<GXUByte> ( DEFAULT_COLOR_ALPHA ) ),
+    _uvScaleOffset ( DEFAULT_UV_SCALE_X, DEFAULT_UV_SCALE_Y, DEFAULT_UV_OFFSET_X, DEFAULT_UV_OFFSET_Y )
 {
-    static const GLchar* samplerNames[ 1 ] = { "textureSampler" };
-    static const GLuint samplerLocations[ 1 ] = { TEXTURE_SLOT };
+    constexpr GLchar* samplerNames[ 1u ] = { "textureSampler" };
+    constexpr GLuint samplerLocations[ 1u ] = { TEXTURE_SLOT };
 
     GXShaderProgramInfo si;
-    si.vertexShader = VERTEX_SHADER;
-    si.geometryShader = GEOMETRY_SHADER;
-    si.fragmentShader = FRAGMENT_SHADER;
-    si.samplers = 1u;
-    si.samplerNames = samplerNames;
-    si.samplerLocations = samplerLocations;
-    si.transformFeedbackOutputs = 0;
-    si.transformFeedbackOutputNames = nullptr;
+    si._vertexShader = VERTEX_SHADER;
+    si._geometryShader = GEOMETRY_SHADER;
+    si._fragmentShader = FRAGMENT_SHADER;
+    si._samplers = 1u;
+    si._samplerNames = samplerNames;
+    si._samplerLocations = samplerLocations;
+    si._transformFeedbackOutputs = 0;
+    si._transformFeedbackOutputNames = nullptr;
 
-    shaderProgram.Init ( si );
+    _shaderProgram.Init ( si );
 
-    mod_view_proj_matLocation = shaderProgram.GetUniform ( "mod_view_proj_mat" );
-    uvScaleOffsetLocation = shaderProgram.GetUniform ( "uvScaleOffset" );
-    colorLocation = shaderProgram.GetUniform  ( "color" );
+    _mod_view_proj_matLocation = _shaderProgram.GetUniform ( "mod_view_proj_mat" );
+    _uvScaleOffsetLocation = _shaderProgram.GetUniform ( "uvScaleOffset" );
+    _colorLocation = _shaderProgram.GetUniform  ( "color" );
 }
 
 GXUnlitTexture2DMaterial::~GXUnlitTexture2DMaterial ()
@@ -55,52 +55,52 @@ GXUnlitTexture2DMaterial::~GXUnlitTexture2DMaterial ()
 
 GXVoid GXUnlitTexture2DMaterial::Bind ( const GXTransform &transfrom )
 {
-    if ( !texture ) return;
+    if ( !_texture ) return;
 
     GXMat4 mod_view_proj_mat;
     mod_view_proj_mat.Multiply ( transfrom.GetCurrentFrameModelMatrix (), GXCamera::GetActiveCamera ()->GetCurrentFrameViewProjectionMatrix () );
     
-    glUseProgram ( shaderProgram.GetProgram () );
-    glUniformMatrix4fv ( mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat.data );
-    glUniform4fv ( uvScaleOffsetLocation, 1, uvScaleOffset.data );
-    glUniform4fv ( colorLocation, 1, color.data );
+    glUseProgram ( _shaderProgram.GetProgram () );
+    glUniformMatrix4fv ( _mod_view_proj_matLocation, 1, GL_FALSE, mod_view_proj_mat._data );
+    glUniform4fv ( _uvScaleOffsetLocation, 1, _uvScaleOffset._data );
+    glUniform4fv ( _colorLocation, 1, _color._data );
 
-    texture->Bind ( TEXTURE_SLOT );
-    sampler.Bind ( TEXTURE_SLOT );
+    _texture->Bind ( TEXTURE_SLOT );
+    _sampler.Bind ( TEXTURE_SLOT );
 }
 
 GXVoid GXUnlitTexture2DMaterial::Unbind ()
 {
-    if ( !texture ) return;
+    if ( !_texture ) return;
 
-    sampler.Unbind ( TEXTURE_SLOT );
-    texture->Unbind ();
+    _sampler.Unbind ( TEXTURE_SLOT );
+    _texture->Unbind ();
     glUseProgram ( 0u );
 }
 
 GXVoid GXUnlitTexture2DMaterial::SetTexture ( GXTexture2D &textureObject )
 {
-    texture = &textureObject;
+    _texture = &textureObject;
 }
 
 GXVoid GXUnlitTexture2DMaterial::SetTextureScale ( GXFloat x, GXFloat y )
 {
-    uvScaleOffset.data[ 0u ] = x;
-    uvScaleOffset.data[ 1u ] = y;
+    _uvScaleOffset._data[ 0u ] = x;
+    _uvScaleOffset._data[ 1u ] = y;
 }
 
 GXVoid GXUnlitTexture2DMaterial::SetTextureOffset ( GXFloat x, GXFloat y )
 {
-    uvScaleOffset.data[ 2u ] = x;
-    uvScaleOffset.data[ 3u ] = y;
+    _uvScaleOffset._data[ 2u ] = x;
+    _uvScaleOffset._data[ 3u ] = y;
 }
 
 GXVoid GXUnlitTexture2DMaterial::SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
 {
-    color.From ( red, green, blue, alpha );
+    _color.From ( red, green, blue, alpha );
 }
 
 GXVoid GXUnlitTexture2DMaterial::SetColor ( const GXColorRGB &newColor )
 {
-    color = newColor;
+    _color = newColor;
 }

@@ -20,21 +20,30 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractMutex.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractSmartLock.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractThread.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractUIntAtomic.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractUPointerAtomic.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXBKELoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXBKESaver.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXBKEStructs.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXFileSystem.cpp" />
-    <ClCompile Include="..\..\Sources\GXCommon\GXLogger.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXMath.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXMemory.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshSaver.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXOBJLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp" />
-    <ClCompile Include="..\..\Sources\GXCommon\GXTime.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFile.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXLogger.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMemoryInspector.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXSmartLock.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXString.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXThread.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXTime.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXUIntAtomic.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXUPointerAtomic.cpp" />
     <ClCompile Include="..\..\Sources\GXEngineDLL\GXFreeType.cpp" />
     <ClCompile Include="..\..\Sources\GXEngineDLL\GXOGGVorbis.cpp" />
     <ClCompile Include="..\..\Sources\GXEngineDLL\GXOpenAL.cpp" />
@@ -151,6 +160,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>Freetype 2.5.3.lib;Ogg.lib;OpenAL.lib;Vorbis.lib;Vorbisfile.lib;XInput.lib;PhysX3_x64.lib;PhysX3Common_x64.lib;PhysX3Cooking_x64.lib;PhysX3Extensions.lib;PhysX3CharacterKinematic_x64.lib;PhysX3Vehicle.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:MSVCRT %(AdditionalOptions)</AdditionalOptions>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -176,7 +186,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>
@@ -191,6 +201,9 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <PrecompiledHeaderFile />
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalOptions>/wd4514 /wd4710 /wd4711 /wd4820 %(AdditionalOptions)</AdditionalOptions>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -198,13 +211,13 @@
       </EnableCOMDATFolding>
       <OptimizeReferences>
       </OptimizeReferences>
-      <GenerateDebugInformation>No</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>Freetype 2.5.3.lib;Ogg.lib;OpenAL32.lib;PhysX3_x64.lib;PhysX3CharacterKinematic_x64.lib;PhysX3Common_x64.lib;PhysX3Cooking_x64.lib;PhysX3Extensions.lib;PhysX3Vehicle.lib;Vorbis.lib;Vorbisfile.lib;XInput.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:libcmt.lib %(AdditionalOptions)</AdditionalOptions>
       <ImportLibrary />
-      <ProgramDatabaseFile />
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
       <Command>del "$(OutDir)$(TargetName).exp"

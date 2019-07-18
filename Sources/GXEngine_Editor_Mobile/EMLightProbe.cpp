@@ -21,85 +21,87 @@
 
 //----------------------------------------------------------------------------
 
-GXTexture2D EMLightProbe::brdfIntegrationMap;
-EMLightProbe* EMLightProbe::probes = nullptr;
+GXTexture2D EMLightProbe::_brdfIntegrationMap;
+EMLightProbe* EMLightProbe::_probes = nullptr;
 
 EMLightProbe::EMLightProbe ():
-    prev ( nullptr ),
-    next ( probes ),
-    locationWorld ( DEFAULT_LOCATION_X, DEFAULT_LOCATION_Y, DEFAULT_LOCATION_Z )
+    _previous ( nullptr ),
+    _next ( _probes ),
+    _locationWorld ( DEFAULT_LOCATION_X, DEFAULT_LOCATION_Y, DEFAULT_LOCATION_Z )
 {
-    if ( probes )
-        probes->prev = this;
+    if ( _probes )
+        _probes->_previous = this;
 
-    probes = this;
+    _probes = this;
 
-    GXFloat halfRangeX = 0.5f * DEFAULT_BOUND_RANGE_X;
-    GXFloat halfRangeY = 0.5f * DEFAULT_BOUND_RANGE_Y;
-    GXFloat halfRangeZ = 0.5f * DEFAULT_BOUND_RANGE_Z;
+    constexpr GXFloat halfRangeX = 0.5f * DEFAULT_BOUND_RANGE_X;
+    constexpr GXFloat halfRangeY = 0.5f * DEFAULT_BOUND_RANGE_Y;
+    constexpr GXFloat halfRangeZ = 0.5f * DEFAULT_BOUND_RANGE_Z;
 
-    boundsWorld.AddVertex ( locationWorld.GetX () - halfRangeX, locationWorld.GetY () - halfRangeY, locationWorld.GetZ () - halfRangeZ );
-    boundsWorld.AddVertex ( locationWorld.GetX () + halfRangeX, locationWorld.GetY () + halfRangeY, locationWorld.GetZ () + halfRangeZ );
+    _boundsWorld.AddVertex ( _locationWorld.GetX () - halfRangeX, _locationWorld.GetY () - halfRangeY, _locationWorld.GetZ () - halfRangeZ );
+    _boundsWorld.AddVertex ( _locationWorld.GetX () + halfRangeX, _locationWorld.GetY () + halfRangeY, _locationWorld.GetZ () + halfRangeZ );
 
-    cube.LoadMesh ( CUBE_MESH );
-    screenQuad.LoadMesh ( SCREEN_QUAD_MESH );
+    _cube.LoadMesh ( CUBE_MESH );
+    _screenQuad.LoadMesh ( SCREEN_QUAD_MESH );
 
-    if ( brdfIntegrationMap.IsInitialized () ) return;
+    if ( _brdfIntegrationMap.IsInitialized () ) return;
 
-    brdfIntegratorMaterial.SetSamplesPerPixel ( DEFAULT_BRDF_INTEGRATION_MAP_SAMPLES_PER_PIXEL );
+    _brdfIntegratorMaterial.SetSamplesPerPixel ( DEFAULT_BRDF_INTEGRATION_MAP_SAMPLES_PER_PIXEL );
     SetBRDFIntegrationMapResolution ( DEFAULT_BRDF_INTEGRATION_MAP_RESOLUTION );
 }
 
 EMLightProbe::~EMLightProbe ()
 {
-    if ( next ) next->prev = prev;
+    if ( _next ) _next->_previous = _previous;
 
-    if ( prev )
-        prev->next = next;
+    if ( _previous )
+        _previous->_next = _next;
     else
-        probes = next;
+        _probes = _next;
 
-    if ( diffuseIrradiance.IsInitialized () )
-        diffuseIrradiance.FreeResources ();
+    if ( _diffuseIrradiance.IsInitialized () )
+        _diffuseIrradiance.FreeResources ();
 
-    if ( prefilteredEnvironmentMap.IsInitialized () )
-        prefilteredEnvironmentMap.FreeResources ();
+    if ( _prefilteredEnvironmentMap.IsInitialized () )
+        _prefilteredEnvironmentMap.FreeResources ();
 
-    if ( !probes && brdfIntegrationMap.IsInitialized () )
-        brdfIntegrationMap.FreeResources ();
+    if ( !_probes && _brdfIntegrationMap.IsInitialized () )
+    {
+        _brdfIntegrationMap.FreeResources ();
+    }
 }
 
 GXVoid EMLightProbe::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 {
-    locationWorld.Init ( x, y, z );
-    SetBoundLocal ( boundsWorld.GetWidth (), boundsWorld.GetHeight (), boundsWorld.GetDepth () );
+    _locationWorld.Init ( x, y, z );
+    SetBoundLocal ( _boundsWorld.GetWidth (), _boundsWorld.GetHeight (), _boundsWorld.GetDepth () );
 }
 
 GXVoid EMLightProbe::SetEnvironmentMap ( GXTextureCubeMap &cubeMap )
 {
-    environmentMap = &cubeMap;
+    _environmentMap = &cubeMap;
     UpdatePrefilteredEnvironmentMap ();
 
-    if ( !diffuseIrradiance.IsInitialized () )
-        diffuseIrradiance.InitResources ( DEFAULT_DIFFUSE_IRRADIANCE_RESOLUTION, GL_RGB16F, GL_FALSE );
+    if ( !_diffuseIrradiance.IsInitialized () )
+        _diffuseIrradiance.InitResources ( DEFAULT_DIFFUSE_IRRADIANCE_RESOLUTION, GL_RGB16F, GL_FALSE );
 
     UpdateDiffuseIrradiance ();
 }
 
 GXVoid EMLightProbe::SetBoundLocal ( GXFloat xRange, GXFloat yRange, GXFloat zRange )
 {
-    GXFloat halfRangeX = 0.5f * xRange;
-    GXFloat halfRangeY = 0.5f * yRange;
-    GXFloat halfRangeZ = 0.5f * zRange;
+    const GXFloat halfRangeX = 0.5f * xRange;
+    const GXFloat halfRangeY = 0.5f * yRange;
+    const GXFloat halfRangeZ = 0.5f * zRange;
 
-    boundsWorld.Empty ();
-    boundsWorld.AddVertex ( locationWorld.GetX () - halfRangeX, locationWorld.GetY () - halfRangeY, locationWorld.GetZ () - halfRangeZ );
-    boundsWorld.AddVertex ( locationWorld.GetX () + halfRangeX, locationWorld.GetY () + halfRangeY, locationWorld.GetZ () + halfRangeZ );
+    _boundsWorld.Empty ();
+    _boundsWorld.AddVertex ( _locationWorld.GetX () - halfRangeX, _locationWorld.GetY () - halfRangeY, _locationWorld.GetZ () - halfRangeZ );
+    _boundsWorld.AddVertex ( _locationWorld.GetX () + halfRangeX, _locationWorld.GetY () + halfRangeY, _locationWorld.GetZ () + halfRangeZ );
 }
 
 GXUInt EMLightProbe::SetDiffuseIrradianceConvolutionAngleStep ( GXFloat radians )
 {
-    GXUInt samples = diffuseIrradianceGeneratorMaterial.SetAngleStep ( radians );
+    GXUInt samples = _diffuseIrradianceGeneratorMaterial.SetAngleStep ( radians );
     UpdateDiffuseIrradiance ();
 
     return samples;
@@ -107,41 +109,41 @@ GXUInt EMLightProbe::SetDiffuseIrradianceConvolutionAngleStep ( GXFloat radians 
 
 GXVoid EMLightProbe::SetDiffuseIrradianceResolution ( GXUShort resolution )
 {
-    if ( diffuseIrradiance.IsInitialized () )
-        diffuseIrradiance.FreeResources ();
+    if ( _diffuseIrradiance.IsInitialized () )
+        _diffuseIrradiance.FreeResources ();
 
-    diffuseIrradiance.InitResources ( resolution, GL_RGB16F, GX_FALSE );
+    _diffuseIrradiance.InitResources ( resolution, GL_RGB16F, GX_FALSE );
     UpdateDiffuseIrradiance ();
 }
 
 GXVoid EMLightProbe::SetBRDFIntegrationMapResolution ( GXUShort length )
 {
-    if ( brdfIntegrationMap.IsInitialized () )
-        brdfIntegrationMap.FreeResources ();
+    if ( _brdfIntegrationMap.IsInitialized () )
+        _brdfIntegrationMap.FreeResources ();
 
-    brdfIntegrationMap.InitResources ( length, length, GL_RG16F, GL_TRUE );
+    _brdfIntegrationMap.InitResources ( length, length, GL_RG16F, GL_TRUE );
     UpdateBRDFIntegrationMap ();
 }
 
 GXVoid EMLightProbe::SetBRDFIntegrationMapSamplesPerPixel ( GXUShort samples )
 {
-    brdfIntegratorMaterial.SetSamplesPerPixel ( samples );
+    _brdfIntegratorMaterial.SetSamplesPerPixel ( samples );
     UpdateBRDFIntegrationMap ();
 }
 
 GXTextureCubeMap& EMLightProbe::GetDiffuseIrradiance ()
 {
-    return diffuseIrradiance;
+    return _diffuseIrradiance;
 }
 
 GXTextureCubeMap& EMLightProbe::GetPrefilteredEnvironmentMap ()
 {
-    return prefilteredEnvironmentMap;
+    return _prefilteredEnvironmentMap;
 }
 
 GXTexture2D& EMLightProbe::GetBRDFIntegrationMap ()
 {
-    return brdfIntegrationMap;
+    return _brdfIntegrationMap;
 }
 
 GXVoid EMLightProbe::UpdateDiffuseIrradiance ()
@@ -152,7 +154,7 @@ GXVoid EMLightProbe::UpdateDiffuseIrradiance ()
     GLuint fbo;
     glGenFramebuffers ( 1, &fbo );
     glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
-    glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, diffuseIrradiance.GetTextureObject (), 0 );
+    glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _diffuseIrradiance.GetTextureObject (), 0 );
     glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0u, 0 );
     glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0u, 0 );
     glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0u, 0 );
@@ -170,10 +172,10 @@ GXVoid EMLightProbe::UpdateDiffuseIrradiance ()
     glStencilMask ( 0x00u );
     glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE );
 
-    GLsizei length = static_cast<GLsizei> ( diffuseIrradiance.GetFaceLength () );
+    GLsizei length = static_cast<GLsizei> ( _diffuseIrradiance.GetFaceLength () );
     glViewport ( 0, 0, length, length );
 
-    static const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
+    constexpr GLenum buffers[ 1u ] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers ( 1, buffers );
 
     GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
@@ -181,11 +183,11 @@ GXVoid EMLightProbe::UpdateDiffuseIrradiance ()
     if ( status != GL_FRAMEBUFFER_COMPLETE )
         GXLogA ( "EMLightProbe::UpdateDiffuseIrradiance::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
-    diffuseIrradianceGeneratorMaterial.SetEnvironmentMap ( *environmentMap );
-    diffuseIrradianceGeneratorMaterial.SetAngleStep ( DEFAULT_DIFFUSE_IRRADIANCE_CONVOLUTION_ANGLE_STEP );
-    diffuseIrradianceGeneratorMaterial.Bind ( GXTransform::GetNullTransform () );
-    cube.Render ();
-    diffuseIrradianceGeneratorMaterial.Unbind ();
+    _diffuseIrradianceGeneratorMaterial.SetEnvironmentMap ( *_environmentMap );
+    _diffuseIrradianceGeneratorMaterial.SetAngleStep ( DEFAULT_DIFFUSE_IRRADIANCE_CONVOLUTION_ANGLE_STEP );
+    _diffuseIrradianceGeneratorMaterial.Bind ( GXTransform::GetNullTransform () );
+    _cube.Render ();
+    _diffuseIrradianceGeneratorMaterial.Unbind ();
 
     glBindFramebuffer ( GL_FRAMEBUFFER, 0u );
     glDeleteFramebuffers ( 1, &fbo );
@@ -198,7 +200,7 @@ GXVoid EMLightProbe::UpdatePrefilteredEnvironmentMap ()
     GXOpenGLState state;
     state.Save ();
 
-    GXUShort length = environmentMap->GetFaceLength ();
+    GXUShort length = _environmentMap->GetFaceLength ();
 
     GLuint fbo;
     glGenFramebuffers ( 1, &fbo );
@@ -222,23 +224,23 @@ GXVoid EMLightProbe::UpdatePrefilteredEnvironmentMap ()
 
     glViewport ( 0, 0, static_cast<GLsizei> ( length ), static_cast<GLsizei> ( length ) );
 
-    static const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
+    constexpr GLenum buffers[ 1u ] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers ( 1, buffers );
 
-    if ( prefilteredEnvironmentMap.IsInitialized () )
-        prefilteredEnvironmentMap.FreeResources ();
+    if ( _prefilteredEnvironmentMap.IsInitialized () )
+        _prefilteredEnvironmentMap.FreeResources ();
 
-    prefilteredEnvironmentMap.InitResources ( length, GL_RGB16F, GL_TRUE );
+    _prefilteredEnvironmentMap.InitResources ( length, GL_RGB16F, GL_TRUE );
 
-    prefilteredEnvironmentMapGeneratorMaterial.SetEnvironmentMap ( *environmentMap );
+    _prefilteredEnvironmentMapGeneratorMaterial.SetEnvironmentMap ( *_environmentMap );
 
-    GXFloat roughnessStep = 1.0f / static_cast<GXFloat> ( prefilteredEnvironmentMap.GetLevelOfDetailNumber () - 1 );
+    const GXFloat roughnessStep = 1.0f / static_cast<GXFloat> ( _prefilteredEnvironmentMap.GetLevelOfDetailNumber () - 1 );
     GLint mipmapLevel = 0;
     GLsizei currentResolution = static_cast<GLsizei> ( length );
 
     for ( GXFloat rougness = 0.0f; rougness < 1.0f; rougness += roughnessStep )
     {
-        glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, prefilteredEnvironmentMap.GetTextureObject (), mipmapLevel );
+        glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _prefilteredEnvironmentMap.GetTextureObject (), mipmapLevel );
 
         glViewport ( 0, 0, currentResolution, currentResolution );
 
@@ -251,10 +253,10 @@ GXVoid EMLightProbe::UpdatePrefilteredEnvironmentMap ()
             continue;
         }
 
-        prefilteredEnvironmentMapGeneratorMaterial.SetRoughness ( rougness );
-        prefilteredEnvironmentMapGeneratorMaterial.Bind ( GXTransform::GetNullTransform () );
-        cube.Render ();
-        prefilteredEnvironmentMapGeneratorMaterial.Unbind ();
+        _prefilteredEnvironmentMapGeneratorMaterial.SetRoughness ( rougness );
+        _prefilteredEnvironmentMapGeneratorMaterial.Bind ( GXTransform::GetNullTransform () );
+        _cube.Render ();
+        _prefilteredEnvironmentMapGeneratorMaterial.Unbind ();
 
         currentResolution /= 2;
 
@@ -275,7 +277,7 @@ GXVoid EMLightProbe::UpdateBRDFIntegrationMap ()
     GLuint fbo;
     glGenFramebuffers ( 1, &fbo );
     glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
-    glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, brdfIntegrationMap.GetTextureObject (), 0 );
+    glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _brdfIntegrationMap.GetTextureObject (), 0 );
     glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0u, 0 );
     glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0u, 0 );
     glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0u, 0 );
@@ -293,9 +295,9 @@ GXVoid EMLightProbe::UpdateBRDFIntegrationMap ()
     glStencilMask ( 0x00u );
     glColorMask ( GL_TRUE, GL_TRUE, GL_FALSE, GL_FALSE );
 
-    glViewport ( 0, 0, static_cast<GLsizei> ( brdfIntegrationMap.GetWidth () ), static_cast<GLsizei> ( brdfIntegrationMap.GetHeight () ) );
+    glViewport ( 0, 0, static_cast<GLsizei> ( _brdfIntegrationMap.GetWidth () ), static_cast<GLsizei> ( _brdfIntegrationMap.GetHeight () ) );
 
-    static const GLenum buffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
+    constexpr GLenum buffers[ 1u ] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers ( 1, buffers );
 
     GLenum status = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
@@ -303,19 +305,19 @@ GXVoid EMLightProbe::UpdateBRDFIntegrationMap ()
     if ( status != GL_FRAMEBUFFER_COMPLETE )
         GXLogA ( "EMLightProbe::UpdateBRDFIntegrationMap::Error - Что-то не так с FBO (ошибка 0x%08x)\n", status );
 
-    brdfIntegratorMaterial.Bind ( GXTransform::GetNullTransform () );
-    screenQuad.Render ();
-    diffuseIrradianceGeneratorMaterial.Unbind ();
+    _brdfIntegratorMaterial.Bind ( GXTransform::GetNullTransform () );
+    _screenQuad.Render ();
+    _diffuseIrradianceGeneratorMaterial.Unbind ();
 
     glBindFramebuffer ( GL_FRAMEBUFFER, 0u );
     glDeleteFramebuffers ( 1, &fbo );
 
     state.Restore ();
 
-    brdfIntegrationMap.UpdateMipmaps ();
+    _brdfIntegrationMap.UpdateMipmaps ();
 }
 
 EMLightProbe* EMLightProbe::GetProbes ()
 {
-    return probes;
+    return _probes;
 }

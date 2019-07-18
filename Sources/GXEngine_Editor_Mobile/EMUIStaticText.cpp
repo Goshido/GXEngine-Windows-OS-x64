@@ -15,8 +15,8 @@
 class EMUIStaticTextRenderer final : public GXWidgetRenderer
 {
     private:
-        GXFont              font;
-        GXHudSurface*       surface;
+        GXFont              _font;
+        GXHudSurface*       _surface;
 
     public:
         explicit EMUIStaticTextRenderer ( GXUIStaticText* staticTextWidget );
@@ -37,65 +37,65 @@ class EMUIStaticTextRenderer final : public GXWidgetRenderer
 
 EMUIStaticTextRenderer::EMUIStaticTextRenderer ( GXUIStaticText* staticTextWidget ):
     GXWidgetRenderer ( staticTextWidget ),
-    font ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) )
+    _font ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) )
 {
     const GXAABB& boundsLocal = widget->GetBoundsWorld ();
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
-    surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
+    _surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
 EMUIStaticTextRenderer::~EMUIStaticTextRenderer ()
 {
-    delete surface;
+    delete _surface;
 }
 
 GXVoid EMUIStaticTextRenderer::OnRefresh ()
 {
-    GXUIStaticText* staticText = static_cast<GXUIStaticText*> ( widget );
+    const GXUIStaticText* staticText = static_cast<const GXUIStaticText*> ( widget );
 
-    surface->Reset ();
-    GXFloat h = static_cast<GXFloat> ( surface->GetHeight () );
+    _surface->Reset ();
+    const GXFloat h = static_cast<GXFloat> ( _surface->GetHeight () );
     const GXWChar* text = staticText->GetText ();
 
     if ( !text ) return;
 
     GXPenInfo pi;
-    pi.font = &font;
-    pi.insertY = ( h - font.GetSize () * 0.6f ) * 0.5f;
-    pi.overlayType = eGXImageOverlayType::SimpleReplace;
-    pi.color = staticText->GetTextColor ();
+    pi._font = &_font;
+    pi._insertY = ( h - _font.GetSize () * 0.6f ) * 0.5f;
+    pi._overlayType = eGXImageOverlayType::SimpleReplace;
+    pi._color = staticText->GetTextColor ();
 
     switch ( staticText->GetAlignment () )
     {
         case eGXUITextAlignment::Left:
-            pi.insertX = 0.0f;
+            pi._insertX = 0.0f;
         break;
 
         case eGXUITextAlignment::Right:
         {
-            GXFloat w = static_cast<GXFloat> ( surface->GetWidth () );
-            GXFloat len = static_cast<GXFloat> ( font.GetTextLength ( 0u, staticText->GetText () ) );
-            pi.insertX = w - len;
+            const GXFloat w = static_cast<GXFloat> ( _surface->GetWidth () );
+            const GXFloat len = static_cast<GXFloat> ( _font.GetTextLength ( 0u, staticText->GetText () ) );
+            pi._insertX = w - len;
         }
         break;
 
         case eGXUITextAlignment::Center:
         {
-            GXFloat w = static_cast<GXFloat> ( surface->GetWidth () );
-            GXFloat len = static_cast<GXFloat> ( font.GetTextLength ( 0u, staticText->GetText () ) );
-            pi.insertX = ( w - len ) * 0.5f;
+            const GXFloat w = static_cast<GXFloat> ( _surface->GetWidth () );
+            const GXFloat len = static_cast<GXFloat> ( _font.GetTextLength ( 0u, staticText->GetText () ) );
+            pi._insertX = ( w - len ) * 0.5f;
         }
         break;
     }
 
-    surface->AddText ( pi, 0u, staticText->GetText () );
+    _surface->AddText ( pi, 0u, staticText->GetText () );
 }
 
 GXVoid EMUIStaticTextRenderer::OnDraw ()
 {
     glDisable ( GL_DEPTH_TEST );
-    surface->Render ();
+    _surface->Render ();
     glEnable ( GL_DEPTH_TEST );
 }
 
@@ -105,13 +105,13 @@ GXVoid EMUIStaticTextRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width,
     y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
     GXVec3 location;
-    surface->GetLocation ( location );
-    delete surface;
+    _surface->GetLocation ( location );
+    delete _surface;
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
-    surface = new GXHudSurface ( width, height );
+    _surface = new GXHudSurface ( width, height );
 
-    surface->SetLocation ( x, y, location.data[ 2u ] );
+    _surface->SetLocation ( x, y, location._data[ 2u ] );
 }
 
 GXVoid EMUIStaticTextRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -120,62 +120,62 @@ GXVoid EMUIStaticTextRenderer::OnMoved ( GXFloat x, GXFloat y )
     y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
     GXVec3 location;
-    surface->GetLocation ( location );
-    surface->SetLocation ( x, y, location.data[ 2 ] );
+    _surface->GetLocation ( location );
+    _surface->SetLocation ( x, y, location._data[ 2 ] );
 }
 
 //------------------------------------------------------------------------------
 
 EMUIStaticText::EMUIStaticText ( EMUI* parent ) :
     EMUI ( parent ),
-    widget ( new GXUIStaticText ( parent ? parent->GetWidget () : nullptr ) )
+    _widget ( new GXUIStaticText ( parent ? parent->GetWidget () : nullptr ) )
 {
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticTextRenderer" );
-    widget->SetRenderer ( new EMUIStaticTextRenderer ( widget ) );
+    _widget->SetRenderer ( new EMUIStaticTextRenderer ( _widget ) );
 }
 
 EMUIStaticText::~EMUIStaticText ()
 {
-    delete widget->GetRenderer ();
-    delete widget;
+    delete _widget->GetRenderer ();
+    delete _widget;
 }
 
 GXWidget* EMUIStaticText::GetWidget () const
 {
-    return widget;
+    return _widget;
 }
 
 GXVoid EMUIStaticText::SetText ( const GXWChar* text )
 {
-    widget->SetText ( text );
+    _widget->SetText ( text );
 }
 
 const GXWChar* EMUIStaticText::GetText () const
 {
-    return widget->GetText ();
+    return _widget->GetText ();
 }
 
 GXVoid EMUIStaticText::SetTextColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
 {
-    widget->SetTextColor ( red, green, blue, alpha );
+    _widget->SetTextColor ( red, green, blue, alpha );
 }
 
 const GXColorRGB& EMUIStaticText::GetTextColor () const
 {
-    return widget->GetTextColor ();
+    return _widget->GetTextColor ();
 }
 
 GXVoid EMUIStaticText::SetAlingment ( eGXUITextAlignment alignment )
 {
-    widget->SetAlignment ( alignment );
+    _widget->SetAlignment ( alignment );
 }
 
 eGXUITextAlignment EMUIStaticText::GetAlignment () const
 {
-    return widget->GetAlignment ();
+    return _widget->GetAlignment ();
 }
 
 GXVoid EMUIStaticText::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height )
 {
-    widget->Resize ( bottomLeftX, bottomLeftY, width, height );
+    _widget->Resize ( bottomLeftX, bottomLeftY, width, height );
 }

@@ -4,38 +4,41 @@
 #include <GXCommon/GXLogger.h>
 
 
-static EMUI* em_UIElements = nullptr;
-
+EMUI* EMUI::_uiElements = nullptr;
 
 EMUI::EMUI ( EMUI* parent ):
-	next ( em_UIElements ),
-	prev ( nullptr ),
-	parent ( parent )
+    _next ( _uiElements ),
+    _previous ( nullptr ),
+    _parent ( parent )
 {
-	if ( em_UIElements )
-		em_UIElements->prev = this;
+    if ( _uiElements )
+        _uiElements->_previous = this;
 
-	em_UIElements = this;
+    _uiElements = this;
 }
 
 EMUI::~EMUI ()
 {
-	if ( next ) next->prev = prev;
+    if ( _next )
+        _next->_previous = _previous;
 
-	if ( prev ) 
-		prev->next = next;
-	else
-		em_UIElements = next;
+    if ( _previous )
+    {
+        _previous->_next = _next;
+        return;
+    }
+
+    _uiElements = _next;
 }
 
 GXVoid EMUI::ToForeground ()
 {
-	GetWidget ()->ToForeground ();
+    GetWidget ()->ToForeground ();
 }
 
 //--------------------------------------------------------------
 
 GXVoid GXCALL EMDrawUI ()
 {
-	GXTouchSurface::GetInstance ().DrawWidgets ();
+    GXTouchSurface::GetInstance ().DrawWidgets ();
 }

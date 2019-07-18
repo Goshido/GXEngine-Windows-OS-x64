@@ -1,4 +1,4 @@
-// version 1.19
+// version 1.20
 
 #include <GXEngine/GXInput.h>
 #include <GXEngine/GXCore.h>
@@ -19,216 +19,216 @@ GX_RESTORE_WARNING_STATE
 #define INPUT_INV_STICK_VALUE       3.0519e-5f
 #define INPUT_INV_TRIGGER_VALUE     3.9216e-3f
 
+//---------------------------------------------------------------------------------------------------------------------
 
 extern HMODULE gx_GXEngineDLLModuleHandle;
 
+GXThread*                   GXInput::_thread = nullptr;
+GXBool                      GXInput::_loopFlag = false;
 
-GXThread*                   GXInput::thread = nullptr;
-GXBool                      GXInput::loopFlag = false;
+GXVoid*                     GXInput::_keysHandlers[ GX_INPUT_TOTAL_KEYBOARD_KEYS ];
+GXInputKeyHandler           GXInput::_KeysMapping[ GX_INPUT_TOTAL_KEYBOARD_KEYS ];
+GXBool                      GXInput::_keysMask[ GX_INPUT_TOTAL_KEYBOARD_KEYS ];
 
-GXVoid*                     GXInput::keysHandlers[ GX_INPUT_TOTAL_KEYBOARD_KEYS ];
-PFNGXKEYPROC                GXInput::KeysMapping[ GX_INPUT_TOTAL_KEYBOARD_KEYS ];
-GXBool                      GXInput::keysMask[ GX_INPUT_TOTAL_KEYBOARD_KEYS ];
+GXVoid*                     GXInput::_onTypeContext = nullptr;
+GXInputTypeHandler          GXInput::_onType = nullptr;
+GXWChar                     GXInput::_symbol;
 
-GXVoid*                     GXInput::onTypeHandler = nullptr;
-PFNGXTYPEPROC               GXInput::OnType = nullptr;
-GXWChar                     GXInput::symbol;
+XINPUT_STATE                GXInput::_gamepadState[ 2u ];
+GXUByte                     GXInput::_currentGamepadState;
 
-XINPUT_STATE                GXInput::gamepadState[ 2u ];
-GXUByte                     GXInput::currentGamepadState;
+GXVoid*                     GXInput::_gamepadKeysHandlers[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2 ];
+GXInputKeyHandler           GXInput::_gamepadKeysMapping[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2 ];
+GXByte                      GXInput::_gamepadKeysMask[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2 ];
 
-GXVoid*                     GXInput::gamepadKeysHandlers[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2 ];
-PFNGXKEYPROC                GXInput::GamepadKeysMapping[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2 ];
-GXByte                      GXInput::gamepadKeysMask[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2 ];
+GXVoid*                     GXInput::_onLeftTriggerContext = nullptr;
+GXInputTriggerHandler       GXInput::_doLeftTrigger = nullptr;
 
-GXVoid*                     GXInput::onLeftTriggerHandler = nullptr;
-PFNGXTRIGGERPROC            GXInput::DoLeftTrigger = nullptr;
+GXVoid*                     GXInput::_onRightTriggerContext = nullptr;
+GXInputTriggerHandler       GXInput::_doRightTrigger = nullptr;
 
-GXVoid*                     GXInput::onRightTriggerHandler = nullptr;
-PFNGXTRIGGERPROC            GXInput::DoRightTrigger = nullptr;
+GXVoid*                     GXInput::_onLeftStickContext = nullptr;
+GXInputStickHandler         GXInput::_doLeftStick = nullptr;
 
-GXVoid*                     GXInput::onLeftStickHandler = nullptr;
-PFNGXSTICKPROC              GXInput::DoLeftStick = nullptr;
+GXVoid*                     GXInput::_onRightStickContext = nullptr;
+GXInputStickHandler         GXInput::_doRightStick = nullptr;
 
-GXVoid*                     GXInput::onRightStickTrigger = nullptr;
-PFNGXSTICKPROC              GXInput::DoRightStick = nullptr;
+GXVoid*                     GXInput::_onMouseMoveContext = nullptr;
+GXInputMouseMoveHandler     GXInput::_doMouseMoving = nullptr;
 
-GXVoid*                     GXInput::onMouseMoveHandler = nullptr;
-PFNGXMOUSEMOVEPROC          GXInput::DoMouseMoving = nullptr;
+GXVoid*                     GXInput::_onMouseButtonContext = nullptr;
+GXInputMouseButtonHandler   GXInput::_doMouseButton = nullptr;
 
-GXVoid*                     GXInput::onMouseButtonHandler = nullptr;
-PFNGXMOUSEBUTTONSPROC       GXInput::DoMouseButton = nullptr;
+GXVoid*                     GXInput::_onMouseWheelContext = nullptr;
+GXInputMouseHandler         GXInput::_doMouseWheel = nullptr;
 
-GXVoid*                     GXInput::onMouseWheelHandler = nullptr;
-PFNGXMOUSEWHEELPROC         GXInput::DoMouseWheel = nullptr;
+GXInputMouseFlags           GXInput::_mouseflags;
 
-GXInputMouseFlags           GXInput::mouseflags;
+eGXInputDevice              GXInput::_activeInputDevice = eGXInputDevice::Keyboard;
 
-eGXInputDevice              GXInput::activeInputDevice = eGXInputDevice::Keyboard;
+XIXInputGetState            GXInput::_xInputGetState = nullptr;
+XIXInputEnable              GXInput::_xInputEnable = nullptr;
 
-PFNXINPUTGETSTATEPROC       GXInput::XInputGetState = nullptr;
-PFNXINPUTENABLEPROC         GXInput::XInputEnable = nullptr;
-
-GXInput*                    GXInput::instance = nullptr;
+GXInput*                    GXInput::_instance = nullptr;
 
 
 GXInput& GXCALL GXInput::GetInstance ()
 {
-    if ( !instance )
-        instance = new GXInput ();
+    if ( !_instance )
+        _instance = new GXInput ();
 
-    return *instance;
+    return *_instance;
 }
 
 GXInput::~GXInput ()
 {
     DestroyXInputLibrary ();
-    delete thread;
+    delete _thread;
 }
 
 GXVoid GXInput::Start ()
 {
-    thread->Start ();
+    _thread->Start ();
 }
 
 GXVoid GXInput::Shutdown ()
 {
-    loopFlag = GX_FALSE;
-    thread->Join ();
+    _loopFlag = GX_FALSE;
+    _thread->Join ();
 }
 
-GXVoid GXInput::BindKeyCallback ( GXVoid* handler, PFNGXKEYPROC callback, GXInt vk_key, eGXInputButtonState eState )
+GXVoid GXInput::BindKeyCallback ( GXVoid* context, GXInputKeyHandler callback, GXInt virtualKeyCode, eGXInputButtonState state )
 {
-    GXUShort i = ( eState == eGXInputButtonState::Down ) ? static_cast<GXUShort> ( vk_key * 2 ) : static_cast<GXUShort> ( ( vk_key * 2 ) + 1 );
+    const GXUShort i = ( state == eGXInputButtonState::Down ) ? static_cast<GXUShort> ( virtualKeyCode * 2 ) : static_cast<GXUShort> ( ( virtualKeyCode * 2 ) + 1 );
 
-    keysMask[ i ] = GX_FALSE;
-    KeysMapping[ i ] = callback;
-    keysHandlers[ i ] = handler;
+    _keysMask[ i ] = GX_FALSE;
+    _KeysMapping[ i ] = callback;
+    _keysHandlers[ i ] = context;
 }
 
-GXVoid GXInput::UnbindKeyCallback ( GXInt vk_key, eGXInputButtonState eState  )
+GXVoid GXInput::UnbindKeyCallback ( GXInt virtualKeyCode, eGXInputButtonState state )
 {
-    GXUShort i = ( eState == eGXInputButtonState::Down ) ? static_cast<GXUShort> ( vk_key * 2 ) : static_cast<GXUShort> ( ( vk_key * 2 ) + 1 );
+    const GXUShort i = ( state == eGXInputButtonState::Down ) ? static_cast<GXUShort> ( virtualKeyCode * 2 ) : static_cast<GXUShort> ( ( virtualKeyCode * 2 ) + 1 );
 
-    keysMask[ i ] = GX_FALSE;
-    KeysMapping[ i ] = nullptr;
-    keysHandlers[ i ] = nullptr;
+    _keysMask[ i ] = GX_FALSE;
+    _KeysMapping[ i ] = nullptr;
+    _keysHandlers[ i ] = nullptr;
 }
 
-GXVoid GXInput::BindTypeCallback ( GXVoid* handler, PFNGXTYPEPROC callback )
+GXVoid GXInput::BindTypeCallback ( GXVoid* context, GXInputTypeHandler callback )
 {
-    onTypeHandler = handler;
-    OnType = callback;
-    symbol = 0;
+    _onTypeContext = context;
+    _onType = callback;
+    _symbol = 0;
 }
 
 GXVoid GXInput::UnbindTypeCallback ()
 {
-    onTypeHandler = nullptr;
-    OnType = nullptr;
-    symbol = 0;
+    _onTypeContext = nullptr;
+    _onType = nullptr;
+    _symbol = 0;
 }
 
-GXVoid GXInput::BindMouseMoveCallback ( GXVoid* handler, PFNGXMOUSEMOVEPROC callback )
+GXVoid GXInput::BindMouseMoveCallback ( GXVoid* context, GXInputMouseMoveHandler callback )
 {
-    onMouseMoveHandler = handler;
-    DoMouseMoving = callback;
+    _onMouseMoveContext = context;
+    _doMouseMoving = callback;
 }
 
 GXVoid GXInput::UnbindMouseMoveCallback ()
 {
-    onMouseMoveHandler = nullptr;
-    DoMouseMoving = nullptr;
+    _onMouseMoveContext = nullptr;
+    _doMouseMoving = nullptr;
 }
 
-GXVoid GXInput::BindMouseButtonCallback ( GXVoid* handler, PFNGXMOUSEBUTTONSPROC callback )
+GXVoid GXInput::BindMouseButtonCallback ( GXVoid* context, GXInputMouseButtonHandler callback )
 {
-    onMouseButtonHandler = handler;
-    DoMouseButton = callback;
+    _onMouseButtonContext = context;
+    _doMouseButton = callback;
 }
 
 GXVoid GXInput::UnbindMouseButtonCallback ()
 {
-    onMouseButtonHandler = nullptr;
-    DoMouseButton = nullptr;
+    _onMouseButtonContext = nullptr;
+    _doMouseButton = nullptr;
 }
 
-GXVoid GXInput::BindMouseWheelCallback ( GXVoid* handler, PFNGXMOUSEWHEELPROC callback )
+GXVoid GXInput::BindMouseWheelCallback ( GXVoid* context, GXInputMouseHandler callback )
 {
-    onMouseWheelHandler = handler;
-    DoMouseWheel = callback;
+    _onMouseWheelContext = context;
+    _doMouseWheel = callback;
 }
 
 GXVoid GXInput::UnbindMouseWheelCallback ()
 {
-    onMouseWheelHandler = nullptr;
-    DoMouseWheel = nullptr;
+    _onMouseWheelContext = nullptr;
+    _doMouseWheel = nullptr;
 }
 
-GXVoid GXInput::BindGamepadKeyCallback ( GXVoid* handler, PFNGXKEYPROC callback, GXInt gamepad_key, eGXInputButtonState eState )
+GXVoid GXInput::BindGamepadKeyCallback ( GXVoid* context, GXInputKeyHandler callback, GXInt gamepadKey, eGXInputButtonState state )
 {
-    GXUByte i = ( eState == eGXInputButtonState::Down ) ? static_cast<GXUByte> ( gamepad_key * 2 ) : static_cast<GXUByte> ( ( gamepad_key * 2 ) + 1 );
+    const GXUByte i = ( state == eGXInputButtonState::Down ) ? static_cast<GXUByte> ( gamepadKey * 2 ) : static_cast<GXUByte> ( ( gamepadKey * 2 ) + 1 );
 
-    gamepadKeysHandlers[ i ] = handler;
-    GamepadKeysMapping[ i ] = callback;
-    gamepadKeysMask[ i ] = GX_FALSE;
+    _gamepadKeysHandlers[ i ] = context;
+    _gamepadKeysMapping[ i ] = callback;
+    _gamepadKeysMask[ i ] = GX_FALSE;
 }
 
-GXVoid GXInput::UnbindGamepadKeyCallback ( GXInt gamepad_key, eGXInputButtonState eState )
+GXVoid GXInput::UnbindGamepadKeyCallback ( GXInt gamepadKey, eGXInputButtonState state )
 {
-    GXUByte i = ( eState == eGXInputButtonState::Down ) ? static_cast<GXUByte> ( gamepad_key * 2 ) : static_cast<GXUByte> ( ( gamepad_key * 2 ) + 1 );
+    const GXUByte i = ( state == eGXInputButtonState::Down ) ? static_cast<GXUByte> ( gamepadKey * 2 ) : static_cast<GXUByte> ( ( gamepadKey * 2 ) + 1 );
 
-    gamepadKeysHandlers[ i ] = nullptr;
-    GamepadKeysMapping[ i ] = nullptr;
-    gamepadKeysMask[ i ] = GX_FALSE;
+    _gamepadKeysHandlers[ i ] = nullptr;
+    _gamepadKeysMapping[ i ] = nullptr;
+    _gamepadKeysMask[ i ] = GX_FALSE;
 }
 
-GXVoid GXInput::BindLeftTriggerCallback ( GXVoid* handler, PFNGXTRIGGERPROC callback )
+GXVoid GXInput::BindLeftTriggerCallback ( GXVoid* context, GXInputTriggerHandler callback )
 {
-    onLeftTriggerHandler = handler;
-    DoLeftTrigger = callback;
+    _onLeftTriggerContext = context;
+    _doLeftTrigger = callback;
 }
 
 GXVoid GXInput::UnbindLeftTriggerCallback ()
 {
-    onLeftTriggerHandler = nullptr;
-    DoLeftTrigger = nullptr;
+    _onLeftTriggerContext = nullptr;
+    _doLeftTrigger = nullptr;
 }
 
-GXVoid GXInput::BindRightTriggerCallback ( GXVoid* handler, PFNGXTRIGGERPROC callback )
+GXVoid GXInput::BindRightTriggerCallback ( GXVoid* context, GXInputTriggerHandler callback )
 {
-    onRightTriggerHandler = handler;
-    DoRightTrigger = callback;
+    _onRightTriggerContext = context;
+    _doRightTrigger = callback;
 }
 
 GXVoid GXInput::UnbindRightTriggerCallback ()
 {
-    onRightTriggerHandler = nullptr;
-    DoRightTrigger = nullptr;
+    _onRightTriggerContext = nullptr;
+    _doRightTrigger = nullptr;
 }
 
-GXVoid GXInput::BindLeftStickCallback ( GXVoid* handler, PFNGXSTICKPROC callback )
+GXVoid GXInput::BindLeftStickCallback ( GXVoid* context, GXInputStickHandler callback )
 {
-    onLeftStickHandler = handler;
-    DoLeftStick = callback;
+    _onLeftStickContext = context;
+    _doLeftStick = callback;
 }
 
 GXVoid GXInput::UnbindLeftStickCallback ()
 {
-    onLeftStickHandler = nullptr;
-    DoLeftStick = nullptr;
+    _onLeftStickContext = nullptr;
+    _doLeftStick = nullptr;
 }
 
-GXVoid GXInput::BindRightStickCallback ( GXVoid* handler, PFNGXSTICKPROC callback )
+GXVoid GXInput::BindRightStickCallback ( GXVoid* context, GXInputStickHandler callback )
 {
-    onRightTriggerHandler = handler;
-    DoRightStick = callback;
+    _onRightTriggerContext = context;
+    _doRightStick = callback;
 }
 
 GXVoid GXInput::UnbindRightStickCallback ()
 {
-    onRightTriggerHandler = nullptr;
-    DoRightStick = nullptr;
+    _onRightTriggerContext = nullptr;
+    _doRightStick = nullptr;
 }
 
 LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
@@ -255,12 +255,12 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
         case WM_KEYDOWN:
         case WM_SYSKEYDOWN:
         {
-            activeInputDevice = eGXInputDevice::Keyboard;
-            keysMask[ wParam << 1 ] = GX_TRUE;
+            _activeInputDevice = eGXInputDevice::Keyboard;
+            _keysMask[ wParam << 1 ] = GX_TRUE;
 
             GXTouchSurface::GetInstance ().OnKeyDown ( (GXInt)wParam );
 
-            if ( !OnType ) return 0;
+            if ( !_onType ) return 0;
 
             GXBool tests[ 6 ];
             tests[ 0 ] = wParam == VK_SPACE;
@@ -280,7 +280,7 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
             GXWChar buff[ 20 ];
 
             if ( ToUnicode ( static_cast<UINT> ( wParam ), static_cast<UINT> ( lParam ), inputKeys, buff, 20, 0u ) )
-                OnType ( onTypeHandler, buff[ 0 ] );
+                _onType ( _onTypeContext, buff[ 0 ] );
         }
         return 0;
 
@@ -288,7 +288,7 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
         case WM_SYSKEYUP:
         {
             GXTouchSurface::GetInstance ().OnKeyUp ( static_cast<GXInt> ( wParam ) );
-            keysMask[ ( wParam << 1 ) + 1 ] = GX_TRUE;
+            _keysMask[ ( wParam << 1 ) + 1 ] = GX_TRUE;
         }
         return 0;
 
@@ -298,10 +298,10 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
         
         case WM_LBUTTONDOWN:
         {
-            if ( DoMouseButton )
+            if ( _doMouseButton )
             {
-                mouseflags.lmb = 1;
-                DoMouseButton ( onMouseButtonHandler, mouseflags );
+                _mouseflags._leftMouseButton = 1;
+                _doMouseButton ( _onMouseButtonContext, _mouseflags );
             }
 
             GXVec2 pos;
@@ -314,10 +314,10 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
         
         case WM_RBUTTONDOWN:
         {
-            if ( DoMouseButton )
+            if ( _doMouseButton )
             {
-                mouseflags.rmb = 1;
-                DoMouseButton ( onMouseButtonHandler, mouseflags );
+                _mouseflags._rightMouseButton = 1;
+                _doMouseButton ( _onMouseButtonContext, _mouseflags );
             }
 
             GXVec2 pos;
@@ -330,10 +330,10 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
         case WM_MBUTTONDOWN:
         {
-            if ( DoMouseButton )
+            if ( _doMouseButton )
             {
-                mouseflags.mmb = GX_TRUE;
-                DoMouseButton ( onMouseButtonHandler, mouseflags );
+                _mouseflags._middleMouseButton = GX_TRUE;
+                _doMouseButton ( _onMouseButtonContext, _mouseflags );
             }
 
             GXVec2 pos;
@@ -346,10 +346,10 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
         
         case WM_LBUTTONUP:
         {
-            if ( DoMouseButton )
+            if ( _doMouseButton )
             {
-                mouseflags.lmb = GX_TRUE;
-                DoMouseButton ( onMouseButtonHandler, mouseflags );
+                _mouseflags._leftMouseButton = GX_TRUE;
+                _doMouseButton ( _onMouseButtonContext, _mouseflags );
             }
 
             GXVec2 pos;
@@ -362,10 +362,10 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
         
         case WM_RBUTTONUP:
         {
-            if ( DoMouseButton )
+            if ( _doMouseButton )
             {
-                mouseflags.rmb = GX_FALSE;
-                DoMouseButton ( onMouseButtonHandler, mouseflags );
+                _mouseflags._rightMouseButton = GX_FALSE;
+                _doMouseButton ( _onMouseButtonContext, _mouseflags );
             }
 
             GXVec2 pos;
@@ -378,10 +378,10 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
         case WM_MBUTTONUP:
         {
-            if ( DoMouseButton )
+            if ( _doMouseButton )
             {
-                mouseflags.mmb = 0;
-                DoMouseButton ( onMouseButtonHandler, mouseflags );
+                _mouseflags._middleMouseButton = 0;
+                _doMouseButton ( _onMouseButtonContext, _mouseflags );
             }
 
             GXVec2 pos;
@@ -394,8 +394,8 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
         
         case WM_MOUSEMOVE:
         {
-            if ( DoMouseMoving )
-                DoMouseMoving ( onMouseMoveHandler, LOWORD ( lParam ), HIWORD ( lParam ) );
+            if ( _doMouseMoving )
+                _doMouseMoving ( _onMouseMoveContext, LOWORD ( lParam ), HIWORD ( lParam ) );
 
             GXVec2 pos;
             pos.SetX ( static_cast<GXFloat> ( LOWORD ( lParam ) ) );
@@ -409,8 +409,8 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
         {
             GXInt steps = GET_WHEEL_DELTA_WPARAM ( wParam ) / WHEEL_DELTA;
 
-            if ( DoMouseWheel )
-                DoMouseWheel ( onMouseWheelHandler, steps );
+            if ( _doMouseWheel )
+                _doMouseWheel ( _onMouseWheelContext, steps );
 
             POINT posRaw;
             posRaw.x = GET_X_LPARAM ( lParam );
@@ -445,76 +445,76 @@ LRESULT CALLBACK GXInput::InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
 GXInput::GXInput ()
 {
-    activeInputDevice = eGXInputDevice::Keyboard;
+    _activeInputDevice = eGXInputDevice::Keyboard;
 
-    for ( GXInt i = 0; i < GX_INPUT_TOTAL_KEYBOARD_KEYS; ++i )
+    for ( GXUInt i = 0u; i < GX_INPUT_TOTAL_KEYBOARD_KEYS; ++i )
     {
-        keysMask[ i ] = GX_FALSE;
-        KeysMapping[ i ] = nullptr;
+        _keysMask[ i ] = GX_FALSE;
+        _KeysMapping[ i ] = nullptr;
     }
 
-    onTypeHandler = nullptr;
-    OnType = nullptr;
-    symbol = 0;
+    _onTypeContext = nullptr;
+    _onType = nullptr;
+    _symbol = 0;
     
-    mouseflags.lmb = false;
-    mouseflags.mmb = false;
-    mouseflags.rmb = false;
+    _mouseflags._leftMouseButton = false;
+    _mouseflags._middleMouseButton = false;
+    _mouseflags._rightMouseButton = false;
 
-    onMouseMoveHandler = nullptr;
-    DoMouseMoving = nullptr;
+    _onMouseMoveContext = nullptr;
+    _doMouseMoving = nullptr;
 
-    onMouseButtonHandler = nullptr;
-    DoMouseButton = nullptr;
+    _onMouseButtonContext = nullptr;
+    _doMouseButton = nullptr;
 
-    onMouseWheelHandler = nullptr;
-    DoMouseWheel = nullptr;
+    _onMouseWheelContext = nullptr;
+    _doMouseWheel = nullptr;
 
-    GXInt limit = GX_INPUT_TOTAL_GAMEPAD_KEYS * 2;
+    constexpr GXUInt limit = GX_INPUT_TOTAL_GAMEPAD_KEYS * 2u;
 
-    for ( GXInt i = 0; i < limit; ++i )
+    for ( GXUInt i = 0u; i < limit; ++i )
     {
-        gamepadKeysHandlers[ i ] = nullptr;
-        GamepadKeysMapping[ i ] = nullptr;
-        gamepadKeysMask[ i ] = GX_FALSE;
+        _gamepadKeysHandlers[ i ] = nullptr;
+        _gamepadKeysMapping[ i ] = nullptr;
+        _gamepadKeysMask[ i ] = GX_FALSE;
     }
 
-    onLeftStickHandler = onRightStickTrigger = nullptr;
-    DoLeftStick = DoRightStick = nullptr;
+    _onLeftStickContext = _onRightStickContext = nullptr;
+    _doLeftStick = _doRightStick = nullptr;
 
-    onLeftTriggerHandler = onRightTriggerHandler = nullptr;
-    DoLeftTrigger = DoRightTrigger = nullptr;
+    _onLeftTriggerContext = _onRightTriggerContext = nullptr;
+    _doLeftTrigger = _doRightTrigger = nullptr;
 
-    currentGamepadState = 0;
-    gamepadState[ 0 ].Gamepad.wButtons = gamepadState[ 1 ].Gamepad.wButtons = 0;
+    _currentGamepadState = 0u;
+    _gamepadState[ 0u ].Gamepad.wButtons = _gamepadState[ 1 ].Gamepad.wButtons = 0;
 
     InitXInputLibrary ();
 
-    loopFlag = GX_TRUE;
-    thread = new GXThread ( &InputLoop, nullptr );
+    _loopFlag = GX_TRUE;
+    _thread = new GXThread ( &InputLoop, nullptr );
 }
 
 GXUPointer GXTHREADCALL GXInput::InputLoop ( GXVoid* /*args*/, GXThread &inputThread )
 {
-    while ( loopFlag )
+    while ( _loopFlag )
     {
         UpdateGamepad ();
 
-        switch ( activeInputDevice )
+        switch ( _activeInputDevice )
         {
             case eGXInputDevice::Keyboard:
             {
                 for ( GXUShort i = 0u; i < GX_INPUT_TOTAL_KEYBOARD_KEYS; ++i )
                 {
-                    if ( keysMask[ i ] && KeysMapping[ i ] )
+                    if ( _keysMask[ i ] && _KeysMapping[ i ] )
                     {
-                        KeysMapping[ i ] ( keysHandlers[ i ] );
-                        keysMask[ i ] = GX_FALSE;
+                        _KeysMapping[ i ] ( _keysHandlers[ i ] );
+                        _keysMask[ i ] = GX_FALSE;
                     }
                 }
 
-                if ( OnType && symbol )
-                    OnType ( onTypeHandler, symbol );
+                if ( _onType && _symbol )
+                    _onType ( _onTypeContext, _symbol );
             }
             break;
 
@@ -526,10 +526,10 @@ GXUPointer GXTHREADCALL GXInput::InputLoop ( GXVoid* /*args*/, GXThread &inputTh
             {
                 for ( GXInt i = 0;  i < GX_INPUT_TOTAL_GAMEPAD_KEYS * 2; ++i )
                 {
-                    if ( GamepadKeysMapping[ i ] && gamepadKeysMask[ i ] )
+                    if ( _gamepadKeysMapping[ i ] && _gamepadKeysMask[ i ] )
                     {
-                        GamepadKeysMapping[ i ] ( gamepadKeysHandlers[ i ] );
-                        gamepadKeysMask[ i ] = GX_FALSE;
+                        _gamepadKeysMapping[ i ] ( _gamepadKeysHandlers[ i ] );
+                        _gamepadKeysMask[ i ] = GX_FALSE;
                     }
                 }
             }
@@ -545,46 +545,46 @@ GXUPointer GXTHREADCALL GXInput::InputLoop ( GXVoid* /*args*/, GXThread &inputTh
 GXBool GXInput::IsGamepadConnected ( GXDword gamepadID )
 {
     XINPUT_STATE state;
-    return XInputGetState ( gamepadID, &state ) != ERROR_DEVICE_NOT_CONNECTED;
+    return _xInputGetState ( gamepadID, &state ) != ERROR_DEVICE_NOT_CONNECTED;
 }
 
 GXVoid GXInput::TestGamepadButton ( GXDword buttonFlag, GXUChar buttonID )
 {
-    GXUByte oldGamepadState = ( currentGamepadState == 0 ) ? (GXUByte)1 : (GXUByte)0;
+    GXUByte oldGamepadState = ( _currentGamepadState == 0 ) ? (GXUByte)1 : (GXUByte)0;
 
-    if ( ( gamepadState[ currentGamepadState ].Gamepad.wButtons & buttonFlag ) && !( gamepadState[ oldGamepadState ].Gamepad.wButtons & buttonFlag ) )
+    if ( ( _gamepadState[ _currentGamepadState ].Gamepad.wButtons & buttonFlag ) && !( _gamepadState[ oldGamepadState ].Gamepad.wButtons & buttonFlag ) )
     {
-        activeInputDevice = eGXInputDevice::XBOXController;
-        gamepadKeysMask[ buttonID << 1 ] = GX_TRUE;
+        _activeInputDevice = eGXInputDevice::XBOXController;
+        _gamepadKeysMask[ buttonID << 1 ] = GX_TRUE;
     }
-    else if ( !( gamepadState[ currentGamepadState ].Gamepad.wButtons & buttonFlag ) && ( gamepadState[ oldGamepadState ].Gamepad.wButtons & buttonFlag ) )
+    else if ( !( _gamepadState[ _currentGamepadState ].Gamepad.wButtons & buttonFlag ) && ( _gamepadState[ oldGamepadState ].Gamepad.wButtons & buttonFlag ) )
     {
-        gamepadKeysMask[ ( buttonID << 1 ) + 1 ] = GX_TRUE;
+        _gamepadKeysMask[ ( buttonID << 1 ) + 1 ] = GX_TRUE;
     }
 }
 
 GXVoid GXInput::UpdateGamepad ()
 {
-    if ( XInputGetState ( 0u, &gamepadState[ currentGamepadState ] ) == ERROR_DEVICE_NOT_CONNECTED ) return;
+    if ( _xInputGetState ( 0u, &_gamepadState[ _currentGamepadState ] ) == ERROR_DEVICE_NOT_CONNECTED ) return;
     
-    if ( activeInputDevice == eGXInputDevice::XBOXController )
+    if ( _activeInputDevice == eGXInputDevice::XBOXController )
     {
-        if ( DoLeftStick )
-            DoLeftStick ( onLeftStickHandler, gamepadState[ currentGamepadState ].Gamepad.sThumbLX * INPUT_INV_STICK_VALUE, gamepadState[ currentGamepadState ].Gamepad.sThumbLY * INPUT_INV_STICK_VALUE );
+        if ( _doLeftStick )
+            _doLeftStick ( _onLeftStickContext, _gamepadState[ _currentGamepadState ].Gamepad.sThumbLX * INPUT_INV_STICK_VALUE, _gamepadState[ _currentGamepadState ].Gamepad.sThumbLY * INPUT_INV_STICK_VALUE );
 
-        if ( DoRightStick )
-            DoRightStick ( onRightStickTrigger, gamepadState[ currentGamepadState ].Gamepad.sThumbRX * INPUT_INV_STICK_VALUE, gamepadState[ currentGamepadState ].Gamepad.sThumbRY * INPUT_INV_STICK_VALUE );
+        if ( _doRightStick )
+            _doRightStick ( _onRightStickContext, _gamepadState[ _currentGamepadState ].Gamepad.sThumbRX * INPUT_INV_STICK_VALUE, _gamepadState[ _currentGamepadState ].Gamepad.sThumbRY * INPUT_INV_STICK_VALUE );
 
-        if ( DoLeftTrigger )
-            DoLeftTrigger ( onLeftTriggerHandler, gamepadState[ currentGamepadState ].Gamepad.bLeftTrigger * INPUT_INV_TRIGGER_VALUE );
+        if ( _doLeftTrigger )
+            _doLeftTrigger ( _onLeftTriggerContext, _gamepadState[ _currentGamepadState ].Gamepad.bLeftTrigger * INPUT_INV_TRIGGER_VALUE );
 
-        if ( DoRightTrigger )
-            DoRightTrigger ( onRightTriggerHandler, gamepadState[ currentGamepadState ].Gamepad.bRightTrigger * INPUT_INV_TRIGGER_VALUE );
+        if ( _doRightTrigger )
+            _doRightTrigger ( _onRightTriggerContext, _gamepadState[ _currentGamepadState ].Gamepad.bRightTrigger * INPUT_INV_TRIGGER_VALUE );
     }
 
-    GXUByte oldGamepadState = ( currentGamepadState == 0u ) ? 1u : 0u;
+    GXUByte oldGamepadState = ( _currentGamepadState == 0u ) ? 1u : 0u;
 
-    if ( gamepadState[ currentGamepadState ].dwPacketNumber == gamepadState[ oldGamepadState ].dwPacketNumber ) return;
+    if ( _gamepadState[ _currentGamepadState ].dwPacketNumber == _gamepadState[ oldGamepadState ].dwPacketNumber ) return;
 
     TestGamepadButton ( XINPUT_GAMEPAD_A, GX_INPUT_XBOX_A );
     TestGamepadButton ( XINPUT_GAMEPAD_B, GX_INPUT_XBOX_B );
@@ -601,7 +601,7 @@ GXVoid GXInput::UpdateGamepad ()
     TestGamepadButton ( XINPUT_GAMEPAD_START, GX_INPUT_XBOX_START );
     TestGamepadButton ( XINPUT_GAMEPAD_BACK, GX_INPUT_XBOX_BACK );
 
-    currentGamepadState = oldGamepadState;
+    _currentGamepadState = oldGamepadState;
 }
 
 GXBool GXCALL GXInput::InitXInputLibrary ()
@@ -615,7 +615,7 @@ GXBool GXCALL GXInput::InitXInputLibrary ()
         return GX_FALSE;
     }
 
-    PFNGXXINPUTINITPROC GXXInputInit = reinterpret_cast<PFNGXXINPUTINITPROC> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXXInputInit" ) ) );
+    GXXInputInitFunc GXXInputInit = reinterpret_cast<GXXInputInitFunc> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXXInputInit" ) ) );
 
     if ( !GXXInputInit )
     {
@@ -624,8 +624,8 @@ GXBool GXCALL GXInput::InitXInputLibrary ()
     }
 
     GXXInputFunctions out;
-    out.XInputGetState = &XInputGetState;
-    out.XInputEnable = &XInputEnable;
+    out.XInputGetState = &_xInputGetState;
+    out.XInputEnable = &_xInputEnable;
     GXXInputInit ( out );
 
     return GX_TRUE;

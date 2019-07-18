@@ -9,28 +9,28 @@
 
 class EMScaleGismo final : public GXTransform
 {
-	private:
-		GXBool						isVisible;
-		EMMesh						mesh;
-		GXTexture2D					texture;
+    private:
+        GXBool                      _isVisible;
+        EMMesh                      _mesh;
+        GXTexture2D                 _texture;
 
-		GXUnlitTexture2DMaterial	unlitMaterial;
+        GXUnlitTexture2DMaterial    _unlitMaterial;
 
-	public:
-		EMScaleGismo ();
-		~EMScaleGismo () override;
+    public:
+        EMScaleGismo ();
+        ~EMScaleGismo () override;
 
-		GXVoid Hide ();
-		GXVoid Show ();
+        GXVoid Hide ();
+        GXVoid Show ();
 
-		GXVoid Render ();
+        GXVoid Render ();
 
-	protected:
-		GXVoid TransformUpdated () override;
+    protected:
+        GXVoid TransformUpdated () override;
 
-	private:
-		EMScaleGismo ( const EMScaleGismo &other ) = delete;
-		EMScaleGismo& operator = ( const EMScaleGismo &other ) = delete;
+    private:
+        EMScaleGismo ( const EMScaleGismo &other ) = delete;
+        EMScaleGismo& operator = ( const EMScaleGismo &other ) = delete;
 };
 
 

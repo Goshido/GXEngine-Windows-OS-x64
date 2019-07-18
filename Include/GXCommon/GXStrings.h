@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #ifndef GX_STRINGS
 #define GX_STRINGS
@@ -10,8 +10,8 @@
 class GXUTF8Parser final
 {
     private:
-        const GXUTF8*       string;
-        GXUPointer          totalSymbols;
+        const GXUTF8*       _string;
+        GXUPointer          _totalSymbols;
 
     public:
         explicit GXUTF8Parser ( const GXUTF8* string );
@@ -76,7 +76,7 @@ class GXStringData;
 class GXString final: public GXMemoryInspector
 {
     private:
-        GXStringData*       stringData;
+        GXStringData*       _stringData;
 
     public:
         GXString ();

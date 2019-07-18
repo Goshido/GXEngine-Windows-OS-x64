@@ -1,4 +1,4 @@
-// version 1.13
+// version 1.14
 
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXMemory.h>
@@ -12,14 +12,14 @@
 
 GXDirectoryInfo::GXDirectoryInfo ()
 {
-    absolutePath = nullptr;
+    _absolutePath = nullptr;
 
-    totalFolders = 0u;
-    folderNames = nullptr;
+    _totalFolders = 0u;
+    _folderNames = nullptr;
 
-    totalFiles = 0u;
-    fileNames = nullptr;
-    fileSizes = nullptr;
+    _totalFiles = 0u;
+    _fileNames = nullptr;
+    _fileSizes = nullptr;
 }
 
 GXDirectoryInfo::~GXDirectoryInfo ()
@@ -29,31 +29,31 @@ GXDirectoryInfo::~GXDirectoryInfo ()
 
 GXVoid GXDirectoryInfo::Clear ()
 {
-    GXWChar* p = const_cast<GXWChar*> ( absolutePath );
+    GXWChar* p = const_cast<GXWChar*> ( _absolutePath );
     GXSafeFree ( p );
-    absolutePath = nullptr;
+    _absolutePath = nullptr;
 
-    for ( GXUInt i = 0; i < totalFolders; ++i )
+    for ( GXUInt i = 0; i < _totalFolders; ++i )
     {
-        p = const_cast<GXWChar*> ( folderNames[ i ] );
+        p = const_cast<GXWChar*> ( _folderNames[ i ] );
         GXSafeFree ( p );
     }
 
-    totalFolders = 0u;
-    GXSafeFree ( folderNames );
+    _totalFolders = 0u;
+    GXSafeFree ( _folderNames );
 
-    for ( GXUInt i = 0u; i < totalFiles; ++i )
+    for ( GXUInt i = 0u; i < _totalFiles; ++i )
     {
-        p = (GXWChar*)fileNames[ i ];
+        p = (GXWChar*)_fileNames[ i ];
         GXSafeFree ( p );
     }
 
-    totalFiles = 0u;
-    GXSafeFree ( fileNames );
+    _totalFiles = 0u;
+    GXSafeFree ( _fileNames );
 
-    GXUBigInt* s = const_cast<GXUBigInt*> ( fileSizes );
+    GXUBigInt* s = const_cast<GXUBigInt*> ( _fileSizes );
     GXSafeFree ( s );
-    fileSizes = nullptr;
+    _fileSizes = nullptr;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUPointer 
     }
 
     fseek ( input, 0, SEEK_END );
-    fileSize = (GXUPointer)ftell ( input );
+    fileSize = static_cast<GXUPointer> ( ftell ( input ) );
     rewind ( input );
 
     if ( fileSize == 0u )
@@ -172,7 +172,39 @@ GXBool GXCALL GXDoesDirectoryExist ( const GXWChar* directory )
 
 GXBool GXCALL GXCreateDirectory ( const GXWChar* directory )
 {
-    return CreateDirectoryW ( directory, nullptr ) ? GX_TRUE : GX_FALSE;
+    if ( GXDoesDirectoryExist ( directory ) )
+        return GX_TRUE;
+
+    GXUPointer offset = 0;
+    GXUPointer symbols = wcslen ( directory ) + 1;
+    GXWChar buffer[ MAX_PATH ];
+
+    for ( ; ; )
+    {
+        if ( offset >= symbols ) break;
+
+        const GXWChar symbol = directory[ offset ];
+
+        if ( symbol != L'\\' && symbol != L'/' && symbol != L'\0' )
+        {
+            buffer[ offset ] = symbol;
+            ++offset;
+            continue;
+        }
+
+        buffer[ offset ] = symbol;
+        ++offset;
+        buffer[ offset ] = L'\0';
+
+        if ( GXDoesDirectoryExist ( buffer ) ) continue;
+
+        if ( CreateDirectoryW ( buffer, nullptr ) ) continue;
+
+        GXLogA ( "GXCreateDirectory::Error - Can't create directory %S.\n", buffer );
+        return GX_FALSE;
+    }
+
+    return GX_TRUE;
 }
 
 GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar* directory )
@@ -248,41 +280,41 @@ GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar
         *p = L'/';
     }
 
-    directoryInfo.absolutePath = absolutePath;
+    directoryInfo._absolutePath = absolutePath;
 
-    directoryInfo.totalFolders = static_cast<GXUInt> ( folderNames.GetLength () );
+    directoryInfo._totalFolders = static_cast<GXUInt> ( folderNames.GetLength () );
 
-    if ( directoryInfo.totalFolders > 0 )
+    if ( directoryInfo._totalFolders > 0 )
     {
-        size = directoryInfo.totalFolders * sizeof ( GXWChar* );
+        size = directoryInfo._totalFolders * sizeof ( GXWChar* );
         GXWChar** f = reinterpret_cast<GXWChar**> ( malloc ( size ) );
         memcpy ( f, folderNames.GetData (), size );
-        directoryInfo.folderNames = const_cast<const GXWChar**> ( f );
+        directoryInfo._folderNames = const_cast<const GXWChar**> ( f );
     }
     else
     {
-        directoryInfo.folderNames = nullptr;
+        directoryInfo._folderNames = nullptr;
     }
 
-    directoryInfo.totalFiles = static_cast<GXUInt> ( fileNames.GetLength () );
+    directoryInfo._totalFiles = static_cast<GXUInt> ( fileNames.GetLength () );
 
-    if ( directoryInfo.totalFiles < 1u )
+    if ( directoryInfo._totalFiles < 1u )
     {
-        directoryInfo.fileNames = nullptr;
-        directoryInfo.fileSizes = nullptr;
+        directoryInfo._fileNames = nullptr;
+        directoryInfo._fileSizes = nullptr;
 
         return GX_TRUE;
     }
 
-    size = directoryInfo.totalFiles * sizeof ( GXWChar* );
+    size = directoryInfo._totalFiles * sizeof ( GXWChar* );
     GXWChar** f = reinterpret_cast<GXWChar**> ( malloc ( size ) );
     memcpy ( f, fileNames.GetData (), size );
-    directoryInfo.fileNames = const_cast<const GXWChar**> ( f );
+    directoryInfo._fileNames = const_cast<const GXWChar**> ( f );
 
-    size = directoryInfo.totalFiles * sizeof ( GXUBigInt );
+    size = directoryInfo._totalFiles * sizeof ( GXUBigInt );
     GXUBigInt* s = static_cast<GXUBigInt*> ( malloc ( size ) );
     memcpy ( s, fileSizes.GetData (), size );
-    directoryInfo.fileSizes = const_cast<const GXUBigInt*> ( s );
+    directoryInfo._fileSizes = const_cast<const GXUBigInt*> ( s );
 
     return GX_TRUE;
 }
@@ -402,9 +434,9 @@ GXVoid GXCALL GXGetFileExtension ( GXWChar** extension, const GXWChar* fileName 
 
 GXWriteFileStream::GXWriteFileStream ( const GXWChar* fileName )
 {
-    _wfopen_s ( &file, fileName, L"wb" );
+    _wfopen_s ( &_file, fileName, L"wb" );
 
-    if ( file ) return;
+    if ( _file ) return;
 
     GXLogA ( "GXWriteToFile::Error - Не могу создать файл %S\n", fileName );
 }
@@ -416,20 +448,20 @@ GXWriteFileStream::~GXWriteFileStream ()
 
 GXVoid GXWriteFileStream::Write ( const GXVoid* data, GXUPointer size )
 {
-    if ( !file ) return;
+    if ( !_file ) return;
 
-    fwrite ( data, size, 1u, file );
+    fwrite ( data, size, 1u, _file );
 }
 
 GXVoid GXWriteFileStream::Flush ()
 {
-    fflush ( file );
+    fflush ( _file );
 }
 
 GXVoid GXWriteFileStream::Close ()
 {
-    if ( !file ) return;
+    if ( !_file ) return;
 
-    fclose ( file );
-    file = nullptr;
+    fclose ( _file );
+    _file = nullptr;
 }

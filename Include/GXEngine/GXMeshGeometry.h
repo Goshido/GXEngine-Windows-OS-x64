@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #ifndef GX_MESH_GEOMETRY
 #define GX_MESH_GEOMETRY
@@ -27,18 +27,18 @@ class GXSkin;
 class GXMeshGeometry final : public GXMemoryInspector
 {
     private:
-        GXMesh*                 mesh;
-        GLuint                  meshVAO;
-        GLenum                  topology;
+        GXMesh*                 _mesh;
+        GLuint                  _meshVAO;
+        GLenum                  _topology;
 
-        GXSkin*                 skin;
-        GXUByte                 skinningSwitchIndex;
-        GXSkinningMaterial*     skinningMaterial;
+        GXSkin*                 _skin;
+        GXUByte                 _skinningSwitchIndex;
+        GXSkinningMaterial*     _skinningMaterial;
 
-        GXAABB                  boundsLocal;
+        GXAABB                  _boundsLocal;
 
-        GLuint                  poseVAO[ 2u ];
-        GXMesh*                 pose[ 2u ];
+        GLuint                  _poseVAO[ 2u ];
+        GXMesh*                 _pose[ 2u ];
 
     public:
         GXMeshGeometry ();

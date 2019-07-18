@@ -9,32 +9,32 @@
 
 class EMDiffuseIrradianceGeneratorMaterial final : public GXMaterial
 {
-	private:
-		GXTextureCubeMap*		environmentMap;
-		GXSampler				sampler;
-		GXFloat					angleStep;
+    private:
+        GXTextureCubeMap*       _environmentMap;
+        GXSampler               _sampler;
+        GXFloat                 _angleStep;
 
-		GXMat4					viewProjectionMatrices[ 6 ];
+        GXMat4                  _viewProjectionMatrices[ 6u ];
 
-		GLint					angleStepLocation;
-		GLint					viewProjectionMatricesLocation;
+        GLint                   _angleStepLocation;
+        GLint                   _viewProjectionMatricesLocation;
 
-	public:
-		EMDiffuseIrradianceGeneratorMaterial ();
-		~EMDiffuseIrradianceGeneratorMaterial () override;
+    public:
+        EMDiffuseIrradianceGeneratorMaterial ();
+        ~EMDiffuseIrradianceGeneratorMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) override;
-		GXVoid Unbind () override;
+        GXVoid Bind ( const GXTransform &transform ) override;
+        GXVoid Unbind () override;
 
-		GXVoid SetEnvironmentMap ( GXTextureCubeMap &cubeMap );
+        GXVoid SetEnvironmentMap ( GXTextureCubeMap &cubeMap );
 
-		// Less step - more precisely convolution result.
-		// Returns total samples will be done.
-		GXUInt SetAngleStep ( GXFloat radians );
+        // Less step - more precisely convolution result.
+        // Returns total samples will be done.
+        GXUInt SetAngleStep ( GXFloat radians );
 
-	private:
-		EMDiffuseIrradianceGeneratorMaterial ( const EMDiffuseIrradianceGeneratorMaterial &other ) = delete;
-		EMDiffuseIrradianceGeneratorMaterial& operator = ( const EMDiffuseIrradianceGeneratorMaterial &other ) = delete;
+    private:
+        EMDiffuseIrradianceGeneratorMaterial ( const EMDiffuseIrradianceGeneratorMaterial &other ) = delete;
+        EMDiffuseIrradianceGeneratorMaterial& operator = ( const EMDiffuseIrradianceGeneratorMaterial &other ) = delete;
 };
 
 

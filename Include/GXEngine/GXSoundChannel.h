@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #ifndef GX_SOUND_CHANNEL
 #define GX_SOUND_CHANNEL
@@ -10,13 +10,13 @@
 class GXSoundChannel final : public GXMemoryInspector
 {
     public:
-        GXSoundChannel**    top;
-        GXSoundChannel*     next;
-        GXSoundChannel*     prev;
+        GXSoundChannel**    _top;
+        GXSoundChannel*     _next;
+        GXSoundChannel*     _previous;
 
     private:
-        GXFloat             volume;
-        GXSoundEmitter*     emitters;
+        GXFloat             _volume;
+        GXSoundEmitter*     _emitters;
 
     public:
         GXSoundChannel ();

@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_UI_COMMON
 #define GX_UI_COMMON
@@ -14,10 +14,6 @@ enum class eGXMouseButtonState : GXUByte
     Down,
     Up
 };
-
-
-typedef GXVoid ( GXCALL* PFNGXONMOUSESCROLLPROC ) ( GXFloat scroll, GXFloat x, GXFloat y );
-typedef GXVoid ( GXCALL* PFNGXONMOUSEMOVEPROC ) ( GXFloat x, GXFloat y );
 
 
 extern GXFloat              gx_ui_Scale;    // rough pixels in centimeter

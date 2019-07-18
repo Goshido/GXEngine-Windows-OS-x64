@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_CONTACT_BITANGENT_CONSTRAINT
 #define GX_CONTACT_BITANGENT_CONSTRAINT
@@ -16,18 +16,18 @@
 
 class GXContactBitangentConstraint final : public GXConstraint
 {
-	public:
-		// inverseLinkedContacts - is 1.0f / ( total manifold contacts ).
-		// squareThreshold - is square magnitude of relative contact point velocity projection onto tangent/bitangent plane.
-		// If this magnitude is less than squareThreshold contact point is considered to be stationary and will be
-		// used coefficient of static friction. Otherwise will be used coefficient of dynamic friction.
-		explicit GXContactBitangentConstraint ( GXContact &contact, GXFloat inverseLinkedContacts, GXFloat squareThreshold );
+    public:
+        // inverseLinkedContacts - is 1.0f / ( total manifold contacts ).
+        // squareThreshold - is square magnitude of relative contact point velocity projection onto tangent/bitangent plane.
+        // If this magnitude is less than squareThreshold contact point is considered to be stationary and will be
+        // used coefficient of static friction. Otherwise will be used coefficient of dynamic friction.
+        explicit GXContactBitangentConstraint ( GXContact &contact, GXFloat inverseLinkedContacts, GXFloat squareThreshold );
 
-		~GXContactBitangentConstraint ();
+        ~GXContactBitangentConstraint ();
 
-	private:
-		GXContactBitangentConstraint ( const GXContactBitangentConstraint &other ) = delete;
-		GXContactBitangentConstraint& operator = ( const GXContactBitangentConstraint &other ) = delete;
+    private:
+        GXContactBitangentConstraint ( const GXContactBitangentConstraint &other ) = delete;
+        GXContactBitangentConstraint& operator = ( const GXContactBitangentConstraint &other ) = delete;
 };
 
 

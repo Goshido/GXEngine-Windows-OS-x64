@@ -1,33 +1,33 @@
-// version 1.7
+// version 1.9
 
 #include <GXCommon/GXMemory.h>
 
 
 GXCircleBuffer::GXCircleBuffer ( GXUPointer size )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXCircleBuffer" )
-    size ( size ),
-    offset ( 0u )
+    _size ( size ),
+    _offset ( 0u )
 {
-    buffer = static_cast<GXUByte*> ( Malloc ( size ) );
+    _buffer = static_cast<GXUByte*> ( Malloc ( size ) );
 }
 
 GXCircleBuffer::~GXCircleBuffer ()
 {
-    Free ( buffer );
+    Free ( _buffer );
 }
 
 GXVoid* GXCircleBuffer::Allocate ( GXUPointer bytes )
 {
     if ( bytes == 0 ) return nullptr;
 
-    if ( ( offset + bytes ) >= size )
+    if ( ( _offset + bytes ) >= _size )
     {
-        offset = bytes;
-        return buffer;
+        _offset = bytes;
+        return _buffer;
     }
 
-    GXUByte* b = buffer + offset;
-    offset += bytes;
+    GXUByte* b = _buffer + _offset;
+    _offset += bytes;
 
     return b;
 }
@@ -35,58 +35,58 @@ GXVoid* GXCircleBuffer::Allocate ( GXUPointer bytes )
 //---------------------------------------------------------------------------------------------------------------------
 
 GXDynamicArray::GXDynamicArray ( GXUPointer elementSize ):
-    data ( nullptr ),
-    elementSize ( elementSize ),
-    numElements ( 0u )
+    _data ( nullptr ),
+    _elementSize ( elementSize ),
+    _numElements ( 0u )
 {
     // NOTHING
 }
 
 GXDynamicArray::~GXDynamicArray ()
 {
-    GXSafeFree ( data );
+    GXSafeFree ( _data );
 }
 
 GXVoid GXDynamicArray::SetValue ( GXUPointer i, const GXVoid* element )
 {
-    if ( i >= numElements )
+    if ( i >= _numElements )
         Resize ( i + 1 );
 
-    memcpy ( data + i * elementSize, element, elementSize );
+    memcpy ( _data + i * _elementSize, element, _elementSize );
 }
 
 GXVoid* GXDynamicArray::GetValue ( GXUPointer i ) const
 {
-    if ( i >= numElements )
+    if ( i >= _numElements )
         return nullptr;
 
-    return data + i * elementSize;
+    return _data + i * _elementSize;
 }
 
 GXVoid* GXDynamicArray::GetData () const
 {
-    return data;
+    return _data;
 }
 
 GXUPointer GXDynamicArray::GetLength () const
 {
-    return numElements;
+    return _numElements;
 }
 
 GXVoid GXDynamicArray::Resize ( GXUPointer totalElements )
 {
-    GXUByte* old = data;
-    data = static_cast<GXUByte*> ( malloc ( totalElements * elementSize ) );
+    GXUByte* old = _data;
+    _data = static_cast<GXUByte*> ( malloc ( totalElements * _elementSize ) );
 
     if ( !old )
     {
-        numElements = totalElements;
+        _numElements = totalElements;
         return;
     }
 
-    GXUPointer copy = ( totalElements < numElements ) ? totalElements : numElements;
-    memcpy ( data, old, copy * elementSize );
-    numElements = totalElements;
+    GXUPointer copy = ( totalElements < _numElements ) ? totalElements : _numElements;
+    memcpy ( _data, old, copy * _elementSize );
+    _numElements = totalElements;
 
     GXSafeFree ( old );
 }

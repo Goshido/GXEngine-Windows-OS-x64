@@ -1,4 +1,4 @@
-﻿// version 1.3
+﻿// version 1.4
 
 #ifndef GX_MUTEX_WINDOWS
 #define GX_MUTEX_WINDOWS
@@ -10,7 +10,7 @@
 class GXMutex final : public GXAbstractMutex
 {
     private:
-        HANDLE      mutex;
+        HANDLE      _mutex;
 
     public:
         GXMutex ();

@@ -6,318 +6,324 @@
 #include <GXEngine/GXLocale.h>
 
 
-#define DEFAULT_MAIN_PANEL_WIDTH			8.1f
-#define DEFAULT_MAIN_PANEL_HEIGHT			7.3f
+#define DEFAULT_MAIN_PANEL_WIDTH            8.1f
+#define DEFAULT_MAIN_PANEL_HEIGHT           7.3f
 
-#define MAIN_PANEL_MINIMUM_WIDTH			8.00180f
-#define MAIN_PANEL_MINIMUM_HEIGHT			7.27680f
+#define MAIN_PANEL_MINIMUM_WIDTH            8.00180f
+#define MAIN_PANEL_MINIMUM_HEIGHT           7.27680f
 
-#define START_MAIN_PANEL_LEFT_X_OFFSET		1.5f
-#define START_MAIN_PANEL_TOP_Y_OFFSET		1.5f
+#define START_MAIN_PANEL_LEFT_X_OFFSET      1.5f
+#define START_MAIN_PANEL_TOP_Y_OFFSET       1.5f
 
-#define CAPTION_LABEL_COLOR_R				115u
-#define CAPTION_LABEL_COLOR_G				185u
-#define CAPTION_LABEL_COLOR_B				0u
-#define CAPTION_LABEL_COLOR_A				255u
+#define CAPTION_LABEL_COLOR_R               115u
+#define CAPTION_LABEL_COLOR_G               185u
+#define CAPTION_LABEL_COLOR_B               0u
+#define CAPTION_LABEL_COLOR_A               255u
 
-#define PROPERTY_LABEL_COLOR_R				255u
-#define PROPERTY_LABEL_COLOR_G				255u
-#define PROPERTY_LABEL_COLOR_B				255u
-#define PROPERTY_LABEL_COLOR_A				255u
+#define PROPERTY_LABEL_COLOR_R              255u
+#define PROPERTY_LABEL_COLOR_G              255u
+#define PROPERTY_LABEL_COLOR_B              255u
+#define PROPERTY_LABEL_COLOR_A              255u
 
-#define MAX_BUFFER_SYMBOLS					16u
+#define MAX_BUFFER_SYMBOLS                  16u
 
-#define MARGIN								0.24166f
+#define MARGIN                              0.24166f
 
-#define CAPTION_TOP_Y_OFFSET				0.64444f
-#define CAPTION_HEIGHT						0.5f
+#define CAPTION_TOP_Y_OFFSET                0.64444f
+#define CAPTION_HEIGHT                      0.5f
 
-#define TOP_SEPARATOR_TOP_Y_OFFSET			0.85925f
-#define TOP_SEPARATOR_HEIGHT				0.2f
+#define TOP_SEPARATOR_TOP_Y_OFFSET          0.85925f
+#define TOP_SEPARATOR_HEIGHT                0.2f
 
-#define CHECK_RADIUS_TOP_Y_OFFSET			1.77221f
+#define CHECK_RADIUS_TOP_Y_OFFSET           1.77221f
 
-#define EDIT_BOX_WIDTH						1.71851f
-#define EDIT_BOX_HEIGHT						0.59074f
+#define EDIT_BOX_WIDTH                      1.71851f
+#define EDIT_BOX_HEIGHT                     0.59074f
 
-#define PROPERTY_LABEL_HEIGHT				0.59074f
-#define PROPERTY_Y_OFFSET					1.12777f
+#define PROPERTY_LABEL_HEIGHT               0.59074f
+#define PROPERTY_Y_OFFSET                   1.12777f
 
-#define BUTTON_WIDTH						1.90647f
-#define BUTTON_HEIGHT						0.51018f
-#define CANCEL_BUTTON_X_OFFSET				4.02775f
+#define BUTTON_WIDTH                        1.90647f
+#define BUTTON_HEIGHT                       0.51018f
+#define CANCEL_BUTTON_X_OFFSET              4.02775f
 
-#define BOTTOM_SEPARATOR_HEIGHT				0.2f
-#define BOTTOM_SEPARATOR_BOTTOM_Y_OFFSET	0.64444f
+#define BOTTOM_SEPARATOR_HEIGHT             0.2f
+#define BOTTOM_SEPARATOR_BOTTOM_Y_OFFSET    0.64444f
 
-#define DEFAULT_INTEGER_VALIDATOR_STRING	L"4"
-#define DEFAULT_FLOAT_VALIDATOR_STRING		L"0.3"
+#define DEFAULT_INTEGER_VALIDATOR_STRING    L"4"
+#define DEFAULT_FLOAT_VALIDATOR_STRING      L"0.3"
 
-#define MINIMUM_CHECK_RADIUS				0.01f
-#define MAXIMUM_CHECK_RADIUS				77777.7f
+#define MINIMUM_CHECK_RADIUS                0.01f
+#define MAXIMUM_CHECK_RADIUS                77777.7f
 
-#define MINIMUM_SAMPLES						4u
-#define MAXIMUM_SAMPLES						64u
+#define MINIMUM_SAMPLES                     4u
+#define MAXIMUM_SAMPLES                     64u
 
-#define MINIMUM_NOISE_TEXTURE_RESOLUTION	2u
-#define MAXIMUM_NOISE_TEXTURE_RESOLUTION	4096u
+#define MINIMUM_NOISE_TEXTURE_RESOLUTION    2u
+#define MAXIMUM_NOISE_TEXTURE_RESOLUTION    4096u
 
-#define MINIMUM_DISTANCE					0.3f
-#define MAXIMUM_DISTANCE					77777.7f
+#define MINIMUM_DISTANCE                    0.3f
+#define MAXIMUM_DISTANCE                    77777.7f
 
 //---------------------------------------------------------------------------------------------------------------------
 
-EMUISSAOSettings* EMUISSAOSettings::instance = nullptr;
+EMUISSAOSettings* EMUISSAOSettings::_instance = nullptr;
 
 EMUISSAOSettings& EMUISSAOSettings::GetInstance ()
 {
-	if ( !instance )
-		instance = new EMUISSAOSettings ();
+    if ( !_instance )
+        _instance = new EMUISSAOSettings ();
 
-	return *instance;
+    return *_instance;
 }
 
 EMUISSAOSettings::~EMUISSAOSettings ()
 {
-	delete apply;
-	delete cancel;
-	delete bottomSeparator;
+    delete _apply;
+    delete _cancel;
+    delete _bottomSeparator;
 
-	delete maxDistance->GetValidator ();
-	delete maxDistance;
-	delete maxDistanceLabel;
+    delete _maxDistance->GetValidator ();
+    delete _maxDistance;
+    delete _maxDistanceLabel;
 
-	delete noiseTextureResolution->GetValidator ();
-	delete noiseTextureResolution;
-	delete noiseTextureResolutionLabel;
+    delete _noiseTextureResolution->GetValidator ();
+    delete _noiseTextureResolution;
+    delete _noiseTextureResolutionLabel;
 
-	delete samples->GetValidator ();
-	delete samples;
-	delete samplesLabel;
+    delete _samples->GetValidator ();
+    delete _samples;
+    delete _samplesLabel;
 
-	delete checkRadius->GetValidator ();
-	delete checkRadius;
-	delete checkRadiusLabel;
+    delete _checkRadius->GetValidator ();
+    delete _checkRadius;
+    delete _checkRadiusLabel;
 
-	delete topSeparator;
-	delete caption;
-	delete mainPanel;
+    delete _topSeparator;
+    delete _caption;
+    delete _mainPanel;
 
-	instance = nullptr;
+    _instance = nullptr;
 }
 
 GXWidget* EMUISSAOSettings::GetWidget () const
 {
-	return mainPanel->GetWidget ();
+    return _mainPanel->GetWidget ();
 }
 
 GXVoid EMUISSAOSettings::Show ()
 {
-	if ( !mainPanel->GetWidget ()->IsVisible () || !checkRadius->GetText () )
-		SyncSettings ();
+    if ( !_mainPanel->GetWidget ()->IsVisible () || !_checkRadius->GetText () )
+        SyncSettings ();
 
-	mainPanel->Show ();
+    _mainPanel->Show ();
 }
 
 GXVoid EMUISSAOSettings::Hide ()
 {
-	mainPanel->Hide ();
+    _mainPanel->Hide ();
 }
 
 EMUISSAOSettings::EMUISSAOSettings ():
-	EMUI ( nullptr ),
-	mainPanel ( new EMUIDraggableArea ( nullptr ) )
+    EMUI ( nullptr ),
+    _mainPanel ( new EMUIDraggableArea ( nullptr ) )
 {
-	caption = new EMUIStaticText ( mainPanel );
-	topSeparator = new EMUISeparator ( mainPanel );
+    _caption = new EMUIStaticText ( _mainPanel );
+    _topSeparator = new EMUISeparator ( _mainPanel );
 
-	checkRadiusLabel = new EMUIStaticText ( mainPanel );
-	checkRadius = new EMUIEditBox ( mainPanel );
-	GXUIEditBox* editBox = static_cast<GXUIEditBox*> ( checkRadius->GetWidget () );
-	GXUIEditBoxFloatValidator* floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_CHECK_RADIUS, MAXIMUM_CHECK_RADIUS );
-	checkRadius->SetValidator ( *floatValidator );
+    _checkRadiusLabel = new EMUIStaticText ( _mainPanel );
+    _checkRadius = new EMUIEditBox ( _mainPanel );
+    GXUIEditBox* editBox = static_cast<GXUIEditBox*> ( _checkRadius->GetWidget () );
+    GXUIEditBoxFloatValidator* floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_CHECK_RADIUS, MAXIMUM_CHECK_RADIUS );
+    _checkRadius->SetValidator ( *floatValidator );
 
-	samplesLabel = new EMUIStaticText ( mainPanel );
-	samples = new EMUIEditBox ( mainPanel );
-	editBox = static_cast<GXUIEditBox*> ( samples->GetWidget () );
-	GXUIEditBoxIntegerValidator* integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_STRING, *editBox, MINIMUM_SAMPLES, MAXIMUM_SAMPLES );
-	samples->SetValidator ( *integerValidator );
+    _samplesLabel = new EMUIStaticText ( _mainPanel );
+    _samples = new EMUIEditBox ( _mainPanel );
+    editBox = static_cast<GXUIEditBox*> ( _samples->GetWidget () );
+    GXUIEditBoxIntegerValidator* integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_STRING, *editBox, MINIMUM_SAMPLES, MAXIMUM_SAMPLES );
+    _samples->SetValidator ( *integerValidator );
 
-	noiseTextureResolutionLabel = new EMUIStaticText ( mainPanel );
-	noiseTextureResolution = new EMUIEditBox ( mainPanel );
-	editBox = static_cast<GXUIEditBox*> ( noiseTextureResolution->GetWidget () );
-	integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_STRING, *editBox, MINIMUM_NOISE_TEXTURE_RESOLUTION, MAXIMUM_NOISE_TEXTURE_RESOLUTION );
-	noiseTextureResolution->SetValidator ( *integerValidator );
+    _noiseTextureResolutionLabel = new EMUIStaticText ( _mainPanel );
+    _noiseTextureResolution = new EMUIEditBox ( _mainPanel );
+    editBox = static_cast<GXUIEditBox*> ( _noiseTextureResolution->GetWidget () );
+    integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_STRING, *editBox, MINIMUM_NOISE_TEXTURE_RESOLUTION, MAXIMUM_NOISE_TEXTURE_RESOLUTION );
+    _noiseTextureResolution->SetValidator ( *integerValidator );
 
-	maxDistanceLabel = new EMUIStaticText ( mainPanel );
-	maxDistance = new EMUIEditBox ( mainPanel );
-	editBox = static_cast<GXUIEditBox*> ( maxDistance->GetWidget () );
-	floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_DISTANCE, MAXIMUM_DISTANCE );
-	maxDistance->SetValidator ( *floatValidator );
+    _maxDistanceLabel = new EMUIStaticText ( _mainPanel );
+    _maxDistance = new EMUIEditBox ( _mainPanel );
+    editBox = static_cast<GXUIEditBox*> ( _maxDistance->GetWidget () );
+    floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_DISTANCE, MAXIMUM_DISTANCE );
+    _maxDistance->SetValidator ( *floatValidator );
 
-	bottomSeparator = new EMUISeparator ( mainPanel );
-	cancel = new EMUIButton ( mainPanel );
-	apply = new EMUIButton ( mainPanel );
+    _bottomSeparator = new EMUISeparator ( _mainPanel );
+    _cancel = new EMUIButton ( _mainPanel );
+    _apply = new EMUIButton ( _mainPanel );
 
-	GXLocale& locale = GXLocale::GetInstance ();
+    const GXLocale& locale = GXLocale::GetInstance ();
 
-	caption->SetText ( locale.GetString ( L"SSAO settings->SSAO settings" ) );
-	caption->SetTextColor ( CAPTION_LABEL_COLOR_R, CAPTION_LABEL_COLOR_G, CAPTION_LABEL_COLOR_B, CAPTION_LABEL_COLOR_A );
-	caption->SetAlingment ( eGXUITextAlignment::Center );
+    _caption->SetText ( locale.GetString ( L"SSAO settings->SSAO settings" ) );
+    _caption->SetTextColor ( CAPTION_LABEL_COLOR_R, CAPTION_LABEL_COLOR_G, CAPTION_LABEL_COLOR_B, CAPTION_LABEL_COLOR_A );
+    _caption->SetAlingment ( eGXUITextAlignment::Center );
 
-	checkRadiusLabel->SetText ( locale.GetString ( L"SSAO settings->Check radius (meters)" ) );
-	checkRadiusLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
-	checkRadiusLabel->SetAlingment ( eGXUITextAlignment::Left );
+    _checkRadiusLabel->SetText ( locale.GetString ( L"SSAO settings->Check radius (meters)" ) );
+    _checkRadiusLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
+    _checkRadiusLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-	samplesLabel->SetText ( locale.GetString ( L"SSAO settings->Samples" ) );
-	samplesLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
-	samplesLabel->SetAlingment ( eGXUITextAlignment::Left );
+    _samplesLabel->SetText ( locale.GetString ( L"SSAO settings->Samples" ) );
+    _samplesLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
+    _samplesLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-	noiseTextureResolutionLabel->SetText ( locale.GetString ( L"SSAO settings->Noise texture resulotion" ) );
-	noiseTextureResolutionLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
-	noiseTextureResolutionLabel->SetAlingment ( eGXUITextAlignment::Left );
+    _noiseTextureResolutionLabel->SetText ( locale.GetString ( L"SSAO settings->Noise texture resulotion" ) );
+    _noiseTextureResolutionLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
+    _noiseTextureResolutionLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-	maxDistanceLabel->SetText ( locale.GetString ( L"SSAO settings->Maximum distance (meters)" ) );
-	maxDistanceLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
-	maxDistanceLabel->SetAlingment ( eGXUITextAlignment::Left );
+    _maxDistanceLabel->SetText ( locale.GetString ( L"SSAO settings->Maximum distance (meters)" ) );
+    _maxDistanceLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
+    _maxDistanceLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-	checkRadius->SetAlignment ( eGXUITextAlignment::Center );
-	samples->SetAlignment ( eGXUITextAlignment::Center );
-	noiseTextureResolution->SetAlignment ( eGXUITextAlignment::Center );
-	maxDistance->SetAlignment ( eGXUITextAlignment::Center );
+    _checkRadius->SetAlignment ( eGXUITextAlignment::Center );
+    _samples->SetAlignment ( eGXUITextAlignment::Center );
+    _noiseTextureResolution->SetAlignment ( eGXUITextAlignment::Center );
+    _maxDistance->SetAlignment ( eGXUITextAlignment::Center );
 
-	cancel->SetCaption ( locale.GetString ( L"SSAO settings->Cancel" ) );
-	apply->SetCaption ( locale.GetString ( L"SSAO settings->Apply" ) );
+    _cancel->SetCaption ( locale.GetString ( L"SSAO settings->Cancel" ) );
+    _apply->SetCaption ( locale.GetString ( L"SSAO settings->Apply" ) );
 
-	cancel->SetOnLeftMouseButtonCallback ( this, &EMUISSAOSettings::OnButton );
-	apply->SetOnLeftMouseButtonCallback ( this, &EMUISSAOSettings::OnButton );
+    _cancel->SetOnLeftMouseButtonCallback ( this, &EMUISSAOSettings::OnButton );
+    _apply->SetOnLeftMouseButtonCallback ( this, &EMUISSAOSettings::OnButton );
 
-	mainPanel->SetOnResizeCallback ( this, &EMUISSAOSettings::OnResize );
+    _mainPanel->SetOnResizeCallback ( this, &EMUISSAOSettings::OnResize );
 
-	GXFloat height = DEFAULT_MAIN_PANEL_HEIGHT * gx_ui_Scale;
-	mainPanel->Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
-	mainPanel->SetMinimumWidth ( MAIN_PANEL_MINIMUM_WIDTH * gx_ui_Scale );
-	mainPanel->SetMinimumHeight ( MAIN_PANEL_MINIMUM_HEIGHT * gx_ui_Scale );
-	mainPanel->Hide ();
+    const GXFloat height = DEFAULT_MAIN_PANEL_HEIGHT * gx_ui_Scale;
+    _mainPanel->Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
+    _mainPanel->SetMinimumWidth ( MAIN_PANEL_MINIMUM_WIDTH * gx_ui_Scale );
+    _mainPanel->SetMinimumHeight ( MAIN_PANEL_MINIMUM_HEIGHT * gx_ui_Scale );
+    _mainPanel->Hide ();
 }
 
 GXVoid EMUISSAOSettings::SyncSettings ()
 {
-	EMRenderer& renderer = EMRenderer::GetInstance ();
-	static GXWChar buffer[ MAX_BUFFER_SYMBOLS ] = { 0 };
+    EMRenderer& renderer = EMRenderer::GetInstance ();
+    GXWChar buffer[ MAX_BUFFER_SYMBOLS ];
 
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetSSAOCheckRadius () );
-	checkRadius->SetText ( buffer );
+    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetSSAOCheckRadius () );
+    _checkRadius->SetText ( buffer );
 
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", renderer.GetSSAOSampleNumber () );
-	samples->SetText ( buffer );
+    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", renderer.GetSSAOSampleNumber () );
+    _samples->SetText ( buffer );
 
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hu", renderer.GetSSAONoiseTextureResolution () );
-	noiseTextureResolution->SetText ( buffer );
+    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hu", renderer.GetSSAONoiseTextureResolution () );
+    _noiseTextureResolution->SetText ( buffer );
 
-	swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetSSAOMaximumDistance () );
-	maxDistance->SetText ( buffer );
+    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetSSAOMaximumDistance () );
+    _maxDistance->SetText ( buffer );
 }
 
 GXVoid GXCALL EMUISSAOSettings::OnButton ( GXVoid* handler, GXUIButton& button, GXFloat /*x*/, GXFloat /*y*/, eGXMouseButtonState state )
 {
-	if ( state != eGXMouseButtonState::Up ) return;
+    if ( state != eGXMouseButtonState::Up ) return;
 
-	EMUISSAOSettings* settings = static_cast<EMUISSAOSettings*> ( handler );
+    EMUISSAOSettings* settings = static_cast<EMUISSAOSettings*> ( handler );
 
-	if ( &button == settings->cancel->GetWidget () )
-	{
-		settings->Hide ();
-		return;
-	}
+    if ( &button == settings->_cancel->GetWidget () )
+    {
+        settings->Hide ();
+        return;
+    }
 
-	EMRenderer& renderer = EMRenderer::GetInstance ();
-	const GXWChar* stringW = settings->checkRadius->GetText ();
+    EMRenderer& renderer = EMRenderer::GetInstance ();
+    const GXWChar* stringW = settings->_checkRadius->GetText ();
 
-	if ( stringW )
-	{
-		GXFloat newCheckRadius;
-		GXInt result = swscanf_s ( stringW, L"%f", &newCheckRadius );
+    if ( stringW )
+    {
+        GXFloat newCheckRadius;
+        const GXInt result = swscanf_s ( stringW, L"%f", &newCheckRadius );
 
-		if ( result != 0 )
-			renderer.SetSSAOCheckRadius ( newCheckRadius );
-	}
+        if ( result != 0 )
+        {
+            renderer.SetSSAOCheckRadius ( newCheckRadius );
+        }
+    }
 
-	stringW = settings->samples->GetText ();
+    stringW = settings->_samples->GetText ();
 
-	if ( stringW )
-	{
-		GXUByte newSamples;
-		GXInt result = swscanf_s ( stringW, L"%hhu", &newSamples );
+    if ( stringW )
+    {
+        GXUByte newSamples;
+        const GXInt result = swscanf_s ( stringW, L"%hhu", &newSamples );
 
-		if ( result != 0 )
-			renderer.SetSSAOSampleNumber ( newSamples );
-	}
+        if ( result != 0 )
+        {
+            renderer.SetSSAOSampleNumber ( newSamples );
+        }
+    }
 
-	stringW = settings->noiseTextureResolution->GetText ();
+    stringW = settings->_noiseTextureResolution->GetText ();
 
-	if ( stringW )
-	{
-		GXUShort newNoiseTextureResolution;
-		GXInt result = swscanf_s ( stringW, L"%hu", &newNoiseTextureResolution );
+    if ( stringW )
+    {
+        GXUShort newNoiseTextureResolution;
+        const GXInt result = swscanf_s ( stringW, L"%hu", &newNoiseTextureResolution );
 
-		if ( result != 0 )
-			renderer.SetSSAONoiseTextureResolution ( newNoiseTextureResolution );
-	}
+        if ( result != 0 )
+        {
+            renderer.SetSSAONoiseTextureResolution ( newNoiseTextureResolution );
+        }
+    }
 
-	stringW = settings->maxDistance->GetText ();
+    stringW = settings->_maxDistance->GetText ();
 
-	if ( stringW )
-	{
-		GXFloat newMaxDistance;
-		GXInt result = swscanf_s ( stringW, L"%f", &newMaxDistance );
+    if ( !stringW ) return;
 
-		if ( result != 0 )
-			renderer.SetSSAOMaximumDistance ( newMaxDistance );
-	}
+    GXFloat newMaxDistance;
+    const GXInt result = swscanf_s ( stringW, L"%f", &newMaxDistance );
+
+    if ( result == 0 ) return;
+
+    renderer.SetSSAOMaximumDistance ( newMaxDistance );
 }
 
 GXVoid GXCALL EMUISSAOSettings::OnResize ( GXVoid* handler, GXUIDragableArea& /*area*/, GXFloat width, GXFloat height )
 {
-	EMUISSAOSettings* settings = static_cast<EMUISSAOSettings*> ( handler );
+    EMUISSAOSettings* settings = static_cast<EMUISSAOSettings*> ( handler );
 
-	GXFloat margin = MARGIN * gx_ui_Scale;
+    const GXFloat margin = MARGIN * gx_ui_Scale;
 
-	settings->caption->Resize ( margin, height - ( MARGIN + CAPTION_TOP_Y_OFFSET ) * gx_ui_Scale, width - 2.0f * margin, CAPTION_HEIGHT * gx_ui_Scale );
+    settings->_caption->Resize ( margin, height - ( MARGIN + CAPTION_TOP_Y_OFFSET ) * gx_ui_Scale, width - 2.0f * margin, CAPTION_HEIGHT * gx_ui_Scale );
 
-	settings->topSeparator->Resize ( margin, height - ( MARGIN + TOP_SEPARATOR_TOP_Y_OFFSET ) * gx_ui_Scale, width - 2.0f * margin, TOP_SEPARATOR_HEIGHT * gx_ui_Scale );
+    settings->_topSeparator->Resize ( margin, height - ( MARGIN + TOP_SEPARATOR_TOP_Y_OFFSET ) * gx_ui_Scale, width - 2.0f * margin, TOP_SEPARATOR_HEIGHT * gx_ui_Scale );
 
-	GXFloat offset = height - ( MARGIN + CHECK_RADIUS_TOP_Y_OFFSET ) * gx_ui_Scale;
-	GXFloat editBoxWidth = EDIT_BOX_WIDTH * gx_ui_Scale;
-	GXFloat editBoxHeight = EDIT_BOX_HEIGHT * gx_ui_Scale;
-	GXFloat editBoxXOffset = width - ( margin + editBoxWidth );
-	GXFloat labelWidth = width - 2.0f * margin - editBoxWidth;
-	GXFloat labelHeight = PROPERTY_LABEL_HEIGHT * gx_ui_Scale;
-	GXFloat propertyYOffset = PROPERTY_Y_OFFSET * gx_ui_Scale;
+    GXFloat offset = height - ( MARGIN + CHECK_RADIUS_TOP_Y_OFFSET ) * gx_ui_Scale;
+    const GXFloat editBoxWidth = EDIT_BOX_WIDTH * gx_ui_Scale;
+    const GXFloat editBoxHeight = EDIT_BOX_HEIGHT * gx_ui_Scale;
+    const GXFloat editBoxXOffset = width - ( margin + editBoxWidth );
+    const GXFloat labelWidth = width - 2.0f * margin - editBoxWidth;
+    const GXFloat labelHeight = PROPERTY_LABEL_HEIGHT * gx_ui_Scale;
+    const GXFloat propertyYOffset = PROPERTY_Y_OFFSET * gx_ui_Scale;
 
-	settings->checkRadiusLabel->Resize ( margin, offset, labelWidth, labelHeight );
-	settings->checkRadius->Resize ( editBoxXOffset, offset, editBoxWidth, editBoxHeight );
+    settings->_checkRadiusLabel->Resize ( margin, offset, labelWidth, labelHeight );
+    settings->_checkRadius->Resize ( editBoxXOffset, offset, editBoxWidth, editBoxHeight );
 
-	offset -= propertyYOffset;
+    offset -= propertyYOffset;
 
-	settings->samplesLabel->Resize ( margin, offset, labelWidth, labelHeight );
-	settings->samples->Resize ( editBoxXOffset, offset, editBoxWidth, editBoxHeight );
+    settings->_samplesLabel->Resize ( margin, offset, labelWidth, labelHeight );
+    settings->_samples->Resize ( editBoxXOffset, offset, editBoxWidth, editBoxHeight );
 
-	offset -= propertyYOffset;
+    offset -= propertyYOffset;
 
-	settings->noiseTextureResolutionLabel->Resize ( margin, offset, labelWidth, labelHeight );
-	settings->noiseTextureResolution->Resize ( editBoxXOffset, offset, editBoxWidth, editBoxHeight );
+    settings->_noiseTextureResolutionLabel->Resize ( margin, offset, labelWidth, labelHeight );
+    settings->_noiseTextureResolution->Resize ( editBoxXOffset, offset, editBoxWidth, editBoxHeight );
 
-	offset -= propertyYOffset;
+    offset -= propertyYOffset;
 
-	settings->maxDistanceLabel->Resize ( margin, offset, labelWidth, labelHeight );
-	settings->maxDistance->Resize ( editBoxXOffset, offset, editBoxWidth, editBoxHeight );
+    settings->_maxDistanceLabel->Resize ( margin, offset, labelWidth, labelHeight );
+    settings->_maxDistance->Resize ( editBoxXOffset, offset, editBoxWidth, editBoxHeight );
 
-	settings->bottomSeparator->Resize ( margin, margin + BOTTOM_SEPARATOR_BOTTOM_Y_OFFSET * gx_ui_Scale, width - 2.0f * margin, BOTTOM_SEPARATOR_HEIGHT * gx_ui_Scale );
+    settings->_bottomSeparator->Resize ( margin, margin + BOTTOM_SEPARATOR_BOTTOM_Y_OFFSET * gx_ui_Scale, width - 2.0f * margin, BOTTOM_SEPARATOR_HEIGHT * gx_ui_Scale );
 
-	GXFloat buttonWidth = BUTTON_WIDTH * gx_ui_Scale;
-	GXFloat buttonHeight = BUTTON_HEIGHT * gx_ui_Scale;
+    const GXFloat buttonWidth = BUTTON_WIDTH * gx_ui_Scale;
+    const GXFloat buttonHeight = BUTTON_HEIGHT * gx_ui_Scale;
 
-	settings->cancel->Resize ( width - ( MARGIN + CANCEL_BUTTON_X_OFFSET ) * gx_ui_Scale, margin, buttonWidth, buttonHeight );
-	settings->apply->Resize ( width - margin - buttonWidth, margin, buttonWidth, buttonHeight );
+    settings->_cancel->Resize ( width - ( MARGIN + CANCEL_BUTTON_X_OFFSET ) * gx_ui_Scale, margin, buttonWidth, buttonHeight );
+    settings->_apply->Resize ( width - margin - buttonWidth, margin, buttonWidth, buttonHeight );
 }

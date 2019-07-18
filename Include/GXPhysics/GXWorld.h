@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_WORLD
 #define GX_WORLD
@@ -19,14 +19,14 @@ struct GXRigidBodyRegistration;
 class GXWorld final
 {
     private:
-        GXCollisionData                     collisions;
-        GXRigidBodyRegistration*            bodies;
-        GXContactGeneratorsRegistration*    contactGenerators;
-        GXForceGeneratorsRegistration*      forceGenerators;
-        GXBool                              isCalculateIterations;
+        GXCollisionData                     _collisions;
+        GXRigidBodyRegistration*            _bodies;
+        GXContactGeneratorsRegistration*    _contactGenerators;
+        GXForceGeneratorsRegistration*      _forceGenerators;
+        GXBool                              _isCalculateIterations;
 
-        GXContactResolver                   contactResolver;
-        GXSmartLock                         smartLock;
+        GXContactResolver                   _contactResolver;
+        GXSmartLock                         _smartLock;
 
     public:
         explicit GXWorld ( GXUInt maxContacts, GXUInt iterations );

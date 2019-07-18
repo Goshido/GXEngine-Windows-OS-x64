@@ -11,44 +11,44 @@
 
 class EMUISSAOSettings final : public EMUI
 {
-	private:
-		EMUIDraggableArea*			mainPanel;
+    private:
+        EMUIDraggableArea*          _mainPanel;
 
-		EMUIStaticText*				caption;
-		EMUISeparator*				topSeparator;
-		EMUIStaticText*				checkRadiusLabel;
-		EMUIEditBox*				checkRadius;
-		EMUIStaticText*				samplesLabel;
-		EMUIEditBox*				samples;
-		EMUIStaticText*				noiseTextureResolutionLabel;
-		EMUIEditBox*				noiseTextureResolution;
-		EMUIStaticText*				maxDistanceLabel;
-		EMUIEditBox*				maxDistance;
-		EMUISeparator*				bottomSeparator;
-		EMUIButton*					cancel;
-		EMUIButton*					apply;
+        EMUIStaticText*             _caption;
+        EMUISeparator*              _topSeparator;
+        EMUIStaticText*             _checkRadiusLabel;
+        EMUIEditBox*                _checkRadius;
+        EMUIStaticText*             _samplesLabel;
+        EMUIEditBox*                _samples;
+        EMUIStaticText*             _noiseTextureResolutionLabel;
+        EMUIEditBox*                _noiseTextureResolution;
+        EMUIStaticText*             _maxDistanceLabel;
+        EMUIEditBox*                _maxDistance;
+        EMUISeparator*              _bottomSeparator;
+        EMUIButton*                 _cancel;
+        EMUIButton*                 _apply;
 
-		static EMUISSAOSettings*	instance;
+        static EMUISSAOSettings*    _instance;
 
-	public:
-		static EMUISSAOSettings& GetInstance ();
-		~EMUISSAOSettings () override;
+    public:
+        static EMUISSAOSettings& GetInstance ();
+        ~EMUISSAOSettings () override;
 
-		GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () const override;
 
-		GXVoid Show ();
-		GXVoid Hide ();
+        GXVoid Show ();
+        GXVoid Hide ();
 
-	private:
-		EMUISSAOSettings ();
+    private:
+        EMUISSAOSettings ();
 
-		GXVoid SyncSettings ();
+        GXVoid SyncSettings ();
 
-		static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state );
-		static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
+        static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state );
+        static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
 
-		EMUISSAOSettings ( const EMUISSAOSettings &other ) = delete;
-		EMUISSAOSettings& operator = ( const EMUISSAOSettings &other ) = delete;
+        EMUISSAOSettings ( const EMUISSAOSettings &other ) = delete;
+        EMUISSAOSettings& operator = ( const EMUISSAOSettings &other ) = delete;
 };
 
 

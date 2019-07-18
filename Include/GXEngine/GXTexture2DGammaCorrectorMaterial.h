@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_TEXUTE_2D_GAMMA_CORRECTOR_MATERIAL
 #define GX_TEXUTE_2D_GAMMA_CORRECTOR_MATERIAL
@@ -12,10 +12,10 @@
 class GXTexture2DGammaCorrectorMaterial final : public GXMaterial
 {
     private:
-        GXTexture2D*    sRGBTexture;
-        GXSampler       sampler;
+        GXTexture2D*    _sRGBTexture;
+        GXSampler       _sampler;
 
-        GLint           gammaLocation;
+        GLint           _gammaLocation;
 
     public:
         GXTexture2DGammaCorrectorMaterial ();

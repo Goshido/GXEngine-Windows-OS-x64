@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #ifndef GX_LOCALE
 #define GX_LOCALE
@@ -9,17 +9,17 @@
 
 enum class eGXLanguage : GXUShort
 {
-    English = 0,
-    Russian = 1
+    English = 0u,
+    Russian = 1u
 };
 
 class GXLocale final : public GXMemoryInspector
 {
     private:
-        eGXLanguage         currentLanguage;
-        GXDynamicArray      storage;
+        eGXLanguage         _currentLanguage;
+        GXDynamicArray      _storage;
 
-        static GXLocale*    instance;
+        static GXLocale*    _instance;
 
     public:
         static GXLocale& GXCALL GetInstance ();

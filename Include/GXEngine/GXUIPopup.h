@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_UI_POPUP
 #define GX_UI_POPUP
@@ -12,15 +12,15 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-typedef GXVoid ( GXCALL* PFNGXONUIPOPUPACTIONPROC ) ( GXVoid* handler );
+typedef GXVoid ( GXCALL* GXUIPopupActionHandler ) ( GXVoid* context );
 
 class GXUIPopup final : public GXWidget
 {
     private:
-        GXDynamicArray      items;
-        GXUByte             selectedItemIndex;
-        GXFloat             itemHeight;
-        GXWidget*           owner;
+        GXDynamicArray      _items;
+        GXUByte             _selectedItemIndex;
+        GXFloat             _itemHeight;
+        GXWidget*           _owner;
 
     public:
         explicit GXUIPopup ( GXWidget* parent );
@@ -28,7 +28,7 @@ class GXUIPopup final : public GXWidget
 
         GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
 
-        GXVoid AddItem ( GXVoid* handler, PFNGXONUIPOPUPACTIONPROC action );
+        GXVoid AddItem ( GXVoid* context, GXUIPopupActionHandler action );
         GXUByte GetTotalItems () const;
 
         GXVoid EnableItem ( GXUByte itemIndex );

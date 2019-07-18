@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_SMART_LOCK_WINDOWS
 #define GX_SMART_LOCK_WINDOWS
@@ -10,7 +10,7 @@
 class GXSmartLock final: public GXAbstractSmartLock
 {
     private:
-        SRWLOCK     srwLock;
+        SRWLOCK     _srwLock;
 
     public:
         GXSmartLock ();

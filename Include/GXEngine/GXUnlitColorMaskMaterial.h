@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_UNLIT_COLOR_MASK_MATERIAL
 #define GX_UNLIT_COLOR_MASK_MATERIAL
@@ -12,14 +12,14 @@
 class GXUnlitColorMaskMaterial final : public GXMaterial
 {
     private:
-        GXTexture2D*    mask;
-        GXSampler       sampler;
-        GXVec4          uvScaleOffset;
-        GXColorRGB      color;
+        GXTexture2D*    _mask;
+        GXSampler       _sampler;
+        GXVec4          _uvScaleOffset;
+        GXColorRGB      _color;
 
-        GLint           mod_view_proj_matLocation;
-        GLint           uvScaleOffsetLocation;
-        GLint           colorLocation;
+        GLint           _mod_view_proj_matLocation;
+        GLint           _uvScaleOffsetLocation;
+        GLint           _colorLocation;
 
     public:
         GXUnlitColorMaskMaterial ();

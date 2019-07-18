@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #ifndef GX_TOUCH_SURFACE
 #define GX_TOUCH_SURFACE
@@ -11,19 +11,19 @@ struct GXMessage;
 class GXTouchSurface final
 {
     private:
-        GXMessage*                  messages;
-        GXMessage*                  lastMessage;
+        GXMessage*                  _messages;
+        GXMessage*                  _lastMessage;
 
-        GXWidget*                   widgetHead;
-        GXWidget*                   widgetTail;
+        GXWidget*                   _widgetHead;
+        GXWidget*                   _widgetTail;
 
-        GXWidget*                   mouseOverWidget;
-        GXWidget*                   lockedWidget;
-        GXWidget*                   defaultWidget;
+        GXWidget*                   _mouseOverWidget;
+        GXWidget*                   _lockedWidget;
+        GXWidget*                   _defaultWidget;
 
-        GXVec2                      mousePosition;
+        GXVec2                      _mousePosition;
 
-        static GXTouchSurface*      instance;
+        static GXTouchSurface*      _instance;
 
     public:
         static GXTouchSurface& GXCALL GetInstance ();

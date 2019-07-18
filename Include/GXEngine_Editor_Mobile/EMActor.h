@@ -12,61 +12,61 @@ extern EMActor* em_Actors;
 
 enum class eEMActorType : GXUInt
 {
-	Abstact = 0,
-	DirectedLight = 1,
-	UnitCube = 2,
-	Mesh = 3,
-	PhysicsDrivenActor = 4
+    Abstact = 0,
+    DirectedLight = 1,
+    UnitCube = 2,
+    Mesh = 3,
+    PhysicsDrivenActor = 4
 };
 
 struct EMActorHeader
 {
-	GXUInt		type;
-	GXUBigInt	nameOffset;
-	GXMat4		origin;
-	GXBool		isVisible;
-	GXUBigInt	size;
+    GXUInt          _type;
+    GXUBigInt       _nameOffset;
+    GXMat4          _origin;
+    GXBool          _isVisible;
+    GXUBigInt       _size;
 };
 
 class EMActor
 {
-	private:
-		EMActor*		next;
-		EMActor*		prev;
+    private:
+        EMActor*        _next;
+        EMActor*        _previous;
 
-	protected:
-		eEMActorType	type;
-		GXTransform		transform;
-		GXBool			isVisible;
-		GXWChar*		name;
+    protected:
+        eEMActorType    _type;
+        GXTransform     _transform;
+        GXBool          _isVisible;
+        GXWChar*        _name;
 
-	public:
-		explicit EMActor ( const GXWChar* name, eEMActorType type, const GXTransform &transform );
-		virtual ~EMActor ();
+    public:
+        explicit EMActor ( const GXWChar* name, eEMActorType type, const GXTransform &transform );
+        virtual ~EMActor ();
 
-		virtual GXVoid OnDrawCommonPass ( GXFloat deltaTime );
-		virtual GXVoid OnDrawHudColorPass ();
-		virtual GXVoid OnDrawHudMaskPass ();
-		
-		virtual GXVoid OnUpdate ( GXFloat deltaTime );
-		virtual GXVoid OnSave ( GXUByte** data );
-		virtual GXVoid OnLoad ( const GXUByte* data );
-		virtual GXUPointer OnRequeredSaveSize () const;
-		virtual GXVoid OnTransformChanged ();
+        virtual GXVoid OnDrawCommonPass ( GXFloat deltaTime );
+        virtual GXVoid OnDrawHudColorPass ();
+        virtual GXVoid OnDrawHudMaskPass ();
+        
+        virtual GXVoid OnUpdate ( GXFloat deltaTime );
+        virtual GXVoid OnSave ( GXUByte** data );
+        virtual GXVoid OnLoad ( const GXUByte* data );
+        virtual GXUPointer OnRequeredSaveSize () const;
+        virtual GXVoid OnTransformChanged ();
 
-		const GXWChar* GetName ();
-		eEMActorType GetType ();
+        const GXWChar* GetName ();
+        eEMActorType GetType ();
 
-		const GXTransform& GetTransform ();
-		GXVoid SetTransform ( const GXTransform &newTransform );
+        const GXTransform& GetTransform ();
+        GXVoid SetTransform ( const GXTransform &newTransform );
 
-		GXVoid Show ();
-		GXVoid Hide ();
+        GXVoid Show ();
+        GXVoid Hide ();
 
-	private:
-		EMActor () = delete;
-		EMActor ( const EMActor &other ) = delete;
-		EMActor& operator = ( const EMActor &other ) = delete;
+    private:
+        EMActor () = delete;
+        EMActor ( const EMActor &other ) = delete;
+        EMActor& operator = ( const EMActor &other ) = delete;
 };
 
 

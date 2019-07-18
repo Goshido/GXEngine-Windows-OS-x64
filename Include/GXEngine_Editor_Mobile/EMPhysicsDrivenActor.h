@@ -11,42 +11,42 @@
 
 class EMPhysicsDrivenActor final : public EMActor
 {
-	private:
-		EMWireframeMaterial*				wireframeMaterial;
-		GXTexture2D							albedo;
-		GXTexture2D							normal;
-		GXTexture2D							emission;
-		GXTexture2D							parameter;
+    private:
+        EMWireframeMaterial*                _wireframeMaterial;
+        GXTexture2D                         _albedo;
+        GXTexture2D                         _normal;
+        GXTexture2D                         _emission;
+        GXTexture2D                         _parameter;
 
-		GXRigidBody							rigidBody;
-		GXMeshGeometry						mesh;
-		EMCookTorranceCommonPassMaterial	material;
+        GXRigidBody                         _rigidBody;
+        GXMeshGeometry                      _mesh;
+        EMCookTorranceCommonPassMaterial    _material;
 
-		GXMeshGeometry						unitSphereMesh;
-		GXMeshGeometry						unitCubeMesh;
+        GXMeshGeometry                      _unitSphereMesh;
+        GXMeshGeometry                      _unitCubeMesh;
 
-	public:
-		explicit EMPhysicsDrivenActor ( const GXWChar* name, const GXTransform &transform );
-		~EMPhysicsDrivenActor () override;
+    public:
+        explicit EMPhysicsDrivenActor ( const GXWChar* name, const GXTransform &transform );
+        ~EMPhysicsDrivenActor () override;
 
-		GXVoid OnDrawCommonPass ( GXFloat deltaTime ) override;
-		GXVoid OnDrawHudColorPass () override;
-		GXVoid OnTransformChanged () override;
+        GXVoid OnDrawCommonPass ( GXFloat deltaTime ) override;
+        GXVoid OnDrawHudColorPass () override;
+        GXVoid OnTransformChanged () override;
 
-		GXVoid SetMesh ( const GXWChar* meshFile );
+        GXVoid SetMesh ( const GXWChar* meshFile );
 
-		GXRigidBody& GetRigidBody ();
-		EMCookTorranceCommonPassMaterial& GetMaterial ();
+        GXRigidBody& GetRigidBody ();
+        EMCookTorranceCommonPassMaterial& GetMaterial ();
 
-		GXVoid EnablePhysicsDebug ();
-		GXVoid DisablePhysicsDebug ();
+        GXVoid EnablePhysicsDebug ();
+        GXVoid DisablePhysicsDebug ();
 
-	private:
-		static GXVoid GXCALL OnRigidBodyTransformChanged ( GXVoid* handler, const GXRigidBody &rigidBody );
+    private:
+        static GXVoid GXCALL OnRigidBodyTransformChanged ( GXVoid* handler, const GXRigidBody &rigidBody );
 
-		EMPhysicsDrivenActor () = delete;
-		EMPhysicsDrivenActor ( const EMPhysicsDrivenActor &other ) = delete;
-		EMPhysicsDrivenActor& operator = ( const EMPhysicsDrivenActor &other ) = delete;
+        EMPhysicsDrivenActor () = delete;
+        EMPhysicsDrivenActor ( const EMPhysicsDrivenActor &other ) = delete;
+        EMPhysicsDrivenActor& operator = ( const EMPhysicsDrivenActor &other ) = delete;
 };
 
 

@@ -1,24 +1,24 @@
-// version 1.3
+// version 1.4
 
 #include <GXCommon/Windows/GXMutex.h>
 
 
 GXMutex::GXMutex ()
 {
-    mutex = CreateMutexW ( nullptr, FALSE, nullptr );
+    _mutex = CreateMutexW ( nullptr, FALSE, nullptr );
 }
 
 GXMutex::~GXMutex ()
 {
-    CloseHandle ( mutex );
+    CloseHandle ( _mutex );
 }
 
 GXVoid GXMutex::Lock ()
 {
-    WaitForSingleObject ( mutex, INFINITE );
+    WaitForSingleObject ( _mutex, INFINITE );
 }
 
 GXVoid GXMutex::Release ()
 {
-    ReleaseMutex ( mutex );
+    ReleaseMutex ( _mutex );
 }

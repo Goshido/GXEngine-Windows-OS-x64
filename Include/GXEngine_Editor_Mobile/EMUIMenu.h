@@ -9,23 +9,23 @@
 
 class EMUIMenu final : public EMUI
 {
-	private:
-		GXUIMenu*	widget;
+    private:
+        GXUIMenu*       _widget;
 
-	public:
-		explicit EMUIMenu ( EMUI* parent );
-		~EMUIMenu () override;
+    public:
+        explicit EMUIMenu ( EMUI* parent );
+        ~EMUIMenu () override;
 
-		GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () const override;
 
-		GXVoid AddItem ( const GXWChar* name, EMUIPopup* popup );
-		GXVoid SetLocation ( GXFloat leftBottomX, GXFloat leftBottomY );
-		GXFloat GetHeight () const;
+        GXVoid AddItem ( const GXWChar* name, EMUIPopup* popup );
+        GXVoid SetLocation ( GXFloat leftBottomX, GXFloat leftBottomY );
+        GXFloat GetHeight () const;
 
-	private:
-		EMUIMenu () = delete;
-		EMUIMenu ( const EMUIMenu &other ) = delete;
-		EMUIMenu& operator = ( const EMUIMenu &other ) = delete;
+    private:
+        EMUIMenu () = delete;
+        EMUIMenu ( const EMUIMenu &other ) = delete;
+        EMUIMenu& operator = ( const EMUIMenu &other ) = delete;
 };
 
 

@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #include <GXEngine/GXTextValidator.h>
 #include <GXCommon/GXStrings.h>
@@ -7,13 +7,16 @@
 
 GXTextValidator::GXTextValidator ( const GXWChar* defaultValidText )
 {
-	if ( !defaultValidText )
-		defaultValidText = nullptr;
-	else
-		GXWcsclone ( &oldValidText, defaultValidText );
+    if ( defaultValidText )
+    {
+        GXWcsclone ( &_oldValidText, defaultValidText );
+        return;
+    }
+
+    defaultValidText = nullptr;
 }
 
 GXTextValidator::~GXTextValidator ()
 {
-	GXSafeFree ( oldValidText );
+    GXSafeFree ( _oldValidText );
 }

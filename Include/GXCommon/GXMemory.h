@@ -1,4 +1,4 @@
-// version 1.8
+// version 1.9
 
 #ifndef GX_MEMORY
 #define GX_MEMORY
@@ -35,11 +35,11 @@ GX_RESTORE_WARNING_STATE
 class GXMemoryInspectorLite
 {
     private:
-        static GXUPointerAtomic     newObjects;
-        static GXUPointerAtomic     newObjectSize;
+        static GXUPointerAtomic     _newObjects;
+        static GXUPointerAtomic     _newObjectSize;
 
-        static GXUPointerAtomic     mallocObjects;
-        static GXUPointerAtomic     mallocObjectSize;
+        static GXUPointerAtomic     _mallocObjects;
+        static GXUPointerAtomic     _mallocObjectSize;
 
     public:
         // Method returns GX_TRUE if no any memory leaks are detected.
@@ -61,7 +61,7 @@ class GXMemoryInspectorLite
 class GXMemoryInspectorFull
 {
     private:
-        GXChar*     className;
+        GXChar*     _className;
 
     public:
         // Mandatory method for "new" ecosystem.
@@ -117,9 +117,9 @@ class GXMemoryInspectorFull
 class GXCircleBuffer final : public GXMemoryInspector
 {
     private:
-        GXUPointer      size;
-        GXUPointer      offset;
-        GXUByte*        buffer;
+        GXUPointer      _size;
+        GXUPointer      _offset;
+        GXUByte*        _buffer;
 
     public:
         explicit GXCircleBuffer ( GXUPointer size );
@@ -137,9 +137,9 @@ class GXCircleBuffer final : public GXMemoryInspector
 class GXDynamicArray final
 {
     protected:
-        GXUByte*        data;
-        GXUPointer      elementSize;
-        GXUPointer      numElements;
+        GXUByte*        _data;
+        GXUPointer      _elementSize;
+        GXUPointer      _numElements;
 
     public:
         explicit GXDynamicArray ( GXUPointer elementSize );

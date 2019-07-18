@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #ifndef GX_THREAD_WINDOWS
 #define GX_THREAD_WINDOWS
@@ -10,10 +10,10 @@
 class GXThread final : public GXAbstractThread
 {
     private:
-        HANDLE      thread;
+        HANDLE      _thread;
 
     public:
-        explicit GXThread ( PFNGXTHREADPROC procedure, GXVoid* argument );
+        explicit GXThread ( GXThreaFunction procedure, GXVoid* argument );
         ~GXThread () override;
 
         GXVoid Start () override;

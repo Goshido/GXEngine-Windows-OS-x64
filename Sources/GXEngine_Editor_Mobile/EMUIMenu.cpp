@@ -41,9 +41,9 @@
 class EMUIMenuRenderer final : public GXWidgetRenderer
 {
     private:
-        GXFont              font;
-        GXTexture2D         texture;
-        GXHudSurface*       surface;
+        GXFont              _font;
+        GXTexture2D         _texture;
+        GXHudSurface*       _surface;
 
     public:
         explicit EMUIMenuRenderer ( GXUIMenu* widget );
@@ -65,96 +65,96 @@ class EMUIMenuRenderer final : public GXWidgetRenderer
 
 EMUIMenuRenderer::EMUIMenuRenderer ( GXUIMenu* widget ):
     GXWidgetRenderer ( widget ),
-    font ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) ),
-    texture ( DEFAULT_TEXTURE, GX_FALSE, GX_FALSE )
+    _font ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) ),
+    _texture ( DEFAULT_TEXTURE, GX_FALSE, GX_FALSE )
 {
     const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
-    surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
+    _surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
 EMUIMenuRenderer::~EMUIMenuRenderer ()
 {
-    delete surface;
+    delete _surface;
 }
 
 GXFloat EMUIMenuRenderer::GetTextWidth ( const GXWChar* text ) const
 {
-    return (GXFloat)font.GetTextLength ( 0, text );
+    return (GXFloat)_font.GetTextLength ( 0, text );
 }
 
 GXVoid EMUIMenuRenderer::OnRefresh ()
 {
     const GXUIMenu* menu = static_cast<const GXUIMenu*> ( widget );
 
-    GXFloat w = static_cast<GXFloat> ( surface->GetWidth () );
-    GXFloat h = static_cast<GXFloat> ( surface->GetHeight () );
+    const GXFloat w = static_cast<const GXFloat> ( _surface->GetWidth () );
+    const GXFloat h = static_cast<const GXFloat> ( _surface->GetHeight () );
 
-    GXUByte totalItems = menu->GetTotalItems ();
+    const GXUByte totalItems = menu->GetTotalItems ();
 
-    GXUByte selectedItemIndex = menu->GetSelectedItemIndex ();
-    GXUByte highlightedItemIndex = menu->GetHighlightedItemIndex ();
+    const GXUByte selectedItemIndex = menu->GetSelectedItemIndex ();
+    const GXUByte highlightedItemIndex = menu->GetHighlightedItemIndex ();
 
-    surface->Reset ();
+    _surface->Reset ();
 
     GXImageInfo ii;
-    ii.color.From ( BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
-    ii.texture = &texture;
-    ii.overlayType = eGXImageOverlayType::SimpleReplace;
-    ii.insertX = 0.1f;
-    ii.insertY = 0.1f;
-    ii.insertWidth = w - 0.2f;
-    ii.insertHeight = h - 0.2f;
+    ii._color.From ( BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
+    ii._texture = &_texture;
+    ii._overlayType = eGXImageOverlayType::SimpleReplace;
+    ii._insertX = 0.1f;
+    ii._insertY = 0.1f;
+    ii._insertWidth = w - 0.2f;
+    ii._insertHeight = h - 0.2f;
     
-    surface->AddImage ( ii );
+    _surface->AddImage ( ii );
 
     if ( selectedItemIndex != GX_UI_MENU_INVALID_INDEX )
     {
-        ii.color.From ( SELECT_COLOR_R, SELECT_COLOR_G, SELECT_COLOR_B, SELECT_COLOR_A );
-        ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
-        ii.insertX = menu->GetItemOffset ( selectedItemIndex ) + 0.1f;
-        ii.insertY = 0.1f;
-        ii.insertWidth = menu->GetItemWidth ( selectedItemIndex ) - 0.2f;
-        ii.insertHeight = h - 0.2f;
+        ii._color.From ( SELECT_COLOR_R, SELECT_COLOR_G, SELECT_COLOR_B, SELECT_COLOR_A );
+        ii._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+        ii._insertX = menu->GetItemOffset ( selectedItemIndex ) + 0.1f;
+        ii._insertY = 0.1f;
+        ii._insertWidth = menu->GetItemWidth ( selectedItemIndex ) - 0.2f;
+        ii._insertHeight = h - 0.2f;
 
-        surface->AddImage ( ii );
+        _surface->AddImage ( ii );
     }
 
     if ( highlightedItemIndex != GX_UI_MENU_INVALID_INDEX )
     {
-        ii.color.From ( HIGHLIGHT_COLOR_R, HIGHLIGHT_COLOR_G, HIGHLIGHT_COLOR_B, HIGHLIGHT_COLOR_A );
-        ii.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
-        ii.insertX = menu->GetItemOffset ( highlightedItemIndex ) + 0.1f;
-        ii.insertY = 0.1f;
-        ii.insertWidth = menu->GetItemWidth ( highlightedItemIndex ) - 0.2f;
-        ii.insertHeight = h - 0.2f;
+        ii._color.From ( HIGHLIGHT_COLOR_R, HIGHLIGHT_COLOR_G, HIGHLIGHT_COLOR_B, HIGHLIGHT_COLOR_A );
+        ii._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+        ii._insertX = menu->GetItemOffset ( highlightedItemIndex ) + 0.1f;
+        ii._insertY = 0.1f;
+        ii._insertWidth = menu->GetItemWidth ( highlightedItemIndex ) - 0.2f;
+        ii._insertHeight = h - 0.2f;
 
-        surface->AddImage ( ii );
+        _surface->AddImage ( ii );
     }
 
     GXPenInfo pi;
-    pi.color.From ( FONT_COLOR_R, FONT_COLOR_G, FONT_COLOR_B, FONT_COLOR_A );
-    pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
-    pi.font = &font;
-    pi.insertY = ( h - font.GetSize () ) * 0.7f;
+    pi._color.From ( FONT_COLOR_R, FONT_COLOR_G, FONT_COLOR_B, FONT_COLOR_A );
+    pi._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+    pi._font = &_font;
+    pi._insertY = ( h - _font.GetSize () ) * 0.7f;
 
     for ( GXUByte i = 0u; i < totalItems; ++i )
     {
         const GXWChar* itemName = menu->GetItemName ( i );
-        GXFloat itemOffset = menu->GetItemOffset ( i );
-        GXFloat itemWidth = menu->GetItemWidth ( i );
-        GXFloat textWidth = static_cast<GXFloat> ( font.GetTextLength ( 0u, itemName ) );
+        const GXFloat itemOffset = menu->GetItemOffset ( i );
+        const GXFloat itemWidth = menu->GetItemWidth ( i );
+        const GXFloat textWidth = static_cast<const GXFloat> ( _font.GetTextLength ( 0u, itemName ) );
 
-        pi.insertX = itemOffset + ( itemWidth - textWidth ) * 0.5f;
+        pi._insertX = itemOffset + ( itemWidth - textWidth ) * 0.5f;
 
-        surface->AddText ( pi, 0u, itemName );
+        _surface->AddText ( pi, 0u, itemName );
     }
 }
 
 GXVoid EMUIMenuRenderer::OnDraw ()
 {
-    surface->Render ();
+    _surface->Render ();
 }
 
 GXVoid EMUIMenuRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
@@ -162,14 +162,14 @@ GXVoid EMUIMenuRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUSh
     x = truncf ( x ) + PIXEL_PERFECT_LOCATION_OFFSET_X;
     y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
-    delete surface;
+    delete _surface;
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
-    surface = new GXHudSurface ( width, height );
+    _surface = new GXHudSurface ( width, height );
 
     GXVec3 location;
-    surface->GetLocation ( location );
-    surface->SetLocation ( x, y, location.data[ 2 ] );
+    _surface->GetLocation ( location );
+    _surface->SetLocation ( x, y, location._data[ 2u ] );
 }
 
 GXVoid EMUIMenuRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -178,41 +178,41 @@ GXVoid EMUIMenuRenderer::OnMoved ( GXFloat x, GXFloat y )
     y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
     GXVec3 location;
-    surface->GetLocation ( location );
-    surface->SetLocation ( x, y, location.data[ 2 ] );
+    _surface->GetLocation ( location );
+    _surface->SetLocation ( x, y, location._data[ 2u ] );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 EMUIMenu::EMUIMenu ( EMUI* parent ):
     EMUI ( parent ),
-    widget ( new GXUIMenu ( parent ? parent->GetWidget () : nullptr ) )
+    _widget ( new GXUIMenu ( parent ? parent->GetWidget () : nullptr ) )
 {
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIMenuRenderer" );
-    widget->SetRenderer ( new EMUIMenuRenderer ( widget ) );
-    widget->Resize ( DEFAULT_BOTTOM_LEFT_X * gx_ui_Scale, DEFAULT_BOTTOM_LEFT_Y * gx_ui_Scale, ANY_WIDTH, ITEM_HEIGHT * gx_ui_Scale );
+    _widget->SetRenderer ( new EMUIMenuRenderer ( _widget ) );
+    _widget->Resize ( DEFAULT_BOTTOM_LEFT_X * gx_ui_Scale, DEFAULT_BOTTOM_LEFT_Y * gx_ui_Scale, ANY_WIDTH, ITEM_HEIGHT * gx_ui_Scale );
 }
 
 EMUIMenu::~EMUIMenu ()
 {
-    delete widget->GetRenderer ();
-    delete widget;
+    delete _widget->GetRenderer ();
+    delete _widget;
 }
 
 GXWidget* EMUIMenu::GetWidget () const
 {
-    return widget;
+    return _widget;
 }
 
 GXVoid EMUIMenu::AddItem ( const GXWChar* name, EMUIPopup* popup )
 {
-    const EMUIMenuRenderer* renderer = static_cast<const EMUIMenuRenderer*> ( widget->GetRenderer () );
-    widget->AddItem ( name, renderer->GetTextWidth ( name ) + TEXT_EXTEND * gx_ui_Scale, popup ? static_cast<GXUIPopup*> ( popup->GetWidget () ) : nullptr );
+    const EMUIMenuRenderer* renderer = static_cast<const EMUIMenuRenderer*> ( _widget->GetRenderer () );
+    _widget->AddItem ( name, renderer->GetTextWidth ( name ) + TEXT_EXTEND * gx_ui_Scale, popup ? static_cast<GXUIPopup*> ( popup->GetWidget () ) : nullptr );
 }
 
 GXVoid EMUIMenu::SetLocation ( GXFloat leftBottomX, GXFloat leftBottomY )
 {
-    widget->Resize ( leftBottomX, leftBottomY, ANY_WIDTH, ITEM_HEIGHT * gx_ui_Scale );
+    _widget->Resize ( leftBottomX, leftBottomY, ANY_WIDTH, ITEM_HEIGHT * gx_ui_Scale );
 }
 
 GXFloat EMUIMenu::GetHeight () const

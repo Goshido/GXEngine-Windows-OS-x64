@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #ifndef GX_AVL_TREE
 #define GX_AVL_TREE
@@ -7,24 +7,7 @@
 #include <GXCommon/GXMemory.h>
 
 
-class GXAVLTreeNode : public GXMemoryInspector
-{
-    public:
-        GXAVLTreeNode*      left;
-        GXAVLTreeNode*      right;
-        GXUInt              height;
-
-    public:
-        GXAVLTreeNode ();
-        ~GXAVLTreeNode () override;
-};
-
-
-typedef GXVoid ( GXCALL* PFNGXAVLTREEITERATORPROC ) ( const GXAVLTreeNode &node, GXVoid* args );
-typedef GXInt ( GXCALL* PFNGXAVLTREECOMPAREPROC ) ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
-
-
-enum class eGXAVLTreeSide : GXUByte
+enum class eGXAVLTreeSide: GXUByte
 {
     Left,
     Right,
@@ -32,29 +15,48 @@ enum class eGXAVLTreeSide : GXUByte
 };
 
 
+class GXAVLTreeNode : public GXMemoryInspector
+{
+    public:
+        GXAVLTreeNode*      _left;
+        GXAVLTreeNode*      _right;
+        GXUInt              _height;
+
+    public:
+        GXAVLTreeNode ();
+        ~GXAVLTreeNode () override;
+
+    private:
+        GXAVLTreeNode ( const GXAVLTreeNode &other ) = delete;
+        GXAVLTreeNode& operator = ( const GXAVLTreeNode &other ) = delete;
+};
+
+typedef GXVoid ( GXCALL* GXAVLTreeIterator ) ( const GXAVLTreeNode &node, GXVoid* args );
+typedef GXInt ( GXCALL* GXAVLTreeComparator ) ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
+
 class GXAVLTree
 {
     protected:
-        GXAVLTreeNode*              root;
-        GXUInt                      totalNodes;
+        GXAVLTreeNode*          _root;
+        GXUInt                  _totalNodes;
 
     private:
-        PFNGXAVLTREECOMPAREPROC     Compare;
-        GXBool                      isAutoClean;
+        GXAVLTreeComparator     _comparator;
+        GXBool                  _isAutoClean;
 
     public:
         GXUInt GetTotalNodes () const;
 
     protected:
-        explicit GXAVLTree ( PFNGXAVLTREECOMPAREPROC comparator, GXBool doesAutoClean );
+        explicit GXAVLTree ( GXAVLTreeComparator comparator, GXBool doesAutoClean );
         virtual ~GXAVLTree ();
 
         const GXAVLTreeNode* Find ( const GXAVLTreeNode &node ) const;
         GXVoid Add ( GXAVLTreeNode &node );
         
-        GXVoid DoPrefix ( const GXAVLTreeNode* currentRoot, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const;
-        GXVoid DoInfix ( const GXAVLTreeNode* currentRoot, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const;
-        GXVoid DoPostfix ( const GXAVLTreeNode* currentRoot, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const;
+        GXVoid DoPrefix ( const GXAVLTreeNode* currentRoot, GXAVLTreeIterator iterator, GXVoid* args ) const;
+        GXVoid DoInfix ( const GXAVLTreeNode* currentRoot, GXAVLTreeIterator iterator, GXVoid* args ) const;
+        GXVoid DoPostfix ( const GXAVLTreeNode* currentRoot, GXAVLTreeIterator iterator, GXVoid* args ) const;
 
     private:
         GXVoid FindInternal ( GXAVLTreeNode** oldNode, GXAVLTreeNode** parent, eGXAVLTreeSide &side, const GXAVLTreeNode &node );
@@ -70,6 +72,9 @@ class GXAVLTree
         GXAVLTreeNode* Balance ( GXAVLTreeNode* me );
 
         GXVoid DeleteTree ( GXAVLTreeNode* node );
+
+        GXAVLTree ( const GXAVLTree &other ) = delete;
+        GXAVLTree& operator = ( const GXAVLTree &other ) = delete;
 };
 
 

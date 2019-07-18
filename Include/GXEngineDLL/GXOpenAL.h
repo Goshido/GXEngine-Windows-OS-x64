@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_OPEN_AL
 #define GX_OPEN_AL
@@ -41,42 +41,42 @@ typedef void ( AL_APIENTRY* PFNALSOURCESTOP ) ( ALuint sid );
 typedef void ( AL_APIENTRY* PFNALSOURCEPAUSE ) ( ALuint sid );
 typedef void ( AL_APIENTRY* PFNALSOURCEREWIND ) ( ALuint sid );
 
-typedef GXVoid ( GXCALL* PFNGXOPENALDESTROY ) ();
-typedef ALboolean ( GXCALL* PFNGXOPENALCHECKCONTEXTERROR ) ();
-typedef ALboolean ( GXCALL* PFNGXOPENALCHECKERROR ) ();
+typedef GXVoid ( GXCALL* GXOpenALDestroyFunc ) ();
+typedef ALboolean ( GXCALL* GXOpenALCheckContextErrorFunc ) ();
+typedef ALboolean ( GXCALL* GXOpenALCheckErrorFunc ) ();
 
 
 struct GXOpenALFunctions
 {
-	PFNALLISTENERFV*				alListenerfv;
-	PFNALLISTENER3F*				alListener3f;
-	PFNALLISTENERF*					alListenerf;
+    PFNALLISTENERFV*                    alListenerfv;
+    PFNALLISTENER3F*                    alListener3f;
+    PFNALLISTENERF*                     alListenerf;
 
-	PFNALGENBUFFERS*				alGenBuffers;
-	PFNALDELETEBUFFERS*				alDeleteBuffers;
+    PFNALGENBUFFERS*                    alGenBuffers;
+    PFNALDELETEBUFFERS*                 alDeleteBuffers;
 
-	PFNALBUFFERI*					alBufferi;
-	PFNALBUFFERDATA*				alBufferData;
-	
-	PFNALGENSOURCES*				alGenSources;
-	PFNALGETSOURCEI*				alGetSourcei;
-	PFNALDELETESOURCES*				alDeleteSources;
+    PFNALBUFFERI*                       alBufferi;
+    PFNALBUFFERDATA*                    alBufferData;
+    
+    PFNALGENSOURCES*                    alGenSources;
+    PFNALGETSOURCEI*                    alGetSourcei;
+    PFNALDELETESOURCES*                 alDeleteSources;
 
-	PFNALSOURCEI*					alSourcei;
-	PFNALSOURCEFV*					alSourcefv;
-	PFNALSOURCE3F*					alSource3f;
-	PFNALSOURCEF*					alSourcef;
-	PFNALSOURCEQUEUEBUFFERS*		alSourceQueueBuffers;
-	PFNALSOURCEUNQUEUEBUFFERS*		alSourceUnqueueBuffers;
+    PFNALSOURCEI*                       alSourcei;
+    PFNALSOURCEFV*                      alSourcefv;
+    PFNALSOURCE3F*                      alSource3f;
+    PFNALSOURCEF*                       alSourcef;
+    PFNALSOURCEQUEUEBUFFERS*            alSourceQueueBuffers;
+    PFNALSOURCEUNQUEUEBUFFERS*          alSourceUnqueueBuffers;
 
-	PFNALSOURCEPLAY*				alSourcePlay;
-	PFNALSOURCESTOP*				alSourceStop;
-	PFNALSOURCEPAUSE*				alSourcePause;
-	PFNALSOURCEREWIND*				alSourceRewind;
+    PFNALSOURCEPLAY*                    alSourcePlay;
+    PFNALSOURCESTOP*                    alSourceStop;
+    PFNALSOURCEPAUSE*                   alSourcePause;
+    PFNALSOURCEREWIND*                  alSourceRewind;
 
-	PFNGXOPENALDESTROY*				GXOpenALDestroy;
-	PFNGXOPENALCHECKCONTEXTERROR*	GXOpenALCheckContextError;
-	PFNGXOPENALCHECKERROR*			GXOpenALCheckError;
+    GXOpenALDestroyFunc*                GXOpenALDestroy;
+    GXOpenALCheckContextErrorFunc*      GXOpenALCheckContextError;
+    GXOpenALCheckErrorFunc*             GXOpenALCheckError;
 };
 
 

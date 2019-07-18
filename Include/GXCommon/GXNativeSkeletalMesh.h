@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.9
 
 #ifndef GX_NATIVE_SKELETAL_MESH
 #define GX_NATIVE_SKELETAL_MESH
@@ -20,34 +20,34 @@
 
 struct GXNativeSkeletalMeshHeader final
 {
-    GXUInt          totalVertices;
-    GXUBigInt       vboOffset;                      // VBO element struct: position (GXVec3), uv (GXVec2), normal (GXVec3), tangent (GXVec3), bitangent (GXVec3), indices (GXVec4), weights (GXVec4).
+    GXUInt          _totalVertices;
+    GXUBigInt       _vboOffset;                      // VBO element struct: position (GXVec3), uv (GXVec2), normal (GXVec3), tangent (GXVec3), bitangent (GXVec3), indices (GXVec4), weights (GXVec4).
 
-    GXUShort        totalBones;
-    GXUBigInt       boneNamesOffset;                // array of totalBones elements: 64 byte slot with zero terminated UTF8 string.
-    GXUBigInt       parentBoneIndicesOffset;        // array of totalBones elements: zero based index (GXUShort).
-    GXUBigInt       referensePoseOffset;            // array of totalBones elements: location (GXVec3), rotation (GXQuat). Relative parent.
-    GXUBigInt       inverseBindTransformOffset;     // array of totalBones elements: location (GXVec3), rotation (GXQuat).
+    GXUShort        _totalBones;
+    GXUBigInt       _boneNamesOffset;                // array of totalBones elements: 64 byte slot with zero terminated UTF8 string.
+    GXUBigInt       _parentBoneIndicesOffset;        // array of totalBones elements: zero based index (GXUShort).
+    GXUBigInt       _referensePoseOffset;            // array of totalBones elements: location (GXVec3), rotation (GXQuat). Relative parent.
+    GXUBigInt       _inverseBindTransformOffset;     // array of totalBones elements: location (GXVec3), rotation (GXQuat).
 };
 
 #pragma pack ( pop )
 
 struct GXBoneJoint final
 {
-    GXQuat      rotation;
-    GXVec3      location;
+    GXQuat      _rotation;
+    GXVec3      _location;
 };
 
 struct GXSkeletalMeshData final
 {
-    GXUInt          totalVertices;
-    GXFloat*        vboData;
+    GXUInt          _totalVertices;
+    GXFloat*        _vboData;
 
-    GXUShort        totalBones;
-    GXUTF8*         boneNames;
-    GXUShort*       parentBoneIndices;
-    GXBoneJoint*    referencePose;
-    GXBoneJoint*    inverseBindTransform;
+    GXUShort        _totalBones;
+    GXUTF8*         _boneNames;
+    GXUShort*       _parentBoneIndices;
+    GXBoneJoint*    _referencePose;
+    GXBoneJoint*    _inverseBindTransform;
 
     GXSkeletalMeshData ();
     GXVoid Cleanup ();
@@ -58,25 +58,25 @@ struct GXSkeletalMeshData final
 
 struct GXNativeAnimationHeader final
 {
-    GXFloat         fps;
-    GXUInt          totalFrames;
+    GXFloat         _fps;
+    GXUInt          _totalFrames;
 
-    GXUShort        totalBones;
-    GXUBigInt       boneNamesOffset;    // array of totalBones elements: 64 byte slot with zero terminated UTF-8 string
-    GXUBigInt       keysOffset;         // array of [totalBones * totalFrames] elements: rotation (GXQuat), location (GXVec3). Relative parent.
-    GXUBigInt       keysOffset2;
+    GXUShort        _totalBones;
+    GXUBigInt       _boneNamesOffset;       // array of totalBones elements: 64 byte slot with zero terminated UTF-8 string
+    GXUBigInt       _keysOffset;            // array of [totalBones * totalFrames] elements: rotation (GXQuat), location (GXVec3). Relative parent.
+    GXUBigInt       _keysOffset2;
 };
 
 #pragma pack ( pop )
 
 struct GXAnimationInfo final
 {
-    GXUShort        totalBones;
-    GXUTF8*         boneNames;
+    GXUShort        _totalBones;
+    GXUTF8*         _boneNames;
 
-    GXFloat         fps;
-    GXUInt          totalFrames;
-    GXBoneJoint*    keys;
+    GXFloat         _fps;
+    GXUInt          _totalFrames;
+    GXBoneJoint*    _keys;
 
     GXAnimationInfo ();
     GXVoid Cleanup ();

@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #ifndef GX_SOUND_PROVIDER
 #define GX_SOUND_PROVIDER
@@ -16,10 +16,10 @@
 class GXSoundStreamer : public GXMemoryInspector
 {
     protected:
-        GXUByte*        mappedFile;
-        GXUPointer      totalSize;
-        GXLong          position;
-        GXUByte         pcmData[ GX_SOUND_PROVIDER_BUFFER_SIZE ];
+        GXUByte*        _mappedFile;
+        GXUPointer      _totalSize;
+        GXLong          _position;
+        GXUByte         _pcmData[ GX_SOUND_PROVIDER_BUFFER_SIZE ];
 
     public:
         explicit GXSoundStreamer ( GXVoid* memoryMappedFile, GXUPointer fileSize );
@@ -45,19 +45,19 @@ class GXSoundStreamer : public GXMemoryInspector
 class GXSoundTrack : public GXMemoryInspector
 {
     public:
-        GXSoundTrack*       next;
-        GXSoundTrack*       prev;
+        GXSoundTrack*       _next;
+        GXSoundTrack*       _previous;
 
     protected:
-        GXUPointerAtomic    references;
-        ALuint              readyBuffer;
+        GXUPointerAtomic    _references;
+        ALuint              _readyBuffer;
 
     public:
-        const GXString      trackFile;
+        const GXString      _trackFile;
 
     protected:
-        GXUByte*            mappedFile;
-        GXUBigInt           totalSize;
+        GXUByte*            _mappedFile;
+        GXUBigInt           _totalSize;
 
     public:
         explicit GXSoundTrack ( const GXWChar* trackFileName );

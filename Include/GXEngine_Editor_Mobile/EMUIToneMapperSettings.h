@@ -11,44 +11,44 @@
 
 class EMUIToneMapperSettings final : public EMUI
 {
-	private:
-		EMUIDraggableArea*				mainPanel;
+    private:
+        EMUIDraggableArea*                  _mainPanel;
 
-		EMUIStaticText*					caption;
-		EMUISeparator*					topSeparator;
-		EMUIStaticText*					gammaLabel;
-		EMUIEditBox*					gamma;
-		EMUIStaticText*					sensitivityLabel;
-		EMUIEditBox*					sensitivity;
-		EMUIStaticText*					eyeAdaptationSpeedLabel;
-		EMUIEditBox*					eyeAdaptationSpeed;
-		EMUIStaticText*					whiteIntensityLabel;
-		EMUIEditBox*					whiteIntensity;
-		EMUISeparator*					bottomSeparator;
-		EMUIButton*						cancel;
-		EMUIButton*						apply;
+        EMUIStaticText*                     _caption;
+        EMUISeparator*                      _topSeparator;
+        EMUIStaticText*                     _gammaLabel;
+        EMUIEditBox*                        _gamma;
+        EMUIStaticText*                     _sensitivityLabel;
+        EMUIEditBox*                        _sensitivity;
+        EMUIStaticText*                     _eyeAdaptationSpeedLabel;
+        EMUIEditBox*                        _eyeAdaptationSpeed;
+        EMUIStaticText*                     _whiteIntensityLabel;
+        EMUIEditBox*                        _whiteIntensity;
+        EMUISeparator*                      _bottomSeparator;
+        EMUIButton*                         _cancel;
+        EMUIButton*                         _apply;
 
-		static EMUIToneMapperSettings*	instance;
+        static EMUIToneMapperSettings*      _instance;
 
-	public:
-		static EMUIToneMapperSettings& GXCALL GetInstance ();
-		~EMUIToneMapperSettings () override;
+    public:
+        static EMUIToneMapperSettings& GXCALL GetInstance ();
+        ~EMUIToneMapperSettings () override;
 
-		GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () const override;
 
-		GXVoid Show ();
-		GXVoid Hide ();
+        GXVoid Show ();
+        GXVoid Hide ();
 
-	private:
-		EMUIToneMapperSettings ();
+    private:
+        EMUIToneMapperSettings ();
 
-		GXVoid SyncSettings ();
+        GXVoid SyncSettings ();
 
-		static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state );
-		static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
+        static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state );
+        static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
 
-		EMUIToneMapperSettings ( const EMUIToneMapperSettings &other ) = delete;
-		EMUIToneMapperSettings& operator = ( const EMUIToneMapperSettings &other ) = delete;
+        EMUIToneMapperSettings ( const EMUIToneMapperSettings &other ) = delete;
+        EMUIToneMapperSettings& operator = ( const EMUIToneMapperSettings &other ) = delete;
 };
 
 

@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #ifndef GX_UI_EDIT_BOX
 #define GX_UI_EDIT_BOX
@@ -9,35 +9,35 @@
 
 
 class GXUIEditBox;
-typedef GXVoid ( GXCALL* PFNGXUIEDITBOXONFINISHEDITINGPROC ) ( GXVoid* handler, GXUIEditBox& editBox );
+typedef GXVoid ( GXCALL* GXUIEditBoxOnCommitHandler ) ( GXVoid* context, GXUIEditBox &editBox );
 
 
 class GXTextValidator;
 class GXUIEditBox final : public GXWidget
 {
     private:
-        GXWChar*                                text;
-        GXWChar*                                workingBuffer;
-        GXUInt                                  textSymbols;
-        GXUInt                                  maxSymbols;
+        GXWChar*                        _text;
+        GXWChar*                        _workingBuffer;
+        GXUInt                          _textSymbols;
+        GXUInt                          _maxSymbols;
 
-        GXFloat                                 textLeftOffset;
-        GXFloat                                 textRightOffset;
+        GXFloat                         _textLeftOffset;
+        GXFloat                         _textRightOffset;
 
-        GXInt                                   cursor;            // index before symbol
-        GXInt                                   selection;        // index before symbol
-        eGXUITextAlignment                      alignment;
+        GXInt                           _cursor;        // index before symbol
+        GXInt                           _selection;     // index before symbol
+        eGXUITextAlignment              _alignment;
 
-        GXTextValidator*                        validator;
+        GXTextValidator*                _validator;
 
-        PFNGXUIEDITBOXONFINISHEDITINGPROC       OnFinishEditing;
-        GXVoid*                                 handler;
+        GXUIEditBoxOnCommitHandler      _onFinishEditing;
+        GXVoid*                         _context;
 
-        HCURSOR                                 editCursor;
-        HCURSOR                                 arrowCursor;
+        HCURSOR                         _editCursor;
+        HCURSOR                         _arrowCursor;
 
-        GXFont*                                 font;
-        const HCURSOR*                          currentCursor;
+        GXFont*                         _font;
+        const HCURSOR*                  _currentCursor;
 
     public:
         explicit GXUIEditBox ( GXWidget* parent );
@@ -55,10 +55,10 @@ class GXUIEditBox final : public GXWidget
         GXVoid SetTextRightOffset ( GXFloat offset );
         GXFloat GetTextRightOffset () const;
 
-        GXVoid SetText ( const GXWChar* newText );
+        GXVoid SetText ( const GXWChar* text );
         const GXWChar* GetText () const;
 
-        GXVoid SetAlignment ( eGXUITextAlignment newAlignment );
+        GXVoid SetAlignment ( eGXUITextAlignment alignment );
         eGXUITextAlignment GetAlignment () const;
 
         GXVoid SetFont ( const GXWChar* fontFile, GXUShort fontSize );
@@ -66,10 +66,10 @@ class GXUIEditBox final : public GXWidget
 
         GXBool IsActive ();
 
-        GXVoid SetValidator ( GXTextValidator &validatorObject );
+        GXVoid SetValidator ( GXTextValidator &validator );
         GXTextValidator* GetValidator () const;
 
-        GXVoid SetOnFinishEditingCallback ( GXVoid* handlerObject, PFNGXUIEDITBOXONFINISHEDITINGPROC callback );
+        GXVoid SetOnFinishEditingCallback ( GXVoid* context, GXUIEditBoxOnCommitHandler callback );
 
     private:
         GXInt GetSelectionPosition ( const GXVec2 &mousePosition ) const;
@@ -78,19 +78,19 @@ class GXUIEditBox final : public GXWidget
         GXVoid LockInput ();
         GXVoid ReleaseInput ();
 
-        GXVoid UpdateCursor ( GXInt newCursor );
+        GXVoid UpdateCursor ( GXInt cursor );
 
         GXVoid CopyText ();
         GXVoid PasteText ( const GXWChar* textToPaste );
         GXBool DeleteText ();
 
-        static GXVoid GXCALL OnEnd ( GXVoid* handler );
-        static GXVoid GXCALL OnHome ( GXVoid* handler );
-        static GXVoid GXCALL OnDel ( GXVoid* handler );
-        static GXVoid GXCALL OnBackspace ( GXVoid* handler );
-        static GXVoid GXCALL OnLeftArrow ( GXVoid* handler );
-        static GXVoid GXCALL OnRightArrow ( GXVoid* handler );
-        static GXVoid GXCALL OnType ( GXVoid* handler, GXWChar symbol );
+        static GXVoid GXCALL OnEnd ( GXVoid* context );
+        static GXVoid GXCALL OnHome ( GXVoid* context );
+        static GXVoid GXCALL OnDel ( GXVoid* context );
+        static GXVoid GXCALL OnBackspace ( GXVoid* context );
+        static GXVoid GXCALL OnLeftArrow ( GXVoid* context );
+        static GXVoid GXCALL OnRightArrow ( GXVoid* context );
+        static GXVoid GXCALL OnType ( GXVoid* context, GXWChar symbol );
 
         GXUIEditBox () = delete;
         GXUIEditBox ( const GXUIEditBox &other ) = delete;

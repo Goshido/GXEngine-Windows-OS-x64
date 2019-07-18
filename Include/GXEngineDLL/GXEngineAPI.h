@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_ENGINE_API
 #define GX_ENGINE_API
@@ -6,32 +6,32 @@
 
 #include "GXPhysXAdapter.h"
 
-typedef GXPhysXAdapter* ( GXCALL* PFNGXPHYSXCREATE ) ();
-typedef GXVoid ( GXCALL* PFNGXPHYSXDESTROY ) ( GXPhysXAdapter* physics );
+typedef GXPhysXAdapter* ( GXCALL* GXPhysXCreateFunc ) ();
+typedef GXVoid ( GXCALL* GXPhysXDestroyFunc ) ( GXPhysXAdapter* physics );
 
 //--------------------------------------------------------------------------------------------------
 
 #include "GXOGGVorbis.h"
 
-typedef GXVoid ( GXCALL* PFNGXOGGVORBISINIT ) ( GXOGGVorbisFunctions &out );
+typedef GXVoid ( GXCALL* GXOGGVorbisInitFunc ) ( GXOGGVorbisFunctions &out );
 
 //--------------------------------------------------------------------------------------------------
 
 #include "GXOpenAL.h"
 
-typedef GXBool ( GXCALL* PFNGXOPENALINIT ) ( GXOpenALFunctions &out );
+typedef GXBool ( GXCALL* GXOpenALInitFunc ) ( GXOpenALFunctions &out );
 
 //--------------------------------------------------------------------------------------------------
 
 #include "GXFreeType.h"
 
-typedef GXBool ( GXCALL* PFNGXFREETYPEINIT ) ( GXFreeTypeFunctions &out, FT_Library &library );
+typedef GXBool ( GXCALL* GXFreeTypeInitFunc ) ( GXFreeTypeFunctions &out, FT_Library &library );
 
 //--------------------------------------------------------------------------------------------------
 
 #include "GXXInput.h"
 
-typedef GXVoid ( GXCALL* PFNGXXINPUTINITPROC ) ( GXXInputFunctions &out );
+typedef GXVoid ( GXCALL* GXXInputInitFunc ) ( GXXInputFunctions &out );
 
 //--------------------------------------------------------------------------------------------------
 

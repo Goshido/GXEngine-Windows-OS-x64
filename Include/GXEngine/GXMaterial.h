@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_MATERIAL
 #define GX_MATERIAL
@@ -11,7 +11,7 @@
 class GXMaterial
 {
     protected:
-        GXShaderProgram     shaderProgram;
+        GXShaderProgram     _shaderProgram;
 
     public:
         GXMaterial ();

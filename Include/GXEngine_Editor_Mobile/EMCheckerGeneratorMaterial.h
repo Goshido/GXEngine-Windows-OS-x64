@@ -7,31 +7,31 @@
 
 class EMCheckerGeneratorMaterial final : public GXMaterial
 {
-	private:
-		GXColorRGB	colorOne;
-		GXColorRGB	colorTwo;
-		GXVec2		elementSize;
-		GXVec2		doubleElementSize;
+    private:
+        GXColorRGB      _colorOne;
+        GXColorRGB      _colorTwo;
+        GXVec2          _elementSize;
+        GXVec2          _doubleElementSize;
 
-		GLint		colorOneLocation;
-		GLint		colorTwoLocation;
-		GLint		elementSizeLocation;
-		GLint		doubleElementSizeLocation;
+        GLint           _colorOneLocation;
+        GLint           _colorTwoLocation;
+        GLint           _elementSizeLocation;
+        GLint           _doubleElementSizeLocation;
 
-	public:
-		EMCheckerGeneratorMaterial ();
-		~EMCheckerGeneratorMaterial () override;
+    public:
+        EMCheckerGeneratorMaterial ();
+        ~EMCheckerGeneratorMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) override;
-		GXVoid Unbind () override;
+        GXVoid Bind ( const GXTransform &transform ) override;
+        GXVoid Unbind () override;
 
-		GXVoid SetColorOne ( GXUChar red, GXUChar green, GXUChar blue, GXUChar alpha );
-		GXVoid SetColorTwo ( GXUChar red, GXUChar green, GXUChar blue, GXUChar alpha );
-		GXVoid SetElementSize ( GXUShort width, GXUShort height );
+        GXVoid SetColorOne ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
+        GXVoid SetColorTwo ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
+        GXVoid SetElementSize ( GXUShort width, GXUShort height );
 
-	private:
-		EMCheckerGeneratorMaterial ( const EMCheckerGeneratorMaterial &other ) = delete;
-		EMCheckerGeneratorMaterial& operator = ( const EMCheckerGeneratorMaterial &other ) = delete;
+    private:
+        EMCheckerGeneratorMaterial ( const EMCheckerGeneratorMaterial &other ) = delete;
+        EMCheckerGeneratorMaterial& operator = ( const EMCheckerGeneratorMaterial &other ) = delete;
 };
 
 

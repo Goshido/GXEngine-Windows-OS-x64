@@ -5,8 +5,8 @@
 
 #define GX_INVALID_MODULE nullptr
 
-static PFNGXPHYSXCREATE     GXCreatePhysXInstance = nullptr;
-static PFNGXPHYSXDESTROY    GXDestroyPhysXInstance = nullptr;
+static GXPhysXCreateFunc        GXCreatePhysXInstance = nullptr;
+static GXPhysXDestroyFunc       GXDestroyPhysXInstance = nullptr;
 
 HMODULE gx_GXEngineDLLModuleHandle = GX_INVALID_MODULE;
 
@@ -24,7 +24,7 @@ GXPhysXAdapter* GXCALL GXGetPhysXInstance ()
         return nullptr;
     }
 
-    GXCreatePhysXInstance = reinterpret_cast<PFNGXPHYSXCREATE> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXPhysXCreate" ) ) );
+    GXCreatePhysXInstance = reinterpret_cast<GXPhysXCreateFunc> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXPhysXCreate" ) ) );
 
     if ( !GXCreatePhysXInstance )
     {
@@ -32,7 +32,7 @@ GXPhysXAdapter* GXCALL GXGetPhysXInstance ()
         return nullptr;
     }
 
-    GXDestroyPhysXInstance = reinterpret_cast<PFNGXPHYSXDESTROY> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXPhysXDestroy" ) ) );
+    GXDestroyPhysXInstance = reinterpret_cast<GXPhysXDestroyFunc> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXPhysXDestroy" ) ) );
 
     if ( !GXDestroyPhysXInstance )
     {

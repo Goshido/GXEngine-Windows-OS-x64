@@ -10,25 +10,25 @@
 #include <GXCommon/GXFileSystem.h>
 
 
-typedef GXVoid ( GXCALL* PFNEMONBROWSEFILEPROC ) ( const GXWChar* filePath );
+typedef GXVoid ( GXCALL* EMUIOpenFileBrowseFileHandler ) ( const GXWChar* filePath );
 
 class EMUIOpenFile final : public EMUI
 {
     private:
-        GXWChar*                    currentDirectory;
+        GXWChar*                            _currentDirectory;
 
-        GXWChar*                    rootDirectory;
-        GXUPointer                  rootDirectoryPathOffset;
+        GXWChar*                            _rootDirectory;
+        GXUPointer                          _rootDirectoryPathOffset;
 
-        EMUIDraggableArea*          mainPanel;
-        EMUIButton*                 okButton;
-        EMUIButton*                 cancelButton;
-        EMUIStaticText*             filePathStaticText;
-        EMUISeparator*              bottomSeparator;
-        EMUISeparator*              topSeparator;
-        EMUIFileListBox*            fileListBox;
+        EMUIDraggableArea*                  _mainPanel;
+        EMUIButton*                         _okButton;
+        EMUIButton*                         _cancelButton;
+        EMUIStaticText*                     _filePathStaticText;
+        EMUISeparator*                      _bottomSeparator;
+        EMUISeparator*                      _topSeparator;
+        EMUIFileListBox*                    _fileListBox;
 
-        PFNEMONBROWSEFILEPROC       OnBrowseFile;
+        EMUIOpenFileBrowseFileHandler       _onBrowseFile;
 
     public:
         EMUIOpenFile ();
@@ -36,7 +36,7 @@ class EMUIOpenFile final : public EMUI
 
         GXWidget* GetWidget () const override;
 
-        GXVoid Browse ( PFNEMONBROWSEFILEPROC callback );
+        GXVoid Browse ( EMUIOpenFileBrowseFileHandler callback );
 
     private:
         GXVoid UpdateDirectory ( const GXWChar* folder );

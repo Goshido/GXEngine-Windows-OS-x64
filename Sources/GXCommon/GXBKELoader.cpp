@@ -8,23 +8,21 @@
 
 GXVoid GXCALL GXLoadBKE ( const GXWChar* fileName, GXBakeInfo &out_bake_info )
 {
-	GXChar* buffer = nullptr;
-	GXUInt size = 0;
+    GXChar* buffer = nullptr;
+    GXUPointer size = 0u;
 
-	if ( !GXLoadFile ( fileName, (GXVoid**)&buffer, size, GX_TRUE ) )
-	{
-		GXDebugBox ( L"GXLoadBKE::Error - Не могу загрузить файл" );
-		GXLogW ( L"GXLoadBKE::Error - Не могу загрузить файл %s", fileName );
-	}
+    if ( !GXLoadFile ( fileName, (GXVoid**)&buffer, size, GX_TRUE ) )
+        GXLogW ( L"GXLoadBKE::Error - Не могу загрузить файл %s", fileName );
 
-	GXBakeHeader h;
-	memcpy ( &h, buffer, sizeof ( GXBakeHeader ) );
-	GXUShort fileNameSize = (GXUShort)( sizeof ( GXWChar ) * ( wcslen ( (GXWChar*)( buffer + h.us_FileNameOffset ) ) + 1 ) );
-	GXUShort cacheFileNameSize = (GXUShort)( sizeof ( GXWChar ) * ( wcslen ( (GXWChar*)( buffer + h.us_CacheFileNameOffset ) ) + 1 ) );
-	out_bake_info.fileName = (GXWChar*)malloc ( fileNameSize );
-	memcpy ( out_bake_info.fileName, buffer + h.us_FileNameOffset, fileNameSize );
-	out_bake_info.cacheFileName = (GXWChar*)malloc ( cacheFileNameSize );
-	memcpy ( out_bake_info.cacheFileName, buffer + h.us_CacheFileNameOffset, cacheFileNameSize );
+    GXBakeHeader h;
+    memcpy ( &h, buffer, sizeof ( GXBakeHeader ) );
 
-	GXSafeFree ( buffer );
+    const GXUShort fileNameSize = static_cast<const GXUShort> ( sizeof ( GXWChar ) * ( wcslen ( reinterpret_cast<const GXWChar*> ( buffer + h._fileNameOffset ) ) + 1u ) );
+    const GXUShort cacheFileNameSize = static_cast<const GXUShort> ( sizeof ( GXWChar ) * ( wcslen ( reinterpret_cast<const GXWChar*> ( buffer + h._cacheFileNameOffset ) ) + 1u ) );
+    out_bake_info._fileName = static_cast<GXWChar*> ( malloc ( fileNameSize ) );
+    memcpy ( out_bake_info._fileName, buffer + h._fileNameOffset, fileNameSize );
+    out_bake_info._cacheFileName = static_cast<GXWChar*> ( malloc ( cacheFileNameSize ) );
+    memcpy ( out_bake_info._cacheFileName, buffer + h._cacheFileNameOffset, cacheFileNameSize );
+
+    GXSafeFree ( buffer );
 }

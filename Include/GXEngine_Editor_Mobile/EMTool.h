@@ -9,41 +9,41 @@
 
 class EMTool
 {
-	protected:
-		EMActor*			actor;
+    protected:
+        EMActor*            _actor;
 
-	private:
-		static EMTool*		activeTool;
+    private:
+        static EMTool*      _activeTool;
 
-	public:
-		EMTool ();
-		virtual ~EMTool ();
+    public:
+        EMTool ();
+        virtual ~EMTool ();
 
-		virtual GXVoid Bind ();
-		virtual GXVoid SetActor ( EMActor* newActor );
-		virtual GXVoid UnBind ();
+        virtual GXVoid Bind ();
+        virtual GXVoid SetActor ( EMActor* newActor );
+        virtual GXVoid UnBind ();
 
-		virtual GXVoid OnViewerTransformChanged ();
+        virtual GXVoid OnViewerTransformChanged ();
 
-		virtual GXVoid OnDrawCommonPass ();
-		virtual GXVoid OnDrawHudColorPass ();
-		virtual GXVoid OnDrawHudMaskPass ();
+        virtual GXVoid OnDrawCommonPass ();
+        virtual GXVoid OnDrawHudColorPass ();
+        virtual GXVoid OnDrawHudMaskPass ();
 
-		virtual GXBool OnLeftMouseButtonDown ( GXFloat x, GXFloat y );
-		virtual GXBool OnLeftMouseButtonUp ( GXFloat x, GXFloat y );
-		virtual GXBool OnMouseMove ( GXFloat x, GXFloat y );
-		virtual GXBool OnMouseScroll ( GXFloat x, GXFloat y, GXFloat scroll );
-		virtual GXBool OnKeyDown ( GXInt keyCode );
-		virtual GXBool OnKeyUp ( GXInt keyCode );
+        virtual GXBool OnLeftMouseButtonDown ( GXFloat x, GXFloat y );
+        virtual GXBool OnLeftMouseButtonUp ( GXFloat x, GXFloat y );
+        virtual GXBool OnMouseMove ( GXFloat x, GXFloat y );
+        virtual GXBool OnMouseScroll ( GXFloat x, GXFloat y, GXFloat scroll );
+        virtual GXBool OnKeyDown ( GXInt keyCode );
+        virtual GXBool OnKeyUp ( GXInt keyCode );
 
-		virtual GXBool OnObject ( GXVoid* object ) = 0;
+        virtual GXBool OnObject ( GXVoid* object ) = 0;
 
-		static EMTool* GXCALL GetActiveTool ();
-		static GXVoid GXCALL SetActiveTool ( EMTool* tool );
+        static EMTool* GXCALL GetActiveTool ();
+        static GXVoid GXCALL SetActiveTool ( EMTool* tool );
 
-	private:
-		EMTool ( const EMTool &other ) = delete;
-		EMTool& operator = ( const EMTool &other ) = delete;
+    private:
+        EMTool ( const EMTool &other ) = delete;
+        EMTool& operator = ( const EMTool &other ) = delete;
 };
 
 

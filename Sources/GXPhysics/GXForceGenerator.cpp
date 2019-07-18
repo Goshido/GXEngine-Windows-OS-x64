@@ -1,14 +1,14 @@
-// version 1.1
+// version 1.2
 
 #include <GXPhysics/GXForceGenerator.h>
 
 
 GXForceGenerator::GXForceGenerator ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXForceGenerator::~GXForceGenerator ()
 {
-	// NOTHING
+    // NOTHING
 }

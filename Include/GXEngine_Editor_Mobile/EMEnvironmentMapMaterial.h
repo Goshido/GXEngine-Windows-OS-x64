@@ -10,42 +10,42 @@
 
 class EMEnvironmentMapMaterial final : public GXMaterial
 {
-	private:
-		GXTextureCubeMap*		environmentTexture;
-		GXTexture2D*			depthTexture;
+    private:
+        GXTextureCubeMap*       _environmentTexture;
+        GXTexture2D*            _depthTexture;
 
-		GXSampler				environmentSampler;
-		GXSampler				depthSampler;
+        GXSampler               _environmentSampler;
+        GXSampler               _depthSampler;
 
-		GXVec2					screenResolution;
-		GXVec2					inverseScreenResolution;
+        GXVec2                  _screenResolution;
+        GXVec2                  _inverseScreenResolution;
 
-		GXFloat					inverseDeltaTime;
-		GXFloat					environmentQuasiDistance;
+        GXFloat                 _inverseDeltaTime;
+        GXFloat                 _environmentQuasiDistance;
 
-		GLint					modelViewProjectionMatrixLocation;
-		GLint					inverseScreenResolutionLocation;
-		GLint					velocityBlurLocation;
+        GLint                   _modelViewProjectionMatrixLocation;
+        GLint                   _inverseScreenResolutionLocation;
+        GLint                   _velocityBlurLocation;
 
-	public:
-		EMEnvironmentMapMaterial ();
-		~EMEnvironmentMapMaterial () override;
+    public:
+        EMEnvironmentMapMaterial ();
+        ~EMEnvironmentMapMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) override;
-		GXVoid Unbind () override;
+        GXVoid Bind ( const GXTransform &transform ) override;
+        GXVoid Unbind () override;
 
-		GXVoid SetEnvironmentMap ( GXTextureCubeMap &cubeMap );
-		GXVoid SetDepthTexture ( GXTexture2D &texture );
+        GXVoid SetEnvironmentMap ( GXTextureCubeMap &cubeMap );
+        GXVoid SetDepthTexture ( GXTexture2D &texture );
 
-		GXVoid SetScreenResolution ( GXUShort width, GXUShort height );
-		GXVoid SetDeltaTime ( GXFloat seconds );
+        GXVoid SetScreenResolution ( GXUShort width, GXUShort height );
+        GXVoid SetDeltaTime ( GXFloat seconds );
 
-		// Distance to environment map border to calculate positions and then velocity blur.
-		GXVoid SetEnvironmentQuasiDistance ( GXFloat meters );
+        // Distance to environment map border to calculate positions and then velocity blur.
+        GXVoid SetEnvironmentQuasiDistance ( GXFloat meters );
 
-	private:
-		EMEnvironmentMapMaterial ( const EMEnvironmentMapMaterial &other ) = delete;
-		EMEnvironmentMapMaterial& operator = ( const EMEnvironmentMapMaterial &other ) = delete;
+    private:
+        EMEnvironmentMapMaterial ( const EMEnvironmentMapMaterial &other ) = delete;
+        EMEnvironmentMapMaterial& operator = ( const EMEnvironmentMapMaterial &other ) = delete;
 };
 
 

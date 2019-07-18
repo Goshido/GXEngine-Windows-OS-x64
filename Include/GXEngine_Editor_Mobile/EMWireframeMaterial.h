@@ -7,24 +7,24 @@
 
 class EMWireframeMaterial final : public GXMaterial
 {
-	private:
-		GXColorRGB	color;
+    private:
+        GXColorRGB      _color;
 
-		GLint		currentFrameModelViewProjectionMatrixLocation;
-		GLint		colorLocation;
+        GLint           _currentFrameModelViewProjectionMatrixLocation;
+        GLint           _colorLocation;
 
-	public:
-		EMWireframeMaterial ();
-		~EMWireframeMaterial () override;
+    public:
+        EMWireframeMaterial ();
+        ~EMWireframeMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) override;
-		GXVoid Unbind () override;
+        GXVoid Bind ( const GXTransform &transform ) override;
+        GXVoid Unbind () override;
 
-		GXVoid SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
+        GXVoid SetColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
 
-	private:
-		EMWireframeMaterial ( const EMWireframeMaterial &other ) = delete;
-		EMWireframeMaterial& operator = ( const EMWireframeMaterial &other ) = delete;
+    private:
+        EMWireframeMaterial ( const EMWireframeMaterial &other ) = delete;
+        EMWireframeMaterial& operator = ( const EMWireframeMaterial &other ) = delete;
 };
 
 

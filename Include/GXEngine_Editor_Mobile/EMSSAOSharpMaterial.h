@@ -13,30 +13,30 @@
 class EMSSAOSharpMaterial final : public GXMaterial
 {
     private:
-        GXTexture2D*    depthTexture;
-        GXTexture2D*    normalTexture;
+        GXTexture2D*    _depthTexture;
+        GXTexture2D*    _normalTexture;
 
-        GXSampler       sampler;
+        GXSampler       _sampler;
 
-        GXFloat         maxDistance;
-        GXFloat         checkRadius;
+        GXFloat         _maxDistance;
+        GXFloat         _checkRadius;
 
-        GXTexture2D     noiseTexture;
+        GXTexture2D     _noiseTexture;
 
-        GXInt           samples;
-        GXFloat         inverseSamples;
+        GXInt           _samples;
+        GXFloat         _inverseSamples;
 
-        GXVec2          noiseScale;
-        GXVec3          kernel[ EM_MAX_SSAO_SAMPLES ];
+        GXVec2          _noiseScale;
+        GXVec3          _kernel[ EM_MAX_SSAO_SAMPLES ];
 
-        GLint           checkRadiusLocation;
-        GLint           kernelLocation;
-        GLint           samplesLocation;
-        GLint           inverseSamplesLocation;
-        GLint           noiseScaleLocation;
-        GLint           maxDistanceLocation;
-        GLint           projectionMatrixLocation;
-        GLint           inverseProjectionMatrixLocation;
+        GLint           _checkRadiusLocation;
+        GLint           _kernelLocation;
+        GLint           _samplesLocation;
+        GLint           _inverseSamplesLocation;
+        GLint           _noiseScaleLocation;
+        GLint           _maxDistanceLocation;
+        GLint           _projectionMatrixLocation;
+        GLint           _inverseProjectionMatrixLocation;
 
     public:
         EMSSAOSharpMaterial ();

@@ -1,10 +1,10 @@
-// version 1.1
+// version 1.2
 
 #include <GXCommon/Windows/GXSmartLock.h>
 
 
 GXSmartLock::GXSmartLock ():
-    srwLock ( SRWLOCK_INIT )
+    _srwLock ( SRWLOCK_INIT )
 {
     // NOTHING
 }
@@ -16,20 +16,20 @@ GXSmartLock::~GXSmartLock ()
 
 GXVoid GXSmartLock::AcquireShared ()
 {
-    AcquireSRWLockShared ( &srwLock );
+    AcquireSRWLockShared ( &_srwLock );
 }
 
 GXVoid GXSmartLock::ReleaseShared ()
 {
-    ReleaseSRWLockShared ( &srwLock );
+    ReleaseSRWLockShared ( &_srwLock );
 }
 
 GXVoid GXSmartLock::AcquireExclusive ()
 {
-    AcquireSRWLockExclusive ( &srwLock );
+    AcquireSRWLockExclusive ( &_srwLock );
 }
 
 GXVoid GXSmartLock::ReleaseExclusive ()
 {
-    ReleaseSRWLockExclusive ( &srwLock );
+    ReleaseSRWLockExclusive ( &_srwLock );
 }

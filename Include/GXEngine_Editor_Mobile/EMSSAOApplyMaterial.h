@@ -9,25 +9,25 @@
 
 class EMSSAOApplyMaterial final : public GXMaterial
 {
-	private:
-		GXTexture2D*	ssaoTexture;
-		GXTexture2D*	imageTexture;
+    private:
+        GXTexture2D*    _ssaoTexture;
+        GXTexture2D*    _imageTexture;
 
-		GXSampler		sampler;
+        GXSampler       _sampler;
 
-	public:
-		EMSSAOApplyMaterial ();
-		~EMSSAOApplyMaterial () override;
+    public:
+        EMSSAOApplyMaterial ();
+        ~EMSSAOApplyMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) override;
-		GXVoid Unbind () override;
+        GXVoid Bind ( const GXTransform &transform ) override;
+        GXVoid Unbind () override;
 
-		GXVoid SetSSAOTexture ( GXTexture2D &texture );
-		GXVoid SetImageTexture ( GXTexture2D &texture );
+        GXVoid SetSSAOTexture ( GXTexture2D &texture );
+        GXVoid SetImageTexture ( GXTexture2D &texture );
 
-	private:
-		EMSSAOApplyMaterial ( const EMSSAOApplyMaterial &other ) = delete;
-		EMSSAOApplyMaterial& operator = ( const EMSSAOApplyMaterial &other ) = delete;
+    private:
+        EMSSAOApplyMaterial ( const EMSSAOApplyMaterial &other ) = delete;
+        EMSSAOApplyMaterial& operator = ( const EMSSAOApplyMaterial &other ) = delete;
 };
 
 

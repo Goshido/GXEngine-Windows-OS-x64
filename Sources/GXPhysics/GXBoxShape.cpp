@@ -1,110 +1,112 @@
-// version 1.1
+// version 1.2
 
 #include <GXPhysics/GXBoxShape.h>
 #include <GXCommon/GXLogger.h>
 
 
 GXBoxShape::GXBoxShape ( GXRigidBody* body, GXFloat width, GXFloat height, GXFloat depth ):
-	GXShape ( eGXShapeType::Box, body ),
-	width ( width ),
-	height ( height ),
-	depth ( depth )
+    GXShape ( eGXShapeType::Box, body ),
+    _width ( width ),
+    _height ( height ),
+    _depth ( depth )
 {
-	GXFloat halfWidth = 0.5f * width;
-	GXFloat halfHeight = 0.5f * height;
-	GXFloat halfDepth = 0.5f * depth;
+    const GXFloat halfWidth = 0.5f * width;
+    const GXFloat halfHeight = 0.5f * height;
+    const GXFloat halfDepth = 0.5f * depth;
 
-	boundsLocal.AddVertex ( -halfWidth, -halfHeight, -halfDepth );
-	boundsLocal.AddVertex ( halfWidth, halfHeight, halfDepth );
+    _boundsLocal.AddVertex ( -halfWidth, -halfHeight, -halfDepth );
+    _boundsLocal.AddVertex ( halfWidth, halfHeight, halfDepth );
 
-	boundsWorld = boundsLocal;
+    _boundsWorld = _boundsLocal;
 }
 
 GXBoxShape::~GXBoxShape ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXVoid GXBoxShape::CalculateInertiaTensor ( GXFloat mass )
 {
-	GXFloat factor = mass * 0.08333f;
-	GXFloat ww = width * width;
-	GXFloat hh = height * height;
-	GXFloat dd = depth * depth;
+    const GXFloat factor = mass * 0.08333f;
+    const GXFloat ww = _width * _width;
+    const GXFloat hh = _height * _height;
+    const GXFloat dd = _depth * _depth;
 
-	inertiaTensor.m[ 0 ][ 0 ] = factor * ( hh + dd );
-	inertiaTensor.m[ 1 ][ 1 ] = factor * ( ww + dd );
-	inertiaTensor.m[ 2 ][ 2 ] = factor * ( ww + hh );
+    _inertiaTensor._m[ 0u ][ 0u ] = factor * ( hh + dd );
+    _inertiaTensor._m[ 1u ][ 1u ] = factor * ( ww + dd );
+    _inertiaTensor._m[ 2u ][ 2u ] = factor * ( ww + hh );
 
-	inertiaTensor.m[ 0 ][ 1 ] = inertiaTensor.m[ 0 ][ 2 ] = 0.0f;
-	inertiaTensor.m[ 1 ][ 0 ] = inertiaTensor.m[ 1 ][ 2 ] = 0.0f;
-	inertiaTensor.m[ 2 ][ 0 ] = inertiaTensor.m[ 2 ][ 1 ] = 0.0f;
+    _inertiaTensor._m[ 0u ][ 1u ] = _inertiaTensor._m[ 0u ][ 2u ] = 0.0f;
+    _inertiaTensor._m[ 1u ][ 0u ] = _inertiaTensor._m[ 1u ][ 2u ] = 0.0f;
+    _inertiaTensor._m[ 2u ][ 0u ] = _inertiaTensor._m[ 2u ][ 1u ] = 0.0f;
 }
 
 GXVoid GXBoxShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const
 {
-	GXBoxShapeVertices v;
-	GetRotatedVecticesWorld ( v );
+    GXBoxShapeVertices v;
+    GetRotatedVecticesWorld ( v );
 
-	GXUByte index = 0u;
-	GXFloat projection = -FLT_MAX;
+    GXUByte index = 0u;
+    GXFloat projection = -FLT_MAX;
 
-	for ( GXUByte i = 0; i < 8; ++i )
-	{
-		GXFloat p = direction.DotProduct ( v.vertices[ i ] );
-		if ( p > projection )
-		{
-			projection = p;
-			index = i;
-		}
-	}
+    for ( GXUByte i = 0u; i < 8u; ++i )
+    {
+        GXFloat p = direction.DotProduct ( v._vertices[ i ] );
 
-	GXVec3 originWorld;
-	transformWorld.GetW ( originWorld );
-	point.Sum ( v.vertices[ index ], originWorld );
+        if ( p <= projection ) continue;
+
+        projection = p;
+        index = i;
+    }
+
+    GXVec3 originWorld;
+    _transformWorld.GetW ( originWorld );
+    point.Sum ( v._vertices[ index ], originWorld );
 }
 
 GXFloat GXBoxShape::GetWidth () const
 {
-	return width;
+    return _width;
 }
 
 GXFloat GXBoxShape::GetHeight () const
 {
-	return height;
+    return _height;
 }
 
 GXFloat GXBoxShape::GetDepth () const
 {
-	return depth;
+    return _depth;
 }
 
 GXVoid GXBoxShape::UpdateBoundsWorld ()
 {
-	boundsLocal.Transform ( boundsWorld, transformWorld );
+    _boundsLocal.Transform ( _boundsWorld, _transformWorld );
 }
 
 GXVoid GXBoxShape::GetRotatedVecticesWorld ( GXBoxShapeVertices &vertices ) const
 {
-	GXFloat w = width * 0.5f;
-	GXFloat h = height * 0.5f;
-	GXFloat d = depth * 0.5f;
+    const GXFloat w = 0.5f * _width;
+    const GXFloat h = 0.5f * _height;
+    const GXFloat d = 0.5f * _depth;
 
-	GXVec3 v[ 8 ];
-	v[ 0 ].Init ( -w, -h, -d );
-	v[ 1 ].Init ( w, -h, -d );
-	v[ 2 ].Init ( w, h, -d );
-	v[ 3 ].Init ( -w, h, -d );
+    GXVec3 v[ 8u ];
+    v[ 0u ].Init ( -w, -h, -d );
+    v[ 1u ].Init ( w, -h, -d );
+    v[ 2u ].Init ( w, h, -d );
+    v[ 3u ].Init ( -w, h, -d );
 
-	v[ 4 ].Init ( -w, -h, d );
-	v[ 5 ].Init ( w, -h, d );
-	v[ 6 ].Init ( w, h, d );
-	v[ 7 ].Init ( -w, h, d );
+    v[ 4u ].Init ( -w, -h, d );
+    v[ 5u ].Init ( w, -h, d );
+    v[ 6u ].Init ( w, h, d );
+    v[ 7u ].Init ( -w, h, d );
 
-	GXMat4 rotatationWorld ( transformWorld );
-	static const GXVec3 origin ( 0.0f, 0.0f, 0.0f );
-	rotatationWorld.SetW ( origin );
+    GXMat4 rotatationWorld ( _transformWorld );
+    constexpr GXVec3 origin ( 0.0f, 0.0f, 0.0f );
+    rotatationWorld.SetW ( origin );
 
-	for ( GXUByte i = 0u; i < 8u; ++i )
-		rotatationWorld.MultiplyAsPoint ( vertices.vertices[ i ], v[ i ] );
+    for ( GXUByte i = 0u; i < 8u; ++i )
+    {
+        rotatationWorld.MultiplyAsPoint ( vertices._vertices[ i ], v[ i ] );
+    }
 }

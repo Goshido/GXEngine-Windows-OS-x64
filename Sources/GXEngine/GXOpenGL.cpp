@@ -1,4 +1,4 @@
-// version 1.12
+// version 1.13
 
 #include <GXEngine/GXOpenGL.h>
 #include <GXCommon/GXLogger.h>
@@ -191,64 +191,64 @@ GXOpenGLState::~GXOpenGLState ()
 
 GXVoid GXOpenGLState::Save ()
 {
-    glGetIntegerv ( GL_FRAMEBUFFER_BINDING, reinterpret_cast<GLint*> ( &fbo ) );
-    glGetIntegerv ( GL_VIEWPORT, viewport );
-    glGetBooleanv ( GL_COLOR_WRITEMASK, colorMask );
+    glGetIntegerv ( GL_FRAMEBUFFER_BINDING, reinterpret_cast<GLint*> ( &_fbo ) );
+    glGetIntegerv ( GL_VIEWPORT, _viewport );
+    glGetBooleanv ( GL_COLOR_WRITEMASK, _colorMask );
 
-    glGetBooleanv ( GL_DEPTH_WRITEMASK, &depthMask );
-    glGetBooleanv ( GL_DEPTH_TEST, &depthTest );
-    glGetFloatv ( GL_DEPTH_CLEAR_VALUE, &depthClearValue );
-    glGetIntegerv ( GL_DEPTH_FUNC, &depthFunction );
+    glGetBooleanv ( GL_DEPTH_WRITEMASK, &_depthMask );
+    glGetBooleanv ( GL_DEPTH_TEST, &_depthTest );
+    glGetFloatv ( GL_DEPTH_CLEAR_VALUE, &_depthClearValue );
+    glGetIntegerv ( GL_DEPTH_FUNC, &_depthFunction );
 
-    glGetBooleanv ( GL_CULL_FACE, &cullFace );
-    glGetIntegerv ( GL_CULL_FACE_MODE, &cullFaceMode );
+    glGetBooleanv ( GL_CULL_FACE, &_cullFace );
+    glGetIntegerv ( GL_CULL_FACE_MODE, &_cullFaceMode );
 
     GLint maxDrawBuffers = 0;
     glGetIntegerv ( GL_MAX_DRAW_BUFFERS, &maxDrawBuffers );
 
     for ( GLint i = 0; i < maxDrawBuffers; ++i )
-        glGetIntegerv ( static_cast<GLenum> ( GL_DRAW_BUFFER0 + i ), reinterpret_cast<GLint*> ( drawBuffers + i ) );
+        glGetIntegerv ( static_cast<GLenum> ( GL_DRAW_BUFFER0 + i ), reinterpret_cast<GLint*> ( _drawBuffers + i ) );
 
     GXCheckOpenGLError ();
 }
 
 GXVoid GXOpenGLState::Restore ()
 {
-    glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+    glBindFramebuffer ( GL_FRAMEBUFFER, _fbo );
 
-    glViewport ( viewport[ 0 ], viewport[ 1 ], viewport[ 2 ], viewport[ 3 ] );
-    glColorMask ( colorMask[ 0 ], colorMask[ 1 ], colorMask[ 2 ], colorMask[ 3 ] );
+    glViewport ( _viewport[ 0 ], _viewport[ 1 ], _viewport[ 2 ], _viewport[ 3 ] );
+    glColorMask ( _colorMask[ 0 ], _colorMask[ 1 ], _colorMask[ 2 ], _colorMask[ 3 ] );
 
-    glDepthMask ( depthMask );
-    glClearDepth ( depthClearValue );
-    glDepthFunc ( static_cast<GLenum> ( depthFunction ) );
+    glDepthMask ( _depthMask );
+    glClearDepth ( _depthClearValue );
+    glDepthFunc ( static_cast<GLenum> ( _depthFunction ) );
 
-    glCullFace ( static_cast<GLenum> ( cullFaceMode ) );
+    glCullFace ( static_cast<GLenum> ( _cullFaceMode ) );
 
-    if ( depthTest )
+    if ( _depthTest )
         glEnable ( GL_DEPTH_TEST );
     else
         glDisable ( GL_DEPTH_TEST );
 
-    if ( cullFace )
+    if ( _cullFace )
         glEnable ( GL_CULL_FACE );
     else
         glDisable ( GL_CULL_FACE );
 
-    if ( blending )
+    if ( _blending )
         glEnable ( GL_BLEND );
     else
         glDisable ( GL_BLEND );
 
-    if ( fbo == DEFAULT_OPENGL_FRAMEBUFFER )
+    if ( _fbo == DEFAULT_OPENGL_FRAMEBUFFER )
     {
-        glDrawBuffer ( drawBuffers[ 0 ] );
+        glDrawBuffer ( _drawBuffers[ 0 ] );
     }
     else
     {
         GLint maxDrawBuffers = 0;
         glGetIntegerv ( GL_MAX_DRAW_BUFFERS, &maxDrawBuffers );
-        glDrawBuffers ( maxDrawBuffers, drawBuffers );
+        glDrawBuffers ( maxDrawBuffers, _drawBuffers );
     }
 
     GXCheckOpenGLError ();

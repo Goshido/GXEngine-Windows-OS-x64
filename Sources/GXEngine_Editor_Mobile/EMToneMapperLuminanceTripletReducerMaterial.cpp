@@ -1,70 +1,70 @@
 #include <GXEngine_Editor_Mobile/EMToneMapperLuminanceTripletReducerMaterial.h>
 
 
-#define DEFAULT_LEVEL_OF_DETAIL_TO_REDUCE	0u
+#define DEFAULT_LEVEL_OF_DETAIL_TO_REDUCE       0u
 
-#define TEXTURE_SLOT						0u
+#define TEXTURE_SLOT                            0u
 
-#define VERTEX_SHADER						L"Shaders/System/ScreenQuad_vs.txt"
-#define GEOMETRY_SHADER						nullptr
-#define FRAGMENT_SHADER						L"Shaders/Editor Mobile/LuminanceTripletReducer_fs.txt"
+#define VERTEX_SHADER                           L"Shaders/System/ScreenQuad_vs.txt"
+#define GEOMETRY_SHADER                         nullptr
+#define FRAGMENT_SHADER                         L"Shaders/Editor Mobile/LuminanceTripletReducer_fs.txt"
 
 //---------------------------------------------------------------------------------------------------------------------
 
 EMToneMapperLuminanceTripletReducerMaterial::EMToneMapperLuminanceTripletReducerMaterial ():
-	luminanceTripletTexture ( nullptr ),
-	sampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f ),
-	levelOfDetail ( static_cast<GXFloat> ( DEFAULT_LEVEL_OF_DETAIL_TO_REDUCE ) )
+    _luminanceTripletTexture ( nullptr ),
+    _sampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f ),
+    _levelOfDetail ( static_cast<GXFloat> ( DEFAULT_LEVEL_OF_DETAIL_TO_REDUCE ) )
 {
-	static const GLchar* samplerNames[ 1 ] = { "luminanceTripletSampler" };
-	static const GLuint samplerLocations[ 1 ] = { TEXTURE_SLOT };
+    constexpr GLchar* samplerNames[ 1u ] = { "luminanceTripletSampler" };
+    constexpr GLuint samplerLocations[ 1u ] = { TEXTURE_SLOT };
 
-	GXShaderProgramInfo si;
-	si.vertexShader = VERTEX_SHADER;
-	si.geometryShader = GEOMETRY_SHADER;
-	si.fragmentShader = FRAGMENT_SHADER;
-	si.samplers = 1u;
-	si.samplerNames = samplerNames;
-	si.samplerLocations = samplerLocations;
-	si.transformFeedbackOutputs = 0;
-	si.transformFeedbackOutputNames = nullptr;
+    GXShaderProgramInfo si;
+    si._vertexShader = VERTEX_SHADER;
+    si._geometryShader = GEOMETRY_SHADER;
+    si._fragmentShader = FRAGMENT_SHADER;
+    si._samplers = 1u;
+    si._samplerNames = samplerNames;
+    si._samplerLocations = samplerLocations;
+    si._transformFeedbackOutputs = 0;
+    si._transformFeedbackOutputNames = nullptr;
 
-	shaderProgram.Init ( si );
-	levelOfDetailLocation = shaderProgram.GetUniform ( "levelOfDetail" );
+    _shaderProgram.Init ( si );
+    _levelOfDetailLocation = _shaderProgram.GetUniform ( "levelOfDetail" );
 }
 
 EMToneMapperLuminanceTripletReducerMaterial::~EMToneMapperLuminanceTripletReducerMaterial ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXVoid EMToneMapperLuminanceTripletReducerMaterial::Bind ( const GXTransform& /*transform*/ )
 {
-	if ( !luminanceTripletTexture ) return;
+    if ( !_luminanceTripletTexture ) return;
 
-	glUseProgram ( shaderProgram.GetProgram () );
-	glUniform1f ( levelOfDetailLocation, levelOfDetail );
+    glUseProgram ( _shaderProgram.GetProgram () );
+    glUniform1f ( _levelOfDetailLocation, _levelOfDetail );
 
-	luminanceTripletTexture->Bind ( TEXTURE_SLOT );
-	sampler.Bind ( TEXTURE_SLOT );
+    _luminanceTripletTexture->Bind ( TEXTURE_SLOT );
+    _sampler.Bind ( TEXTURE_SLOT );
 }
 
 GXVoid EMToneMapperLuminanceTripletReducerMaterial::Unbind ()
 {
-	if ( !luminanceTripletTexture ) return;
+    if ( !_luminanceTripletTexture ) return;
 
-	sampler.Unbind ( TEXTURE_SLOT );
-	luminanceTripletTexture->Unbind ();
+    _sampler.Unbind ( TEXTURE_SLOT );
+    _luminanceTripletTexture->Unbind ();
 
-	glUseProgram ( 0u );
+    glUseProgram ( 0u );
 }
 
 GXVoid EMToneMapperLuminanceTripletReducerMaterial::SetLuminanceTripletTexture ( GXTexture2D &texture )
 {
-	luminanceTripletTexture = &texture;
+    _luminanceTripletTexture = &texture;
 }
 
 GXVoid EMToneMapperLuminanceTripletReducerMaterial::SetLevelOfDetailToReduce ( GXUByte newLevelOfDetail )
 {
-	levelOfDetail = static_cast<GXFloat> ( newLevelOfDetail );
+    _levelOfDetail = static_cast<GXFloat> ( newLevelOfDetail );
 }

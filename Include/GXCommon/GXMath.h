@@ -1,4 +1,4 @@
-// version 1.54
+// version 1.56
 
 #ifndef GX_MATH
 #define GX_MATH
@@ -26,11 +26,18 @@ GX_RESTORE_WARNING_STATE
 struct GXVec2 final
 {
     // Stores vector components in x, y order.
-    GXFloat     data[ 2u ];
+    GXFloat     _data[ 2u ];
 
     GXVec2 ();
     GXVec2 ( const GXVec2 &other );
-    explicit GXVec2 ( GXFloat x, GXFloat y );
+
+    // constexpr constructor is implicitly inline
+    // see https://timsong-cpp.github.io/cppwp/n4140/dcl.constexpr
+    constexpr explicit GXVec2 ( GXFloat x, GXFloat y ):
+        _data { x, y }
+    {
+        // NOTHING
+    }
 
     GXVoid SetX ( GXFloat x );
     GXFloat GetX () const;
@@ -76,11 +83,18 @@ eGXLineRelationship GXCALL GXLineIntersection2D ( GXVec2 &intersectionPoint, con
 struct GXVec3 final
 {
     // Stores vector components in x, y, z order.
-    GXFloat     data[ 3u ];
+    GXFloat     _data[ 3u ];
 
     GXVec3 ();
     GXVec3 ( const GXVec3 &other );
-    explicit GXVec3 ( GXFloat x, GXFloat y, GXFloat z );
+
+    // constexpr constructor is implicitly inline
+    // see https://timsong-cpp.github.io/cppwp/n4140/dcl.constexpr
+    constexpr explicit GXVec3 ( GXFloat x, GXFloat y, GXFloat z ):
+        _data { x, y, z }
+    {
+        // NOTHING
+    }
 
     GXVoid SetX ( GXFloat x );
     GXFloat GetX () const;
@@ -130,13 +144,22 @@ GXBool GXCALL GXRayTriangleIntersection3D ( GXFloat &outT, const GXVec3 &origin,
 
 struct GXEuler final
 {
-    GXFloat     pitchRadians;
-    GXFloat     yawRadians;
-    GXFloat     rollRadians;
+    GXFloat     _pitchRadians;
+    GXFloat     _yawRadians;
+    GXFloat     _rollRadians;
 
     GXEuler ();
     GXEuler ( const GXEuler &other );
-    explicit GXEuler ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians );
+
+    // constexpr constructor is implicitly inline
+    // see https://timsong-cpp.github.io/cppwp/n4140/dcl.constexpr
+    constexpr explicit GXEuler ( GXFloat pitchRadians, GXFloat yawRadians, GXFloat rollRadians ):
+        _pitchRadians ( pitchRadians ),
+        _yawRadians ( yawRadians ),
+        _rollRadians ( rollRadians )
+    {
+        // NOTHING
+    }
 
     GXEuler& operator = ( const GXEuler &other );
 };
@@ -147,12 +170,19 @@ struct GXEuler final
 struct GXVec4 final
 {
     // Stores vector components in x, y, z, w order.
-    GXFloat     data[ 4u ];
+    GXFloat     _data[ 4u ];
 
     GXVec4 ();
     GXVec4 ( const GXVec4 &other );
     explicit GXVec4 ( const GXVec3& vector, GXFloat w );
-    explicit GXVec4 ( GXFloat x, GXFloat y, GXFloat z, GXFloat w );
+
+    // constexpr constructor is implicitly inline
+    // see https://timsong-cpp.github.io/cppwp/n4140/dcl.constexpr
+    constexpr explicit GXVec4 ( GXFloat x, GXFloat y, GXFloat z, GXFloat w ):
+        _data { x, y, z, w }
+    {
+        // NOTHING
+    }
 
     GXVoid Init ( GXFloat x, GXFloat y, GXFloat z, GXFloat w );
 
@@ -184,11 +214,18 @@ struct GXVec4 final
 
 struct GXVec6 final
 {
-    GXFloat     data[ 6u ];
+    GXFloat     _data[ 6u ];
 
     GXVec6 ();
     GXVec6 ( const GXVec6 &other );
-    explicit GXVec6 ( GXFloat a1, GXFloat a2, GXFloat a3, GXFloat a4, GXFloat a5, GXFloat a6 );
+
+    // constexpr constructor is implicitly inline
+    // see https://timsong-cpp.github.io/cppwp/n4140/dcl.constexpr
+    constexpr explicit GXVec6 ( GXFloat a1, GXFloat a2, GXFloat a3, GXFloat a4, GXFloat a5, GXFloat a6 ):
+        _data { a1, a2, a3, a4, a5, a6 }
+    {
+        // NOTHING
+    }
 
     GXVoid Init ( GXFloat a1, GXFloat a2, GXFloat a3, GXFloat a4, GXFloat a5, GXFloat a6 );
     GXVoid From ( const GXVec3 &v1, const GXVec3 &v2 );
@@ -207,11 +244,19 @@ struct GXColorHSV;
 struct GXColorRGB final
 {
     // Stores components in red, green, blue, alpha order.
-    GXFloat     data[ 4u ];
+    GXFloat     _data[ 4u ];
 
     GXColorRGB ();
     GXColorRGB ( const GXColorRGB &other );
-    explicit GXColorRGB ( GXFloat red, GXFloat green, GXFloat blue, GXFloat alpha );
+
+    // constexpr constructor is implicitly inline
+    // see https://timsong-cpp.github.io/cppwp/n4140/dcl.constexpr
+    constexpr explicit GXColorRGB ( GXFloat red, GXFloat green, GXFloat blue, GXFloat alpha ):
+        _data { red, green, blue, alpha }
+    {
+        // NOTHING
+    }
+
     explicit GXColorRGB ( GXUByte red, GXUByte green, GXUByte blue, GXFloat alpha );
     explicit GXColorRGB ( const GXColorHSV &color );
 
@@ -246,11 +291,19 @@ struct GXColorRGB final
 struct GXColorHSV final
 {
     // Stores components in hue, saturation, value, alpha order.
-    GXFloat     data[ 4u ];
+    GXFloat     _data[ 4u ];
 
     GXColorHSV ();
     GXColorHSV ( const GXColorHSV &other );
-    explicit GXColorHSV ( GXFloat hue, GXFloat saturation, GXFloat value, GXFloat alpha );
+
+    // constexpr constructor is implicitly inline
+    // see https://timsong-cpp.github.io/cppwp/n4140/dcl.constexpr
+    constexpr explicit GXColorHSV ( GXFloat hue, GXFloat saturation, GXFloat value, GXFloat alpha ):
+        _data { hue, saturation, value, alpha }
+    {
+        // NOTHING
+    }
+
     explicit GXColorHSV ( const GXColorRGB &color );
 
     // [0.0f 360.0f]
@@ -278,12 +331,21 @@ struct GXColorHSV final
 
 struct GXPreciseComplex final
 {
-    GXDouble    r;
-    GXDouble    i;
+    GXDouble    _r;
+    GXDouble    _i;
 
     GXPreciseComplex ();
     GXPreciseComplex ( const GXPreciseComplex &other );
-    explicit GXPreciseComplex ( GXDouble real, GXDouble imaginary );
+
+    // constexpr constructor is implicitly inline
+    // see https://timsong-cpp.github.io/cppwp/n4140/dcl.constexpr
+    explicit GXPreciseComplex ( GXDouble real, GXDouble imaginary ):
+        _r ( real ),
+        _i ( imaginary )
+    {
+        // NOTHING
+    }
+
     ~GXPreciseComplex ();
 
     GXVoid Init ( GXDouble real, GXDouble imaginary );
@@ -312,11 +374,18 @@ struct GXMat4;
 struct GXQuat final
 {
     // Stores quaternion components in r, a, b, c order.
-    GXFloat     data[ 4u ];
+    GXFloat     _data[ 4u ];
 
     GXQuat ();
     GXQuat ( const GXQuat &other );
-    explicit GXQuat ( GXFloat r, GXFloat a, GXFloat b, GXFloat c );
+
+    // constexpr constructor is implicitly inline
+    // see https://timsong-cpp.github.io/cppwp/n4140/dcl.constexpr
+    explicit GXQuat ( GXFloat r, GXFloat a, GXFloat b, GXFloat c ):
+        _data { r, a, b, c }
+    {
+        // NOTHING
+    }
 
     // Result is valid if rotationMatrix is rotation matrix. Any scale will be ignored.
     explicit GXQuat ( const GXMat3 &rotationMatrix );
@@ -378,8 +447,8 @@ struct GXMat3 final
 {
     union
     {
-        GXFloat data[ 9u ];
-        GXFloat m[ 3u ][ 3u ];
+        GXFloat _data[ 9u ];
+        GXFloat _m[ 3u ][ 3u ];
     };
 
     GXMat3 ();
@@ -444,8 +513,8 @@ struct GXMat4 final
 {
     union
     {
-        GXFloat data[ 16u ];
-        GXFloat m[ 4u ][ 4u ];
+        GXFloat _data[ 16u ];
+        GXFloat _m[ 4u ][ 4u ];
     };
 
     GXMat4 ();
@@ -527,10 +596,10 @@ struct GXMat4 final
 
 struct GXAABB final
 {
-    GXUByte     vertices;
+    GXUByte     _vertices;
 
-    GXVec3      min;
-    GXVec3      max;
+    GXVec3      _min;
+    GXVec3      _max;
 
     GXAABB ();
     GXAABB ( const GXAABB &other );
@@ -565,10 +634,10 @@ enum class eGXPlaneClassifyVertex : GXUByte
 
 struct GXPlane final
 {
-    GXFloat     a;
-    GXFloat     b;
-    GXFloat     c;
-    GXFloat     d;
+    GXFloat     _a;
+    GXFloat     _b;
+    GXFloat     _c;
+    GXFloat     _d;
 
     GXPlane ();
     GXPlane ( const GXPlane &other );
@@ -590,7 +659,7 @@ struct GXPlane final
 class GXProjectionClipPlanes final
 {
     private:
-        GXPlane     planes[ 6u ];
+        GXPlane     _planes[ 6u ];
 
     public:
         GXProjectionClipPlanes ();

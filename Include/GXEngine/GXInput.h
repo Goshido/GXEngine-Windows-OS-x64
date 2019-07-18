@@ -1,4 +1,4 @@
-// version 1.19
+// version 1.20
 
 #ifndef GX_INPUT
 #define GX_INPUT
@@ -8,8 +8,8 @@
 #include <GXEngineDLL/GXXInput.h>
 
 
-#define GX_INPUT_TOTAL_KEYBOARD_KEYS    256 * 2
-#define GX_INPUT_TOTAL_GAMEPAD_KEYS     14
+#define GX_INPUT_TOTAL_KEYBOARD_KEYS    256u * 2u
+#define GX_INPUT_TOTAL_GAMEPAD_KEYS     14u
 
 
 #define VK_KEY_0                        0x30
@@ -65,6 +65,7 @@
 #define GX_INPUT_XBOX_START             12
 #define GX_INPUT_XBOX_BACK              13
 
+//---------------------------------------------------------------------------------------------------------------------
 
 enum class eGXInputButtonState : GXUByte
 {
@@ -72,79 +73,79 @@ enum class eGXInputButtonState : GXUByte
     Up
 };
 
-struct GXInputMouseFlags
-{
-    GXBool lmb;
-    GXBool mmb;
-    GXBool rmb;
-};
-
-typedef GXVoid ( GXCALL* PFNGXTYPEPROC ) ( GXVoid* handler, GXWChar symbol );
-typedef GXVoid ( GXCALL* PFNGXKEYPROC ) ( GXVoid* handler );
-typedef GXVoid ( GXCALL* PFNGXMOUSEMOVEPROC ) ( GXVoid* handler, GXInt win_x, GXInt win_y );
-typedef GXVoid ( GXCALL* PFNGXMOUSEBUTTONSPROC ) ( GXVoid* handler, GXInputMouseFlags mouseflags );
-typedef GXVoid ( GXCALL* PFNGXMOUSEWHEELPROC ) ( GXVoid* handler, GXInt steps );
-typedef GXVoid ( GXCALL* PFNGXSTICKPROC ) ( GXVoid* handler, GXFloat x, GXFloat y );
-typedef GXVoid ( GXCALL* PFNGXTRIGGERPROC ) ( GXVoid* handler, GXFloat value );
-
-enum class eGXInputDevice : GXUByte
+enum class eGXInputDevice: GXUByte
 {
     Keyboard,
     Mouse,
     XBOXController
 };
 
+struct GXInputMouseFlags
+{
+    GXBool      _leftMouseButton;
+    GXBool      _middleMouseButton;
+    GXBool      _rightMouseButton;
+};
+
+typedef GXVoid ( GXCALL* GXInputTypeHandler ) ( GXVoid* context, GXWChar symbol );
+typedef GXVoid ( GXCALL* GXInputKeyHandler ) ( GXVoid* context );
+typedef GXVoid ( GXCALL* GXInputMouseMoveHandler ) ( GXVoid* context, GXInt windowX, GXInt windowY );
+typedef GXVoid ( GXCALL* GXInputMouseButtonHandler ) ( GXVoid* context, GXInputMouseFlags mouseflags );
+typedef GXVoid ( GXCALL* GXInputMouseHandler ) ( GXVoid* context, GXInt steps );
+typedef GXVoid ( GXCALL* GXInputStickHandler ) ( GXVoid* context, GXFloat x, GXFloat y );
+typedef GXVoid ( GXCALL* GXInputTriggerHandler ) ( GXVoid* context, GXFloat value );
+
 class GXInput final
 {
     private:
-        static GXThread*                thread;
+        static GXThread*                    _thread;
 
-        static GXBool                   loopFlag;
+        static GXBool                       _loopFlag;
 
-        static GXVoid*                  keysHandlers[ GX_INPUT_TOTAL_KEYBOARD_KEYS ];
-        static PFNGXKEYPROC             KeysMapping[ GX_INPUT_TOTAL_KEYBOARD_KEYS ];
-        static GXBool                   keysMask[ GX_INPUT_TOTAL_KEYBOARD_KEYS ];
+        static GXVoid*                      _keysHandlers[ GX_INPUT_TOTAL_KEYBOARD_KEYS ];
+        static GXInputKeyHandler            _KeysMapping[ GX_INPUT_TOTAL_KEYBOARD_KEYS ];
+        static GXBool                       _keysMask[ GX_INPUT_TOTAL_KEYBOARD_KEYS ];
 
-        static GXVoid*                  onTypeHandler;
-        static PFNGXTYPEPROC            OnType;
-        static GXWChar                  symbol;
+        static GXVoid*                      _onTypeContext;
+        static GXInputTypeHandler           _onType;
+        static GXWChar                      _symbol;
 
-        static XINPUT_STATE             gamepadState[ 2u ];
-        static GXUChar                  currentGamepadState;
+        static XINPUT_STATE                 _gamepadState[ 2u ];
+        static GXUChar                      _currentGamepadState;
 
-        static GXVoid*                  gamepadKeysHandlers[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2 ];
-        static PFNGXKEYPROC             GamepadKeysMapping[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2 ];
-        static GXByte                   gamepadKeysMask[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2 ];
+        static GXVoid*                      _gamepadKeysHandlers[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2u ];
+        static GXInputKeyHandler            _gamepadKeysMapping[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2u ];
+        static GXByte                       _gamepadKeysMask[ GX_INPUT_TOTAL_GAMEPAD_KEYS * 2u ];
 
-        static GXVoid*                  onLeftTriggerHandler;
-        static PFNGXTRIGGERPROC         DoLeftTrigger;
+        static GXVoid*                      _onLeftTriggerContext;
+        static GXInputTriggerHandler        _doLeftTrigger;
 
-        static GXVoid*                  onRightTriggerHandler;
-        static PFNGXTRIGGERPROC         DoRightTrigger;
+        static GXVoid*                      _onRightTriggerContext;
+        static GXInputTriggerHandler        _doRightTrigger;
 
-        static GXVoid*                  onLeftStickHandler;
-        static PFNGXSTICKPROC           DoLeftStick;
+        static GXVoid*                      _onLeftStickContext;
+        static GXInputStickHandler          _doLeftStick;
 
-        static GXVoid*                  onRightStickTrigger;
-        static PFNGXSTICKPROC           DoRightStick;
+        static GXVoid*                      _onRightStickContext;
+        static GXInputStickHandler          _doRightStick;
 
-        static GXVoid*                  onMouseMoveHandler;
-        static PFNGXMOUSEMOVEPROC       DoMouseMoving;
+        static GXVoid*                      _onMouseMoveContext;
+        static GXInputMouseMoveHandler      _doMouseMoving;
 
-        static GXVoid*                  onMouseButtonHandler;
-        static PFNGXMOUSEBUTTONSPROC    DoMouseButton;
+        static GXVoid*                      _onMouseButtonContext;
+        static GXInputMouseButtonHandler    _doMouseButton;
 
-        static GXVoid*                  onMouseWheelHandler;
-        static PFNGXMOUSEWHEELPROC      DoMouseWheel;
+        static GXVoid*                      _onMouseWheelContext;
+        static GXInputMouseHandler          _doMouseWheel;
 
-        static GXInputMouseFlags        mouseflags;
+        static GXInputMouseFlags            _mouseflags;
 
-        static eGXInputDevice           activeInputDevice;
+        static eGXInputDevice               _activeInputDevice;
 
-        static PFNXINPUTGETSTATEPROC    XInputGetState;
-        static PFNXINPUTENABLEPROC      XInputEnable;
+        static XIXInputGetState             _xInputGetState;
+        static XIXInputEnable               _xInputEnable;
 
-        static GXInput*                 instance;
+        static GXInput*                     _instance;
 
     public:
         static GXInput& GXCALL GetInstance ();
@@ -153,34 +154,34 @@ class GXInput final
         GXVoid Start ();
         GXVoid Shutdown ();
 
-        GXVoid BindKeyCallback ( GXVoid* handler, PFNGXKEYPROC callback, GXInt vk_key, eGXInputButtonState eState );
-        GXVoid UnbindKeyCallback ( GXInt vk_key, eGXInputButtonState eState );
+        GXVoid BindKeyCallback ( GXVoid* context, GXInputKeyHandler callback, GXInt virtualKeyCode, eGXInputButtonState state );
+        GXVoid UnbindKeyCallback ( GXInt virtualKeyCode, eGXInputButtonState state );
 
-        GXVoid BindTypeCallback ( GXVoid* handler, PFNGXTYPEPROC callback );
+        GXVoid BindTypeCallback ( GXVoid* context, GXInputTypeHandler callback );
         GXVoid UnbindTypeCallback ();
 
-        GXVoid BindMouseMoveCallback ( GXVoid* handler, PFNGXMOUSEMOVEPROC callback );
+        GXVoid BindMouseMoveCallback ( GXVoid* context, GXInputMouseMoveHandler callback );
         GXVoid UnbindMouseMoveCallback ();
 
-        GXVoid BindMouseButtonCallback ( GXVoid* handler, PFNGXMOUSEBUTTONSPROC callback );
+        GXVoid BindMouseButtonCallback ( GXVoid* context, GXInputMouseButtonHandler callback );
         GXVoid UnbindMouseButtonCallback ();
 
-        GXVoid BindMouseWheelCallback ( GXVoid* handler, PFNGXMOUSEWHEELPROC callback );
+        GXVoid BindMouseWheelCallback ( GXVoid* context, GXInputMouseHandler callback );
         GXVoid UnbindMouseWheelCallback ();
 
-        GXVoid BindGamepadKeyCallback ( GXVoid* handler, PFNGXKEYPROC callback, GXInt gamepad_key, eGXInputButtonState eState );
-        GXVoid UnbindGamepadKeyCallback ( GXInt gamepad_key, eGXInputButtonState eState );
+        GXVoid BindGamepadKeyCallback ( GXVoid* context, GXInputKeyHandler callback, GXInt gamepadKey, eGXInputButtonState state );
+        GXVoid UnbindGamepadKeyCallback ( GXInt gamepadKey, eGXInputButtonState state );
 
-        GXVoid BindLeftTriggerCallback ( GXVoid* handler, PFNGXTRIGGERPROC callback );
+        GXVoid BindLeftTriggerCallback ( GXVoid* context, GXInputTriggerHandler callback );
         GXVoid UnbindLeftTriggerCallback ();
 
-        GXVoid BindRightTriggerCallback ( GXVoid* handler, PFNGXTRIGGERPROC callback );
+        GXVoid BindRightTriggerCallback ( GXVoid* context, GXInputTriggerHandler callback );
         GXVoid UnbindRightTriggerCallback ();
         
-        GXVoid BindLeftStickCallback ( GXVoid* handler, PFNGXSTICKPROC callback );
+        GXVoid BindLeftStickCallback ( GXVoid* context, GXInputStickHandler callback );
         GXVoid UnbindLeftStickCallback ();
 
-        GXVoid BindRightStickCallback ( GXVoid* handler, PFNGXSTICKPROC callback );
+        GXVoid BindRightStickCallback ( GXVoid* context, GXInputStickHandler callback );
         GXVoid UnbindRightStickCallback ();
 
         static LRESULT CALLBACK InputProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam );

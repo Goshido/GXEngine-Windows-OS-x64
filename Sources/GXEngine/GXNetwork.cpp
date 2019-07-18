@@ -1,4 +1,4 @@
-// version 1.11
+// version 1.12
 
 #include <GXEngine/GXNetwork.h>
 #include <GXCommon/GXMemory.h>
@@ -16,8 +16,8 @@ enum class eGXNetModule : GXUByte
 
 struct GXClientInfo
 {
-    GXUInt      id;
-    SOCKET      socket;
+    GXUInt      _id;
+    SOCKET      _socket;
 };
 
 //------------------------------------------------------------------------------------------------
@@ -111,8 +111,8 @@ GXBool GXCALL GXNetWSADestroy ( eGXNetModule who )
 //------------------------------------------------------------------------------------------------------
 
 GXNetConnectionTCP::GXNetConnectionTCP ():
-    socket ( INVALID_SOCKET ),
-    thread ( nullptr )
+    _socket ( INVALID_SOCKET ),
+    _thread ( nullptr )
 {
     // NOTHING
 }
@@ -124,58 +124,58 @@ GXNetConnectionTCP::~GXNetConnectionTCP ()
 
 GXBool GXNetConnectionTCP::IsFree ()
 {
-    return socket == INVALID_SOCKET ? GX_TRUE : GX_FALSE;
+    return _socket == INVALID_SOCKET ? GX_TRUE : GX_FALSE;
 }
 
 SOCKET GXNetConnectionTCP::GetSocket ()
 {
-    return socket;
+    return _socket;
 }
 
 GXThread* GXNetConnectionTCP::GetThread ()
 {
-    return thread;
+    return _thread;
 }
 
 GXVoid GXNetConnectionTCP::Init ( SOCKET socketObject, GXThread* threadObject )
 {
-    GXSafeDelete ( thread );
-    thread = threadObject;
-    socket = socketObject;
+    GXSafeDelete ( _thread );
+    _thread = threadObject;
+    _socket = socketObject;
 }
 
 GXVoid GXNetConnectionTCP::Destroy ()
 {
-    socket = INVALID_SOCKET;
+    _socket = INVALID_SOCKET;
 }
 
 //------------------------------------------------------------------------------------------------------
 
-SOCKET                                  GXNetServer::listenerTCP = INVALID_SOCKET;
-SOCKET                                  GXNetServer::listenerUDP = INVALID_SOCKET;
+SOCKET                                  GXNetServer::_listenerTCP = INVALID_SOCKET;
+SOCKET                                  GXNetServer::_listenerUDP = INVALID_SOCKET;
 
-GXUInt                                  GXNetServer::numClientsTCP = 0u;
+GXUInt                                  GXNetServer::_numClientsTCP = 0u;
 
-GXNetConnectionTCP                      GXNetServer::clientsTCP[ GX_MAX_NETWORK_CLIENTS ];
+GXNetConnectionTCP                      GXNetServer::_clientsTCP[ GX_NETWORK_MAX_NETWORK_CLIENTS ];
 
-PFNGXONSERVERNEWTCPCONNECTIONPROC       GXNetServer::OnNewConnectionTCP = nullptr;
-PFNGXONSERVERDISCONNECTPROC             GXNetServer::OnDisconnect = nullptr;
+GXNetworkOnNewTCPConectionHandler       GXNetServer::_onNewConnectionTCP = nullptr;
+GXNetworkOnServerDisconnectedHandler    GXNetServer::_onDisconnect = nullptr;
 
-PFNGXONSERVERPMESSAGETCPPROC            GXNetServer::OnMessageTCP = nullptr;
-PFNGXONSERVERPMESSAGEUDPPROC            GXNetServer::OnMessageUDP = nullptr;
+GXNetworkOnMessageTCPHandler            GXNetServer::_onMessageTCP = nullptr;
+GXNetworkOnMessageUDPHandler            GXNetServer::_onMessageUDP = nullptr;
 
-GXUByte                                 GXNetServer::bufferTCP[ GX_SOCKET_BUFFER_SIZE ] = { 0u };
-GXUByte                                 GXNetServer::bufferUDP[ GX_SOCKET_BUFFER_SIZE ] = { 0u };
+GXUByte                                 GXNetServer::_bufferTCP[ GX_NETWORK_SOCKET_BUFFER_SIZE ] = { 0u };
+GXUByte                                 GXNetServer::_bufferUDP[ GX_NETWORK_SOCKET_BUFFER_SIZE ] = { 0u };
 
-GXNetServer*                            GXNetServer::instance = nullptr;
+GXNetServer*                            GXNetServer::_instance = nullptr;
 
 
 GXNetServer& GXCALL GXNetServer::GetInstance ()
 {
-    if ( !instance )
-        instance = new GXNetServer ();
+    if ( !_instance )
+        _instance = new GXNetServer ();
 
-    return *instance;
+    return *_instance;
 }
 
 GXNetServer::~GXNetServer ()
@@ -185,14 +185,14 @@ GXNetServer::~GXNetServer ()
 
     DestroyUDP ();
 
-    instance = nullptr;
+    _instance = nullptr;
 }
 
 GXBool GXNetServer::CreateTCP ( GXUShort port )
 {
     DestroyTCP ();
 
-    numClientsTCP = 0u;
+    _numClientsTCP = 0u;
 
     if ( !GXNetWSAInit ( eGXNetModule::Server ) )
     {
@@ -200,13 +200,13 @@ GXBool GXNetServer::CreateTCP ( GXUShort port )
         return GX_FALSE;
     }
     
-    listenerTCP = socket ( AF_INET, SOCK_STREAM, 0 );
+    _listenerTCP = socket ( AF_INET, SOCK_STREAM, 0 );
 
-    if ( listenerTCP == INVALID_SOCKET )
+    if ( _listenerTCP == INVALID_SOCKET )
     {
         GXLogA ( "GXNetServer::CreateTCP::Error - Ошибка создания сокета\n" );
 
-        if ( listenerUDP == INVALID_SOCKET )
+        if ( _listenerUDP == INVALID_SOCKET )
             GXNetWSADestroy ( eGXNetModule::Server );
 
         return GX_FALSE;
@@ -217,36 +217,36 @@ GXBool GXNetServer::CreateTCP ( GXUShort port )
     local_addr.sin_port = htons ( port );
     local_addr.sin_addr.s_addr = 0;
 
-    if ( bind ( listenerTCP, reinterpret_cast<sockaddr*> ( &local_addr ), sizeof ( local_addr ) ) )
+    if ( bind ( _listenerTCP, reinterpret_cast<sockaddr*> ( &local_addr ), sizeof ( local_addr ) ) )
     {
         GXLogA ( "GXNetServer::CreateTCP::Error - Ошибка bind\n" );
 
-        shutdown ( listenerTCP, SD_BOTH );
-        closesocket ( listenerTCP );
-        listenerTCP = INVALID_SOCKET;
+        shutdown ( _listenerTCP, SD_BOTH );
+        closesocket ( _listenerTCP );
+        _listenerTCP = INVALID_SOCKET;
 
-        if ( listenerUDP == INVALID_SOCKET )
+        if ( _listenerUDP == INVALID_SOCKET )
             GXNetWSADestroy ( eGXNetModule::Server );
 
         return GX_FALSE;
     }
 
-    if ( listen ( listenerTCP, 0x100 ) )
+    if ( listen ( _listenerTCP, 0x100 ) )
     {
         GXLogA ( "GXNetServer::CreateTCP::Error - Ошибка listen\n" );
 
-        shutdown ( listenerTCP, SD_BOTH );
-        closesocket ( listenerTCP );
-        listenerTCP = INVALID_SOCKET;
+        shutdown ( _listenerTCP, SD_BOTH );
+        closesocket ( _listenerTCP );
+        _listenerTCP = INVALID_SOCKET;
 
-        if ( listenerUDP == INVALID_SOCKET )
+        if ( _listenerUDP == INVALID_SOCKET )
             GXNetWSADestroy ( eGXNetModule::Server );
 
         return GX_FALSE;
     }
 
-    threadTCP = new GXThread ( &GXNetServer::ListenTCP, nullptr );
-    threadTCP->Start ();
+    _threadTCP = new GXThread ( &GXNetServer::ListenTCP, nullptr );
+    _threadTCP->Start ();
 
     return GX_TRUE;
 }
@@ -261,13 +261,13 @@ GXBool GXNetServer::CreateUDP ( GXUShort port )
         return GX_FALSE;
     }
     
-    listenerUDP = socket ( AF_INET, SOCK_DGRAM, 0 );
+    _listenerUDP = socket ( AF_INET, SOCK_DGRAM, 0 );
 
-    if ( listenerUDP == INVALID_SOCKET )
+    if ( _listenerUDP == INVALID_SOCKET )
     {
         GXLogA ( "GXNetServer::CreateUDP::Error - Ошибка создания сокета\n" );
 
-        if ( listenerTCP == INVALID_SOCKET ) 
+        if ( _listenerTCP == INVALID_SOCKET ) 
             GXNetWSADestroy ( eGXNetModule::Server );
 
         return GX_FALSE;
@@ -278,34 +278,34 @@ GXBool GXNetServer::CreateUDP ( GXUShort port )
     local_addr.sin_port = htons ( port );
     local_addr.sin_addr.s_addr = 0;
 
-    if ( bind ( listenerUDP, reinterpret_cast<sockaddr*> ( &local_addr ), sizeof ( local_addr ) ) )
+    if ( bind ( _listenerUDP, reinterpret_cast<sockaddr*> ( &local_addr ), sizeof ( local_addr ) ) )
     {
         GXLogA ( "GXNetServer::CreateUDP::Error - Ошибка bind\n" );
 
-        shutdown ( listenerUDP, SD_BOTH );
-        closesocket ( listenerUDP );
-        listenerUDP = INVALID_SOCKET;
+        shutdown ( _listenerUDP, SD_BOTH );
+        closesocket ( _listenerUDP );
+        _listenerUDP = INVALID_SOCKET;
 
-        if ( listenerTCP == INVALID_SOCKET )
+        if ( _listenerTCP == INVALID_SOCKET )
             GXNetWSADestroy ( eGXNetModule::Server );
 
         return GX_FALSE;
     }
 
-    threadUDP = new GXThread ( &GXNetServer::ServeClientUDP, nullptr );
-    threadUDP->Start ();
+    _threadUDP = new GXThread ( &GXNetServer::ServeClientUDP, nullptr );
+    _threadUDP->Start ();
 
     return GX_TRUE;
 }
 
 GXBool GXNetServer::SendTCP ( GXUInt clientID, GXVoid* data, GXInt size )
 {
-    if ( numClientsTCP < 1u ) return GX_FALSE;
+    if ( _numClientsTCP < 1u ) return GX_FALSE;
 
-    if ( clientID >= GX_MAX_NETWORK_CLIENTS || clientsTCP[ clientID ].IsFree () )
+    if ( clientID >= GX_NETWORK_MAX_NETWORK_CLIENTS || _clientsTCP[ clientID ].IsFree () )
         return GX_FALSE;
 
-    SOCKET socket = clientsTCP[ clientID ].GetSocket ();
+    SOCKET socket = _clientsTCP[ clientID ].GetSocket ();
     GXInt  trans = size;
     
     while ( trans > 0 )
@@ -328,7 +328,7 @@ GXBool GXNetServer::SendUDP ( const sockaddr_in &toClient, GXVoid* data, GXInt s
 
     while ( trans > 0 )
     {
-        GXInt t = sendto ( listenerUDP, static_cast<const GXChar*> ( data ) + size - trans, trans, 0, reinterpret_cast<const sockaddr*> ( &toClient ), len );
+        GXInt t = sendto ( _listenerUDP, static_cast<const GXChar*> ( data ) + size - trans, trans, 0, reinterpret_cast<const sockaddr*> ( &toClient ), len );
 
         if ( t == SOCKET_ERROR )
             return GX_FALSE;
@@ -343,9 +343,9 @@ GXBool GXNetServer::BroadcastTCP ( GXVoid* data, GXInt size )
 {
     GXBool    result = GX_TRUE;
 
-    for ( GXUChar i = 0u; i < GX_MAX_NETWORK_CLIENTS; ++i )
+    for ( GXUChar i = 0u; i < GX_NETWORK_MAX_NETWORK_CLIENTS; ++i )
     {
-        if ( clientsTCP[ i ].IsFree () ) continue;
+        if ( _clientsTCP[ i ].IsFree () ) continue;
 
         result &= SendTCP ( i, data, size );
     }
@@ -357,7 +357,7 @@ GXBool GXNetServer::BroadcastUDP ( GXVoid* data, GXInt size )
 {
     GXBool    result = GX_TRUE;
 
-    for ( GXUChar i = 0u; i < GX_MAX_NETWORK_CLIENTS; ++i )
+    for ( GXUChar i = 0u; i < GX_NETWORK_MAX_NETWORK_CLIENTS; ++i )
     {
         sockaddr_in address;
 
@@ -370,30 +370,30 @@ GXBool GXNetServer::BroadcastUDP ( GXVoid* data, GXInt size )
 
 GXBool GXNetServer::DestroyTCP ()
 {
-    if ( listenerTCP == INVALID_SOCKET ) return GX_TRUE;
+    if ( _listenerTCP == INVALID_SOCKET ) return GX_TRUE;
 
-    for ( GXUInt i = 0u; i < GX_MAX_NETWORK_CLIENTS; ++i )
+    for ( GXUInt i = 0u; i < GX_NETWORK_MAX_NETWORK_CLIENTS; ++i )
     {
-        if ( clientsTCP[ i ].IsFree () ) continue;
+        if ( _clientsTCP[ i ].IsFree () ) continue;
 
-        shutdown ( clientsTCP[ i ].GetSocket (), SD_BOTH );
-        closesocket ( clientsTCP[ i ].GetSocket () );
+        shutdown ( _clientsTCP[ i ].GetSocket (), SD_BOTH );
+        closesocket ( _clientsTCP[ i ].GetSocket () );
 
-        GXThread* thread = clientsTCP[ i ].GetThread ();
+        GXThread* thread = _clientsTCP[ i ].GetThread ();
         thread->Join ();
 
-        clientsTCP[ i ].Destroy ();
+        _clientsTCP[ i ].Destroy ();
         delete thread;
     }
 
-    shutdown ( listenerTCP, SD_BOTH );
-    closesocket ( listenerTCP );
-    listenerTCP = INVALID_SOCKET;
+    shutdown ( _listenerTCP, SD_BOTH );
+    closesocket ( _listenerTCP );
+    _listenerTCP = INVALID_SOCKET;
 
-    threadTCP->Join ();
-    GXSafeDelete ( threadTCP );
+    _threadTCP->Join ();
+    GXSafeDelete ( _threadTCP );
 
-    if ( listenerUDP == INVALID_SOCKET )
+    if ( _listenerUDP == INVALID_SOCKET )
         return GXNetWSADestroy ( eGXNetModule::Server );
     else
         return GX_TRUE;
@@ -401,52 +401,52 @@ GXBool GXNetServer::DestroyTCP ()
 
 GXBool GXNetServer::DestroyUDP ()
 {
-    if ( listenerUDP == INVALID_SOCKET ) return GX_TRUE;
+    if ( _listenerUDP == INVALID_SOCKET ) return GX_TRUE;
 
-    closesocket ( listenerUDP );
-    listenerUDP = INVALID_SOCKET;
+    closesocket ( _listenerUDP );
+    _listenerUDP = INVALID_SOCKET;
 
-    threadUDP->Join ();
-    GXSafeDelete ( threadUDP );
+    _threadUDP->Join ();
+    GXSafeDelete ( _threadUDP );
 
-    if ( listenerTCP == INVALID_SOCKET ) return GXNetWSADestroy ( eGXNetModule::Server );
+    if ( _listenerTCP == INVALID_SOCKET ) return GXNetWSADestroy ( eGXNetModule::Server );
 
     return GX_TRUE;
 }
 
 GXBool GXNetServer::IsDeployedTCP ()
 {
-    return ( listenerTCP != INVALID_SOCKET ) ? GX_TRUE : GX_FALSE;
+    return ( _listenerTCP != INVALID_SOCKET ) ? GX_TRUE : GX_FALSE;
 }
 
 GXBool GXNetServer::IsDeployedUDP ()
 {
-    return ( listenerUDP != INVALID_SOCKET ) ? GX_TRUE : GX_FALSE;
+    return ( _listenerUDP != INVALID_SOCKET ) ? GX_TRUE : GX_FALSE;
 }
 
-GXVoid GXNetServer::SetOnNewTCPConnection ( PFNGXONSERVERNEWTCPCONNECTIONPROC callback )
+GXVoid GXNetServer::SetOnNewTCPConnection ( GXNetworkOnNewTCPConectionHandler callback )
 {
-    OnNewConnectionTCP = callback;
+    _onNewConnectionTCP = callback;
 }
 
-GXVoid GXNetServer::SetOnDisconnectFunc ( PFNGXONSERVERDISCONNECTPROC callback )
+GXVoid GXNetServer::SetOnDisconnectFunc ( GXNetworkOnServerDisconnectedHandler callback )
 {
-    OnDisconnect = callback;
+    _onDisconnect = callback;
 }
 
-GXVoid GXNetServer::SetOnMessageFuncTCP ( PFNGXONSERVERPMESSAGETCPPROC callback )
+GXVoid GXNetServer::SetOnMessageFuncTCP ( GXNetworkOnMessageTCPHandler callback )
 {
-    OnMessageTCP = callback;
+    _onMessageTCP = callback;
 }
 
-GXVoid GXNetServer::SetOnMessageFuncUDP ( PFNGXONSERVERPMESSAGEUDPPROC callback )
+GXVoid GXNetServer::SetOnMessageFuncUDP ( GXNetworkOnMessageUDPHandler callback )
 {
-    OnMessageUDP = callback;
+    _onMessageUDP = callback;
 }
 
 GXNetServer::GXNetServer ():
-    threadTCP ( nullptr ),
-    threadUDP ( nullptr )
+    _threadTCP ( nullptr ),
+    _threadUDP ( nullptr )
 {
     // NOTHING
 }
@@ -458,13 +458,13 @@ GXUPointer GXTHREADCALL GXNetServer::ListenTCP ( GXVoid* /*arg*/, GXThread& /*th
 
     GXInt client_addr_size = sizeof ( client_addr );
 
-    while ( ( client_socket = accept ( listenerTCP, reinterpret_cast<sockaddr*> ( &client_addr ), &client_addr_size ) ) != INVALID_SOCKET )
+    while ( ( client_socket = accept ( _listenerTCP, reinterpret_cast<sockaddr*> ( &client_addr ), &client_addr_size ) ) != INVALID_SOCKET )
     {
         HOSTENT* hst;
         hst = gethostbyaddr ( reinterpret_cast<const char*> ( &client_addr.sin_addr.s_addr ), 4, AF_INET );
         GXLogA ( "GXNetServer::ListenTCP::Info - Получена заявка на подключение. Пытаюсь зарегистрировать нового клиента...\n" );
 
-        if ( numClientsTCP > GX_MAX_NETWORK_CLIENTS )
+        if ( _numClientsTCP > GX_NETWORK_MAX_NETWORK_CLIENTS )
         {
             GXLogA ( "GXNetServer::ListenTCP::Warning - Превышено количество одновременных подключений\n" );
         }
@@ -475,20 +475,20 @@ GXUPointer GXTHREADCALL GXNetServer::ListenTCP ( GXVoid* /*arg*/, GXThread& /*th
             if ( id == -1 ) continue;
 
             GXClientInfo* info = new GXClientInfo ();
-            info->id = static_cast<GXUInt> ( id );
-            info->socket = client_socket;
+            info->_id = static_cast<GXUInt> ( id );
+            info->_socket = client_socket;
 
             GXThread* newClientThread = new GXThread ( &GXNetServer::ServeClientTCP, info );
-            clientsTCP[ id ].Init ( client_socket, newClientThread );
+            _clientsTCP[ id ].Init ( client_socket, newClientThread );
             newClientThread->Start ();
         }
     }
 
-    shutdown ( listenerTCP, SD_BOTH );
-    closesocket ( listenerTCP );
-    listenerTCP = INVALID_SOCKET;
+    shutdown ( _listenerTCP, SD_BOTH );
+    closesocket ( _listenerTCP );
+    _listenerTCP = INVALID_SOCKET;
 
-    if ( listenerUDP == INVALID_SOCKET )
+    if ( _listenerUDP == INVALID_SOCKET )
         GXNetWSADestroy ( eGXNetModule::Server );
 
     return 0u;
@@ -500,35 +500,35 @@ GXUPointer GXTHREADCALL GXNetServer::ServeClientTCP ( GXVoid* arg, GXThread& /*t
 
     const GXClientInfo* info = static_cast<const GXClientInfo*> ( arg );
 
-    ++numClientsTCP;
+    ++_numClientsTCP;
 
     BOOL disable = FALSE;
-    setsockopt ( info->socket, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*> ( &disable ), sizeof ( BOOL ) );
+    setsockopt ( info->_socket, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*> ( &disable ), sizeof ( BOOL ) );
 
-    if ( OnNewConnectionTCP )
-        OnNewConnectionTCP ( info->id );
+    if ( _onNewConnectionTCP )
+        _onNewConnectionTCP ( info->_id );
 
     GXInt size;
-    size = recv ( info->socket, reinterpret_cast<char*> ( bufferTCP ), GX_SOCKET_BUFFER_SIZE, 0 );
+    size = recv ( info->_socket, reinterpret_cast<char*> ( _bufferTCP ), GX_NETWORK_SOCKET_BUFFER_SIZE, 0 );
 
     while ( size != SOCKET_ERROR && size != 0 )
     {
-        if ( OnMessageTCP ) 
-            OnMessageTCP ( info->id, bufferTCP, static_cast<GXUInt> ( size ) );
+        if ( _onMessageTCP ) 
+            _onMessageTCP ( info->_id, _bufferTCP, static_cast<GXUInt> ( size ) );
 
-        size = recv ( info->socket, reinterpret_cast<char*> ( bufferTCP ), GX_SOCKET_BUFFER_SIZE, 0 );
+        size = recv ( info->_socket, reinterpret_cast<char*> ( _bufferTCP ), GX_NETWORK_SOCKET_BUFFER_SIZE, 0 );
     }
 
-    shutdown ( info->socket, SD_BOTH );
-    closesocket ( info->socket );
+    shutdown ( info->_socket, SD_BOTH );
+    closesocket ( info->_socket );
 
     GXLogA ( "GXNetServer::ServeClientTCP::Info - Клиент отключился\n" );
 
-    --numClientsTCP;
-    clientsTCP[ info->id ].Destroy ();
+    --_numClientsTCP;
+    _clientsTCP[ info->_id ].Destroy ();
 
-    if ( OnDisconnect )
-        OnDisconnect ( info->id );
+    if ( _onDisconnect )
+        _onDisconnect ( info->_id );
     delete info;
 
     return 0u;
@@ -540,20 +540,20 @@ GXUPointer GXTHREADCALL GXNetServer::ServeClientUDP ( GXVoid* /*arg*/, GXThread&
     GXInt client_addr_size = sizeof ( client_addr );
 
     GXInt size = 0;
-    size = recvfrom ( listenerUDP, reinterpret_cast<char*> ( bufferUDP ), GX_SOCKET_BUFFER_SIZE, 0, reinterpret_cast<sockaddr*> ( &client_addr ), &client_addr_size );
+    size = recvfrom ( _listenerUDP, reinterpret_cast<char*> ( _bufferUDP ), GX_NETWORK_SOCKET_BUFFER_SIZE, 0, reinterpret_cast<sockaddr*> ( &client_addr ), &client_addr_size );
 
     while ( size != SOCKET_ERROR && size != 0 )
     {
-        if ( OnMessageUDP )
-            OnMessageUDP ( client_addr, bufferUDP, static_cast<GXUInt> ( size ) );
+        if ( _onMessageUDP )
+            _onMessageUDP ( client_addr, _bufferUDP, static_cast<GXUInt> ( size ) );
 
-        size = recvfrom ( listenerUDP, reinterpret_cast<char*> ( bufferUDP ), GX_SOCKET_BUFFER_SIZE, 0, reinterpret_cast<sockaddr*> ( &client_addr ), &client_addr_size );
+        size = recvfrom ( _listenerUDP, reinterpret_cast<char*> ( _bufferUDP ), GX_NETWORK_SOCKET_BUFFER_SIZE, 0, reinterpret_cast<sockaddr*> ( &client_addr ), &client_addr_size );
     }
 
-    closesocket ( listenerUDP );
-    listenerUDP = INVALID_SOCKET;
+    closesocket ( _listenerUDP );
+    _listenerUDP = INVALID_SOCKET;
 
-    if ( listenerTCP == INVALID_SOCKET )
+    if ( _listenerTCP == INVALID_SOCKET )
         GXNetWSADestroy ( eGXNetModule::Server );
 
     return 0u;
@@ -561,9 +561,9 @@ GXUPointer GXTHREADCALL GXNetServer::ServeClientUDP ( GXVoid* /*arg*/, GXThread&
 
 GXInt GXNetServer::GetFreeClientTCP ()
 {
-    for ( GXUInt i = 0u; i < GX_MAX_NETWORK_CLIENTS; ++i )
+    for ( GXUInt i = 0u; i < GX_NETWORK_MAX_NETWORK_CLIENTS; ++i )
     {
-        if ( clientsTCP[ i ].IsFree () )
+        if ( _clientsTCP[ i ].IsFree () )
             return static_cast<GXInt> ( i );
     }
 
@@ -572,9 +572,9 @@ GXInt GXNetServer::GetFreeClientTCP ()
 
 GXInt GXNetServer::FindClientTCP ( SOCKET socket )
 {
-    for ( GXUInt i = 0u; i < GX_MAX_NETWORK_CLIENTS; ++i )
+    for ( GXUInt i = 0u; i < GX_NETWORK_MAX_NETWORK_CLIENTS; ++i )
     {
-        if ( !clientsTCP[ i ].IsFree () && clientsTCP[ i ].GetSocket () == socket )
+        if ( !_clientsTCP[ i ].IsFree () && _clientsTCP[ i ].GetSocket () == socket )
             return static_cast<GXInt> ( i );
     }
 
@@ -583,11 +583,11 @@ GXInt GXNetServer::FindClientTCP ( SOCKET socket )
 
 GXBool GXNetServer::GetClientIP ( sockaddr_in &address, GXUInt clientID )
 {
-    if ( clientsTCP[ clientID ].IsFree () ) return GX_FALSE;
+    if ( _clientsTCP[ clientID ].IsFree () ) return GX_FALSE;
 
     GXInt size = sizeof ( sockaddr_in );
 
-    if ( getpeername ( clientsTCP[ clientID ].GetSocket (), reinterpret_cast<sockaddr*> ( &address ), &size ) == 0 ) 
+    if ( getpeername ( _clientsTCP[ clientID ].GetSocket (), reinterpret_cast<sockaddr*> ( &address ), &size ) == 0 ) 
         return GX_TRUE;
 
     return GX_FALSE;
@@ -595,27 +595,27 @@ GXBool GXNetServer::GetClientIP ( sockaddr_in &address, GXUInt clientID )
 
 //----------------------------------------------------------------------------------------------
 
-SOCKET                      GXNetClient::socketTCP = INVALID_SOCKET;
-SOCKET                      GXNetClient::socketUDP = INVALID_SOCKET;
+SOCKET                              GXNetClient::_socketTCP = INVALID_SOCKET;
+SOCKET                              GXNetClient::_socketUDP = INVALID_SOCKET;
 
-GXThread*                   GXNetClient::threadTCP = nullptr;
-GXThread*                   GXNetClient::threadUDP = nullptr;
+GXThread*                           GXNetClient::_threadTCP = nullptr;
+GXThread*                           GXNetClient::_threadUDP = nullptr;
 
-PFNGXONCLIENTMESSAGEPROC    GXNetClient::OnMessageTCP = nullptr;
-PFNGXONCLIENTMESSAGEPROC    GXNetClient::OnMessageUDP = nullptr;
+GXNetworkOnClientMessageHandler     GXNetClient::_onMessageTCP = nullptr;
+GXNetworkOnClientMessageHandler     GXNetClient::_onMessageUDP = nullptr;
 
-GXUByte                     GXNetClient::bufferTCP[ GX_SOCKET_BUFFER_SIZE ] = { 0 };
-GXUByte                     GXNetClient::bufferUDP[ GX_SOCKET_BUFFER_SIZE ] = { 0 };
+GXUByte                             GXNetClient::_bufferTCP[ GX_NETWORK_SOCKET_BUFFER_SIZE ] = { 0 };
+GXUByte                             GXNetClient::_bufferUDP[ GX_NETWORK_SOCKET_BUFFER_SIZE ] = { 0 };
 
-GXNetClient*                GXNetClient::instance = nullptr;
+GXNetClient*                        GXNetClient::_instance = nullptr;
 
 
 GXNetClient& GXCALL GXNetClient::GetInstance ()
 {
-    if ( !instance )
-        instance = new GXNetClient ();
+    if ( !_instance )
+        _instance = new GXNetClient ();
 
-    return *instance;
+    return *_instance;
 }
 
 GXNetClient::~GXNetClient ()
@@ -625,7 +625,7 @@ GXNetClient::~GXNetClient ()
 
     DestroyUDP ();
 
-    instance = nullptr;
+    _instance = nullptr;
 }
 
 GXBool GXNetClient::ConnectTCP ( const GXChar* url, GXUShort port )
@@ -638,7 +638,7 @@ GXBool GXNetClient::ConnectTCP ( const GXChar* url, GXUShort port )
         return GX_FALSE;
     }
 
-    if ( ( socketTCP = socket ( AF_INET, SOCK_STREAM, 0 ) ) == INVALID_SOCKET  )
+    if ( ( _socketTCP = socket ( AF_INET, SOCK_STREAM, 0 ) ) == INVALID_SOCKET  )
     {
         GXLogA ( "GXNetClient::ConnectTCP::Error - Ошибка Socket\n" );
         return GX_FALSE;
@@ -666,30 +666,30 @@ GXBool GXNetClient::ConnectTCP ( const GXChar* url, GXUShort port )
         else
         {
             GXLogA ( "GXNetClient::ConnectTCP::Error - Неверный адрес\n" );
-            shutdown ( socketTCP, SD_BOTH );
-            closesocket ( socketTCP );
-            socketTCP = INVALID_SOCKET;
+            shutdown ( _socketTCP, SD_BOTH );
+            closesocket ( _socketTCP );
+            _socketTCP = INVALID_SOCKET;
             GXNetWSADestroy ( eGXNetModule::Client );
             return GX_FALSE;
         }
     }
 
-    if ( connect ( socketTCP, reinterpret_cast<sockaddr*> ( &dest_addr ), sizeof ( dest_addr ) ) == SOCKET_ERROR )
+    if ( connect ( _socketTCP, reinterpret_cast<sockaddr*> ( &dest_addr ), sizeof ( dest_addr ) ) == SOCKET_ERROR )
     {
         GXLogA ( "GXNetClient::ConnectTCP::Error - Невозможно установить соединение\n" );
         
-        shutdown ( socketTCP, SD_BOTH );
-        closesocket ( socketTCP );
-        socketTCP = INVALID_SOCKET;
+        shutdown ( _socketTCP, SD_BOTH );
+        closesocket ( _socketTCP );
+        _socketTCP = INVALID_SOCKET;
 
-        if ( socketUDP == INVALID_SOCKET )
+        if ( _socketUDP == INVALID_SOCKET )
             GXNetWSADestroy ( eGXNetModule::Client );
 
         return GX_FALSE;
     }
 
-    threadTCP = new GXThread ( &GXNetClient::ReceiveTCP, nullptr );
-    threadTCP->Start ();
+    _threadTCP = new GXThread ( &GXNetClient::ReceiveTCP, nullptr );
+    _threadTCP->Start ();
     
     return GX_TRUE;
 }
@@ -704,25 +704,25 @@ GXBool GXNetClient::DeployUDP ( const GXChar* url, GXUShort port )
         return GX_FALSE;
     }
 
-    if ( ( socketUDP = socket ( AF_INET, SOCK_DGRAM, 0 ) ) == INVALID_SOCKET  )
+    if ( ( _socketUDP = socket ( AF_INET, SOCK_DGRAM, 0 ) ) == INVALID_SOCKET  )
     {
         GXLogA ( "GXNetClient::DeployUDP::Error - Ошибка Socket\n" );
         return GX_FALSE;
     }
 
-    serverAddressUDP.sin_family = AF_INET;
-    serverAddressUDP.sin_port = htons ( port );
+    _serverAddressUDP.sin_family = AF_INET;
+    _serverAddressUDP.sin_port = htons ( port );
     HOSTENT* hst;
 
     if ( inet_addr ( url ) != INADDR_NONE )
-        serverAddressUDP.sin_addr.s_addr = inet_addr ( url );
+        _serverAddressUDP.sin_addr.s_addr = inet_addr ( url );
     else
     {
         hst = gethostbyname ( url );
 
         if ( hst )
         {
-            GXUInt* alpha = reinterpret_cast<GXUInt*> ( &serverAddressUDP.sin_addr );
+            GXUInt* alpha = reinterpret_cast<GXUInt*> ( &_serverAddressUDP.sin_addr );
             GXUInt** betta = reinterpret_cast<GXUInt**> ( hst->h_addr_list );
             alpha[ 0u ] = betta[ 0u ][ 0u ];
         }
@@ -730,10 +730,10 @@ GXBool GXNetClient::DeployUDP ( const GXChar* url, GXUShort port )
         {
             GXLogA ( "GXNetClient::ConnectTCP::Error - Неверный адрес\n" );
 
-            closesocket ( socketUDP );
-            socketUDP = INVALID_SOCKET;
+            closesocket ( _socketUDP );
+            _socketUDP = INVALID_SOCKET;
 
-            if ( socketTCP == INVALID_SOCKET )
+            if ( _socketTCP == INVALID_SOCKET )
                 GXNetWSADestroy ( eGXNetModule::Client );
 
             return GX_FALSE;
@@ -745,32 +745,32 @@ GXBool GXNetClient::DeployUDP ( const GXChar* url, GXUShort port )
     self_addr.sin_port = ( htons ( 0 ) );
     self_addr.sin_addr.s_addr = INADDR_ANY;
 
-    if ( bind ( socketUDP, reinterpret_cast<sockaddr*> ( &self_addr ), sizeof ( self_addr ) ) == SOCKET_ERROR )
+    if ( bind ( _socketUDP, reinterpret_cast<sockaddr*> ( &self_addr ), sizeof ( self_addr ) ) == SOCKET_ERROR )
     {
         GXLogA ( "GXNetClient::DeployUDP::Error - Ошибка bind\n" );
-        closesocket ( socketUDP );
+        closesocket ( _socketUDP );
 
-        if ( socketTCP == INVALID_SOCKET )
+        if ( _socketTCP == INVALID_SOCKET )
             GXNetWSADestroy ( eGXNetModule::Client );
 
         return GX_FALSE;
     }
 
-    threadUDP = new GXThread ( &GXNetClient::ReceiveUDP, nullptr );
-    threadUDP->Start ();
+    _threadUDP = new GXThread ( &GXNetClient::ReceiveUDP, nullptr );
+    _threadUDP->Start ();
     
     return GX_TRUE;
 }
 
 GXBool GXNetClient::SendTCP ( GXVoid* data, GXInt size )
 {
-    if ( socketTCP == INVALID_SOCKET ) return GX_FALSE;
+    if ( _socketTCP == INVALID_SOCKET ) return GX_FALSE;
 
     GXInt  trans = size;
     
     while ( trans > 0 )
     {
-        GXInt t = send ( socketTCP, reinterpret_cast<const char*> ( data ) + size - trans, trans, 0 );
+        GXInt t = send ( _socketTCP, reinterpret_cast<const char*> ( data ) + size - trans, trans, 0 );
 
         if ( t == SOCKET_ERROR )
             return GX_FALSE;
@@ -783,14 +783,15 @@ GXBool GXNetClient::SendTCP ( GXVoid* data, GXInt size )
 
 GXBool GXNetClient::SendUDP ( GXVoid* data, GXInt size )
 {
-    if ( socketUDP == INVALID_SOCKET ) return GX_FALSE;
+    if ( _socketUDP == INVALID_SOCKET )
+        return GX_FALSE;
 
     GXInt trans = size;
-    GXInt len = sizeof ( sockaddr_in );
+    constexpr GXInt len = static_cast<GXInt> ( sizeof ( sockaddr_in ) );
 
     while ( trans > 0 )
     {
-        GXInt t = sendto ( socketUDP, reinterpret_cast<const char*> ( data ) + size - trans, trans, 0, reinterpret_cast<const sockaddr*> ( &serverAddressUDP ), len );
+        const GXInt t = sendto ( _socketUDP, reinterpret_cast<const char*> ( data ) + size - trans, trans, 0, reinterpret_cast<const sockaddr*> ( &_serverAddressUDP ), len );
 
         if ( t == SOCKET_ERROR )
             return GX_FALSE;
@@ -803,29 +804,31 @@ GXBool GXNetClient::SendUDP ( GXVoid* data, GXInt size )
 
 GXBool GXNetClient::DisconnectTCP ()
 {
-    if ( socketTCP == INVALID_SOCKET ) return GX_TRUE;
+    if ( _socketTCP == INVALID_SOCKET )
+        return GX_TRUE;
 
-    shutdown ( socketTCP, SD_BOTH );
-    closesocket ( socketTCP );
-    socketTCP = INVALID_SOCKET;
+    shutdown ( _socketTCP, SD_BOTH );
+    closesocket ( _socketTCP );
+    _socketTCP = INVALID_SOCKET;
 
-    threadTCP->Join ();
-    GXSafeDelete ( threadTCP );
+    _threadTCP->Join ();
+    GXSafeDelete ( _threadTCP );
 
     return GXNetWSADestroy ( eGXNetModule::Client );
 }
 
 GXBool GXNetClient::DestroyUDP ()
 {
-    if ( socketUDP == INVALID_SOCKET ) return GX_TRUE;
+    if ( _socketUDP == INVALID_SOCKET )
+        return GX_TRUE;
 
-    closesocket ( socketUDP );
-    socketUDP = INVALID_SOCKET;
+    closesocket ( _socketUDP );
+    _socketUDP = INVALID_SOCKET;
 
-    threadUDP->Join ();
-    GXSafeDelete ( threadUDP );
+    _threadUDP->Join ();
+    GXSafeDelete ( _threadUDP );
 
-    if ( socketTCP == INVALID_SOCKET )
+    if ( _socketTCP == INVALID_SOCKET )
         return GXNetWSADestroy ( eGXNetModule::Client );
 
     return GX_TRUE;
@@ -833,22 +836,22 @@ GXBool GXNetClient::DestroyUDP ()
 
 GXBool GXNetClient::IsConnectedTCP ()
 {
-    return ( socketTCP != INVALID_SOCKET ) ? GX_TRUE : GX_FALSE;
+    return ( _socketTCP != INVALID_SOCKET ) ? GX_TRUE : GX_FALSE;
 }
 
 GXBool GXNetClient::IsDeployedUDP ()
 {
-    return ( socketUDP != INVALID_SOCKET ) ? GX_TRUE : GX_FALSE;
+    return ( _socketUDP != INVALID_SOCKET ) ? GX_TRUE : GX_FALSE;
 }
 
-GXVoid GXNetClient::SetOnMessageTCPFunc ( PFNGXONCLIENTMESSAGEPROC onMessageFunc )
+GXVoid GXNetClient::SetOnMessageTCPFunc ( GXNetworkOnClientMessageHandler callback )
 {
-    OnMessageTCP = onMessageFunc;
+    _onMessageTCP = callback;
 }
 
-GXVoid GXNetClient::SetOnMessageUDPFunc ( PFNGXONCLIENTMESSAGEPROC onMessageFunc )
+GXVoid GXNetClient::SetOnMessageUDPFunc ( GXNetworkOnClientMessageHandler callback )
 {
-    OnMessageUDP = onMessageFunc;
+    _onMessageUDP = callback;
 }
 
 GXNetClient::GXNetClient ()
@@ -860,18 +863,18 @@ GXUPointer GXTHREADCALL GXNetClient::ReceiveTCP ( GXVoid* /*arg*/, GXThread& /*t
 {
     GXLogA ( "GXNetClient::ReceiveTCP::Info - Соединение успешно создано\n" );
 
-    BOOL disable = FALSE;
-    setsockopt ( socketTCP, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*> ( &disable ), sizeof ( BOOL ) );
+    constexpr BOOL disable = FALSE;
+    setsockopt ( _socketTCP, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*> ( &disable ), sizeof ( BOOL ) );
 
     GXInt size = 0;
-    size = recv ( socketTCP, reinterpret_cast<char*> ( bufferTCP ), GX_SOCKET_BUFFER_SIZE, 0 );
+    size = recv ( _socketTCP, reinterpret_cast<char*> ( _bufferTCP ), GX_NETWORK_SOCKET_BUFFER_SIZE, 0 );
 
     while ( size != SOCKET_ERROR && size != 0 )
     {
-        if ( OnMessageTCP )
-            OnMessageTCP ( bufferTCP, static_cast<GXUInt> ( size ) );
+        if ( _onMessageTCP )
+            _onMessageTCP ( _bufferTCP, static_cast<GXUInt> ( size ) );
 
-        size = recv ( socketTCP, reinterpret_cast<char*> ( bufferTCP ), GX_SOCKET_BUFFER_SIZE, 0 );
+        size = recv ( _socketTCP, reinterpret_cast<char*> ( _bufferTCP ), GX_NETWORK_SOCKET_BUFFER_SIZE, 0 );
     }
 
     return 0u;
@@ -881,18 +884,18 @@ GXUPointer GXTHREADCALL GXNetClient::ReceiveUDP ( GXVoid* /*arg*/, GXThread& /*t
 {
     GXLogA ( "GXNetClient::ReceiveUDP::Info - UDP сокет успешно поднят\n" );
 
-    sockaddr_in client_addr;
-    GXInt client_addr_size = sizeof ( client_addr );
+    sockaddr_in address;
+    constexpr GXInt structSize = static_cast<GXInt> ( sizeof ( address ) );
     
     GXInt size = 0;
-    size = recvfrom ( socketUDP, reinterpret_cast<char*> ( bufferUDP ), GX_SOCKET_BUFFER_SIZE, 0, reinterpret_cast<sockaddr*> ( &client_addr ), &client_addr_size );
+    size = recvfrom ( _socketUDP, reinterpret_cast<char*> ( _bufferUDP ), GX_NETWORK_SOCKET_BUFFER_SIZE, 0, reinterpret_cast<sockaddr*> ( &address ), const_cast<GXInt*> ( &structSize ) );
 
     while ( size != SOCKET_ERROR && size != 0 )
     {        
-        if ( OnMessageUDP )
-            OnMessageUDP ( bufferUDP, static_cast<GXUInt> ( size ) );
+        if ( _onMessageUDP )
+            _onMessageUDP ( _bufferUDP, static_cast<GXUInt> ( size ) );
 
-        size = recvfrom ( socketUDP, reinterpret_cast<char*> ( bufferUDP ), GX_SOCKET_BUFFER_SIZE, 0, reinterpret_cast<sockaddr*> ( &client_addr ), &client_addr_size );
+        size = recvfrom ( _socketUDP, reinterpret_cast<char*> ( _bufferUDP ), GX_NETWORK_SOCKET_BUFFER_SIZE, 0, reinterpret_cast<sockaddr*> ( &address ), const_cast<GXInt*> ( &structSize ) );
     }
 
     return 0u;

@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #include <GXPhysics/GXContact.h>
 #include <GXCommon/GXLogger.h>
@@ -6,146 +6,146 @@
 
 GXVoid GXContact::SetLinkedContacts ( GXUInt contacts )
 {
-	linkedContacts = contacts;
+    _linkedContacts = contacts;
 }
 
 GXUInt GXContact::GetLinkedContacts () const
 {
-	return linkedContacts;
+    return _linkedContacts;
 }
 
 GXVoid GXContact::SetShapes ( const GXShape &a, const GXShape &b )
 {
-	bodies[ 0 ] = &a.GetRigidBody ();
-	bodies[ 1 ] = &b.GetRigidBody ();
+    _bodies[ 0u ] = &a.GetRigidBody ();
+    _bodies[ 1u ] = &b.GetRigidBody ();
 
-	// TODO frictions|restitution imperical lookup table
+    // TODO frictions|restitution imperical lookup table
 
-	staticFriction = GXMinf ( a.GetStaticFriction (), b.GetStaticFriction () );
-	dynamicFriction = GXMinf ( a.GetDynamicFriction (), b.GetDynamicFriction () );
+    _staticFriction = GXMinf ( a.GetStaticFriction (), b.GetStaticFriction () );
+    _dynamicFriction = GXMinf ( a.GetDynamicFriction (), b.GetDynamicFriction () );
 
-	if ( staticFriction < dynamicFriction )
-		dynamicFriction = staticFriction;
+    if ( _staticFriction < _dynamicFriction )
+        _dynamicFriction = _staticFriction;
 
-	restitution = GXMinf ( a.GetRestitution (), b.GetRestitution () );
+    _restitution = GXMinf ( a.GetRestitution (), b.GetRestitution () );
 }
 
 GXRigidBody& GXContact::GetFirstRigidBody ()
 {
-	return *bodies[ 0 ];
+    return *_bodies[ 0u ];
 }
 
 GXRigidBody& GXContact::GetSecondRigidBody ()
 {
-	return *bodies[ 1 ];
+    return *_bodies[ 1u ];
 }
 
 const GXVec3& GXContact::GetTangent () const
 {
-	return tangent;
+    return _tangent;
 }
 
 const GXVec3& GXContact::GetBitangent () const
 {
-	return bitangent;
+    return _bitangent;
 }
 
-GXVoid GXContact::SetNormal ( const GXVec3 &contactNormal )
+GXVoid GXContact::SetNormal ( const GXVec3 &normal )
 {
-	GXMat3 tmp;
-	tmp.From ( contactNormal );
+    GXMat3 tmp;
+    tmp.From ( normal );
 
-	tmp.GetX ( tangent );
-	tmp.GetY ( bitangent );
-	normal = contactNormal;
+    tmp.GetX ( _tangent );
+    tmp.GetY ( _bitangent );
+    _normal = normal;
 }
 
 const GXVec3& GXContact::GetNormal () const
 {
-	return normal;
+    return _normal;
 }
 
-GXVoid GXContact::SetContactPoint ( const GXVec3 &contactPoint )
+GXVoid GXContact::SetContactPoint ( const GXVec3 &point )
 {
-	point = contactPoint;
+    _point = point;
 }
 
 const GXVec3& GXContact::GetContactPoint () const
 {
-	return point;
+    return _point;
 }
 
-GXVoid GXContact::SetPenetration ( GXFloat contactPenetration )
+GXVoid GXContact::SetPenetration ( GXFloat penetration )
 {
-	penetration = contactPenetration;
+    _penetration = penetration;
 }
 
 GXFloat GXContact::GetPenetration () const
 {
-	return penetration;
+    return _penetration;
 }
 
 GXFloat GXContact::GetStaticFriction () const
 {
-	return staticFriction;
+    return _staticFriction;
 }
 
 GXFloat GXContact::GetDynamicFriction () const
 {
-	return dynamicFriction;
+    return _dynamicFriction;
 }
 
 GXFloat GXContact::GetRestitution () const
 {
-	return restitution;
+    return _restitution;
 }
 
 GXVoid GXContact::SetGJKIterations ( GXUInt iterations )
 {
-	gjkIterations = iterations;
+    _gjkIterations = iterations;
 }
 
 GXUInt GXContact::GetGJKIterations () const
 {
-	return gjkIterations;
+    return _gjkIterations;
 }
 
 GXVoid GXContact::SetEPAIterations ( GXUInt iterations )
 {
-	epaIterations = iterations;
+    _epaIterations = iterations;
 }
 
 GXUInt GXContact::GetEPAIterations () const
 {
-	return epaIterations;
+    return _epaIterations;
 }
 
 GXVoid GXContact::SetSupportPoints ( GXUInt totalSupportPoints )
 {
-	supportPoints = totalSupportPoints;
+    _supportPoints = totalSupportPoints;
 }
 
 GXUInt GXContact::GetSupportPoints () const
 {
-	return supportPoints;
+    return _supportPoints;
 }
 
 GXVoid GXContact::SetEdges ( GXUInt totalEdges )
 {
-	edges = totalEdges;
+    _edges = totalEdges;
 }
 
 GXUInt GXContact::GetEdges () const
 {
-	return edges;
+    return _edges;
 }
 
 GXVoid GXContact::SetFaces ( GXUInt totalFaces )
 {
-	faces = totalFaces;
+    _faces = totalFaces;
 }
 
 GXUInt GXContact::GetFaces () const
 {
-	return faces;
+    return _faces;
 }

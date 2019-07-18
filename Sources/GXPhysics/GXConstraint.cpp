@@ -1,29 +1,29 @@
-// version 1.1
+// version 1.2
 
 #include <GXPhysics/GXConstraint.h>
 
 
 const GXVec6* GXConstraint::GetJacobian () const
 {
-	return jacobian;
+    return _jacobian;
 }
 
 GXFloat GXConstraint::GetBias () const
 {
-	return bias;
+    return _bias;
 }
 
 const GXVec2& GXConstraint::GetLambdaRange () const
 {
-	return lambdaRange;
+    return _lambdaRange;
 }
 
 GXConstraint::GXConstraint ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXConstraint::~GXConstraint ()
 {
-	// NOTHING
+    // NOTHING
 }

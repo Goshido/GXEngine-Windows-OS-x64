@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.1
 
 #ifndef GX_TORQUE_GENERATOR
 #define GX_TORQUE_GENERATOR
@@ -9,8 +9,8 @@
 
 class GXTorgueGenerator
 {
-	public:
-		virtual GXVoid UpdateTorque ( GXRigidBody &body, GXFloat deltaTime ) = 0;
+    public:
+        virtual GXVoid UpdateTorque ( GXRigidBody &body, GXFloat deltaTime ) = 0;
 };
 
 

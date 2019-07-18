@@ -8,11 +8,11 @@
 class EMBRDFIntegratorMaterial final : public GXMaterial
 {
     private:
-        GXInt       samples;
-        GXFloat     inverseSamples;
+        GXInt       _samples;
+        GXFloat     _inverseSamples;
 
-        GLint       samplesLocation;
-        GLint       inverseSamplesLocation;
+        GLint       _samplesLocation;
+        GLint       _inverseSamplesLocation;
 
     public:
         EMBRDFIntegratorMaterial ();

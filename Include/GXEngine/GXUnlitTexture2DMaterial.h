@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_UNLIT_TEXTURE2D_MATERIAL
 #define GX_UNLIT_TEXTURE2D_MATERIAL
@@ -12,14 +12,14 @@
 class GXUnlitTexture2DMaterial final : public GXMaterial
 {
     private:
-        GXTexture2D*    texture;
-        GXSampler       sampler;
-        GXColorRGB      color;
-        GXVec4          uvScaleOffset;
+        GXTexture2D*    _texture;
+        GXSampler       _sampler;
+        GXColorRGB      _color;
+        GXVec4          _uvScaleOffset;
 
-        GLint           mod_view_proj_matLocation;
-        GLint           uvScaleOffsetLocation;
-        GLint           colorLocation;
+        GLint           _mod_view_proj_matLocation;
+        GLint           _uvScaleOffsetLocation;
+        GLint           _colorLocation;
 
     public:
         GXUnlitTexture2DMaterial ();

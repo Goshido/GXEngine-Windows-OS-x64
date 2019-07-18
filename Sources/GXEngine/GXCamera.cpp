@@ -1,71 +1,71 @@
-// version 1.15
+// version 1.16
 
 #include <GXEngine/GXCamera.h>
 
 
-GXCamera* GXCamera::activeCamera = nullptr;
+GXCamera* GXCamera::_activeCamera = nullptr;
 
 const GXMat4& GXCamera::GetCurrentFrameViewProjectionMatrix () const
 {
-    return currentFrameViewProjectionMatrix;
+    return _currentFrameViewProjectionMatrix;
 }
 
 const GXMat4& GXCamera::GetCurrentFrameInverseViewProjectionMatrix () const
 {
-    return currentFrameInverseViewProjectionMatrix;
+    return _currentFrameInverseViewProjectionMatrix;
 }
 
 const GXMat4& GXCamera::GetCurrentFrameProjectionMatrix () const
 {
-    return currentFrameProjectionMatrix;
+    return _currentFrameProjectionMatrix;
 }
 
 const GXMat4& GXCamera::GetCurrentFrameInverseProjectionMatrix () const
 {
-    return currentFrameInverseProjectionMatrix;
+    return _currentFrameInverseProjectionMatrix;
 }
 
 const GXMat4& GXCamera::GetCurrentFrameModelMatrix () const
 {
-    return currentFrameModelMatrix;
+    return _currentFrameModelMatrix;
 }
 
 const GXMat4& GXCamera::GetCurrentFrameViewMatrix () const
 {
-    return currentFrameViewMatrix;
+    return _currentFrameViewMatrix;
 }
 
 const GXMat4& GXCamera::GetLastFrameModelMatrix () const
 {
-    return lastFrameModelMatrix;
+    return _lastFrameModelMatrix;
 }
 
 const GXMat4& GXCamera::GetLastFrameViewMatrix () const
 {
-    return lastFrameViewMatrix;
+    return _lastFrameViewMatrix;
 }
 
 const GXMat4& GXCamera::GetLastFrameViewProjectionMatrix () const
 {
-    return lastFrameViewProjectionMatrix;
+    return _lastFrameViewProjectionMatrix;
 }
 
 GXVoid GXCamera::SetLocation ( GXFloat x, GXFloat y, GXFloat z )
 {
-    currentFrameModelMatrix.SetW ( GXVec3 ( x, y, z ) );
-    currentFrameViewMatrix.Inverse ( currentFrameModelMatrix );
-    currentFrameViewProjectionMatrix.Multiply ( currentFrameViewMatrix, currentFrameProjectionMatrix );
-    currentFrameInverseViewProjectionMatrix.Inverse ( currentFrameViewProjectionMatrix );
+    _currentFrameModelMatrix.SetW ( GXVec3 ( x, y, z ) );
+    _currentFrameViewMatrix.Inverse ( _currentFrameModelMatrix );
+    _currentFrameViewProjectionMatrix.Multiply ( _currentFrameViewMatrix, _currentFrameProjectionMatrix );
+    _currentFrameInverseViewProjectionMatrix.Inverse ( _currentFrameViewProjectionMatrix );
 
     UpdateClipPlanes ();
 }
 
 GXVoid GXCamera::SetLocation ( const GXVec3 &location )
 {
-    currentFrameModelMatrix.SetW ( location );
-    currentFrameViewMatrix.Inverse ( currentFrameModelMatrix );
-    currentFrameViewProjectionMatrix.Multiply ( currentFrameViewMatrix, currentFrameProjectionMatrix );
-    currentFrameInverseViewProjectionMatrix.Inverse ( currentFrameViewProjectionMatrix );
+    _currentFrameModelMatrix.SetW ( location );
+    _currentFrameViewMatrix.Inverse ( _currentFrameModelMatrix );
+    _currentFrameViewProjectionMatrix.Multiply ( _currentFrameViewMatrix, _currentFrameProjectionMatrix );
+    _currentFrameInverseViewProjectionMatrix.Inverse ( _currentFrameViewProjectionMatrix );
 
     UpdateClipPlanes ();
 }
@@ -73,14 +73,14 @@ GXVoid GXCamera::SetLocation ( const GXVec3 &location )
 GXVoid GXCamera::SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_rad )
 {
     GXVec3 location;
-    currentFrameModelMatrix.GetW ( location );
+    _currentFrameModelMatrix.GetW ( location );
 
-    currentFrameModelMatrix.RotationXYZ ( pitch_rad, yaw_rad, roll_rad );
-    currentFrameModelMatrix.SetW ( location );
+    _currentFrameModelMatrix.RotationXYZ ( pitch_rad, yaw_rad, roll_rad );
+    _currentFrameModelMatrix.SetW ( location );
 
-    currentFrameViewMatrix.Inverse ( currentFrameModelMatrix );
-    currentFrameViewProjectionMatrix.Multiply ( currentFrameViewMatrix, currentFrameProjectionMatrix );
-    currentFrameInverseViewProjectionMatrix.Inverse ( currentFrameViewProjectionMatrix );
+    _currentFrameViewMatrix.Inverse ( _currentFrameModelMatrix );
+    _currentFrameViewProjectionMatrix.Multiply ( _currentFrameViewMatrix, _currentFrameProjectionMatrix );
+    _currentFrameInverseViewProjectionMatrix.Inverse ( _currentFrameViewProjectionMatrix );
 
     UpdateClipPlanes ();
 }
@@ -88,14 +88,14 @@ GXVoid GXCamera::SetRotation ( GXFloat pitch_rad, GXFloat yaw_rad, GXFloat roll_
 GXVoid GXCamera::SetRotation ( const GXMat4 &rotation )
 {
     GXVec3 location;
-    currentFrameModelMatrix.GetW ( location );
+    _currentFrameModelMatrix.GetW ( location );
 
-    currentFrameModelMatrix = rotation;
-    currentFrameModelMatrix.SetW ( location );
+    _currentFrameModelMatrix = rotation;
+    _currentFrameModelMatrix.SetW ( location );
 
-    currentFrameViewMatrix.Inverse ( currentFrameModelMatrix );
-    currentFrameViewProjectionMatrix.Multiply ( currentFrameViewMatrix, currentFrameProjectionMatrix );
-    currentFrameInverseViewProjectionMatrix.Inverse ( currentFrameViewProjectionMatrix );
+    _currentFrameViewMatrix.Inverse ( _currentFrameModelMatrix );
+    _currentFrameViewProjectionMatrix.Multiply ( _currentFrameViewMatrix, _currentFrameProjectionMatrix );
+    _currentFrameInverseViewProjectionMatrix.Inverse ( _currentFrameViewProjectionMatrix );
 
     UpdateClipPlanes ();
 }
@@ -103,95 +103,95 @@ GXVoid GXCamera::SetRotation ( const GXMat4 &rotation )
 GXVoid GXCamera::SetRotation ( const GXQuat &rotation )
 {
     GXVec3 location;
-    currentFrameModelMatrix.GetW ( location );
-    currentFrameModelMatrix.From ( rotation, location );
+    _currentFrameModelMatrix.GetW ( location );
+    _currentFrameModelMatrix.From ( rotation, location );
 
-    currentFrameViewMatrix.Inverse ( currentFrameModelMatrix );
-    currentFrameViewProjectionMatrix.Multiply ( currentFrameViewMatrix, currentFrameProjectionMatrix );
-    currentFrameInverseViewProjectionMatrix.Inverse ( currentFrameViewProjectionMatrix );
+    _currentFrameViewMatrix.Inverse ( _currentFrameModelMatrix );
+    _currentFrameViewProjectionMatrix.Multiply ( _currentFrameViewMatrix, _currentFrameProjectionMatrix );
+    _currentFrameInverseViewProjectionMatrix.Inverse ( _currentFrameViewProjectionMatrix );
 
     UpdateClipPlanes ();
 }
 
 GXVoid GXCamera::SetCurrentFrameModelMatrix ( const GXMat4 &matrix )
 {
-    currentFrameModelMatrix = matrix;
+    _currentFrameModelMatrix = matrix;
 
-    currentFrameViewMatrix.Inverse ( currentFrameModelMatrix );
-    currentFrameViewProjectionMatrix.Multiply ( currentFrameViewMatrix, currentFrameProjectionMatrix );
-    currentFrameInverseViewProjectionMatrix.Inverse ( currentFrameViewProjectionMatrix );
+    _currentFrameViewMatrix.Inverse ( _currentFrameModelMatrix );
+    _currentFrameViewProjectionMatrix.Multiply ( _currentFrameViewMatrix, _currentFrameProjectionMatrix );
+    _currentFrameInverseViewProjectionMatrix.Inverse ( _currentFrameViewProjectionMatrix );
 
     UpdateClipPlanes ();
 }
 
-GXVoid GXCamera::GetLocation ( GXVec3& outLocation ) const
+GXVoid GXCamera::GetLocation ( GXVec3 &location ) const
 {
-    currentFrameModelMatrix.GetW ( outLocation );
+    _currentFrameModelMatrix.GetW ( location );
 }
 
-GXVoid GXCamera::GetRotation ( GXMat4 &out ) const
+GXVoid GXCamera::GetRotation ( GXMat4 &rotation ) const
 {
     static const GXVec3 origin ( 0.0f, 0.0f, 0.0f );
 
-    out = currentFrameModelMatrix;
-    out.SetW ( origin );
+    rotation = _currentFrameModelMatrix;
+    rotation.SetW ( origin );
 }
 
-GXVoid GXCamera::GetRotation ( GXQuat &out ) const
+GXVoid GXCamera::GetRotation ( GXQuat &rotation ) const
 {
-    out.From ( currentFrameModelMatrix );
+    rotation.From ( _currentFrameModelMatrix );
 }
 
 const GXProjectionClipPlanes& GXCamera::GetClipPlanesWorld ()
 {
-    return clipPlanesWorld;
+    return _clipPlanesWorld;
 }
 
 GXBool GXCamera::IsObjectVisible ( const GXAABB objectBoundsWorld )
 {
-    return clipPlanesWorld.IsVisible ( objectBoundsWorld );
+    return _clipPlanesWorld.IsVisible ( objectBoundsWorld );
 }
 
 GXFloat GXCamera::GetZNear () const
 {
-    return zNear;
+    return _zNear;
 }
 
 GXFloat GXCamera::GetZFar () const
 {
-    return zFar;
+    return _zFar;
 }
 
 GXVoid GXCamera::UpdateLastFrameMatrices ()
 {
-    lastFrameModelMatrix = currentFrameModelMatrix;
-    lastFrameViewMatrix = currentFrameViewMatrix;
-    lastFrameViewProjectionMatrix = currentFrameViewProjectionMatrix;
+    _lastFrameModelMatrix = _currentFrameModelMatrix;
+    _lastFrameViewMatrix = _currentFrameViewMatrix;
+    _lastFrameViewProjectionMatrix = _currentFrameViewProjectionMatrix;
 }
 
 GXCamera* GXCALL GXCamera::GetActiveCamera ()
 {
-    return activeCamera;
+    return _activeCamera;
 }
 
 GXVoid GXCALL GXCamera::SetActiveCamera ( GXCamera* camera )
 {
-    activeCamera = camera;
+    _activeCamera = camera;
 }
 
 GXCamera::GXCamera ( GXFloat zNear, GXFloat zFar ):
-    zNear ( zNear ),
-    zFar ( zFar )
+    _zNear ( zNear ),
+    _zFar ( zFar )
 {
-    currentFrameModelMatrix.Identity ();
-    currentFrameViewMatrix.Identity ();
-    currentFrameProjectionMatrix.Identity ();
-    currentFrameInverseProjectionMatrix.Identity ();
-    currentFrameViewProjectionMatrix.Identity ();
-    currentFrameInverseViewProjectionMatrix.Identity ();
-    lastFrameModelMatrix.Identity ();
-    lastFrameViewMatrix.Identity ();
-    lastFrameViewProjectionMatrix.Identity ();
+    _currentFrameModelMatrix.Identity ();
+    _currentFrameViewMatrix.Identity ();
+    _currentFrameProjectionMatrix.Identity ();
+    _currentFrameInverseProjectionMatrix.Identity ();
+    _currentFrameViewProjectionMatrix.Identity ();
+    _currentFrameInverseViewProjectionMatrix.Identity ();
+    _lastFrameModelMatrix.Identity ();
+    _lastFrameViewMatrix.Identity ();
+    _lastFrameViewProjectionMatrix.Identity ();
 
     UpdateClipPlanes ();
 }
@@ -203,5 +203,5 @@ GXCamera::~GXCamera ()
 
 GXVoid GXCamera::UpdateClipPlanes ()
 {
-    clipPlanesWorld.From ( currentFrameViewProjectionMatrix );
+    _clipPlanesWorld.From ( _currentFrameViewProjectionMatrix );
 }

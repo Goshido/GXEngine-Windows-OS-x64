@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXEngine/GXTexture2DGammaCorrectorMaterial.h>
 
@@ -14,24 +14,24 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 GXTexture2DGammaCorrectorMaterial::GXTexture2DGammaCorrectorMaterial ():
-    sRGBTexture ( nullptr ),
-    sampler( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f )
+    _sRGBTexture ( nullptr ),
+    _sampler( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f )
 {
-    static const GLchar* samplerNames[ 1u ] = { "sRGBSampler" };
-    static const GLuint samplerLocations[ 1u ] = { TEXTURE_SLOT };
+    constexpr GLchar* samplerNames[ 1u ] = { "sRGBSampler" };
+    constexpr GLuint samplerLocations[ 1u ] = { TEXTURE_SLOT };
 
     GXShaderProgramInfo si;
-    si.vertexShader = VERTEX_SHADER;
-    si.geometryShader = GEOMETRY_SHADER;
-    si.fragmentShader = FRAGMENT_SHADER;
-    si.samplers = 1u;
-    si.samplerNames = samplerNames;
-    si.samplerLocations = samplerLocations;
-    si.transformFeedbackOutputs = 0;
-    si.transformFeedbackOutputNames = nullptr;
+    si._vertexShader = VERTEX_SHADER;
+    si._geometryShader = GEOMETRY_SHADER;
+    si._fragmentShader = FRAGMENT_SHADER;
+    si._samplers = 1u;
+    si._samplerNames = samplerNames;
+    si._samplerLocations = samplerLocations;
+    si._transformFeedbackOutputs = 0;
+    si._transformFeedbackOutputNames = nullptr;
 
-    shaderProgram.Init ( si );
-    gammaLocation = shaderProgram.GetUniform ( "gamma" );
+    _shaderProgram.Init ( si );
+    _gammaLocation = _shaderProgram.GetUniform ( "gamma" );
 }
 
 GXTexture2DGammaCorrectorMaterial::~GXTexture2DGammaCorrectorMaterial ()
@@ -41,27 +41,27 @@ GXTexture2DGammaCorrectorMaterial::~GXTexture2DGammaCorrectorMaterial ()
 
 GXVoid GXTexture2DGammaCorrectorMaterial::Bind ( const GXTransform& /*transform*/ )
 {
-    if ( !sRGBTexture ) return;
+    if ( !_sRGBTexture ) return;
 
-    glUseProgram ( shaderProgram.GetProgram () );
+    glUseProgram ( _shaderProgram.GetProgram () );
 
-    glUniform1f ( gammaLocation, GAMMA );
+    glUniform1f ( _gammaLocation, GAMMA );
 
-    sRGBTexture->Bind ( TEXTURE_SLOT );
-    sampler.Bind ( TEXTURE_SLOT );
+    _sRGBTexture->Bind ( TEXTURE_SLOT );
+    _sampler.Bind ( TEXTURE_SLOT );
 }
 
 GXVoid GXTexture2DGammaCorrectorMaterial::Unbind ()
 {
-    if ( !sRGBTexture ) return;
+    if ( !_sRGBTexture ) return;
 
-    sampler.Unbind ( TEXTURE_SLOT );
-    sRGBTexture->Unbind ();
+    _sampler.Unbind ( TEXTURE_SLOT );
+    _sRGBTexture->Unbind ();
 
     glUseProgram ( 0u );
 }
 
 GXVoid GXTexture2DGammaCorrectorMaterial::SetSRGBTexture ( GXTexture2D &texture )
 {
-    sRGBTexture = &texture;
+    _sRGBTexture = &texture;
 }

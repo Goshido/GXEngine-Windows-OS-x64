@@ -18,7 +18,6 @@
     GX_DISABLE_WARNING ( 4464 )     /* relative include path contains '..' */ \
     GX_DISABLE_WARNING ( 4471 )     /* 'enumeration': a forward declaration of an unscoped enumeration must have an underlying type (int assumed) */ \
     GX_DISABLE_WARNING ( 4505 )     /* unreferenced local function has been removed */ \
-    GX_DISABLE_WARNING ( 4514 )     /* 'function' : unreferenced inline function has been removed */ \
     GX_DISABLE_WARNING ( 4555 )     /* expression has no effect; expected expression with side-effect */ \
     GX_DISABLE_WARNING ( 4625 )     /* copy constructor was implicitly defined as deleted */ \
     GX_DISABLE_WARNING ( 4626 )     /* assignment operator was implicitly defined as deleted */ \

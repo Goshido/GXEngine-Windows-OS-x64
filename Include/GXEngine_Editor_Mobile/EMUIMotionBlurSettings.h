@@ -11,41 +11,41 @@
 
 class EMUIMotionBlurSettings final : public EMUI
 {
-	private:
-		EMUIDraggableArea*				mainPanel;
-		EMUIStaticText*					caption;
-		EMUISeparator*					topSeparator;
-		EMUIStaticText*					maxSamplesLabel;
-		EMUIEditBox*					maxSamples;
-		EMUIStaticText*					depthLimitLabel;
-		EMUIEditBox*					depthLimit;
-		EMUIStaticText*					exposureLabel;
-		EMUIEditBox*					exposure;
-		EMUISeparator*					bottomSeparator;
-		EMUIButton*						cancel;
-		EMUIButton*						apply;
+    private:
+        EMUIDraggableArea*                  _mainPanel;
+        EMUIStaticText*                     _caption;
+        EMUISeparator*                      _topSeparator;
+        EMUIStaticText*                     _maxSamplesLabel;
+        EMUIEditBox*                        _maxSamples;
+        EMUIStaticText*                     _depthLimitLabel;
+        EMUIEditBox*                        _depthLimit;
+        EMUIStaticText*                     _exposureLabel;
+        EMUIEditBox*                        _exposure;
+        EMUISeparator*                      _bottomSeparator;
+        EMUIButton*                         _cancel;
+        EMUIButton*                         _apply;
 
-		static EMUIMotionBlurSettings*	instance;
+        static EMUIMotionBlurSettings*      _instance;
 
-	public:
-		static EMUIMotionBlurSettings& GetInstance ();
-		~EMUIMotionBlurSettings () override;
+    public:
+        static EMUIMotionBlurSettings& GetInstance ();
+        ~EMUIMotionBlurSettings () override;
 
-		GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () const override;
 
-		GXVoid Show ();
-		GXVoid Hide ();
+        GXVoid Show ();
+        GXVoid Hide ();
 
-	private:
-		EMUIMotionBlurSettings ();
+    private:
+        EMUIMotionBlurSettings ();
 
-		GXVoid SyncSettings ();
+        GXVoid SyncSettings ();
 
-		static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state );
-		static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
+        static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state );
+        static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
 
-		EMUIMotionBlurSettings ( const EMUIMotionBlurSettings &other ) = delete;
-		EMUIMotionBlurSettings& operator = ( const EMUIMotionBlurSettings &other ) = delete;
+        EMUIMotionBlurSettings ( const EMUIMotionBlurSettings &other ) = delete;
+        EMUIMotionBlurSettings& operator = ( const EMUIMotionBlurSettings &other ) = delete;
 };
 
 

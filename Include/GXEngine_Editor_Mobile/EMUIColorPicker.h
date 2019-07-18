@@ -11,75 +11,75 @@
 
 
 class EMUIColorPicker;
-typedef GXVoid ( GXCALL* PFNEMONHSVACOLORPROC ) ( GXVoid* handler, const GXColorHSV &color );
-typedef GXVoid ( GXCALL* PFNEMONRGBACOLORPROC ) ( GXVoid* handler, const GXColorRGB &color );
-typedef GXVoid ( GXCALL* PFNEMONRGBAUBYTECOLORPROC ) ( GXVoid* handler, GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
+typedef GXVoid ( GXCALL* EMColorPickerOnHSVAColorHandler ) ( GXVoid* context, const GXColorHSV &color );
+typedef GXVoid ( GXCALL* EMColorPickerOnRGBAColorHandler ) ( GXVoid* context, const GXColorRGB &color );
+typedef GXVoid ( GXCALL* EMColorPickerOnHSVAColorUByteHandler ) ( GXVoid* context, GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
 
 
 class EMUIColorPicker final : public EMUI
 {
-	private:
-		EMUIDraggableArea*			mainPanel;
+    private:
+        EMUIDraggableArea*                      _mainPanel;
 
-		PFNEMONHSVACOLORPROC		OnHSVColor;
-		PFNEMONRGBACOLORPROC		OnRGBColor;
-		PFNEMONRGBAUBYTECOLORPROC	OnRGBUByteColor;
-		GXVoid*						handler;
+        EMColorPickerOnHSVAColorHandler         _onHSVColor;
+        EMColorPickerOnRGBAColorHandler         _onRGBColor;
+        EMColorPickerOnHSVAColorUByteHandler    _onRGBUByteColor;
+        GXVoid*                                 _context;
 
-		GXWChar*					buffer;
+        GXWChar*                                _buffer;
 
-		EMUIStaticText*				caption;
-		EMUISeparator*				topSeparator;
-		GXUIInput*					hsvColorWidget;
-		GXUIInput*					currentColor;
-		GXUIInput*					oldColor;
-		EMUIButton*					addColor;
-		GXUIInput*					savedColors[ 16 ];
-		EMUISeparator*				middleSeparator;
-		EMUIStaticText*				hLabel;
-		EMUIEditBox*				h;
-		EMUIStaticText*				rLabel;
-		EMUIEditBox*				r;
-		EMUIStaticText*				sLabel;
-		EMUIEditBox*				s;
-		EMUIStaticText*				gLabel;
-		EMUIEditBox*				g;
-		EMUIStaticText*				vLabel;
-		EMUIEditBox*				v;
-		EMUIStaticText*				bLabel;
-		EMUIEditBox*				b;
-		EMUIStaticText*				transparencyLabel;
-		EMUIEditBox*				transparency;
-		EMUISeparator*				bottomSeparator;
-		EMUIButton*					cancel;
-		EMUIButton*					pick;
+        EMUIStaticText*                         _caption;
+        EMUISeparator*                          _topSeparator;
+        GXUIInput*                              _hsvColorWidget;
+        GXUIInput*                              _currentColor;
+        GXUIInput*                              _oldColor;
+        EMUIButton*                             _addColor;
+        GXUIInput*                              _savedColors[ 16u ];
+        EMUISeparator*                          _middleSeparator;
+        EMUIStaticText*                         _hLabel;
+        EMUIEditBox*                            _h;
+        EMUIStaticText*                         _rLabel;
+        EMUIEditBox*                            _r;
+        EMUIStaticText*                         _sLabel;
+        EMUIEditBox*                            _s;
+        EMUIStaticText*                         _gLabel;
+        EMUIEditBox*                            _g;
+        EMUIStaticText*                         _vLabel;
+        EMUIEditBox*                            _v;
+        EMUIStaticText*                         _bLabel;
+        EMUIEditBox*                            _b;
+        EMUIStaticText*                         _transparencyLabel;
+        EMUIEditBox*                            _transparency;
+        EMUISeparator*                          _bottomSeparator;
+        EMUIButton*                             _cancel;
+        EMUIButton*                             _pick;
 
-		static EMUIColorPicker*		instance;
+        static EMUIColorPicker*                 _instance;
 
-	public:
-		static EMUIColorPicker& GetInstance ();
-		~EMUIColorPicker () override;
+    public:
+        static EMUIColorPicker& GetInstance ();
+        ~EMUIColorPicker () override;
 
-		GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () const override;
 
-		GXVoid PickColor ( GXVoid* handlerObject, PFNEMONHSVACOLORPROC callback, const GXColorHSV &oldColorValue );
-		GXVoid PickColor ( GXVoid* handlerObject, PFNEMONRGBACOLORPROC callback, const GXColorRGB &oldColorValue );
-		GXVoid PickColor ( GXVoid* handlerObject, PFNEMONRGBAUBYTECOLORPROC callback, GXUByte oldRed, GXUByte oldGreen, GXUByte oldBlue, GXUByte oldAlpha );
+        GXVoid PickColor ( GXVoid* context, EMColorPickerOnHSVAColorHandler callback, const GXColorHSV &oldColorValue );
+        GXVoid PickColor ( GXVoid* context, EMColorPickerOnRGBAColorHandler callback, const GXColorRGB &oldColorValue );
+        GXVoid PickColor ( GXVoid* context, EMColorPickerOnHSVAColorUByteHandler callback, GXUByte oldRed, GXUByte oldGreen, GXUByte oldBlue, GXUByte oldAlpha );
 
-	private:
-		EMUIColorPicker ();
+    private:
+        EMUIColorPicker ();
 
-		GXVoid UpdateCurrentColor ( GXFloat hue, GXFloat saturation, GXFloat value, GXFloat alpha );
-		GXVoid UpdateCurrentColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
-		GXVoid UpdateCurrentColorWithCorrection ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
+        GXVoid UpdateCurrentColor ( GXFloat hue, GXFloat saturation, GXFloat value, GXFloat alpha );
+        GXVoid UpdateCurrentColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
+        GXVoid UpdateCurrentColorWithCorrection ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
 
-		static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state );
-		static GXVoid GXCALL OnLeftMouseButton ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
-		static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
-		static GXVoid GXCALL OnFinishEditing ( GXVoid* handler, GXUIEditBox& editBox );
+        static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state );
+        static GXVoid GXCALL OnLeftMouseButton ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
+        static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
+        static GXVoid GXCALL OnFinishEditing ( GXVoid* handler, GXUIEditBox& editBox );
 
-		EMUIColorPicker ( const EMUIColorPicker &other ) = delete;
-		EMUIColorPicker& operator = ( const EMUIColorPicker &other ) = delete;
+        EMUIColorPicker ( const EMUIColorPicker &other ) = delete;
+        EMUIColorPicker& operator = ( const EMUIColorPicker &other ) = delete;
 };
 
 

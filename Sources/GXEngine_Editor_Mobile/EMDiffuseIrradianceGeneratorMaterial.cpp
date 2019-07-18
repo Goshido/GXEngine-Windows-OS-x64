@@ -2,99 +2,99 @@
 #include <GXEngine/GXCameraPerspective.h>
 
 
-#define TEXTURE_SLOT			0u
-#define DEFAULT_ANGLE_STEP		0.025f
+#define TEXTURE_SLOT            0u
+#define DEFAULT_ANGLE_STEP      0.025f
 
-#define SQUARE_ASPECT_RATIO		1.0f
-#define Z_NEAR					0.1f
-#define Z_FAR					777.777f
-#define PROJECTION_FOV_Y		GX_MATH_HALF_PI
+#define SQUARE_ASPECT_RATIO     1.0f
+#define Z_NEAR                  0.1f
+#define Z_FAR                   777.777f
+#define PROJECTION_FOV_Y        GX_MATH_HALF_PI
 
-#define VERTEX_SHADER			L"Shaders/System/VertexPass_vs.txt"
-#define GEOMETRY_SHADER			L"Shaders/System/CubeMapSplitter_gs.txt"
-#define FRAGMENT_SHADER			L"Shaders/Editor Mobile/DiffuseIrradianceGenerator_fs.txt"
+#define VERTEX_SHADER           L"Shaders/System/VertexPass_vs.txt"
+#define GEOMETRY_SHADER         L"Shaders/System/CubeMapSplitter_gs.txt"
+#define FRAGMENT_SHADER         L"Shaders/Editor Mobile/DiffuseIrradianceGenerator_fs.txt"
 
 //---------------------------------------------------------------------------------------------------------------------
 
 EMDiffuseIrradianceGeneratorMaterial::EMDiffuseIrradianceGeneratorMaterial ():
-	environmentMap ( nullptr ),
-	sampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f ),
-	angleStep ( DEFAULT_ANGLE_STEP )
+    _environmentMap ( nullptr ),
+    _sampler ( GL_CLAMP_TO_EDGE, eGXResampling::None, 1.0f ),
+    _angleStep ( DEFAULT_ANGLE_STEP )
 {
-	static const GLchar* samplerNames[ 1 ] = { "environmentSampler" };
-	static const GLuint samplerLocations[ 1 ] = { TEXTURE_SLOT };
+    constexpr GLchar* samplerNames[ 1u ] = { "environmentSampler" };
+    constexpr GLuint samplerLocations[ 1u ] = { TEXTURE_SLOT };
 
-	GXShaderProgramInfo si;
-	si.vertexShader = VERTEX_SHADER;
-	si.geometryShader = GEOMETRY_SHADER;
-	si.fragmentShader = FRAGMENT_SHADER;
-	si.samplers = 1;
-	si.samplerNames = samplerNames;
-	si.samplerLocations = samplerLocations;
-	si.transformFeedbackOutputs = 0;
-	si.transformFeedbackOutputNames = nullptr;
+    GXShaderProgramInfo si;
+    si._vertexShader = VERTEX_SHADER;
+    si._geometryShader = GEOMETRY_SHADER;
+    si._fragmentShader = FRAGMENT_SHADER;
+    si._samplers = 1;
+    si._samplerNames = samplerNames;
+    si._samplerLocations = samplerLocations;
+    si._transformFeedbackOutputs = 0;
+    si._transformFeedbackOutputNames = nullptr;
 
-	shaderProgram.Init ( si );
+    _shaderProgram.Init ( si );
 
-	viewProjectionMatricesLocation = shaderProgram.GetUniform ( "viewProjectionMatrices" );
-	angleStepLocation = shaderProgram.GetUniform ( "angleStep" );
+    _viewProjectionMatricesLocation = _shaderProgram.GetUniform ( "viewProjectionMatrices" );
+    _angleStepLocation = _shaderProgram.GetUniform ( "angleStep" );
 
-	GXCameraPerspective camera ( PROJECTION_FOV_Y, SQUARE_ASPECT_RATIO, Z_NEAR, Z_FAR );
-	camera.SetRotation ( 0.0f, GX_MATH_HALF_PI, 0.0f );
-	viewProjectionMatrices[ 0 ] = camera.GetCurrentFrameViewProjectionMatrix ();
+    GXCameraPerspective camera ( PROJECTION_FOV_Y, SQUARE_ASPECT_RATIO, Z_NEAR, Z_FAR );
+    camera.SetRotation ( 0.0f, GX_MATH_HALF_PI, 0.0f );
+    _viewProjectionMatrices[ 0u ] = camera.GetCurrentFrameViewProjectionMatrix ();
 
-	camera.SetRotation ( 0.0f, -GX_MATH_HALF_PI, 0.0f );
-	viewProjectionMatrices[ 1 ] = camera.GetCurrentFrameViewProjectionMatrix ();
+    camera.SetRotation ( 0.0f, -GX_MATH_HALF_PI, 0.0f );
+    _viewProjectionMatrices[ 1u ] = camera.GetCurrentFrameViewProjectionMatrix ();
 
-	camera.SetRotation ( GX_MATH_HALF_PI, 0.0f, 0.0f );
-	viewProjectionMatrices[ 2 ] = camera.GetCurrentFrameViewProjectionMatrix ();
+    camera.SetRotation ( GX_MATH_HALF_PI, 0.0f, 0.0f );
+    _viewProjectionMatrices[ 2u ] = camera.GetCurrentFrameViewProjectionMatrix ();
 
-	camera.SetRotation ( -GX_MATH_HALF_PI, 0.0f, 0.0f );
-	viewProjectionMatrices[ 3 ] = camera.GetCurrentFrameViewProjectionMatrix ();
+    camera.SetRotation ( -GX_MATH_HALF_PI, 0.0f, 0.0f );
+    _viewProjectionMatrices[ 3u ] = camera.GetCurrentFrameViewProjectionMatrix ();
 
-	camera.SetRotation ( 0.0f, 0.0f, 0.0f );
-	viewProjectionMatrices[ 4 ] = camera.GetCurrentFrameViewProjectionMatrix ();
+    camera.SetRotation ( 0.0f, 0.0f, 0.0f );
+    _viewProjectionMatrices[ 4u ] = camera.GetCurrentFrameViewProjectionMatrix ();
 
-	camera.SetRotation ( 0.0f, GX_MATH_PI, 0.0f );
-	viewProjectionMatrices[ 5 ] = camera.GetCurrentFrameViewProjectionMatrix ();
+    camera.SetRotation ( 0.0f, GX_MATH_PI, 0.0f );
+    _viewProjectionMatrices[ 5u ] = camera.GetCurrentFrameViewProjectionMatrix ();
 }
 
 EMDiffuseIrradianceGeneratorMaterial::~EMDiffuseIrradianceGeneratorMaterial ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXVoid EMDiffuseIrradianceGeneratorMaterial::Bind ( const GXTransform& /*transform*/ )
 {
-	if ( !environmentMap ) return;
+    if ( !_environmentMap ) return;
 
-	glUseProgram ( shaderProgram.GetProgram () );
+    glUseProgram ( _shaderProgram.GetProgram () );
 
-	glUniformMatrix4fv ( viewProjectionMatricesLocation, 6, GL_FALSE, (const GLfloat*)viewProjectionMatrices );
-	glUniform1f ( angleStepLocation, angleStep );
+    glUniformMatrix4fv ( _viewProjectionMatricesLocation, 6, GL_FALSE, (const GLfloat*)_viewProjectionMatrices );
+    glUniform1f ( _angleStepLocation, _angleStep );
 
-	environmentMap->Bind ( TEXTURE_SLOT );
-	sampler.Bind ( TEXTURE_SLOT );
+    _environmentMap->Bind ( TEXTURE_SLOT );
+    _sampler.Bind ( TEXTURE_SLOT );
 }
 
 GXVoid EMDiffuseIrradianceGeneratorMaterial::Unbind ()
 {
-	if ( !environmentMap ) return;
+    if ( !_environmentMap ) return;
 
-	sampler.Unbind ( TEXTURE_SLOT );
-	environmentMap->Unbind ();
+    _sampler.Unbind ( TEXTURE_SLOT );
+    _environmentMap->Unbind ();
 
-	glUseProgram ( 0u );
+    glUseProgram ( 0u );
 }
 
 GXVoid EMDiffuseIrradianceGeneratorMaterial::SetEnvironmentMap ( GXTextureCubeMap &cubeMap )
 {
-	environmentMap = &cubeMap;
+    _environmentMap = &cubeMap;
 }
 
 GXUInt EMDiffuseIrradianceGeneratorMaterial::SetAngleStep ( GXFloat radians )
 {
-	angleStep = radians;
-	GXFloat invAngleStep = 1.0f / angleStep;
-	return (GXUInt)( floorf ( GX_MATH_HALF_PI * invAngleStep ) + floorf ( GX_MATH_DOUBLE_PI * invAngleStep ) );
+    _angleStep = radians;
+    GXFloat invAngleStep = 1.0f / _angleStep;
+    return static_cast<GXUInt> ( floorf ( GX_MATH_HALF_PI * invAngleStep ) + floorf ( GX_MATH_DOUBLE_PI * invAngleStep ) );
 }

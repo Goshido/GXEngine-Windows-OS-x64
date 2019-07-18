@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_THREAD
 #define GX_THREAD
@@ -8,7 +8,7 @@
 
 
 class GXThread;
-typedef GXUPointer ( GXTHREADCALL* PFNGXTHREADPROC ) ( GXVoid* argument, GXThread &thread );
+typedef GXUPointer ( GXTHREADCALL* GXThreaFunction ) ( GXVoid* argument, GXThread &thread );
 
 
 enum class eGXThreadState : GXUByte
@@ -20,9 +20,9 @@ enum class eGXThreadState : GXUByte
 class GXAbstractThread
 {
     protected:
-        PFNGXTHREADPROC     Procedure;
-        GXVoid*             argument;
-        eGXThreadState      state;
+        GXThreaFunction     _procedure;
+        GXVoid*             _argument;
+        eGXThreadState      _state;
 
     public:
         eGXThreadState GetState () const;
@@ -33,7 +33,7 @@ class GXAbstractThread
         virtual GXVoid Join () = 0;
 
     protected:
-        explicit GXAbstractThread ( PFNGXTHREADPROC procedure, GXVoid* argument );
+        explicit GXAbstractThread ( GXThreaFunction procedure, GXVoid* argument );
         virtual ~GXAbstractThread ();
 
     private:

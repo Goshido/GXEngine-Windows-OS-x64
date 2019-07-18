@@ -8,29 +8,29 @@
 
 class EMUIDraggableArea final : public EMUI
 {
-	private:
-		GXUIDragableArea*	widget;
+    private:
+        GXUIDragableArea*       _widget;
 
-	public:
-		explicit EMUIDraggableArea ( EMUI* parent );
-		~EMUIDraggableArea () override;
+    public:
+        explicit EMUIDraggableArea ( EMUI* parent );
+        ~EMUIDraggableArea () override;
 
-		GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () const override;
 
-		GXVoid Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height );
+        GXVoid Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height );
 
-		GXVoid Show ();
-		GXVoid Hide ();
+        GXVoid Show ();
+        GXVoid Hide ();
 
-		GXVoid SetHeaderHeight ( GXFloat headerHeight );
-		GXVoid SetMinimumWidth ( GXFloat width );
-		GXVoid SetMinimumHeight ( GXFloat height );
-		GXVoid SetOnResizeCallback ( GXVoid* handler, PFNGXUIDRAGABLEAREAONRESIZEPROC callback );
+        GXVoid SetHeaderHeight ( GXFloat headerHeight );
+        GXVoid SetMinimumWidth ( GXFloat width );
+        GXVoid SetMinimumHeight ( GXFloat height );
+        GXVoid SetOnResizeCallback ( GXVoid* context, GXUIDraggableAreaOnResizeHandler callback );
 
-	private:
-		EMUIDraggableArea () = delete;
-		EMUIDraggableArea ( const EMUIDraggableArea &other ) = delete;
-		EMUIDraggableArea& operator = ( const EMUIDraggableArea &other ) = delete;
+    private:
+        EMUIDraggableArea () = delete;
+        EMUIDraggableArea ( const EMUIDraggableArea &other ) = delete;
+        EMUIDraggableArea& operator = ( const EMUIDraggableArea &other ) = delete;
 };
 
 

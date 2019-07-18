@@ -7,19 +7,19 @@
 
 class EMVertexColorMaterial final : public GXMaterial
 {
-	private:
-		GLint		currentFrameModelViewProjectionMatrixLocation;
+    private:
+        GLint       _currentFrameModelViewProjectionMatrixLocation;
 
-	public:
-		EMVertexColorMaterial ();
-		~EMVertexColorMaterial () override;
+    public:
+        EMVertexColorMaterial ();
+        ~EMVertexColorMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) override;
-		GXVoid Unbind () override;
+        GXVoid Bind ( const GXTransform &transform ) override;
+        GXVoid Unbind () override;
 
-	private:
-		EMVertexColorMaterial ( const EMVertexColorMaterial &other ) = delete;
-		EMVertexColorMaterial& operator = ( const EMVertexColorMaterial &other ) = delete;
+    private:
+        EMVertexColorMaterial ( const EMVertexColorMaterial &other ) = delete;
+        EMVertexColorMaterial& operator = ( const EMVertexColorMaterial &other ) = delete;
 };
 
 

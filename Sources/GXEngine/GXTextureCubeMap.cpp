@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #include <GXEngine/GXTextureCubeMap.h>
 #include <GXEngine/GXMeshGeometry.h>
@@ -34,17 +34,17 @@ enum class eGXChannelDataType : GXUByte
 
 struct GXTextureCubeMapCacheHeader final
 {
-    GXUByte                 numChannels;
-    eGXChannelDataType      channelDataType;
+    GXUByte                 _numChannels;
+    eGXChannelDataType      _channelDataType;
 
-    GXUShort                faceLength;
+    GXUShort                _faceLength;
 
-    GXUBigInt               positiveXPixelOffset;
-    GXUBigInt               negativeXPixelOffset;
-    GXUBigInt               positiveYPixelOffset;
-    GXUBigInt               negativeYPixelOffset;
-    GXUBigInt               positiveZPixelOffset;
-    GXUBigInt               negativeZPixelOffset;
+    GXUBigInt               _positiveXPixelOffset;
+    GXUBigInt               _negativeXPixelOffset;
+    GXUBigInt               _positiveYPixelOffset;
+    GXUBigInt               _negativeYPixelOffset;
+    GXUBigInt               _positiveZPixelOffset;
+    GXUBigInt               _negativeZPixelOffset;
 };
 
 #pragma pack ( pop )
@@ -54,25 +54,25 @@ struct GXTextureCubeMapCacheHeader final
 class GXTextureCubeMapEntry final : public GXMemoryInspector
 {
     private:
-        GXTextureCubeMapEntry*              previous;
-        GXTextureCubeMapEntry*              next;
-        GXUPointerAtomic                    references;
+        GXTextureCubeMapEntry*              _previous;
+        GXTextureCubeMapEntry*              _next;
+        GXUPointerAtomic                    _references;
 
-        const GXString                      fileName;
+        const GXString                      _fileName;
 
-        GXUShort                            faceLength;
-        GXUByte                             numChannels;
-        GXUByte                             lods;
+        GXUShort                            _faceLength;
+        GXUByte                             _numChannels;
+        GXUByte                             _lods;
 
-        GLint                               internalFormat;
-        GLint                               unpackAlignment;
-        GLenum                              format;
-        GLenum                              type;
+        GLint                               _internalFormat;
+        GLint                               _unpackAlignment;
+        GLenum                              _format;
+        GLenum                              _type;
 
-        GLuint                              textureObject;
-        GXBool                              isGenerateMipmap;
+        GLuint                              _textureObject;
+        GXBool                              _isGenerateMipmap;
 
-        static GXTextureCubeMapEntry*       top;
+        static GXTextureCubeMapEntry*       _top;
 
     public:
         explicit GXTextureCubeMapEntry ( const GXWChar* equirectangularTextureFileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection );
@@ -103,7 +103,7 @@ class GXTextureCubeMapEntry final : public GXMemoryInspector
     private:
         ~GXTextureCubeMapEntry ();
 
-        GXVoid InitResources ( GXUShort textureFaceLength, GLint textureInternalFormat, GXBool isGenerateMipmapPolicy );
+        GXVoid InitResources ( GXUShort faceLength, GLint internalFormat, GXBool isGenerateMipmapPolicy );
         GXVoid ProjectFaces ( GLuint fbo, GLuint faceTextureObject, GXTexture2D &equirectangularTexture, GXBool isApplyGammaCorrection );
 
         GXTextureCubeMapEntry () = delete;
@@ -111,25 +111,25 @@ class GXTextureCubeMapEntry final : public GXMemoryInspector
         GXTextureCubeMapEntry& operator = ( const GXTextureCubeMapEntry &other ) = delete;
 };
 
-GXTextureCubeMapEntry* GXTextureCubeMapEntry::top = nullptr;
+GXTextureCubeMapEntry* GXTextureCubeMapEntry::_top = nullptr;
 
 GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTextureFileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTextureCubeMapEntry" )
-    previous ( nullptr ),
-    next ( top ),
-    references ( 1u ),
-    fileName ( equirectangularTextureFileName )
+    _previous ( nullptr ),
+    _next ( _top ),
+    _references ( 1u ),
+    _fileName ( equirectangularTextureFileName )
 {
-    if ( top )
-        top->previous = this;
+    if ( _top )
+        _top->_previous = this;
 
-    top = this;
+    _top = this;
 
     GXWChar* path = nullptr;
     GXGetFileDirectoryPath ( &path, equirectangularTextureFileName );
 
     GXWChar* baseFileName = nullptr;
-    GXGetBaseFileName ( &baseFileName, fileName );
+    GXGetBaseFileName ( &baseFileName, _fileName );
 
     GXString cacheFileName;
     cacheFileName.Format ( "%S/%S/%S.%S", path, CACHE_DIRECTORY_NAME, baseFileName, CACHE_FILE_EXTENSION );
@@ -147,11 +147,11 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
         const GXTextureCubeMapCacheHeader* cacheHeader = reinterpret_cast<const GXTextureCubeMapCacheHeader*> ( data );
         GLint resolvedInternalFormat = INVALID_INTERNAL_FORMAT;
 
-        switch ( cacheHeader->numChannels )
+        switch ( cacheHeader->_numChannels )
         {
             case 1u:
             {
-                switch ( cacheHeader->channelDataType )
+                switch ( cacheHeader->_channelDataType )
                 {
                     case eGXChannelDataType::UnsignedByte:
                         resolvedInternalFormat = GL_R8;
@@ -170,7 +170,7 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
 
             case 3u:
             {
-                switch ( cacheHeader->channelDataType )
+                switch ( cacheHeader->_channelDataType )
                 {
                     case eGXChannelDataType::UnsignedByte:
                         resolvedInternalFormat = GL_RGB8;
@@ -189,7 +189,7 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
 
             case 4u:
             {
-                switch ( cacheHeader->channelDataType )
+                switch ( cacheHeader->_channelDataType )
                 {
                     case eGXChannelDataType::UnsignedByte:
                         resolvedInternalFormat = GL_RGBA8;
@@ -211,14 +211,14 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
             break;
         }
 
-        InitResources ( cacheHeader->faceLength, resolvedInternalFormat, isGenerateMipmap );
+        InitResources ( cacheHeader->_faceLength, resolvedInternalFormat, isGenerateMipmap );
 
-        FillWholePixelData ( data + cacheHeader->positiveXPixelOffset, GL_TEXTURE_CUBE_MAP_POSITIVE_X );
-        FillWholePixelData ( data + cacheHeader->negativeXPixelOffset, GL_TEXTURE_CUBE_MAP_NEGATIVE_X );
-        FillWholePixelData ( data + cacheHeader->positiveYPixelOffset, GL_TEXTURE_CUBE_MAP_POSITIVE_Y );
-        FillWholePixelData ( data + cacheHeader->negativeYPixelOffset, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y );
-        FillWholePixelData ( data + cacheHeader->positiveZPixelOffset, GL_TEXTURE_CUBE_MAP_POSITIVE_Z );
-        FillWholePixelData ( data + cacheHeader->negativeZPixelOffset, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z );
+        FillWholePixelData ( data + cacheHeader->_positiveXPixelOffset, GL_TEXTURE_CUBE_MAP_POSITIVE_X );
+        FillWholePixelData ( data + cacheHeader->_negativeXPixelOffset, GL_TEXTURE_CUBE_MAP_NEGATIVE_X );
+        FillWholePixelData ( data + cacheHeader->_positiveYPixelOffset, GL_TEXTURE_CUBE_MAP_POSITIVE_Y );
+        FillWholePixelData ( data + cacheHeader->_negativeYPixelOffset, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y );
+        FillWholePixelData ( data + cacheHeader->_positiveZPixelOffset, GL_TEXTURE_CUBE_MAP_POSITIVE_Z );
+        FillWholePixelData ( data + cacheHeader->_negativeZPixelOffset, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z );
 
         file.Close ();
 
@@ -233,7 +233,7 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
     GXUInt height = 0u;
 
     GXWChar* extension = nullptr;
-    GXGetFileExtension ( &extension, fileName );
+    GXGetFileExtension ( &extension, _fileName );
 
     GXFloat* hdrPixels = nullptr;
     GXUByte* ldrPixels = nullptr;
@@ -243,10 +243,10 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
 
     if ( GXWcscmp ( extension, L"hdr" ) == 0 || GXWcscmp ( extension, L"HDR" ) == 0 )
     {
-        success = GXLoadHDRImage ( fileName, width, height, cacheHeader.numChannels, &hdrPixels );
-        cacheHeader.channelDataType = eGXChannelDataType::Float;
+        success = GXLoadHDRImage ( _fileName, width, height, cacheHeader._numChannels, &hdrPixels );
+        cacheHeader._channelDataType = eGXChannelDataType::Float;
 
-        switch ( cacheHeader.numChannels )
+        switch ( cacheHeader._numChannels )
         {
             case 1u:
                 equirectangularTexture.InitResources ( static_cast<GXUShort> ( width ), static_cast<GXUShort> ( height ), GL_R16F, GX_FALSE );
@@ -268,14 +268,14 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
         equirectangularTexture.FillWholePixelData ( hdrPixels );
         Free ( hdrPixels );
         GXUInt resolvedFaceLength = width / 4u;
-        faceSize = resolvedFaceLength * resolvedFaceLength * cacheHeader.numChannels * sizeof ( GXFloat );
+        faceSize = resolvedFaceLength * resolvedFaceLength * cacheHeader._numChannels * sizeof ( GXFloat );
     }
     else
     {
-        success = GXLoadLDRImage ( fileName, width, height, cacheHeader.numChannels, &ldrPixels );
-        cacheHeader.channelDataType = eGXChannelDataType::UnsignedByte;
+        success = GXLoadLDRImage ( _fileName, width, height, cacheHeader._numChannels, &ldrPixels );
+        cacheHeader._channelDataType = eGXChannelDataType::UnsignedByte;
 
-        switch ( cacheHeader.numChannels )
+        switch ( cacheHeader._numChannels )
         {
             case 1u:
                 equirectangularTexture.InitResources ( static_cast<GXUShort> ( width ), static_cast<GXUShort> ( height ), GL_R8, GX_FALSE );
@@ -297,18 +297,18 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
         equirectangularTexture.FillWholePixelData ( ldrPixels );
         Free ( ldrPixels );
         GXUInt resolvedFaceLength = width / 4u;
-        faceSize = resolvedFaceLength * resolvedFaceLength * cacheHeader.numChannels * sizeof ( GXUByte );
+        faceSize = resolvedFaceLength * resolvedFaceLength * cacheHeader._numChannels * sizeof ( GXUByte );
     }
 
     GXSafeFree ( extension );
 
     if ( !success )
     {
-        GXLogA ( "GXTextureCubeMap::LoadEquirectangularTexture::Error - ѕоддерживаютс€ текстуры с количеством каналов 1, 3 и 4 (текущее количество %hhu)\n", cacheHeader.numChannels );
+        GXLogA ( "GXTextureCubeMap::LoadEquirectangularTexture::Error - ѕоддерживаютс€ текстуры с количеством каналов 1, 3 и 4 (текущее количество %hhu)\n", cacheHeader._numChannels );
         return;
     }
 
-    cacheHeader.faceLength = static_cast<GXUShort> ( width / 4u );
+    cacheHeader._faceLength = static_cast<GXUShort> ( width / 4u );
 
     GXString cacheDirectory;
     cacheDirectory.Format ( "%S/%S", path, CACHE_DIRECTORY_NAME );
@@ -318,23 +318,23 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
     if ( !GXDoesDirectoryExist ( cacheDirectory ) )
         GXCreateDirectory ( cacheDirectory );
 
-    cacheHeader.positiveXPixelOffset = sizeof ( GXTextureCubeMapCacheHeader );
-    cacheHeader.negativeXPixelOffset = static_cast<GXUBigInt> ( cacheHeader.positiveXPixelOffset + faceSize );
-    cacheHeader.positiveYPixelOffset = static_cast<GXUBigInt> ( cacheHeader.negativeXPixelOffset + faceSize );
-    cacheHeader.negativeYPixelOffset = static_cast<GXUBigInt> ( cacheHeader.positiveYPixelOffset + faceSize );
-    cacheHeader.positiveZPixelOffset = static_cast<GXUBigInt> ( cacheHeader.negativeYPixelOffset + faceSize );
-    cacheHeader.negativeZPixelOffset = static_cast<GXUBigInt> ( cacheHeader.positiveZPixelOffset + faceSize );
+    cacheHeader._positiveXPixelOffset = sizeof ( GXTextureCubeMapCacheHeader );
+    cacheHeader._negativeXPixelOffset = static_cast<GXUBigInt> ( cacheHeader._positiveXPixelOffset + faceSize );
+    cacheHeader._positiveYPixelOffset = static_cast<GXUBigInt> ( cacheHeader._negativeXPixelOffset + faceSize );
+    cacheHeader._negativeYPixelOffset = static_cast<GXUBigInt> ( cacheHeader._positiveYPixelOffset + faceSize );
+    cacheHeader._positiveZPixelOffset = static_cast<GXUBigInt> ( cacheHeader._negativeYPixelOffset + faceSize );
+    cacheHeader._negativeZPixelOffset = static_cast<GXUBigInt> ( cacheHeader._positiveZPixelOffset + faceSize );
 
     GLint resolvedInternalFormat = INVALID_INTERNAL_FORMAT;
     GLenum readPixelFormat = GL_INVALID_ENUM;
     GLenum readPixelType = GL_INVALID_ENUM;
     GLint packAlignment = 1;
 
-    switch ( cacheHeader.numChannels )
+    switch ( cacheHeader._numChannels )
     {
         case 1u:
         {
-            switch ( cacheHeader.channelDataType )
+            switch ( cacheHeader._channelDataType )
             {
                 case eGXChannelDataType::UnsignedByte:
                     resolvedInternalFormat = GL_R8;
@@ -359,7 +359,7 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
 
         case 3u:
         {
-            switch ( cacheHeader.channelDataType )
+            switch ( cacheHeader._channelDataType )
             {
                 case eGXChannelDataType::UnsignedByte:
                     resolvedInternalFormat = GL_RGB8;
@@ -384,7 +384,7 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
 
         case 4u:
         {
-            switch ( cacheHeader.channelDataType )
+            switch ( cacheHeader._channelDataType )
             {
                 case eGXChannelDataType::UnsignedByte:
                     resolvedInternalFormat = GL_RGBA8;
@@ -412,7 +412,7 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
         break;
     }
 
-    InitResources ( cacheHeader.faceLength, resolvedInternalFormat, isGenerateMipmap );
+    InitResources ( cacheHeader._faceLength, resolvedInternalFormat, isGenerateMipmap );
 
     GLuint fbo;
     glGenFramebuffers ( 1, &fbo );
@@ -424,14 +424,14 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
 
     GXUByte* facePixels = static_cast<GXUByte*> ( Malloc ( faceSize ) );
 
-    ProjectFaces ( fbo, textureObject, equirectangularTexture, isApplyGammaCorrection );
+    ProjectFaces ( fbo, _textureObject, equirectangularTexture, isApplyGammaCorrection );
 
     GXOpenGLState state;
     state.Save ();
 
     glBindFramebuffer ( GL_READ_FRAMEBUFFER, fbo );
 
-    switch ( cacheHeader.numChannels )
+    switch ( cacheHeader._numChannels )
     {
         case 1u:
             glColorMask ( GL_TRUE, GL_FALSE, GL_FALSE, GL_FALSE );
@@ -450,28 +450,28 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
         break;
     }
 
-    glFramebufferTexture2D ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X, textureObject, 0 );
-    glReadPixels ( 0, 0, static_cast<GLsizei> ( cacheHeader.faceLength ), static_cast<GLsizei> ( cacheHeader.faceLength ), readPixelFormat, readPixelType, facePixels );
+    glFramebufferTexture2D ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X, _textureObject, 0 );
+    glReadPixels ( 0, 0, static_cast<GLsizei> ( cacheHeader._faceLength ), static_cast<GLsizei> ( cacheHeader._faceLength ), readPixelFormat, readPixelType, facePixels );
     cacheFile.Write ( facePixels, faceSize );
 
-    glFramebufferTexture2D ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, textureObject, 0 );
-    glReadPixels ( 0, 0, static_cast<GLsizei> ( cacheHeader.faceLength ), static_cast<GLsizei> ( cacheHeader.faceLength ), readPixelFormat, readPixelType, facePixels );
+    glFramebufferTexture2D ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, _textureObject, 0 );
+    glReadPixels ( 0, 0, static_cast<GLsizei> ( cacheHeader._faceLength ), static_cast<GLsizei> ( cacheHeader._faceLength ), readPixelFormat, readPixelType, facePixels );
     cacheFile.Write ( facePixels, faceSize );
 
-    glFramebufferTexture2D ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, textureObject, 0 );
-    glReadPixels ( 0, 0, static_cast<GLsizei> ( cacheHeader.faceLength ), static_cast<GLsizei> ( cacheHeader.faceLength ), readPixelFormat, readPixelType, facePixels );
+    glFramebufferTexture2D ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, _textureObject, 0 );
+    glReadPixels ( 0, 0, static_cast<GLsizei> ( cacheHeader._faceLength ), static_cast<GLsizei> ( cacheHeader._faceLength ), readPixelFormat, readPixelType, facePixels );
     cacheFile.Write ( facePixels, faceSize );
 
-    glFramebufferTexture2D ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, textureObject, 0 );
-    glReadPixels ( 0, 0, static_cast<GLsizei> ( cacheHeader.faceLength ), static_cast<GLsizei> ( cacheHeader.faceLength ), readPixelFormat, readPixelType, facePixels );
+    glFramebufferTexture2D ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, _textureObject, 0 );
+    glReadPixels ( 0, 0, static_cast<GLsizei> ( cacheHeader._faceLength ), static_cast<GLsizei> ( cacheHeader._faceLength ), readPixelFormat, readPixelType, facePixels );
     cacheFile.Write ( facePixels, faceSize );
 
-    glFramebufferTexture2D ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, textureObject, 0 );
-    glReadPixels ( 0, 0, static_cast<GLsizei> ( cacheHeader.faceLength ), static_cast<GLsizei> ( cacheHeader.faceLength ), readPixelFormat, readPixelType, facePixels );
+    glFramebufferTexture2D ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, _textureObject, 0 );
+    glReadPixels ( 0, 0, static_cast<GLsizei> ( cacheHeader._faceLength ), static_cast<GLsizei> ( cacheHeader._faceLength ), readPixelFormat, readPixelType, facePixels );
     cacheFile.Write ( facePixels, faceSize );
 
-    glFramebufferTexture2D ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, textureObject, 0 );
-    glReadPixels ( 0, 0, static_cast<GLsizei> ( cacheHeader.faceLength ), static_cast<GLsizei> ( cacheHeader.faceLength ), readPixelFormat, readPixelType, facePixels );
+    glFramebufferTexture2D ( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, _textureObject, 0 );
+    glReadPixels ( 0, 0, static_cast<GLsizei> ( cacheHeader._faceLength ), static_cast<GLsizei> ( cacheHeader._faceLength ), readPixelFormat, readPixelType, facePixels );
     cacheFile.Write ( facePixels, faceSize );
 
     state.Restore ();
@@ -487,55 +487,55 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
 
 GXTextureCubeMapEntry::GXTextureCubeMapEntry ( GXUShort faceLength, GLint internalFormat, GXBool isGenerateMipmap )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTextureCubeMapEntry" )
-    previous ( nullptr ),
-    next ( nullptr ),
-    references ( 1u )
+    _previous ( nullptr ),
+    _next ( nullptr ),
+    _references ( 1u )
 {
     InitResources ( faceLength, internalFormat, isGenerateMipmap );
 }
 
 const GXWChar* GXTextureCubeMapEntry::GetFileName () const
 {
-    return fileName;
+    return _fileName;
 }
 
 GLuint GXTextureCubeMapEntry::GetTextureObject () const
 {
-    return textureObject;
+    return _textureObject;
 }
 
 GXUShort GXTextureCubeMapEntry::GetFaceLength () const
 {
-    return faceLength;
+    return _faceLength;
 }
 
 GXUByte GXTextureCubeMapEntry::GetChannelNumber () const
 {
-    return numChannels;
+    return _numChannels;
 }
 
 GXUByte GXTextureCubeMapEntry::GetLevelOfDetailNumber () const
 {
-    return lods;
+    return _lods;
 }
 
 GLint GXTextureCubeMapEntry::GetInternalFormat () const
 {
-    return internalFormat;
+    return _internalFormat;
 }
 
 GXBool GXTextureCubeMapEntry::IsGenerateMipmap () const
 {
-    return isGenerateMipmap;
+    return _isGenerateMipmap;
 }
 
 GXVoid GXTextureCubeMapEntry::FillWholePixelData ( const GXVoid* data, GLenum target )
 {
     glActiveTexture ( GL_TEXTURE0 );
-    glBindTexture ( GL_TEXTURE_CUBE_MAP, textureObject );
+    glBindTexture ( GL_TEXTURE_CUBE_MAP, _textureObject );
 
-    glPixelStorei ( GL_UNPACK_ALIGNMENT, unpackAlignment );
-    glTexImage2D ( target, 0, internalFormat, (GLsizei)faceLength, (GLsizei)faceLength, 0, format, type, data );
+    glPixelStorei ( GL_UNPACK_ALIGNMENT, _unpackAlignment );
+    glTexImage2D ( target, 0, _internalFormat, (GLsizei)_faceLength, (GLsizei)_faceLength, 0, _format, _type, data );
 
     glBindTexture ( GL_TEXTURE_CUBE_MAP, 0u );
 
@@ -544,10 +544,10 @@ GXVoid GXTextureCubeMapEntry::FillWholePixelData ( const GXVoid* data, GLenum ta
 
 GXVoid GXTextureCubeMapEntry::UpdateMipmaps ()
 {
-    if ( textureObject == 0u || !isGenerateMipmap ) return;
+    if ( _textureObject == 0u || !_isGenerateMipmap ) return;
 
     glActiveTexture ( GL_TEXTURE0 );
-    glBindTexture ( GL_TEXTURE_CUBE_MAP, textureObject );
+    glBindTexture ( GL_TEXTURE_CUBE_MAP, _textureObject );
     glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
     glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
@@ -562,23 +562,23 @@ GXVoid GXTextureCubeMapEntry::UpdateMipmaps ()
 
 GXVoid GXTextureCubeMapEntry::AddReference ()
 {
-    ++references;
+    ++_references;
 }
 
 GXVoid GXTextureCubeMapEntry::Release ()
 {
-    --references;
+    --_references;
 
-    if ( references > static_cast<GXUPointer> ( 0u ) ) return;
+    if ( _references > static_cast<GXUPointer> ( 0u ) ) return;
 
     delete this;
 }
 
 GXTextureCubeMapEntry* GXCALL GXTextureCubeMapEntry::Find ( const GXWChar* equirectangularTextureFileName )
 {
-    for ( GXTextureCubeMapEntry* p = top; p; p = p->next )
+    for ( GXTextureCubeMapEntry* p = _top; p; p = p->_next )
     {
-        if ( GXWcscmp ( p->fileName, equirectangularTextureFileName ) != 0 ) continue;
+        if ( GXWcscmp ( p->_fileName, equirectangularTextureFileName ) != 0 ) continue;
         
         return p;
     }
@@ -590,11 +590,11 @@ GXUInt GXCALL GXTextureCubeMapEntry::GetTotalLoadedTextures ( const GXWChar** la
 {
     GXUInt total = 0u;
 
-    for ( GXTextureCubeMapEntry* p = top; p; p = p->next )
+    for ( GXTextureCubeMapEntry* p = _top; p; p = p->_next )
         ++total;
 
     if ( total > 0u )
-        *lastTexture = top->fileName;
+        *lastTexture = _top->_fileName;
     else
         *lastTexture = nullptr;
 
@@ -603,39 +603,39 @@ GXUInt GXCALL GXTextureCubeMapEntry::GetTotalLoadedTextures ( const GXWChar** la
 
 GXTextureCubeMapEntry::~GXTextureCubeMapEntry ()
 {
-    if ( top == this )
-        top = top->next;
+    if ( _top == this )
+        _top = _top->_next;
 
-    if ( previous )
-        previous->next = next;
+    if ( _previous )
+        _previous->_next = _next;
 
-    if ( next )
-        next->previous = previous;
+    if ( _next )
+        _next->_previous = _previous;
 
-    if ( textureObject == 0u ) return;
+    if ( _textureObject == 0u ) return;
 
-    glDeleteTextures ( 1, &textureObject );
+    glDeleteTextures ( 1, &_textureObject );
 }
 
-GXVoid GXTextureCubeMapEntry::InitResources ( GXUShort textureFaceLength, GLint textureInternalFormat, GXBool isGenerateMipmapPolicy )
+GXVoid GXTextureCubeMapEntry::InitResources ( GXUShort faceLength, GLint internalFormat, GXBool isGenerateMipmapPolicy )
 {
-    faceLength = textureFaceLength;
-    internalFormat = textureInternalFormat;
-    isGenerateMipmap = isGenerateMipmapPolicy;
+    _faceLength = faceLength;
+    _internalFormat = internalFormat;
+    _isGenerateMipmap = isGenerateMipmapPolicy;
 
     glActiveTexture ( GL_TEXTURE0 );
-    glGenTextures ( 1, &textureObject );
-    glBindTexture ( GL_TEXTURE_CUBE_MAP, textureObject );
+    glGenTextures ( 1, &_textureObject );
+    glBindTexture ( GL_TEXTURE_CUBE_MAP, _textureObject );
 
-    switch ( internalFormat )
+    switch ( _internalFormat )
     {
         case GL_R32I:
         case GL_R32UI:
         {
-            unpackAlignment = 4;
-            format = GL_RED;
-            type = GL_UNSIGNED_INT;
-            numChannels = 1u;
+            _unpackAlignment = 4;
+            _format = GL_RED;
+            _type = GL_UNSIGNED_INT;
+            _numChannels = 1u;
         }
         break;
 
@@ -643,64 +643,64 @@ GXVoid GXTextureCubeMapEntry::InitResources ( GXUShort textureFaceLength, GLint 
         case GL_R8I:
         case GL_R8UI:
         {
-            unpackAlignment = 1;
-            format = GL_RED;
-            type = GL_UNSIGNED_BYTE;
-            numChannels = 1u;
+            _unpackAlignment = 1;
+            _format = GL_RED;
+            _type = GL_UNSIGNED_BYTE;
+            _numChannels = 1u;
         }
         break;
 
         case GL_R16F:
-            unpackAlignment = 2;
-            format = GL_RED;
-            type = GL_FLOAT;
-            numChannels = 1u;
+            _unpackAlignment = 2;
+            _format = GL_RED;
+            _type = GL_FLOAT;
+            _numChannels = 1u;
         break;
 
         case GL_RG8:
         case GL_RG8I:
         case GL_RG8UI:
         {
-            unpackAlignment = 2;
-            format = GL_RG;
-            type = GL_UNSIGNED_BYTE;
-            numChannels = 2u;
+            _unpackAlignment = 2;
+            _format = GL_RG;
+            _type = GL_UNSIGNED_BYTE;
+            _numChannels = 2u;
         }
         break;
 
         case GL_RG16F:
-            unpackAlignment = 4;
-            format = GL_RG;
-            type = GL_FLOAT;
-            numChannels = 2u;
+            _unpackAlignment = 4;
+            _format = GL_RG;
+            _type = GL_FLOAT;
+            _numChannels = 2u;
         break;
 
         case GL_RGB8:
         case GL_RGB8I:
         case GL_RGB8UI:
         {
-            unpackAlignment = 1;
-            format = GL_RGB;
-            type = GL_UNSIGNED_BYTE;
-            numChannels = 3u;
+            _unpackAlignment = 1;
+            _format = GL_RGB;
+            _type = GL_UNSIGNED_BYTE;
+            _numChannels = 3u;
         }
         break;
 
         case GL_RGB16:
         {
-            unpackAlignment = 2;
-            format = GL_RGB;
-            type = GL_UNSIGNED_SHORT;
-            numChannels = 3u;
+            _unpackAlignment = 2;
+            _format = GL_RGB;
+            _type = GL_UNSIGNED_SHORT;
+            _numChannels = 3u;
         }
         break;
 
         case GL_RGB16F:
         {
-            unpackAlignment = 2;
-            format = GL_RGB;
-            type = GL_FLOAT;
-            numChannels = 3u;
+            _unpackAlignment = 2;
+            _format = GL_RGB;
+            _type = GL_FLOAT;
+            _numChannels = 3u;
         }
         break;
 
@@ -708,28 +708,28 @@ GXVoid GXTextureCubeMapEntry::InitResources ( GXUShort textureFaceLength, GLint 
         case GL_RGBA8I:
         case GL_RGBA8UI:
         {
-            unpackAlignment = 4;
-            format = GL_RGBA;
-            type = GL_UNSIGNED_BYTE;
-            numChannels = 4u;
+            _unpackAlignment = 4;
+            _format = GL_RGBA;
+            _type = GL_UNSIGNED_BYTE;
+            _numChannels = 4u;
         }
         break;
 
         case GL_RGBA16F:
         {
-            unpackAlignment = 4;
-            format = GL_RGBA;
-            type = GL_FLOAT;
-            numChannels = 4u;
+            _unpackAlignment = 4;
+            _format = GL_RGBA;
+            _type = GL_FLOAT;
+            _numChannels = 4u;
         }
         break;
 
         case GL_DEPTH24_STENCIL8:
         {
-            unpackAlignment = 4;
-            format = GL_DEPTH_STENCIL;
-            type = GL_UNSIGNED_INT_24_8;
-            numChannels = 1u;
+            _unpackAlignment = 4;
+            _format = GL_DEPTH_STENCIL;
+            _type = GL_UNSIGNED_INT_24_8;
+            _numChannels = 1u;
         }
         break;
 
@@ -747,21 +747,21 @@ GXVoid GXTextureCubeMapEntry::InitResources ( GXUShort textureFaceLength, GLint 
     FillWholePixelData ( nullptr, GL_TEXTURE_CUBE_MAP_POSITIVE_Z );
     FillWholePixelData ( nullptr, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z );
 
-    if ( !isGenerateMipmap )
+    if ( !_isGenerateMipmap )
     {
         glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0 );
-        lods = 1u;
+        _lods = 1u;
         return;
     }
 
     UpdateMipmaps ();
 
-    lods = 0u;
+    _lods = 0u;
     GXUShort currentResolution = 1u;
 
-    while ( currentResolution <= faceLength )
+    while ( currentResolution <= _faceLength )
     {
-        ++lods;
+        ++_lods;
         currentResolution *= 2u;
     }
 }
@@ -839,130 +839,130 @@ GXVoid GXTextureCubeMapEntry::ProjectFaces ( GLuint fbo, GLuint cubeMapTextureOb
 
 GXTextureCubeMap::GXTextureCubeMap ()
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTextureCubeMap" )
-    textureUnit ( INVALID_TEXTURE_UNIT ),
-    textureCubeMapEntry ( nullptr )
+    _textureUnit ( INVALID_TEXTURE_UNIT ),
+    _textureCubeMapEntry ( nullptr )
 {
     // NOTHING
 }
 
 GXTextureCubeMap::GXTextureCubeMap ( GXUShort faceLength, GLint internalFormat, GXBool isGenerateMipmap )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTextureCubeMap" )
-    textureUnit ( INVALID_TEXTURE_UNIT )
+    _textureUnit ( INVALID_TEXTURE_UNIT )
 {
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMapEntry" );
-    textureCubeMapEntry = new GXTextureCubeMapEntry ( faceLength, internalFormat, isGenerateMipmap );
+    _textureCubeMapEntry = new GXTextureCubeMapEntry ( faceLength, internalFormat, isGenerateMipmap );
 }
 
 GXTextureCubeMap::GXTextureCubeMap ( const GXWChar* equirectangularImage, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTextureCubeMap" )
-    textureUnit ( INVALID_TEXTURE_UNIT ),
-    textureCubeMapEntry ( nullptr )
+    _textureUnit ( INVALID_TEXTURE_UNIT ),
+    _textureCubeMapEntry ( nullptr )
 {
     LoadEquirectangularImage ( equirectangularImage, isGenerateMipmap, isApplyGammaCorrection );
 }
 
 GXTextureCubeMap::~GXTextureCubeMap ()
 {
-    if ( !textureCubeMapEntry ) return;
+    if ( !_textureCubeMapEntry ) return;
 
-    textureCubeMapEntry->Release ();
+    _textureCubeMapEntry->Release ();
 }
 
 GXUShort GXTextureCubeMap::GetFaceLength () const
 {
-    return textureCubeMapEntry->GetFaceLength ();
+    return _textureCubeMapEntry->GetFaceLength ();
 }
 
 GXUByte GXTextureCubeMap::GetChannelNumber () const
 {
-    return textureCubeMapEntry->GetChannelNumber ();
+    return _textureCubeMapEntry->GetChannelNumber ();
 }
 
 GXUByte GXTextureCubeMap::GetLevelOfDetailNumber () const
 {
-    return textureCubeMapEntry->GetLevelOfDetailNumber ();
+    return _textureCubeMapEntry->GetLevelOfDetailNumber ();
 }
 
 GXVoid GXTextureCubeMap::LoadEquirectangularImage ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection )
 {
-    if ( textureCubeMapEntry )
-        textureCubeMapEntry->Release ();
+    if ( _textureCubeMapEntry )
+        _textureCubeMapEntry->Release ();
 
-    textureCubeMapEntry = GXTextureCubeMapEntry::Find ( fileName );
+    _textureCubeMapEntry = GXTextureCubeMapEntry::Find ( fileName );
 
-    if ( textureCubeMapEntry )
+    if ( _textureCubeMapEntry )
     {
-        textureCubeMapEntry->AddReference ();
+        _textureCubeMapEntry->AddReference ();
         return;
     }
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMapEntry" );
-    textureCubeMapEntry = new GXTextureCubeMapEntry ( fileName, isGenerateMipmap, isApplyGammaCorrection );
+    _textureCubeMapEntry = new GXTextureCubeMapEntry ( fileName, isGenerateMipmap, isApplyGammaCorrection );
 }
 
 GXVoid GXTextureCubeMap::FillWholePixelData ( const GXVoid* data, GLenum target )
 {
-    if ( !textureCubeMapEntry->GetFileName () )
+    if ( !_textureCubeMapEntry->GetFileName () )
     {
-        textureCubeMapEntry->FillWholePixelData ( data, target );
+        _textureCubeMapEntry->FillWholePixelData ( data, target );
         return;
     }
 
-    GXUShort faceLength = textureCubeMapEntry->GetFaceLength ();
-    GLint internalFormat = textureCubeMapEntry->GetInternalFormat ();
-    GXBool isGenerateMipmap = textureCubeMapEntry->IsGenerateMipmap ();
+    GXUShort faceLength = _textureCubeMapEntry->GetFaceLength ();
+    GLint internalFormat = _textureCubeMapEntry->GetInternalFormat ();
+    GXBool isGenerateMipmap = _textureCubeMapEntry->IsGenerateMipmap ();
 
-    textureCubeMapEntry->Release ();
+    _textureCubeMapEntry->Release ();
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMapEntry" );
-    textureCubeMapEntry = new GXTextureCubeMapEntry ( faceLength, internalFormat, isGenerateMipmap );
-    textureCubeMapEntry->FillWholePixelData ( data, target );
+    _textureCubeMapEntry = new GXTextureCubeMapEntry ( faceLength, internalFormat, isGenerateMipmap );
+    _textureCubeMapEntry->FillWholePixelData ( data, target );
 }
 
 GXVoid GXTextureCubeMap::UpdateMipmaps ()
 {
-    textureCubeMapEntry->UpdateMipmaps ();
+    _textureCubeMapEntry->UpdateMipmaps ();
 }
 
 GXVoid GXTextureCubeMap::Bind ( GXUByte unit )
 {
-    textureUnit = unit;
+    _textureUnit = unit;
 
-    glActiveTexture ( static_cast<GLenum> ( GL_TEXTURE0 + textureUnit ) );
-    glBindTexture ( GL_TEXTURE_CUBE_MAP, textureCubeMapEntry->GetTextureObject () );
+    glActiveTexture ( static_cast<GLenum> ( GL_TEXTURE0 + _textureUnit ) );
+    glBindTexture ( GL_TEXTURE_CUBE_MAP, _textureCubeMapEntry->GetTextureObject () );
 }
 
 GXVoid GXTextureCubeMap::Unbind ()
 {
-    glActiveTexture ( static_cast<GLenum> ( GL_TEXTURE0 + textureUnit ) );
+    glActiveTexture ( static_cast<GLenum> ( GL_TEXTURE0 + _textureUnit ) );
     glBindTexture ( GL_TEXTURE_CUBE_MAP, 0u );
 }
 
 GLuint GXTextureCubeMap::GetTextureObject () const
 {
-    return textureCubeMapEntry->GetTextureObject ();
+    return _textureCubeMapEntry->GetTextureObject ();
 }
 
 GXBool GXTextureCubeMap::IsInitialized () const
 {
-    return textureCubeMapEntry != nullptr;
+    return _textureCubeMapEntry != nullptr;
 }
 
 GXVoid GXTextureCubeMap::InitResources ( GXUShort faceLength, GLint internalFormat, GXBool isGenerateMipmap )
 {
-    if ( textureCubeMapEntry )
-        textureCubeMapEntry->Release ();
+    if ( _textureCubeMapEntry )
+        _textureCubeMapEntry->Release ();
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMapEntry" );
-    textureCubeMapEntry = new GXTextureCubeMapEntry ( faceLength, internalFormat, isGenerateMipmap );
+    _textureCubeMapEntry = new GXTextureCubeMapEntry ( faceLength, internalFormat, isGenerateMipmap );
 }
 
 GXVoid GXTextureCubeMap::FreeResources ()
 {
-    if ( !textureCubeMapEntry ) return;
+    if ( !_textureCubeMapEntry ) return;
 
-    textureCubeMapEntry->Release ();
-    textureCubeMapEntry = nullptr;
+    _textureCubeMapEntry->Release ();
+    _textureCubeMapEntry = nullptr;
 }
 
 GXUInt GXTextureCubeMap::GetTotalLoadedTextures ( const GXWChar** lastTexture )

@@ -1,77 +1,76 @@
-// version 1.1
+// version 1.2
 
 #include <GXPhysics/GXRectangleShape.h>
 
 
-GXRectangleShape::GXRectangleShape ( GXRigidBody* body, GXFloat width, GXFloat depth )
-: GXShape ( eGXShapeType::Rectangle, body )
+GXRectangleShape::GXRectangleShape ( GXRigidBody* body, GXFloat width, GXFloat depth ):
+    GXShape ( eGXShapeType::Rectangle, body ),
+    _width ( width ),
+    _depth ( depth )
 {
-	this->width = width;
-	this->depth = depth;
+    const GXFloat halfWidth = 0.5f * width;
+    const GXFloat halfDepth = 0.5f * depth;
 
-	GXFloat halfWidth = 0.5f * width;
-	GXFloat halfDepth = 0.5f * depth;
+    _boundsLocal.AddVertex ( -halfWidth, 0.0f, -halfDepth );
+    _boundsLocal.AddVertex ( halfWidth, 0.0f, halfDepth );
 
-	boundsLocal.AddVertex ( -halfWidth, 0.0f, -halfDepth );
-	boundsLocal.AddVertex ( halfWidth, 0.0f, halfDepth );
-
-	boundsWorld = boundsLocal;
+    _boundsWorld = _boundsLocal;
 }
 
 GXRectangleShape::~GXRectangleShape ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXFloat GXRectangleShape::GetWidth () const
 {
-	return width;
+    return _width;
 }
 
 GXFloat GXRectangleShape::GetHeight () const
 {
-	return depth;
+    return _depth;
 }
 
 GXVoid GXRectangleShape::CalculateInertiaTensor ( GXFloat /*mass*/ )
 {
-	inertiaTensor.Identity ();
+    _inertiaTensor.Identity ();
 }
 
 GXVoid GXRectangleShape::GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const
 {
-	GXFloat w = width * 0.5f;
-	GXFloat d = depth * 0.5f;
+    const GXFloat w = 0.5f * _width;
+    const GXFloat d = 0.5f * _depth;
 
-	GXVec3 vLocal[ 4 ];
+    GXVec3 vLocal[ 4u ];
 
-	vLocal[ 0 ].Init ( -w, 0.0f, -d );
-	vLocal[ 1 ].Init ( w, 0.0f, -d );
-	vLocal[ 2 ].Init ( w, 0.0f, d );
-	vLocal[ 3 ].Init ( -w, 0.0f, d );
+    vLocal[ 0u ].Init ( -w, 0.0f, -d );
+    vLocal[ 1u ].Init ( w, 0.0f, -d );
+    vLocal[ 2u ].Init ( w, 0.0f, d );
+    vLocal[ 3u ].Init ( -w, 0.0f, d );
 
-	GXVec3 vWorld[ 4 ];
-	for ( GXUByte i = 0u; i < 4u; ++i )
-		transformWorld.MultiplyAsPoint ( vWorld[ i ], vLocal[ i ] );
+    GXVec3 vWorld[ 4u ];
 
-	GXUByte index = 0u;
-	GXFloat projection = -FLT_MAX;
+    for ( GXUByte i = 0u; i < 4u; ++i )
+        _transformWorld.MultiplyAsPoint ( vWorld[ i ], vLocal[ i ] );
 
-	for ( GXUByte i = 0u; i < 8u; ++i )
-	{
-		GXFloat p = direction.DotProduct ( vWorld[ i ] );
+    GXUByte index = 0u;
+    GXFloat projection = -FLT_MAX;
 
-		if ( p > projection )
-		{
-			projection = p;
-			index = i;
-		}
-	}
+    for ( GXUByte i = 0u; i < 8u; ++i )
+    {
+        GXFloat p = direction.DotProduct ( vWorld[ i ] );
 
-	point = vWorld[ index ];
+        if ( p <= projection ) continue;
+
+        projection = p;
+        index = i;
+    }
+
+    point = vWorld[ index ];
 }
 
 GXVoid GXRectangleShape::UpdateBoundsWorld ()
 {
-	boundsLocal.Transform ( boundsWorld, transformWorld );
+    _boundsLocal.Transform ( _boundsWorld, _transformWorld );
 }

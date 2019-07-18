@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #ifndef GX_UI_DRAGGABLE_AREA
 #define GX_UI_DRAGGABLE_AREA
@@ -8,85 +8,85 @@
 
 
 class GXUIDragableArea;
-typedef GXVoid ( GXCALL* PFNGXUIDRAGABLEAREAONRESIZEPROC ) ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
+typedef GXVoid ( GXCALL* GXUIDraggableAreaOnResizeHandler ) ( GXVoid* context, GXUIDragableArea& area, GXFloat width, GXFloat height );
 
 enum eGXDraggableAreaResizeMode : GXUByte
 {
-	None,
-	Dragging,
-	WidthLockLeft,
-	WidthLockRight,
-	HeightLockBottom,
-	HeightLockTop,
-	WidthAndHeightLockTopLeft,
-	WidthAndHeightLockTopRight,
-	WidthAndHeightLockBottomLeft,
-	WidthAndHeightLockBottomRight
+    None,
+    Dragging,
+    WidthLockLeft,
+    WidthLockRight,
+    HeightLockBottom,
+    HeightLockTop,
+    WidthAndHeightLockTopLeft,
+    WidthAndHeightLockTopRight,
+    WidthAndHeightLockBottomLeft,
+    WidthAndHeightLockBottomRight
 };
 
 class GXUIDragableArea final : public GXWidget
 {
-	private:
-		GXFloat							headerHeight;
-		GXFloat							borderThickness;
+    private:
+        GXFloat                             _headerHeight;
+        GXFloat                             _borderThickness;
 
-		GXVec2							minimumSize;
+        GXVec2                              _minimumSize;
 
-		HCURSOR							standartArrow;
-		HCURSOR							verticalArrow;
-		HCURSOR							horizontalArrow;
-		HCURSOR							crossArrow;
-		HCURSOR							northwestSoutheastArrow;
-		HCURSOR							northeastSouthwestArrow;
+        HCURSOR                             _standartArrow;
+        HCURSOR                             _verticalArrow;
+        HCURSOR                             _horizontalArrow;
+        HCURSOR                             _crossArrow;
+        HCURSOR                             _northwestSoutheastArrow;
+        HCURSOR                             _northeastSouthwestArrow;
 
-		GXVec2							lastMousePosition;
-		eGXDraggableAreaResizeMode		resizeMode;
-		PFNGXUIDRAGABLEAREAONRESIZEPROC	OnResize;
-		GXVoid*							handler;
+        GXVec2                              _lastMousePosition;
+        eGXDraggableAreaResizeMode          _resizeMode;
+        GXUIDraggableAreaOnResizeHandler    _onResize;
+        GXVoid*                             _context;
 
-		GXAABB							headerArea;
-		GXAABB							clientArea;
+        GXAABB                              _headerArea;
+        GXAABB                              _clientArea;
 
-		GXAABB							borderLeft;
-		GXAABB							borderTop;
-		GXAABB							borderRight;
-		GXAABB							borderBottom;
+        GXAABB                              _borderLeft;
+        GXAABB                              _borderTop;
+        GXAABB                              _borderRight;
+        GXAABB                              _borderBottom;
 
-		GXAABB							cornerTopLeft;
-		GXAABB							cornerTopRight;
-		GXAABB							cornerBottomLeft;
-		GXAABB							cornerBottomRight;
+        GXAABB                              _cornerTopLeft;
+        GXAABB                              _cornerTopRight;
+        GXAABB                              _cornerBottomLeft;
+        GXAABB                              _cornerBottomRight;
 
-		const HCURSOR*					currentCursor;
+        const HCURSOR*                      _currentCursor;
 
-	public:
-		explicit GXUIDragableArea ( GXWidget* parent );
-		~GXUIDragableArea () override;
+    public:
+        explicit GXUIDragableArea ( GXWidget* parent );
+        ~GXUIDragableArea () override;
 
-		GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
+        GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
 
-		GXVoid SetMinimumWidth ( GXFloat width );
-		GXFloat GetMinimumWidth () const;
+        GXVoid SetMinimumWidth ( GXFloat width );
+        GXFloat GetMinimumWidth () const;
 
-		GXVoid SetMinimumHeight ( GXFloat height );
-		GXFloat GetMinimumHeight () const;
+        GXVoid SetMinimumHeight ( GXFloat height );
+        GXFloat GetMinimumHeight () const;
 
-		GXVoid SetHeaderHeight ( GXFloat height );
-		GXFloat GetHeaderHeight () const;
+        GXVoid SetHeaderHeight ( GXFloat height );
+        GXFloat GetHeaderHeight () const;
 
-		GXVoid SetBorderThickness ( GXFloat thickness );
-		GXFloat GetBorderThickness () const;
+        GXVoid SetBorderThickness ( GXFloat thickness );
+        GXFloat GetBorderThickness () const;
 
-		GXVoid SetOnResizeCallback ( GXVoid* handlerObject, PFNGXUIDRAGABLEAREAONRESIZEPROC callback );
+        GXVoid SetOnResizeCallback ( GXVoid* context, GXUIDraggableAreaOnResizeHandler callback );
 
-	private:
-		eGXDraggableAreaResizeMode GetResizeMode ( const GXVec2 &mousePosition ) const;
-		GXVoid UpdateAreas ();
-		GXVoid UpdateCursor ( const GXVec2 &mousePosition );
+    private:
+        eGXDraggableAreaResizeMode GetResizeMode ( const GXVec2 &mousePosition ) const;
+        GXVoid UpdateAreas ();
+        GXVoid UpdateCursor ( const GXVec2 &mousePosition );
 
-		GXUIDragableArea () = delete;
-		GXUIDragableArea ( const GXUIDragableArea &other ) = delete;
-		GXUIDragableArea& operator = ( const GXUIDragableArea &other ) = delete;
+        GXUIDragableArea () = delete;
+        GXUIDragableArea ( const GXUIDragableArea &other ) = delete;
+        GXUIDragableArea& operator = ( const GXUIDragableArea &other ) = delete;
 };
 
 

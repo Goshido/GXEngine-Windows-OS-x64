@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #ifndef GX_SOUND_EMITTER
 #define GX_SOUND_EMITTER
@@ -11,28 +11,28 @@
 class GXSoundEmitter final : public GXMemoryInspector
 {
     public:
-        GXSoundEmitter**    top;
-        GXSoundEmitter*     next;
-        GXSoundEmitter*     prev;
+        GXSoundEmitter**    _top;
+        GXSoundEmitter*     _next;
+        GXSoundEmitter*     _previous;
 
     private:
-        GXSoundTrack*       track;
-        GXSoundStreamer*    streamer;
+        GXSoundTrack*       _track;
+        GXSoundStreamer*    _streamer;
 
-        GXFloat             ownVolume;
-        GXFloat             channelVolume;
+        GXFloat             _ownVolume;
+        GXFloat             _channelVolume;
 
-        GXBool              looped;
-        GXBool              finished;
-        GXBool              stopped;
+        GXBool              _looped;
+        GXBool              _finished;
+        GXBool              _stopped;
 
-        GXBool              forceUpdate;
+        GXBool              _forceUpdate;
 
-        ALuint              source;
-        ALuint              streamBuffers[ 2u ];
+        ALuint              _source;
+        ALuint              _streamBuffers[ 2u ];
 
     public:
-        explicit GXSoundEmitter ( GXSoundTrack* trackObject, GXBool isTrackLooped, GXBool isTrackStreamed, GXBool isRelative );
+        explicit GXSoundEmitter ( GXSoundTrack* track, GXBool isTrackLooped, GXBool isTrackStreamed, GXBool isRelative );
         ~GXSoundEmitter () override;
 
         GXVoid SetVelocity ( const GXVec3 &velocity );

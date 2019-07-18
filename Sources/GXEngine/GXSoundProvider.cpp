@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #include <GXEngine/GXSoundProvider.h>
 #include <GXCommon/GXFile.h>
@@ -10,9 +10,9 @@ GXSoundTrack* gx_strgSoundTracks = nullptr;
 
 GXSoundStreamer::GXSoundStreamer ( GXVoid* memoryMappedFile, GXUPointer fileSize )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXSoundStreamer" )
-    mappedFile ( static_cast<GXUByte*> ( memoryMappedFile ) ),
-    totalSize ( fileSize ),
-    position ( 0 )
+    _mappedFile ( static_cast<GXUByte*> ( memoryMappedFile ) ),
+    _totalSize ( fileSize ),
+    _position ( 0 )
 {
     // NOTHING
 }
@@ -24,13 +24,13 @@ GXSoundStreamer::~GXSoundStreamer ()
 
 GXUInt GXSoundStreamer::Read ( GXVoid* out, GXUInt size )
 {
-    GXUInt temp = static_cast<GXUInt> ( totalSize - position );
+    const GXUInt temp = static_cast<GXUInt> ( _totalSize - _position );
 
     if ( size > temp )
         size = temp;
     
-    memcpy ( out, mappedFile + position, size );
-    position += size;
+    memcpy ( out, _mappedFile + _position, size );
+    _position += size;
 
     return size;
 }
@@ -40,88 +40,88 @@ GXInt GXSoundStreamer::Seek ( GXInt offset, GXInt whence )
     switch ( whence )
     {
         case SEEK_SET:
-            position = offset;
+            _position = offset;
         break;
 
         case SEEK_CUR:
-            position += offset;
+            _position += offset;
         break;
 
         case SEEK_END:
-            position = static_cast<GXLong> ( totalSize ) + offset;
+            _position = static_cast<GXLong> ( _totalSize ) + offset;
         break;
     }
 
-    if ( position < 0 ) 
-        position = 0;
-    else if ( position > static_cast<GXLong> ( totalSize ) ) 
-        position = static_cast<GXLong> ( totalSize );
+    if ( _position < 0 ) 
+        _position = 0;
+    else if ( _position > static_cast<GXLong> ( _totalSize ) ) 
+        _position = static_cast<GXLong> ( _totalSize );
 
     return 0;
 }
 
 GXLong GXSoundStreamer::Tell ()
 {
-    return position;
+    return _position;
 }
 
 GXVoid GXSoundStreamer::Reset ()
 {
-    position = 0;
+    _position = 0;
 }
 
 //-----------------------------------------------------------------------------------------------------
 
 GXSoundTrack::GXSoundTrack ( const GXWChar* trackFileName )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXSoundTrack" )
-    next ( gx_strgSoundTracks ),
-    prev ( nullptr ),
-    references ( 1u ),
-    readyBuffer ( 0u ),
-    trackFile ( trackFileName )
+    _next ( gx_strgSoundTracks ),
+    _previous ( nullptr ),
+    _references ( 1u ),
+    _readyBuffer ( 0u ),
+    _trackFile ( trackFileName )
 {
-    if ( next )
-        next->prev = this;
+    if ( _next )
+        _next->_previous = this;
 
     gx_strgSoundTracks = this;
 
     GXUPointer fileSize;
-    GXFile file ( trackFile );
-    file.LoadContent ( mappedFile, fileSize, eGXFileContentOwner::User, GX_TRUE );
+    GXFile file ( _trackFile );
+    file.LoadContent ( _mappedFile, fileSize, eGXFileContentOwner::User, GX_TRUE );
 }
 
 GXVoid GXSoundTrack::AddReference ()
 {
-    ++references;
+    ++_references;
 }
 
 GXVoid GXSoundTrack::Release ()
 {
-    if ( references < static_cast<GXUPointer> ( 1u ) )
+    if ( _references < static_cast<GXUPointer> ( 1u ) )
     {
         GXWarningBox ( "GXSoundTrack::Error - ѕопытка уменьшить количество ссылок, когда их нет." );
         return;
     }
 
-    --references;
+    --_references;
 
-    if ( references > static_cast<GXUPointer> ( 0u ) ) return;
+    if ( _references > static_cast<GXUPointer> ( 0u ) ) return;
 
     delete this;
 }
 
 GXSoundTrack::~GXSoundTrack ()
 {
-    SafeFree ( reinterpret_cast<GXVoid**> ( &mappedFile ) );
+    SafeFree ( reinterpret_cast<GXVoid**> ( &_mappedFile ) );
 
-    if ( next )
-        next->prev = prev;
+    if ( _next )
+        _next->_previous = _previous;
 
-    if ( prev )
+    if ( _previous )
     {
-        prev->next = next;
+        _previous->_next = _next;
         return;
     }
 
-    gx_strgSoundTracks = next;
+    gx_strgSoundTracks = _next;
 }

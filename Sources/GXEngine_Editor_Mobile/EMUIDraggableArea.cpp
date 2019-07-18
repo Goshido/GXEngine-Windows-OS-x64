@@ -24,8 +24,8 @@
 class EMUIDraggableAreaRenderer final : public GXWidgetRenderer
 {
     private:
-        GXTexture2D         background;
-        GXHudSurface*       surface;
+        GXTexture2D         _background;
+        GXHudSurface*       _surface;
 
     public:
         explicit EMUIDraggableAreaRenderer ( GXUIDragableArea* draggableAreaWidget );
@@ -46,64 +46,64 @@ class EMUIDraggableAreaRenderer final : public GXWidgetRenderer
 
 EMUIDraggableAreaRenderer::EMUIDraggableAreaRenderer ( GXUIDragableArea* draggableAreaWidget ):
     GXWidgetRenderer ( draggableAreaWidget ),
-    background ( BACKGROUND_TEXTURE, GX_FALSE, GX_FALSE )
+    _background ( BACKGROUND_TEXTURE, GX_FALSE, GX_FALSE )
 {
     const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
-    surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
+    _surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
 EMUIDraggableAreaRenderer::~EMUIDraggableAreaRenderer ()
 {
-    delete surface;
+    delete _surface;
 }
 
 GXVoid EMUIDraggableAreaRenderer::OnRefresh ()
 {
-    surface->Reset ();
-    GXFloat w = static_cast<GXFloat> ( surface->GetWidth () );
-    GXFloat h = static_cast<GXFloat> ( surface->GetHeight () );
+    _surface->Reset ();
+    const GXFloat w = static_cast<GXFloat> ( _surface->GetWidth () );
+    const GXFloat h = static_cast<GXFloat> ( _surface->GetHeight () );
 
     GXImageInfo ii;
-    ii.texture = &background;
-    ii.color.From ( BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
-    ii.insertX = ii.insertY = 1.5f;
-    ii.insertWidth = w - 2.0f;
-    ii.insertHeight = h - 2.0f;
-    ii.overlayType = eGXImageOverlayType::SimpleReplace;
+    ii._texture = &_background;
+    ii._color.From ( BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A );
+    ii._insertX = ii._insertY = 1.5f;
+    ii._insertWidth = w - 2.0f;
+    ii._insertHeight = h - 2.0f;
+    ii._overlayType = eGXImageOverlayType::SimpleReplace;
 
-    surface->AddImage ( ii );
+    _surface->AddImage ( ii );
 
     GXLineInfo li;
-    li.color.From ( FRAME_COLOR_R, FRAME_COLOR_G, FRAME_COLOR_B, FRAME_COLOR_A );
-    li.thickness = 1.0f;
-    li.startPoint.Init ( 1.5f, 0.5f );
-    li.endPoint.Init ( w - 0.5f, 0.5f );
-    li.overlayType = eGXImageOverlayType::SimpleReplace;
+    li._color.From ( FRAME_COLOR_R, FRAME_COLOR_G, FRAME_COLOR_B, FRAME_COLOR_A );
+    li._thickness = 1.0f;
+    li._startPoint.Init ( 1.5f, 0.5f );
+    li._endPoint.Init ( w - 0.5f, 0.5f );
+    li._overlayType = eGXImageOverlayType::SimpleReplace;
 
-    surface->AddLine ( li );
+    _surface->AddLine ( li );
 
-    li.startPoint.Init ( w - 0.5f, 1.5f );
-    li.endPoint.Init ( w - 0.5f, h - 0.5f );
+    li._startPoint.Init ( w - 0.5f, 1.5f );
+    li._endPoint.Init ( w - 0.5f, h - 0.5f );
 
-    surface->AddLine ( li );
+    _surface->AddLine ( li );
 
-    li.startPoint.Init ( w - 1.5f, h - 0.5f );
-    li.endPoint.Init ( 0.5f, h - 0.5f );
+    li._startPoint.Init ( w - 1.5f, h - 0.5f );
+    li._endPoint.Init ( 0.5f, h - 0.5f );
 
-    surface->AddLine ( li );
+    _surface->AddLine ( li );
 
-    li.startPoint.Init ( 0.5f, h - 1.5f );
-    li.endPoint.Init ( 0.5f, 0.5f );
+    li._startPoint.Init ( 0.5f, h - 1.5f );
+    li._endPoint.Init ( 0.5f, 0.5f );
 
-    surface->AddLine ( li );
+    _surface->AddLine ( li );
 }
 
 GXVoid EMUIDraggableAreaRenderer::OnDraw ()
 {
     glDisable ( GL_DEPTH_TEST );
-    surface->Render ();
+    _surface->Render ();
     glEnable ( GL_DEPTH_TEST );
 }
 
@@ -113,13 +113,13 @@ GXVoid EMUIDraggableAreaRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort wid
     y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
     GXVec3 location;
-    surface->GetLocation ( location );
-    delete surface;
+    _surface->GetLocation ( location );
+    delete _surface;
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
-    surface = new GXHudSurface ( width, height );
+    _surface = new GXHudSurface ( width, height );
 
-    surface->SetLocation ( x, y, location.data[ 2 ] );
+    _surface->SetLocation ( x, y, location._data[ 2u ] );
 }
 
 GXVoid EMUIDraggableAreaRenderer::OnMoved ( GXFloat x, GXFloat y )
@@ -128,62 +128,62 @@ GXVoid EMUIDraggableAreaRenderer::OnMoved ( GXFloat x, GXFloat y )
     y = truncf ( y ) + PIXEL_PERFECT_LOCATION_OFFSET_Y;
 
     GXVec3 location;
-    surface->GetLocation ( location );
-    surface->SetLocation ( x, y, location.data[ 2 ] );
+    _surface->GetLocation ( location );
+    _surface->SetLocation ( x, y, location._data[ 2 ] );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 EMUIDraggableArea::EMUIDraggableArea ( EMUI* parent ):
     EMUI ( parent ),
-    widget ( new GXUIDragableArea ( parent ? parent->GetWidget () : nullptr ) )
+    _widget ( new GXUIDragableArea ( parent ? parent->GetWidget () : nullptr ) )
 {
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIDraggableAreaRenderer" );
-    widget->SetRenderer ( new EMUIDraggableAreaRenderer ( widget ) );
+    _widget->SetRenderer ( new EMUIDraggableAreaRenderer ( _widget ) );
 }
 
 EMUIDraggableArea::~EMUIDraggableArea ()
 {
-    delete widget->GetRenderer ();
-    delete widget;
+    delete _widget->GetRenderer ();
+    delete _widget;
 }
 
 GXWidget* EMUIDraggableArea::GetWidget () const
 {
-    return widget;
+    return _widget;
 }
 
 GXVoid EMUIDraggableArea::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height )
 {
-    widget->Resize ( bottomLeftX, bottomLeftY, width, height );
+    _widget->Resize ( bottomLeftX, bottomLeftY, width, height );
 }
 
 GXVoid EMUIDraggableArea::Show ()
 {
-    widget->Show ();
+    _widget->Show ();
 }
 
 GXVoid EMUIDraggableArea::Hide ()
 {
-    widget->Hide ();
+    _widget->Hide ();
 }
 
 GXVoid EMUIDraggableArea::SetHeaderHeight ( GXFloat headerHeight )
 {
-    widget->SetHeaderHeight ( headerHeight );
+    _widget->SetHeaderHeight ( headerHeight );
 }
 
 GXVoid EMUIDraggableArea::SetMinimumWidth ( GXFloat width )
 {
-    widget->SetMinimumWidth ( width );
+    _widget->SetMinimumWidth ( width );
 }
 
 GXVoid EMUIDraggableArea::SetMinimumHeight ( GXFloat height )
 {
-    widget->SetMinimumHeight ( height );
+    _widget->SetMinimumHeight ( height );
 }
 
-GXVoid EMUIDraggableArea::SetOnResizeCallback ( GXVoid* handler, PFNGXUIDRAGABLEAREAONRESIZEPROC callback )
+GXVoid EMUIDraggableArea::SetOnResizeCallback ( GXVoid* context, GXUIDraggableAreaOnResizeHandler callback )
 {
-    widget->SetOnResizeCallback ( handler, callback );
+    _widget->SetOnResizeCallback ( context, callback );
 }

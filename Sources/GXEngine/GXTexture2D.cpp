@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #include <GXEngine/GXTexture2D.h>
 #include <GXEngine/GXMeshGeometry.h>
@@ -36,11 +36,11 @@ enum class eGXChannelDataType : GXUByte
 
 struct GXTexture2DCacheHeader final
 {
-    GXUByte                 numChannels;
-    eGXChannelDataType      channelDataType;
-    GXUShort                width;
-    GXUShort                height;
-    GXUBigInt               pixelOffset;
+    GXUByte                 _numChannels;
+    eGXChannelDataType      _channelDataType;
+    GXUShort                _width;
+    GXUShort                _height;
+    GXUBigInt               _pixelOffset;
 };
 
 #pragma pack ( pop )
@@ -50,31 +50,31 @@ struct GXTexture2DCacheHeader final
 class GXTexture2DEntry final : public GXMemoryInspector
 {
     private:
-        GXTexture2DEntry*               previous;
-        GXTexture2DEntry*               next;
+        GXTexture2DEntry*               _previous;
+        GXTexture2DEntry*               _next;
 
-        GXUPointerAtomic                references;
-        const GXString                  fileName;
+        GXUPointerAtomic                _references;
+        const GXString                  _fileName;
 
-        GXUShort                        width;
-        GXUShort                        height;
-        GXUByte                         numChannels;
-        GXUByte                         lods;
+        GXUShort                        _width;
+        GXUShort                        _height;
+        GXUByte                         _numChannels;
+        GXUByte                         _lods;
 
-        GLint                           internalFormat;
-        GLint                           unpackAlignment;
-        GLenum                          format;
-        GLenum                          type;
+        GLint                           _internalFormat;
+        GLint                           _unpackAlignment;
+        GLenum                          _format;
+        GLenum                          _type;
 
-        GLuint                          textureObject;
+        GLuint                          _textureObject;
 
-        GXBool                          isGenerateMipmap;
+        GXBool                          _isGenerateMipmap;
 
-        static GXTexture2DEntry*        top;
+        static GXTexture2DEntry*        _top;
 
     public:
         explicit GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGenerateMipmap, GXBool isApplyGammaCorrection );
-        explicit GXTexture2DEntry ( GXUShort imageWidth, GXUShort imageHeight, GLint imageInternalFormat, GXBool doesGenerateMipmap );
+        explicit GXTexture2DEntry ( GXUShort width, GXUShort height, GLint internalFormat, GXBool doesGenerateMipmap );
 
         const GXWChar* GetFileName () const;
         GXUShort GetWidth () const;
@@ -109,27 +109,27 @@ class GXTexture2DEntry final : public GXMemoryInspector
         GXTexture2DEntry& operator = ( const GXTexture2DEntry &other ) = delete;
 };
 
-GXTexture2DEntry* GXTexture2DEntry::top = nullptr;
+GXTexture2DEntry* GXTexture2DEntry::_top = nullptr;
 
 GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGenerateMipmap, GXBool isApplyGammaCorrection )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTexture2DEntry" )
-    previous ( nullptr ),
-    next ( top ),
-    references ( 1u ),
-    fileName ( imageFileName )
+    _previous ( nullptr ),
+    _next ( _top ),
+    _references ( 1u ),
+    _fileName ( imageFileName )
 {
-    isGenerateMipmap = doesGenerateMipmap;
+    _isGenerateMipmap = doesGenerateMipmap;
 
-    if ( top )
-        top->previous = this;
+    if ( _top )
+        _top->_previous = this;
 
-    top = this;
+    _top = this;
 
     GXWChar* path = nullptr;
-    GXGetFileDirectoryPath ( &path, fileName );
+    GXGetFileDirectoryPath ( &path, _fileName );
 
     GXWChar* baseFileName = nullptr;
-    GXGetBaseFileName ( &baseFileName, fileName );
+    GXGetBaseFileName ( &baseFileName, _fileName );
 
     GXString cacheFileName;
     cacheFileName.Format ( "%S/%S/%S.%S", path, CACHE_DIRECTORY_NAME, baseFileName, CACHE_FILE_EXTENSION );
@@ -151,11 +151,11 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
 
         const GXTexture2DCacheHeader* cacheHeader = reinterpret_cast<const GXTexture2DCacheHeader*> ( data );
 
-        switch ( cacheHeader->numChannels )
+        switch ( cacheHeader->_numChannels )
         {
             case 1u:
             {
-                switch ( cacheHeader->channelDataType )
+                switch ( cacheHeader->_channelDataType )
                 {
                     case eGXChannelDataType::UnsignedByte:
                         resolvedInternalFormat = GL_R8;
@@ -174,7 +174,7 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
 
             case 2u:
             {
-                switch ( cacheHeader->channelDataType )
+                switch ( cacheHeader->_channelDataType )
                 {
                     case eGXChannelDataType::UnsignedByte:
                         resolvedInternalFormat = GL_RG8;
@@ -193,7 +193,7 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
 
             case 3u:
             {
-                switch ( cacheHeader->channelDataType )
+                switch ( cacheHeader->_channelDataType )
                 {
                     case eGXChannelDataType::UnsignedByte:
                         resolvedInternalFormat = GL_RGB8;
@@ -212,7 +212,7 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
 
             case 4u:
             {
-                switch ( cacheHeader->channelDataType )
+                switch ( cacheHeader->_channelDataType )
                 {
                     case eGXChannelDataType::UnsignedByte:
                         resolvedInternalFormat = GL_RGBA8;
@@ -234,8 +234,8 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
             break;
         }
 
-        InitResources ( cacheHeader->width, cacheHeader->height, resolvedInternalFormat, isGenerateMipmap );
-        FillWholePixelData ( data + cacheHeader->pixelOffset );
+        InitResources ( cacheHeader->_width, cacheHeader->_height, resolvedInternalFormat, _isGenerateMipmap );
+        FillWholePixelData ( data + cacheHeader->_pixelOffset );
 
         file.Close ();
         return;
@@ -254,7 +254,7 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
     GXUInt resolvedHeight = 0u;
 
     GXWChar* extension = nullptr;
-    GXGetFileExtension ( &extension, fileName );
+    GXGetFileExtension ( &extension, _fileName );
     GXTexture2D textureToGammaCorrect;
     GXBool success = GX_FALSE;
     GXUByte* pixels = nullptr;
@@ -264,11 +264,11 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
     if ( GXWcscmp ( extension, L"hdr" ) == 0 || GXWcscmp ( extension, L"HDR" ) == 0 )
     {
         GXFloat* hdrPixels = nullptr;
-        success = GXLoadHDRImage ( fileName, resolvedWidth, resolvedHeight, cacheHeader.numChannels, &hdrPixels );
+        success = GXLoadHDRImage ( _fileName, resolvedWidth, resolvedHeight, cacheHeader._numChannels, &hdrPixels );
 
         if ( success )
         {
-            switch ( cacheHeader.numChannels )
+            switch ( cacheHeader._numChannels )
             {
                 case 1u:
                     resolvedInternalFormat = GL_R16F;
@@ -303,21 +303,21 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
                 break;
             }
 
-            cacheHeader.channelDataType = eGXChannelDataType::Float;
-            cacheHeader.width = static_cast<GXUShort> ( resolvedWidth );
-            cacheHeader.height = static_cast<GXUShort> ( resolvedHeight );
-            cacheHeader.pixelOffset = sizeof ( GXTexture2DCacheHeader );
+            cacheHeader._channelDataType = eGXChannelDataType::Float;
+            cacheHeader._width = static_cast<GXUShort> ( resolvedWidth );
+            cacheHeader._height = static_cast<GXUShort> ( resolvedHeight );
+            cacheHeader._pixelOffset = sizeof ( GXTexture2DCacheHeader );
 
-            pixelSize = resolvedWidth * resolvedHeight * cacheHeader.numChannels * sizeof ( GXFloat );
+            pixelSize = resolvedWidth * resolvedHeight * cacheHeader._numChannels * sizeof ( GXFloat );
 
             cacheFile.Write ( &cacheHeader, sizeof ( GXTexture2DCacheHeader ) );
-            InitResources ( cacheHeader.width, cacheHeader.height, resolvedInternalFormat, isGenerateMipmap );
+            InitResources ( cacheHeader._width, cacheHeader._height, resolvedInternalFormat, _isGenerateMipmap );
 
             if ( isApplyGammaCorrection )
             {
                 pixels = reinterpret_cast<GXUByte*> ( hdrPixels );
 
-                textureToGammaCorrect.InitResources ( cacheHeader.width, cacheHeader.height, resolvedInternalFormat, GX_FALSE );
+                textureToGammaCorrect.InitResources ( cacheHeader._width, cacheHeader._height, resolvedInternalFormat, GX_FALSE );
                 textureToGammaCorrect.FillWholePixelData ( pixels );
             }
             else
@@ -334,11 +334,11 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
     else
     {
         GXUByte* ldrPixels = nullptr;
-        success = GXLoadLDRImage ( fileName, resolvedWidth, resolvedHeight, cacheHeader.numChannels, &ldrPixels );
+        success = GXLoadLDRImage ( _fileName, resolvedWidth, resolvedHeight, cacheHeader._numChannels, &ldrPixels );
 
         if ( success )
         {
-            switch ( cacheHeader.numChannels )
+            switch ( cacheHeader._numChannels )
             {
                 case 1u:
                     resolvedInternalFormat = GL_R8;
@@ -373,20 +373,20 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
                 break;
             }
 
-            cacheHeader.channelDataType = eGXChannelDataType::UnsignedByte;
-            cacheHeader.width = static_cast<GXUShort> ( resolvedWidth );
-            cacheHeader.height = static_cast<GXUShort> ( resolvedHeight );
-            cacheHeader.pixelOffset = sizeof ( GXTexture2DCacheHeader );
+            cacheHeader._channelDataType = eGXChannelDataType::UnsignedByte;
+            cacheHeader._width = static_cast<GXUShort> ( resolvedWidth );
+            cacheHeader._height = static_cast<GXUShort> ( resolvedHeight );
+            cacheHeader._pixelOffset = sizeof ( GXTexture2DCacheHeader );
 
-            pixelSize = resolvedWidth * resolvedHeight * cacheHeader.numChannels * sizeof ( GXUByte );
+            pixelSize = resolvedWidth * resolvedHeight * cacheHeader._numChannels * sizeof ( GXUByte );
             cacheFile.Write ( &cacheHeader, sizeof ( GXTexture2DCacheHeader ) );
-            InitResources ( cacheHeader.width, cacheHeader.height, resolvedInternalFormat, isGenerateMipmap );
+            InitResources ( cacheHeader._width, cacheHeader._height, resolvedInternalFormat, _isGenerateMipmap );
 
             if ( isApplyGammaCorrection )
             {
                 pixels = ldrPixels;
 
-                textureToGammaCorrect.InitResources ( cacheHeader.width, cacheHeader.height, resolvedInternalFormat, GX_FALSE );
+                textureToGammaCorrect.InitResources ( cacheHeader._width, cacheHeader._height, resolvedInternalFormat, GX_FALSE );
                 textureToGammaCorrect.FillWholePixelData ( pixels );
             }
             else
@@ -405,7 +405,7 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
 
     if ( !success )
     {
-        GXLogA ( "GXTexture2D::LoadTexture::Error - ѕоддерживаютс€ текстуры с количеством каналов 1, 3 и 4 (текущее количество %hhu)\n", cacheHeader.numChannels );
+        GXLogA ( "GXTexture2D::LoadTexture::Error - ѕоддерживаютс€ текстуры с количеством каналов 1, 3 и 4 (текущее количество %hhu)\n", cacheHeader._numChannels );
         return;
     }
 
@@ -417,7 +417,7 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
     GLuint fbo;
     glGenFramebuffers ( 1, &fbo );
     glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
-    glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureObject, 0 );
+    glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _textureObject, 0 );
     glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, 0u, 0 );
     glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, 0u, 0 );
     glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, 0u, 0 );
@@ -427,7 +427,7 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
     glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT7, 0u, 0 );
     glFramebufferTexture ( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 0u, 0 );
 
-    switch ( numChannels )
+    switch ( _numChannels )
     {
         case 1u:
             glColorMask ( GL_TRUE, GL_FALSE, GL_FALSE, GL_FALSE );
@@ -477,7 +477,7 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
     gammaCorrectorMaterial.Unbind ();
 
     glPixelStorei ( GL_PACK_ALIGNMENT, packAlignment );
-    glReadPixels ( 0, 0, static_cast<GLsizei> ( cacheHeader.width ), static_cast<GLsizei> ( cacheHeader.height ), readPixelFormat, readPixelType, pixels );
+    glReadPixels ( 0, 0, static_cast<GLsizei> ( cacheHeader._width ), static_cast<GLsizei> ( cacheHeader._height ), readPixelFormat, readPixelType, pixels );
 
     cacheFile.Write ( pixels, pixelSize );
     cacheFile.Close ();
@@ -487,76 +487,76 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
     state.Restore ();
     glDeleteFramebuffers ( 1, &fbo );
 
-    if ( !isGenerateMipmap ) return;
+    if ( !_isGenerateMipmap ) return;
 
     UpdateMipmaps ();
 }
 
-GXTexture2DEntry::GXTexture2DEntry ( GXUShort imageWidth, GXUShort imageHeight, GLint imageInternalFormat, GXBool doesGenerateMipmap )
+GXTexture2DEntry::GXTexture2DEntry ( GXUShort width, GXUShort height, GLint internalFormat, GXBool doesGenerateMipmap )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTexture2DEntry" )
-    previous ( nullptr ),
-    next ( nullptr ),
-    references ( 1u )
+    _previous ( nullptr ),
+    _next ( nullptr ),
+    _references ( 1u )
 {
-    InitResources ( imageWidth, imageHeight, imageInternalFormat, doesGenerateMipmap );
+    InitResources ( width, height, internalFormat, doesGenerateMipmap );
 }
 
 const GXWChar* GXTexture2DEntry::GetFileName () const
 {
-    return fileName;
+    return _fileName;
 }
 
 GXUShort GXTexture2DEntry::GetWidth () const
 {
-    return width;
+    return _width;
 }
 
 GXUShort GXTexture2DEntry::GetHeight () const
 {
-    return height;
+    return _height;
 }
 
 GLint GXTexture2DEntry::GetInternalFormat () const
 {
-    return internalFormat;
+    return _internalFormat;
 }
 
 GXBool GXTexture2DEntry::IsGenerateMipmap () const
 {
-    return isGenerateMipmap;
+    return _isGenerateMipmap;
 }
 
 GXUByte GXTexture2DEntry::GetChannelNumber () const
 {
-    return numChannels;
+    return _numChannels;
 }
 
 GXUByte GXTexture2DEntry::GetLevelOfDetailNumber () const
 {
-    return lods;
+    return _lods;
 }
 
 GLuint GXTexture2DEntry::GetTextureObject () const
 {
-    return textureObject;
+    return _textureObject;
 }
 
 GXVoid GXTexture2DEntry::FillWholePixelData ( const GXVoid* data )
 {
-    if ( textureObject == 0u ) return;
+    if ( _textureObject == 0u ) return;
 
     glActiveTexture ( GL_TEXTURE0 );
-    glBindTexture ( GL_TEXTURE_2D, textureObject );
+    glBindTexture ( GL_TEXTURE_2D, _textureObject );
 
-    glPixelStorei ( GL_UNPACK_ALIGNMENT, unpackAlignment );
-    glTexImage2D ( GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, data );
+    glPixelStorei ( GL_UNPACK_ALIGNMENT, _unpackAlignment );
+    glTexImage2D ( GL_TEXTURE_2D, 0, _internalFormat, _width, _height, 0, _format, _type, data );
 
     glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
     glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
     glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-    if ( isGenerateMipmap )
+    if ( _isGenerateMipmap )
         glGenerateMipmap ( GL_TEXTURE_2D );
 
     glBindTexture ( GL_TEXTURE_2D, 0u );
@@ -566,16 +566,16 @@ GXVoid GXTexture2DEntry::FillWholePixelData ( const GXVoid* data )
 
 GXVoid GXTexture2DEntry::FillRegionPixelData ( GXUShort left, GXUShort bottom, GXUShort regionWidth, GXUShort regionHeight, const GXVoid* data )
 {
-    if ( textureObject == 0u ) return;
+    if ( _textureObject == 0u ) return;
 
     glActiveTexture ( GL_TEXTURE0 );
-    glBindTexture ( GL_TEXTURE_2D, textureObject );
+    glBindTexture ( GL_TEXTURE_2D, _textureObject );
 
-    glPixelStorei ( GL_UNPACK_ALIGNMENT, unpackAlignment );
-    glTexSubImage2D ( GL_TEXTURE_2D, 0, static_cast<GLint> ( left ), static_cast<GLint> ( bottom ), static_cast<GLint> ( regionWidth ), static_cast<GLint> ( regionHeight ), format, type, data );
+    glPixelStorei ( GL_UNPACK_ALIGNMENT, _unpackAlignment );
+    glTexSubImage2D ( GL_TEXTURE_2D, 0, static_cast<GLint> ( left ), static_cast<GLint> ( bottom ), static_cast<GLint> ( regionWidth ), static_cast<GLint> ( regionHeight ), _format, _type, data );
     GXCheckOpenGLError ();
 
-    if ( isGenerateMipmap )
+    if ( _isGenerateMipmap )
     {
         glGenerateMipmap ( GL_TEXTURE_2D );
         glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
@@ -591,10 +591,10 @@ GXVoid GXTexture2DEntry::FillRegionPixelData ( GXUShort left, GXUShort bottom, G
 
 GXVoid GXTexture2DEntry::UpdateMipmaps ()
 {
-    if ( textureObject == 0u || !isGenerateMipmap ) return;
+    if ( _textureObject == 0u || !_isGenerateMipmap ) return;
 
     glActiveTexture ( GL_TEXTURE0 );
-    glBindTexture ( GL_TEXTURE_2D, textureObject );
+    glBindTexture ( GL_TEXTURE_2D, _textureObject );
 
     glGenerateMipmap ( GL_TEXTURE_2D );
     glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
@@ -609,23 +609,23 @@ GXVoid GXTexture2DEntry::UpdateMipmaps ()
 
 GXVoid GXTexture2DEntry::AddReference ()
 {
-    ++references;
+    ++_references;
 }
 
 GXVoid GXTexture2DEntry::Release ()
 {
-    --references;
+    --_references;
 
-    if ( references > static_cast<GXUPointer> ( 0u ) ) return;
+    if ( _references > static_cast<GXUPointer> ( 0u ) ) return;
 
     delete this;
 }
 
 GXTexture2DEntry* GXCALL GXTexture2DEntry::Find ( const GXWChar* textureFile )
 {
-    for ( GXTexture2DEntry* p = top; p; p = p->next )
+    for ( GXTexture2DEntry* p = _top; p; p = p->_next )
     {
-        if ( GXWcscmp ( p->fileName, textureFile ) != 0 ) continue;
+        if ( GXWcscmp ( p->_fileName, textureFile ) != 0 ) continue;
         
         return p;
     }
@@ -637,11 +637,11 @@ GXUInt GXCALL GXTexture2DEntry::GetTotalLoadedTextures ( const GXWChar** lastTex
 {
     GXUInt total = 0u;
 
-    for ( const GXTexture2DEntry* p = top; p; p = p->next )
+    for ( const GXTexture2DEntry* p = _top; p; p = p->_next )
         ++total;
 
     if ( total > 0u )
-        *lastTexture = top->GetFileName ();
+        *lastTexture = _top->GetFileName ();
     else
         *lastTexture = nullptr;
 
@@ -650,40 +650,40 @@ GXUInt GXCALL GXTexture2DEntry::GetTotalLoadedTextures ( const GXWChar** lastTex
 
 GXTexture2DEntry::~GXTexture2DEntry ()
 {
-    if ( top == this )
-        top = top->next;
+    if ( _top == this )
+        _top = _top->_next;
 
-    if ( previous )
-        previous->next = next;
+    if ( _previous )
+        _previous->_next = _next;
 
-    if ( next )
-        next->previous = previous;
+    if ( _next )
+        _next->_previous = _previous;
 
-    if ( textureObject == 0u ) return;
+    if ( _textureObject == 0u ) return;
 
-    glDeleteTextures ( 1, &textureObject );
+    glDeleteTextures ( 1, &_textureObject );
 }
 
 GXVoid GXTexture2DEntry::InitResources ( GXUShort textureWidth, GXUShort textureHeight, GLint textureInternalFormat, GXBool isGenerateMipmapPolicy )
 {
-    width = textureWidth;
-    height = textureHeight;
-    internalFormat = textureInternalFormat;
-    isGenerateMipmap = isGenerateMipmapPolicy;
+    _width = textureWidth;
+    _height = textureHeight;
+    _internalFormat = textureInternalFormat;
+    _isGenerateMipmap = isGenerateMipmapPolicy;
 
     glActiveTexture ( GL_TEXTURE0 );
-    glGenTextures ( 1, &textureObject );
-    glBindTexture ( GL_TEXTURE_2D, textureObject );
+    glGenTextures ( 1, &_textureObject );
+    glBindTexture ( GL_TEXTURE_2D, _textureObject );
 
-    switch ( internalFormat )
+    switch ( _internalFormat )
     {
         case GL_R32I:
         case GL_R32UI:
         {
-            unpackAlignment = 4;
-            format = GL_RED;
-            type = GL_UNSIGNED_INT;
-            numChannels = 1u;
+            _unpackAlignment = 4;
+            _format = GL_RED;
+            _type = GL_UNSIGNED_INT;
+            _numChannels = 1u;
         }
         break;
 
@@ -691,71 +691,71 @@ GXVoid GXTexture2DEntry::InitResources ( GXUShort textureWidth, GXUShort texture
         case GL_R8I:
         case GL_R8UI:
         {
-            unpackAlignment = 1;
-            format = GL_RED;
-            type = GL_UNSIGNED_BYTE;
-            numChannels = 1u;
+            _unpackAlignment = 1;
+            _format = GL_RED;
+            _type = GL_UNSIGNED_BYTE;
+            _numChannels = 1u;
         }
         break;
 
         case GL_R16F:
-            unpackAlignment = 2;
-            format = GL_RED;
-            type = GL_FLOAT;
-            numChannels = 1u;
+            _unpackAlignment = 2;
+            _format = GL_RED;
+            _type = GL_FLOAT;
+            _numChannels = 1u;
         break;
 
         case GL_R32F:
-            unpackAlignment = 4;
-            format = GL_RED;
-            type = GL_FLOAT;
-            numChannels = 1u;
+            _unpackAlignment = 4;
+            _format = GL_RED;
+            _type = GL_FLOAT;
+            _numChannels = 1u;
         break;
 
         case GL_RG8:
         case GL_RG8I:
         case GL_RG8UI:
         {
-            unpackAlignment = 2;
-            format = GL_RG;
-            type = GL_UNSIGNED_BYTE;
-            numChannels = 2u;
+            _unpackAlignment = 2;
+            _format = GL_RG;
+            _type = GL_UNSIGNED_BYTE;
+            _numChannels = 2u;
         }
         break;
 
         case GL_RG16F:
-            unpackAlignment = 4;
-            format = GL_RG;
-            type = GL_FLOAT;
-            numChannels = 2u;
+            _unpackAlignment = 4;
+            _format = GL_RG;
+            _type = GL_FLOAT;
+            _numChannels = 2u;
         break;
 
         case GL_RGB8:
         case GL_RGB8I:
         case GL_RGB8UI:
         {
-            unpackAlignment = 1;
-            format = GL_RGB;
-            type = GL_UNSIGNED_BYTE;
-            numChannels = 3u;
+            _unpackAlignment = 1;
+            _format = GL_RGB;
+            _type = GL_UNSIGNED_BYTE;
+            _numChannels = 3u;
         }
         break;
 
         case GL_RGB16:
         {
-            unpackAlignment = 2;
-            format = GL_RGB;
-            type = GL_UNSIGNED_SHORT;
-            numChannels = 3u;
+            _unpackAlignment = 2;
+            _format = GL_RGB;
+            _type = GL_UNSIGNED_SHORT;
+            _numChannels = 3u;
         }
         break;
 
         case GL_RGB16F:
         {
-            unpackAlignment = 2;
-            format = GL_RGB;
-            type = GL_FLOAT;
-            numChannels = 3u;
+            _unpackAlignment = 2;
+            _format = GL_RGB;
+            _type = GL_FLOAT;
+            _numChannels = 3u;
         }
         break;
 
@@ -763,28 +763,28 @@ GXVoid GXTexture2DEntry::InitResources ( GXUShort textureWidth, GXUShort texture
         case GL_RGBA8I:
         case GL_RGBA8UI:
         {
-            unpackAlignment = 4;
-            format = GL_RGBA;
-            type = GL_UNSIGNED_BYTE;
-            numChannels = 4u;
+            _unpackAlignment = 4;
+            _format = GL_RGBA;
+            _type = GL_UNSIGNED_BYTE;
+            _numChannels = 4u;
         }
         break;
 
         case GL_RGBA16F:
         {
-            unpackAlignment = 8;
-            format = GL_RGBA;
-            type = GL_FLOAT;
-            numChannels = 4u;
+            _unpackAlignment = 8;
+            _format = GL_RGBA;
+            _type = GL_FLOAT;
+            _numChannels = 4u;
         }
         break;
 
         case GL_DEPTH24_STENCIL8:
         {
-            unpackAlignment = 4;
-            format = GL_DEPTH_STENCIL;
-            type = GL_UNSIGNED_INT_24_8;
-            numChannels = 1u;
+            _unpackAlignment = 4;
+            _format = GL_DEPTH_STENCIL;
+            _type = GL_UNSIGNED_INT_24_8;
+            _numChannels = 1u;
         }
         break;
 
@@ -793,23 +793,23 @@ GXVoid GXTexture2DEntry::InitResources ( GXUShort textureWidth, GXUShort texture
         break;
     }
 
-    if ( isGenerateMipmap )
+    if ( _isGenerateMipmap )
     {
-        GXUShort maxSide = width >= height ? width : height;
+        GXUShort maxSide = _width >= _height ? _width : _height;
 
-        lods = 0u;
+        _lods = 0u;
         GXUShort currentResolution = 1u;
 
         while ( currentResolution <= maxSide )
         {
-            ++lods;
+            ++_lods;
             currentResolution *= 2;
         }
     }
     else
     {
         glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0 );
-        lods = 1u;
+        _lods = 1u;
     }
 
     glBindTexture ( GL_TEXTURE_2D, 0u );
@@ -820,158 +820,158 @@ GXVoid GXTexture2DEntry::InitResources ( GXUShort textureWidth, GXUShort texture
 
 GXTexture2D::GXTexture2D ()
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTexture2D" )
-    textureUnit ( INVALID_TEXTURE_UNIT ),
-    texture2DEntry ( nullptr )
+    _textureUnit ( INVALID_TEXTURE_UNIT ),
+    _texture2DEntry ( nullptr )
 {
     // NOTHING
 }
 
 GXTexture2D::GXTexture2D ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTexture2D" )
-    textureUnit ( INVALID_TEXTURE_UNIT )
+    _textureUnit ( INVALID_TEXTURE_UNIT )
 {
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" );
-    texture2DEntry = new GXTexture2DEntry ( width, height, internalFormat, isGenerateMipmap );
+    _texture2DEntry = new GXTexture2DEntry ( width, height, internalFormat, isGenerateMipmap );
     // NOTHING
 }
 
 GXTexture2D::GXTexture2D ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTexture2D" )
-    textureUnit ( INVALID_TEXTURE_UNIT ),
-    texture2DEntry ( nullptr )
+    _textureUnit ( INVALID_TEXTURE_UNIT ),
+    _texture2DEntry ( nullptr )
 {
     LoadImage ( fileName, isGenerateMipmap, isApplyGammaCorrection );
 }
 
 GXTexture2D::~GXTexture2D ()
 {
-    if ( !texture2DEntry ) return;
+    if ( !_texture2DEntry ) return;
 
-    texture2DEntry->Release ();
+    _texture2DEntry->Release ();
 }
 
 GXUShort GXTexture2D::GetWidth () const
 {
-    return texture2DEntry->GetWidth ();
+    return _texture2DEntry->GetWidth ();
 }
 
 GXUShort GXTexture2D::GetHeight () const
 {
-    return texture2DEntry->GetHeight ();
+    return _texture2DEntry->GetHeight ();
 }
 
 GXUByte GXTexture2D::GetChannelNumber () const
 {
-    return texture2DEntry->GetChannelNumber ();
+    return _texture2DEntry->GetChannelNumber ();
 }
 
 GXUByte GXTexture2D::GetLevelOfDetailNumber () const
 {
-    return texture2DEntry->GetLevelOfDetailNumber ();
+    return _texture2DEntry->GetLevelOfDetailNumber ();
 }
 
 GXVoid GXTexture2D::LoadImage ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection )
 {
-    if ( texture2DEntry )
-        texture2DEntry->Release ();
+    if ( _texture2DEntry )
+        _texture2DEntry->Release ();
 
-    texture2DEntry = GXTexture2DEntry::Find ( fileName );
+    _texture2DEntry = GXTexture2DEntry::Find ( fileName );
 
-    if ( texture2DEntry )
+    if ( _texture2DEntry )
     {
-        texture2DEntry->AddReference ();
+        _texture2DEntry->AddReference ();
         return;
     }
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" );
-    texture2DEntry = new GXTexture2DEntry ( fileName, isGenerateMipmap, isApplyGammaCorrection );
+    _texture2DEntry = new GXTexture2DEntry ( fileName, isGenerateMipmap, isApplyGammaCorrection );
 }
 
 GXVoid GXTexture2D::FillWholePixelData ( const GXVoid* data )
 {
-    if ( !texture2DEntry->GetFileName () )
+    if ( !_texture2DEntry->GetFileName () )
     {
-        texture2DEntry->FillWholePixelData ( data );
+        _texture2DEntry->FillWholePixelData ( data );
         return;
     }
 
-    GXUShort width = texture2DEntry->GetWidth ();
-    GXUShort height = texture2DEntry->GetHeight ();
-    GLint internalFormat = texture2DEntry->GetInternalFormat ();
-    GXBool isGenerateMipmap = texture2DEntry->IsGenerateMipmap ();
+    GXUShort width = _texture2DEntry->GetWidth ();
+    GXUShort height = _texture2DEntry->GetHeight ();
+    GLint internalFormat = _texture2DEntry->GetInternalFormat ();
+    GXBool isGenerateMipmap = _texture2DEntry->IsGenerateMipmap ();
 
-    texture2DEntry->Release ();
+    _texture2DEntry->Release ();
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" );
-    texture2DEntry = new GXTexture2DEntry ( width, height, internalFormat, isGenerateMipmap );
-    texture2DEntry->FillWholePixelData ( data );
+    _texture2DEntry = new GXTexture2DEntry ( width, height, internalFormat, isGenerateMipmap );
+    _texture2DEntry->FillWholePixelData ( data );
 }
 
 GXVoid GXTexture2D::FillRegionPixelData ( GXUShort left, GXUShort bottom, GXUShort regionWidth, GXUShort regionHeight, const GXVoid* data )
 {
-    if ( !texture2DEntry->GetFileName () )
+    if ( !_texture2DEntry->GetFileName () )
     {
-        texture2DEntry->FillRegionPixelData ( left, bottom, regionWidth, regionHeight, data );
+        _texture2DEntry->FillRegionPixelData ( left, bottom, regionWidth, regionHeight, data );
         return;
     }
 
-    GXUShort width = texture2DEntry->GetWidth ();
-    GXUShort height = texture2DEntry->GetHeight ();
-    GLint internalFormat = texture2DEntry->GetInternalFormat ();
-    GXBool isGenerateMipmap = texture2DEntry->IsGenerateMipmap ();
+    GXUShort width = _texture2DEntry->GetWidth ();
+    GXUShort height = _texture2DEntry->GetHeight ();
+    GLint internalFormat = _texture2DEntry->GetInternalFormat ();
+    GXBool isGenerateMipmap = _texture2DEntry->IsGenerateMipmap ();
 
-    texture2DEntry->Release ();
+    _texture2DEntry->Release ();
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" );
-    texture2DEntry = new GXTexture2DEntry ( width, height, internalFormat, isGenerateMipmap );
-    texture2DEntry->FillWholePixelData ( nullptr );
-    texture2DEntry->FillRegionPixelData ( left, bottom, regionWidth, regionHeight, data );
+    _texture2DEntry = new GXTexture2DEntry ( width, height, internalFormat, isGenerateMipmap );
+    _texture2DEntry->FillWholePixelData ( nullptr );
+    _texture2DEntry->FillRegionPixelData ( left, bottom, regionWidth, regionHeight, data );
 }
 
 GXVoid GXTexture2D::UpdateMipmaps ()
 {
-    texture2DEntry->UpdateMipmaps ();
+    _texture2DEntry->UpdateMipmaps ();
 }
 
 GXVoid GXTexture2D::Bind ( GXUByte unit )
 {
-    textureUnit = unit;
+    _textureUnit = unit;
 
     glActiveTexture ( static_cast<GLenum> ( GL_TEXTURE0 + unit ) );
-    glBindTexture ( GL_TEXTURE_2D, texture2DEntry->GetTextureObject () );
+    glBindTexture ( GL_TEXTURE_2D, _texture2DEntry->GetTextureObject () );
 }
 
 GXVoid GXTexture2D::Unbind ()
 {
-    glActiveTexture ( static_cast<GLenum> ( GL_TEXTURE0 + textureUnit ) );
+    glActiveTexture ( static_cast<GLenum> ( GL_TEXTURE0 + _textureUnit ) );
     glBindTexture ( GL_TEXTURE_2D, 0u );
 }
 
 GLuint GXTexture2D::GetTextureObject () const
 {
-    return texture2DEntry->GetTextureObject ();
+    return _texture2DEntry->GetTextureObject ();
 }
 
 GXBool GXTexture2D::IsInitialized () const
 {
-    return texture2DEntry != nullptr;
+    return _texture2DEntry != nullptr;
 }
 
 GXVoid GXTexture2D::InitResources ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap )
 {
-    if ( texture2DEntry )
-        texture2DEntry->Release ();
+    if ( _texture2DEntry )
+        _texture2DEntry->Release ();
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" );
-    texture2DEntry = new GXTexture2DEntry ( width, height, internalFormat, isGenerateMipmap );
+    _texture2DEntry = new GXTexture2DEntry ( width, height, internalFormat, isGenerateMipmap );
 }
 
 GXVoid GXTexture2D::FreeResources ()
 {
-    if ( !texture2DEntry ) return;
+    if ( !_texture2DEntry ) return;
 
-    texture2DEntry->Release ();
-    texture2DEntry = nullptr;
+    _texture2DEntry->Release ();
+    _texture2DEntry = nullptr;
 }
 
 GXUInt GXCALL GXTexture2D::GetTotalLoadedTextures ( const GXWChar** lastTexture )

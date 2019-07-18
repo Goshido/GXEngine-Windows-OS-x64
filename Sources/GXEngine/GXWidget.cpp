@@ -1,4 +1,4 @@
-// version 1.10
+// version 1.11
 
 #include <GXEngine/GXWidget.h>
 #include <GXEngine/GXRenderer.h>
@@ -10,15 +10,15 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXWidget::GXWidget ( GXWidget* parentWidget, GXBool isNeedRegister ):
-    isRegistered ( isNeedRegister ),
-    next ( nullptr ),
-    prev ( nullptr ),
-    parent ( parentWidget ),
-    childs ( nullptr ),
-    isVisible ( GX_TRUE ),
-    isDraggable ( GX_FALSE ),
-    renderer ( nullptr )
+GXWidget::GXWidget ( GXWidget* parent, GXBool isNeedRegister ):
+    _isRegistered ( isNeedRegister ),
+    _next ( nullptr ),
+    _previous ( nullptr ),
+    _parent ( parent ),
+    _childs ( nullptr ),
+    _isVisible ( GX_TRUE ),
+    _isDraggable ( GX_FALSE ),
+    _renderer ( nullptr )
 {
     GXAABB defaultBoundsLocal;
 
@@ -26,12 +26,12 @@ GXWidget::GXWidget ( GXWidget* parentWidget, GXBool isNeedRegister ):
     defaultBoundsLocal.AddVertex ( 1.0f, 1.0f, 1.0f );
     UpdateBoundsWorld ( defaultBoundsLocal );
 
-    if ( !isRegistered ) return;
+    if ( !_isRegistered ) return;
 
     gx_ui_SmartLock->AcquireExclusive ();
 
-    if ( parent )
-        parent->AddChild ( this );
+    if ( _parent )
+        _parent->AddChild ( this );
     else
         GXTouchSurface::GetInstance ().RegisterWidget ( this );
 
@@ -40,12 +40,12 @@ GXWidget::GXWidget ( GXWidget* parentWidget, GXBool isNeedRegister ):
 
 GXWidget::~GXWidget ()
 {
-    if ( !isRegistered ) return;
+    if ( !_isRegistered ) return;
 
     gx_ui_SmartLock->AcquireExclusive ();
 
-    if ( parent )
-        parent->RemoveChild ( this );
+    if ( _parent )
+        _parent->RemoveChild ( this );
     else
         GXTouchSurface::GetInstance ().UnRegisterWidget ( this );
 
@@ -170,27 +170,27 @@ GXVoid GXWidget::OnMessage ( eGXUIMessage message, const GXVoid* data )
         const GXAABB* newBoundsLocal = static_cast<const GXAABB*> ( data );
         UpdateBoundsWorld ( *newBoundsLocal );
 
-        if ( renderer )
-            renderer->OnUpdate ();
+        if ( _renderer )
+            _renderer->OnUpdate ();
 
         return;
     }
 
     if ( message == eGXUIMessage::Show )
     {
-        isVisible = GX_TRUE;
+        _isVisible = GX_TRUE;
         return;
     }
 
     if ( message == eGXUIMessage::Hide )
     {
-        isVisible = GX_FALSE;
+        _isVisible = GX_FALSE;
         return;
     }
 
     if ( message == eGXUIMessage::Foreground )
     {
-        if ( !parent )
+        if ( !_parent )
         {
             GXTouchSurface::GetInstance ().MoveWidgetToForeground ( this );
             return;
@@ -199,7 +199,7 @@ GXVoid GXWidget::OnMessage ( eGXUIMessage message, const GXVoid* data )
         GXWidgetIterator iterator;
         GXWidget* p = iterator.Init ( this );
 
-        while ( p->parent )
+        while ( p->_parent )
             p = iterator.GetParent ();
 
         p->OnMessage ( eGXUIMessage::Foreground, data );
@@ -208,8 +208,8 @@ GXVoid GXWidget::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
     if ( message == eGXUIMessage::Redraw )
     {
-        if ( renderer )
-            renderer->OnUpdate ();
+        if ( _renderer )
+            _renderer->OnUpdate ();
 
         return;
     }
@@ -226,12 +226,12 @@ GXVoid GXWidget::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat widt
 
 const GXAABB& GXWidget::GetBoundsWorld () const
 {
-    return boundsWorld;
+    return _boundsWorld;
 }
 
 const GXAABB& GXWidget::GetBoundsLocal () const
 {
-    return boundsLocal;
+    return _boundsLocal;
 }
 
 GXVoid GXWidget::Show ()
@@ -256,22 +256,22 @@ GXVoid GXWidget::ToForeground ()
 
 GXBool GXWidget::IsVisible () const
 {
-    return isVisible;
+    return _isVisible;
 }
 
 GXBool GXWidget::IsDraggable () const
 {
-    return isDraggable;
+    return _isDraggable;
 }
 
-GXVoid GXWidget::SetRenderer ( GXWidgetRenderer* rendererObject )
+GXVoid GXWidget::SetRenderer ( GXWidgetRenderer* renderer )
 {
-    renderer = rendererObject;
+    _renderer = renderer;
 }
 
 GXWidgetRenderer* GXWidget::GetRenderer () const
 {
-    return renderer;
+    return _renderer;
 }
 
 GXWidget* GXWidget::FindWidget ( const GXVec2 &position )
@@ -279,7 +279,7 @@ GXWidget* GXWidget::FindWidget ( const GXVec2 &position )
     gx_ui_SmartLock->AcquireShared ();
 
     GXWidgetIterator iterator;
-    GXWidget* p = iterator.Init ( childs );
+    GXWidget* p = iterator.Init ( _childs );
 
     while ( p )
     {
@@ -299,13 +299,13 @@ GXWidget* GXWidget::FindWidget ( const GXVec2 &position )
 
 GXVoid GXWidget::OnDraw ()
 {
-    if ( !isVisible ) return;
+    if ( !_isVisible ) return;
 
-    if ( renderer )
-        renderer->OnDraw ();
+    if ( _renderer )
+        _renderer->OnDraw ();
 
     GXWidgetIterator iterator;
-    GXWidget* p = iterator.Init ( childs );
+    GXWidget* p = iterator.Init ( _childs );
 
     while ( p )
     {
@@ -314,51 +314,51 @@ GXVoid GXWidget::OnDraw ()
     }
 }
 
-GXVoid GXWidget::UpdateBoundsWorld ( const GXAABB &newBoundsLocal )
+GXVoid GXWidget::UpdateBoundsWorld ( const GXAABB &boundsLocal )
 {
-    memcpy ( &boundsLocal, &newBoundsLocal, sizeof ( GXAABB ) );
+    memcpy ( &_boundsLocal, &boundsLocal, sizeof ( GXAABB ) );
 
-    if ( parent )
+    if ( _parent )
     {
-        const GXAABB& originWorld = parent->GetBoundsWorld ();
-        boundsWorld.Empty ();
-        boundsWorld.AddVertex ( originWorld.min.GetX () + boundsLocal.min.GetX (), originWorld.min.GetY () + boundsLocal.min.GetY (), originWorld.min.GetZ () );
-        boundsWorld.AddVertex ( originWorld.min.GetX () + boundsLocal.max.GetX (), originWorld.min.GetY () + boundsLocal.max.GetY (), originWorld.max.GetZ () );\
+        const GXAABB& originWorld = _parent->GetBoundsWorld ();
+        _boundsWorld.Empty ();
+        _boundsWorld.AddVertex ( originWorld._min.GetX () + _boundsLocal._min.GetX (), originWorld._min.GetY () + _boundsLocal._min.GetY (), originWorld._min.GetZ () );
+        _boundsWorld.AddVertex ( originWorld._min.GetX () + _boundsLocal._max.GetX (), originWorld._min.GetY () + _boundsLocal._max.GetY (), originWorld._max.GetZ () );
 
         return;
     }
 
-    memcpy ( &boundsWorld, &boundsLocal, sizeof ( GXAABB ) );
+    memcpy ( &_boundsWorld, &_boundsLocal, sizeof ( GXAABB ) );
 }
 
 GXVoid GXWidget::AddChild ( GXWidget* child )
 {
     if ( DoesChildExist ( child ) ) return;
 
-    child->next = childs;
-    child->prev = nullptr;
+    child->_next = _childs;
+    child->_previous = nullptr;
 
-    if ( childs )
-        childs->prev = child;
+    if ( _childs )
+        _childs->_previous = child;
 
-    childs = child;
+    _childs = child;
 }
 
 GXVoid GXWidget::RemoveChild ( GXWidget* child )
 {
     if ( !DoesChildExist ( child ) ) return;
 
-    if ( child->next ) child->next->prev = child->prev;
+    if ( child->_next ) child->_next->_previous = child->_previous;
 
-    if ( child->prev )
-        child->prev->next = child->next;
+    if ( child->_previous )
+        child->_previous->_next = child->_next;
     else
-        childs = child->next;
+        _childs = child->_next;
 }
 
 GXBool GXWidget::DoesChildExist ( GXWidget* child ) const
 {
-    for ( GXWidget* p = childs; p; p = p->next )
+    for ( GXWidget* p = _childs; p; p = p->_next )
     {
         if ( p != child ) continue;
 
@@ -391,7 +391,7 @@ GXWidget* GXWidgetIterator::GetNext ()
 {
     if ( !widget ) return nullptr;
 
-    widget = widget->next;
+    widget = widget->_next;
     return widget;
 }
 
@@ -399,7 +399,7 @@ GXWidget* GXWidgetIterator::GetPrevious ()
 {
     if ( !widget ) return nullptr;
 
-    widget = widget->prev;
+    widget = widget->_previous;
     return widget;
 }
 
@@ -407,7 +407,7 @@ GXWidget* GXWidgetIterator::GetParent ()
 {
     if ( !widget ) return nullptr;
 
-    widget = widget->parent;
+    widget = widget->_parent;
     return widget;
 }
 
@@ -415,7 +415,7 @@ GXWidget* GXWidgetIterator::GetChilds ()
 {
     if ( !widget ) return nullptr;
 
-    widget = widget->childs;
+    widget = widget->_childs;
     return widget;
 }
 
@@ -445,8 +445,8 @@ GXVoid GXWidgetRenderer::OnUpdate ()
         GXVec3 center;
         boundsWorld.GetCenter ( center );
         GXRenderer& renderer = GXRenderer::GetInstance ();
-        center.data[ 0u ] -= 0.5f * renderer.GetWidth ();
-        center.data[ 1u ] -= 0.5f * renderer.GetHeight ();
+        center._data[ 0u ] -= 0.5f * renderer.GetWidth ();
+        center._data[ 1u ] -= 0.5f * renderer.GetHeight ();
 
         OnResized ( center.GetX (), center.GetY (), width, height );
         OnRefresh ();
@@ -463,8 +463,8 @@ GXVoid GXWidgetRenderer::OnUpdate ()
     GXVec3 center;
     widget->GetBoundsWorld ().GetCenter ( center );
     GXRenderer& renderer = GXRenderer::GetInstance ();
-    center.data[ 0u ] -= 0.5f * renderer.GetWidth ();
-    center.data[ 1u ] -= 0.5f * renderer.GetHeight ();
+    center._data[ 0u ] -= 0.5f * renderer.GetWidth ();
+    center._data[ 1u ] -= 0.5f * renderer.GetHeight ();
 
     OnMoved ( center.GetX (), center.GetY () );
 }
@@ -513,13 +513,13 @@ GXBool GXWidgetRenderer::IsMoved ()
 
     const GXAABB& bounds = widget->GetBoundsWorld ();
 
-    if ( fabs ( bounds.min.GetX () - oldBounds.min.GetX () ) >= GX_WIDGET_RENDERER_RESIZE_EPSILON )
+    if ( fabs ( bounds._min.GetX () - oldBounds._min.GetX () ) >= GX_WIDGET_RENDERER_RESIZE_EPSILON )
     {
         oldBounds = bounds;
         return GX_TRUE;
     }
 
-    if ( fabs ( bounds.min.GetY () - oldBounds.min.GetY () ) < GX_WIDGET_RENDERER_RESIZE_EPSILON ) return GX_FALSE;
+    if ( fabs ( bounds._min.GetY () - oldBounds._min.GetY () ) < GX_WIDGET_RENDERER_RESIZE_EPSILON ) return GX_FALSE;
 
     oldBounds = bounds;
     return GX_TRUE;

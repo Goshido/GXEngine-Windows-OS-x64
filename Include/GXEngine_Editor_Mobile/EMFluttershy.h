@@ -9,34 +9,34 @@
 
 class EMFluttershy final : public GXTransform
 {
-	private:
-		EMMesh								mesh;
-		GXSkeleton							skeleton;
-		GXAnimationSolverPlayer				animationSolverPlayer;
-		GXAnimationInfo						animationInfo;
+    private:
+        EMMesh                              _mesh;
+        GXSkeleton                          _skeleton;
+        GXAnimationSolverPlayer             _animationSolverPlayer;
+        GXAnimationInfo                     _animationInfo;
 
-		GXTexture2D							albedoTexture;
-		GXTexture2D							normalTexture;
-		GXTexture2D							emissionTexture;
-		GXTexture2D							parameterTexture;
+        GXTexture2D                         _albedoTexture;
+        GXTexture2D                         _normalTexture;
+        GXTexture2D                         _emissionTexture;
+        GXTexture2D                         _parameterTexture;
 
-		EMCookTorranceCommonPassMaterial	material;
+        EMCookTorranceCommonPassMaterial    _material;
 
-	public:
-		EMFluttershy ();
-		~EMFluttershy () override;
+    public:
+        EMFluttershy ();
+        ~EMFluttershy () override;
 
-		GXVoid Render ( GXFloat deltaTime );
-		GXVoid UpdatePose ( GXFloat deltaTime );
+        GXVoid Render ( GXFloat deltaTime );
+        GXVoid UpdatePose ( GXFloat deltaTime );
 
-		const GXSkeleton& GetSkeleton () const;
+        const GXSkeleton& GetSkeleton () const;
 
-	protected:
-		GXVoid TransformUpdated () override;
+    protected:
+        GXVoid TransformUpdated () override;
 
-	private:
-		EMFluttershy ( const EMFluttershy &other ) = delete;
-		EMFluttershy& operator = ( const EMFluttershy &other ) = delete;
+    private:
+        EMFluttershy ( const EMFluttershy &other ) = delete;
+        EMFluttershy& operator = ( const EMFluttershy &other ) = delete;
 };
 
 

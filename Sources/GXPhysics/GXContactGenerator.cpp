@@ -1,14 +1,14 @@
-//version 1.1
+//version 1.2
 
 #include <GXPhysics/GXContactGenerator.h>
 
 
 GXContactGenerator::GXContactGenerator ()
 {
-	// NOTHING
+    // NOTHING
 }
 
 GXContactGenerator::~GXContactGenerator ()
 {
-	// NOTHING
+    // NOTHING
 }

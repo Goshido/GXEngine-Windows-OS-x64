@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_STG_STRUCTS
 #define GX_STG_STRUCTS
@@ -8,18 +8,18 @@
 
 
 /*
-Вершина
-Нормаль
-Тангент (опционально)
-UV		(опционально)
+    Вершина
+    Нормаль
+    Тангент     (опционально)
+    UV          (опционально)
 */
 
 struct GXStaticGeometryHeader final
 {
-	GXUInt		numVertices;
-	GXBool		isUVs;
-	GXBool		isNormals;
-	GXBool		isTangents;
+    GXUInt      _numVertices;
+    GXBool      _isUVs;
+    GXBool      _isNormals;
+    GXBool      _isTangents;
 };
 
 

@@ -9,27 +9,27 @@
 
 class EMRotateGismo final : public GXTransform
 {
-	private:
-		GXBool						isVisible;
-		EMMesh						mesh;
-		GXUnlitTexture2DMaterial	unlitMaterial;
-		GXTexture2D					texture;
+    private:
+        GXBool                      _isVisible;
+        EMMesh                      _mesh;
+        GXUnlitTexture2DMaterial    _unlitMaterial;
+        GXTexture2D                 _texture;
 
-	public:
-		EMRotateGismo ();
-		~EMRotateGismo () override;
+    public:
+        EMRotateGismo ();
+        ~EMRotateGismo () override;
 
-		GXVoid Hide ();
-		GXVoid Show ();
+        GXVoid Hide ();
+        GXVoid Show ();
 
-		GXVoid Render ();
+        GXVoid Render ();
 
-	protected:
-		GXVoid TransformUpdated () override;
+    protected:
+        GXVoid TransformUpdated () override;
 
-	private:
-		EMRotateGismo ( const EMRotateGismo &other ) = delete;
-		EMRotateGismo& operator = ( const EMRotateGismo &other ) = delete;
+    private:
+        EMRotateGismo ( const EMRotateGismo &other ) = delete;
+        EMRotateGismo& operator = ( const EMRotateGismo &other ) = delete;
 };
 
 

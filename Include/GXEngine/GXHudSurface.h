@@ -1,4 +1,4 @@
-// version 1.25
+// version 1.26
 
 #ifndef GX_HUD_SURFACE
 #define GX_HUD_SURFACE
@@ -26,35 +26,35 @@ enum class eGXImageOverlayType
 
 struct GXImageInfo final
 {
-    GXTexture2D*            texture;
+    GXTexture2D*            _texture;
 
-    GXColorRGB              color;
-    GXFloat                 insertX;
-    GXFloat                 insertY;
-    GXFloat                 insertWidth;
-    GXFloat                 insertHeight;
+    GXColorRGB              _color;
+    GXFloat                 _insertX;
+    GXFloat                 _insertY;
+    GXFloat                 _insertWidth;
+    GXFloat                 _insertHeight;
 
-    eGXImageOverlayType     overlayType;
+    eGXImageOverlayType     _overlayType;
 };
 
 struct GXPenInfo final
 {
-    GXFont*                 font;
-    GXColorRGB              color;
-    GXFloat                 insertX;
-    GXFloat                 insertY;
+    GXFont*                 _font;
+    GXColorRGB              _color;
+    GXFloat                 _insertX;
+    GXFloat                 _insertY;
 
-    eGXImageOverlayType     overlayType;
+    eGXImageOverlayType     _overlayType;
 };
 
 struct GXLineInfo final
 {
-    GXColorRGB              color;
-    GXFloat                 thickness;
-    GXVec2                  startPoint;
-    GXVec2                  endPoint;
+    GXColorRGB              _color;
+    GXFloat                 _thickness;
+    GXVec2                  _startPoint;
+    GXVec2                  _endPoint;
     
-    eGXImageOverlayType     overlayType;
+    eGXImageOverlayType     _overlayType;
 };
 
 class GXImageRenderable;
@@ -63,31 +63,31 @@ class GXLineRenderable;
 class GXHudSurface final : public GXMemoryInspector, public GXTransform
 {
     private:
-        GXImageRenderable&          image;
-        GXGlyphRenderable&          glyph;
-        GXLineRenderable&           line;
+        GXImageRenderable&          _image;
+        GXGlyphRenderable&          _glyph;
+        GXLineRenderable&           _line;
 
-        GXUShort                    width;
-        GXUShort                    height;
+        GXUShort                    _width;
+        GXUShort                    _height;
 
-        GXCameraOrthographic        canvasCamera;
+        GXCameraOrthographic        _canvasCamera;
 
-        GLuint                      fbo;
-        GXTexture2D                 canvasTexture;
-        GXOpenGLState               openGLState;
+        GLuint                      _fbo;
+        GXTexture2D                 _canvasTexture;
+        GXOpenGLState               _openGLState;
 
-        GXUnlitColorMaterial        unlitColorMaterial;
-        GXUnlitColorMaskMaterial    unlitColorMaskMaterial;
-        GXUnlitTexture2DMaterial    unlitTexture2DMaterial;
+        GXUnlitColorMaterial        _unlitColorMaterial;
+        GXUnlitColorMaskMaterial    _unlitColorMaskMaterial;
+        GXUnlitTexture2DMaterial    _unlitTexture2DMaterial;
 
-        GXMeshGeometry              screenQuadMesh;
+        GXMeshGeometry              _screenQuadMesh;
 
     public:
-        explicit GXHudSurface ( GXUShort imageWidth, GXUShort imageHeight );
+        explicit GXHudSurface ( GXUShort width, GXUShort height );
         ~GXHudSurface () override;
 
         GXVoid Reset ();
-        GXVoid Resize ( GXUShort newWidth, GXUShort newHeight );
+        GXVoid Resize ( GXUShort width, GXUShort height );
 
         GXVoid AddImage ( const GXImageInfo &imageInfo );
         GXVoid AddLine ( const GXLineInfo &lineInfo );

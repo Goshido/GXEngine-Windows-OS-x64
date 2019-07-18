@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #ifndef GX_TEXTURE_2D
 #define GX_TEXTURE_2D
@@ -14,8 +14,8 @@ class GXTexture2DEntry;
 class GXTexture2D final : public GXMemoryInspector
 {
     private:
-        GXUByte                 textureUnit;
-        GXTexture2DEntry*       texture2DEntry;
+        GXUByte                 _textureUnit;
+        GXTexture2DEntry*       _texture2DEntry;
 
     public:
         // Creates uninitiated texture resource.

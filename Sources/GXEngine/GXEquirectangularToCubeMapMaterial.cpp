@@ -21,45 +21,45 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 GXEquirectangularToCubeMapMaterial::GXEquirectangularToCubeMapMaterial ():
-    equirectangularTexture ( nullptr ),
-    sampler ( GL_REPEAT, eGXResampling::Linear, 1.0f )
+    _equirectangularTexture ( nullptr ),
+    _sampler ( GL_REPEAT, eGXResampling::Linear, 1.0f )
 {
-    static const GLchar* samplerNames[ 1u ] = { "equirectangularSampler" };
-    static const GLuint samplerLocations[ 1u ] = { TEXTURE_SLOT };
+    constexpr GLchar* samplerNames[ 1u ] = { "equirectangularSampler" };
+    constexpr const GLuint samplerLocations[ 1u ] = { TEXTURE_SLOT };
 
     GXShaderProgramInfo si;
-    si.vertexShader = VERTEX_SHADER;
-    si.geometryShader = GEOMETRY_SHADER;
-    si.fragmentShader = FRAGMENT_SHADER;
-    si.samplers = 1u;
-    si.samplerNames = samplerNames;
-    si.samplerLocations = samplerLocations;
-    si.transformFeedbackOutputs = 0;
-    si.transformFeedbackOutputNames = nullptr;
+    si._vertexShader = VERTEX_SHADER;
+    si._geometryShader = GEOMETRY_SHADER;
+    si._fragmentShader = FRAGMENT_SHADER;
+    si._samplers = 1u;
+    si._samplerNames = samplerNames;
+    si._samplerLocations = samplerLocations;
+    si._transformFeedbackOutputs = 0;
+    si._transformFeedbackOutputNames = nullptr;
 
-    shaderProgram.Init ( si );
+    _shaderProgram.Init ( si );
 
-    viewProjectionMatricesLocation = shaderProgram.GetUniform ( "viewProjectionMatrices" );
-    gammaLocation = shaderProgram.GetUniform ( "gamma" );
+    _viewProjectionMatricesLocation = _shaderProgram.GetUniform ( "viewProjectionMatrices" );
+    _gammaLocation = _shaderProgram.GetUniform ( "gamma" );
 
     GXCameraPerspective camera ( PROJECTION_FOV_Y, SQUARE_ASPECT_RATIO, Z_NEAR, Z_FAR );
     camera.SetRotation ( 0.0f, GX_MATH_HALF_PI, 0.0f );
-    viewProjectionMatrices[ 0u ] = camera.GetCurrentFrameViewProjectionMatrix ();
+    _viewProjectionMatrices[ 0u ] = camera.GetCurrentFrameViewProjectionMatrix ();
 
     camera.SetRotation ( 0.0f, -GX_MATH_HALF_PI, 0.0f );
-    viewProjectionMatrices[ 1u ] = camera.GetCurrentFrameViewProjectionMatrix ();
+    _viewProjectionMatrices[ 1u ] = camera.GetCurrentFrameViewProjectionMatrix ();
 
     camera.SetRotation ( GX_MATH_HALF_PI, 0.0f, 0.0f );
-    viewProjectionMatrices[ 2u ] = camera.GetCurrentFrameViewProjectionMatrix ();
+    _viewProjectionMatrices[ 2u ] = camera.GetCurrentFrameViewProjectionMatrix ();
 
     camera.SetRotation ( -GX_MATH_HALF_PI, 0.0f, 0.0f );
-    viewProjectionMatrices[ 3u ] = camera.GetCurrentFrameViewProjectionMatrix ();
+    _viewProjectionMatrices[ 3u ] = camera.GetCurrentFrameViewProjectionMatrix ();
 
     camera.SetRotation ( 0.0f, 0.0f, 0.0f );
-    viewProjectionMatrices[ 4u ] = camera.GetCurrentFrameViewProjectionMatrix ();
+    _viewProjectionMatrices[ 4u ] = camera.GetCurrentFrameViewProjectionMatrix ();
 
     camera.SetRotation ( 0.0f, GX_MATH_PI, 0.0f );
-    viewProjectionMatrices[ 5u ] = camera.GetCurrentFrameViewProjectionMatrix ();
+    _viewProjectionMatrices[ 5u ] = camera.GetCurrentFrameViewProjectionMatrix ();
 
     EnableGammaCorrection ();
 }
@@ -71,37 +71,37 @@ GXEquirectangularToCubeMapMaterial::~GXEquirectangularToCubeMapMaterial ()
 
 GXVoid GXEquirectangularToCubeMapMaterial::Bind ( const GXTransform& /*transform*/ )
 {
-    if ( !equirectangularTexture ) return;
+    if ( !_equirectangularTexture ) return;
 
-    glUseProgram ( shaderProgram.GetProgram () );
-    glUniformMatrix4fv ( viewProjectionMatricesLocation, 6, GL_FALSE, reinterpret_cast<const GLfloat*> ( viewProjectionMatrices ) );
-    glUniform1f ( gammaLocation, gamma );
+    glUseProgram ( _shaderProgram.GetProgram () );
+    glUniformMatrix4fv ( _viewProjectionMatricesLocation, 6, GL_FALSE, reinterpret_cast<const GLfloat*> ( _viewProjectionMatrices ) );
+    glUniform1f ( _gammaLocation, _gamma );
 
-    equirectangularTexture->Bind ( static_cast<GXUByte> ( TEXTURE_SLOT ) );
-    sampler.Bind ( TEXTURE_SLOT );
+    _equirectangularTexture->Bind ( static_cast<GXUByte> ( TEXTURE_SLOT ) );
+    _sampler.Bind ( TEXTURE_SLOT );
 }
 
 GXVoid GXEquirectangularToCubeMapMaterial::Unbind ()
 {
-    if ( !equirectangularTexture ) return;
+    if ( !_equirectangularTexture ) return;
 
-    sampler.Unbind ( TEXTURE_SLOT );
-    equirectangularTexture->Unbind ();
+    _sampler.Unbind ( TEXTURE_SLOT );
+    _equirectangularTexture->Unbind ();
 
     glUseProgram ( 0u );
 }
 
 GXVoid GXEquirectangularToCubeMapMaterial::SetEquirectangularTexture ( GXTexture2D &texture )
 {
-    equirectangularTexture = &texture;
+    _equirectangularTexture = &texture;
 }
 
 GXVoid GXEquirectangularToCubeMapMaterial::EnableGammaCorrection ()
 {
-    gamma = ENABLE_GAMMA_CORRECTION_VALUE;
+    _gamma = ENABLE_GAMMA_CORRECTION_VALUE;
 }
 
 GXVoid GXEquirectangularToCubeMapMaterial::DisableGammaCorrection ()
 {
-    gamma = DISABLE_GAMMA_CORRECTION_VALUE;
+    _gamma = DISABLE_GAMMA_CORRECTION_VALUE;
 }

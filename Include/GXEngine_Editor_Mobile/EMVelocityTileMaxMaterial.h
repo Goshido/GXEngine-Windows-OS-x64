@@ -9,30 +9,30 @@
 
 class EMVelocityTileMaxMaterial final : public GXMaterial
 {
-	private:
-		GXTexture2D*	velocityBlurTexture;
-		GXSampler		sampler;
+    private:
+        GXTexture2D*    _velocityBlurTexture;
+        GXSampler       _sampler;
 
-		GXInt			maxBlurSamples;
-		GXVec2			inverseScreenResolution;
+        GXInt           _maxBlurSamples;
+        GXVec2          _inverseScreenResolution;
 
-		GLint			maxBlurSamplesLocation;
-		GLint			inverseScreenResolutionLocation;
+        GLint           _maxBlurSamplesLocation;
+        GLint           _inverseScreenResolutionLocation;
 
-	public:
-		EMVelocityTileMaxMaterial ();
-		~EMVelocityTileMaxMaterial () override;
+    public:
+        EMVelocityTileMaxMaterial ();
+        ~EMVelocityTileMaxMaterial () override;
 
-		GXVoid Bind ( const GXTransform &transform ) override;
-		GXVoid Unbind () override;
+        GXVoid Bind ( const GXTransform &transform ) override;
+        GXVoid Unbind () override;
 
-		GXVoid SetVelocityBlurTexture ( GXTexture2D &texture );
-		GXVoid SetMaxBlurSamples ( GXUByte maxSamples );
-		GXVoid SetScreenResolution ( GXUShort width, GXUShort height );
+        GXVoid SetVelocityBlurTexture ( GXTexture2D &texture );
+        GXVoid SetMaxBlurSamples ( GXUByte maxSamples );
+        GXVoid SetScreenResolution ( GXUShort width, GXUShort height );
 
-	private:
-		EMVelocityTileMaxMaterial ( const EMVelocityTileMaxMaterial &other ) = delete;
-		EMVelocityTileMaxMaterial& operator = ( const EMVelocityTileMaxMaterial &other ) = delete;
+    private:
+        EMVelocityTileMaxMaterial ( const EMVelocityTileMaxMaterial &other ) = delete;
+        EMVelocityTileMaxMaterial& operator = ( const EMVelocityTileMaxMaterial &other ) = delete;
 };
 
 

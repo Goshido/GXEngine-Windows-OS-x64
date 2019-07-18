@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #ifndef GX_RECTANGLE_SHAPE
 #define GX_RECTANGLE_SHAPE
@@ -9,27 +9,27 @@
 
 class GXRectangleShape final : public GXShape
 {
-	private:
-		GXFloat		width;
-		GXFloat		depth;
+    private:
+        GXFloat     _width;
+        GXFloat     _depth;
 
-	public:
-		explicit GXRectangleShape ( GXRigidBody* body, GXFloat width, GXFloat depth );
-		~GXRectangleShape () override;
+    public:
+        explicit GXRectangleShape ( GXRigidBody* body, GXFloat width, GXFloat depth );
+        ~GXRectangleShape () override;
 
-		GXFloat GetWidth () const;
-		GXFloat GetHeight () const;
+        GXFloat GetWidth () const;
+        GXFloat GetHeight () const;
 
-		GXVoid CalculateInertiaTensor ( GXFloat mass ) override;
-		GXVoid GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const override;
+        GXVoid CalculateInertiaTensor ( GXFloat mass ) override;
+        GXVoid GetExtremePoint ( GXVec3 &point, const GXVec3 &direction ) const override;
 
-	protected:
-		GXVoid UpdateBoundsWorld () override;
+    protected:
+        GXVoid UpdateBoundsWorld () override;
 
-	private:
-		GXRectangleShape () = delete;
-		GXRectangleShape ( const GXRectangleShape &other ) = delete;
-		GXRectangleShape& operator = ( const GXRectangleShape &other ) = delete;
+    private:
+        GXRectangleShape () = delete;
+        GXRectangleShape ( const GXRectangleShape &other ) = delete;
+        GXRectangleShape& operator = ( const GXRectangleShape &other ) = delete;
 };
 
 

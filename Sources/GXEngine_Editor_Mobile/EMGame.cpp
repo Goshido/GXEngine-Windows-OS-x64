@@ -23,37 +23,37 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXBool EMGame::isContact;
-GXMat4 EMGame::contactNormalTransform;
+GXBool EMGame::_isContact;
+GXMat4 EMGame::_contactNormalTransform;
 
 EMGame::EMGame ():
-    hudCamera ( nullptr ),
-    openFile ( nullptr ),
-    menu ( nullptr ),
-    filePopup ( nullptr ),
-    createPopup ( nullptr ),
-    toolsPopup ( nullptr ),
-    utilityPopup ( nullptr ),
-    effectsPopup ( nullptr ),
-    physicsInfo ( nullptr ),
-    physicsContactPointMesh ( nullptr ),
-    physicsContactPointMaterial ( nullptr ),
-    gravity ( GXVec3 ( 0.0f, -9.81f, 0.0f ) ),
-    directedLight ( nullptr ),
-    unitActor ( nullptr ),
-    colliderOne ( nullptr ),
-    colliderTwo ( nullptr ),
-    kinematicPlane ( nullptr ),
-    moveTool ( nullptr ),
-    contactLocationMesh ( nullptr ),
-    contactLocationMaterial ( nullptr ),
-    contactNormalMesh ( nullptr ),
-    contactNormalMaterial ( nullptr ),
-    environmentMap ( nullptr ),
-    lightProbeSourceTexture ( nullptr ),
-    lightProbe ( nullptr ),
-    uiInput ( nullptr ),
-    physicsInfoFont ( nullptr )
+    _hudCamera ( nullptr ),
+    _openFile ( nullptr ),
+    _menu ( nullptr ),
+    _filePopup ( nullptr ),
+    _createPopup ( nullptr ),
+    _toolsPopup ( nullptr ),
+    _utilityPopup ( nullptr ),
+    _effectsPopup ( nullptr ),
+    _physicsInfo ( nullptr ),
+    _physicsContactPointMesh ( nullptr ),
+    _physicsContactPointMaterial ( nullptr ),
+    _gravity ( GXVec3 ( 0.0f, -9.81f, 0.0f ) ),
+    _directedLight ( nullptr ),
+    _unitActor ( nullptr ),
+    _colliderOne ( nullptr ),
+    _colliderTwo ( nullptr ),
+    _kinematicPlane ( nullptr ),
+    _moveTool ( nullptr ),
+    _contactLocationMesh ( nullptr ),
+    _contactLocationMaterial ( nullptr ),
+    _contactNormalMesh ( nullptr ),
+    _contactNormalMaterial ( nullptr ),
+    _environmentMap ( nullptr ),
+    _lightProbeSourceTexture ( nullptr ),
+    _lightProbe ( nullptr ),
+    _uiInput ( nullptr ),
+    _physicsInfoFont ( nullptr )
 {
     // NOTHING
 }
@@ -77,8 +77,8 @@ GXVoid EMGame::OnInit ()
     input.BindKeyCallback ( this, &EMGame::OnExit, VK_ESCAPE, eGXInputButtonState::Up );
     input.BindMouseButtonCallback ( this, &EMGame::OnMouseButton );
 
-    uiInput = new GXUIInput ( nullptr, GX_FALSE );
-    GXTouchSurface::GetInstance ().SetDefaultWidget ( uiInput );
+    _uiInput = new GXUIInput ( nullptr, GX_FALSE );
+    GXTouchSurface::GetInstance ().SetDefaultWidget ( _uiInput );
 
     GXFloat w = static_cast<GXFloat> ( coreRenderer.GetWidth () );
     GXFloat h = static_cast<GXFloat> ( coreRenderer.GetHeight () );
@@ -88,134 +88,134 @@ GXVoid EMGame::OnInit ()
 
     GXCollisionDetector::GetInstance ().EnableDebugData ();
 
-    openFile = new EMUIOpenFile ();
+    _openFile = new EMUIOpenFile ();
 
-    filePopup = new EMUIPopup ( nullptr );
-    filePopup->AddItem ( locale.GetString ( L"Main menu->File->New" ), nullptr, nullptr );
-    filePopup->AddItem ( locale.GetString ( L"Main menu->File->Open" ), nullptr, nullptr );
-    filePopup->AddItem ( locale.GetString ( L"Main menu->File->Close" ), nullptr, nullptr );
-    filePopup->AddItem ( locale.GetString ( L"Main menu->File->Save" ), nullptr, nullptr );
-    filePopup->AddItem ( locale.GetString ( L"Main menu->File->Exit" ), this, &EMGame::OnExit );
+    _filePopup = new EMUIPopup ( nullptr );
+    _filePopup->AddItem ( locale.GetString ( L"Main menu->File->New" ), nullptr, nullptr );
+    _filePopup->AddItem ( locale.GetString ( L"Main menu->File->Open" ), nullptr, nullptr );
+    _filePopup->AddItem ( locale.GetString ( L"Main menu->File->Close" ), nullptr, nullptr );
+    _filePopup->AddItem ( locale.GetString ( L"Main menu->File->Save" ), nullptr, nullptr );
+    _filePopup->AddItem ( locale.GetString ( L"Main menu->File->Exit" ), this, &EMGame::OnExit );
 
-    createPopup = new EMUIPopup ( nullptr );
-    createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Unit Actor" ), nullptr, nullptr );
-    createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Box falling" ), this, nullptr );
-    createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Skeletal mesh" ), nullptr, nullptr );
-    createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Directed light" ), nullptr, nullptr );
-    createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Spot" ), nullptr, nullptr );
-    createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Bulp" ), nullptr, nullptr );
+    _createPopup = new EMUIPopup ( nullptr );
+    _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Unit Actor" ), nullptr, nullptr );
+    _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Box falling" ), this, nullptr );
+    _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Skeletal mesh" ), nullptr, nullptr );
+    _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Directed light" ), nullptr, nullptr );
+    _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Spot" ), nullptr, nullptr );
+    _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Bulp" ), nullptr, nullptr );
 
-    toolsPopup = new EMUIPopup ( nullptr );
-    toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Select" ), nullptr, &EMGame::OnColorPicker );
-    toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Move" ), nullptr, nullptr );
-    toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Rotate" ), nullptr, nullptr );
-    toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Scale" ), nullptr, nullptr );
+    _toolsPopup = new EMUIPopup ( nullptr );
+    _toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Select" ), nullptr, &EMGame::OnColorPicker );
+    _toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Move" ), nullptr, nullptr );
+    _toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Rotate" ), nullptr, nullptr );
+    _toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Scale" ), nullptr, nullptr );
 
-    utilityPopup = new EMUIPopup ( nullptr );
-    utilityPopup->AddItem ( locale.GetString ( L"Main menu->Utility->Particle system" ), nullptr, nullptr );
-    utilityPopup->AddItem ( locale.GetString ( L"Main menu->Utility->Animation graph" ), nullptr, nullptr );
+    _utilityPopup = new EMUIPopup ( nullptr );
+    _utilityPopup->AddItem ( locale.GetString ( L"Main menu->Utility->Particle system" ), nullptr, nullptr );
+    _utilityPopup->AddItem ( locale.GetString ( L"Main menu->Utility->Animation graph" ), nullptr, nullptr );
 
-    effectsPopup = new EMUIPopup ( nullptr );
-    effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->Motion blur" ), this, &EMGame::OnShowMotionBlurSettings );
-    effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->SSAO" ), this, &EMGame::OnShowSSAOSettings );
-    effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->HDR tone mapper" ), this, &EMGame::OnShowToneMapperSettings );
+    _effectsPopup = new EMUIPopup ( nullptr );
+    _effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->Motion blur" ), this, &EMGame::OnShowMotionBlurSettings );
+    _effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->SSAO" ), this, &EMGame::OnShowSSAOSettings );
+    _effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->HDR tone mapper" ), this, &EMGame::OnShowToneMapperSettings );
 
-    menu = new EMUIMenu ( nullptr );
-    menu->SetLocation ( 0.0f, h - menu->GetHeight () );
-    menu->AddItem ( locale.GetString ( L"Main menu->File" ), filePopup );
-    menu->AddItem ( locale.GetString ( L"Main menu->Create" ), createPopup );
-    menu->AddItem ( locale.GetString ( L"Main menu->Tools" ), toolsPopup );
-    menu->AddItem ( locale.GetString ( L"Main menu->Utility" ), utilityPopup );
-    menu->AddItem ( locale.GetString ( L"Main menu->Effects" ), effectsPopup );
+    _menu = new EMUIMenu ( nullptr );
+    _menu->SetLocation ( 0.0f, h - _menu->GetHeight () );
+    _menu->AddItem ( locale.GetString ( L"Main menu->File" ), _filePopup );
+    _menu->AddItem ( locale.GetString ( L"Main menu->Create" ), _createPopup );
+    _menu->AddItem ( locale.GetString ( L"Main menu->Tools" ), _toolsPopup );
+    _menu->AddItem ( locale.GetString ( L"Main menu->Utility" ), _utilityPopup );
+    _menu->AddItem ( locale.GetString ( L"Main menu->Effects" ), _effectsPopup );
 
     GXFloat physicsInfoWidth = 10.0f * gx_ui_Scale;
     GXFloat physicsInfoHeight = 5.0f * gx_ui_Scale;
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
-    physicsInfo = new GXHudSurface ( static_cast<GXUShort> ( physicsInfoWidth ), static_cast<GXUShort> ( physicsInfoHeight ) );
+    _physicsInfo = new GXHudSurface ( static_cast<GXUShort> ( physicsInfoWidth ), static_cast<GXUShort> ( physicsInfoHeight ) );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXFont" );
-    physicsInfoFont = new GXFont ( L"Fonts/trebuc.ttf", static_cast<GXUShort> ( 0.4f * gx_ui_Scale ) );
+    _physicsInfoFont = new GXFont ( L"Fonts/trebuc.ttf", static_cast<GXUShort> ( 0.4f * gx_ui_Scale ) );
 
-    physicsInfo->SetLocation ( 0.5f * ( physicsInfoWidth - w ), 0.5f * ( physicsInfoHeight - h ), 7.0f );
+    _physicsInfo->SetLocation ( 0.5f * ( physicsInfoWidth - w ), 0.5f * ( physicsInfoHeight - h ), 7.0f );
 
-    physicsInfoBackgroundTexture.LoadImage ( L"Textures/System/Default_Diffuse.tga", GX_FALSE, GX_FALSE );
+    _physicsInfoBackgroundTexture.LoadImage ( L"Textures/System/Default_Diffuse.tga", GX_FALSE, GX_FALSE );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMeshGeometry" );
-    physicsContactPointMesh = new GXMeshGeometry ();
-    physicsContactPointMesh->LoadMesh ( L"Meshes/System/Unit Sphere.obj" );
-    physicsContactPointMaterial = new GXUnlitColorMaterial ();
-    physicsContactPointMaterial->SetColor ( 255u, 0u, 0u, 255u );
+    _physicsContactPointMesh = new GXMeshGeometry ();
+    _physicsContactPointMesh->LoadMesh ( L"Meshes/System/Unit Sphere.obj" );
+    _physicsContactPointMaterial = new GXUnlitColorMaterial ();
+    _physicsContactPointMaterial->SetColor ( 255u, 0u, 0u, 255u );
 
     GXPhysicsEngine::GetInstance ().SetTimeMultiplier ( 0.5f );
     GXPhysicsEngine& physicsEngine = GXPhysicsEngine::GetInstance ();
     GXWorld& world = physicsEngine.GetWorld ();
 
     GXTransform transform;
-    unitActor = new EMUnitActor ( L"Unit actor 01", transform );
+    _unitActor = new EMUnitActor ( L"Unit actor 01", transform );
 
     //transform.SetLocation ( 1.0f, 4.0f, 0.0f );
     transform.SetLocation ( 1.0f, 4.0f, 0.0f );
     transform.SetRotation ( 0.5f, 0.0f, 0.3f );
     transform.SetScale ( 1.0f, 1.0f, 1.0f );
-    colliderOne = new EMPhysicsDrivenActor ( L"Collider One", transform );
-    GXBoxShape* colliderOneShape = new GXBoxShape ( &( colliderOne->GetRigidBody () ), 1.0f, 1.0f, 1.0f );
+    _colliderOne = new EMPhysicsDrivenActor ( L"Collider One", transform );
+    GXBoxShape* colliderOneShape = new GXBoxShape ( &( _colliderOne->GetRigidBody () ), 1.0f, 1.0f, 1.0f );
     colliderOneShape->SetRestitution ( 0.5f );
-    colliderOne->GetRigidBody ().SetMass ( 1.0f );
-    colliderOne->GetRigidBody ().SetShape ( *colliderOneShape );
+    _colliderOne->GetRigidBody ().SetMass ( 1.0f );
+    _colliderOne->GetRigidBody ().SetShape ( *colliderOneShape );
     //colliderOne->GetRigidBody ().SetCanSleep ( GX_FALSE );
     //colliderOne->GetRigidBody ().EnableKinematic ();
     //colliderOne->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, -1.0f, 1.0f ) );
-    colliderOne->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 10.0f, -5.0f ) );
-    colliderOne->SetMesh ( L"Meshes/System/Unit Cube.stm" );
-    EMCookTorranceCommonPassMaterial& colliderOneMaterial = colliderOne->GetMaterial ();
+    _colliderOne->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 10.0f, -5.0f ) );
+    _colliderOne->SetMesh ( L"Meshes/System/Unit Cube.stm" );
+    EMCookTorranceCommonPassMaterial& colliderOneMaterial = _colliderOne->GetMaterial ();
     colliderOneMaterial.SetAlbedoColor ( 253u, 180u, 17u, 255u );
     colliderOneMaterial.SetRoughnessScale ( 0.25f );
     colliderOneMaterial.SetIndexOfRefractionScale ( 0.094f );
     colliderOneMaterial.SetSpecularIntensityScale ( 0.998f );
     colliderOneMaterial.SetMetallicScale ( 1.0f );
     colliderOneMaterial.SetEmissionColorScale ( 0.0f );
-    colliderOne->EnablePhysicsDebug ();
+    _colliderOne->EnablePhysicsDebug ();
 
-    world.RegisterForceGenerator ( colliderOne->GetRigidBody (), gravity );
+    world.RegisterForceGenerator ( _colliderOne->GetRigidBody (), _gravity );
 
     transform.SetLocation ( 3.0f, 0.5f, 0.0f );
     //transform.SetLocation ( 1.0f, 1.0f, 0.0f );
     transform.SetRotation ( 0.0f, 0.0f, 0.0f );
     transform.SetScale ( 1.0f, 1.0f, 1.0f );
-    colliderTwo = new EMPhysicsDrivenActor ( L"Collider Two", transform );
-    GXSphereShape* colliderTwoShape = new GXSphereShape ( &( colliderTwo->GetRigidBody () ), 0.5f );
+    _colliderTwo = new EMPhysicsDrivenActor ( L"Collider Two", transform );
+    GXSphereShape* colliderTwoShape = new GXSphereShape ( &( _colliderTwo->GetRigidBody () ), 0.5f );
     colliderTwoShape->SetRestitution ( 0.8f );
-    colliderTwo->GetRigidBody ().SetMass ( 1.0f );
-    colliderTwo->GetRigidBody ().SetShape ( *colliderTwoShape );
+    _colliderTwo->GetRigidBody ().SetMass ( 1.0f );
+    _colliderTwo->GetRigidBody ().SetShape ( *colliderTwoShape );
     //colliderTwo->GetRigidBody ().SetCanSleep ( GX_FALSE );
     //colliderTwo->GetRigidBody ().EnableKinematic ();
-    colliderTwo->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 0.0f, 35.0f ) );
-    colliderTwo->SetMesh ( L"Meshes/System/Unit Sphere.obj" );
-    EMCookTorranceCommonPassMaterial& colliderTwoMaterial = colliderTwo->GetMaterial ();
+    _colliderTwo->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 0.0f, 35.0f ) );
+    _colliderTwo->SetMesh ( L"Meshes/System/Unit Sphere.obj" );
+    EMCookTorranceCommonPassMaterial& colliderTwoMaterial = _colliderTwo->GetMaterial ();
     colliderTwoMaterial.SetAlbedoColor ( 247u, 244u, 233u, 255u );
     colliderTwoMaterial.SetRoughnessScale ( 0.19f );
     colliderTwoMaterial.SetIndexOfRefractionScale ( 0.1f );
     colliderTwoMaterial.SetSpecularIntensityScale ( 0.998f );
     colliderTwoMaterial.SetMetallicScale ( 1.0f );
     colliderTwoMaterial.SetEmissionColorScale ( 0.0f );
-    colliderTwo->EnablePhysicsDebug ();
+    _colliderTwo->EnablePhysicsDebug ();
 
-    world.RegisterForceGenerator ( colliderTwo->GetRigidBody (), gravity );
+    world.RegisterForceGenerator ( _colliderTwo->GetRigidBody (), _gravity );
 
     transform.SetLocation ( 0.0f, -3.0f, 0.0f );
     transform.SetRotation ( 0.0f, GX_MATH_PI, 0.0f );
     transform.SetScale ( 50.0f, 1.0, 50.0f );
-    kinematicPlane = new EMPhysicsDrivenActor ( L"Kinematic Plane", transform );
-    GXBoxShape* kinematicPlaneShape = new GXBoxShape ( &( kinematicPlane->GetRigidBody () ), 50.0f, 1.0f, 50.0f );
-    kinematicPlane->GetRigidBody ().SetMass ( 777.777e+3f );
-    kinematicPlane->GetRigidBody ().SetShape ( *kinematicPlaneShape );
+    _kinematicPlane = new EMPhysicsDrivenActor ( L"Kinematic Plane", transform );
+    GXBoxShape* kinematicPlaneShape = new GXBoxShape ( &( _kinematicPlane->GetRigidBody () ), 50.0f, 1.0f, 50.0f );
+    _kinematicPlane->GetRigidBody ().SetMass ( 777.777e+3f );
+    _kinematicPlane->GetRigidBody ().SetShape ( *kinematicPlaneShape );
     //kinematicPlane->GetRigidBody ().EnableKinematic ();
     //kinematicPlane->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, 0.1f, 0.0f ) );
     //kinematicPlane->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 0.0f, 0.2f ) );
     kinematicPlaneShape->SetRestitution ( 0.95f );
-    kinematicPlane->SetMesh ( L"Meshes/System/Unit Cube.stm" );
-    EMCookTorranceCommonPassMaterial& kinematicPlaneMaterial = kinematicPlane->GetMaterial ();
+    _kinematicPlane->SetMesh ( L"Meshes/System/Unit Cube.stm" );
+    EMCookTorranceCommonPassMaterial& kinematicPlaneMaterial = _kinematicPlane->GetMaterial ();
     kinematicPlaneMaterial.SetRoughnessScale ( 0.07f );
     kinematicPlaneMaterial.SetSpecularIntensityScale ( 0.15f );
     kinematicPlaneMaterial.SetMetallicScale ( 0.0f );
@@ -223,56 +223,56 @@ GXVoid EMGame::OnInit ()
     GXTexture2D* texture = kinematicPlaneMaterial.GetAlbedoTexture ();
     texture->FreeResources ();
     texture->LoadImage ( L"Textures/System/GXEngine Logo 4k.png", GX_TRUE, GX_TRUE );
-    kinematicPlane->EnablePhysicsDebug ();
+    _kinematicPlane->EnablePhysicsDebug ();
 
     transform.SetLocation ( 6.0f, 0.0f, 0.0f );
     transform.SetScale ( 1.0f, 1.0f, 1.0f );
     transform.SetRotation ( GXDegToRad ( 30.0f ), GXDegToRad ( 30.0f ), 0.0f );
-    directedLight = new EMDirectedLightActor ( L"Directed light 01", transform );
+    _directedLight = new EMDirectedLightActor ( L"Directed light 01", transform );
 
-    moveTool = new EMMoveTool ();
-    moveTool->Bind ();
-    moveTool->SetWorldMode ();
+    _moveTool = new EMMoveTool ();
+    _moveTool->Bind ();
+    _moveTool->SetWorldMode ();
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXCameraOrthographic" );
-    hudCamera = new GXCameraOrthographic ( w, h, EM_UI_HUD_CAMERA_NEAR_Z, EM_UI_HUD_CAMERA_FAR_Z );
+    _hudCamera = new GXCameraOrthographic ( w, h, EM_UI_HUD_CAMERA_NEAR_Z, EM_UI_HUD_CAMERA_FAR_Z );
 
     EMViewer* viewer = EMViewer::GetInstance ();
     viewer->SetOnViewerTransformChangedCallback ( this, &EMGame::OnViewerTransformChanged );
-    viewer->SetInputWidget ( *uiInput );
-    viewer->SetTarget ( unitActor );
+    viewer->SetInputWidget ( *_uiInput );
+    viewer->SetTarget ( _unitActor );
     GXCamera::SetActiveCamera ( &viewer->GetCamera () );
 
-    EMTool::SetActiveTool ( moveTool );
+    EMTool::SetActiveTool ( _moveTool );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMeshGeometry" );
-    contactLocationMesh = new GXMeshGeometry ();
-    contactLocationMesh->LoadMesh ( L"Meshes/System/Unit Sphere.obj" );
+    _contactLocationMesh = new GXMeshGeometry ();
+    _contactLocationMesh->LoadMesh ( L"Meshes/System/Unit Sphere.obj" );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMeshGeometry" );
-    contactNormalMesh = new GXMeshGeometry ();
-    contactNormalMesh->LoadMesh ( L"Meshes/Editor Mobile/Move gismo Z axis.stm" );
+    _contactNormalMesh = new GXMeshGeometry ();
+    _contactNormalMesh->LoadMesh ( L"Meshes/Editor Mobile/Move gismo Z axis.stm" );
 
-    contactLocationMaterial = new GXUnlitColorMaterial ();
-    contactLocationMaterial->SetColor ( 255u, 255u, 255u, 255u );
+    _contactLocationMaterial = new GXUnlitColorMaterial ();
+    _contactLocationMaterial->SetColor ( 255u, 255u, 255u, 255u );
 
-    contactNormalMaterial = new GXUnlitColorMaterial ();
-    contactNormalMaterial->SetColor ( 0u, 0u, 255u, 255u );
+    _contactNormalMaterial = new GXUnlitColorMaterial ();
+    _contactNormalMaterial->SetColor ( 0u, 0u, 255u, 255u );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMap" );
-    environmentMap = new GXTextureCubeMap ();
-    environmentMap->LoadEquirectangularImage ( L"Textures/Editor Mobile/Default LDR environment map.jpg", GX_FALSE, GX_TRUE );
+    _environmentMap = new GXTextureCubeMap ();
+    _environmentMap->LoadEquirectangularImage ( L"Textures/Editor Mobile/Default LDR environment map.jpg", GX_FALSE, GX_TRUE );
     //environmentMap->LoadEquirectangularImage ( L"Textures/Editor Mobile/Default HDR environment map.hdr", GX_TRUE, GX_FALSE );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMap" );
-    lightProbeSourceTexture = new GXTextureCubeMap ();
-    lightProbeSourceTexture->LoadEquirectangularImage ( L"Textures/Editor Mobile/Default HDR environment map.hdr", GX_TRUE, GX_FALSE );
+    _lightProbeSourceTexture = new GXTextureCubeMap ();
+    _lightProbeSourceTexture->LoadEquirectangularImage ( L"Textures/Editor Mobile/Default HDR environment map.hdr", GX_TRUE, GX_FALSE );
 
-    lightProbe = new EMLightProbe ();
-    lightProbe->SetEnvironmentMap ( *lightProbeSourceTexture );
+    _lightProbe = new EMLightProbe ();
+    _lightProbe->SetEnvironmentMap ( *_lightProbeSourceTexture );
 
     EMEnvironment& environment = EMEnvironment::GetInstance ();
-    environment.SetEnvironmentMap ( *environmentMap );
+    environment.SetEnvironmentMap ( *_environmentMap );
     environment.SetEnvironmentQuasiDistance ( ENVIRONMENT_QUASI_DISTANCE );
 
     EMUIFPSCounter::GetInstance ();
@@ -302,10 +302,10 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
     EMRenderer& renderer = EMRenderer::GetInstance ();
     renderer.StartCommonPass ();
 
-    unitActor->OnDrawCommonPass ( deltaTime );
-    colliderOne->OnDrawCommonPass ( deltaTime );
-    colliderTwo->OnDrawCommonPass ( deltaTime );
-    kinematicPlane->OnDrawCommonPass ( deltaTime );
+    _unitActor->OnDrawCommonPass ( deltaTime );
+    _colliderOne->OnDrawCommonPass ( deltaTime );
+    _colliderTwo->OnDrawCommonPass ( deltaTime );
+    _kinematicPlane->OnDrawCommonPass ( deltaTime );
 
     renderer.StartEnvironmentPass ();
 
@@ -319,30 +319,30 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
     renderer.StartHudColorPass ();
 
-    colliderOne->OnDrawHudColorPass ();
-    colliderTwo->OnDrawHudColorPass ();
-    kinematicPlane->OnDrawHudColorPass ();
-    moveTool->OnDrawHudColorPass ();
+    _colliderOne->OnDrawHudColorPass ();
+    _colliderTwo->OnDrawHudColorPass ();
+    _kinematicPlane->OnDrawHudColorPass ();
+    _moveTool->OnDrawHudColorPass ();
 
     GXOpenGLState state;
     GXTransform transform;
 
-    if ( isContact )
+    if ( _isContact )
     {
         state.Save ();
 
-        transform.SetCurrentFrameModelMatrix ( contactNormalTransform );
+        transform.SetCurrentFrameModelMatrix ( _contactNormalTransform );
         transform.SetScale ( 0.1f, 0.1f, 0.1f );
 
-        contactLocationMaterial->Bind ( transform );
-        contactLocationMesh->Render ();
-        contactLocationMaterial->Unbind ();
+        _contactLocationMaterial->Bind ( transform );
+        _contactLocationMesh->Render ();
+        _contactLocationMaterial->Unbind ();
 
         transform.SetScale ( 1.0f, 1.0f, 1.0f );
 
-        contactNormalMaterial->Bind ( transform );
-        contactNormalMesh->Render ();
-        contactNormalMaterial->Unbind ();
+        _contactNormalMaterial->Bind ( transform );
+        _contactNormalMesh->Render ();
+        _contactNormalMaterial->Unbind ();
 
         glDisable ( GL_DEPTH_TEST );
 
@@ -353,7 +353,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
     const GXCollisionData& collisionData = GXPhysicsEngine::GetInstance ().GetWorld ().GetCollisionData ();
     GXContact* contact = collisionData.GetAllContacts ();
 
-    if ( collisionData.GetTotalContacts () > 0 )
+    if ( collisionData.GetTotalContacts () > 0u )
     {
         state.Save ();
 
@@ -365,72 +365,72 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
         {
             transform.SetLocation ( contact[ i ].GetContactPoint () );
 
-            physicsContactPointMaterial->Bind ( transform );
-            physicsContactPointMesh->Render ();
-            physicsContactPointMaterial->Unbind ();
+            _physicsContactPointMaterial->Bind ( transform );
+            _physicsContactPointMesh->Render ();
+            _physicsContactPointMaterial->Unbind ();
         }
 
         state.Restore ();
     }
 
-    GXCamera::SetActiveCamera ( hudCamera );
+    GXCamera::SetActiveCamera ( _hudCamera );
 
     EMDrawUI ();
 
-    physicsInfo->Reset ();
+    _physicsInfo->Reset ();
 
     GXImageInfo ii;
-    ii.color.From ( 0u, 0u, 0u, 180u );
-    ii.texture = &physicsInfoBackgroundTexture;
-    ii.insertX = 0.0f;
-    ii.insertY = 0.0f;
-    ii.insertWidth = static_cast<GXFloat> ( physicsInfo->GetWidth () );
-    ii.insertHeight = static_cast<GXFloat> ( physicsInfo->GetHeight () );
-    ii.overlayType = eGXImageOverlayType::SimpleReplace;
+    ii._color.From ( 0u, 0u, 0u, 180u );
+    ii._texture = &_physicsInfoBackgroundTexture;
+    ii._insertX = 0.0f;
+    ii._insertY = 0.0f;
+    ii._insertWidth = static_cast<GXFloat> ( _physicsInfo->GetWidth () );
+    ii._insertHeight = static_cast<GXFloat> ( _physicsInfo->GetHeight () );
+    ii._overlayType = eGXImageOverlayType::SimpleReplace;
 
-    physicsInfo->AddImage ( ii );
+    _physicsInfo->AddImage ( ii );
 
     GXPenInfo pi;
-    pi.color.From ( 115u, 185u, 0u, 255u );
-    pi.font = physicsInfoFont;
-    pi.insertX = 0.5f * gx_ui_Scale;
-    pi.insertY = 0.5f * gx_ui_Scale;
-    pi.overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
+    pi._color.From ( 115u, 185u, 0u, 255u );
+    pi._font = _physicsInfoFont;
+    pi._insertX = 0.5f * gx_ui_Scale;
+    pi._insertY = 0.5f * gx_ui_Scale;
+    pi._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
-    physicsInfo->AddText ( pi, 64, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Contacts: %i" ), collisionData.GetTotalContacts () );
+    _physicsInfo->AddText ( pi, 64, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Contacts: %i" ), collisionData.GetTotalContacts () );
 
-    GXFloat offset = static_cast<GXFloat> ( physicsInfoFont->GetSize () );
-    pi.insertY += offset;
-    physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Allocated support points: %i" ), collisionDetector.GetAllocatedSupportPoints () );
+    GXFloat offset = static_cast<GXFloat> ( _physicsInfoFont->GetSize () );
+    pi._insertY += offset;
+    _physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Allocated support points: %i" ), collisionDetector.GetAllocatedSupportPoints () );
 
-    pi.insertY += offset;
-    physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Allocated edges: %i" ), collisionDetector.GetAllocatedEdges () );
+    pi._insertY += offset;
+    _physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Allocated edges: %i" ), collisionDetector.GetAllocatedEdges () );
 
-    pi.insertY += offset;
-    physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Allocated faces: %i" ), collisionDetector.GetAllocatedFaces () );
+    pi._insertY += offset;
+    _physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Allocated faces: %i" ), collisionDetector.GetAllocatedFaces () );
 
     if ( collisionData.GetTotalContacts () > 0 )
     {
-        pi.insertY += offset;
-        physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Penetration depth: %f" ), contact->GetPenetration () );
+        pi._insertY += offset;
+        _physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Penetration depth: %f" ), contact->GetPenetration () );
 
-        pi.insertY += offset;
-        physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->GJK iterations: %i" ), contact->GetGJKIterations () );
+        pi._insertY += offset;
+        _physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->GJK iterations: %i" ), contact->GetGJKIterations () );
 
-        pi.insertY += offset;
-        physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->EPA iterations: %i" ), contact->GetEPAIterations () );
+        pi._insertY += offset;
+        _physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->EPA iterations: %i" ), contact->GetEPAIterations () );
 
-        pi.insertY += offset;
-        physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Used support points: %i" ), contact->GetSupportPoints () );
+        pi._insertY += offset;
+        _physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Used support points: %i" ), contact->GetSupportPoints () );
 
-        pi.insertY += offset;
-        physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Used edges: %i" ), contact->GetEdges () );
+        pi._insertY += offset;
+        _physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Used edges: %i" ), contact->GetEdges () );
 
-        pi.insertY += offset;
-        physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Used faces: %i" ), contact->GetFaces () );
+        pi._insertY += offset;
+        _physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Used faces: %i" ), contact->GetFaces () );
     }
 
-    physicsInfo->Render ();
+    _physicsInfo->Render ();
 
     EMUIFPSCounter::GetInstance ().Render ();
 
@@ -438,7 +438,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
     GXCamera::SetActiveCamera ( &viewerCamera );
 
-    moveTool->OnDrawHudMaskPass ();
+    _moveTool->OnDrawHudMaskPass ();
 
     renderer.PresentFrame ( eEMRenderTarget::Combine );
 
@@ -456,7 +456,7 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
 
 GXVoid EMGame::OnDestroy ()
 {
-    moveTool->UnBind ();
+    _moveTool->UnBind ();
 
     GXSplashScreen::GetInstance ().Show ();
     GXRenderer::GetInstance ().Hide ();
@@ -467,49 +467,49 @@ GXVoid EMGame::OnDestroy ()
     input.UnbindKeyCallback ( VK_ESCAPE, eGXInputButtonState::Up );
 
     GXTouchSurface::GetInstance ().SetDefaultWidget ( nullptr );
-    GXSafeDelete ( uiInput );
+    GXSafeDelete ( _uiInput );
 
-    GXSafeDelete ( lightProbe );
+    GXSafeDelete ( _lightProbe );
 
-    delete lightProbeSourceTexture;
-    delete environmentMap;
+    delete _lightProbeSourceTexture;
+    delete _environmentMap;
 
-    GXSafeDelete ( contactNormalMaterial );
-    GXSafeDelete ( contactNormalMesh );
+    GXSafeDelete ( _contactNormalMaterial );
+    GXSafeDelete ( _contactNormalMesh );
 
-    GXSafeDelete ( contactLocationMaterial );
-    GXSafeDelete ( contactLocationMesh );
+    GXSafeDelete ( _contactLocationMaterial );
+    GXSafeDelete ( _contactLocationMesh );
 
-    GXSafeDelete ( moveTool );
+    GXSafeDelete ( _moveTool );
 
     GXWorld& world = GXPhysicsEngine::GetInstance ().GetWorld ();
 
     // world.UnregisterForceGenerator ( kinematicPlane->GetRigidBody (), gravity );
-    world.UnregisterForceGenerator ( colliderOne->GetRigidBody (), gravity );
-    world.UnregisterForceGenerator ( colliderTwo->GetRigidBody (), gravity );
+    world.UnregisterForceGenerator ( _colliderOne->GetRigidBody (), _gravity );
+    world.UnregisterForceGenerator ( _colliderTwo->GetRigidBody (), _gravity );
 
-    GXSafeDelete ( kinematicPlane );
-    GXSafeDelete ( colliderOne );
-    GXSafeDelete ( colliderTwo );
-    GXSafeDelete ( unitActor );
+    GXSafeDelete ( _kinematicPlane );
+    GXSafeDelete ( _colliderOne );
+    GXSafeDelete ( _colliderTwo );
+    GXSafeDelete ( _unitActor );
 
-    GXSafeDelete ( directedLight );
+    GXSafeDelete ( _directedLight );
 
-    GXSafeDelete ( physicsContactPointMaterial );
-    GXSafeDelete ( physicsContactPointMesh );
-    physicsInfoBackgroundTexture.FreeResources ();
-    delete physicsInfoFont;
-    GXSafeDelete ( physicsInfo );
+    GXSafeDelete ( _physicsContactPointMaterial );
+    GXSafeDelete ( _physicsContactPointMesh );
+    _physicsInfoBackgroundTexture.FreeResources ();
+    delete _physicsInfoFont;
+    GXSafeDelete ( _physicsInfo );
 
-    GXSafeDelete ( effectsPopup );
-    GXSafeDelete ( utilityPopup );
-    GXSafeDelete ( toolsPopup );
-    GXSafeDelete ( createPopup );
-    GXSafeDelete ( filePopup );
-    GXSafeDelete ( openFile );
-    GXSafeDelete ( menu );
+    GXSafeDelete ( _effectsPopup );
+    GXSafeDelete ( _utilityPopup );
+    GXSafeDelete ( _toolsPopup );
+    GXSafeDelete ( _createPopup );
+    GXSafeDelete ( _filePopup );
+    GXSafeDelete ( _openFile );
+    GXSafeDelete ( _menu );
 
-    GXSafeDelete ( hudCamera );
+    GXSafeDelete ( _hudCamera );
 
     delete EMViewer::GetInstance ();
     delete &( EMEnvironment::GetInstance () );
@@ -553,12 +553,12 @@ GXVoid GXCALL EMGame::OnShowToneMapperSettings ( GXVoid* /*handler*/ )
 
 GXVoid GXCALL EMGame::OnMouseButton ( GXVoid* /*handler*/, GXInputMouseFlags mouseflags )
 {
-    if ( !mouseflags.lmb ) return;
+    if ( !mouseflags._leftMouseButton ) return;
 
     const GXVec2& mouse = GXTouchSurface::GetInstance ().GetMousePosition ();
 
-    GXUShort x = (GXUShort)mouse.GetX ();
-    GXUShort y = (GXUShort)mouse.GetY ();
+    const GXUShort x = static_cast<GXUShort> ( mouse.GetX () );
+    const GXUShort y = static_cast<GXUShort> ( mouse.GetY () );
 
     EMRenderer::GetInstance ().GetObject ( x, y );
 
@@ -582,11 +582,11 @@ GXVoid GXCALL EMGame::OnMouseButton ( GXVoid* /*handler*/, GXInputMouseFlags mou
     GXVec3 contactNormal;
     const GXShape* contactShape;
 
-    isContact = GXPhysicsEngine::GetInstance ().GetWorld ().Raycast ( rayOrigin, rayDirection, rayLength, contactLocation, contactNormal, &contactShape );
+    _isContact = GXPhysicsEngine::GetInstance ().GetWorld ().Raycast ( rayOrigin, rayDirection, rayLength, contactLocation, contactNormal, &contactShape );
 
-    if ( !isContact ) return;
+    if ( !_isContact ) return;
 
-    contactNormalTransform.From ( contactNormal, contactLocation );
+    _contactNormalTransform.From ( contactNormal, contactLocation );
 
     constexpr GXFloat impulseModule = 3.0f;
     GXVec3 impulseWorld;
@@ -599,21 +599,21 @@ GXVoid GXCALL EMGame::OnObject ( GXVoid* handler, GXVoid* object )
 {
     EMGame* game = static_cast<EMGame*> ( handler );
 
-    if ( game->moveTool->OnObject ( object ) ) return;
+    if ( game->_moveTool->OnObject ( object ) ) return;
 
     EMActor* actor = static_cast<EMActor*> ( object );
 
     if ( actor )
         GXLogA ( "EMOnObject::Info - Îáúåêò %S\n", actor->GetName () );
 
-    game->moveTool->SetActor ( actor );
+    game->_moveTool->SetActor ( actor );
     EMViewer::GetInstance ()->SetTarget ( actor );
 }
 
 GXVoid GXCALL EMGame::OnViewerTransformChanged ( GXVoid* handler )
 {
     EMGame* game = static_cast<EMGame*> ( handler );
-    game->moveTool->OnViewerTransformChanged ();
+    game->_moveTool->OnViewerTransformChanged ();
     EMEnvironment::GetInstance ().OnViewerLocationChanged ();
 }
 

@@ -1,4 +1,4 @@
-// version 1.11
+// version 1.12
 
 #ifndef GX_SOUND_MIXER
 #define GX_SOUND_MIXER
@@ -12,12 +12,12 @@
 class GXSoundMixer final : public GXMemoryInspector
 {
     private:
-        GXThread                    thread;
-        GXFloat                     masterVolume;
+        GXThread                    _thread;
+        GXFloat                     _masterVolume;
 
-        static GXBool               loopFlag;
-        static GXSoundChannel*      channels;
-        static GXSoundMixer*        instance;
+        static GXBool               _loopFlag;
+        static GXSoundChannel*      _channels;
+        static GXSoundMixer*        _instance;
 
     public:
         static GXSoundMixer& GXCALL GetInstance ();

@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXEngine/GXUIStaticText.h>
 #include <GXEngine/GXUICommon.h>
@@ -17,47 +17,47 @@
 
 GXUIStaticText::GXUIStaticText ( GXWidget* parent ):
     GXWidget ( parent ),
-    text ( nullptr ),
-    textColor ( static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_R ), static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_G ), static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_B ), static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_A ) ),
-    alignment ( DEFAULT_UI_ALIGNMENT )
+    _text ( nullptr ),
+    _textColor ( static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_R ), static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_G ), static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_B ), static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_A ) ),
+    _alignment ( DEFAULT_UI_ALIGNMENT )
 {
     // NOTHING
 }
 
 GXUIStaticText::~GXUIStaticText ()
 {
-    GXSafeFree ( text );
+    GXSafeFree ( _text );
 }
 
 GXVoid GXUIStaticText::OnMessage ( eGXUIMessage message, const GXVoid* data )
 {
     if ( message == eGXUIMessage::SetText )
     {
-        GXSafeFree ( text );
-        GXWcsclone ( &text, static_cast<const GXWChar*> ( data ) );
+        GXSafeFree ( _text );
+        GXWcsclone ( &_text, static_cast<const GXWChar*> ( data ) );
 
-        if ( renderer )
-            renderer->OnUpdate ();
+        if ( _renderer )
+            _renderer->OnUpdate ();
 
         return;
     }
 
     if ( message == eGXUIMessage::ClearText )
     {
-        GXSafeFree ( text );
+        GXSafeFree ( _text );
 
-        if ( renderer )
-            renderer->OnUpdate ();
+        if ( _renderer )
+            _renderer->OnUpdate ();
 
         return;
     }
 
     if ( message == eGXUIMessage::SetTextColor )
     {
-        memcpy ( &textColor, data, sizeof ( GXVec4 ) );
+        memcpy ( &_textColor, data, sizeof ( GXVec4 ) );
 
-        if ( renderer )
-            renderer->OnUpdate ();
+        if ( _renderer )
+            _renderer->OnUpdate ();
 
         return;
     }
@@ -65,10 +65,10 @@ GXVoid GXUIStaticText::OnMessage ( eGXUIMessage message, const GXVoid* data )
     if ( message == eGXUIMessage::SetTextAlignment )
     {
         const eGXUITextAlignment* newAlignment = static_cast<const eGXUITextAlignment*> ( data );
-        alignment = *newAlignment;
+        _alignment = *newAlignment;
 
-        if ( renderer )
-            renderer->OnUpdate ();
+        if ( _renderer )
+            _renderer->OnUpdate ();
 
         return;
     }
@@ -101,15 +101,15 @@ GXVoid GXUIStaticText::SetAlignment ( eGXUITextAlignment newAlignment )
 
 const GXWChar* GXUIStaticText::GetText () const
 {
-    return text;
+    return _text;
 }
 
 const GXColorRGB& GXUIStaticText::GetTextColor () const
 {
-    return textColor;
+    return _textColor;
 }
 
 eGXUITextAlignment GXUIStaticText::GetAlignment () const
 {
-    return alignment;
+    return _alignment;
 }

@@ -1,4 +1,4 @@
-// version 1.12
+// version 1.13
 
 #ifndef GX_OPENGL
 #define GX_OPENGL
@@ -99,21 +99,21 @@ GXVoid GXCALL GXCheckOpenGLError ();
 class GXOpenGLState final
 {
     private:
-        GLuint          fbo;
-        GLint           viewport[ 4u ];
-        GLboolean       colorMask[ 4u ];
+        GLuint          _fbo;
+        GLint           _viewport[ 4u ];
+        GLboolean       _colorMask[ 4u ];
 
-        GLboolean       depthMask;
-        GLboolean       depthTest;
-        GLfloat         depthClearValue;
-        GLint           depthFunction;
+        GLboolean       _depthMask;
+        GLboolean       _depthTest;
+        GLfloat         _depthClearValue;
+        GLint           _depthFunction;
 
-        GLboolean       cullFace;
-        GLint           cullFaceMode;
+        GLboolean       _cullFace;
+        GLint           _cullFaceMode;
 
-        GLboolean       blending;
+        GLboolean       _blending;
 
-        GLenum          drawBuffers[ 16u ];
+        GLenum          _drawBuffers[ 16u ];
 
     public:
         GXOpenGLState ();

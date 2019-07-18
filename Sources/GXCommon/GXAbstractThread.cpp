@@ -1,18 +1,18 @@
-// version 1.4
+// version 1.5
 
 #include <GXCommon/GXThread.h>
 
 
 eGXThreadState GXAbstractThread::GetState () const
 {
-    return state;
+    return _state;
 }
 
-GXAbstractThread::GXAbstractThread ( PFNGXTHREADPROC procedure, GXVoid* argument )
+GXAbstractThread::GXAbstractThread ( GXThreaFunction procedure, GXVoid* argument )
 {
-    Procedure = procedure;
-    this->argument = argument;
-    state = eGXThreadState::Waiting;
+    _procedure = procedure;
+    _argument = argument;
+    _state = eGXThreadState::Waiting;
 }
 
 GXAbstractThread::~GXAbstractThread ()

@@ -1,4 +1,4 @@
-// version 1.6
+// version 1.7
 
 #include <GXEngine/GXOGGSoundProvider.h>
 
@@ -37,14 +37,14 @@ GXOGGSoundStreamer::GXOGGSoundStreamer ( GXVoid* mappedFile, GXUInt totalSize ):
     callbacks.seek_func = &GXOGGSeek;
     callbacks.tell_func = &GXOGGTell;
 
-    if ( GXOvOpenCallbacks ( this, &vorbisFile, nullptr, 0, callbacks ) == 0 ) return;
+    if ( GXOvOpenCallbacks ( this, &_vorbisFile, nullptr, 0, callbacks ) == 0 ) return;
 
     GXWarningBox ( L"GXOGGSoundStreamer::Error - не удалось открыть файл" );
 }
 
 GXOGGSoundStreamer::~GXOGGSoundStreamer ()
 {
-    GXOvClear ( &vorbisFile );
+    GXOvClear ( &_vorbisFile );
 }
 
 GXBool GXOGGSoundStreamer::FillBuffer ( ALuint buffer, GXBool isLooped )
@@ -54,26 +54,26 @@ GXBool GXOGGSoundStreamer::FillBuffer ( ALuint buffer, GXBool isLooped )
 
     while ( bufferFilling < GX_SOUND_PROVIDER_BUFFER_SIZE )
     {
-        GXLong decoded = GXOvRead ( &vorbisFile, reinterpret_cast<char*> ( pcmData + bufferFilling ), static_cast<GXInt> ( GX_SOUND_PROVIDER_BUFFER_SIZE ) - bufferFilling, 0, 2, 1, &bitstream );
+        GXLong decoded = GXOvRead ( &_vorbisFile, reinterpret_cast<char*> ( _pcmData + bufferFilling ), static_cast<GXInt> ( GX_SOUND_PROVIDER_BUFFER_SIZE ) - bufferFilling, 0, 2, 1, &bitstream );
         bufferFilling += decoded;
 
         if ( !decoded )
         {
             if ( !isLooped ) break;
-            GXOvPcmSeek ( &vorbisFile, 0 );
+            GXOvPcmSeek ( &_vorbisFile, 0 );
         }
     }
 
-    GXAlBufferi ( buffer, AL_FREQUENCY, static_cast<ALint> ( vorbisFile.vi->rate ) );
-    GXAlBufferi ( buffer, AL_CHANNELS, vorbisFile.vi->channels );
-    GXAlBufferData ( buffer, vorbisFile.vi->channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcmData, bufferFilling, static_cast<ALsizei> ( vorbisFile.vi->rate ) );
+    GXAlBufferi ( buffer, AL_FREQUENCY, static_cast<ALint> ( _vorbisFile.vi->rate ) );
+    GXAlBufferi ( buffer, AL_CHANNELS, _vorbisFile.vi->channels );
+    GXAlBufferData ( buffer, _vorbisFile.vi->channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, _pcmData, bufferFilling, static_cast<ALsizei> ( _vorbisFile.vi->rate ) );
     
     return bufferFilling ? GX_TRUE : GX_FALSE;
 }
 
 GXVoid GXOGGSoundStreamer::DecompressAll ( ALuint buffer )
 {
-    GXUInt decompressedSize = vorbisFile.vi->channels * 2 * static_cast<GXUInt> ( GXOvPcmTotal ( &vorbisFile, -1 ) );
+    GXUInt decompressedSize = _vorbisFile.vi->channels * 2 * static_cast<GXUInt> ( GXOvPcmTotal ( &_vorbisFile, -1 ) );
 
     GXChar* temp = static_cast<GXChar*> ( Malloc ( decompressedSize ) );
     GXInt bitstream;
@@ -81,13 +81,13 @@ GXVoid GXOGGSoundStreamer::DecompressAll ( ALuint buffer )
 
     while ( bufferFilling < static_cast<GXLong> ( decompressedSize ) )
     {
-        GXLong decoded = GXOvRead ( &vorbisFile, temp + bufferFilling, (GXInt)decompressedSize - bufferFilling, 0, 2, 1, &bitstream );
+        GXLong decoded = GXOvRead ( &_vorbisFile, temp + bufferFilling, (GXInt)decompressedSize - bufferFilling, 0, 2, 1, &bitstream );
         bufferFilling += decoded;
     }
 
-    GXAlBufferi ( buffer, AL_FREQUENCY, static_cast<ALint> ( vorbisFile.vi->rate ) );
-    GXAlBufferi ( buffer, AL_CHANNELS, vorbisFile.vi->channels );
-    GXAlBufferData ( buffer, vorbisFile.vi->channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, temp, static_cast<ALsizei> ( decompressedSize ), static_cast<ALsizei> ( vorbisFile.vi->rate ) );
+    GXAlBufferi ( buffer, AL_FREQUENCY, static_cast<ALint> ( _vorbisFile.vi->rate ) );
+    GXAlBufferi ( buffer, AL_CHANNELS, _vorbisFile.vi->channels );
+    GXAlBufferData ( buffer, _vorbisFile.vi->channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, temp, static_cast<ALsizei> ( decompressedSize ), static_cast<ALsizei> ( _vorbisFile.vi->rate ) );
 
     Free ( temp );
 }
@@ -102,28 +102,28 @@ GXOGGSoundTrack::GXOGGSoundTrack ( const GXWChar* trackFile ):
 
 GXSoundStreamer* GXOGGSoundTrack::GetStreamer ()
 {
-    readyBuffer = 0u;
+    _readyBuffer = 0u;
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOGGSoundStreamer" );
-    return new GXOGGSoundStreamer ( mappedFile, static_cast<GXUInt> ( totalSize ) );
+    return new GXOGGSoundStreamer ( _mappedFile, static_cast<GXUInt> ( _totalSize ) );
 }
 
 ALuint GXOGGSoundTrack::GetBuffer ()
 {
-    if ( readyBuffer ) return readyBuffer;
+    if ( _readyBuffer ) return _readyBuffer;
     
-    GXAlGenBuffers ( 1, &readyBuffer );
+    GXAlGenBuffers ( 1, &_readyBuffer );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOGGSoundStreamer" );
-    GXOGGSoundStreamer* streamer = new GXOGGSoundStreamer ( mappedFile, static_cast<GXUInt> ( totalSize ) );
-    streamer->DecompressAll ( readyBuffer );
+    GXOGGSoundStreamer* streamer = new GXOGGSoundStreamer ( _mappedFile, static_cast<GXUInt> ( _totalSize ) );
+    streamer->DecompressAll ( _readyBuffer );
     delete streamer;
-    return readyBuffer;
+    return _readyBuffer;
 }
 
 GXOGGSoundTrack::~GXOGGSoundTrack ()
 {
-    if ( readyBuffer == 0u ) return;
+    if ( _readyBuffer == 0u ) return;
     
-    GXAlDeleteBuffers ( 1, &readyBuffer );
+    GXAlDeleteBuffers ( 1, &_readyBuffer );
 }

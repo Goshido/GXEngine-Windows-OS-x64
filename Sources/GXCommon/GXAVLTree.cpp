@@ -1,4 +1,4 @@
-// vesrion 1.7
+// vesrion 1.8
 
 #include <GXCommon/GXAVLTree.h>
 #include <GXCommon/GXStrings.h>
@@ -8,8 +8,8 @@
 GXAVLTreeNode::GXAVLTreeNode ()
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXAVLTreeNode" )
 {
-    left = right = nullptr;
-    height = 1u;
+    _left = _right = nullptr;
+    _height = 1u;
 }
 
 GXAVLTreeNode::~GXAVLTreeNode ()
@@ -21,39 +21,40 @@ GXAVLTreeNode::~GXAVLTreeNode ()
 
 GXUInt GXAVLTree::GetTotalNodes () const
 {
-    return totalNodes;
+    return _totalNodes;
 }
 
-GXAVLTree::GXAVLTree ( PFNGXAVLTREECOMPAREPROC comparator, GXBool doesAutoClean )
+GXAVLTree::GXAVLTree ( GXAVLTreeComparator comparator, GXBool doesAutoClean ):
+    _comparator ( comparator ),
+    _isAutoClean ( doesAutoClean ),
+    _root ( nullptr ),
+    _totalNodes ( 0u )
 {
-    Compare = comparator;
-    isAutoClean = doesAutoClean;
-    root = nullptr;
-    totalNodes = 0;
+    // NOTHING
 }
 
 GXAVLTree::~GXAVLTree ()
 {
-    if ( !isAutoClean ) return;
+    if ( !_isAutoClean ) return;
 
-    DeleteTree ( root );
+    DeleteTree ( _root );
 }
 
 const GXAVLTreeNode* GXAVLTree::Find ( const GXAVLTreeNode &node ) const
 {
-    GXAVLTreeNode* p = root;
+    GXAVLTreeNode* p = _root;
 
     while ( p )
     {
-        GXInt compareResult = Compare ( node, *p );
+        GXInt compareResult = _comparator ( node, *p );
 
         if ( compareResult < 0 )
         {
-            p = p->left;
+            p = p->_left;
         }
         else if ( compareResult > 0 )
         {
-            p = p->right;
+            p = p->_right;
         }
         else
         {
@@ -74,12 +75,12 @@ GXVoid GXAVLTree::Add ( GXAVLTreeNode &node )
 
     if ( !oldNode )
     {
-        root = Insert ( &node, root );
-        ++totalNodes;
+        _root = Insert ( &node, _root );
+        ++_totalNodes;
         return;
     }
 
-    if ( !isAutoClean )
+    if ( !_isAutoClean )
     {
         GXLogA ( "GXAVLTree::Add::Error - Обнаружен элемент с идентичным ключом. Не могу выполнить обмен элементов, так как требуется удаление старого элемента, а режим авточистки запрещён.\n" );
         return;
@@ -87,18 +88,18 @@ GXVoid GXAVLTree::Add ( GXAVLTreeNode &node )
 
     if ( !parentNode )
     {
-        root = &node;
+        _root = &node;
     }
     else
     {
         switch ( side )
         {
             case eGXAVLTreeSide::Left:
-                parentNode->left = &node;
+                parentNode->_left = &node;
             break;
 
             case eGXAVLTreeSide::Right:
-                parentNode->right = &node;
+                parentNode->_right = &node;
             break;
 
             case eGXAVLTreeSide::Unknown:
@@ -111,60 +112,60 @@ GXVoid GXAVLTree::Add ( GXAVLTreeNode &node )
         }
     }
 
-    node.left = oldNode->left;
-    node.right = oldNode->right;
-    node.height = oldNode->height;
+    node._left = oldNode->_left;
+    node._right = oldNode->_right;
+    node._height = oldNode->_height;
 
     delete oldNode;
 }
 
-GXVoid GXAVLTree::DoPrefix ( const GXAVLTreeNode* currentRoot, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const
+GXVoid GXAVLTree::DoPrefix ( const GXAVLTreeNode* currentRoot, GXAVLTreeIterator iterator, GXVoid* args ) const
 {
     if ( !currentRoot ) return;
 
     iterator ( *currentRoot, args );
-    DoPrefix ( currentRoot->left, iterator, args );
-    DoPrefix ( currentRoot->right, iterator, args );
+    DoPrefix ( currentRoot->_left, iterator, args );
+    DoPrefix ( currentRoot->_right, iterator, args );
 }
 
-GXVoid GXAVLTree::DoInfix ( const GXAVLTreeNode* currentRoot, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const
+GXVoid GXAVLTree::DoInfix ( const GXAVLTreeNode* currentRoot, GXAVLTreeIterator iterator, GXVoid* args ) const
 {
     if ( !currentRoot ) return;
 
-    DoInfix ( currentRoot->left, iterator, args );
+    DoInfix ( currentRoot->_left, iterator, args );
     iterator ( *currentRoot, args );
-    DoInfix ( currentRoot->right, iterator, args );
+    DoInfix ( currentRoot->_right, iterator, args );
 }
 
-GXVoid GXAVLTree::DoPostfix ( const GXAVLTreeNode* currentRoot, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const
+GXVoid GXAVLTree::DoPostfix ( const GXAVLTreeNode* currentRoot, GXAVLTreeIterator iterator, GXVoid* args ) const
 {
     if ( !currentRoot ) return;
 
-    DoPostfix ( currentRoot->left, iterator, args );
-    DoPostfix ( currentRoot->right, iterator, args );
+    DoPostfix ( currentRoot->_left, iterator, args );
+    DoPostfix ( currentRoot->_right, iterator, args );
     iterator ( *currentRoot, args );
 }
 
 GXVoid GXAVLTree::FindInternal ( GXAVLTreeNode** oldNode, GXAVLTreeNode** parent, eGXAVLTreeSide &side, const GXAVLTreeNode &node )
 {
     *parent = nullptr;
-    GXAVLTreeNode* currentNode = root;
+    GXAVLTreeNode* currentNode = _root;
 
     while ( currentNode )
     {
-        GXInt compareResult = Compare ( node, *currentNode );
+        GXInt compareResult = _comparator ( node, *currentNode );
 
         if ( compareResult < 0 )
         {
             *parent = currentNode;
             side = eGXAVLTreeSide::Left;
-            currentNode = currentNode->left;
+            currentNode = currentNode->_left;
         }
         else if ( compareResult > 0 )
         {
             *parent = currentNode;
             side = eGXAVLTreeSide::Right;
-            currentNode = currentNode->right;
+            currentNode = currentNode->_right;
         }
         else
         {
@@ -180,20 +181,20 @@ GXVoid GXAVLTree::FindInternal ( GXAVLTreeNode** oldNode, GXAVLTreeNode** parent
 
 GXUInt GXAVLTree::GetHeight ( GXAVLTreeNode* node ) const
 {
-    return node ? node->height : 0u;
+    return node ? node->_height : 0u;
 }
 
 GXInt GXAVLTree::GetBalance ( GXAVLTreeNode* node )
 {
-    return static_cast<GXInt> ( GetHeight ( node->right ) ) - static_cast<GXInt> ( GetHeight ( node->left ) );
+    return static_cast<GXInt> ( GetHeight ( node->_right ) ) - static_cast<GXInt> ( GetHeight ( node->_left ) );
 }
 
 GXAVLTreeNode* GXAVLTree::LeftRotate ( GXAVLTreeNode* father )
 {
-    GXAVLTreeNode* me = father->right;
+    GXAVLTreeNode* me = father->_right;
 
-    father->right = me->left;
-    me->left = father;
+    father->_right = me->_left;
+    me->_left = father;
 
     FixHeight ( father );
     FixHeight ( me );
@@ -203,10 +204,10 @@ GXAVLTreeNode* GXAVLTree::LeftRotate ( GXAVLTreeNode* father )
 
 GXAVLTreeNode* GXAVLTree::RightRotate ( GXAVLTreeNode* father )
 {
-    GXAVLTreeNode* me = father->left;
+    GXAVLTreeNode* me = father->_left;
 
-    father->left = me->right;
-    me->right = father;
+    father->_left = me->_right;
+    me->_right = father;
 
     FixHeight ( father );
     FixHeight ( me );
@@ -218,20 +219,20 @@ GXAVLTreeNode* GXAVLTree::Insert ( GXAVLTreeNode* node, GXAVLTreeNode* currentRo
 {
     if ( !currentRoot ) return node;
 
-    if ( Compare ( *node, *currentRoot ) < 0 )
-        currentRoot->left = Insert ( node, currentRoot->left );
+    if ( _comparator ( *node, *currentRoot ) < 0 )
+        currentRoot->_left = Insert ( node, currentRoot->_left );
     else
-        currentRoot->right = Insert ( node, currentRoot->right );
+        currentRoot->_right = Insert ( node, currentRoot->_right );
 
     return Balance ( currentRoot );
 }
 
 GXVoid GXAVLTree::FixHeight ( GXAVLTreeNode* node )
 {
-    GXUInt lh = GetHeight ( node->left );
-    GXUInt rh = GetHeight ( node->right );
+    GXUInt lh = GetHeight ( node->_left );
+    GXUInt rh = GetHeight ( node->_right );
 
-    node->height = 1u + ( lh > rh ? lh : rh );
+    node->_height = 1u + ( lh > rh ? lh : rh );
 }
 
 GXAVLTreeNode* GXAVLTree::Balance ( GXAVLTreeNode* me )
@@ -242,20 +243,20 @@ GXAVLTreeNode* GXAVLTree::Balance ( GXAVLTreeNode* me )
 
     if ( difference == 2 )
     {
-        GXAVLTreeNode* rightSon = me->right;
+        GXAVLTreeNode* rightSon = me->_right;
 
         if ( GetBalance ( rightSon ) < 0 )
-            me->right = RightRotate ( rightSon );
+            me->_right = RightRotate ( rightSon );
 
         return LeftRotate ( me );
     }
 
     if ( difference == -2 )
     {
-        GXAVLTreeNode* leftSon = me->left;
+        GXAVLTreeNode* leftSon = me->_left;
 
         if ( GetBalance ( leftSon ) > 0 )
-            me->left = LeftRotate ( leftSon );
+            me->_left = LeftRotate ( leftSon );
 
         return RightRotate ( me );
     }
@@ -267,7 +268,7 @@ GXVoid GXAVLTree::DeleteTree ( GXAVLTreeNode* node )
 {
     if ( !node ) return;
 
-    DeleteTree ( node->left );
-    DeleteTree ( node->right );
+    DeleteTree ( node->_left );
+    DeleteTree ( node->_right );
     delete node;
 }

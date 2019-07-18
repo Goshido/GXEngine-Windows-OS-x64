@@ -5,45 +5,45 @@
 
 extern HMODULE gx_GXEngineDLLModuleHandle;
 
-//--------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
-PFNALLISTENERFV                 GXAlListenerfv                  = nullptr;
-PFNALLISTENER3F                 GXAlListener3f                  = nullptr;
-PFNALLISTENERF                  GXAlListenerf                   = nullptr;
+PFNALLISTENERFV                     GXAlListenerfv                  = nullptr;
+PFNALLISTENER3F                     GXAlListener3f                  = nullptr;
+PFNALLISTENERF                      GXAlListenerf                   = nullptr;
 
-PFNALGENBUFFERS                 GXAlGenBuffers                  = nullptr;
-PFNALDELETEBUFFERS              GXAlDeleteBuffers               = nullptr;
+PFNALGENBUFFERS                     GXAlGenBuffers                  = nullptr;
+PFNALDELETEBUFFERS                  GXAlDeleteBuffers               = nullptr;
 
-PFNALBUFFERI                    GXAlBufferi                     = nullptr;
-PFNALBUFFERDATA                 GXAlBufferData                  = nullptr;
+PFNALBUFFERI                        GXAlBufferi                     = nullptr;
+PFNALBUFFERDATA                     GXAlBufferData                  = nullptr;
 
-PFNALGENSOURCES                 GXAlGenSources                  = nullptr;
-PFNALGETSOURCEI                 GXAlGetSourcei                  = nullptr;
-PFNALDELETESOURCES              GXAlDeleteSources               = nullptr;
+PFNALGENSOURCES                     GXAlGenSources                  = nullptr;
+PFNALGETSOURCEI                     GXAlGetSourcei                  = nullptr;
+PFNALDELETESOURCES                  GXAlDeleteSources               = nullptr;
 
-PFNALSOURCEI                    GXAlSourcei                     = nullptr;
-PFNALSOURCEFV                   GXAlSourcefv                    = nullptr;
-PFNALSOURCE3F                   GXAlSource3f                    = nullptr;
-PFNALSOURCEF                    GXAlSourcef                     = nullptr;
-PFNALSOURCEQUEUEBUFFERS         GXAlSourceQueueBuffers          = nullptr;
-PFNALSOURCEUNQUEUEBUFFERS       GXAlSourceUnqueueBuffers        = nullptr;
+PFNALSOURCEI                        GXAlSourcei                     = nullptr;
+PFNALSOURCEFV                       GXAlSourcefv                    = nullptr;
+PFNALSOURCE3F                       GXAlSource3f                    = nullptr;
+PFNALSOURCEF                        GXAlSourcef                     = nullptr;
+PFNALSOURCEQUEUEBUFFERS             GXAlSourceQueueBuffers          = nullptr;
+PFNALSOURCEUNQUEUEBUFFERS           GXAlSourceUnqueueBuffers        = nullptr;
 
-PFNALSOURCEPLAY                 GXAlSourcePlay                  = nullptr;
-PFNALSOURCESTOP                 GXAlSourceStop                  = nullptr;
-PFNALSOURCEPAUSE                GXAlSourcePause                 = nullptr;
-PFNALSOURCEREWIND               GXAlSourceRewind                = nullptr;
+PFNALSOURCEPLAY                     GXAlSourcePlay                  = nullptr;
+PFNALSOURCESTOP                     GXAlSourceStop                  = nullptr;
+PFNALSOURCEPAUSE                    GXAlSourcePause                 = nullptr;
+PFNALSOURCEREWIND                   GXAlSourceRewind                = nullptr;
 
-PFNGXOPENALCHECKERROR           GXOpenALCheckError              = nullptr;
-PFNGXOPENALCHECKCONTEXTERROR    GXOpenALCheckContextError       = nullptr;
-PFNGXOPENALDESTROY              GXOpenALDestroy                 = nullptr;
+GXOpenALCheckErrorFunc              GXOpenALCheckError              = nullptr;
+GXOpenALCheckContextErrorFunc       GXOpenALCheckContextError       = nullptr;
+GXOpenALDestroyFunc                 GXOpenALDestroy                 = nullptr;
 
-//--------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
-PFNOVOPENCALLBACKS              GXOvOpenCallbacks               = nullptr;
-PFNOVREAD                       GXOvRead                        = nullptr;
-PFNOVPCMSEEK                    GXOvPcmSeek                     = nullptr;
-PFNOVPCMTOTAL                   GXOvPcmTotal                    = nullptr;
-PFNOVCLEAR                      GXOvClear                       = nullptr;
+OVOpenCallbacks                     GXOvOpenCallbacks               = nullptr;
+OVRead                              GXOvRead                        = nullptr;
+OVPCMSeek                           GXOvPcmSeek                     = nullptr;
+OVPCMTotal                          GXOvPcmTotal                    = nullptr;
+OVClear                             GXOvClear                       = nullptr;
 
 GXBool GXCALL GXSoundInit ()
 {
@@ -55,9 +55,9 @@ GXBool GXCALL GXSoundInit ()
         return GX_FALSE;
     }
 
-    PFNGXOGGVORBISINIT GXOGGVorbisInit;
+    GXOGGVorbisInitFunc GXOGGVorbisInit;
 
-    GXOGGVorbisInit = reinterpret_cast<PFNGXOGGVORBISINIT> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXOGGVorbisInit" ) ) );
+    GXOGGVorbisInit = reinterpret_cast<GXOGGVorbisInitFunc> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXOGGVorbisInit" ) ) );
 
     if ( !GXOGGVorbisInit )
     {
@@ -74,8 +74,8 @@ GXBool GXCALL GXSoundInit ()
 
     GXOGGVorbisInit ( oggVorbisOut );
 
-    PFNGXOPENALINIT GXOpenALInit;
-    GXOpenALInit = reinterpret_cast<PFNGXOPENALINIT> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXOpenALInit" ) ) );
+    GXOpenALInitFunc GXOpenALInit;
+    GXOpenALInit = reinterpret_cast<GXOpenALInitFunc> ( reinterpret_cast<GXVoid*> ( GetProcAddress ( gx_GXEngineDLLModuleHandle, "GXOpenALInit" ) ) );
 
     if ( !GXOpenALInit )
     {
