@@ -33,6 +33,10 @@ class GXBoneFinderNode final : public GXAVLTreeNode
         ~GXBoneFinderNode () override;
 
         static GXInt GXCALL Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
+
+    private:
+        GXBoneFinderNode ( const GXBoneFinderNode &other ) = delete;
+        GXBoneFinderNode& operator = ( const GXBoneFinderNode &other ) = delete;
 };
 
 GXBoneFinderNode::GXBoneFinderNode ()
@@ -71,6 +75,10 @@ class GXBoneFinder final : public GXMemoryInspector, public GXAVLTree
         ~GXBoneFinder () override;
 
         GXUShort FindBoneIndex ( const GXUTF8* boneName ) const;
+
+    private:
+        GXBoneFinder ( const GXBoneFinder &other ) = delete;
+        GXBoneFinder& operator = ( const GXBoneFinder &other ) = delete;
 };
 
 GXBoneFinder::GXBoneFinder ( const GXAnimationInfo &animInfo )

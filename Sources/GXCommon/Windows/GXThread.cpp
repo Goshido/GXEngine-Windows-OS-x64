@@ -10,7 +10,7 @@ GX_DISABLE_COMMON_WARNINGS
 GX_RESTORE_WARNING_STATE
 
 
-GXThread::GXThread ( PFNGXTHREADPROC procedure, GXVoid* argument ):
+GXThread::GXThread ( GXThreaFunction procedure, GXVoid* argument ):
     GXAbstractThread ( procedure, argument )
 {
     _thread = INVALID_HANDLE_VALUE;

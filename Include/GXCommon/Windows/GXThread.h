@@ -13,7 +13,7 @@ class GXThread final : public GXAbstractThread
         HANDLE      _thread;
 
     public:
-        explicit GXThread ( PFNGXTHREADPROC procedure, GXVoid* argument );
+        explicit GXThread ( GXThreaFunction procedure, GXVoid* argument );
         ~GXThread () override;
 
         GXVoid Start () override;

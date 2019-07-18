@@ -24,12 +24,13 @@ GXUInt GXAVLTree::GetTotalNodes () const
     return _totalNodes;
 }
 
-GXAVLTree::GXAVLTree ( PFNGXAVLTREECOMPAREPROC comparator, GXBool doesAutoClean )
+GXAVLTree::GXAVLTree ( GXAVLTreeComparator comparator, GXBool doesAutoClean ):
+    _comparator ( comparator ),
+    _isAutoClean ( doesAutoClean ),
+    _root ( nullptr ),
+    _totalNodes ( 0u )
 {
-    _comparator = comparator;
-    _isAutoClean = doesAutoClean;
-    _root = nullptr;
-    _totalNodes = 0;
+    // NOTHING
 }
 
 GXAVLTree::~GXAVLTree ()
@@ -118,7 +119,7 @@ GXVoid GXAVLTree::Add ( GXAVLTreeNode &node )
     delete oldNode;
 }
 
-GXVoid GXAVLTree::DoPrefix ( const GXAVLTreeNode* currentRoot, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const
+GXVoid GXAVLTree::DoPrefix ( const GXAVLTreeNode* currentRoot, GXAVLTreeIterator iterator, GXVoid* args ) const
 {
     if ( !currentRoot ) return;
 
@@ -127,7 +128,7 @@ GXVoid GXAVLTree::DoPrefix ( const GXAVLTreeNode* currentRoot, PFNGXAVLTREEITERA
     DoPrefix ( currentRoot->_right, iterator, args );
 }
 
-GXVoid GXAVLTree::DoInfix ( const GXAVLTreeNode* currentRoot, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const
+GXVoid GXAVLTree::DoInfix ( const GXAVLTreeNode* currentRoot, GXAVLTreeIterator iterator, GXVoid* args ) const
 {
     if ( !currentRoot ) return;
 
@@ -136,7 +137,7 @@ GXVoid GXAVLTree::DoInfix ( const GXAVLTreeNode* currentRoot, PFNGXAVLTREEITERAT
     DoInfix ( currentRoot->_right, iterator, args );
 }
 
-GXVoid GXAVLTree::DoPostfix ( const GXAVLTreeNode* currentRoot, PFNGXAVLTREEITERATORPROC iterator, GXVoid* args ) const
+GXVoid GXAVLTree::DoPostfix ( const GXAVLTreeNode* currentRoot, GXAVLTreeIterator iterator, GXVoid* args ) const
 {
     if ( !currentRoot ) return;
 

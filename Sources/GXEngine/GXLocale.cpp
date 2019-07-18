@@ -26,6 +26,10 @@ class GXStringNode final : public GXAVLTreeNode
 
         static GXVoid GXCALL InitFinderNode ( GXStringNode &node, const GXWChar* key );
         static GXVoid GXCALL DestroyFinderNode ( GXStringNode &node );
+
+    private:
+        GXStringNode ( const GXStringNode &other ) = delete;
+        GXStringNode& operator = ( const GXStringNode &other ) = delete;
 };
 
 GXStringNode::GXStringNode ()
@@ -76,6 +80,9 @@ class GXStringTree final : public GXMemoryInspector, public GXAVLTree
 
     private:
         static GXInt GXCALL Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
+
+        GXStringTree ( const GXStringTree &other ) = delete;
+        GXStringTree& operator = ( const GXStringTree &other ) = delete;
 };
 
 GXStringTree::GXStringTree ()

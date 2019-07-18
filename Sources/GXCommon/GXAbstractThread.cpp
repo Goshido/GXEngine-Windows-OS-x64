@@ -8,10 +8,10 @@ eGXThreadState GXAbstractThread::GetState () const
     return _state;
 }
 
-GXAbstractThread::GXAbstractThread ( PFNGXTHREADPROC procedure, GXVoid* argument )
+GXAbstractThread::GXAbstractThread ( GXThreaFunction procedure, GXVoid* argument )
 {
     _procedure = procedure;
-    this->_argument = argument;
+    _argument = argument;
     _state = eGXThreadState::Waiting;
 }
 
