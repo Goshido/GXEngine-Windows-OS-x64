@@ -45,12 +45,12 @@ class GXAbstractThread
 
 #ifdef __GNUC__
 
-    // TODO implement this
-    #include "Posix/GXThread.h"
+// TODO implement this
+#include "Posix/GXThread.h"
 
 #else
 
-    #include "Windows/GXThread.h"
+#include "Windows/GXThread.h"
 
 #endif // __GNUC__
 

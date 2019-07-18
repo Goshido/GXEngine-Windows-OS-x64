@@ -10,6 +10,7 @@
 
 #define GX_DISABLE_COMMON_WARNINGS \
     GX_SAVE_WARNING_STATE \
+    GX_DISABLE_WARNING ( 4091 )     /* 'keyword' : ignored on left of 'type' when no variable is declared */ \
     GX_DISABLE_WARNING ( 4100 )     /* 'identifier' : unreferenced formal parameter */ \
     GX_DISABLE_WARNING ( 4263 )     /* 'function' : member function does not override any base class virtual member function */ \
     GX_DISABLE_WARNING ( 4264 )     /* 'virtual_function' : no override available for virtual member function from base 'class'; function is hidden */ \

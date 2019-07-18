@@ -10,15 +10,15 @@
 
 class GXMutex
 {
-	private:
-		pthread_mutex_t		_mutex;
+    private:
+        pthread_mutex_t     _mutex;
 
-	public:
-		GXMutex ();
-		~GXMutex ();
+    public:
+        GXMutex ();
+        ~GXMutex ();
 
-		GXVoid Lock ();
-		GXVoid Release ();
+        GXVoid Lock ();
+        GXVoid Release ();
 };
 
 

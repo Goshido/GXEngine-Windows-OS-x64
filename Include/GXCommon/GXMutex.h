@@ -1,4 +1,4 @@
-﻿// version 1.3
+﻿// version 1.4
 
 #ifndef GX_MUTEX
 #define GX_MUTEX
@@ -24,9 +24,13 @@ class GXAbstractMutex
 
 
 #ifdef __GNUC__
-    #include "Posix/GXMutex.h"
+
+#include "Posix/GXMutex.h"
+
 #else
-    #include "Windows/GXMutex.h"
+
+#include "Windows/GXMutex.h"
+
 #endif // __GNU__
 
 

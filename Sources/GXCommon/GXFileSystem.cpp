@@ -207,6 +207,11 @@ GXBool GXCALL GXCreateDirectory ( const GXWChar* directory )
     return GX_TRUE;
 }
 
+GXBool GXCALL GXCreateDirectory ( GXString directory )
+{
+    return GXCreateDirectory ( static_cast<const GXWChar*> ( directory ) );
+}
+
 GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar* directory )
 {
     if ( !directory ) return GX_FALSE;
