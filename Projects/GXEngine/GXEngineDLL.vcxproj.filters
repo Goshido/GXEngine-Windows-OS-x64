@@ -153,4 +153,9 @@
       <Filter>Header Files\PhysX</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\Sources\GXEngineDLL\Windows\Main.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
 </Project>

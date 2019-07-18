@@ -59,6 +59,9 @@
     <ClInclude Include="..\..\Include\GXEngineDLL\GXPhysXAdapter.h" />
     <ClInclude Include="..\..\Include\GXEngineDLL\GXXInput.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\Sources\GXEngineDLL\Windows\Main.rc" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A8A28851-9AE1-41BB-99E3-02C15EEA4E8A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

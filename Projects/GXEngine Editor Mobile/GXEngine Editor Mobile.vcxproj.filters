@@ -1076,11 +1076,9 @@
     <ClInclude Include="..\..\Include\GXCommon\GXNativeSkin.h">
       <Filter>Header Files\GXCommon</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="..\..\Sources\GXEngine\GXRecource.res">
-      <Filter>Resource Files</Filter>
-    </Resource>
+    <ClInclude Include="..\..\Include\GXEngine\GXVersion.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\Shaders\Editor Mobile\Color_fs.txt">
@@ -1269,5 +1267,10 @@
     <Text Include="..\..\Shaders\System\TriangleToLines_gs.txt">
       <Filter>Shaders\System</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\Sources\GXEngine\Windows\Main.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

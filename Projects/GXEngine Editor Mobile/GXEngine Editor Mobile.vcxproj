@@ -437,6 +437,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXUnlitColorMaskMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUnlitColorMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXUnlitTexture2DMaterial.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXVersion.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXWidget.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMActor.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMBRDFIntegratorMaterial.h" />
@@ -516,9 +517,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXPhysics\GXWorld.h" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="..\..\Sources\GXEngine\GXRecource.res" />
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="..\..\Shaders\Editor Mobile\BRDFIntegrator_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\Checker_fs.txt" />
     <Text Include="..\..\Shaders\Editor Mobile\Color_fs.txt" />
@@ -581,6 +579,9 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <Text Include="..\..\Shaders\System\UnlitTexture2D_fs.txt" />
     <Text Include="..\..\Shaders\System\VertexAndUV_vs.txt" />
     <Text Include="..\..\Shaders\System\VertexUVScaleOffset_vs.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\Sources\GXEngine\Windows\Main.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
