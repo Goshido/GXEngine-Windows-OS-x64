@@ -17,7 +17,7 @@ class EMUIOpenFile final : public EMUI
     private:
         GXWChar*                            _currentDirectory;
 
-        GXWChar*                            _rootDirectory;
+        const GXString                      _rootDirectory;
         GXUPointer                          _rootDirectoryPathOffset;
 
         EMUIDraggableArea*                  _mainPanel;

@@ -129,6 +129,9 @@
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXSmartLock.cpp">
       <Filter>Source Files\GXCommon\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFileSystemBackend.cpp">
+      <Filter>Source Files\GXCommon\Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXEngineDLL\GXEngineAPI.h">
@@ -151,6 +154,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngineDLL\GXPhysXAdapter.h">
       <Filter>Header Files\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngineDLL\GXVersion.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

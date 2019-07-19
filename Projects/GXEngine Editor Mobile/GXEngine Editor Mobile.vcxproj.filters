@@ -543,8 +543,14 @@
     <ClCompile Include="..\..\Sources\GXEngine\Windows\GXCrashReport.cpp">
       <Filter>Source Files\GXEngine\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFileSystemExt.cpp">
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFileSystemBackend.cpp">
       <Filter>Source Files\GXCommon\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXWriteFileStream.cpp">
+      <Filter>Source Files\GXCommon\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractWriteFileStream.cpp">
+      <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1096,6 +1102,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\GXEngine\Windows\GXCrashReport.h">
       <Filter>Header Files\GXEngine\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\GXWriteFileStream.h">
+      <Filter>Header Files\GXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXCommon\Windows\GXWriteFileStream.h">
+      <Filter>Header Files\GXCommon\Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

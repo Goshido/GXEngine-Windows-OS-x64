@@ -163,9 +163,9 @@ GXVoid EMGame::OnInit ()
     colliderOneShape->SetRestitution ( 0.5f );
     _colliderOne->GetRigidBody ().SetMass ( 1.0f );
     _colliderOne->GetRigidBody ().SetShape ( *colliderOneShape );
-    //colliderOne->GetRigidBody ().SetCanSleep ( GX_FALSE );
-    //colliderOne->GetRigidBody ().EnableKinematic ();
-    //colliderOne->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, -1.0f, 1.0f ) );
+    //_colliderOne->GetRigidBody ().SetCanSleep ( GX_FALSE );
+    //_colliderOne->GetRigidBody ().EnableKinematic ();
+    //_colliderOne->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, -1.0f, 1.0f ) );
     _colliderOne->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 10.0f, -5.0f ) );
     _colliderOne->SetMesh ( L"Meshes/System/Unit Cube.stm" );
     EMCookTorranceCommonPassMaterial& colliderOneMaterial = _colliderOne->GetMaterial ();
@@ -188,8 +188,8 @@ GXVoid EMGame::OnInit ()
     colliderTwoShape->SetRestitution ( 0.8f );
     _colliderTwo->GetRigidBody ().SetMass ( 1.0f );
     _colliderTwo->GetRigidBody ().SetShape ( *colliderTwoShape );
-    //colliderTwo->GetRigidBody ().SetCanSleep ( GX_FALSE );
-    //colliderTwo->GetRigidBody ().EnableKinematic ();
+    //_colliderTwo->GetRigidBody ().SetCanSleep ( GX_FALSE );
+    //_colliderTwo->GetRigidBody ().EnableKinematic ();
     _colliderTwo->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 0.0f, 35.0f ) );
     _colliderTwo->SetMesh ( L"Meshes/System/Unit Sphere.obj" );
     EMCookTorranceCommonPassMaterial& colliderTwoMaterial = _colliderTwo->GetMaterial ();

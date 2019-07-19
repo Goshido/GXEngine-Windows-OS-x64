@@ -13,8 +13,8 @@
 #include <GXCommon/GXUPointerAtomic.h>
 
 
-#define CACHE_DIRECTORY_NAME    L"Cache"
-#define CACHE_FILE_EXTENSION    L"cache"
+#define CACHE_DIRECTORY_NAME    "Cache"
+#define CACHE_FILE_EXTENSION    "cache"
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -168,21 +168,17 @@ GXMesh::GXMesh ( const GXWChar* fileName )
     _next = _top;
     _top = this;
 
-    GXWChar* extension = nullptr;
-    GXGetFileExtension ( &extension, fileName );
-
+    const GXString extension ( GXGetFileExtension ( fileName ) );
     GXBool result = GX_FALSE;
 
-    if ( GXWcscmp ( extension, L"stm" ) == 0 || GXWcscmp ( extension, L"STM" ) == 0 )
+    if ( extension == "stm" || extension == "STM" )
         result = LoadFromSTM ( fileName );
-    else if ( GXWcscmp ( extension, L"skm" ) == 0 || GXWcscmp ( extension, L"SKM" ) == 0 )
+    else if ( extension == "skm" || extension == "SKM" )
         result = LoadFromSKM ( fileName );
-    else if ( GXWcscmp ( extension, L"obj" ) == 0 || GXWcscmp ( extension, L"OBJ" ) == 0 )
+    else if ( extension == "obj" || extension == "OBJ" )
         result = LoadFromOBJ ( fileName );
-    else if ( GXWcscmp ( extension, L"mesh" ) == 0 || GXWcscmp ( extension, L"MESH" ) == 0 )
+    else if ( extension == "mesh" || extension == "MESH" )
         result = LoadFromMESH ( fileName );
-
-    GXSafeFree ( extension );
 
     if ( result ) return;
 
@@ -211,24 +207,14 @@ GXMesh::~GXMesh ()
 
 GXBool GXMesh::LoadFromOBJ ( const GXWChar* fileName )
 {
-    GXWChar* path = nullptr;
-    GXGetFileDirectoryPath ( &path, fileName );
-
-    GXWChar* baseFileName = nullptr;
-    GXGetBaseFileName ( &baseFileName, fileName );
+    const GXString path ( GXGetFileDirectoryPath ( fileName ) );
+    const GXString baseFileName ( GXGetBaseFileName ( fileName ) );
 
     GXString cacheFileName;
-    cacheFileName.Format ( "%S/%S/%S.%S", path, CACHE_DIRECTORY_NAME, baseFileName, CACHE_FILE_EXTENSION );
+    cacheFileName.Format ( "%s/%s/%s.%s", static_cast<const GXMBChar*> ( path ), CACHE_DIRECTORY_NAME, static_cast<const GXMBChar*> ( baseFileName ), CACHE_FILE_EXTENSION );
 
     if ( GXDoesFileExist ( cacheFileName ) )
-    {
-        GXBool result = LoadFromSTM ( cacheFileName );
-
-        free ( path );
-        free ( baseFileName );
-
-        return result;
-    }
+        return LoadFromSTM ( cacheFileName );
 
     GXOBJPoint* points = nullptr;
     _totalVertices = static_cast<GLsizei> ( GXLoadOBJ ( fileName, points ) );
@@ -292,7 +278,7 @@ GXBool GXMesh::LoadFromOBJ ( const GXWChar* fileName )
     Free ( points );
 
     GXString cacheDirectory;
-    cacheDirectory.Format ( "%S/%S", path, CACHE_DIRECTORY_NAME );
+    cacheDirectory.Format ( "%s/%s", static_cast<const GXMBChar*> ( path ), CACHE_DIRECTORY_NAME );
 
     if ( !GXDoesDirectoryExist ( cacheDirectory ) )
         GXCreateDirectory ( cacheDirectory );
@@ -304,9 +290,6 @@ GXBool GXMesh::LoadFromOBJ ( const GXWChar* fileName )
     Free ( descriptor._normals );
     Free ( descriptor._tangents );
     Free ( descriptor._bitangents );
-
-    free ( path );
-    free ( baseFileName );
 
     _vboUsage = GL_STATIC_DRAW;
 
@@ -497,17 +480,13 @@ GXSkin::GXSkin ( const GXWChar* fileName )
 
     GXWcsclone ( &_skinFile, fileName );
 
-    GXWChar* extension = nullptr;
-    GXGetFileExtension ( &extension, fileName );
-
+    const GXString extension ( GXGetFileExtension ( fileName ) );
     GXBool result = GX_FALSE;
 
-    if ( GXWcscmp ( extension, L"skm" ) == 0 || GXWcscmp ( extension, L"SKM" ) == 0 )
+    if ( extension == "skm" || extension == "SKM" )
         result = LoadFromSKM ( fileName );
-    else if ( GXWcscmp ( extension, L"skin" ) == 0 || GXWcscmp ( extension, L"SKIN" ) == 0 )
+    else if ( extension == "skin" || extension == "SKIN" )
         result = LoadFromSKIN ( fileName );
-
-    GXSafeFree ( extension );
 
     if ( result ) return;
 

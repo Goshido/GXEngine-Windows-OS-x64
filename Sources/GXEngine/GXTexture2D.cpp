@@ -1,4 +1,4 @@
-// version 1.10
+// version 1.11
 
 #include <GXEngine/GXTexture2D.h>
 #include <GXEngine/GXMeshGeometry.h>
@@ -10,6 +10,7 @@
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXUPointerAtomic.h>
+#include <GXCommon/GXWriteFileStream.h>
 
 
 #define INVALID_INTERNAL_FORMAT             0
@@ -20,8 +21,8 @@
 #define INVALID_CHANNEL_NUMBER              0u
 #define INVALID_LEVEL_OF_DETAIL_NUMBER      0u
 
-#define CACHE_DIRECTORY_NAME                L"Cache"
-#define CACHE_FILE_EXTENSION                L"cache"
+#define CACHE_DIRECTORY_NAME                "Cache"
+#define CACHE_FILE_EXTENSION                "cache"
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -125,16 +126,11 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
 
     _top = this;
 
-    GXWChar* path = nullptr;
-    GXGetFileDirectoryPath ( &path, _fileName );
-
-    GXWChar* baseFileName = nullptr;
-    GXGetBaseFileName ( &baseFileName, _fileName );
+    const GXString path ( GXGetFileDirectoryPath ( _fileName ) );
+    const GXString baseFileName ( GXGetBaseFileName ( _fileName ) );
 
     GXString cacheFileName;
-    cacheFileName.Format ( "%S/%S/%S.%S", path, CACHE_DIRECTORY_NAME, baseFileName, CACHE_FILE_EXTENSION );
-
-    free ( baseFileName );
+    cacheFileName.Format ( "%s/%s/%s.%s", static_cast<const GXMBChar*> ( path ), CACHE_DIRECTORY_NAME, static_cast<const GXMBChar*> ( baseFileName ), CACHE_FILE_EXTENSION );
 
     GXUByte* data = nullptr;
     GXUPointer size;
@@ -147,8 +143,6 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
 
     if ( file.LoadContent ( data, size, eGXFileContentOwner::GXFile, GX_FALSE ) )
     {
-        free ( path );
-
         const GXTexture2DCacheHeader* cacheHeader = reinterpret_cast<const GXTexture2DCacheHeader*> ( data );
 
         switch ( cacheHeader->_numChannels )
@@ -242,9 +236,7 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
     }
 
     GXString cacheDirectory;
-    cacheDirectory.Format ( "%S/%S", path, CACHE_DIRECTORY_NAME );
-
-    free ( path );
+    cacheDirectory.Format ( "%s/%s", static_cast<const GXMBChar*> ( path ), CACHE_DIRECTORY_NAME );
 
     if ( !GXDoesDirectoryExist ( cacheDirectory ) )
         GXCreateDirectory ( cacheDirectory );
@@ -253,15 +245,15 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
     GXUInt resolvedWidth = 0u;
     GXUInt resolvedHeight = 0u;
 
-    GXWChar* extension = nullptr;
-    GXGetFileExtension ( &extension, _fileName );
+    const GXString extension ( GXGetFileExtension ( _fileName ) );
+
     GXTexture2D textureToGammaCorrect;
     GXBool success = GX_FALSE;
     GXUByte* pixels = nullptr;
     GXUPointer pixelSize = 0u;
     GXWriteFileStream cacheFile ( cacheFileName );
 
-    if ( GXWcscmp ( extension, L"hdr" ) == 0 || GXWcscmp ( extension, L"HDR" ) == 0 )
+    if ( extension == "hdr" || extension == "HDR" )
     {
         GXFloat* hdrPixels = nullptr;
         success = GXLoadHDRImage ( _fileName, resolvedWidth, resolvedHeight, cacheHeader._numChannels, &hdrPixels );
@@ -400,8 +392,6 @@ GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGe
             }
         }
     }
-
-    GXSafeFree ( extension );
 
     if ( !success )
     {
