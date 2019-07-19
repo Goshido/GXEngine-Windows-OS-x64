@@ -1,4 +1,4 @@
-// version 1.8
+// version 1.9
 
 #include <GXEngine/GXTextureCubeMap.h>
 #include <GXEngine/GXMeshGeometry.h>
@@ -10,6 +10,7 @@
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXUPointerAtomic.h>
+#include <GXCommon/GXWriteFileStream.h>
 
 
 #define INVALID_INTERNAL_FORMAT             0
@@ -18,8 +19,8 @@
 #define INVALID_CHANNEL_NUMBER              0u
 #define INVALID_LEVEL_OF_DETAIL_NUMBER      0u
 
-#define CACHE_DIRECTORY_NAME                L"Cache"
-#define CACHE_FILE_EXTENSION                L"cache"
+#define CACHE_DIRECTORY_NAME                "Cache"
+#define CACHE_FILE_EXTENSION                "cache"
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -125,16 +126,11 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
 
     _top = this;
 
-    GXWChar* path = nullptr;
-    GXGetFileDirectoryPath ( &path, equirectangularTextureFileName );
-
-    GXWChar* baseFileName = nullptr;
-    GXGetBaseFileName ( &baseFileName, _fileName );
+    const GXString path = GXGetFileDirectoryPath ( equirectangularTextureFileName );
+    const GXString baseFileName = GXGetBaseFileName ( _fileName );
 
     GXString cacheFileName;
-    cacheFileName.Format ( "%S/%S/%S.%S", path, CACHE_DIRECTORY_NAME, baseFileName, CACHE_FILE_EXTENSION );
-
-    free ( baseFileName );
+    cacheFileName.Format ( "%s/%s/%s.%s", static_cast<const GXMBChar*> ( path ), CACHE_DIRECTORY_NAME, static_cast<const GXMBChar*> ( baseFileName ), CACHE_FILE_EXTENSION );
 
     GXUByte* data = nullptr;
     GXUPointer size;
@@ -142,8 +138,6 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
 
     if ( file.LoadContent ( data, size, eGXFileContentOwner::GXFile, GX_FALSE ) )
     {
-        free ( path );
-
         const GXTextureCubeMapCacheHeader* cacheHeader = reinterpret_cast<const GXTextureCubeMapCacheHeader*> ( data );
         GLint resolvedInternalFormat = INVALID_INTERNAL_FORMAT;
 
@@ -232,16 +226,14 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
     GXUInt width = 0u;
     GXUInt height = 0u;
 
-    GXWChar* extension = nullptr;
-    GXGetFileExtension ( &extension, _fileName );
-
+    const GXString extension = GXGetFileExtension ( _fileName );
     GXFloat* hdrPixels = nullptr;
     GXUByte* ldrPixels = nullptr;
     GXTexture2D equirectangularTexture;
     GXBool success = GX_FALSE;
     GXUPointer faceSize = 0;
 
-    if ( GXWcscmp ( extension, L"hdr" ) == 0 || GXWcscmp ( extension, L"HDR" ) == 0 )
+    if ( extension == "hdr" || extension == "HDR" )
     {
         success = GXLoadHDRImage ( _fileName, width, height, cacheHeader._numChannels, &hdrPixels );
         cacheHeader._channelDataType = eGXChannelDataType::Float;
@@ -300,8 +292,6 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
         faceSize = resolvedFaceLength * resolvedFaceLength * cacheHeader._numChannels * sizeof ( GXUByte );
     }
 
-    GXSafeFree ( extension );
-
     if ( !success )
     {
         GXLogA ( "GXTextureCubeMap::LoadEquirectangularTexture::Error - ѕоддерживаютс€ текстуры с количеством каналов 1, 3 и 4 (текущее количество %hhu)\n", cacheHeader._numChannels );
@@ -311,9 +301,7 @@ GXTextureCubeMapEntry::GXTextureCubeMapEntry ( const GXWChar* equirectangularTex
     cacheHeader._faceLength = static_cast<GXUShort> ( width / 4u );
 
     GXString cacheDirectory;
-    cacheDirectory.Format ( "%S/%S", path, CACHE_DIRECTORY_NAME );
-
-    free ( path );
+    cacheDirectory.Format ( "%s/%s", static_cast<const GXMBChar*> ( path ), CACHE_DIRECTORY_NAME );
 
     if ( !GXDoesDirectoryExist ( cacheDirectory ) )
         GXCreateDirectory ( cacheDirectory );

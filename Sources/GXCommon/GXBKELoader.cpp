@@ -1,18 +1,21 @@
 //version 1.1
 
 #include <GXCommon/GXBKELoader.h>
+#include <GXCommon/GXFile.h>
 #include <GXCommon/GXFileSystem.h>
-#include <GXCommon/GXMemory.h>
 #include <GXCommon/GXLogger.h>
+#include <GXCommon/GXMemory.h>
 
 
 GXVoid GXCALL GXLoadBKE ( const GXWChar* fileName, GXBakeInfo &out_bake_info )
 {
-    GXChar* buffer = nullptr;
+    GXUByte* buffer = nullptr;
     GXUPointer size = 0u;
 
-    if ( !GXLoadFile ( fileName, (GXVoid**)&buffer, size, GX_TRUE ) )
-        GXLogW ( L"GXLoadBKE::Error - Не могу загрузить файл %s", fileName );
+    GXFile file ( fileName );
+
+    if ( !file.LoadContent ( buffer, size, eGXFileContentOwner::GXFile, GX_TRUE ) )
+        GXLogW ( L"GXLoadBKE::Error - Не могу загрузить файл %s.", fileName );
 
     GXBakeHeader h;
     memcpy ( &h, buffer, sizeof ( GXBakeHeader ) );
@@ -23,6 +26,4 @@ GXVoid GXCALL GXLoadBKE ( const GXWChar* fileName, GXBakeInfo &out_bake_info )
     memcpy ( out_bake_info._fileName, buffer + h._fileNameOffset, fileNameSize );
     out_bake_info._cacheFileName = static_cast<GXWChar*> ( malloc ( cacheFileNameSize ) );
     memcpy ( out_bake_info._cacheFileName, buffer + h._cacheFileNameOffset, cacheFileNameSize );
-
-    GXSafeFree ( buffer );
 }

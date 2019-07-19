@@ -1,13 +1,14 @@
-// version 1.10
+// version 1.12
 
 #include <GXEngine/GXShaderProgram.h>
-#include <GXEngine/GXLocale.h>
-#include <GXCommon/GXStrings.h>
 #include <GXCommon/GXFile.h>
 #include <GXCommon/GXFileSystem.h>
-#include <GXCommon/GXMemory.h>
-#include <GXCommon/GXUPointerAtomic.h>
+#include <GXEngine/GXLocale.h>
 #include <GXCommon/GXLogger.h>
+#include <GXCommon/GXMemory.h>
+#include <GXCommon/GXStrings.h>
+#include <GXCommon/GXUPointerAtomic.h>
+#include <GXCommon/GXWriteFileStream.h>
 
 
 #define PRECOMPILED_SHADER_PROGRAM_DICTIONARY       L"Shaders/Precompiled shader program dictionary.bin"

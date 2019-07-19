@@ -93,6 +93,7 @@ LONG CALLBACK GXCrashReport::UnhandledExceptionFilter ( EXCEPTION_POINTERS* exce
     exceptionInfo.ClientPointers = FALSE;
 
     GXMiniDumpWriteDump ( GetCurrentProcess (), GetCurrentProcessId (), dumpFile, static_cast<MINIDUMP_TYPE> ( MiniDumpNormal ), exceptionPointers ? &exceptionInfo : nullptr, nullptr, nullptr );
+    FlushFileBuffers ( dumpFile );
     CloseHandle ( dumpFile );
 
     return EXCEPTION_CONTINUE_SEARCH;

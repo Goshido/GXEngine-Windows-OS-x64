@@ -34,7 +34,7 @@ class GXUIStaticText final : public GXWidget
         const GXWChar* GetText () const;
         const GXColorRGB& GetTextColor () const;
         eGXUITextAlignment GetAlignment () const;
-        
+
     private:
         GXUIStaticText () = delete;
         GXUIStaticText ( const GXUIStaticText &other ) = delete;

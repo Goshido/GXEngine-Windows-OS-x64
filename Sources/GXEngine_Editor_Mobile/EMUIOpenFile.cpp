@@ -38,10 +38,10 @@
 
 EMUIOpenFile::EMUIOpenFile ():
     EMUI ( nullptr ),
-    _currentDirectory ( nullptr )
+    _currentDirectory ( nullptr ),
+    _rootDirectory ( GXGetCurrentDirectory () )
 {
-    GXGetCurrentDirectory ( &_rootDirectory );
-    _rootDirectoryPathOffset = GXWcslen ( _rootDirectory );
+    _rootDirectoryPathOffset = _rootDirectory.GetSymbolCount ();
 
     _mainPanel = new EMUIDraggableArea ( nullptr );
     _mainPanel->SetHeaderHeight ( PANEL_HEADER_HEIGHT * gx_ui_Scale );
@@ -76,7 +76,6 @@ EMUIOpenFile::EMUIOpenFile ():
 
 EMUIOpenFile::~EMUIOpenFile ()
 {
-    free ( _rootDirectory );
     GXSafeFree ( _currentDirectory );
 
     delete _fileListBox;
@@ -129,7 +128,7 @@ GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
         _fileListBox->Clear ();
         _filePathStaticText->SetText ( GetRelativePath () );
 
-        if ( GXWcscmp ( directoryInfo._absolutePath, _rootDirectory ) == 0 )
+        if ( _rootDirectory == directoryInfo._absolutePath )
         {
             totalItems = directoryInfo._totalFiles + directoryInfo._totalFolders - 2; // Exclude . and .. directories
 
@@ -201,7 +200,7 @@ GXVoid EMUIOpenFile::UpdateDirectory ( const GXWChar* folder )
 
 const GXWChar* EMUIOpenFile::GetRelativePath () const
 {
-    if ( GXWcscmp ( _currentDirectory, _rootDirectory ) == 0 )
+    if ( _rootDirectory == _currentDirectory )
         return _currentDirectory + _rootDirectoryPathOffset;
 
     return _currentDirectory + _rootDirectoryPathOffset + 1;
@@ -237,21 +236,15 @@ GXVoid GXCALL EMUIOpenFile::OnItemSelected ( GXVoid* handler, GXUIListBox& /*lis
     {
         case eEMUIFileListBoxItemType::File:
         {
-            if ( GXWcscmp ( main->_currentDirectory, main->_rootDirectory ) == 0 )
+            if ( main->_rootDirectory == main->_currentDirectory )
             {
                 main->_filePathStaticText->SetText ( element->GetName () );
             }
             else
             {
-                GXUPointer symbols = main->_rootDirectoryPathOffset;
-                symbols += 1u;                                    // '/' symbol
-                symbols += GXWcslen ( element->GetName () );
-                symbols += 1u;                                    // '\0' symbol
-
-                GXWChar* buf = static_cast<GXWChar*> ( malloc ( symbols * sizeof ( GXWChar ) ) );
-                wsprintfW ( buf, L"%s/%s", main->GetRelativePath (), element->GetName () );
+                GXString buf;
+                buf.Format ( "%S/%S", main->GetRelativePath (), element->GetName () );
                 main->_filePathStaticText->SetText ( buf );
-                free ( buf );
             }
         }
         break;

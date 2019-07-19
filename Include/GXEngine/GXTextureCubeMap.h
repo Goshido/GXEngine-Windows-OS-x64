@@ -1,4 +1,4 @@
-// version 1.8
+// version 1.9
 
 #ifndef GX_TEXTURE_CUBE_MAP
 #define GX_TEXTURE_CUBE_MAP

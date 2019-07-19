@@ -35,6 +35,7 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXOBJLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFile.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFileSystemBackend.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXLogger.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMemoryInspector.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp" />
@@ -57,6 +58,7 @@
     <ClInclude Include="..\..\Include\GXEngineDLL\GXOGGVorbis.h" />
     <ClInclude Include="..\..\Include\GXEngineDLL\GXOpenAL.h" />
     <ClInclude Include="..\..\Include\GXEngineDLL\GXPhysXAdapter.h" />
+    <ClInclude Include="..\..\Include\GXEngineDLL\GXVersion.h" />
     <ClInclude Include="..\..\Include\GXEngineDLL\GXXInput.h" />
   </ItemGroup>
   <ItemGroup>
@@ -225,6 +227,7 @@
     <PostBuildEvent>
       <Command>del "$(OutDir)$(TargetName).exp"
 del "$(OutDir)$(TargetName).lib"
+copy "$(OutDir)$(TargetFileName)" "$(SolutionDir)..\..\Debug\$(PlatformTarget)" /Y
 
 
 </Command>

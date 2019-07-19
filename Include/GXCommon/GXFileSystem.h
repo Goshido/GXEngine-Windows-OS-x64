@@ -1,4 +1,4 @@
-// version 1.14
+// version 1.15
 
 #ifndef GX_FILE_SYSTEM
 #define GX_FILE_SYSTEM
@@ -28,42 +28,25 @@ struct GXDirectoryInfo final
     ~GXDirectoryInfo ();
 
     GXVoid Clear ();
-};
 
-GXBool GXCALL GXLoadFile ( const GXWChar* fileName, GXVoid** buffer, GXUPointer &size, GXBool notsilent );
-GXBool GXCALL GXWriteToFile ( const GXWChar* fileName, const GXVoid* buffer, GXUPointer size );
-GXBool GXCALL GXDoesFileExist ( const GXWChar* fileName );
-GXVoid GXCALL GXGetCurrentDirectory ( GXWChar** currentDirectory );
-GXBool GXCALL GXDoesDirectoryExist ( const GXWChar* directory );
+    GXDirectoryInfo ( const GXDirectoryInfo &other ) = delete;
+    GXDirectoryInfo& operator = ( const GXDirectoryInfo &other ) = delete;
+};
 
 // Directory can be created recursively.
-GXBool GXCALL GXCreateDirectory ( const GXWChar* directory );
 GXBool GXCALL GXCreateDirectory ( GXString directory );
+GXString GXCALL GXGetCurrentDirectory ();
+GXBool GXCALL GXDoesDirectoryExist ( GXString directory );
+GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, GXString directory );
 
-GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, const GXWChar* directory );
-GXVoid GXCALL GXGetFileDirectoryPath ( GXWChar** path, const GXWChar* fileName );
-GXVoid GXCALL GXGetBaseFileName ( GXWChar** baseFileName, const GXWChar* fileName );
-GXVoid GXCALL GXGetFileExtension ( GXWChar** extension, const GXWChar* fileName );
+GXBool GXCALL GXDoesFileExist ( GXString fileName );
+GXBool GXCALL GXWriteToFile ( GXString fileName, const GXVoid* buffer, GXUPointer size );
+GXString GXCALL GXGetBaseFileName ( GXString fileName );
+GXString GXCALL GXGetFileExtension ( GXString fileName );
+
+GXString GXCALL GXGetFileDirectoryPath ( GXString fileName );
 
 GXString GXCALL GXWordExp ( GXString expression );
-
-class GXWriteFileStream
-{
-    private:
-        FILE*       _file;
-
-    public:
-        explicit GXWriteFileStream ( const GXWChar* fileName );
-        ~GXWriteFileStream ();
-
-        GXVoid Write ( const GXVoid* data, GXUPointer size );
-        GXVoid Flush ();
-        GXVoid Close ();
-
-    private:
-        GXWriteFileStream ( const GXWriteFileStream &other ) = delete;
-        GXWriteFileStream& operator = ( const GXWriteFileStream &other ) = delete;
-};
 
 
 #endif // GX_FILE_SYSTEM
