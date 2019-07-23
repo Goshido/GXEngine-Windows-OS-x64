@@ -75,6 +75,9 @@ GXUPointer GXDynamicArray::GetLength () const
 
 GXVoid GXDynamicArray::Resize ( GXUPointer totalElements )
 {
+    // TODO improve heap memory allocation
+    // TODO use memory inspector approach
+
     GXUByte* old = _data;
     _data = static_cast<GXUByte*> ( malloc ( totalElements * _elementSize ) );
 

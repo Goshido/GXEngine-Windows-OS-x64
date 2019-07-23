@@ -80,16 +80,16 @@ class EMGame final : public GXGame
         GXVoid OnDestroy () override;
 
     private:
-        static GXVoid GXCALL OnExit ( GXVoid* handler );
-        static GXVoid GXCALL OnColorPicker ( GXVoid* handler );
-        static GXVoid GXCALL OnPickRGBUByte ( GXVoid* handler, GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
-        static GXVoid GXCALL OnShowMotionBlurSettings ( GXVoid* handler );
-        static GXVoid GXCALL OnShowSSAOSettings ( GXVoid* handler );
-        static GXVoid GXCALL OnShowToneMapperSettings ( GXVoid* handler );
+        static GXVoid GXCALL OnExit ( GXVoid* context );
+        static GXVoid GXCALL OnColorPicker ( GXVoid* context );
+        static GXVoid GXCALL OnPickRGBUByte ( GXVoid* context, GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
+        static GXVoid GXCALL OnShowMotionBlurSettings ( GXVoid* context );
+        static GXVoid GXCALL OnShowSSAOSettings ( GXVoid* context );
+        static GXVoid GXCALL OnShowToneMapperSettings ( GXVoid* context );
         static GXVoid GXCALL OnMouseButton ( GXVoid* handler, GXInputMouseFlags mouseflags );
-        static GXVoid GXCALL OnObject ( GXVoid* handler, GXVoid* object );
-        static GXVoid GXCALL OnViewerTransformChanged ( GXVoid* handler );
-        static GXVoid GXCALL OnOpenFile ( const GXWChar* filePath );
+        static GXVoid GXCALL OnObject ( GXVoid* context, GXVoid* object );
+        static GXVoid GXCALL OnViewerTransformChanged ( GXVoid* context );
+        static GXVoid GXCALL OnOpenFile ( GXString filePath );
 
         EMGame ( const EMGame &other ) = delete;
         EMGame& operator = ( const EMGame &other ) = delete;

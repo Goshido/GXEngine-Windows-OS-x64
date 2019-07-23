@@ -27,7 +27,6 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXBKELoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXBKESaver.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXBKEStructs.cpp" />
-    <ClCompile Include="..\..\Sources\GXCommon\GXFileSystem.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXMath.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXMemory.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXNativeStaticMeshLoader.cpp" />

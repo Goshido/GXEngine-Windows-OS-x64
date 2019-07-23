@@ -520,38 +520,38 @@ GXVoid EMGame::OnDestroy ()
     delete &( GXPhysicsEngine::GetInstance () );
 }
 
-GXVoid GXCALL EMGame::OnExit ( GXVoid* /*handler*/ )
+GXVoid GXCALL EMGame::OnExit ( GXVoid* /*context*/ )
 {
     GXCore::GetInstance ().Exit ();
     GXLogA ( "Завершение\n" );
 }
 
-GXVoid GXCALL EMGame::OnColorPicker ( GXVoid* /*handler*/ )
+GXVoid GXCALL EMGame::OnColorPicker ( GXVoid* /*context*/ )
 {
     EMUIColorPicker::GetInstance ().PickColor ( nullptr, &EMGame::OnPickRGBUByte, 115, 185, 0, 255 );
 }
 
-GXVoid GXCALL EMGame::OnPickRGBUByte ( GXVoid* /*handler*/, GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
+GXVoid GXCALL EMGame::OnPickRGBUByte ( GXVoid* /*context*/, GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
 {
     GXLogA ( "EMGame::OnPickRGBUByte::Info - Выбран цвет RGBA:\n\tКрасный - %hhu\n\tЗелёный - %hhu\n\tСиний - %hhu\n\tПрозрачность - %hhu\n", red, green, blue, alpha );
 }
 
-GXVoid GXCALL EMGame::OnShowMotionBlurSettings ( GXVoid* /*handler*/ )
+GXVoid GXCALL EMGame::OnShowMotionBlurSettings ( GXVoid* /*context*/ )
 {
     EMUIMotionBlurSettings::GetInstance ().Show ();
 }
 
-GXVoid GXCALL EMGame::OnShowSSAOSettings ( GXVoid* /*handler*/ )
+GXVoid GXCALL EMGame::OnShowSSAOSettings ( GXVoid* /*context*/ )
 {
     EMUISSAOSettings::GetInstance ().Show ();
 }
 
-GXVoid GXCALL EMGame::OnShowToneMapperSettings ( GXVoid* /*handler*/ )
+GXVoid GXCALL EMGame::OnShowToneMapperSettings ( GXVoid* /*context*/ )
 {
     EMUIToneMapperSettings::GetInstance ().Show ();
 }
 
-GXVoid GXCALL EMGame::OnMouseButton ( GXVoid* /*handler*/, GXInputMouseFlags mouseflags )
+GXVoid GXCALL EMGame::OnMouseButton ( GXVoid* /*context*/, GXInputMouseFlags mouseflags )
 {
     if ( !mouseflags._leftMouseButton ) return;
 
@@ -595,9 +595,9 @@ GXVoid GXCALL EMGame::OnMouseButton ( GXVoid* /*handler*/, GXInputMouseFlags mou
     contactShape->GetRigidBody ().AddImpulseAtPointWorld ( impulseWorld, contactLocation );
 }
 
-GXVoid GXCALL EMGame::OnObject ( GXVoid* handler, GXVoid* object )
+GXVoid GXCALL EMGame::OnObject ( GXVoid* context, GXVoid* object )
 {
-    EMGame* game = static_cast<EMGame*> ( handler );
+    EMGame* game = static_cast<EMGame*> ( context );
 
     if ( game->_moveTool->OnObject ( object ) ) return;
 
@@ -610,14 +610,14 @@ GXVoid GXCALL EMGame::OnObject ( GXVoid* handler, GXVoid* object )
     EMViewer::GetInstance ()->SetTarget ( actor );
 }
 
-GXVoid GXCALL EMGame::OnViewerTransformChanged ( GXVoid* handler )
+GXVoid GXCALL EMGame::OnViewerTransformChanged ( GXVoid* context )
 {
-    EMGame* game = static_cast<EMGame*> ( handler );
+    EMGame* game = static_cast<EMGame*> ( context );
     game->_moveTool->OnViewerTransformChanged ();
     EMEnvironment::GetInstance ().OnViewerLocationChanged ();
 }
 
-GXVoid GXCALL EMGame::OnOpenFile ( const GXWChar* filePath )
+GXVoid GXCALL EMGame::OnOpenFile ( GXString filePath )
 {
-    GXLogA ( "EMOnOpenFile::Info - Файл %S\n", filePath );
+    GXLogA ( "EMOnOpenFile::Info - Файл %s\n", static_cast<const GXMBChar*> ( filePath ) );
 }

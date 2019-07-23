@@ -1,4 +1,4 @@
-// version 1.15
+// version 1.16
 
 #include <GXCommon/GXFileSystem.h>
 #include <GXCommon/GXLogger.h>
@@ -74,7 +74,7 @@ GXString GXCALL GXGetCurrentDirectory ()
 
     const GXUPointer size = GetCurrentDirectoryW ( FAST_BUFFER_SYMBOLS, fastBuffer );
 
-    if ( size <= FAST_BUFFER_SYMBOLS )
+    if ( size + 1u <= FAST_BUFFER_SYMBOLS )
     {
         buffer = fastBuffer;
     }
@@ -150,116 +150,6 @@ GXBool GXCALL GXCreateDirectory ( GXString directory )
         gx_common_FileSystemResource.Free ( buffer );
 
     return result;
-}
-
-GXBool GXCALL GXGetDirectoryInfo ( GXDirectoryInfo &directoryInfo, GXString directory )
-{
-    if ( directory.IsEmpty () || directory.IsNull () )
-        return GX_FALSE;
-
-    GXString findKey;
-    findKey.Format ( "%S/*", static_cast<const GXWChar*> ( directory ) );
-
-    WIN32_FIND_DATAW info;
-    HANDLE handleFind;
-    handleFind = FindFirstFileW ( findKey, &info );
-
-    if ( handleFind == INVALID_HANDLE_VALUE ) return GX_FALSE;
-
-    GXDynamicArray folderNames ( sizeof ( GXWChar* ) );
-    GXDynamicArray fileNames ( sizeof ( GXWChar* ) );
-    GXDynamicArray fileSizes ( sizeof ( GXUBigInt ) );
-
-    do
-    {
-        if ( info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
-        {
-            GXWChar* folderName;
-            GXWcsclone ( &folderName, info.cFileName );
-            folderNames.SetValue ( folderNames.GetLength (), &folderName );
-        }
-        else
-        {
-            GXWChar* fileName;
-            GXWcsclone ( &fileName, info.cFileName );
-            fileNames.SetValue ( fileNames.GetLength (), &fileName );
-
-            GXUBigInt fileSize = static_cast<GXUBigInt> ( info.nFileSizeLow ) + ( static_cast<GXUBigInt> ( info.nFileSizeHigh ) << 32 );
-            fileSizes.SetValue ( fileSizes.GetLength (), &fileSize );
-        }
-    }
-    while ( FindNextFileW ( handleFind, &info ) != 0 );
-
-    if ( GetLastError () != ERROR_NO_MORE_FILES )
-    {
-        FindClose ( handleFind );
-
-        GXWChar** files = reinterpret_cast<GXWChar**> ( fileNames.GetData () );
-        GXUPointer total = fileNames.GetLength ();
-
-        for ( GXUPointer i = 0u; i < total; ++i )
-            free ( files[ i ] );
-
-        GXWChar** folders = reinterpret_cast<GXWChar**> ( folderNames.GetData () );
-        total = folderNames.GetLength ();
-
-        for ( GXUPointer i = 0u; i < total; ++i )
-            free ( folders[ i ] );
-
-        return GX_FALSE;
-    }
-
-    FindClose ( handleFind );
-
-    directoryInfo.Clear ();
-
-    GXWChar* absolutePath = static_cast<GXWChar*> ( malloc ( BUFFER_SIZE_IN_SYMBOLS * sizeof ( GXWChar ) ) );
-    GetFullPathNameW ( directory, BUFFER_SIZE_IN_SYMBOLS, absolutePath, nullptr );
-
-    for ( GXWChar* p = absolutePath; *p != L'\0'; ++p )
-    {
-        if ( *p != L'\\' ) continue;
-
-        *p = L'/';
-    }
-
-    directoryInfo._absolutePath = absolutePath;
-
-    directoryInfo._totalFolders = static_cast<GXUInt> ( folderNames.GetLength () );
-
-    if ( directoryInfo._totalFolders > 0 )
-    {
-        GXUPointer size = directoryInfo._totalFolders * sizeof ( GXWChar* );
-        GXWChar** f = reinterpret_cast<GXWChar**> ( malloc ( size ) );
-        memcpy ( f, folderNames.GetData (), size );
-        directoryInfo._folderNames = const_cast<const GXWChar**> ( f );
-    }
-    else
-    {
-        directoryInfo._folderNames = nullptr;
-    }
-
-    directoryInfo._totalFiles = static_cast<GXUInt> ( fileNames.GetLength () );
-
-    if ( directoryInfo._totalFiles < 1u )
-    {
-        directoryInfo._fileNames = nullptr;
-        directoryInfo._fileSizes = nullptr;
-
-        return GX_TRUE;
-    }
-
-    GXUPointer size = directoryInfo._totalFiles * sizeof ( GXWChar* );
-    GXWChar** f = reinterpret_cast<GXWChar**> ( malloc ( size ) );
-    memcpy ( f, fileNames.GetData (), size );
-    directoryInfo._fileNames = const_cast<const GXWChar**> ( f );
-
-    size = directoryInfo._totalFiles * sizeof ( GXUBigInt );
-    GXUBigInt* s = static_cast<GXUBigInt*> ( malloc ( size ) );
-    memcpy ( s, fileSizes.GetData (), size );
-    directoryInfo._fileSizes = const_cast<const GXUBigInt*> ( s );
-
-    return GX_TRUE;
 }
 
 GXString GXCALL GXGetFileDirectoryPath ( GXString fileName )

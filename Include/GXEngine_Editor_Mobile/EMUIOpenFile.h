@@ -10,15 +10,19 @@
 #include <GXCommon/GXFileSystem.h>
 
 
-typedef GXVoid ( GXCALL* EMUIOpenFileBrowseFileHandler ) ( const GXWChar* filePath );
+typedef GXVoid ( GXCALL* EMUIOpenFileBrowseFileHandler ) ( GXString filePath );
 
 class EMUIOpenFile final : public EMUI
 {
     private:
-        GXWChar*                            _currentDirectory;
-
         const GXString                      _rootDirectory;
         GXUPointer                          _rootDirectoryPathOffset;
+
+        GXString                            _currentDirectory;
+        GXString                            _relativeDirectory;
+
+        // for optimization purposes
+        GXString                            _stringBuffer;
 
         EMUIDraggableArea*                  _mainPanel;
         EMUIButton*                         _okButton;
@@ -39,13 +43,12 @@ class EMUIOpenFile final : public EMUI
         GXVoid Browse ( EMUIOpenFileBrowseFileHandler callback );
 
     private:
-        GXVoid UpdateDirectory ( const GXWChar* folder );
-        const GXWChar* GetRelativePath () const;
+        GXVoid UpdateDirectory ( GXString targetDirectory );
 
-        static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state );
-        static GXVoid GXCALL OnItemSelected ( GXVoid* handler, GXUIListBox& listBox, const GXVoid* item );
-        static GXVoid GXCALL OnItemDoubleClicked ( GXVoid* handler, GXUIListBox& listBox, const GXVoid* item );
-        static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
+        static GXVoid GXCALL OnButton ( GXVoid* context, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state );
+        static GXVoid GXCALL OnItemSelected ( GXVoid* context, GXUIListBox& listBox, const GXVoid* item );
+        static GXVoid GXCALL OnItemDoubleClicked ( GXVoid* context, GXUIListBox& listBox, const GXVoid* item );
+        static GXVoid GXCALL OnResize ( GXVoid* context, GXUIDragableArea& area, GXFloat width, GXFloat height );
 
         EMUIOpenFile ( const EMUIOpenFile &other ) = delete;
         EMUIOpenFile& operator = ( const EMUIOpenFile &other ) = delete;

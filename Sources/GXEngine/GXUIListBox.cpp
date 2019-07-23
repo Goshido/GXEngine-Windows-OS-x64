@@ -120,7 +120,7 @@ GXVoid GXUIListBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
         if ( item )
             item->_isSelected = GX_TRUE;
 
-        if ( _onItemSelected )
+        if ( _onItemSelected && item )
             _onItemSelected ( _itemSelectedContext, *this, item->_data );
 
         if ( _renderer )

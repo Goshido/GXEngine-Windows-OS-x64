@@ -48,9 +48,6 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXBKEStructs.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXCommon\GXFileSystem.cpp">
-      <Filter>Source Files\GXCommon</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\GXCommon\GXMath.cpp">
       <Filter>Source Files\GXCommon</Filter>
     </ClCompile>

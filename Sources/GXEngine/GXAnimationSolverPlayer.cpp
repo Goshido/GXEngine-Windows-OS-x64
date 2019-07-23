@@ -39,16 +39,18 @@ class GXBoneFinderNode final : public GXAVLTreeNode
         GXBoneFinderNode& operator = ( const GXBoneFinderNode &other ) = delete;
 };
 
-GXBoneFinderNode::GXBoneFinderNode ()
+GXBoneFinderNode::GXBoneFinderNode ():
+    _boneName ( nullptr ),
+    _boneIndex ( static_cast<GXUShort> ( INVALID_BONE_INDEX ) )
 {
-    _boneName = nullptr;
-    _boneIndex = static_cast<GXUShort> ( INVALID_BONE_INDEX );
+    // NOTHING
 }
 
-GXBoneFinderNode::GXBoneFinderNode ( const GXUTF8* boneName, GXUShort boneIndex )
+GXBoneFinderNode::GXBoneFinderNode ( const GXUTF8* boneName, GXUShort boneIndex ):
+    _boneName ( boneName ),
+    _boneIndex ( boneIndex )
 {
-    this->_boneName = boneName;
-    this->_boneIndex = boneIndex;
+    // NOTHING
 }
 
 GXBoneFinderNode::~GXBoneFinderNode ()
