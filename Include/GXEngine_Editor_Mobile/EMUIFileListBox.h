@@ -23,10 +23,10 @@ class EMUIFileListBoxItem final
         ~EMUIFileListBoxItem ();
 
         eEMUIFileListBoxItemType GetType () const;
-        GXVoid SetType ( eEMUIFileListBoxItemType newType );
+        GXVoid SetType ( eEMUIFileListBoxItemType type );
 
         const GXWChar* GetName () const;
-        GXVoid SetName ( const GXWChar* newName );
+        GXVoid SetName ( const GXWChar* name );
 
     private:
         EMUIFileListBoxItem () = delete;

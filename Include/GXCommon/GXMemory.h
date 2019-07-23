@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #ifndef GX_MEMORY
 #define GX_MEMORY
@@ -34,21 +34,14 @@ GX_RESTORE_WARNING_STATE
 
 class GXMemoryInspectorLite
 {
-    private:
-        static GXUPointerAtomic     _newObjects;
-        static GXUPointerAtomic     _newObjectSize;
-
-        static GXUPointerAtomic     _mallocObjects;
-        static GXUPointerAtomic     _mallocObjectSize;
-
     public:
         // Method returns GX_TRUE if no any memory leaks are detected.
         static GXBool GXCALL CheckMemoryLeaks ();
 
-        GXVoid* Malloc ( GXUPointer size );
-        GXVoid* Realloc ( GXVoid* heapMemory, GXUPointer newSize );
-        GXVoid Free ( GXVoid* heapMemory );
-        GXVoid SafeFree ( GXVoid** heapMemory );
+        GXVoid* Malloc ( GXUPointer size ) const;
+        GXVoid* Realloc ( GXVoid* heapMemory, GXUPointer newSize ) const;
+        GXVoid Free ( GXVoid* heapMemory ) const;
+        GXVoid SafeFree ( GXVoid** heapMemory ) const;
 
         static GXVoid* operator new ( GXUPointer size );
         static GXVoid operator delete ( GXVoid* heapMemory );
@@ -71,10 +64,10 @@ class GXMemoryInspectorFull
         // Method returns GX_TRUE if no any memory leaks are detected.
         static GXBool GXCALL CheckMemoryLeaks ();
 
-        GXVoid* Malloc ( GXUPointer size );
-        GXVoid* Realloc ( GXVoid* heapMemory, GXUPointer newSize );
-        GXVoid Free ( GXVoid* heapMemory );
-        GXVoid SafeFree ( GXVoid** heapMemory );
+        GXVoid* Malloc ( GXUPointer size ) const;
+        GXVoid* Realloc ( GXVoid* heapMemory, GXUPointer newSize ) const;
+        GXVoid Free ( GXVoid* heapMemory ) const;
+        GXVoid SafeFree ( GXVoid** heapMemory ) const;
 
         static GXVoid* operator new ( GXUPointer size );
         static GXVoid operator delete ( GXVoid* heapMemory );

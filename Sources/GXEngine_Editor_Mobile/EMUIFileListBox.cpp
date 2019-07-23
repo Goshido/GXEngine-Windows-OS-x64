@@ -54,7 +54,7 @@
 EMUIFileListBoxItem::EMUIFileListBoxItem ( eEMUIFileListBoxItemType type, const GXWChar* name ):
     _type ( type )
 {
-    GXWcsclone ( &this->_name, name );
+    GXWcsclone ( &_name, name );
 }
 
 EMUIFileListBoxItem::~EMUIFileListBoxItem ()
@@ -67,9 +67,9 @@ eEMUIFileListBoxItemType EMUIFileListBoxItem::GetType () const
     return _type;
 }
 
-GXVoid EMUIFileListBoxItem::SetType ( eEMUIFileListBoxItemType newType )
+GXVoid EMUIFileListBoxItem::SetType ( eEMUIFileListBoxItemType type )
 {
-    _type = newType;
+    _type = type;
 }
 
 const GXWChar* EMUIFileListBoxItem::GetName () const
@@ -77,9 +77,9 @@ const GXWChar* EMUIFileListBoxItem::GetName () const
     return _name;
 }
 
-GXVoid EMUIFileListBoxItem::SetName ( const GXWChar* newName )
+GXVoid EMUIFileListBoxItem::SetName ( const GXWChar* name )
 {
-    _name = const_cast<GXWChar*> ( newName );
+    _name = const_cast<GXWChar*> ( name );
 }
 
 //---------------------------------------------------------

@@ -177,6 +177,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Sources\GXCommon\GXAbstractDirectoryInfo.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractMutex.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractSmartLock.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractUIntAtomic.cpp" />
@@ -185,7 +186,6 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXCommon\GXAVLTree.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXCFGLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXCFGSaver.cpp" />
-    <ClCompile Include="..\..\Sources\GXCommon\GXFileSystem.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXImageLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXMath.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXMemory.cpp" />
@@ -197,8 +197,9 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXCommon\GXOBJLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractThread.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXDirectoryInfo.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFile.cpp" />
-    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFileSystemBackend.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFileSystem.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXLogger.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMemoryInspector.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp" />
@@ -342,6 +343,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXPhysics\GXWorld.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Include\GXCommon\GXDirectoryInfo.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXFile.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXNativeSkeleton.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXNativeSkin.h" />
@@ -376,6 +378,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXCommon\GXUPointerAtomic.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXWarning.h" />
     <ClInclude Include="..\..\Include\GXCommon\GXWriteFileStream.h" />
+    <ClInclude Include="..\..\Include\GXCommon\Windows\GXDirectoryInfo.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXSmartLock.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXUIntAtomic.h" />
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXUPointerAtomic.h" />

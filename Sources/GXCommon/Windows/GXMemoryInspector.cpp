@@ -1,4 +1,4 @@
-// version 1.8
+// version 1.9
 
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXLogger.h>
@@ -19,72 +19,72 @@ GX_RESTORE_WARNING_STATE
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXUPointerAtomic     GXMemoryInspectorLite::_newObjects;
-GXUPointerAtomic     GXMemoryInspectorLite::_newObjectSize;
-GXUPointerAtomic     GXMemoryInspectorLite::_mallocObjects;
-GXUPointerAtomic     GXMemoryInspectorLite::_mallocObjectSize;
+static GXUPointerAtomic     gx_common_MemoryInspectorLiteNewObjects ( 0u );
+static GXUPointerAtomic     gx_common_MemoryInspectorLiteNewObjectSize ( 0u );
+static GXUPointerAtomic     gx_common_MemoryInspectorLiteMallocObjects ( 0u );
+static GXUPointerAtomic     gx_common_MemoryInspectorLiteMallocObjectSize ( 0u );
 
 GXBool GXCALL GXMemoryInspectorLite::CheckMemoryLeaks ()
 {
-    if ( _newObjects == static_cast<GXUPointer> ( 0u ) && _mallocObjects == static_cast<GXUPointer> ( 0u ) )
+    if ( gx_common_MemoryInspectorLiteNewObjects == static_cast<GXUPointer> ( 0u ) && gx_common_MemoryInspectorLiteMallocObjects == static_cast<GXUPointer> ( 0u ) )
         return GX_TRUE;
 
     GXLogA ( "GXMemoryInspectorLite::CheckMemoryLeaks::Error - Memory leaks were detected:\n" );
 
-    if ( _newObjects > static_cast<GXUPointer> ( 0u ) )
+    if ( gx_common_MemoryInspectorLiteNewObjects > static_cast<GXUPointer> ( 0u ) )
     {
-        GXLogA ( "\tnew allocated object(s): %" PRIuPTR "\n", static_cast<GXUPointer> ( _newObjects ) );
-        GXLogA ( "\tnew allocated object total size: %" PRIuPTR " byte(s)\n", static_cast<GXUPointer> ( _newObjectSize ) );
+        GXLogA ( "\tnew allocated object(s): %" PRIuPTR "\n", static_cast<GXUPointer> ( gx_common_MemoryInspectorLiteNewObjects ) );
+        GXLogA ( "\tnew allocated object total size: %" PRIuPTR " byte(s)\n", static_cast<GXUPointer> ( gx_common_MemoryInspectorLiteNewObjectSize ) );
     }
 
-    if ( _mallocObjects == static_cast<GXUPointer> ( 0u ) )
+    if ( gx_common_MemoryInspectorLiteMallocObjects == static_cast<GXUPointer> ( 0u ) )
     {
         GXLogA ( "\n" );
         return GX_FALSE;
     }
 
-    GXLogA ( "\tmalloc allocated object(s): %" PRIuPTR "\n", static_cast<GXUPointer> ( _mallocObjects ) );
-    GXLogA ( "\tmalloc allocated object total size: %" PRIuPTR " byte(s)\n\n", static_cast<GXUPointer> ( _mallocObjectSize ) );
+    GXLogA ( "\tmalloc allocated object(s): %" PRIuPTR "\n", static_cast<GXUPointer> ( gx_common_MemoryInspectorLiteMallocObjects ) );
+    GXLogA ( "\tmalloc allocated object total size: %" PRIuPTR " byte(s)\n\n", static_cast<GXUPointer> ( gx_common_MemoryInspectorLiteMallocObjectSize ) );
 
     return GX_FALSE;
 }
 
-GXVoid* GXMemoryInspectorLite::Malloc ( GXUPointer size )
+GXVoid* GXMemoryInspectorLite::Malloc ( GXUPointer size ) const
 {
-    ++_mallocObjects;
-    _mallocObjectSize += size;
+    ++gx_common_MemoryInspectorLiteMallocObjects;
+    gx_common_MemoryInspectorLiteMallocObjectSize += size;
     return malloc ( size );
 }
 
-GXVoid* GXMemoryInspectorLite::Realloc ( GXVoid* heapMemory, GXUPointer newSize )
+GXVoid* GXMemoryInspectorLite::Realloc ( GXVoid* heapMemory, GXUPointer newSize ) const
 {
     if ( !heapMemory )
         return Malloc ( newSize );
 
     GXUPointer currentSize = _msize ( heapMemory );
     GXVoid* newHeapMemory = realloc ( heapMemory, newSize );
-    _mallocObjectSize = _mallocObjectSize - currentSize + newSize;
+    gx_common_MemoryInspectorLiteMallocObjectSize = gx_common_MemoryInspectorLiteMallocObjectSize - currentSize + newSize;
 
     return newHeapMemory;
 }
 
-GXVoid GXMemoryInspectorLite::Free ( GXVoid* heapMemory )
+GXVoid GXMemoryInspectorLite::Free ( GXVoid* heapMemory ) const
 {
     if ( !heapMemory ) return;
 
-    --_mallocObjects;
-    _mallocObjectSize -= _msize ( heapMemory );
+    --gx_common_MemoryInspectorLiteMallocObjects;
+    gx_common_MemoryInspectorLiteMallocObjectSize -= _msize ( heapMemory );
     free ( heapMemory );
 }
 
-GXVoid GXMemoryInspectorLite::SafeFree ( GXVoid** heapMemory )
+GXVoid GXMemoryInspectorLite::SafeFree ( GXVoid** heapMemory ) const
 {
     GXVoid* m = *heapMemory;
 
     if ( m == nullptr ) return;
 
-    --_mallocObjects;
-    _mallocObjectSize -= _msize ( m );
+    --gx_common_MemoryInspectorLiteMallocObjects;
+    gx_common_MemoryInspectorLiteMallocObjectSize -= _msize ( m );
     free ( m );
 
     *heapMemory = nullptr;
@@ -92,8 +92,8 @@ GXVoid GXMemoryInspectorLite::SafeFree ( GXVoid** heapMemory )
 
 GXVoid* GXMemoryInspectorLite::operator new ( GXUPointer size )
 {
-    ++_newObjects;
-    _newObjectSize += size;
+    ++gx_common_MemoryInspectorLiteNewObjects;
+    gx_common_MemoryInspectorLiteNewObjectSize += size;
     return malloc ( size );
 }
 
@@ -101,8 +101,8 @@ GXVoid GXMemoryInspectorLite::operator delete ( GXVoid* heapMemory )
 {
     if ( !heapMemory ) return;
 
-    --_newObjects;
-    _newObjectSize -= _msize ( heapMemory );
+    --gx_common_MemoryInspectorLiteNewObjects;
+    gx_common_MemoryInspectorLiteNewObjectSize -= _msize ( heapMemory );
     free ( heapMemory );
 }
 
@@ -503,24 +503,24 @@ GXBool GXCALL GXMemoryInspectorFull::CheckMemoryLeaks ()
     return gx_HeapManager.CheckMemoryLeaks ();
 }
 
-GXVoid* GXMemoryInspectorFull::Malloc ( GXUPointer size )
+GXVoid* GXMemoryInspectorFull::Malloc ( GXUPointer size ) const
 {
     return gx_HeapManager.MakeMalloc ( size, _className );
 }
 
-GXVoid* GXMemoryInspectorFull::Realloc ( GXVoid* heapMemory, GXUPointer newSize )
+GXVoid* GXMemoryInspectorFull::Realloc ( GXVoid* heapMemory, GXUPointer newSize ) const
 {
     return gx_HeapManager.MakeRealloc ( heapMemory, newSize, _className );
 }
 
-GXVoid GXMemoryInspectorFull::Free ( GXVoid* heapMemory )
+GXVoid GXMemoryInspectorFull::Free ( GXVoid* heapMemory ) const
 {
     if ( !heapMemory ) return;
 
     gx_HeapManager.MakeFree ( heapMemory );
 }
 
-GXVoid GXMemoryInspectorFull::SafeFree ( GXVoid** heapMemory )
+GXVoid GXMemoryInspectorFull::SafeFree ( GXVoid** heapMemory ) const
 {
     GXVoid* m = *heapMemory;
 

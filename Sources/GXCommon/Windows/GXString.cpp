@@ -1,4 +1,4 @@
-// version 1.1
+// version 1.2
 
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXLogger.h>
@@ -7,6 +7,7 @@
 
 #define EXTRA_SPACE_SYMBOLS         32u
 #define CALCULATE_BUFFER_SIZE       0u
+#define LEADING_SURROGATE           0xD800u
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -16,6 +17,7 @@ class GXStringData final : public GXMemoryInspector
         GXUPointerAtomic        _references;
 
         GXUTF16*                _utf16Buffer;
+        GXWChar*                _debugFriendlyString;
         GXUPointer              _utf16BufferSize;
         GXUPointer              _utf16AllocatedBufferSize;
         GXUPointer              _symbols;
@@ -51,6 +53,7 @@ class GXStringData final : public GXMemoryInspector
         const GXUTF8* GetUTF8Data ( GXUPointer &size );
 
         const GXUPointer GetSymbolCount () const;
+        const GXUPointer GetUTF16BufferSize () const;
 
         static GXStringData& GXCALL GetNullStringData ();
 
@@ -66,6 +69,7 @@ GXStringData::GXStringData ( const GXUTF16* content, GXBool canOwnContent )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXStringData" )
     _references ( 1u ),
     _utf16Buffer ( nullptr ),
+    _debugFriendlyString ( nullptr ),
     _utf16BufferSize ( 0u ),
     _utf16AllocatedBufferSize ( 0u ),
     _symbols ( 0u ),
@@ -91,12 +95,14 @@ GXStringData::GXStringData ( const GXUTF16* content, GXBool canOwnContent )
     if ( canOwnContent )
     {
         _utf16Buffer = const_cast<GXUTF16*> ( content );
+        _debugFriendlyString = reinterpret_cast<GXWChar*> ( _utf16Buffer );
         _utf16AllocatedBufferSize = _utf16BufferSize;
         return;
     }
 
     _utf16AllocatedBufferSize = _utf16BufferSize + EXTRA_SPACE_SYMBOLS * sizeof ( GXUTF16 );
     _utf16Buffer = static_cast<GXUTF16*> ( Malloc ( _utf16AllocatedBufferSize ) );
+    _debugFriendlyString = reinterpret_cast<GXWChar*> ( _utf16Buffer );
     memcpy ( _utf16Buffer, content, _utf16BufferSize );
 }
 
@@ -136,6 +142,7 @@ GXUTF16* GXStringData::GetInputBuffer ( GXUPointer neededSpace )
     SafeFree ( reinterpret_cast<GXVoid**> ( &_utf16Buffer ) );
     _utf16AllocatedBufferSize = _utf16BufferSize + EXTRA_SPACE_SYMBOLS * sizeof ( GXUTF16 );
     _utf16Buffer = static_cast<GXUTF16*> ( Malloc ( _utf16AllocatedBufferSize ) );
+    _debugFriendlyString = reinterpret_cast<GXWChar*> ( _utf16Buffer );
 
     return _utf16Buffer;
 }
@@ -218,8 +225,16 @@ const GXUPointer GXStringData::GetSymbolCount () const
 GXStringData::~GXStringData ()
 {
     SafeFree ( reinterpret_cast<GXVoid**> ( &_multibyteCache ) );
+
     SafeFree ( reinterpret_cast<GXVoid**> ( &_utf16Buffer ) );
+    _debugFriendlyString = nullptr;
+
     SafeFree ( reinterpret_cast<GXVoid**> ( &_utf8Cache ) );
+}
+
+const GXUPointer GXStringData::GetUTF16BufferSize () const
+{
+    return _utf16BufferSize;
 }
 
 GXStringData& GXCALL GXStringData::GetNullStringData ()
@@ -343,6 +358,88 @@ const GXBool GXString::IsEmpty () const
 const GXBool GXString::IsNull () const
 {
     return _stringData->IsNullString ();
+}
+
+GXString GXString::GetLeft ( GXUPointer lastSymbolIndex ) const
+{
+    if ( _stringData->IsNullString () )
+        return {};
+
+    if ( lastSymbolIndex >= _stringData->GetSymbolCount () )
+        return {};
+
+    GXUPointer utf16Size = 0u;
+    const GXUTF16* utf16Data = _stringData->GetUTF16Data ( utf16Size );
+    GXUPointer targetOffset = 0u;
+
+    for ( GXUPointer i = 0u; i <= lastSymbolIndex; ++i )
+        targetOffset += utf16Data[ targetOffset ] >= LEADING_SURROGATE ? 2u : 1u;
+
+    const GXUPointer stringDataSize = targetOffset * sizeof ( GXUTF16 );
+
+    // add space for null terminator.
+    GXUTF16* buffer = static_cast<GXUTF16*> ( Malloc ( stringDataSize + sizeof ( GXUTF16 ) ) );
+    memcpy ( buffer, utf16Data, stringDataSize );
+    buffer[ targetOffset ] = 0u;
+
+    return GXString ( buffer, GX_TRUE );
+}
+
+GXString GXString::GetMiddle ( GXUPointer firstSymbolIndex, GXUPointer lastSymbolIndex ) const
+{
+    if ( _stringData->IsNullString () || lastSymbolIndex < firstSymbolIndex )
+        return {};
+
+    const GXUPointer rawSymbols = _stringData->GetSymbolCount ();
+
+    if ( firstSymbolIndex >= rawSymbols || lastSymbolIndex >= rawSymbols )
+        return {};
+
+    GXUPointer utf16Size = 0u;
+    const GXUTF16* utf16Data = _stringData->GetUTF16Data ( utf16Size );
+    const GXUPointer symbols = lastSymbolIndex - firstSymbolIndex;
+
+    GXUPointer leftOffset = 0u;
+
+    for ( GXUPointer i = 0u; i < firstSymbolIndex; ++i )
+        leftOffset += utf16Data[ leftOffset ] >= LEADING_SURROGATE ? 2u : 1u;
+
+    GXUPointer rightOffset = leftOffset;
+
+    for ( GXUPointer i = 0u; i <= symbols; ++i )
+        rightOffset += utf16Data[ rightOffset ] >= LEADING_SURROGATE ? 2u : 1u;
+
+    const GXUPointer stringDataChunks = rightOffset - leftOffset;
+    const GXUPointer stringDataSize = stringDataChunks * sizeof ( GXUTF16 );
+
+    // add space for null terminator.
+    GXUTF16* buffer = static_cast<GXUTF16*> ( Malloc ( stringDataSize + sizeof ( GXUTF16 ) ) );
+    memcpy ( buffer, utf16Data + leftOffset, stringDataSize );
+    buffer[ stringDataChunks ] = 0u;
+
+    return GXString ( buffer, GX_TRUE );
+}
+
+GXString GXString::GetRight ( GXUPointer firstSymbolIndex ) const
+{
+    if ( _stringData->IsNullString () )
+        return {};
+
+    if ( firstSymbolIndex >= _stringData->GetSymbolCount () )
+        return {};
+
+    GXUPointer utf16Size = 0u;
+    const GXUTF16* utf16Data = _stringData->GetUTF16Data ( utf16Size );
+    GXUPointer targetOffset = 0u;
+
+    for ( GXUPointer i = 0u; i < firstSymbolIndex; ++i )
+        targetOffset += utf16Data[ targetOffset ] >= LEADING_SURROGATE ? 2u : 1u;
+
+    const GXUPointer neededSpace = utf16Size - targetOffset * sizeof ( GXUTF16 );
+    GXUTF16* buffer = static_cast<GXUTF16*> ( Malloc ( neededSpace ) );
+    memcpy ( buffer, utf16Data + targetOffset, neededSpace );
+
+    return GXString ( buffer, GX_TRUE );
 }
 
 GXVoid GXString::FromSystemMultibyteString ( const GXMBChar* string )

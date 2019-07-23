@@ -1,4 +1,4 @@
-// version 1.8
+// version 1.9
 
 #ifndef GX_STRINGS
 #define GX_STRINGS
@@ -96,6 +96,10 @@ class GXString final: public GXMemoryInspector
 
         const GXBool IsEmpty () const;
         const GXBool IsNull () const;
+
+        GXString GetLeft ( GXUPointer lastSymbolIndex ) const;
+        GXString GetMiddle ( GXUPointer firstSymbolIndex, GXUPointer lastSymbolIndex ) const;
+        GXString GetRight ( GXUPointer firstSymbolIndex ) const;
 
         GXVoid FromSystemMultibyteString ( const GXMBChar* string );
         const GXMBChar* ToSystemMultibyteString ();
