@@ -522,6 +522,8 @@ GXVoid EMGame::OnDestroy ()
 
 GXVoid GXCALL EMGame::OnExit ( GXVoid* /*context*/ )
 {
+    /*EMGame* game = static_cast<EMGame*> ( context );
+    game->_openFile->Browse ( &EMGame::OnOpenFile );*/
     GXCore::GetInstance ().Exit ();
     GXLogA ( "Завершение\n" );
 }

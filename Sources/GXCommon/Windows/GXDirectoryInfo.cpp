@@ -27,32 +27,32 @@ GXDirectoryInfo::GXDirectoryInfo ( GXString targetDirectory ):
 
     if ( handleFind == INVALID_HANDLE_VALUE ) return;
 
-    GXUPointer directories = 0u;
-    GXUPointer files = 0u;
+    // Warning: Some string Kung-Fu. GXString is COW string. So task is simple. Place all strings in GXDynamicArray without
+    // actual assignment operator and losing string data after GXString destructor. So solution is:
+    // 1) Allocate size of GXString bytes in stack. 
+    // 2) Interpret this memory as GXString
+    // 3) Init GXString via placement new operator
+    // 4) Push back this string to GXDynamicArray
+    //
+    // Note GXAbstractDirectoryInfo takes care about GXString destruction by desing.
+
+    GXUByte stringMemory[ sizeof ( GXString ) ];
+    GXString* string = reinterpret_cast<GXString*> ( stringMemory );
 
     do
     {
+        ::new ( string ) GXString ( info.cFileName );
+
         if ( info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
         {
-            ++directories;
-            _directories.Resize ( directories );
-            GXString* directory = static_cast<GXString*> ( _directories.GetValue ( directories - 1u ) );
-            ::new ( directory ) GXString ( info.cFileName );
-
+            _directories.PushBack ( string );
             continue;
         }
 
-        ++files;
-        _files.Resize ( files );
-        _fileSizes.Resize ( files );
-
-        const GXUPointer fileIndex = files - 1u;
-
-        GXString* file = static_cast<GXString*> ( _files.GetValue ( fileIndex ) );
-        ::new ( file ) GXString ( info.cFileName );
+        _files.PushBack ( string );
 
         const GXUBigInt fileSize = static_cast<GXUBigInt> ( info.nFileSizeLow ) + ( static_cast<GXUBigInt> ( info.nFileSizeHigh ) << 32 );
-        _fileSizes.SetValue ( fileIndex, &fileSize );
+        _fileSizes.PushBack ( &fileSize );
     }
     while ( FindNextFileW ( handleFind, &info ) != 0 );
 

@@ -39,7 +39,7 @@ GXUBigInt GXAbstractDirectoryInfo::GetFileSize ( GXUPointer fileIndex ) const
     if ( fileIndex >= _fileSizes.GetLength () )
         return {};
 
-    return *( static_cast<GXUBigInt*> ( _fileSizes.GetValue ( fileIndex ) ) );
+    return *( static_cast<const GXUBigInt*> ( _fileSizes.GetValue ( fileIndex ) ) );
 }
 
 GXAbstractDirectoryInfo::GXAbstractDirectoryInfo ( GXString targetDirectory )

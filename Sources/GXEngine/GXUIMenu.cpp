@@ -35,7 +35,9 @@ GXUIMenu::~GXUIMenu ()
     GXUIMenuItem* itemStorage = static_cast<GXUIMenuItem*> ( _items.GetData () );
 
     for ( GXUByte i = 0u; i < totalItems; ++i )
+    {
         GXSafeFree ( itemStorage[ i ]._name );
+    }
 }
 
 GXVoid GXUIMenu::OnMessage ( eGXUIMessage message, const GXVoid* data )
@@ -221,7 +223,7 @@ GXVoid GXUIMenu::AddItem ( const GXWChar* name, GXFloat itemWidth, GXUIPopup* po
 
 GXUByte GXUIMenu::GetTotalItems () const
 {
-    return (GXUByte)_items.GetLength ();
+    return static_cast<GXUByte> ( _items.GetLength () );
 }
 
 const GXWChar* GXUIMenu::GetItemName ( GXUByte itemIndex ) const
