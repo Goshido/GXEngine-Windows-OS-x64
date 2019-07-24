@@ -81,7 +81,7 @@ EMUIMenuRenderer::~EMUIMenuRenderer ()
 
 GXFloat EMUIMenuRenderer::GetTextWidth ( const GXWChar* text ) const
 {
-    return (GXFloat)_font.GetTextLength ( 0, text );
+    return static_cast<GXFloat> ( _font.GetTextLength ( 0u, text ) );
 }
 
 GXVoid EMUIMenuRenderer::OnRefresh ()

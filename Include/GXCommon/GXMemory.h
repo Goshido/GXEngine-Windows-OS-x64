@@ -127,25 +127,40 @@ class GXCircleBuffer final : public GXMemoryInspector
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class GXDynamicArray final
+class GXDynamicArray final : public GXMemoryInspector
 {
     protected:
-        GXUByte*        _data;
         GXUPointer      _elementSize;
-        GXUPointer      _numElements;
+        GXUPointer      _elements;
+        GXUPointer      _reservedElements;
+
+        GXUByte*        _data;
 
     public:
         explicit GXDynamicArray ( GXUPointer elementSize );
-        ~GXDynamicArray ();
+
+        // reservedElements is internal buffer capacity in elements at start.
+        explicit GXDynamicArray ( GXUPointer elementSize, GXUPointer reservedElements );
+
+        ~GXDynamicArray () override;
+
+        GXVoid Reserve ( GXUPointer elements );
+
+        // Internal buffer doubled if new element cannot be added.
+        GXVoid PushBack ( const GXVoid* element );
 
         GXVoid SetValue ( GXUPointer i, const GXVoid* element );
         GXVoid* GetValue ( GXUPointer i ) const;
+
         GXVoid* GetData () const;
         GXUPointer GetLength () const;
 
-        GXVoid Resize ( GXUPointer totalElements );
+        // Internal buffer is resized to specific element count.
+        GXVoid Resize ( GXUPointer elements );
 
     private:
+        GXVoid PreserveElements ( GXUByte* destination, const GXUByte* source, GXUPointer targetElements );
+
         GXDynamicArray ( const GXDynamicArray &other ) = delete;
         GXDynamicArray& operator = ( const GXDynamicArray &other ) = delete;
 };
