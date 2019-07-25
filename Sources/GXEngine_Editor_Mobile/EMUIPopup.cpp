@@ -60,7 +60,7 @@ class EMUIPopupRenderer final : public GXWidgetRenderer
         explicit EMUIPopupRenderer ( GXUIPopup* widget );
         ~EMUIPopupRenderer () override;
 
-        GXVoid AddItem ( const GXWChar* name );
+        GXVoid AddItem ( GXString name );
 
     protected:
         GXVoid OnRefresh () override;
@@ -77,7 +77,7 @@ class EMUIPopupRenderer final : public GXWidgetRenderer
 EMUIPopupRenderer::EMUIPopupRenderer ( GXUIPopup* widget ):
     GXWidgetRenderer ( widget ),
     _font ( FONT, static_cast<GXUShort> ( FONT_SIZE * gx_ui_Scale ) ),
-    _itemNames ( sizeof ( GXWChar* ) ),
+    _itemNames ( sizeof ( GXString ) ),
     _texture ( DEFAULT_TEXTURE, GX_FALSE, GX_FALSE )
 {
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
@@ -88,20 +88,21 @@ EMUIPopupRenderer::~EMUIPopupRenderer ()
 {
     delete _surface;
 
-    GXWChar** names = reinterpret_cast<GXWChar**> ( _itemNames.GetData () );
-    const GXUByte totalNames = static_cast<const GXUByte> ( _itemNames.GetLength () );
+    GXString* names = static_cast<GXString*> ( _itemNames.GetData () );
+    const GXUPointer totalNames = static_cast<const GXUPointer> ( _itemNames.GetLength () );
 
-    for ( GXUByte i = 0u; i < totalNames; ++i )
+    for ( GXUPointer i = 0u; i < totalNames; ++i )
     {
-        free ( names[ i ] );
+        names[ i ].Clear ();
     }
 }
 
-GXVoid EMUIPopupRenderer::AddItem ( const GXWChar* name )
+GXVoid EMUIPopupRenderer::AddItem ( GXString name )
 {
-    GXWChar* newItem = nullptr;
-    GXWcsclone ( &newItem, name );
-    _itemNames.SetValue ( _itemNames.GetLength (), &newItem );
+    GXUByte stringData[ sizeof ( GXString ) ];
+    GXString* string = reinterpret_cast<GXString*> ( stringData );
+    ::new ( string ) GXString ( name );
+    _itemNames.PushBack ( string );
 }
 
 GXVoid EMUIPopupRenderer::OnRefresh ()
@@ -163,7 +164,7 @@ GXVoid EMUIPopupRenderer::OnRefresh ()
         _surface->AddImage ( ii );
     }
 
-    const GXWChar** names = reinterpret_cast<const GXWChar**> ( _itemNames.GetData () );
+    const GXString* names = static_cast<const GXString*> ( _itemNames.GetData () );
     GXPenInfo pi;
     pi._font = &_font;
     pi._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
@@ -238,7 +239,7 @@ GXWidget* EMUIPopup::GetWidget () const
     return _widget;
 }
 
-GXVoid EMUIPopup::AddItem ( const GXWChar* name, GXVoid* context, GXUIPopupActionHandler action )
+GXVoid EMUIPopup::AddItem ( GXString name, GXVoid* context, GXUIPopupActionHandler action )
 {
     EMUIPopupRenderer* renderer = static_cast<EMUIPopupRenderer*> ( _widget->GetRenderer () );
     renderer->AddItem ( name );

@@ -1,10 +1,10 @@
-// version 1.8
+// version 1.9
 
 #ifndef GX_LOCALE
 #define GX_LOCALE
 
 
-#include <GXCommon/GXMemory.h>
+#include <GXCommon/GXStrings.h>
 
 
 enum class eGXLanguage : GXUShort
@@ -25,12 +25,12 @@ class GXLocale final : public GXMemoryInspector
         static GXLocale& GXCALL GetInstance ();
         ~GXLocale ();
 
-        GXVoid LoadLanguage ( const GXWChar* fileName, eGXLanguage language );
+        GXVoid LoadLanguage ( GXString fileName, eGXLanguage language );
 
         GXVoid SetLanguage ( eGXLanguage language );
         eGXLanguage GetLanguage () const;
-    
-        const GXWChar* GetString ( const GXWChar* resName ) const;
+
+        GXString GetString ( GXString key ) const;
 
     private:
         GXLocale ();

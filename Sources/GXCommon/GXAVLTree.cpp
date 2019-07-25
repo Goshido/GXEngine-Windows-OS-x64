@@ -1,4 +1,4 @@
-// vesrion 1.8
+// vesrion 1.9
 
 #include <GXCommon/GXAVLTree.h>
 #include <GXCommon/GXStrings.h>
@@ -46,19 +46,18 @@ const GXAVLTreeNode* GXAVLTree::Find ( const GXAVLTreeNode &node ) const
 
     while ( p )
     {
-        GXInt compareResult = _comparator ( node, *p );
+        switch ( _comparator ( node, *p ) )
+        {
+            case eGXCompareResult::Less:
+                p = p->_left;
+            break;
 
-        if ( compareResult < 0 )
-        {
-            p = p->_left;
-        }
-        else if ( compareResult > 0 )
-        {
-            p = p->_right;
-        }
-        else
-        {
+            case eGXCompareResult::Equal:
             return p;
+
+            case eGXCompareResult::Greater:
+                p = p->_right;
+            break;
         }
     }
 
@@ -153,24 +152,23 @@ GXVoid GXAVLTree::FindInternal ( GXAVLTreeNode** oldNode, GXAVLTreeNode** parent
 
     while ( currentNode )
     {
-        GXInt compareResult = _comparator ( node, *currentNode );
+        switch ( _comparator ( node, *currentNode ) )
+        {
+            case eGXCompareResult::Less:
+                *parent = currentNode;
+                side = eGXAVLTreeSide::Left;
+                currentNode = currentNode->_left;
+            break;
 
-        if ( compareResult < 0 )
-        {
-            *parent = currentNode;
-            side = eGXAVLTreeSide::Left;
-            currentNode = currentNode->_left;
-        }
-        else if ( compareResult > 0 )
-        {
-            *parent = currentNode;
-            side = eGXAVLTreeSide::Right;
-            currentNode = currentNode->_right;
-        }
-        else
-        {
-            *oldNode = currentNode;
+            case eGXCompareResult::Equal:
+                *oldNode = currentNode;
             return;
+
+            case eGXCompareResult::Greater:
+                *parent = currentNode;
+                side = eGXAVLTreeSide::Right;
+                currentNode = currentNode->_right;
+            break;
         }
     }
 
@@ -219,7 +217,7 @@ GXAVLTreeNode* GXAVLTree::Insert ( GXAVLTreeNode* node, GXAVLTreeNode* currentRo
 {
     if ( !currentRoot ) return node;
 
-    if ( _comparator ( *node, *currentRoot ) < 0 )
+    if ( _comparator ( *node, *currentRoot ) == eGXCompareResult::Less )
         currentRoot->_left = Insert ( node, currentRoot->_left );
     else
         currentRoot->_right = Insert ( node, currentRoot->_right );

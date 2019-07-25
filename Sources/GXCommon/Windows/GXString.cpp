@@ -1,4 +1,4 @@
-// version 1.2
+// version 1.3
 
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXLogger.h>
@@ -283,7 +283,7 @@ GXString::GXString ( const GXMBChar* string )
 GXString::GXString ( GXMBChar character )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXString" )
 {
-    const GXMBChar string[ 2u ] = { character, 0u };
+    const GXMBChar string[ 2u ] = { character, '\0' };
 
     GXWChar* utf16String = nullptr;
 
@@ -524,9 +524,7 @@ GXVoid GXString::FromUTF8 ( const GXUTF8* string )
     }
 
     GXWChar* utf16String = nullptr;
-
     const GXInt symbols = MultiByteToWideChar ( CP_UTF8, MB_PRECOMPOSED, string, -1, utf16String, 0 );
-    utf16String = static_cast<GXWChar*> ( Malloc ( symbols * sizeof ( GXWChar ) ) );
     const GXUPointer neededSpace = symbols * sizeof ( GXWChar );
 
     if ( !_stringData->IsNullString () && !_stringData->IsShared () )
@@ -557,6 +555,40 @@ const GXUTF8* GXString::ToUTF8 ( GXUPointer &stringSize )
     return _stringData->GetUTF8Data ( stringSize );
 }
 
+eGXCompareResult GXString::Compare ( const GXString other ) const
+{
+    GXUPointer tmp;
+    return static_cast<eGXCompareResult> ( GXWcscmp ( reinterpret_cast<const GXWChar*> ( _stringData->GetUTF16Data ( tmp ) ), reinterpret_cast<const GXWChar*> ( other._stringData->GetUTF16Data ( tmp ) ) ) );
+}
+
+eGXCompareResult GXString::Compare ( const GXMBChar* string ) const
+{
+    GXUPointer tmp;
+    return static_cast<eGXCompareResult> ( GXMbscmp ( _stringData->GetMultibyteData ( tmp ), string ) );
+}
+
+eGXCompareResult GXString::Compare ( const GXMBChar character ) const
+{
+    const GXMBChar string[ 2u ] = { character, '\0' };
+    GXUPointer tmp;
+
+    return static_cast<eGXCompareResult> ( GXMbscmp ( _stringData->GetMultibyteData ( tmp ), string ) );
+}
+
+eGXCompareResult GXString::Compare ( const GXWChar* string ) const
+{
+    GXUPointer tmp;
+    return static_cast<eGXCompareResult> ( GXWcscmp ( reinterpret_cast<const GXWChar*> ( _stringData->GetUTF16Data ( tmp ) ), string ) );
+}
+
+eGXCompareResult GXString::Compare ( GXWChar character ) const
+{
+    const GXWChar string[ 2u ] = { character, L'\0' };
+    GXUPointer tmp;
+
+    return static_cast<eGXCompareResult> ( GXWcscmp ( reinterpret_cast<const GXWChar*> ( _stringData->GetUTF16Data ( tmp ) ), string ) );
+}
+
 GXString& GXString::operator = ( const GXString &other )
 {
     other._stringData->AddReference ();
@@ -573,7 +605,7 @@ GXString& GXString::operator = ( const GXMBChar* string )
 
 GXString& GXString::operator = ( GXMBChar character )
 {
-    const GXMBChar string[ 2u ] = { character, 0u };
+    const GXMBChar string[ 2u ] = { character, '\0' };
     FromSystemMultibyteString ( string );
     return *this;
 }
@@ -586,7 +618,7 @@ GXString& GXString::operator = ( const GXWChar* string )
 
 GXString& GXString::operator = ( GXWChar character )
 {
-    const GXWChar string[ 2u ] = { character, 0u };
+    const GXWChar string[ 2u ] = { character, L'\0' };
     FromSystemWideString ( string );
     return *this;
 }
@@ -619,7 +651,7 @@ GXString GXString::operator + ( const GXMBChar* string )
 
 GXString GXString::operator + ( GXMBChar character )
 {
-    const GXMBChar string[ 2u ] = { character, 0u };
+    const GXMBChar string[ 2u ] = { character, '\0' };
 
     GXWChar* utf16String = nullptr;
 
@@ -689,7 +721,7 @@ GXBool GXString::operator > ( const GXMBChar* string ) const
 
 GXBool GXString::operator > ( GXMBChar character ) const
 {
-    const GXMBChar string[ 2u ] = { character, 0 };
+    const GXMBChar string[ 2u ] = { character, '\0' };
     GXUPointer tmp;
 
     return GXMbscmp ( _stringData->GetMultibyteData ( tmp ), string ) > 0;
@@ -703,7 +735,7 @@ GXBool GXString::operator > ( const GXWChar* string ) const
 
 GXBool GXString::operator > ( GXWChar character ) const
 {
-    const GXWChar string[ 2u ] = { character, 0 };
+    const GXWChar string[ 2u ] = { character, L'\0' };
     GXUPointer tmp;
 
     return GXWcscmp ( reinterpret_cast<const GXWChar*> ( _stringData->GetUTF16Data ( tmp ) ), string ) > 0;
@@ -723,7 +755,7 @@ GXBool GXString::operator < ( const GXMBChar* string ) const
 
 GXBool GXString::operator < ( GXMBChar character ) const
 {
-    const GXMBChar string[ 2u ] = { character, 0 };
+    const GXMBChar string[ 2u ] = { character, '\0' };
     GXUPointer tmp;
 
     return GXMbscmp ( _stringData->GetMultibyteData ( tmp ), string ) < 0;
@@ -737,7 +769,7 @@ GXBool GXString::operator < ( const GXWChar* string ) const
 
 GXBool GXString::operator < ( GXWChar character ) const
 {
-    const GXWChar string[ 2u ] = { character, 0 };
+    const GXWChar string[ 2u ] = { character, L'\0' };
     GXUPointer tmp;
 
     return GXWcscmp ( reinterpret_cast<const GXWChar*> ( _stringData->GetUTF16Data ( tmp ) ), string ) < 0;
@@ -757,7 +789,7 @@ GXBool GXString::operator == ( const GXMBChar* string ) const
 
 GXBool GXString::operator == ( GXMBChar character ) const
 {
-    const GXMBChar string[ 2u ] = { character, 0 };
+    const GXMBChar string[ 2u ] = { character, '\0' };
     GXUPointer tmp;
 
     return GXMbscmp ( _stringData->GetMultibyteData ( tmp ), string ) == 0;
@@ -771,7 +803,7 @@ GXBool GXString::operator == ( const GXWChar* string ) const
 
 GXBool GXString::operator == ( GXWChar character ) const
 {
-    const GXWChar string[ 2u ] = { character, 0 };
+    const GXWChar string[ 2u ] = { character, L'\0' };
     GXUPointer tmp;
 
     return GXWcscmp ( reinterpret_cast<const GXWChar*> ( _stringData->GetUTF16Data ( tmp ) ), string ) == 0;
