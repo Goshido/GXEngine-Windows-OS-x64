@@ -1,4 +1,4 @@
-// version 1.10
+// version 1.11
 
 #include <GXEngine/GXAnimationSolverPlayer.h>
 #include <GXCommon/GXNativeSkeletalMesh.h>
@@ -32,7 +32,7 @@ class GXBoneFinderNode final : public GXAVLTreeNode
         explicit GXBoneFinderNode ( const GXUTF8* boneName, GXUShort boneIndex );
         ~GXBoneFinderNode () override;
 
-        static GXInt GXCALL Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
+        static eGXCompareResult GXCALL Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
 
     private:
         GXBoneFinderNode ( const GXBoneFinderNode &other ) = delete;
@@ -58,11 +58,11 @@ GXBoneFinderNode::~GXBoneFinderNode ()
     // NOTHING
 }
 
-GXInt GXCALL GXBoneFinderNode::Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b )
+eGXCompareResult GXCALL GXBoneFinderNode::Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b )
 {
     const GXBoneFinderNode& aNode = static_cast<const GXBoneFinderNode&> ( a );
     const GXBoneFinderNode& bNode = static_cast<const GXBoneFinderNode&> ( b );
-    return GXUTF8cmp ( aNode._boneName, bNode._boneName );
+    return static_cast<eGXCompareResult> ( GXUTF8cmp ( aNode._boneName, bNode._boneName ) );
 }
 
 //--------------------------------------------------------------------------------------------------

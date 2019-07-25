@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.10
 
 #ifndef GX_STRINGS
 #define GX_STRINGS
@@ -32,7 +32,7 @@ class GXUTF8Parser final
 
 //---------------------------------------------------------------------------------------------------------------------
 
-enum eGXEndianness : GXUByte
+enum class eGXEndianness : GXUByte
 {
     BigEndian,
     LittleEndian,
@@ -112,6 +112,12 @@ class GXString final: public GXMemoryInspector
         GXVoid FromUTF8 ( const GXUTF8* string );
         const GXUTF8* ToUTF8 ();
         const GXUTF8* ToUTF8 ( GXUPointer &stringSize );
+
+        eGXCompareResult Compare ( const GXString other ) const;
+        eGXCompareResult Compare ( const GXMBChar* string ) const;
+        eGXCompareResult Compare ( const GXMBChar character ) const;
+        eGXCompareResult Compare ( const GXWChar* string ) const;
+        eGXCompareResult Compare ( GXWChar character ) const;
 
         GXString& operator = ( const GXString &other );
         GXString& operator = ( const GXMBChar* string );

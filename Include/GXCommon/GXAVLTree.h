@@ -1,4 +1,4 @@
-// version 1.8
+// version 1.9
 
 #ifndef GX_AVL_TREE
 #define GX_AVL_TREE
@@ -32,7 +32,7 @@ class GXAVLTreeNode : public GXMemoryInspector
 };
 
 typedef GXVoid ( GXCALL* GXAVLTreeIterator ) ( const GXAVLTreeNode &node, GXVoid* args );
-typedef GXInt ( GXCALL* GXAVLTreeComparator ) ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
+typedef eGXCompareResult ( GXCALL* GXAVLTreeComparator ) ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
 
 class GXAVLTree
 {

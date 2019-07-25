@@ -1,10 +1,9 @@
-// version 1.8
+// version 1.9
 
 #include <GXEngine/GXLocale.h>
 #include <GXCommon/GXAVLTree.h>
 #include <GXCommon/GXFile.h>
 #include <GXCommon/GXLogger.h>
-#include <GXCommon/GXStrings.h>
 
 
 #define GX_DEFAULT_SEPARATOR '~'
@@ -14,17 +13,17 @@
 class GXStringNode final : public GXAVLTreeNode
 {
     public:
-        GXWChar*    _key;
-        GXWChar*    _value;
+        GXString    _key;
+        GXString    _value;
 
     public:
         GXStringNode ();
         explicit GXStringNode ( const GXUTF8* key, const GXUTF8* value );
         ~GXStringNode () override;
 
-        const GXWChar* GetValue () const;
+        GXString GetValue () const;
 
-        static GXVoid GXCALL InitFinderNode ( GXStringNode &node, const GXWChar* key );
+        static GXVoid GXCALL InitFinderNode ( GXStringNode &node, GXString key );
         static GXVoid GXCALL DestroyFinderNode ( GXStringNode &node );
 
     private:
@@ -34,37 +33,34 @@ class GXStringNode final : public GXAVLTreeNode
 
 GXStringNode::GXStringNode ()
 {
-    _key = nullptr;
-    _value = nullptr;
+    // NOTHING
 }
 
 GXStringNode::GXStringNode ( const GXUTF8* key, const GXUTF8* value )
 {
-    GXToWcs ( &_key, key );
-    GXToWcs ( &_value, value );
+    _key.FromUTF8 ( key );
+    _value.FromUTF8 ( value );
 }
 
 GXStringNode::~GXStringNode ()
 {
-    GXSafeFree ( _key );
-    GXSafeFree ( _value );
+    // NOTHING
 }
 
-const GXWChar* GXStringNode::GetValue () const
+GXString GXStringNode::GetValue () const
 {
     return _value;
 }
 
-GXVoid GXCALL GXStringNode::InitFinderNode ( GXStringNode &node, const GXWChar* key )
+GXVoid GXCALL GXStringNode::InitFinderNode ( GXStringNode &node, GXString key )
 {
-    node._key = const_cast<GXWChar*> ( key );
-    node._value = nullptr;
+    node._key = key;
 }
 
 GXVoid GXCALL GXStringNode::DestroyFinderNode ( GXStringNode &node )
 {
-    node._key = nullptr;
-    node._value = nullptr;
+    node._key.Clear ();
+    node._value.Clear ();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -75,11 +71,11 @@ class GXStringTree final : public GXMemoryInspector, public GXAVLTree
         GXStringTree ();
         ~GXStringTree () override;
 
-        GXVoid AddString ( const GXUTF8* key, const GXUTF8* string );
-        const GXWChar* GetString ( const GXWChar* key ) const;
+        GXVoid AddString ( const GXUTF8* key, const GXUTF8* value );
+        GXString GetString ( GXString key ) const;
 
     private:
-        static GXInt GXCALL Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
+        static eGXCompareResult GXCALL Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
 
         GXStringTree ( const GXStringTree &other ) = delete;
         GXStringTree& operator = ( const GXStringTree &other ) = delete;
@@ -87,7 +83,7 @@ class GXStringTree final : public GXMemoryInspector, public GXAVLTree
 
 GXStringTree::GXStringTree ()
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXStringTree" )
-    GXAVLTree ( &Compare, GX_TRUE )
+    GXAVLTree ( &GXStringTree::Compare, GX_TRUE )
 {
     // NOTHING
 }
@@ -104,7 +100,7 @@ GXVoid GXStringTree::AddString ( const GXUTF8* key, const GXUTF8* string )
     Add ( *node );
 }
 
-const GXWChar* GXStringTree::GetString ( const GXWChar* key ) const
+GXString GXStringTree::GetString ( GXString key ) const
 {
     GXStringNode finderNode;
     GXStringNode::InitFinderNode ( finderNode, key );
@@ -114,15 +110,14 @@ const GXWChar* GXStringTree::GetString ( const GXWChar* key ) const
     if ( node )
         return node->GetValue ();
 
-    return nullptr;
+    return {};
 }
 
-GXInt GXCALL GXStringTree::Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b )
+eGXCompareResult GXCALL GXStringTree::Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b )
 {
-    GXStringNode& aNode = (GXStringNode&)a;
-    GXStringNode& bNode = (GXStringNode&)b;
-
-    return GXWcscmp ( aNode._key, bNode._key );
+    const GXStringNode& aNode = static_cast<const GXStringNode&> ( a );
+    const GXStringNode& bNode = static_cast<const GXStringNode&> ( b );
+    return aNode._key.Compare ( bNode._key );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -162,7 +157,7 @@ GXLocale::~GXLocale ()
     _instance = nullptr;
 }
 
-GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
+GXVoid GXLocale::LoadLanguage ( GXString fileName, eGXLanguage language )
 {
     GXUByte* rawData;
     GXUPointer size;
@@ -173,7 +168,7 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
     GXUTF8* data = reinterpret_cast<GXUTF8*> ( rawData );
 
     GXStringTree* tree = nullptr;
-    GXVoid* tmp = _storage.GetValue ( static_cast<GXUInt> ( language ) );
+    GXVoid* tmp = _storage.GetValue ( static_cast<GXUPointer> ( language ) );
 
     if ( !tmp )
     {
@@ -183,13 +178,13 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
     }
     else
     {
-        tree = *( (GXStringTree**)tmp );
+        tree = *( static_cast<GXStringTree**> ( tmp ) );
     }
 
     eGXParserState state = eGXParserState::Key;
-    GXUInt offset = 0u;
-    GXUTF8* key = data;
-    GXUTF8* string = nullptr;
+    GXUPointer offset = 0u;
+    const GXUTF8* key = data;
+    const GXUTF8* string = nullptr;
 
     while ( offset < size )
     {
@@ -212,17 +207,18 @@ GXVoid GXLocale::LoadLanguage ( const GXWChar* fileName, eGXLanguage language )
 
         tree->AddString ( key, string );
 
-        while ( GX_TRUE )
+        for ( ; ; )
         {
             ++offset;
 
             if ( offset >= size ) break;
 
-            else if ( data[ offset ] != ' ' && data[ offset ] != '\n' && data[ offset ] != '\r' && data[ offset ] != '\t' )
-            {
-                --offset;
-                break;
-            }
+            const GXUTF8 c = data[ offset ];
+
+            if ( c == ' ' || c == '\n' || c == '\r' || c == '\t' ) continue;
+
+            --offset;
+            break;
         }
 
         if ( offset >= size ) break;
@@ -253,16 +249,16 @@ eGXLanguage GXLocale::GetLanguage () const
     return _currentLanguage;
 }
 
-const GXWChar* GXLocale::GetString ( const GXWChar* resName ) const
+GXString GXLocale::GetString ( GXString key ) const
 {
     GXUPointer languageIndex = static_cast<GXUPointer> ( _currentLanguage );
     GXStringTree** treePointer = static_cast<GXStringTree**> ( _storage.GetValue ( languageIndex ) );
     GXStringTree* tree = *treePointer;
 
     if ( tree )
-        return tree->GetString ( resName );
+        return tree->GetString ( key );
 
-    return nullptr;
+    return {};
 }
 
 GXLocale::GXLocale ()

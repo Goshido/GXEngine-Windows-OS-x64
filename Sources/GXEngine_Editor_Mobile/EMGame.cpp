@@ -69,8 +69,8 @@ GXVoid EMGame::OnInit ()
     coreRenderer.SetWindowName ( EM_WINDOW_NAME );
 
     GXLocale& locale = GXLocale::GetInstance ();
-    locale.LoadLanguage ( L"Locale/Editor Mobile/RU.lng", eGXLanguage::Russian );
     locale.LoadLanguage ( L"Locale/Editor Mobile/EN.lng", eGXLanguage::English );
+    locale.LoadLanguage ( L"Locale/Editor Mobile/RU.lng", eGXLanguage::Russian );
     locale.SetLanguage ( eGXLanguage::Russian );
 
     GXInput& input = GXInput::GetInstance ();
