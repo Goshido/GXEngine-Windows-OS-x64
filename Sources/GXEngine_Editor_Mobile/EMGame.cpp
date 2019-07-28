@@ -131,17 +131,17 @@ GXVoid EMGame::OnInit ()
     GXFloat physicsInfoWidth = 10.0f * gx_ui_Scale;
     GXFloat physicsInfoHeight = 5.0f * gx_ui_Scale;
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _physicsInfo = new GXHudSurface ( static_cast<GXUShort> ( physicsInfoWidth ), static_cast<GXUShort> ( physicsInfoHeight ) );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXFont" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXFont" )
     _physicsInfoFont = new GXFont ( L"Fonts/trebuc.ttf", static_cast<GXUShort> ( 0.4f * gx_ui_Scale ) );
 
     _physicsInfo->SetLocation ( 0.5f * ( physicsInfoWidth - w ), 0.5f * ( physicsInfoHeight - h ), 7.0f );
 
     _physicsInfoBackgroundTexture.LoadImage ( L"Textures/System/Default_Diffuse.tga", GX_FALSE, GX_FALSE );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMeshGeometry" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMeshGeometry" )
     _physicsContactPointMesh = new GXMeshGeometry ();
     _physicsContactPointMesh->LoadMesh ( L"Meshes/System/Unit Sphere.obj" );
     _physicsContactPointMaterial = new GXUnlitColorMaterial ();
@@ -234,7 +234,7 @@ GXVoid EMGame::OnInit ()
     _moveTool->Bind ();
     _moveTool->SetWorldMode ();
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXCameraOrthographic" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXCameraOrthographic" )
     _hudCamera = new GXCameraOrthographic ( w, h, EM_UI_HUD_CAMERA_NEAR_Z, EM_UI_HUD_CAMERA_FAR_Z );
 
     EMViewer* viewer = EMViewer::GetInstance ();
@@ -245,11 +245,11 @@ GXVoid EMGame::OnInit ()
 
     EMTool::SetActiveTool ( _moveTool );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMeshGeometry" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMeshGeometry" )
     _contactLocationMesh = new GXMeshGeometry ();
     _contactLocationMesh->LoadMesh ( L"Meshes/System/Unit Sphere.obj" );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMeshGeometry" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMeshGeometry" )
     _contactNormalMesh = new GXMeshGeometry ();
     _contactNormalMesh->LoadMesh ( L"Meshes/Editor Mobile/Move gismo Z axis.stm" );
 
@@ -259,12 +259,12 @@ GXVoid EMGame::OnInit ()
     _contactNormalMaterial = new GXUnlitColorMaterial ();
     _contactNormalMaterial->SetColor ( 0u, 0u, 255u, 255u );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMap" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMap" )
     _environmentMap = new GXTextureCubeMap ();
     _environmentMap->LoadEquirectangularImage ( L"Textures/Editor Mobile/Default LDR environment map.jpg", GX_FALSE, GX_TRUE );
     //environmentMap->LoadEquirectangularImage ( L"Textures/Editor Mobile/Default HDR environment map.hdr", GX_TRUE, GX_FALSE );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMap" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMap" )
     _lightProbeSourceTexture = new GXTextureCubeMap ();
     _lightProbeSourceTexture->LoadEquirectangularImage ( L"Textures/Editor Mobile/Default HDR environment map.hdr", GX_TRUE, GX_FALSE );
 

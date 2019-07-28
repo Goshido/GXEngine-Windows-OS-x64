@@ -1,4 +1,4 @@
-// version 1.11
+// version 1.12
 
 #ifndef GX_ANIMATION_SOLVER_PLAYER
 #define GX_ANIMATION_SOLVER_PLAYER

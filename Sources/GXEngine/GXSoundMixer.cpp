@@ -114,7 +114,7 @@ GXSoundMixer& GXCALL GXSoundMixer::GetInstance ()
 {
     if ( !_instance )
     {
-        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXSoundMixer" );
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXSoundMixer" )
         _instance = new GXSoundMixer ();
     }
 

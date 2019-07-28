@@ -1,4 +1,4 @@
-// version 1.11
+// version 1.12
 
 #include <GXEngine/GXAnimationSolverPlayer.h>
 #include <GXCommon/GXNativeSkeletalMesh.h>
@@ -67,7 +67,7 @@ eGXCompareResult GXCALL GXBoneFinderNode::Compare ( const GXAVLTreeNode &a, cons
 
 //--------------------------------------------------------------------------------------------------
 
-class GXBoneFinder final : public GXMemoryInspector, public GXAVLTree
+class GXBoneFinder final : public GXAVLTree
 {
     private:
         GXBoneFinderNode*       _cacheFriendlyNodes;
@@ -83,8 +83,7 @@ class GXBoneFinder final : public GXMemoryInspector, public GXAVLTree
         GXBoneFinder& operator = ( const GXBoneFinder &other ) = delete;
 };
 
-GXBoneFinder::GXBoneFinder ( const GXAnimationInfo &animInfo )
-    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXBoneFinder" )
+GXBoneFinder::GXBoneFinder ( const GXAnimationInfo &animInfo ):
     GXAVLTree ( &GXBoneFinderNode::Compare, GX_FALSE )
 {
     _cacheFriendlyNodes = static_cast<GXBoneFinderNode*> ( Malloc ( sizeof ( GXBoneFinderNode ) * animInfo._totalBones ) );
@@ -208,7 +207,7 @@ GXVoid GXAnimationSolverPlayer::SetAnimationSequence ( const GXAnimationInfo* an
 {
     GXSafeDelete ( _finder );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXBoneFinder" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXBoneFinder" )
     _finder = new GXBoneFinder ( *animData );
 
     _animationInfo = animData;

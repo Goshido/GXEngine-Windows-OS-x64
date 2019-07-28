@@ -57,7 +57,7 @@ GXUIEditBox::GXUIEditBox ( GXWidget* parent ):
     _editCursor ( LoadCursorW ( nullptr, IDC_IBEAM ) ),
     _arrowCursor ( LoadCursorW ( nullptr, IDC_ARROW ) )
 {
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXFont" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXFont" )
     _font = new GXFont ( GX_UI_DEFAULT_FONT, static_cast<GXUShort> ( GX_UI_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
     _currentCursor = &_arrowCursor;
 }
@@ -118,7 +118,7 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
         const GXUIEditBoxFontInfo* fi = static_cast<const GXUIEditBoxFontInfo*> ( data );
         delete _font;
 
-        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXFont" );
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXFont" )
         _font = new GXFont ( fi->_fontFile, fi->_size );
 
         if ( _renderer )

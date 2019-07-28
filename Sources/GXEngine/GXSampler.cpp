@@ -171,7 +171,7 @@ GXSampler::GXSampler ( GLint wrapMode, eGXResampling resampling, GXFloat anisotr
         return;
     }
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXSamplerEntry" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXSamplerEntry" )
     _samplerEntry = new GXSamplerEntry ( wrapMode, resampling, anisotropy );
 }
 

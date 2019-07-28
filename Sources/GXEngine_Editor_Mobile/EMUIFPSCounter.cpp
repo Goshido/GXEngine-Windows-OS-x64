@@ -62,7 +62,7 @@ EMUIFPSCounter::EMUIFPSCounter ():
 {
     GXUInt requeredSize = _font.GetTextLength ( 0u, L"99999999999" );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( static_cast<GXUShort> ( requeredSize ), _font.GetSize () );
 
     GXRenderer& renderer = GXRenderer::GetInstance ();

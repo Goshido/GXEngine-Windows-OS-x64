@@ -837,7 +837,7 @@ GXTextureCubeMap::GXTextureCubeMap ( GXUShort faceLength, GLint internalFormat, 
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTextureCubeMap" )
     _textureUnit ( INVALID_TEXTURE_UNIT )
 {
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMapEntry" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMapEntry" )
     _textureCubeMapEntry = new GXTextureCubeMapEntry ( faceLength, internalFormat, isGenerateMipmap );
 }
 
@@ -884,7 +884,7 @@ GXVoid GXTextureCubeMap::LoadEquirectangularImage ( const GXWChar* fileName, GXB
         return;
     }
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMapEntry" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMapEntry" )
     _textureCubeMapEntry = new GXTextureCubeMapEntry ( fileName, isGenerateMipmap, isApplyGammaCorrection );
 }
 
@@ -902,7 +902,7 @@ GXVoid GXTextureCubeMap::FillWholePixelData ( const GXVoid* data, GLenum target 
 
     _textureCubeMapEntry->Release ();
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMapEntry" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMapEntry" )
     _textureCubeMapEntry = new GXTextureCubeMapEntry ( faceLength, internalFormat, isGenerateMipmap );
     _textureCubeMapEntry->FillWholePixelData ( data, target );
 }
@@ -941,7 +941,7 @@ GXVoid GXTextureCubeMap::InitResources ( GXUShort faceLength, GLint internalForm
     if ( _textureCubeMapEntry )
         _textureCubeMapEntry->Release ();
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMapEntry" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTextureCubeMapEntry" )
     _textureCubeMapEntry = new GXTextureCubeMapEntry ( faceLength, internalFormat, isGenerateMipmap );
 }
 

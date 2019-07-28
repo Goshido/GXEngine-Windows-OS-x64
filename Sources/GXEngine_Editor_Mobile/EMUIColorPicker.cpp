@@ -211,7 +211,7 @@ EMColorRenderer::EMColorRenderer ( GXUIInput* widget ):
 {
     const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
     
     SetColor ( GXColorHSV ( DEFAULT_SAVED_COLOR_H, DEFAULT_SAVED_COLOR_S, DEFAULT_SAVED_COLOR_V, DEFAULT_SAVED_COLOR_A ) );
@@ -281,7 +281,7 @@ GXVoid EMColorRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUSho
 
     GXSafeDelete ( _surface );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( width, height );
 
     GXVec3 location;
@@ -387,7 +387,7 @@ EMColorSelectorRenderer::EMColorSelectorRenderer ( GXUIInput* widget ):
 {
     const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 
     glGenFramebuffers ( 1, &_fbo );
@@ -559,7 +559,7 @@ GXVoid EMColorSelectorRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width
 
     GXSafeDelete ( _surface );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( width, height );
 
     GXVec3 location;
@@ -843,15 +843,15 @@ EMUIColorPicker::EMUIColorPicker ():
 
     GXWidget* mainPanelWidget = _mainPanel->GetWidget ();
     _hsvColorWidget = new GXUIInput ( mainPanelWidget, GX_TRUE );
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMColorSelectorRenderer" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMColorSelectorRenderer" )
     _hsvColorWidget->SetRenderer ( new EMColorSelectorRenderer ( _hsvColorWidget ) );
 
     _currentColor = new GXUIInput ( mainPanelWidget, GX_TRUE );
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMColorRenderer" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMColorRenderer" )
     _currentColor->SetRenderer ( new EMColorRenderer ( _currentColor ) );
 
     _oldColor = new GXUIInput ( mainPanelWidget, GX_TRUE );
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMColorRenderer" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMColorRenderer" )
     _oldColor->SetRenderer ( new EMColorRenderer ( _oldColor ) );
 
     _addColor = new EMUIButton ( _mainPanel );
@@ -859,7 +859,7 @@ EMUIColorPicker::EMUIColorPicker ():
     for ( GXUByte i = 0u; i < 16u; ++i )
     {
         GXUIInput* savedColor = new GXUIInput ( mainPanelWidget, GX_TRUE );
-        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMColorRenderer" );
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMColorRenderer" )
         savedColor->SetRenderer ( new EMColorRenderer ( savedColor ) );
         _savedColors[ i ] = savedColor;
     }

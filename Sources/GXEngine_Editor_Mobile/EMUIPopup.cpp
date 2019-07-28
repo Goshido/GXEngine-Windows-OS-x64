@@ -80,7 +80,7 @@ EMUIPopupRenderer::EMUIPopupRenderer ( GXUIPopup* widget ):
     _itemNames ( sizeof ( GXString ) ),
     _texture ( DEFAULT_TEXTURE, GX_FALSE, GX_FALSE )
 {
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( static_cast<GXUShort> ( widget->GetItemWidth () ), static_cast<GXUShort> ( widget->GetItemHeight () ) );
 }
 
@@ -200,7 +200,7 @@ GXVoid EMUIPopupRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUS
 
     delete _surface;
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( width, height );
 
     _surface->SetLocation ( x, y, location._data[ 2u ] );
@@ -222,7 +222,7 @@ EMUIPopup::EMUIPopup ( EMUI* parent ):
     EMUI ( parent ),
     _widget ( new GXUIPopup ( parent ? parent->GetWidget () : nullptr ) )
 {
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopupRenderer" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopupRenderer" )
     _widget->SetRenderer ( new EMUIPopupRenderer ( _widget ) );
     _widget->Resize ( BOTTOM_LEFT_X * gx_ui_Scale, BOTTOM_LEFT_Y * gx_ui_Scale, ITEM_WIDTH * gx_ui_Scale, ANY_HEIGHT * gx_ui_Scale );
     _widget->SetItemHeight ( ITEM_HEIGHT * gx_ui_Scale );

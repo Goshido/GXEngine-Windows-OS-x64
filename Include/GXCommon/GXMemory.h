@@ -94,7 +94,7 @@ class GXMemoryInspectorFull
             : GXMemoryInspectorFull ( name ),
 
 #define GX_BIND_MEMORY_INSPECTOR_CLASS_NAME(name)           \
-            GXMemoryInspectorFull::BindClassName ( name )
+            GXMemoryInspectorFull::BindClassName ( name );
 
 #else
 

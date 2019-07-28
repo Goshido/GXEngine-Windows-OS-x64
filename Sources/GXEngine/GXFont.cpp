@@ -411,7 +411,7 @@ GXVoid GXFontEntry::CreateAtlas ()
         _atlases = temp;
     }
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2D" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2D" )
     GXTexture2D* atlas = new GXTexture2D ( ATLAS_RESOLUTION, ATLAS_RESOLUTION, GL_R8, GX_FALSE );
     atlas->FillWholePixelData ( nullptr );
     _atlases[ _lastAtlasID ] = atlas;
@@ -432,7 +432,7 @@ GXFont::GXFont ( const GXWChar* fileName, GXUShort size )
         return;
     }
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXFontEntry" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXFontEntry" )
     _fontEntry = new GXFontEntry ( fileName, size );
 }
 

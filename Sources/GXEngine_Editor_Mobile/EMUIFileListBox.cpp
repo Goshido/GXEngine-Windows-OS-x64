@@ -119,7 +119,7 @@ EMUIFileListBoxRenderer::EMUIFileListBoxRenderer ( GXUIListBox* widget ) :
 {
     const GXAABB& boundsLocal = widget->GetBoundsWorld ();
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
@@ -258,7 +258,7 @@ GXVoid EMUIFileListBoxRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width
 
     GXSafeDelete ( _surface );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( width, height );
 
     GXVec3 location;
@@ -285,7 +285,7 @@ EMUIFileListBox::EMUIFileListBox ( EMUI* parent ):
     _widget->Resize ( DEFAULT_LEFT_BOTTOM_X * gx_ui_Scale, DEFAULT_LEFT_BOTTOM_Y * gx_ui_Scale, DEFAULT_WIDTH * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
     _widget->SetItemHeight ( ITEM_HEIGHT * gx_ui_Scale );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIFileListBoxRenderer" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIFileListBoxRenderer" )
     _widget->SetRenderer ( new EMUIFileListBoxRenderer ( _widget ) );
 }
 
