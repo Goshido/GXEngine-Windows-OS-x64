@@ -70,7 +70,7 @@ EMUIMenuRenderer::EMUIMenuRenderer ( GXUIMenu* widget ):
 {
     const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
@@ -164,7 +164,7 @@ GXVoid EMUIMenuRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUSh
 
     delete _surface;
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( width, height );
 
     GXVec3 location;
@@ -188,7 +188,7 @@ EMUIMenu::EMUIMenu ( EMUI* parent ):
     EMUI ( parent ),
     _widget ( new GXUIMenu ( parent ? parent->GetWidget () : nullptr ) )
 {
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIMenuRenderer" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIMenuRenderer" )
     _widget->SetRenderer ( new EMUIMenuRenderer ( _widget ) );
     _widget->Resize ( DEFAULT_BOTTOM_LEFT_X * gx_ui_Scale, DEFAULT_BOTTOM_LEFT_Y * gx_ui_Scale, ANY_WIDTH, ITEM_HEIGHT * gx_ui_Scale );
 }

@@ -1,10 +1,11 @@
-// version 1.9
+// version 1.10
 
 #ifndef GX_LOCALE
 #define GX_LOCALE
 
 
 #include <GXCommon/GXStrings.h>
+#include <GXCommon/GXAVLTree.h>
 
 
 enum class eGXLanguage : GXUShort
@@ -13,13 +14,32 @@ enum class eGXLanguage : GXUShort
     Russian = 1u
 };
 
+class GXLanguageNode;
+class GXLanguageTree final : public GXAVLTree
+{
+    public:
+        GXLanguageTree ();
+        ~GXLanguageTree () override;
+
+        // Method creates GXLanguageNode if node with "language" does not exist.
+        GXLanguageNode& GetLanguage ( eGXLanguage language );
+
+    private:
+        static eGXCompareResult GXCALL Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
+
+        GXLanguageTree ( const GXLanguageTree &other ) = delete;
+        GXLanguageTree& operator = ( const GXLanguageTree &other ) = delete;
+};
+
+//---------------------------------------------------------------------------------------------------------------------
+
 class GXLocale final : public GXMemoryInspector
 {
     private:
-        eGXLanguage         _currentLanguage;
-        GXDynamicArray      _storage;
+        const GXLanguageNode*       _currentLanguage;
+        GXLanguageTree              _languages;
 
-        static GXLocale*    _instance;
+        static GXLocale*            _instance;
 
     public:
         static GXLocale& GXCALL GetInstance ();

@@ -22,7 +22,7 @@ GXPhysicsEngine& GXPhysicsEngine::GetInstance ()
 {
     if ( !_instance )
     {
-        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXPhysicsEngine" );
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXPhysicsEngine" )
         _instance = new GXPhysicsEngine ();
     }
 

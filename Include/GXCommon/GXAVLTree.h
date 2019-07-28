@@ -34,7 +34,7 @@ class GXAVLTreeNode : public GXMemoryInspector
 typedef GXVoid ( GXCALL* GXAVLTreeIterator ) ( const GXAVLTreeNode &node, GXVoid* args );
 typedef eGXCompareResult ( GXCALL* GXAVLTreeComparator ) ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
 
-class GXAVLTree
+class GXAVLTree : public GXMemoryInspector
 {
     protected:
         GXAVLTreeNode*          _root;

@@ -218,14 +218,14 @@ GXOBJVertex* GXCALL GXParseVertices ()
     GXOBJVertex *vTek;
     GXInt i = 0;
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJVertex" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJVertex" )
     vTop = new GXOBJVertex ();
     vTek = vTop;
     vTek->_next = nullptr;
 
     for ( ; ; )
     {
-        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJVertex" );
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJVertex" )
         vTek->_next = new GXOBJVertex ();
         vTek = vTek->_next;
         vTek->_next = nullptr;
@@ -297,7 +297,7 @@ GXOBJNormals* GXCALL GXParseNormals ()
         GXLogA ( "GXParseNormals::Info - Parsing Normals\n" );
     #endif
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJNormals" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJNormals" )
     GXOBJNormals* nTop = new GXOBJNormals ();
     GXOBJNormals* nTek = nTop;
     nTek->_next = nullptr;
@@ -309,7 +309,7 @@ GXOBJNormals* GXCALL GXParseNormals ()
     {
         SKIP_GAPS ();
 
-        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJNormals" );
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJNormals" )
         nTek->_next = new GXOBJNormals ();
         nTek = nTek->_next;
         nTek->_next = nullptr;
@@ -382,7 +382,7 @@ GXOBJUV_s* GXCALL GXParseUVs ()
         GXLogA ( "GXParseUVs::Info - Parsing UV_s\n" );
     #endif
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJUV_s" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJUV_s" )
     GXOBJUV_s* uvTop = new GXOBJUV_s ();
     GXOBJUV_s* uvTek = uvTop;
     uvTek->_next = nullptr;
@@ -393,7 +393,7 @@ GXOBJUV_s* GXCALL GXParseUVs ()
     {
         SKIP_GAPS ();
 
-        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJUV_s" );
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJUV_s" )
         uvTek->_next = new GXOBJUV_s ();
         uvTek = uvTek->_next;
         uvTek->_next = nullptr;
@@ -453,7 +453,7 @@ GXOBJTriangle* GXCALL GXParseTriangles ()
         GXLogA ( "GXParseTriangles::Info - Parsing Triangles\n" );
     #endif
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJTriangle" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJTriangle" )
     GXOBJTriangle* tgTop = new GXOBJTriangle ();
     GXOBJTriangle* tgTek = tgTop;
     tgTek->_next = nullptr;
@@ -461,7 +461,7 @@ GXOBJTriangle* GXCALL GXParseTriangles ()
 
     for ( ; ; )
     {
-        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJTriangle" );
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOBJTriangle" )
         tgTek->_next = new GXOBJTriangle ();
         tgTek = tgTek->_next;
         tgTek->_next = nullptr;

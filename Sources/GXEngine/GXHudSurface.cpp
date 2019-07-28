@@ -47,7 +47,7 @@ GXImageRenderable& GXCALL GXImageRenderable::GetInstance ()
 
     if ( !_instance )
     {
-        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXImageRenderable" );
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXImageRenderable" )
         _instance = new GXImageRenderable ();
     }
 
@@ -69,7 +69,7 @@ GXVoid GXImageRenderable::Render ()
 }
 
 GXImageRenderable::GXImageRenderable ()
-GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXImageRenderable" )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXImageRenderable" )
 {
     InitGraphicResources ();
 }
@@ -127,7 +127,7 @@ GXGlyphRenderable& GXCALL GXGlyphRenderable::GetInstance ()
 
     if ( !_instance )
     {
-        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXGlyphRenderable" );
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXGlyphRenderable" )
         _instance = new GXGlyphRenderable ();
     }
 
@@ -174,7 +174,7 @@ GXVoid GXGlyphRenderable::UpdateGeometry ( const GXVec2 &min, const GXVec2 &max 
 }
 
 GXGlyphRenderable::GXGlyphRenderable ()
-GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXGlyphRenderable" )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXGlyphRenderable" )
 {
     InitGraphicResources ();
 }
@@ -236,7 +236,7 @@ GXLineRenderable& GXCALL GXLineRenderable::GetInstance ()
 
     if ( !_instance )
     {
-        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXLineRenderable" );
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXLineRenderable" )
         _instance = new GXLineRenderable ();
     }
 
@@ -267,7 +267,7 @@ GXVoid GXLineRenderable::UpdateGeometry ( const GXVec2 &start, const GXVec2 &end
 }
 
 GXLineRenderable::GXLineRenderable ()
-GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXLineRenderable" )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXLineRenderable" )
 {
     InitGraphicResources ();
 }

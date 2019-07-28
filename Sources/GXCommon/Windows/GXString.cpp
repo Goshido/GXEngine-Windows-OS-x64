@@ -276,7 +276,7 @@ GXString::GXString ( const GXMBChar* string )
     utf16String = static_cast<GXWChar*> ( Malloc ( symbols * sizeof ( GXWChar ) ) );
     MultiByteToWideChar ( CP_ACP, MB_PRECOMPOSED, string, -1, utf16String, symbols );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" )
     _stringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( utf16String ), GX_TRUE );
 }
 
@@ -291,7 +291,7 @@ GXString::GXString ( GXMBChar character )
     utf16String = static_cast<GXWChar*> ( Malloc ( symbols * sizeof ( GXWChar ) ) );
     MultiByteToWideChar ( CP_ACP, MB_PRECOMPOSED, string, -1, utf16String, symbols );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" )
     _stringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( utf16String ), GX_TRUE );
 }
 
@@ -304,7 +304,7 @@ GXString::GXString ( const GXWChar* string )
         return;
     }
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" )
     _stringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( string ), GX_FALSE );
 }
 
@@ -312,7 +312,7 @@ GXString::GXString ( GXWChar character )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXString" )
 {
     const GXUShort string[ 2u ] = { static_cast<GXUShort> ( character ), 0u };
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" )
     _stringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( string ), GX_FALSE );
 }
 
@@ -464,7 +464,7 @@ GXVoid GXString::FromSystemMultibyteString ( const GXMBChar* string )
     utf16String = static_cast<GXWChar*> ( Malloc ( neededSpace ) );
     MultiByteToWideChar ( CP_ACP, MB_PRECOMPOSED, string, -1, utf16String, symbols );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" )
     GXStringData* newStringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( utf16String ), GX_TRUE );
 
     _stringData->Release ();
@@ -497,7 +497,7 @@ GXVoid GXString::FromSystemWideString ( const GXWChar* string )
         return;
     }
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" )
     GXStringData* newStringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( string ), GX_FALSE );
 
     _stringData->Release ();
@@ -537,7 +537,7 @@ GXVoid GXString::FromUTF8 ( const GXUTF8* string )
     utf16String = static_cast<GXWChar*> ( Malloc ( neededSpace ) );
     MultiByteToWideChar ( CP_UTF8, MB_PRECOMPOSED, string, -1, utf16String, symbols );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" )
     GXStringData* newStringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( utf16String ), GX_TRUE );
 
     _stringData->Release ();
@@ -824,7 +824,7 @@ GXString::operator const GXWChar* () const
 GXString::GXString ( const GXUTF16* content, GXBool canOwnContent )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXString" )
 {
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXString" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXString" )
     _stringData = new GXStringData ( content, canOwnContent );
 }
 

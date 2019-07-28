@@ -820,7 +820,7 @@ GXTexture2D::GXTexture2D ( GXUShort width, GXUShort height, GLint internalFormat
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTexture2D" )
     _textureUnit ( INVALID_TEXTURE_UNIT )
 {
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" )
     _texture2DEntry = new GXTexture2DEntry ( width, height, internalFormat, isGenerateMipmap );
     // NOTHING
 }
@@ -873,7 +873,7 @@ GXVoid GXTexture2D::LoadImage ( const GXWChar* fileName, GXBool isGenerateMipmap
         return;
     }
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" )
     _texture2DEntry = new GXTexture2DEntry ( fileName, isGenerateMipmap, isApplyGammaCorrection );
 }
 
@@ -892,7 +892,7 @@ GXVoid GXTexture2D::FillWholePixelData ( const GXVoid* data )
 
     _texture2DEntry->Release ();
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" )
     _texture2DEntry = new GXTexture2DEntry ( width, height, internalFormat, isGenerateMipmap );
     _texture2DEntry->FillWholePixelData ( data );
 }
@@ -912,7 +912,7 @@ GXVoid GXTexture2D::FillRegionPixelData ( GXUShort left, GXUShort bottom, GXUSho
 
     _texture2DEntry->Release ();
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" )
     _texture2DEntry = new GXTexture2DEntry ( width, height, internalFormat, isGenerateMipmap );
     _texture2DEntry->FillWholePixelData ( nullptr );
     _texture2DEntry->FillRegionPixelData ( left, bottom, regionWidth, regionHeight, data );
@@ -952,7 +952,7 @@ GXVoid GXTexture2D::InitResources ( GXUShort width, GXUShort height, GLint inter
     if ( _texture2DEntry )
         _texture2DEntry->Release ();
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXTexture2DEntry" )
     _texture2DEntry = new GXTexture2DEntry ( width, height, internalFormat, isGenerateMipmap );
 }
 

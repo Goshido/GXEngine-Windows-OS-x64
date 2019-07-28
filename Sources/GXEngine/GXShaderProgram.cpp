@@ -1,4 +1,4 @@
-// version 1.13
+// version 1.14
 
 #include <GXEngine/GXShaderProgram.h>
 #include <GXCommon/GXFile.h>
@@ -199,7 +199,7 @@ GXSaveState::~GXSaveState ()
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class GXPrecompiledShaderProgramFinder final : public GXMemoryInspector, public GXAVLTree
+class GXPrecompiledShaderProgramFinder final : public GXAVLTree
 {
     friend class GXShaderProgramEntry;
 
@@ -221,8 +221,7 @@ class GXPrecompiledShaderProgramFinder final : public GXMemoryInspector, public 
         GXPrecompiledShaderProgramFinder& operator = ( const GXPrecompiledShaderProgramFinder &other ) = delete;
 };
 
-GXPrecompiledShaderProgramFinder::GXPrecompiledShaderProgramFinder ()
-    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXPrecompiledShaderProgramFinder" )
+GXPrecompiledShaderProgramFinder::GXPrecompiledShaderProgramFinder ():
     GXAVLTree ( &GXPrecompiledShaderProgramNode::Compare, GX_TRUE )
 {
     GXUByte* data;
@@ -249,7 +248,7 @@ GXPrecompiledShaderProgramFinder::GXPrecompiledShaderProgramFinder ()
         const GXUTF8* fragmentShader = chunk._fragmentShaderOffset == NULL_STRING_OFFSET ? nullptr : reinterpret_cast<const GXUTF8*> ( data + chunk._fragmentShaderOffset );
         const GXUTF8* binaryPath = reinterpret_cast<const GXUTF8*> ( data + chunk._binaryPathOffset );
 
-        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXPrecompiledShaderProgramNode" );
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXPrecompiledShaderProgramNode" )
         GXPrecompiledShaderProgramNode* node = new GXPrecompiledShaderProgramNode ( vertexShader, geometryShader, fragmentShader, binaryPath, chunk._binaryFormat );
         Add ( *node );
     }
@@ -282,7 +281,7 @@ GXBool GXPrecompiledShaderProgramFinder::FindProgram ( const GXWChar** binaryPat
 
 GXVoid GXPrecompiledShaderProgramFinder::AddProgram ( const GXWChar* vertexShader, const GXWChar* geometryShader, const GXWChar* fragmentShader, const GXWChar* binaryPath, GLenum binaryFormat )
 {
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXPrecompiledShaderProgramNode" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXPrecompiledShaderProgramNode" )
     GXPrecompiledShaderProgramNode* node = new GXPrecompiledShaderProgramNode ( vertexShader, geometryShader, fragmentShader, binaryPath, binaryFormat );
     Add ( *node );
 
@@ -659,10 +658,10 @@ GXVoid GXCALL GXShaderProgramEntry::InitPrecompiledShaderProgramSubsystem ()
 {
     if ( !glGetProgramBinary || !glProgramBinary || !glProgramParameteri ) return;
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXPrecompiledShaderProgramFinder" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXPrecompiledShaderProgramFinder" )
     _precompiledShaderProgramFinder = new GXPrecompiledShaderProgramFinder ();
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXString" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXString" )
     _stringBuffer = new GXString ();
 
     if ( GXDoesDirectoryExist ( PRECOMPILED_SHADER_PROGRAM_DIRECTORY ) ) return;
@@ -935,7 +934,7 @@ GXVoid GXShaderProgram::Init ( const GXShaderProgramInfo &info )
         return;
     }
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXShaderProgramEntry" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXShaderProgramEntry" )
     _shaderProgramEntry = new GXShaderProgramEntry ( info );
 }
 

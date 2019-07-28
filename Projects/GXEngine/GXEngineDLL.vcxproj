@@ -34,7 +34,7 @@
     <ClCompile Include="..\..\Sources\GXCommon\GXOBJLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFile.cpp" />
-    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFileSystemBackend.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFileSystem.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXLogger.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMemoryInspector.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXMutex.cpp" />

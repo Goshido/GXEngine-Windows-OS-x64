@@ -126,7 +126,7 @@
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXSmartLock.cpp">
       <Filter>Source Files\GXCommon\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFileSystemBackend.cpp">
+    <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFileSystem.cpp">
       <Filter>Source Files\GXCommon\Windows</Filter>
     </ClCompile>
   </ItemGroup>

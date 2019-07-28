@@ -639,7 +639,7 @@ GXVoid GXMeshGeometry::SetTotalVertices ( GLsizei totalVertices )
 
         if ( !_mesh )
         {
-            GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMesh" );
+            GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMesh" )
             _mesh = new GXMesh ();
         }
 
@@ -650,7 +650,7 @@ GXVoid GXMeshGeometry::SetTotalVertices ( GLsizei totalVertices )
     if ( _mesh )
         _mesh->Release ();
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMesh" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMesh" )
     _mesh = new GXMesh ();
     _mesh->_totalVertices = totalVertices;
 }
@@ -663,7 +663,7 @@ GXVoid GXMeshGeometry::FillVertexBuffer ( const GXVoid* data, GLsizeiptr size, G
 
         if ( !_mesh )
         {
-            GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMesh" );
+            GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMesh" )
             _mesh = new GXMesh ();
         }
 
@@ -674,7 +674,7 @@ GXVoid GXMeshGeometry::FillVertexBuffer ( const GXVoid* data, GLsizeiptr size, G
     if ( _mesh )
         _mesh->Release ();
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMesh" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMesh" )
     _mesh = new GXMesh ();
     _mesh->FillVBO ( data, size, usage );
 }
@@ -690,7 +690,7 @@ GXVoid GXMeshGeometry::SetBufferStream ( eGXMeshStreamIndex streamIndex, GLint n
 
         if ( !_mesh )
         {
-            GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMesh" );
+            GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMesh" )
             _mesh = new GXMesh ();
         }
 
@@ -711,7 +711,7 @@ GXVoid GXMeshGeometry::SetBufferStream ( eGXMeshStreamIndex streamIndex, GLint n
     if ( _mesh )
         _mesh->Release ();
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMesh" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMesh" )
     _mesh = new GXMesh ();
 
     glBindVertexArray ( _meshVAO );
@@ -767,7 +767,7 @@ GXBool GXMeshGeometry::LoadMesh ( const GXWChar* fileName )
     }
     else
     {
-        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMesh" );
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMesh" )
         _mesh = new GXMesh ( fileName );
     }
 
@@ -789,7 +789,7 @@ GXBool GXMeshGeometry::LoadSkin ( const GXWChar* fileName )
     }
     else
     {
-        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXSkin" );
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXSkin" )
         _skin = new GXSkin ( fileName );
     }
 
@@ -862,18 +862,18 @@ GXVoid GXMeshGeometry::UpdateGraphicResources ()
         return;
     }
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXSkinningMaterial" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXSkinningMaterial" )
     _skinningMaterial = new GXSkinningMaterial ();
     GLsizei meshStride = sizeof ( GXVec3 ) + sizeof ( GXVec2 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 ) + sizeof ( GXVec3 );
     GLsizeiptr poseVBOSize = static_cast<GLsizeiptr> ( meshStride * _skin->_totalVertices );
 
     glGenVertexArrays ( 2, _poseVAO );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMesh" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMesh" )
     _pose[ 0u ] = new GXMesh ();
     _pose[ 0u ]->FillVBO ( nullptr, poseVBOSize, GL_DYNAMIC_DRAW );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMesh" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXMesh" )
     _pose[ 1u ] = new GXMesh ();
     _pose[ 1u ]->FillVBO ( nullptr, poseVBOSize, GL_DYNAMIC_DRAW );
 

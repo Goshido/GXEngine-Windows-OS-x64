@@ -35,7 +35,7 @@ GXSplashScreen& GXSplashScreen::GetInstance ()
 {
     if ( !_instance )
     {
-        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXSplashScreen" );
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXSplashScreen" )
         _instance = new GXSplashScreen ();
     }
 

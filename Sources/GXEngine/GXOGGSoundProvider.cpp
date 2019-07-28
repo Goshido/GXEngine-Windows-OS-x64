@@ -104,7 +104,7 @@ GXSoundStreamer* GXOGGSoundTrack::GetStreamer ()
 {
     _readyBuffer = 0u;
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOGGSoundStreamer" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOGGSoundStreamer" )
     return new GXOGGSoundStreamer ( _mappedFile, static_cast<GXUInt> ( _totalSize ) );
 }
 
@@ -114,7 +114,7 @@ ALuint GXOGGSoundTrack::GetBuffer ()
     
     GXAlGenBuffers ( 1, &_readyBuffer );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOGGSoundStreamer" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXOGGSoundStreamer" )
     GXOGGSoundStreamer* streamer = new GXOGGSoundStreamer ( _mappedFile, static_cast<GXUInt> ( _totalSize ) );
     streamer->DecompressAll ( _readyBuffer );
     delete streamer;

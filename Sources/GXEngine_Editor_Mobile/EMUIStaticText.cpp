@@ -41,7 +41,7 @@ EMUIStaticTextRenderer::EMUIStaticTextRenderer ( GXUIStaticText* staticTextWidge
 {
     const GXAABB& boundsLocal = widget->GetBoundsWorld ();
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
@@ -108,7 +108,7 @@ GXVoid EMUIStaticTextRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width,
     _surface->GetLocation ( location );
     delete _surface;
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( width, height );
 
     _surface->SetLocation ( x, y, location._data[ 2u ] );
@@ -126,11 +126,11 @@ GXVoid EMUIStaticTextRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 //------------------------------------------------------------------------------
 
-EMUIStaticText::EMUIStaticText ( EMUI* parent ) :
+EMUIStaticText::EMUIStaticText ( EMUI* parent ):
     EMUI ( parent ),
     _widget ( new GXUIStaticText ( parent ? parent->GetWidget () : nullptr ) )
 {
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticTextRenderer" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticTextRenderer" )
     _widget->SetRenderer ( new EMUIStaticTextRenderer ( _widget ) );
 }
 

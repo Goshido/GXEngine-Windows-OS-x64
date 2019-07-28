@@ -24,8 +24,9 @@ GXUInt GXAVLTree::GetTotalNodes () const
     return _totalNodes;
 }
 
-GXAVLTree::GXAVLTree ( GXAVLTreeComparator comparator, GXBool doesAutoClean ):
-    _comparator ( comparator ),
+GXAVLTree::GXAVLTree ( GXAVLTreeComparator comparator, GXBool doesAutoClean )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXAVLTree" )
+    _comparator ( comparator ), 
     _isAutoClean ( doesAutoClean ),
     _root ( nullptr ),
     _totalNodes ( 0u )

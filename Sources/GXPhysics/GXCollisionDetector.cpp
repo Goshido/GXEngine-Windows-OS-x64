@@ -220,7 +220,7 @@ GXCollisionDetector& GXCALL GXCollisionDetector::GetInstance ()
 {
     if ( !_instance )
     {
-        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXCollisionDetector" );
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXCollisionDetector" )
         _instance = new GXCollisionDetector ();
     }
 

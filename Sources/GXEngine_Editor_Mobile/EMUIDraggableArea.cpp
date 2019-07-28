@@ -50,7 +50,7 @@ EMUIDraggableAreaRenderer::EMUIDraggableAreaRenderer ( GXUIDragableArea* draggab
 {
     const GXAABB& boundsLocal = widget->GetBoundsLocal ();
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
@@ -116,7 +116,7 @@ GXVoid EMUIDraggableAreaRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort wid
     _surface->GetLocation ( location );
     delete _surface;
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( width, height );
 
     _surface->SetLocation ( x, y, location._data[ 2u ] );
@@ -138,7 +138,7 @@ EMUIDraggableArea::EMUIDraggableArea ( EMUI* parent ):
     EMUI ( parent ),
     _widget ( new GXUIDragableArea ( parent ? parent->GetWidget () : nullptr ) )
 {
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIDraggableAreaRenderer" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIDraggableAreaRenderer" )
     _widget->SetRenderer ( new EMUIDraggableAreaRenderer ( _widget ) );
 }
 

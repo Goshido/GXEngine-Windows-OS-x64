@@ -75,7 +75,7 @@ EMUIEditBoxRenderer::EMUIEditBoxRenderer ( GXUIEditBox* widget ):
 {
     const GXAABB& boundsLocal = widget->GetBoundsWorld ();
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
@@ -202,7 +202,7 @@ GXVoid EMUIEditBoxRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GX
 
     GXSafeDelete ( _surface );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( width, height );
 
     GXVec3 location;
@@ -226,7 +226,7 @@ EMUIEditBox::EMUIEditBox ( EMUI* parent ):
     EMUI ( parent ),
     _widget ( new GXUIEditBox ( parent ? parent->GetWidget () : nullptr ) )
 {
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBoxRenderer" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBoxRenderer" )
     _widget->SetRenderer ( new EMUIEditBoxRenderer ( _widget ) );
     _widget->Resize ( DEFAULT_BOTTOM_LEFT_X * gx_ui_Scale, DEFAULT_BOTTOM_LEFT_Y * gx_ui_Scale, DEFAULT_WIDTH * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
     _widget->SetFont ( DEFAULT_FONT, static_cast<GXUShort> ( DEFAULT_FONT_SIZE * gx_ui_Scale ) );

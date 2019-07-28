@@ -46,7 +46,7 @@ EMUISeparatorRenderer::EMUISeparatorRenderer ( GXWidget* widget ):
 {
     const GXAABB& boundsLocal = widget->GetBoundsWorld ();
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( static_cast<GXUShort> ( boundsLocal.GetWidth () ), static_cast<GXUShort> ( boundsLocal.GetHeight () ) );
 }
 
@@ -84,7 +84,7 @@ GXVoid EMUISeparatorRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, 
 
     GXSafeDelete ( _surface );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXHudSurface" )
     _surface = new GXHudSurface ( width, height );
 
     GXVec3 location;
@@ -110,7 +110,7 @@ EMUISeparator::EMUISeparator ( EMUI* parent ):
 {
     _widget->Resize ( DEFAULT_BOTTOM_X * gx_ui_Scale, DEFAULT_BOTTOM_Y * gx_ui_Scale, DEFAULT_WIDHT * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
 
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISeparatorRenderer" );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISeparatorRenderer" )
     _widget->SetRenderer ( new EMUISeparatorRenderer ( _widget ) );
 }
 
