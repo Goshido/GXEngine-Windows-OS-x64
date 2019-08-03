@@ -1,5 +1,5 @@
 Build tool:
-    MSVC-140 x64
+    Windows OS: Visual Studio 2019 [16.2.0], build tools (x64, v142, 10.0.18362.0)
 
 Dependencies:
     1) FreeType
@@ -8,3 +8,7 @@ Dependencies:
     4) XInput
     5) Vorbis/Ogg
     6) STB
+
+Windows OS specific:
+- \WX \Wall build by design
+- GXEngineDLL builds in release only

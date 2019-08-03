@@ -1,12 +1,12 @@
-// version 1.3
+// version 1.4
 
 #include <GXPhysics/GXSpring.h>
 
 
 GXSpring::GXSpring ( const GXVec3 &connectionPointLocal, GXRigidBody &otherBody, const GXVec3 &otherConnectionPointLocal, GXFloat hardness, GXFloat restLength ):
     _connectionPointLocal ( connectionPointLocal ),
-    _otherBody ( &otherBody ),
     _otherConnectionPointLocal ( otherConnectionPointLocal ),
+    _otherBody ( &otherBody ),
     _hardness ( hardness ),
     _restLength ( restLength )
 {

@@ -25,8 +25,8 @@ GXTexture2D EMLightProbe::_brdfIntegrationMap;
 EMLightProbe* EMLightProbe::_probes = nullptr;
 
 EMLightProbe::EMLightProbe ():
-    _previous ( nullptr ),
     _next ( _probes ),
+    _previous ( nullptr ),
     _locationWorld ( DEFAULT_LOCATION_X, DEFAULT_LOCATION_Y, DEFAULT_LOCATION_Z )
 {
     if ( _probes )

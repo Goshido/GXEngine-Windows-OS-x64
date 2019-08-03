@@ -1,4 +1,4 @@
-// vesrion 1.9
+// vesrion 1.10
 
 #include <GXCommon/GXAVLTree.h>
 #include <GXCommon/GXStrings.h>
@@ -26,10 +26,10 @@ GXUInt GXAVLTree::GetTotalNodes () const
 
 GXAVLTree::GXAVLTree ( GXAVLTreeComparator comparator, GXBool doesAutoClean )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXAVLTree" )
-    _comparator ( comparator ), 
-    _isAutoClean ( doesAutoClean ),
     _root ( nullptr ),
-    _totalNodes ( 0u )
+    _totalNodes ( 0u ),
+    _comparator ( comparator ),
+    _isAutoClean ( doesAutoClean )
 {
     // NOTHING
 }

@@ -1,4 +1,4 @@
-// version 1.15
+// version 1.16
 
 #include <GXEngine/GXFont.h>
 #include <GXEngineDLL/GXEngineAPI.h>
@@ -114,8 +114,8 @@ GXFontEntry::GXFontEntry ( const GXWChar* fontFileName, GXUShort fontSize )
     _atlases ( nullptr ),
     _lastAtlasID ( ATLAS_UNDEFINED ),
     _left ( 0u ),
-    _bottom ( 0u ),
     _top ( 0u ),
+    _bottom ( 0u ),
     _size ( fontSize ),
     _fileName ( fontFileName )
 {
@@ -135,7 +135,7 @@ GXFontEntry::GXFontEntry ( const GXWChar* fontFileName, GXUShort fontSize )
 
     if ( !file.LoadContent ( _mappedFile, totalSize, eGXFileContentOwner::User, GX_TRUE ) )
     {
-        GXLogA ( "GXFontEntry::GXFontEntry::Error - Не могу загрузить файл шрифта %S\n", _fileName );
+        GXLogA ( "GXFontEntry::GXFontEntry::Error - Не могу загрузить файл шрифта %s\n", static_cast<const GXMBChar*> ( _fileName ) );
         _face = nullptr;
 
         return;
@@ -143,7 +143,7 @@ GXFontEntry::GXFontEntry ( const GXWChar* fontFileName, GXUShort fontSize )
 
     if ( !GXFtNewMemoryFace ( gx_ft_Library, static_cast<FT_Byte*> ( _mappedFile ), static_cast<FT_Long> ( totalSize ), 0, &_face ) ) return;
 
-    GXLogA ( "GXFontEntry::GXFontEntry::Error - GXFtNewMemoryFace выполнилась с ошибкой для шрифта %S failed\n", _fileName );
+    GXLogA ( "GXFontEntry::GXFontEntry::Error - GXFtNewMemoryFace выполнилась с ошибкой для шрифта %s failed\n", static_cast<const GXMBChar*> ( _fileName ) );
     SafeFree ( reinterpret_cast<GXVoid**> ( &_mappedFile ) );
     _face = nullptr;
 }
