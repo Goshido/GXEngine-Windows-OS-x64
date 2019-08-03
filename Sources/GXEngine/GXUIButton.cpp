@@ -10,8 +10,8 @@ GXUIButton::GXUIButton ( GXWidget* parent ):
     _onLeftMouseButton ( nullptr ),
     _context ( nullptr ),
     _isPressed ( GX_FALSE ),
-    _isDisabled ( GX_FALSE ),
-    _isHighlighted ( GX_FALSE )
+    _isHighlighted ( GX_FALSE ),
+    _isDisabled ( GX_FALSE )
 {
     // NOTHING
 }

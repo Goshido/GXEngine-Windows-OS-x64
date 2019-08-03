@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #include <GXEngine/GXUIInput.h>
 #include <GXEngine/GXUIMessage.h>
@@ -13,8 +13,8 @@ GXUIInput::GXUIInput ( GXWidget* parent, GXBool isNeedRegister ):
     _onRMBDown ( nullptr ),
     _onRMBUp ( nullptr ),
     _onDoubleClick ( nullptr ),
-    _onMouseMove ( nullptr ),
     _onMouseScroll ( nullptr ),
+    _onMouseMove ( nullptr ),
     _onMouseOver ( nullptr ),
     _onMouseLeave ( nullptr ),
     _onKeyDown ( nullptr ),

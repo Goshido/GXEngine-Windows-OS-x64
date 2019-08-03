@@ -8,7 +8,7 @@ eGXThreadState GXAbstractThread::GetState () const
     return _state;
 }
 
-GXAbstractThread::GXAbstractThread ( GXThreaFunction procedure, GXVoid* argument )
+GXAbstractThread::GXAbstractThread ( GXThreadFunction procedure, GXVoid* argument )
 {
     _procedure = procedure;
     _argument = argument;

@@ -1,4 +1,4 @@
-// version 1.14
+// version 1.15
 
 #include <GXEngine/GXShaderProgram.h>
 #include <GXCommon/GXFile.h>
@@ -51,8 +51,8 @@ class GXPrecompiledShaderProgramNode final : public GXAVLTreeNode
 };
 
 GXPrecompiledShaderProgramNode::GXPrecompiledShaderProgramNode ():
-    _binaryPath ( nullptr ),
     _binaryFormat ( GL_INVALID_ENUM ),
+    _binaryPath ( nullptr ),
     _vertexShader ( nullptr ),
     _geometryShader ( nullptr ),
     _fragmentShader ( nullptr )

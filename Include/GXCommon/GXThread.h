@@ -8,7 +8,7 @@
 
 
 class GXThread;
-typedef GXUPointer ( GXTHREADCALL* GXThreaFunction ) ( GXVoid* argument, GXThread &thread );
+typedef GXUPointer ( GXTHREADCALL* GXThreadFunction ) ( GXVoid* argument, GXThread &thread );
 
 
 enum class eGXThreadState : GXUByte
@@ -20,7 +20,7 @@ enum class eGXThreadState : GXUByte
 class GXAbstractThread
 {
     protected:
-        GXThreaFunction     _procedure;
+        GXThreadFunction    _procedure;
         GXVoid*             _argument;
         eGXThreadState      _state;
 
@@ -33,7 +33,7 @@ class GXAbstractThread
         virtual GXVoid Join () = 0;
 
     protected:
-        explicit GXAbstractThread ( GXThreaFunction procedure, GXVoid* argument );
+        explicit GXAbstractThread ( GXThreadFunction procedure, GXVoid* argument );
         virtual ~GXAbstractThread ();
 
     private:

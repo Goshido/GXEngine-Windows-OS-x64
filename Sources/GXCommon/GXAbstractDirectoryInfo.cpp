@@ -56,7 +56,7 @@ GXAbstractDirectoryInfo::~GXAbstractDirectoryInfo ()
 {
     GXUPointer count = _directories.GetLength ();
 
-    for ( GXUPointer i = 0; i < count; ++i )
+    for ( GXUPointer i = 0u; i < count; ++i )
     {
         GXString* directory = static_cast<GXString*> ( _directories.GetValue ( i ) );
         directory->Clear ();

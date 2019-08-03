@@ -1,4 +1,4 @@
-// version 1.15
+// version 1.16
 
 #ifndef GX_FONT
 #define GX_FONT
