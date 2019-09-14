@@ -1,11 +1,11 @@
-// version 1.11
+// version 1.12
 
 #ifndef GX_TEXTURE_2D
 #define GX_TEXTURE_2D
 
 
 #include "GXOpenGL.h"
-#include <GXCommon/GXMemory.h>
+#include <GXCommon/GXStrings.h>
 
 
 // Class handles lazy loading reference counting texture 2D resource creation.
@@ -25,7 +25,7 @@ class GXTexture2D final : public GXMemoryInspector
         explicit GXTexture2D ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap );
 
         // Creates reference counting texture resource.
-        explicit GXTexture2D ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection );
+        explicit GXTexture2D ( const GXString &fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection );
 
         ~GXTexture2D () override;
 

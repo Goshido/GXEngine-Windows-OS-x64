@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #ifndef GX_UI_MESSAGE
 #define GX_UI_MESSAGE
@@ -32,7 +32,7 @@ enum class eGXUIMessage : GXUInt
     DraggableAreaSetMinimumHeight           = 19u,              // GXFloat                      new minimum height
     Drag                                    = 20u,              // GXVec2                       x, y - global mouse delta
     Foreground                              = 21u,              // none                         none
-    SetText                                 = 22u,              // const GXWChar*               new text
+    SetText                                 = 22u,              // const GXUTF16*               new text
     ClearText                               = 23u,              // none                         none
     SetTextAlignment                        = 24u,              // eGXUITextAlignment           see eGXUIStaticTextAlignment
     SetTextColor                            = 25u,              // GXVec4                       text color

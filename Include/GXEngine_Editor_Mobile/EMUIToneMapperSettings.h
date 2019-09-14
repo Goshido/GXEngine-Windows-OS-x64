@@ -12,7 +12,7 @@
 class EMUIToneMapperSettings final : public EMUI
 {
     private:
-        EMUIDraggableArea*                  _mainPanel;
+        EMUIDraggableArea                   _mainPanel;
 
         EMUIStaticText*                     _caption;
         EMUISeparator*                      _topSeparator;
@@ -34,7 +34,7 @@ class EMUIToneMapperSettings final : public EMUI
         static EMUIToneMapperSettings& GXCALL GetInstance ();
         ~EMUIToneMapperSettings () override;
 
-        GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () override;
 
         GXVoid Show ();
         GXVoid Hide ();

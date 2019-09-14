@@ -37,20 +37,31 @@
 
 EMUIOpenFile::EMUIOpenFile ():
     EMUI ( nullptr ),
-    _rootDirectory ( GXGetCurrentDirectory () )
+    _rootDirectory ( GXGetCurrentDirectory () ),
+    _mainPanel ( nullptr )
 {
     _rootDirectoryPathOffset = _rootDirectory.GetSymbolCount () + 1u;
 
-    _mainPanel = new EMUIDraggableArea ( nullptr );
-    _mainPanel->SetHeaderHeight ( PANEL_HEADER_HEIGHT * gx_ui_Scale );
-    _mainPanel->SetOnResizeCallback ( this, &EMUIOpenFile::OnResize );
+    _mainPanel.SetHeaderHeight ( PANEL_HEADER_HEIGHT * gx_ui_Scale );
+    _mainPanel.SetOnResizeCallback ( this, &EMUIOpenFile::OnResize );
 
-    _okButton = new EMUIButton ( _mainPanel );
-    _cancelButton = new EMUIButton ( _mainPanel );
-    _filePathStaticText = new EMUIStaticText ( _mainPanel );
-    _bottomSeparator = new EMUISeparator ( _mainPanel );
-    _topSeparator = new EMUISeparator ( _mainPanel );
-    _fileListBox = new EMUIFileListBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIButton" )
+    _okButton = new EMUIButton ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIButton" )
+    _cancelButton = new EMUIButton ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _filePathStaticText = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISeparator" )
+    _bottomSeparator = new EMUISeparator ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISeparator" )
+    _topSeparator = new EMUISeparator ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIFileListBox" )
+    _fileListBox = new EMUIFileListBox ( &_mainPanel );
 
     const GXLocale& locale = GXLocale::GetInstance ();
 
@@ -68,8 +79,8 @@ EMUIOpenFile::EMUIOpenFile ():
 
     UpdateDirectory ( _rootDirectory );
 
-    _mainPanel->Resize ( PANEL_LEFT_BOTTOM_X * gx_ui_Scale, PANEL_LEFT_BOTTOM_Y * gx_ui_Scale, PANEL_WIDTH * gx_ui_Scale, PANEL_HEIGHT * gx_ui_Scale );
-    _mainPanel->Hide ();
+    _mainPanel.Resize ( PANEL_LEFT_BOTTOM_X * gx_ui_Scale, PANEL_LEFT_BOTTOM_Y * gx_ui_Scale, PANEL_WIDTH * gx_ui_Scale, PANEL_HEIGHT * gx_ui_Scale );
+    _mainPanel.Hide ();
 }
 
 EMUIOpenFile::~EMUIOpenFile ()
@@ -80,12 +91,11 @@ EMUIOpenFile::~EMUIOpenFile ()
     delete _filePathStaticText;
     delete _okButton;
     delete _cancelButton;
-    delete _mainPanel;
 }
 
-GXWidget* EMUIOpenFile::GetWidget () const
+GXWidget* EMUIOpenFile::GetWidget ()
 {
-    return _mainPanel->GetWidget ();
+    return _mainPanel.GetWidget ();
 }
 
 GXVoid EMUIOpenFile::Browse ( EMUIOpenFileBrowseFileHandler callback )
@@ -93,8 +103,8 @@ GXVoid EMUIOpenFile::Browse ( EMUIOpenFileBrowseFileHandler callback )
     if ( !callback ) return;
 
     _onBrowseFile = callback;
-    _mainPanel->Show ();
-    _mainPanel->ToForeground ();
+    _mainPanel.Show ();
+    _mainPanel.ToForeground ();
 }
 
 GXVoid EMUIOpenFile::UpdateDirectory ( GXString targetDirectory )
@@ -199,7 +209,7 @@ GXVoid GXCALL EMUIOpenFile::OnButton ( GXVoid* context, GXUIButton& button, GXFl
 
     if ( &button == uiOpenFile->_cancelButton->GetWidget () )
     {
-        uiOpenFile->_mainPanel->Hide ();
+        uiOpenFile->_mainPanel.Hide ();
         return;
     }
 
@@ -210,7 +220,7 @@ GXVoid GXCALL EMUIOpenFile::OnButton ( GXVoid* context, GXUIButton& button, GXFl
     if ( i && i->GetType () == eEMUIFileListBoxItemType::File )
         uiOpenFile->_onBrowseFile ( uiOpenFile->_filePathStaticText->GetText () );
 
-    uiOpenFile->_mainPanel->Hide ();
+    uiOpenFile->_mainPanel.Hide ();
 }
 
 GXVoid GXCALL EMUIOpenFile::OnItemSelected ( GXVoid* context, GXUIListBox& /*listBox*/, const GXVoid* item )

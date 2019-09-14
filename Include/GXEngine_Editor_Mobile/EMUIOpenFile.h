@@ -16,6 +16,8 @@ class EMUIOpenFile final : public EMUI
 {
     private:
         const GXString                      _rootDirectory;
+        EMUIDraggableArea                   _mainPanel;
+
         GXUPointer                          _rootDirectoryPathOffset;
 
         GXString                            _currentDirectory;
@@ -24,7 +26,6 @@ class EMUIOpenFile final : public EMUI
         // for optimization purposes
         GXString                            _stringBuffer;
 
-        EMUIDraggableArea*                  _mainPanel;
         EMUIButton*                         _okButton;
         EMUIButton*                         _cancelButton;
         EMUIStaticText*                     _filePathStaticText;
@@ -38,7 +39,7 @@ class EMUIOpenFile final : public EMUI
         EMUIOpenFile ();
         ~EMUIOpenFile () override;
 
-        GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () override;
 
         GXVoid Browse ( EMUIOpenFileBrowseFileHandler callback );
 

@@ -711,7 +711,10 @@ EMUIColorPicker* EMUIColorPicker::_instance = nullptr;
 EMUIColorPicker& EMUIColorPicker::GetInstance ()
 {
     if ( !_instance )
+    {
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIColorPicker" )
         _instance = new EMUIColorPicker ();
+    }
 
     return *_instance;
 }
@@ -773,14 +776,13 @@ EMUIColorPicker::~EMUIColorPicker ()
 
     delete _topSeparator;
     delete _caption;
-    delete _mainPanel;
 
     _instance = nullptr;
 }
 
-GXWidget* EMUIColorPicker::GetWidget () const
+GXWidget* EMUIColorPicker::GetWidget ()
 {
-    return _mainPanel->GetWidget ();
+    return _mainPanel.GetWidget ();
 }
 
 GXVoid EMUIColorPicker::PickColor ( GXVoid* context, EMColorPickerOnHSVAColorHandler callback, const GXColorHSV &oldColorHSVAValue )
@@ -794,7 +796,7 @@ GXVoid EMUIColorPicker::PickColor ( GXVoid* context, EMColorPickerOnHSVAColorHan
     _onRGBColor = nullptr;
     _onRGBUByteColor = nullptr;
 
-    _mainPanel->Show ();
+    _mainPanel.Show ();
 }
 
 GXVoid EMUIColorPicker::PickColor ( GXVoid* context, EMColorPickerOnRGBAColorHandler callback, const GXColorRGB &oldColorValue )
@@ -809,7 +811,7 @@ GXVoid EMUIColorPicker::PickColor ( GXVoid* context, EMColorPickerOnRGBAColorHan
     _onHSVColor = nullptr;
     _onRGBUByteColor = nullptr;
 
-    _mainPanel->Show ();
+    _mainPanel.Show ();
 }
 
 GXVoid EMUIColorPicker::PickColor ( GXVoid* context, EMColorPickerOnHSVAColorUByteHandler callback, GXUByte oldRed, GXUByte oldGreen, GXUByte oldBlue, GXUByte oldAlpha )
@@ -826,99 +828,138 @@ GXVoid EMUIColorPicker::PickColor ( GXVoid* context, EMColorPickerOnHSVAColorUBy
     _onRGBColor = nullptr;
     _onHSVColor = nullptr;
 
-    _mainPanel->Show ();
+    _mainPanel.Show ();
 }
 
 EMUIColorPicker::EMUIColorPicker ():
     EMUI ( nullptr ),
-    _mainPanel ( new EMUIDraggableArea ( nullptr ) ),
+    _mainPanel ( nullptr ),
     _onHSVColor ( nullptr ),
     _onRGBColor ( nullptr ),
     _onRGBUByteColor ( nullptr ),
     _context ( nullptr ),
     _buffer ( static_cast<GXWChar*> ( malloc ( MAX_BUFFER_SYMBOLS * sizeof ( GXWChar ) ) ) )
 {
-    _caption = new EMUIStaticText ( _mainPanel );
-    _topSeparator = new EMUISeparator ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _caption = new EMUIStaticText ( &_mainPanel );
 
-    GXWidget* mainPanelWidget = _mainPanel->GetWidget ();
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISeparator" )
+    _topSeparator = new EMUISeparator ( &_mainPanel );
+
+    GXWidget* mainPanelWidget = _mainPanel.GetWidget ();
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXUIInput" )
     _hsvColorWidget = new GXUIInput ( mainPanelWidget, GX_TRUE );
+
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMColorSelectorRenderer" )
     _hsvColorWidget->SetRenderer ( new EMColorSelectorRenderer ( _hsvColorWidget ) );
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXUIInput" )
     _currentColor = new GXUIInput ( mainPanelWidget, GX_TRUE );
+
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMColorRenderer" )
     _currentColor->SetRenderer ( new EMColorRenderer ( _currentColor ) );
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXUIInput" )
     _oldColor = new GXUIInput ( mainPanelWidget, GX_TRUE );
+
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMColorRenderer" )
     _oldColor->SetRenderer ( new EMColorRenderer ( _oldColor ) );
 
-    _addColor = new EMUIButton ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIButton" )
+    _addColor = new EMUIButton ( &_mainPanel );
 
     for ( GXUByte i = 0u; i < 16u; ++i )
     {
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXUIInput" )
         GXUIInput* savedColor = new GXUIInput ( mainPanelWidget, GX_TRUE );
+
         GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMColorRenderer" )
         savedColor->SetRenderer ( new EMColorRenderer ( savedColor ) );
         _savedColors[ i ] = savedColor;
     }
 
-    _middleSeparator = new EMUISeparator ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISeparator" )
+    _middleSeparator = new EMUISeparator ( &_mainPanel );
 
-    _hLabel = new EMUIStaticText ( _mainPanel );
-    _h = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _hLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" )
+    _h = new EMUIEditBox ( &_mainPanel );
     GXUIEditBox* editBox = static_cast<GXUIEditBox*> ( _h->GetWidget () );
     GXUIEditBoxFloatValidator* floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_TEXT, *editBox, MINIMUM_HUE_VALUE, MAXIMUM_HUE_VALUE );
     _h->SetValidator ( *floatValidator );
     _h->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
-    _rLabel = new EMUIStaticText ( _mainPanel );
-    _r = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _rLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" )
+    _r = new EMUIEditBox ( &_mainPanel );
     editBox = static_cast<GXUIEditBox*> ( _r->GetWidget () );
     GXUIEditBoxIntegerValidator* integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_TEXT, *editBox, MINIMUM_RED_VALUE, MAXIMUM_RED_VALUE );
     _r->SetValidator ( *integerValidator );
     _r->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
-    _sLabel = new EMUIStaticText ( _mainPanel );
-    _s = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _sLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" )
+    _s = new EMUIEditBox ( &_mainPanel );
     editBox = static_cast<GXUIEditBox*> ( _s->GetWidget () );
     floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_TEXT, *editBox, MINIMUM_SATURATION_VALUE, MAXIMUM_SATURATION_VALUE );
     _s->SetValidator ( *floatValidator );
     _s->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
-    _gLabel = new EMUIStaticText ( _mainPanel );
-    _g = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _gLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" )
+    _g = new EMUIEditBox ( &_mainPanel );
     editBox = static_cast<GXUIEditBox*> ( _g->GetWidget () );
     integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_TEXT, *editBox, MINIMUM_GREEN_VALUE, MAXIMUM_GREEN_VALUE );
     _g->SetValidator ( *integerValidator );
     _g->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
-    _vLabel = new EMUIStaticText ( _mainPanel );
-    _v = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _vLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" )
+    _v = new EMUIEditBox ( &_mainPanel );
     editBox = static_cast<GXUIEditBox*> ( _v->GetWidget () );
     floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_TEXT, *editBox, MINIMUM_VALUE, MAXIMUM_VALUE );
     _v->SetValidator ( *floatValidator );
     _v->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
-    _bLabel = new EMUIStaticText ( _mainPanel );
-    _b = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _bLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" )
+    _b = new EMUIEditBox ( &_mainPanel );
     editBox = static_cast<GXUIEditBox*> ( _b->GetWidget () );
     integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_TEXT, *editBox, MINIMUM_BLUE_VALUE, MAXIMUM_BLUE_VALUE );
     _b->SetValidator ( *integerValidator );
     _b->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
-    _transparencyLabel = new EMUIStaticText ( _mainPanel );
-    _transparency = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _transparencyLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" )
+    _transparency = new EMUIEditBox ( &_mainPanel );
     editBox = static_cast<GXUIEditBox*> ( _transparency->GetWidget () );
     integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_TEXT, *editBox, MINIMUM_ALPHA_VALUE, MAXIMUM_ALPHA_VALUE );
     _transparency->SetValidator ( *integerValidator );
     _transparency->SetOnFinishEditingCallback ( this, &EMUIColorPicker::OnFinishEditing );
 
-    _bottomSeparator = new EMUISeparator ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISeparator" )
+    _bottomSeparator = new EMUISeparator ( &_mainPanel );
 
-    _cancel = new EMUIButton ( _mainPanel );
-    _pick = new EMUIButton ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIButton" )
+    _cancel = new EMUIButton ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIButton" )
+    _pick = new EMUIButton ( &_mainPanel );
 
     GXLocale& locale = GXLocale::GetInstance ();
 
@@ -983,7 +1024,7 @@ EMUIColorPicker::EMUIColorPicker ():
     _cancel->SetOnLeftMouseButtonCallback ( this, &EMUIColorPicker::OnButton );
     _pick->SetOnLeftMouseButtonCallback ( this, &EMUIColorPicker::OnButton );
 
-    _mainPanel->SetOnResizeCallback ( this, &EMUIColorPicker::OnResize );
+    _mainPanel.SetOnResizeCallback ( this, &EMUIColorPicker::OnResize );
 
     UpdateCurrentColor ( DEFAULT_CURRENT_COLOR_H, DEFAULT_CURRENT_COLOR_S, DEFAULT_CURRENT_COLOR_V, DEFAULT_CURRENT_COLOR_A );
     EMColorRenderer* destinationRenderer = static_cast<EMColorRenderer*> ( _oldColor->GetRenderer () );
@@ -999,10 +1040,10 @@ EMUIColorPicker::EMUIColorPicker ():
     }
 
     const GXFloat height = DEFAULT_MAIN_PANEL_HEIGHT * gx_ui_Scale;
-    _mainPanel->Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
-    _mainPanel->SetMinimumWidth ( MAIN_PANEL_MINIMUM_WIDTH * gx_ui_Scale );
-    _mainPanel->SetMinimumHeight ( MAIN_PANEL_MINIMUM_HEIGHT * gx_ui_Scale );
-    _mainPanel->Hide ();
+    _mainPanel.Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
+    _mainPanel.SetMinimumWidth ( MAIN_PANEL_MINIMUM_WIDTH * gx_ui_Scale );
+    _mainPanel.SetMinimumHeight ( MAIN_PANEL_MINIMUM_HEIGHT * gx_ui_Scale );
+    _mainPanel.Hide ();
 }
 
 GXVoid EMUIColorPicker::UpdateCurrentColor ( GXFloat hue, GXFloat saturation, GXFloat value, GXFloat alpha )
@@ -1181,11 +1222,11 @@ GXVoid GXCALL EMUIColorPicker::OnButton ( GXVoid* handler, GXUIButton& button, G
             colorPicker->_onRGBUByteColor ( handler, red, green, blue, alpha );
         }
 
-        colorPicker->_mainPanel->Hide ();
+        colorPicker->_mainPanel.Hide ();
         return;
     }
 
-    colorPicker->_mainPanel->Hide ();
+    colorPicker->_mainPanel.Hide ();
 }
 
 GXVoid GXCALL EMUIColorPicker::OnLeftMouseButton ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y )

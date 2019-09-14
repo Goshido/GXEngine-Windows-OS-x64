@@ -17,8 +17,8 @@ class EMMesh final : public GXTransform, public GXRenderable
         GXAABB              _boundsWorld;
 
     public:
-        explicit EMMesh ( const GXWChar* meshFileName );
-        explicit EMMesh ( const GXWChar* meshFileName, const GXWChar* skinFileName );
+        explicit EMMesh ( const GXString &meshFileName );
+        explicit EMMesh ( const GXString &meshFileName, const GXString &skinFileName );
         ~EMMesh () override;
 
         GXVoid Render () override;

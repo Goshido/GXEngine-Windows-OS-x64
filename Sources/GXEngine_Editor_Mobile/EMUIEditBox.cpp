@@ -37,8 +37,8 @@
 #define DEFAULT_BOTTOM_LEFT_X               0.1f
 #define DEFAULT_BOTTOM_LEFT_Y               0.1f
 
-#define DEFAULT_BACKGROUND                  L"Textures/System/Default_Diffuse.tga"
-#define DEFAULT_FONT                        L"Fonts/trebuc.ttf"
+#define DEFAULT_BACKGROUND                  "Textures/System/Default_Diffuse.tga"
+#define DEFAULT_FONT                        "Fonts/trebuc.ttf"
 #define DEFAULT_FONT_SIZE                   0.33f
 #define DEFAULT_ALIGNMENT                   eGXUITextAlignment::Left
 
@@ -224,74 +224,73 @@ GXVoid EMUIEditBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 EMUIEditBox::EMUIEditBox ( EMUI* parent ):
     EMUI ( parent ),
-    _widget ( new GXUIEditBox ( parent ? parent->GetWidget () : nullptr ) )
+    _widget ( parent ? parent->GetWidget () : nullptr )
 {
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBoxRenderer" )
-    _widget->SetRenderer ( new EMUIEditBoxRenderer ( _widget ) );
-    _widget->Resize ( DEFAULT_BOTTOM_LEFT_X * gx_ui_Scale, DEFAULT_BOTTOM_LEFT_Y * gx_ui_Scale, DEFAULT_WIDTH * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
-    _widget->SetFont ( DEFAULT_FONT, static_cast<GXUShort> ( DEFAULT_FONT_SIZE * gx_ui_Scale ) );
-    _widget->SetAlignment ( DEFAULT_ALIGNMENT );
-    _widget->SetTextLeftOffset ( DEFAULT_TEXT_LEFT_OFFSET * gx_ui_Scale );
-    _widget->SetTextRightOffset ( DEFAULT_TEXT_RIGHT_OFFSET * gx_ui_Scale );
+    _widget.SetRenderer ( new EMUIEditBoxRenderer ( &_widget ) );
+    _widget.Resize ( DEFAULT_BOTTOM_LEFT_X * gx_ui_Scale, DEFAULT_BOTTOM_LEFT_Y * gx_ui_Scale, DEFAULT_WIDTH * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
+    _widget.SetFont ( DEFAULT_FONT, static_cast<GXUShort> ( DEFAULT_FONT_SIZE * gx_ui_Scale ) );
+    _widget.SetAlignment ( DEFAULT_ALIGNMENT );
+    _widget.SetTextLeftOffset ( DEFAULT_TEXT_LEFT_OFFSET * gx_ui_Scale );
+    _widget.SetTextRightOffset ( DEFAULT_TEXT_RIGHT_OFFSET * gx_ui_Scale );
 }
 
 EMUIEditBox::~EMUIEditBox ()
 {
-    delete _widget->GetRenderer ();
-    delete _widget;
+    delete _widget.GetRenderer ();
 }
 
-GXWidget* EMUIEditBox::GetWidget () const
+GXWidget* EMUIEditBox::GetWidget ()
 {
-    return _widget;
+    return &_widget;
 }
 
 GXVoid EMUIEditBox::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height )
 {
-    _widget->Resize ( bottomLeftX, bottomLeftY, width, height );
+    _widget.Resize ( bottomLeftX, bottomLeftY, width, height );
 }
 
-GXVoid EMUIEditBox::SetText ( const GXWChar* text )
+GXVoid EMUIEditBox::SetText ( const GXString &text )
 {
-    _widget->SetText ( text );
+    _widget.SetText ( text );
 }
 
-const GXWChar* EMUIEditBox::GetText () const
+const GXString& EMUIEditBox::GetText ()
 {
-    return _widget->GetText ();
+    return _widget.GetText ();
 }
 
 GXVoid EMUIEditBox::SetAlignment ( eGXUITextAlignment alignment )
 {
-    _widget->SetAlignment ( alignment );
+    _widget.SetAlignment ( alignment );
 }
 
 eGXUITextAlignment EMUIEditBox::GetAlignment () const
 {
-    return _widget->GetAlignment ();
+    return _widget.GetAlignment ();
 }
 
-GXVoid EMUIEditBox::SetFont ( const GXWChar* fontFile, GXUShort fontSize )
+GXVoid EMUIEditBox::SetFont ( const GXString &fontFile, GXUShort fontSize )
 {
-    _widget->SetFont ( fontFile, fontSize );
+    _widget.SetFont ( fontFile, fontSize );
 }
 
-GXFont* EMUIEditBox::GetFont () const
+GXFont* EMUIEditBox::GetFont ()
 {
-    return _widget->GetFont ();
+    return _widget.GetFont ();
 }
 
 GXVoid EMUIEditBox::SetValidator ( GXTextValidator& validator )
 {
-    _widget->SetValidator ( validator );
+    _widget.SetValidator ( validator );
 }
 
 GXTextValidator* EMUIEditBox::GetValidator () const
 {
-    return _widget->GetValidator ();
+    return _widget.GetValidator ();
 }
 
 GXVoid EMUIEditBox::SetOnFinishEditingCallback ( GXVoid* context, GXUIEditBoxOnCommitHandler callback )
 {
-    _widget->SetOnFinishEditingCallback ( context, callback );
+    _widget.SetOnFinishEditingCallback ( context, callback );
 }

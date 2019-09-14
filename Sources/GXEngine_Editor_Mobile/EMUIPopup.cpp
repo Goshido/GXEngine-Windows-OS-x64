@@ -220,49 +220,48 @@ GXVoid EMUIPopupRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 EMUIPopup::EMUIPopup ( EMUI* parent ):
     EMUI ( parent ),
-    _widget ( new GXUIPopup ( parent ? parent->GetWidget () : nullptr ) )
+    _widget ( parent ? parent->GetWidget () : nullptr )
 {
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopupRenderer" )
-    _widget->SetRenderer ( new EMUIPopupRenderer ( _widget ) );
-    _widget->Resize ( BOTTOM_LEFT_X * gx_ui_Scale, BOTTOM_LEFT_Y * gx_ui_Scale, ITEM_WIDTH * gx_ui_Scale, ANY_HEIGHT * gx_ui_Scale );
-    _widget->SetItemHeight ( ITEM_HEIGHT * gx_ui_Scale );
+    _widget.SetRenderer ( new EMUIPopupRenderer ( &_widget ) );
+    _widget.Resize ( BOTTOM_LEFT_X * gx_ui_Scale, BOTTOM_LEFT_Y * gx_ui_Scale, ITEM_WIDTH * gx_ui_Scale, ANY_HEIGHT * gx_ui_Scale );
+    _widget.SetItemHeight ( ITEM_HEIGHT * gx_ui_Scale );
 }
 
 EMUIPopup::~EMUIPopup ()
 {
-    delete _widget->GetRenderer ();
-    delete _widget;
+    delete _widget.GetRenderer ();
 }
 
-GXWidget* EMUIPopup::GetWidget () const
+GXWidget* EMUIPopup::GetWidget ()
 {
-    return _widget;
+    return &_widget;
 }
 
 GXVoid EMUIPopup::AddItem ( GXString name, GXVoid* context, GXUIPopupActionHandler action )
 {
-    EMUIPopupRenderer* renderer = static_cast<EMUIPopupRenderer*> ( _widget->GetRenderer () );
+    EMUIPopupRenderer* renderer = static_cast<EMUIPopupRenderer*> ( _widget.GetRenderer () );
     renderer->AddItem ( name );
-    _widget->AddItem ( context, action );
+    _widget.AddItem ( context, action );
 }
 
 GXVoid EMUIPopup::EnableItem ( GXUByte itemIndex )
 {
-    GXUIPopup* popup = static_cast<GXUIPopup*> ( _widget );
+    GXUIPopup* popup = static_cast<GXUIPopup*> ( &_widget );
     popup->EnableItem ( itemIndex );
 }
 
 GXVoid EMUIPopup::DisableItem ( GXUByte itemIndex )
 {
-    _widget->DisableItem ( itemIndex );
+    _widget.DisableItem ( itemIndex );
 }
 
 GXVoid EMUIPopup::SetLocation ( GXFloat x, GXFloat y )
 {
-    _widget->Resize ( x, y, ITEM_WIDTH * gx_ui_Scale, ANY_HEIGHT );
+    _widget.Resize ( x, y, ITEM_WIDTH * gx_ui_Scale, ANY_HEIGHT );
 }
 
 GXVoid EMUIPopup::Show ( EMUI* owner )
 {
-    _widget->Show ( owner->GetWidget () );
+    _widget.Show ( owner->GetWidget () );
 }

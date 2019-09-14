@@ -280,44 +280,43 @@ GXVoid EMUIFileListBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 EMUIFileListBox::EMUIFileListBox ( EMUI* parent ):
     EMUI ( parent ),
-    _widget ( new GXUIListBox ( parent ? parent->GetWidget () : nullptr, &EMUIFileListBox::ItemDestructor ) )
+    _widget ( parent ? parent->GetWidget () : nullptr, &EMUIFileListBox::ItemDestructor )
 {
-    _widget->Resize ( DEFAULT_LEFT_BOTTOM_X * gx_ui_Scale, DEFAULT_LEFT_BOTTOM_Y * gx_ui_Scale, DEFAULT_WIDTH * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
-    _widget->SetItemHeight ( ITEM_HEIGHT * gx_ui_Scale );
+    _widget.Resize ( DEFAULT_LEFT_BOTTOM_X * gx_ui_Scale, DEFAULT_LEFT_BOTTOM_Y * gx_ui_Scale, DEFAULT_WIDTH * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
+    _widget.SetItemHeight ( ITEM_HEIGHT * gx_ui_Scale );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIFileListBoxRenderer" )
-    _widget->SetRenderer ( new EMUIFileListBoxRenderer ( _widget ) );
+    _widget.SetRenderer ( new EMUIFileListBoxRenderer ( &_widget ) );
 }
 
 EMUIFileListBox::~EMUIFileListBox ()
 {
-    delete _widget->GetRenderer ();
-    delete _widget;
+    delete _widget.GetRenderer ();
 }
 
-GXWidget* EMUIFileListBox::GetWidget () const
+GXWidget* EMUIFileListBox::GetWidget ()
 {
-    return _widget;
+    return &_widget;
 }
 
 GXVoid EMUIFileListBox::Resize ( GXFloat leftBottomX, GXFloat leftBottomY, GXFloat width, GXFloat height )
 {
-    _widget->Resize ( leftBottomX, leftBottomY, width, height );
+    _widget.Resize ( leftBottomX, leftBottomY, width, height );
 }
 
 GXVoid EMUIFileListBox::AddFolder ( const GXWChar* name )
 {
-    _widget->AddItem ( new EMUIFileListBoxItem ( eEMUIFileListBoxItemType::Folder, name ) );
+    _widget.AddItem ( new EMUIFileListBoxItem ( eEMUIFileListBoxItemType::Folder, name ) );
 }
 
 GXVoid EMUIFileListBox::AddFile ( const GXWChar* name )
 {
-    _widget->AddItem ( new EMUIFileListBoxItem ( eEMUIFileListBoxItemType::File, name ) );
+    _widget.AddItem ( new EMUIFileListBoxItem ( eEMUIFileListBoxItemType::File, name ) );
 }
 
 GXVoid EMUIFileListBox::Clear ()
 {
-    _widget->RemoveAllItems ();
+    _widget.RemoveAllItems ();
 }
 
 GXVoid EMUIFileListBox::AddItems ( const EMUIFileListBoxItem* itemArray, GXUInt items )
@@ -329,29 +328,29 @@ GXVoid EMUIFileListBox::AddItems ( const EMUIFileListBoxItem* itemArray, GXUInt 
     for ( GXUInt i = 0u; i < items; ++i )
         elements[ i ] = new EMUIFileListBoxItem ( itemArray[ i ].GetType (), itemArray[ i ].GetName () );
     
-    _widget->AddItems ( reinterpret_cast<GXVoid**> ( elements ), items );
+    _widget.AddItems ( reinterpret_cast<GXVoid**> ( elements ), items );
 
     free ( elements );
 }
 
 GXVoid EMUIFileListBox::Redraw ()
 {
-    _widget->Redraw ();
+    _widget.Redraw ();
 }
 
 const GXVoid* EMUIFileListBox::GetSelectedItem () const
 {
-    return _widget->GetSelectedItem ();
+    return _widget.GetSelectedItem ();
 }
 
 GXVoid EMUIFileListBox::SetOnItemSelectedCallback ( GXVoid* context, GXUIListBoxItemOnItemSelectHandler callback )
 {
-    _widget->SetOnItemSelectedCallback ( context, callback );
+    _widget.SetOnItemSelectedCallback ( context, callback );
 }
 
 GXVoid EMUIFileListBox::SetOnItemDoubleClickedCallbak ( GXVoid* context, GXUIListBoxItemOnItemDoubleClickHandler callback )
 {
-    _widget->SetOnItemDoubleClickedCallback ( context, callback );
+    _widget.SetOnItemDoubleClickedCallback ( context, callback );
 }
 
 GXVoid GXCALL EMUIFileListBox::ItemDestructor ( GXVoid* itemData )

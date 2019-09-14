@@ -186,33 +186,32 @@ GXVoid EMUIMenuRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 EMUIMenu::EMUIMenu ( EMUI* parent ):
     EMUI ( parent ),
-    _widget ( new GXUIMenu ( parent ? parent->GetWidget () : nullptr ) )
+    _widget ( parent ? parent->GetWidget () : nullptr )
 {
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIMenuRenderer" )
-    _widget->SetRenderer ( new EMUIMenuRenderer ( _widget ) );
-    _widget->Resize ( DEFAULT_BOTTOM_LEFT_X * gx_ui_Scale, DEFAULT_BOTTOM_LEFT_Y * gx_ui_Scale, ANY_WIDTH, ITEM_HEIGHT * gx_ui_Scale );
+    _widget.SetRenderer ( new EMUIMenuRenderer ( &_widget ) );
+    _widget.Resize ( DEFAULT_BOTTOM_LEFT_X * gx_ui_Scale, DEFAULT_BOTTOM_LEFT_Y * gx_ui_Scale, ANY_WIDTH, ITEM_HEIGHT * gx_ui_Scale );
 }
 
 EMUIMenu::~EMUIMenu ()
 {
-    delete _widget->GetRenderer ();
-    delete _widget;
+    delete _widget.GetRenderer ();
 }
 
-GXWidget* EMUIMenu::GetWidget () const
+GXWidget* EMUIMenu::GetWidget ()
 {
-    return _widget;
+    return &_widget;
 }
 
 GXVoid EMUIMenu::AddItem ( const GXWChar* name, EMUIPopup* popup )
 {
-    const EMUIMenuRenderer* renderer = static_cast<const EMUIMenuRenderer*> ( _widget->GetRenderer () );
-    _widget->AddItem ( name, renderer->GetTextWidth ( name ) + TEXT_EXTEND * gx_ui_Scale, popup ? static_cast<GXUIPopup*> ( popup->GetWidget () ) : nullptr );
+    const EMUIMenuRenderer* renderer = static_cast<const EMUIMenuRenderer*> ( _widget.GetRenderer () );
+    _widget.AddItem ( name, renderer->GetTextWidth ( name ) + TEXT_EXTEND * gx_ui_Scale, popup ? static_cast<GXUIPopup*> ( popup->GetWidget () ) : nullptr );
 }
 
 GXVoid EMUIMenu::SetLocation ( GXFloat leftBottomX, GXFloat leftBottomY )
 {
-    _widget->Resize ( leftBottomX, leftBottomY, ANY_WIDTH, ITEM_HEIGHT * gx_ui_Scale );
+    _widget.Resize ( leftBottomX, leftBottomY, ANY_WIDTH, ITEM_HEIGHT * gx_ui_Scale );
 }
 
 GXFloat EMUIMenu::GetHeight () const

@@ -9,13 +9,13 @@
 class EMUIPopup final : public EMUI
 {
     private:
-        GXUIPopup*      _widget;
+        GXUIPopup       _widget;
 
     public:
         explicit EMUIPopup ( EMUI* parent );
         ~EMUIPopup () override;
 
-        GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () override;
 
         GXVoid AddItem ( GXString name, GXVoid* context, GXUIPopupActionHandler action );
 

@@ -9,13 +9,13 @@
 class EMUIDraggableArea final : public EMUI
 {
     private:
-        GXUIDragableArea*       _widget;
+        GXUIDragableArea    _widget;
 
     public:
         explicit EMUIDraggableArea ( EMUI* parent );
         ~EMUIDraggableArea () override;
 
-        GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () override;
 
         GXVoid Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height );
 

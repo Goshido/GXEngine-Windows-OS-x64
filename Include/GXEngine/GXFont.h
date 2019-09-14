@@ -1,4 +1,4 @@
-// version 1.16
+// version 1.17
 
 #ifndef GX_FONT
 #define GX_FONT
@@ -28,7 +28,7 @@ class GXFont final : public GXMemoryInspector
         GXFontEntry*    _fontEntry;
 
     public:
-        explicit GXFont ( const GXWChar* fileName, GXUShort size );
+        explicit GXFont ( const GXString &fileName, GXUShort size );
         ~GXFont () override;
 
         GXBool GetGlyph ( GXUInt symbol, GXGlyphInfo &info ) const;

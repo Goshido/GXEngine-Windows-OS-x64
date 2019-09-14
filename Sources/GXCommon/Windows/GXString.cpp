@@ -1,4 +1,4 @@
-// version 1.3
+// version 1.4
 
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXLogger.h>
@@ -47,6 +47,7 @@ class GXStringData final : public GXMemoryInspector
         // Returns buffer for fill UTF16 string content.
         // Method will try to reuse existing buffer or make Malloc for new buffer.
         GXUTF16* GetInputBuffer ( GXUPointer neededSpace );
+        GXVoid RecountSymbols ();
 
         const GXMBChar* GetMultibyteData ( GXUPointer &size );
         const GXUTF16* GetUTF16Data ( GXUPointer &size ) const;
@@ -145,6 +146,11 @@ GXUTF16* GXStringData::GetInputBuffer ( GXUPointer neededSpace )
     _debugFriendlyString = reinterpret_cast<GXWChar*> ( _utf16Buffer );
 
     return _utf16Buffer;
+}
+
+GXVoid GXStringData::RecountSymbols ()
+{
+    _symbols = !_utf16Buffer ? 0u : static_cast<const GXUPointer> ( GXWcslen ( reinterpret_cast<const GXWChar*> ( _utf16Buffer ) ) + 1u );
 }
 
 const GXMBChar* GXStringData::GetMultibyteData ( GXUPointer &size )
@@ -247,6 +253,111 @@ GXStringData GXStringData::_nullStringData ( nullptr, GX_FALSE );
 
 //---------------------------------------------------------------------------------------------------------------------
 
+GXStringSymbol::GXStringSymbol ( const GXStringSymbol &other ):
+    _lead ( other._lead ),
+    _trailing ( other._trailing )
+{
+    // NOTHING
+}
+
+GXStringSymbol::GXStringSymbol ( const GXChar symbol ):
+    _lead ( static_cast<GXUTF16> ( symbol ) ),
+    _trailing ( 0 )
+{
+    // NOTHING
+}
+
+GXStringSymbol::GXStringSymbol ( const GXWChar symbol ):
+    _lead ( static_cast<GXUTF16> ( symbol ) ),
+    _trailing ( 0 )
+{
+    // NOTHING
+}
+
+GXStringSymbol::~GXStringSymbol ()
+{
+    // NOTHING
+}
+
+GXUInt GXStringSymbol::ToCodePoint () const
+{
+    // Based on https://en.wikipedia.org/wiki/UTF-16#U+0000_to_U+D7FF_and_U+E000_to_U+FFFF
+
+    if ( _trailing == 0u )
+        return static_cast<GXUInt> ( _lead );
+
+    GXUInt tmp = 0x00010000u;
+    tmp |= static_cast<GXUInt> ( _lead & 0x03FFu ) << 10u;
+    return tmp | static_cast<GXUInt> ( _trailing & 0x03FFu );
+}
+
+GXStringSymbol& GXStringSymbol::operator = ( const GXStringSymbol &other )
+{
+    _lead = other._lead;
+    _trailing = other._trailing;
+    return *this;
+}
+
+GXStringSymbol& GXStringSymbol::operator = ( const GXChar symbol )
+{
+    _lead = static_cast<GXUTF16> ( symbol );
+    _trailing = 0u;
+    return *this;
+}
+
+GXStringSymbol& GXStringSymbol::operator = ( const GXWChar symbol )
+{
+    _lead = static_cast<GXUTF16> ( symbol );
+    _trailing = 0u;
+    return *this;
+}
+
+GXBool GXStringSymbol::operator == ( const GXStringSymbol &other ) const
+{
+    return _lead == other._lead && _trailing == other._trailing;
+}
+
+GXBool GXStringSymbol::operator == ( GXChar symbol ) const
+{
+    return ToCodePoint () == static_cast<GXUInt> ( symbol );
+}
+
+GXBool GXStringSymbol::operator == ( GXWChar symbol ) const
+{
+    return ToCodePoint () == static_cast<GXUInt> ( symbol );
+}
+
+GXBool GXStringSymbol::operator != ( const GXStringSymbol &other ) const
+{
+    return _lead != other._lead || _trailing != other._trailing;
+}
+
+GXBool GXStringSymbol::operator != ( GXChar symbol ) const
+{
+    return ToCodePoint () != static_cast<GXUInt> ( symbol );
+}
+
+GXBool GXStringSymbol::operator != ( GXWChar symbol ) const
+{
+    return ToCodePoint () != static_cast<GXUInt> ( symbol );
+}
+
+GXStringSymbol::GXStringSymbol ( GXUTF16 trivial ):
+    _lead ( trivial ),
+    _trailing ( 0u )
+{
+    // NOTHING
+}
+
+GXStringSymbol::GXStringSymbol ( GXUTF16 lead, GXUTF16 trailing ):
+    _lead ( lead ),
+    _trailing ( trailing )
+{
+    // NOTHING
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 GXString::GXString ()
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXString" )
     _stringData ( &( GXStringData::GetNullStringData () ) )
@@ -316,6 +427,19 @@ GXString::GXString ( GXWChar character )
     _stringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( string ), GX_FALSE );
 }
 
+GXString::GXString ( GXUTF16* string )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXString" )
+{
+    if ( !string )
+    {
+        _stringData = &( GXStringData::GetNullStringData () );
+        return;
+    }
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" )
+    _stringData = new GXStringData ( string, GX_FALSE );
+}
+
 GXString::~GXString ()
 {
     _stringData->Release ();
@@ -352,7 +476,7 @@ const GXUPointer GXString::GetSymbolCount () const
 
 const GXBool GXString::IsEmpty () const
 {
-    return _stringData->GetSymbolCount () < 1u;
+    return _stringData->GetSymbolCount () <= 1u;
 }
 
 const GXBool GXString::IsNull () const
@@ -458,6 +582,7 @@ GXVoid GXString::FromSystemMultibyteString ( const GXMBChar* string )
     {
         utf16String = reinterpret_cast<GXWChar*> ( _stringData->GetInputBuffer ( neededSpace ) );
         MultiByteToWideChar ( CP_ACP, MB_PRECOMPOSED, string, -1, utf16String, symbols );
+        _stringData->RecountSymbols ();
         return;
     }
 
@@ -494,6 +619,7 @@ GXVoid GXString::FromSystemWideString ( const GXWChar* string )
     {
         const GXUPointer neededSpace = ( GXWcslen ( string ) + 1u ) * sizeof ( GXUTF16 );
         memcpy ( _stringData->GetInputBuffer ( neededSpace ), string, neededSpace );
+        _stringData->RecountSymbols ();
         return;
     }
 
@@ -531,6 +657,7 @@ GXVoid GXString::FromUTF8 ( const GXUTF8* string )
     {
         utf16String = reinterpret_cast<GXWChar*> ( _stringData->GetInputBuffer ( neededSpace ) );
         MultiByteToWideChar ( CP_UTF8, MB_PRECOMPOSED, string, -1, utf16String, symbols );
+        _stringData->RecountSymbols ();
         return;
     }
 
@@ -553,6 +680,157 @@ const GXUTF8* GXString::ToUTF8 ()
 const GXUTF8* GXString::ToUTF8 ( GXUPointer &stringSize )
 {
     return _stringData->GetUTF8Data ( stringSize );
+}
+
+GXVoid GXString::FromUTF16 ( const GXUTF16* string )
+{
+    FromSystemWideString ( reinterpret_cast<const GXWChar*> ( string ) );
+}
+
+const GXUTF16* GXString::ToUTF16 () const
+{
+    GXUPointer tmp;
+    return _stringData->GetUTF16Data ( tmp );
+}
+
+const GXUTF16* GXString::ToUTF16 ( GXUPointer &stringSize ) const
+{
+    return _stringData->GetUTF16Data ( stringSize );
+}
+
+GXVoid GXString::FromSymbols ( const GXStringSymbol* symbols )
+{
+    if ( !symbols )
+    {
+        Clear ();
+        return;
+    }
+
+    // Null terminator at least.
+    GXUPointer neededSpace = sizeof ( GXUTF16 );
+
+    for ( const GXStringSymbol* symbol = symbols; *symbol != '\0'; ++symbol )
+        neededSpace += symbol->_trailing == 0u ? sizeof ( GXUTF16 ) : 2 * sizeof ( GXUTF16 );
+
+    GXUTF16* buffer = nullptr;
+    const GXBool isReuse = !_stringData->IsNullString () && !_stringData->IsShared ();
+
+    if ( isReuse )
+    {
+        buffer = _stringData->GetInputBuffer ( neededSpace );
+    }
+    else
+    {
+        buffer = static_cast<GXUTF16*> ( Malloc ( neededSpace ) );
+        _stringData->Release ();
+    }
+
+    GXUTF16* write = buffer;
+
+    for ( const GXStringSymbol* symbol = symbols; *symbol != '\0'; ++symbol )
+    {
+        *write = symbol->_lead;
+        ++write;
+
+        if ( symbol->_trailing == 0u ) continue;
+
+        *write = symbol->_trailing;
+        ++write;
+    }
+
+    // Null terminator.
+    *write = 0u;
+
+    if ( isReuse )
+    {
+        _stringData->RecountSymbols ();
+        return;
+    }
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" )
+    _stringData = new GXStringData ( buffer, GX_TRUE );
+}
+
+GXStringSymbol* GXString::ToSymbols () const
+{
+    if ( IsNull () )
+        return nullptr;
+
+    GXStringSymbol* symbols = static_cast<GXStringSymbol*> ( Malloc ( sizeof ( GXStringSymbol ) * ( GetSymbolCount () + 1u ) ) );
+    GXStringSymbol* write = symbols;
+
+    GXUPointer chunkCount = 0u;
+    const GXUTF16* data = _stringData->GetUTF16Data ( chunkCount );
+    chunkCount /= sizeof ( GXUTF16 );
+
+    for ( GXUPointer i = 0u; i < chunkCount; ++write )
+    {
+        // Extract high 6 bits. 0xD800 is lead surrogate.
+        // See https://en.wikipedia.org/wiki/UTF-16#U+0000_to_U+D7FF_and_U+E000_to_U+FFFF
+
+        const GXUTF16 lead = data[ i ];
+
+        if ( ( lead & 0xFC00u ) == 0xD800u )
+        {
+            // Two GXUTF16.
+            write->_lead = lead;
+            write->_trailing = data[ i + 1u ];
+            i += 2u;
+
+            continue;
+        }
+
+        // One GXUTF16.
+        write->_lead = lead;
+        write->_trailing = 0u;
+
+        ++i;
+    }
+
+    return symbols;
+}
+
+GXBool GXString::ToSymbols ( GXStringSymbol*& buffer, GXUPointer maxSymbolCount ) const
+{
+    const GXUPointer targetSymbolCount = GetSymbolCount () + 1u;
+
+    if ( maxSymbolCount < targetSymbolCount )
+    {
+        GXLogA ( "GXString::ToSymbols::Error - Buffer is too small. Buffer maximum symbol capacity: %zu. String symbols: %zu\n", maxSymbolCount, targetSymbolCount );
+        return GX_FALSE;
+    }
+
+    GXStringSymbol* write = buffer;
+
+    GXUPointer chunkCount = 0u;
+    const GXUTF16* data = _stringData->GetUTF16Data ( chunkCount );
+    chunkCount /= sizeof ( GXUTF16 );
+
+    for ( GXUPointer i = 0u; i < chunkCount; ++write )
+    {
+        // Extract high 6 bits. 0xD800 is lead surrogate.
+        // See https://en.wikipedia.org/wiki/UTF-16#U+0000_to_U+D7FF_and_U+E000_to_U+FFFF
+
+        const GXUTF16 lead = data[ i ];
+
+        if ( ( lead & 0xFC00u ) == 0xD800u )
+        {
+            // Two GXUTF16.
+            write->_lead = lead;
+            write->_trailing = data[ i + 1u ];
+            i += 2u;
+
+            continue;
+        }
+
+        // One GXUTF16.
+        write->_lead = lead;
+        write->_trailing = 0u;
+
+        ++i;
+    }
+
+    return GX_TRUE;
 }
 
 eGXCompareResult GXString::Compare ( const GXString other ) const
@@ -809,10 +1087,41 @@ GXBool GXString::operator == ( GXWChar character ) const
     return GXWcscmp ( reinterpret_cast<const GXWChar*> ( _stringData->GetUTF16Data ( tmp ) ), string ) == 0;
 }
 
+GXStringSymbol GXString::operator [] ( GXUPointer symbolIndex ) const
+{
+    const GXUPointer count = GetSymbolCount ();
+
+    if ( symbolIndex >= count )
+    {
+        GXLogA ( "GXString::operator [] - Can't return symbol with %zu index. String contains %zu symbol(s) only.", symbolIndex, count );
+        return GXStringSymbol ( '\0' );
+    }
+
+    GXUPointer tmp;
+    const GXUTF16* data = _stringData->GetUTF16Data ( tmp );
+
+    for ( GXUPointer i = 0u; i < symbolIndex; ++i )
+    {
+        // Extract high 6 bits. 0xD800 is lead surrogate.
+        // See https://en.wikipedia.org/wiki/UTF-16#U+0000_to_U+D7FF_and_U+E000_to_U+FFFF
+
+        data += ( ( *data ) & 0xFC00u ) == 0xD800u ? 2u : 1u;
+    }
+
+    // Same trick.
+    return ( ( *data ) & 0xFC00u ) == 0xD800u ? GXStringSymbol ( data[ 0u ], data[ 1u ] ) : GXStringSymbol ( data[ 0u ] );
+}
+
 GXString::operator const GXMBChar* () const
 {
     GXUPointer tmp;
     return _stringData->GetMultibyteData ( tmp );
+}
+
+GXString::operator const GXUTF16* () const
+{
+    GXUPointer tmp;
+    return _stringData->GetUTF16Data ( tmp );
 }
 
 GXString::operator const GXWChar* () const
@@ -824,7 +1133,7 @@ GXString::operator const GXWChar* () const
 GXString::GXString ( const GXUTF16* content, GXBool canOwnContent )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXString" )
 {
-    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXString" )
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXStringData" )
     _stringData = new GXStringData ( content, canOwnContent );
 }
 

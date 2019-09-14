@@ -10,7 +10,8 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXWidget::GXWidget ( GXWidget* parent, GXBool isNeedRegister ):
+GXWidget::GXWidget ( GXWidget* parent, GXBool isNeedRegister )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXWidget" )
     _isRegistered ( isNeedRegister ),
     _next ( nullptr ),
     _previous ( nullptr ),

@@ -9,13 +9,13 @@
 class EMUIStaticText final : public EMUI
 {
     private:
-        GXUIStaticText*     _widget;
+        GXUIStaticText      _widget;
 
     public:
         explicit EMUIStaticText ( EMUI* parent );
         ~EMUIStaticText () override;
 
-        GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () override;
 
         GXVoid SetText ( const GXWChar* text );
         const GXWChar* GetText () const;

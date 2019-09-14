@@ -70,7 +70,10 @@ EMUIToneMapperSettings* EMUIToneMapperSettings::_instance = nullptr;
 EMUIToneMapperSettings& GXCALL EMUIToneMapperSettings::GetInstance ()
 {
     if ( !_instance )
+    {
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIToneMapperSettings" )
         _instance = new EMUIToneMapperSettings ();
+    }
 
     return *_instance;
 }
@@ -99,63 +102,83 @@ EMUIToneMapperSettings::~EMUIToneMapperSettings ()
 
     delete _topSeparator;
     delete _caption;
-    delete _mainPanel;
+
 
     _instance = nullptr;
 }
 
-GXWidget* EMUIToneMapperSettings::GetWidget () const
+GXWidget* EMUIToneMapperSettings::GetWidget ()
 {
-    return _mainPanel->GetWidget ();
+    return _mainPanel.GetWidget ();
 }
 
 GXVoid EMUIToneMapperSettings::Show ()
 {
-    if ( !_mainPanel->GetWidget ()->IsVisible () || !_gamma->GetText () )
+    if ( !_mainPanel.GetWidget ()->IsVisible () || _gamma->GetText ().IsNull () || _gamma->GetText ().IsEmpty () )
         SyncSettings ();
 
-    _mainPanel->Show ();
+    _mainPanel.Show ();
 }
 
 GXVoid EMUIToneMapperSettings::Hide ()
 {
-    _mainPanel->Hide ();
+    _mainPanel.Hide ();
 }
 
 EMUIToneMapperSettings::EMUIToneMapperSettings ():
     EMUI ( nullptr ),
-    _mainPanel ( new EMUIDraggableArea ( nullptr ) )
+    _mainPanel ( nullptr )
 {
-    _caption = new EMUIStaticText ( _mainPanel );
-    _topSeparator = new EMUISeparator ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _caption = new EMUIStaticText ( &_mainPanel );
 
-    _gammaLabel = new EMUIStaticText ( _mainPanel );
-    _gamma = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISeparator" )
+    _topSeparator = new EMUISeparator ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _gammaLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" )
+    _gamma = new EMUIEditBox ( &_mainPanel );
     GXUIEditBox* editBox = static_cast<GXUIEditBox*> ( _gamma->GetWidget () );
     GXUIEditBoxFloatValidator* floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_GAMMA, MAXIMUM_GAMMA );
     _gamma->SetValidator ( *floatValidator );
 
-    _sensitivityLabel = new EMUIStaticText ( _mainPanel );
-    _sensitivity = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _sensitivityLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" )
+    _sensitivity = new EMUIEditBox ( &_mainPanel );
     editBox = static_cast<GXUIEditBox*> ( _sensitivity->GetWidget () );
     floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_SENSITIVITY, MAXIMUM_SENSITIVITY );
     _sensitivity->SetValidator ( *floatValidator );
 
-    _eyeAdaptationSpeedLabel = new EMUIStaticText ( _mainPanel );
-    _eyeAdaptationSpeed = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _eyeAdaptationSpeedLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" )
+    _eyeAdaptationSpeed = new EMUIEditBox ( &_mainPanel );
     editBox = static_cast<GXUIEditBox*> ( _eyeAdaptationSpeed->GetWidget () );
     floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_ADOPTATION_SPEED, MAXIMUM_ADOPTATION_SPEED );
     _eyeAdaptationSpeed->SetValidator ( *floatValidator );
 
-    _whiteIntensityLabel = new EMUIStaticText ( _mainPanel );
-    _whiteIntensity = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _whiteIntensityLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" )
+    _whiteIntensity = new EMUIEditBox ( &_mainPanel );
     editBox = static_cast<GXUIEditBox*> ( _whiteIntensity->GetWidget () );
     floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_WHITE_INTENSITY, MAXIMUM_WHITE_INTENSITY );
     _whiteIntensity->SetValidator ( *floatValidator );
 
-    _bottomSeparator = new EMUISeparator ( _mainPanel );
-    _cancel = new EMUIButton ( _mainPanel );
-    _apply = new EMUIButton ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISeparator" )
+    _bottomSeparator = new EMUISeparator ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIButton" )
+    _cancel = new EMUIButton ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIButton" )
+    _apply = new EMUIButton ( &_mainPanel );
 
     const GXLocale& locale = GXLocale::GetInstance ();
 
@@ -190,13 +213,13 @@ EMUIToneMapperSettings::EMUIToneMapperSettings ():
     _cancel->SetOnLeftMouseButtonCallback ( this, &EMUIToneMapperSettings::OnButton );
     _apply->SetOnLeftMouseButtonCallback ( this, &EMUIToneMapperSettings::OnButton );
 
-    _mainPanel->SetOnResizeCallback ( this, &EMUIToneMapperSettings::OnResize );
+    _mainPanel.SetOnResizeCallback ( this, &EMUIToneMapperSettings::OnResize );
 
     const GXFloat height = DEFAULT_MAIN_PANEL_HEIGHT * gx_ui_Scale;
-    _mainPanel->Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
-    _mainPanel->SetMinimumWidth ( MAIN_PANEL_MINIMUM_WIDTH * gx_ui_Scale );
-    _mainPanel->SetMinimumHeight ( MAIN_PANEL_MINIMUM_HEIGHT * gx_ui_Scale );
-    _mainPanel->Hide ();
+    _mainPanel.Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
+    _mainPanel.SetMinimumWidth ( MAIN_PANEL_MINIMUM_WIDTH * gx_ui_Scale );
+    _mainPanel.SetMinimumHeight ( MAIN_PANEL_MINIMUM_HEIGHT * gx_ui_Scale );
+    _mainPanel.Hide ();
 }
 
 GXVoid EMUIToneMapperSettings::SyncSettings ()

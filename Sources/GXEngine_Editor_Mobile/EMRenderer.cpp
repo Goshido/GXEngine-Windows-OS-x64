@@ -412,7 +412,7 @@ GXVoid EMRenderer::ApplySSAO ()
         GXLogA ( "EMRenderer::ApplySSAO::Error - Что-то не так с FBO на третьем проходе (ошибка 0x%08x)\n", status );
 
     _gaussVerticalBlurMaterial.Bind ( nullTransform );
-    _screenQuadMesh.Render ();
+ _screenQuadMesh.Render ();
     _gaussVerticalBlurMaterial.Unbind ();
 
     glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _yottaTexture.GetTextureObject (), 0 );
@@ -424,7 +424,7 @@ GXVoid EMRenderer::ApplySSAO ()
         GXLogA ( "EMRenderer::ApplySSAO::Error - Что-то не так с FBO на четвёртом проходе (ошибка 0x%08x)\n", status );
 
     _ssaoApplyMaterial.Bind ( nullTransform );
-    _screenQuadMesh.Render ();
+ _screenQuadMesh.Render ();
     _ssaoApplyMaterial.Unbind ();
 }
 
@@ -459,7 +459,7 @@ GXVoid EMRenderer::ApplyMotionBlur ()
         GXLogA ( "EMRenderer::ApplyMotionBlur::Error - Что-то не так с FBO на первом проходе (ошибка 0x%08x)\n", status );
 
     _velocityTileMaxMaterial.Bind ( GXTransform::GetNullTransform () );
-    _screenQuadMesh.Render ();
+ _screenQuadMesh.Render ();
     _velocityTileMaxMaterial.Unbind ();
 
     glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _velocityNeighborMaxTexture.GetTextureObject (), 0 );
@@ -470,7 +470,7 @@ GXVoid EMRenderer::ApplyMotionBlur ()
         GXLogA ( "EMRenderer::ApplyMotionBlur::Error - Что-то не так с FBO на втором проходе (ошибка 0x%08x)\n", status );
 
     _velocityNeighborMaxMaterial.Bind ( GXTransform::GetNullTransform () );
-    _screenQuadMesh.Render ();
+ _screenQuadMesh.Render ();
     _velocityNeighborMaxMaterial.Unbind ();
 
     glFramebufferTexture ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _omegaTexture.GetTextureObject (), 0 );
@@ -483,7 +483,7 @@ GXVoid EMRenderer::ApplyMotionBlur ()
         GXLogA ( "EMRenderer::ApplyMotionBlur::Error - Что-то не так с FBO на третьем проходе (ошибка 0x%08x)\n", status );
 
     _motionBlurMaterial.Bind ( GXTransform::GetNullTransform () );
-    _screenQuadMesh.Render ();
+ _screenQuadMesh.Render ();
     _motionBlurMaterial.Unbind ();
 }
 
@@ -522,7 +522,7 @@ GXVoid EMRenderer::ApplyToneMapping ( GXFloat deltaTime )
     const GXTransform& nullTransform = GXTransform::GetNullTransform ();
 
     _importantAreaFilterMaterial.Bind ( nullTransform );
-    _screenQuadMesh.Render ();
+ _screenQuadMesh.Render ();
     _importantAreaFilterMaterial.Unbind ();
 
     const GXUByte reducingSteps = _importantAreaTexture.GetLevelOfDetailNumber ();
@@ -553,7 +553,7 @@ GXVoid EMRenderer::ApplyToneMapping ( GXFloat deltaTime )
 
         _toneMapperLuminanceTripletReducerMaterial.SetLevelOfDetailToReduce ( static_cast<GXUByte> ( i - 1u ) );
         _toneMapperLuminanceTripletReducerMaterial.Bind ( nullTransform );
-        _screenQuadMesh.Render ();
+     _screenQuadMesh.Render ();
         _toneMapperLuminanceTripletReducerMaterial.Unbind ();
     }
 
@@ -590,7 +590,7 @@ GXVoid EMRenderer::ApplyToneMapping ( GXFloat deltaTime )
 
     _toneMapperMaterial.SetLuminanceTriplet ( _toneMapperEffectiveLuminanceTriplet.GetX (), _toneMapperEffectiveLuminanceTriplet.GetY (), _toneMapperEffectiveLuminanceTriplet.GetZ () );
     _toneMapperMaterial.Bind ( nullTransform );
-    _screenQuadMesh.Render ();
+ _screenQuadMesh.Render ();
     _toneMapperMaterial.Unbind ();
 }
 
@@ -620,7 +620,7 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
     _unlitMaterial.SetColor ( 255u, 255u, 255u, 255u );
     _unlitMaterial.Bind ( _screenQuadMesh );
 
-    _screenQuadMesh.Render ();
+ _screenQuadMesh.Render ();
 
     _unlitMaterial.Unbind ();
 
@@ -682,7 +682,7 @@ GXVoid EMRenderer::PresentFrame ( eEMRenderTarget target )
     _unlitMaterial.SetColor ( 255u, 255u, 255u, OVERLAY_TRANSPARENCY );
     _unlitMaterial.Bind ( _screenQuadMesh );
 
-    _screenQuadMesh.Render ();
+ _screenQuadMesh.Render ();
 
     _unlitMaterial.Unbind ();
 
@@ -878,9 +878,9 @@ EMRenderer::EMRenderer ():
     _newSSAONoiseTextureResolution ( static_cast<GXUShort> ( DEFAULT_SSAO_NOISE_TEXTURE_RESOLUTION ) ),
     _newSSAOMaxDistance ( DEFAULT_SSAO_MAX_DISTANCE ),
     _isSSAOSettingsChanged ( GX_FALSE ),
-    _screenQuadMesh ( L"Meshes/System/ScreenQuad.stm" ),
     _gaussHorizontalBlurMaterial ( eEMGaussHorizontalBlurKernelType::OneChannelFivePixel ),
-    _gaussVerticalBlurMaterial ( eEMGaussVerticalBlurKernelType::OneChannelFivePixel )
+    _gaussVerticalBlurMaterial ( eEMGaussVerticalBlurKernelType::OneChannelFivePixel ),
+    _screenQuadMesh ( "Meshes/System/ScreenQuad.stm" )
 {
     SetObjectMask ( nullptr );
 
@@ -1130,7 +1130,7 @@ GXVoid EMRenderer::LightUpByDirected ( EMDirectedLight* light )
 
     _directedLightMaterial.Bind ( _screenQuadMesh );
 
-    _screenQuadMesh.Render ();
+ _screenQuadMesh.Render ();
 
     _directedLightMaterial.Unbind ();
 }

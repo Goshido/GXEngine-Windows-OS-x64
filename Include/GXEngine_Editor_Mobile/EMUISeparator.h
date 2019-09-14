@@ -8,13 +8,13 @@
 class EMUISeparator final : public EMUI
 {
     private:
-        GXWidget*       _widget;
+        GXWidget    _widget;
 
     public:
         explicit EMUISeparator ( EMUI* parent );
         ~EMUISeparator () override;
 
-        GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () override;
 
         GXVoid Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height );
 

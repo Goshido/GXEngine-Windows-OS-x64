@@ -69,7 +69,10 @@ EMUIMotionBlurSettings* EMUIMotionBlurSettings::_instance = nullptr;
 EMUIMotionBlurSettings& EMUIMotionBlurSettings::GetInstance ()
 {
     if ( !_instance )
+    {
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIMotionBlurSettings" )
         _instance = new EMUIMotionBlurSettings ();
+    }
 
     return *_instance;
 }
@@ -94,57 +97,73 @@ EMUIMotionBlurSettings::~EMUIMotionBlurSettings ()
 
     delete _topSeparator;
     delete _caption;
-    delete _mainPanel;
 
     _instance = nullptr;
 }
 
-GXWidget* EMUIMotionBlurSettings::GetWidget () const
+GXWidget* EMUIMotionBlurSettings::GetWidget ()
 {
-    return _mainPanel->GetWidget ();
+    return _mainPanel.GetWidget ();
 }
 
 GXVoid EMUIMotionBlurSettings::Show ()
 {
-    if ( !_mainPanel->GetWidget ()->IsVisible () || !_maxSamples->GetText () )
+    if ( !_mainPanel.GetWidget ()->IsVisible () || _maxSamples->GetText ().IsEmpty () || _maxSamples->GetText ().IsNull () )
         SyncSettings ();
 
-    _mainPanel->Show ();
+    _mainPanel.Show ();
 }
 
 GXVoid EMUIMotionBlurSettings::Hide ()
 {
-    _mainPanel->Hide ();
+    _mainPanel.Hide ();
 }
 
 EMUIMotionBlurSettings::EMUIMotionBlurSettings ():
     EMUI ( nullptr ),
-    _mainPanel ( new EMUIDraggableArea ( nullptr ) )
+    _mainPanel ( nullptr )
 {
-    _caption = new EMUIStaticText ( _mainPanel );
-    _topSeparator = new EMUISeparator ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _caption = new EMUIStaticText ( &_mainPanel );
 
-    _maxSamplesLabel = new EMUIStaticText ( _mainPanel );
-    _maxSamples = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISeparator" )
+    _topSeparator = new EMUISeparator ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _maxSamplesLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" )
+    _maxSamples = new EMUIEditBox ( &_mainPanel );
     GXUIEditBox* editBox = static_cast<GXUIEditBox*> ( _maxSamples->GetWidget () );
     GXUIEditBoxIntegerValidator* integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_STRING, *editBox, MINIMUM_SAMPLES, MAXIMUM_SAMPLES );
     _maxSamples->SetValidator ( *integerValidator );
 
-    _depthLimitLabel = new EMUIStaticText ( _mainPanel );
-    _depthLimit = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _depthLimitLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" )
+    _depthLimit = new EMUIEditBox ( &_mainPanel );
     editBox = static_cast<GXUIEditBox*> ( _depthLimit->GetWidget () );
     GXUIEditBoxFloatValidator* floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_DEPTH_LIMIT, MAXIMUM_DEPTH_LIMIT );
     _depthLimit->SetValidator ( *floatValidator );
 
-    _exposureLabel = new EMUIStaticText ( _mainPanel );
-    _exposure = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _exposureLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" )
+    _exposure = new EMUIEditBox ( &_mainPanel );
     editBox = static_cast<GXUIEditBox*> ( _exposure->GetWidget () );
     floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_EXPOSURE, MAXIMUM_EXPOSURE );
     _exposure->SetValidator ( *floatValidator );
 
-    _bottomSeparator = new EMUISeparator ( _mainPanel );
-    _cancel = new EMUIButton ( _mainPanel );
-    _apply = new EMUIButton ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISeparator" )
+    _bottomSeparator = new EMUISeparator ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIButton" )
+    _cancel = new EMUIButton ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIButton" )
+    _apply = new EMUIButton ( &_mainPanel );
 
     const GXLocale& locale = GXLocale::GetInstance ();
 
@@ -174,13 +193,13 @@ EMUIMotionBlurSettings::EMUIMotionBlurSettings ():
     _cancel->SetOnLeftMouseButtonCallback ( this, &EMUIMotionBlurSettings::OnButton );
     _apply->SetOnLeftMouseButtonCallback ( this, &EMUIMotionBlurSettings::OnButton );
 
-    _mainPanel->SetOnResizeCallback ( this, &EMUIMotionBlurSettings::OnResize );
+    _mainPanel.SetOnResizeCallback ( this, &EMUIMotionBlurSettings::OnResize );
 
     const GXFloat height = DEFAULT_MAIN_PANEL_HEIGHT * gx_ui_Scale;
-    _mainPanel->Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
-    _mainPanel->SetMinimumWidth ( MAIN_PANEL_MINIMUM_WIDTH * gx_ui_Scale );
-    _mainPanel->SetMinimumHeight ( MAIN_PANEL_MINIMUM_HEIGHT * gx_ui_Scale );
-    _mainPanel->Hide ();
+    _mainPanel.Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
+    _mainPanel.SetMinimumWidth ( MAIN_PANEL_MINIMUM_WIDTH * gx_ui_Scale );
+    _mainPanel.SetMinimumHeight ( MAIN_PANEL_MINIMUM_HEIGHT * gx_ui_Scale );
+    _mainPanel.Hide ();
 }
 
 GXVoid EMUIMotionBlurSettings::SyncSettings ()

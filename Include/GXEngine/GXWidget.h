@@ -10,7 +10,7 @@
 
 
 class GXWidgetRenderer;
-class GXWidget
+class GXWidget : public GXMemoryInspector
 {
     friend class GXTouchSurface;
     friend class GXWidgetIterator;

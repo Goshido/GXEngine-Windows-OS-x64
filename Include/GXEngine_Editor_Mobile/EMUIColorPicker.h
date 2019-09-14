@@ -19,7 +19,7 @@ typedef GXVoid ( GXCALL* EMColorPickerOnHSVAColorUByteHandler ) ( GXVoid* contex
 class EMUIColorPicker final : public EMUI
 {
     private:
-        EMUIDraggableArea*                      _mainPanel;
+        EMUIDraggableArea                       _mainPanel;
 
         EMColorPickerOnHSVAColorHandler         _onHSVColor;
         EMColorPickerOnRGBAColorHandler         _onRGBColor;
@@ -60,7 +60,7 @@ class EMUIColorPicker final : public EMUI
         static EMUIColorPicker& GetInstance ();
         ~EMUIColorPicker () override;
 
-        GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () override;
 
         GXVoid PickColor ( GXVoid* context, EMColorPickerOnHSVAColorHandler callback, const GXColorHSV &oldColorValue );
         GXVoid PickColor ( GXVoid* context, EMColorPickerOnRGBAColorHandler callback, const GXColorRGB &oldColorValue );

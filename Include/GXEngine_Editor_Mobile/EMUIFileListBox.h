@@ -37,13 +37,13 @@ class EMUIFileListBoxItem final
 class EMUIFileListBox final : public EMUI
 {
     private:
-        GXUIListBox*    _widget;
+        GXUIListBox     _widget;
 
     public:
         explicit EMUIFileListBox ( EMUI* parent );
         ~EMUIFileListBox () override;
 
-        GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () override;
 
         GXVoid Resize ( GXFloat leftBottomX, GXFloat leftBottomY, GXFloat width, GXFloat height );
         GXVoid AddFolder ( const GXWChar* name );

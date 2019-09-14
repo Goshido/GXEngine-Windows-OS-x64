@@ -1,4 +1,4 @@
-// version 1.7
+// version 1.8
 
 #include <GXEngine/GXUIEditBox.h>
 #include <GXEngine/GXUIMessage.h>
@@ -8,11 +8,11 @@
 #include <GXCommon/GXStrings.h>
 
 
-#define GX_UI_DEFAULT_FONT                  L"Fonts/trebuc.ttf"
+#define GX_UI_DEFAULT_FONT                  "Fonts/trebuc.ttf"
 #define GX_UI_DEFAULT_FONT_SIZE             0.33f
 #define GX_UI_DEFAULT_TEXT_ALIGNMENT        eGXUITextAlignment::Left
 #define GX_UI_KEYSTATE_MASK                 0x8000
-#define GX_UI_SEPARATOR_SYMBOL              L' '
+#define GX_UI_SEPARATOR_SYMBOL              ' '
 #define GX_UI_EPSILON                       0.2f
 #define GX_UI_DEFAULT_TEXT_LEFT_OFFSET      0.1f
 #define GX_UI_DEFAULT_TEXT_RIGHT_OFFSET     0.1f
@@ -34,7 +34,7 @@
 
 struct GXUIEditBoxFontInfo final
 {
-    GXWChar*    _fontFile;
+    GXUTF16*    _fontFile;
     GXUShort    _size;
 };
 
@@ -55,7 +55,8 @@ GXUIEditBox::GXUIEditBox ( GXWidget* parent ):
     _onFinishEditing ( nullptr ),
     _context ( nullptr ),
     _editCursor ( LoadCursorW ( nullptr, IDC_IBEAM ) ),
-    _arrowCursor ( LoadCursorW ( nullptr, IDC_ARROW ) )
+    _arrowCursor ( LoadCursorW ( nullptr, IDC_ARROW ) ),
+    _isCacheValid ( GX_TRUE )
 {
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXFont" )
     _font = new GXFont ( GX_UI_DEFAULT_FONT, static_cast<GXUShort> ( GX_UI_DEFAULT_FONT_SIZE * gx_ui_Scale ) );
@@ -65,36 +66,41 @@ GXUIEditBox::GXUIEditBox ( GXWidget* parent ):
 GXUIEditBox::~GXUIEditBox ()
 {
     delete _font;
-    GXSafeFree ( _text );
+    SafeFree ( reinterpret_cast<GXVoid**> ( &_text ) );
+    SafeFree ( reinterpret_cast<GXVoid**> ( &_workingBuffer ) );
 }
 
 GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
 {
     if ( message == eGXUIMessage::SetText )
     {
-        _textSymbols = static_cast<GXUInt> ( GXWcslen ( static_cast<const GXWChar*> ( data ) ) );
-        GXUInt size = sizeof ( GXWChar ) * ( _textSymbols + 1 );
+        _tmp.FromUTF16 ( static_cast<const GXUTF16*> ( data ) );
+        _textSymbols = static_cast<GXUInt> ( _tmp.GetSymbolCount () );
 
-        if ( _textSymbols > _maxSymbols )
+        _isCacheValid = GX_FALSE;
+
+        if ( _textSymbols <= _maxSymbols )
         {
-            GXSafeFree ( _text );
-            GXSafeFree ( _workingBuffer );
+            _tmp.ToSymbols ( _text, _maxSymbols + 1u );
+            _cursor = _selection = 0;
+        }
+        else
+        {
+            SafeFree ( reinterpret_cast<GXVoid**> ( &_text ) );
+            SafeFree ( reinterpret_cast<GXVoid**> ( &_workingBuffer ) );
 
-            _text = static_cast<GXWChar*> ( malloc ( size ) );
-            _workingBuffer = static_cast<GXWChar*> ( malloc ( size ) );
+            _text = _tmp.ToSymbols ();
+            _workingBuffer = static_cast<GXStringSymbol*> ( Malloc ( ( _textSymbols + 1u ) * sizeof ( GXStringSymbol ) ) );
 
             _maxSymbols = _textSymbols;
         }
 
-        memcpy ( _text, static_cast<const GXWChar*> ( data ), size );
-        _cursor = _selection = 0;
-
         if ( _validator )
-            _validator->Validate ( _text );
+            _validator->Validate ( _tmp );
 
-        if ( _renderer )
-            _renderer->OnUpdate ();
+        if ( !_renderer ) return;
 
+        _renderer->OnUpdate ();
         return;
     }
 
@@ -102,14 +108,14 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
     {
         if ( _textSymbols == 0 ) return;
 
-        _text[ 0 ] = 0;
+        _text[ 0u ] = '\0';
 
-        _textSymbols = 0;
+        _textSymbols = 0u;
         _cursor = _selection = 0;
 
-        if ( _renderer )
-            _renderer->OnUpdate ();
+        if ( !_renderer ) return;
 
+        _renderer->OnUpdate ();
         return;
     }
 
@@ -121,9 +127,9 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
         GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXFont" )
         _font = new GXFont ( fi->_fontFile, fi->_size );
 
-        if ( _renderer )
-            _renderer->OnUpdate ();
+        if ( !_renderer ) return;
 
+        _renderer->OnUpdate ();
         return;
     }
 
@@ -132,9 +138,9 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
         const eGXUITextAlignment* newAlignment = static_cast<const eGXUITextAlignment*> ( data );
         this->_alignment = *newAlignment;
 
-        if ( _renderer )
-            _renderer->OnUpdate ();
+        if ( !_renderer ) return;
 
+        _renderer->OnUpdate ();
         return;
     }
 
@@ -148,30 +154,39 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
         const GXVec2* pos = static_cast<const GXVec2*> ( data );
 
-        if ( _boundsWorld.IsOverlaped ( pos->GetX (), pos->GetY (), 0.0f ) )
+        if ( _boundsWorld.IsOverlaped ( pos->_data[ 0u ], pos->_data[ 1u ], 0.0f ) )
         {
             LockInput ();
 
             if ( GetKeyState ( VK_SHIFT ) & GX_UI_KEYSTATE_MASK )
+            {
                 _cursor = GetSelectionPosition ( *pos );
+            }
             else
+            {
                 _cursor = _selection = GetSelectionPosition ( *pos );
+            }
         }
         else
         {
             ReleaseInput ();
+            UpdateCache ();
 
-            if ( _validator && _validator->Validate ( _text ) && _onFinishEditing )
+            if ( _validator && _validator->Validate ( _cache ) && _onFinishEditing )
+            {
                 _onFinishEditing ( _context, *this );
+            }
             else if ( _onFinishEditing )
+            {
                 _onFinishEditing ( _context, *this );
+            }
 
             GXTouchSurface::GetInstance ().OnLeftMouseButtonDown ( *pos );
         }
 
-        if ( _renderer )
-            _renderer->OnUpdate ();
+        if ( !_renderer ) return;
 
+        _renderer->OnUpdate ();
         return;
     }
 
@@ -188,30 +203,29 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
         for ( ; end < static_cast<GXInt> ( _textSymbols ); ++end )
         {
-            if ( _text[ end ] == GX_UI_SEPARATOR_SYMBOL )
-                break;
+            if ( _text[ end ] != GX_UI_SEPARATOR_SYMBOL ) continue;
+
+            break;
         }
 
         GXInt begin = current;
 
         for ( ; begin > 0; --begin )
         {
-            if ( _text[ begin ] == GX_UI_SEPARATOR_SYMBOL )
-            {
-                ++begin;
-                break;
-            }
+            if ( _text[ begin ] != GX_UI_SEPARATOR_SYMBOL ) continue;
+
+            ++begin;
+            break;
         }
 
-        if ( _selection != begin || _cursor != end )
-        {
-            _selection = begin;
-            _cursor = end;
+        if ( _selection == begin && _cursor == end ) return;
 
-            if ( _renderer )
-                _renderer->OnUpdate ();
-        }
+        _selection = begin;
+        _cursor = end;
 
+        if ( !_renderer ) return;
+
+        _renderer->OnUpdate ();
         return;
     }
 
@@ -231,7 +245,7 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
     {
         const GXVec2* pos = static_cast<const GXVec2*> ( data );
 
-        if ( _boundsWorld.IsOverlaped ( pos->GetX (), pos->GetY (), 0.0f ) )
+        if ( _boundsWorld.IsOverlaped ( pos->_data[ 0u ], pos->_data[ 1u ], 0.0f ) )
         {
             if ( _currentCursor != &_editCursor )
             {
@@ -250,19 +264,17 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
         if ( _textSymbols == 0 ) return;
 
-        if ( GetKeyState ( VK_LBUTTON ) & GX_UI_KEYSTATE_MASK )
-        {
-            GXInt current = GetSelectionPosition ( *pos );
+        if ( !( GetKeyState ( VK_LBUTTON ) & GX_UI_KEYSTATE_MASK ) ) return;
 
-            if ( current != _cursor )
-            {
-                _cursor = current;
+        GXInt current = GetSelectionPosition ( *pos );
 
-                if ( _renderer )
-                    _renderer->OnUpdate ();
-            }
-        }
+        if ( current == _cursor ) return;
 
+        _cursor = current;
+
+        if ( !_renderer ) return;
+
+        _renderer->OnUpdate ();
         return;
     }
 
@@ -284,27 +296,34 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
             case GX_CTRL_V:
             {
-                if ( IsClipboardFormatAvailable ( CF_UNICODETEXT ) && OpenClipboard ( static_cast<HWND> ( 0 ) ) )
+                if ( !IsClipboardFormatAvailable ( CF_UNICODETEXT ) || !OpenClipboard ( nullptr ) ) break;
+
+                HGLOBAL block = GetClipboardData ( CF_UNICODETEXT );
+
+                if ( !block )
                 {
-                    HGLOBAL block = GetClipboardData ( CF_UNICODETEXT );
-
-                    if ( block )
-                    {
-                        GXWChar* clipBoardData = static_cast<GXWChar*> ( GlobalLock ( block ) );
-
-                        if ( clipBoardData )
-                        {
-                            DeleteText ();
-                            PasteText ( clipBoardData );
-                            GlobalUnlock ( block );
-
-                            if ( _renderer )
-                                _renderer->OnUpdate ();
-                        }
-                    }
-
                     CloseClipboard ();
+                    break;
                 }
+
+                GXWChar* clipBoardData = static_cast<GXWChar*> ( GlobalLock ( block ) );
+
+                if ( !clipBoardData )
+                {
+                    CloseClipboard ();
+                    break;
+                }
+
+                DeleteText ();
+                PasteText ( clipBoardData );
+                GlobalUnlock ( block );
+
+                if ( _renderer )
+                {
+                    _renderer->OnUpdate ();
+                }
+
+                CloseClipboard ();
             }
             break;
 
@@ -312,21 +331,22 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
             {
                 CopyText ();
 
-                if ( DeleteText () && _renderer )
-                    _renderer->OnUpdate ();
+                if ( !DeleteText () || !_renderer ) break;
+
+                _renderer->OnUpdate ();
             }
             break;
 
             case GX_CTRL_A:
             {
-                if ( _cursor != (GXInt)_textSymbols || _selection != 0 )
-                {
-                    _cursor = (GXInt)_textSymbols;
-                    _selection = 0;
+                if ( _cursor == static_cast<GXInt> ( _textSymbols ) && _selection == 0 ) break;
 
-                    if ( _renderer )
-                        _renderer->OnUpdate ();
-                }
+                _cursor = static_cast<GXInt> ( _textSymbols );
+                _selection = 0;
+
+                if ( !_renderer ) break;
+
+                _renderer->OnUpdate ();
             }
             break;
 
@@ -340,25 +360,27 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
             case GX_DEL:
             {
-                if ( _cursor == _selection && _cursor == static_cast<GXInt> ( _textSymbols ) )
-                    break;
-                else if ( _cursor == _selection )
+                if ( _cursor == _selection && _cursor == static_cast<GXInt> ( _textSymbols ) ) break;
+
+                if ( _cursor == _selection )
                     ++_selection;
 
-                if ( DeleteText () && _renderer )
-                    _renderer->OnUpdate ();
+                if ( !DeleteText () || !_renderer ) break;
+
+                _renderer->OnUpdate ();
             }
             break;
 
             case GX_BACKSPACE:
             {
-                if ( _cursor == _selection && _cursor == 0 )
-                    break;
-                else if ( _cursor == _selection )
+                if ( _cursor == _selection && _cursor == 0 ) break;
+
+                if ( _cursor == _selection )
                     --_cursor;
 
-                if ( DeleteText () && _renderer )
-                    _renderer->OnUpdate ();
+                if ( !DeleteText () || !_renderer ) break;
+
+                _renderer->OnUpdate ();
             }
             break;
 
@@ -373,14 +395,15 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
             default:
             {
                 // Добавить символ
-                static GXWChar buffer[ 2 ] = { 0 };
+                static GXWChar buffer[ 2 ] = { 0u };
                 buffer[ 0 ] = *symbol;
 
                 DeleteText ();
                 PasteText ( buffer );
 
-                if ( _renderer )
-                    _renderer->OnUpdate ();
+                if ( !_renderer ) break;
+
+                _renderer->OnUpdate ();
             }
             break;
         }
@@ -396,9 +419,9 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
         _textLeftOffset = *offset;
 
-        if ( _renderer )
-            _renderer->OnUpdate ();
+        if ( !_renderer ) return;
 
+        _renderer->OnUpdate ();
         return;
     }
 
@@ -410,26 +433,26 @@ GXVoid GXUIEditBox::OnMessage ( eGXUIMessage message, const GXVoid* data )
 
         _textRightOffset = *offset;
 
-        if ( _renderer )
-            _renderer->OnUpdate ();
+        if ( !_renderer ) return;
 
+        _renderer->OnUpdate ();
         return;
     }
 
     GXWidget::OnMessage ( message, data );
 }
 
-GXFloat GXUIEditBox::GetCursorOffset () const
+GXFloat GXUIEditBox::GetCursorOffset ()
 {
     return GetSelectionOffset ( static_cast<GXUInt> ( _cursor ) );
 }
 
-GXFloat GXUIEditBox::GetSelectionBeginOffset () const
+GXFloat GXUIEditBox::GetSelectionBeginOffset ()
 {
     return GetSelectionOffset ( _cursor > _selection ? static_cast<GXUInt> ( _cursor ) : static_cast<GXUInt> ( _selection ) );
 }
 
-GXFloat GXUIEditBox::GetSelectionEndOffset () const
+GXFloat GXUIEditBox::GetSelectionEndOffset ()
 {
     return GetSelectionOffset ( _cursor < _selection ? static_cast<GXUInt> ( _cursor ) : static_cast<GXUInt> ( _selection ) );
 }
@@ -454,20 +477,23 @@ GXFloat GXUIEditBox::GetTextRightOffset () const
     return _textRightOffset;
 }
 
-GXVoid GXUIEditBox::SetText ( const GXWChar* text )
+GXVoid GXUIEditBox::SetText ( const GXString &text )
 {
-    if ( text )
+    if ( text.IsNull () || text.IsEmpty () )
     {
-        GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::SetText, text, static_cast<GXUInt> ( ( GXWcslen ( text ) + 1u ) * sizeof ( GXWChar ) ) );
+        GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::ClearText, nullptr, 0u );
         return;
     }
 
-    GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::ClearText, nullptr, 0u );
+    GXUPointer size;
+    const GXUTF16* data = text.ToUTF16 ( size );
+    GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::SetText, data, static_cast<GXUInt> ( size ) );
 }
 
-const GXWChar* GXUIEditBox::GetText () const
+const GXString& GXUIEditBox::GetText ()
 {
-    return _text;
+    UpdateCache ();
+    return _cache;
 }
 
 GXVoid GXUIEditBox::SetAlignment ( eGXUITextAlignment alignment )
@@ -480,15 +506,16 @@ eGXUITextAlignment GXUIEditBox::GetAlignment () const
     return _alignment;
 }
 
-GXVoid GXUIEditBox::SetFont ( const GXWChar* fontFile, GXUShort fontSize )
+GXVoid GXUIEditBox::SetFont ( const GXString &fontFile, GXUShort fontSize )
 {
-    if ( !fontFile ) return;
+    if ( fontFile.IsNull () || fontFile.IsEmpty () ) return;
 
-    GXUPointer size = ( GXWcslen ( fontFile ) + 1u ) * sizeof ( GXWChar );
+    GXUPointer size;
+    const GXUTF16* data = fontFile.ToUTF16 ( size );
 
     GXUIEditBoxFontInfo fi;
-    fi._fontFile = static_cast<GXWChar*> ( gx_ui_MessageBuffer->Allocate ( size ) );
-    memcpy ( fi._fontFile, fontFile, size );
+    fi._fontFile = static_cast<GXUTF16*> ( gx_ui_MessageBuffer->Allocate ( size ) );
+    memcpy ( fi._fontFile, data, size );
     fi._size = fontSize;
 
     GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::EditBoxSetFont, &fi, sizeof ( GXUIEditBoxFontInfo ) );
@@ -520,13 +547,16 @@ GXVoid GXUIEditBox::SetOnFinishEditingCallback ( GXVoid* context, GXUIEditBoxOnC
     _onFinishEditing = callback;
 }
 
-GXInt GXUIEditBox::GetSelectionPosition ( const GXVec2 &mousePosition ) const
+GXInt GXUIEditBox::GetSelectionPosition ( const GXVec2 &mousePosition )
 {
     GXVec3 center;
     _boundsWorld.GetCenter ( center );
     GXFloat width = _boundsWorld.GetWidth ();
     GXFloat offset = 0.0f;
-    GXFloat textLength = static_cast<GXFloat> ( _font->GetTextLength ( 0u, _text ) );
+
+    UpdateCache ();
+
+    GXFloat textLength = static_cast<GXFloat> ( _font->GetTextLength ( 0u, _cache ) );
 
     switch ( _alignment )
     {
@@ -545,37 +575,40 @@ GXInt GXUIEditBox::GetSelectionPosition ( const GXVec2 &mousePosition ) const
         break;
 
         case eGXUITextAlignment::Left:
-            textLength = static_cast<GXFloat> ( _font->GetTextLength ( 0u, _text ) );
             offset = GXClampf ( mousePosition.GetX () - _boundsWorld._min.GetX () + _textLeftOffset, _textLeftOffset, textLength );
         break;
     }
 
-    if ( offset == 0.0f ) return 0;
+    if ( offset == 0.0f )
+        return 0;
 
     if ( abs ( offset - textLength ) < GX_UI_EPSILON ) 
-        return static_cast<GXInt> ( GXWcslen ( _text ) );
+        return static_cast<GXInt> ( _textSymbols );
 
     for ( GXUInt i = 0u; i < _textSymbols; ++i )
     {
         _workingBuffer[ i ] = _text[ i ];
-        _workingBuffer[ i + 1 ] = 0;
-        GXFloat currentOffset = static_cast<GXFloat> ( _font->GetTextLength ( 0u, _workingBuffer ) );
+        _workingBuffer[ i + 1u ] = '\0';
 
-        if ( currentOffset > offset )
-            return static_cast<GXInt> ( i );
+        _tmp.FromSymbols ( _workingBuffer );
+        GXFloat currentOffset = static_cast<GXFloat> ( _font->GetTextLength ( 0u, _tmp ) );
+
+        if ( currentOffset <= offset ) continue;
+
+        return static_cast<GXInt> ( i );
     }
 
     return 0;
 }
 
-GXFloat GXUIEditBox::GetSelectionOffset ( GXUInt symbolIndex ) const
+GXFloat GXUIEditBox::GetSelectionOffset ( GXUInt symbolIndex )
 {
-    if ( _textSymbols == 0 ) return 0.0f;
+    if ( _textSymbols == 0 )
+        return 0.0f;
 
-    memcpy ( _workingBuffer, _text, sizeof ( GXWChar ) * symbolIndex );
-    _workingBuffer[ symbolIndex ] = 0;
+    UpdateCache ();
 
-    GXFloat textLength = static_cast<GXFloat> ( _font->GetTextLength ( 0u, _text ) );
+    GXFloat textLength = static_cast<GXFloat> ( _font->GetTextLength ( 0u, _cache ) );
     GXFloat textOffset = 0.0f;
 
     switch ( _alignment )
@@ -593,7 +626,11 @@ GXFloat GXUIEditBox::GetSelectionOffset ( GXUInt symbolIndex ) const
         break;
     }
 
-    return textOffset + static_cast<GXFloat> ( _font->GetTextLength ( 0, _workingBuffer ) );
+    memcpy ( _workingBuffer, _text, sizeof ( GXStringSymbol ) * symbolIndex );
+    _workingBuffer[ symbolIndex ] = '\0';
+    _tmp.FromSymbols ( _workingBuffer );
+
+    return textOffset + static_cast<GXFloat> ( _font->GetTextLength ( 0, _tmp ) );
 }
 
 GXVoid GXUIEditBox::LockInput ()
@@ -630,25 +667,31 @@ GXVoid GXUIEditBox::UpdateCursor ( GXInt cursor )
 
     if ( GetKeyState ( VK_SHIFT ) & GX_UI_KEYSTATE_MASK )
     {
-        if ( c != _cursor )
-        {
-            _cursor = c;
+        if ( c == _cursor ) return;
 
-            if ( _renderer )
-                _renderer->OnUpdate ();
-        }
-
-        return;
-    }
-
-    if ( c != _cursor || c != _selection )
-    {
-        _cursor = _selection = c;
+        _cursor = c;
 
         if ( !_renderer ) return;
 
         _renderer->OnUpdate ();
+        return;
     }
+
+    if ( c == _cursor && c == _selection ) return;
+
+    _cursor = _selection = c;
+
+    if ( !_renderer ) return;
+
+    _renderer->OnUpdate ();
+}
+
+GXVoid GXUIEditBox::UpdateCache ()
+{
+    if ( _isCacheValid ) return;
+
+    _cache.FromSymbols ( _text );
+    _isCacheValid = GX_TRUE;
 }
 
 GXVoid GXUIEditBox::CopyText ()
@@ -669,60 +712,68 @@ GXVoid GXUIEditBox::CopyText ()
         end = _cursor;
     }
 
-    GXUShort marked = static_cast<GXUShort> ( end - begin );
-    GXUInt size = ( marked + 1 ) * sizeof ( GXWChar );
+    UpdateCache ();
+
+    GXString marked = _cache.GetMiddle ( static_cast<GXUPointer> ( begin ), static_cast<GXUPointer> ( end - 1 ) );
+    GXUPointer size = 0u;
+    const GXWChar* source = marked.ToSystemWideString ( size );
+
     HGLOBAL block = GlobalAlloc ( GMEM_MOVEABLE, size );
     GXWChar* clipData = static_cast<GXWChar*> ( GlobalLock ( block ) );
-    memcpy ( clipData, _text + begin, size );
-    clipData[ marked ] = 0;
+    memcpy ( clipData, source, size );
     GlobalUnlock ( block );
 
-    OpenClipboard ( static_cast<HWND> ( 0 ) );
+    OpenClipboard ( nullptr );
     EmptyClipboard ();
     SetClipboardData ( CF_UNICODETEXT, clipData );
     CloseClipboard ();
 }
 
-GXVoid GXUIEditBox::PasteText ( const GXWChar* textToPaste )
+GXVoid GXUIEditBox::PasteText ( const GXString &textToPaste )
 {
-    GXUInt numSymbols = static_cast<GXUInt> ( GXWcslen ( textToPaste ) );
+    GXUInt numSymbols = static_cast<GXUInt> ( textToPaste.GetSymbolCount () );
     GXUInt totalSymbols = _textSymbols + numSymbols;
 
     if ( totalSymbols > _maxSymbols )
     {
-        GXUInt size = ( totalSymbols + GX_TEXT_GROW_FACTOR + 1 ) * sizeof ( GXWChar );
+        GXUInt size = ( totalSymbols + GX_TEXT_GROW_FACTOR + 1 ) * sizeof ( GXStringSymbol );
 
-        if ( _maxSymbols == 0 )
+        if ( _maxSymbols == 0u )
         {
-            _text = static_cast<GXWChar*> ( malloc ( size ) );
-            _workingBuffer = static_cast<GXWChar*> ( malloc ( size ) );
+            _text = static_cast<GXStringSymbol*> ( Malloc ( size ) );
+            _workingBuffer = static_cast<GXStringSymbol*> ( Malloc ( size ) );
 
-            _text[ 0 ] = 0;
+            _text[ 0u ] = '\0';
         }
         else
         {
-            free ( _workingBuffer );
-            _workingBuffer = static_cast<GXWChar*> ( malloc ( size ) );
+            Free ( _workingBuffer );
+            _workingBuffer = static_cast<GXStringSymbol*> ( Malloc ( size ) );
 
-            GXWChar* newText = static_cast<GXWChar*> ( malloc ( size ) );
-            memcpy ( newText, _text, ( _textSymbols + 1 ) * sizeof ( GXWChar ) );
-            free ( _text );
+            GXStringSymbol* newText = static_cast<GXStringSymbol*> ( Malloc ( size ) );
+            memcpy ( newText, _text, ( _textSymbols + 1 ) * sizeof ( GXStringSymbol ) );
+            Free ( _text );
             _text = newText;
         }
 
         _maxSymbols = totalSymbols + GX_TEXT_GROW_FACTOR;
     }
 
-    memmove ( _text + _cursor + numSymbols, _text + _cursor, ( _textSymbols + 1 - _cursor ) * sizeof ( GXWChar ) );
-    memcpy ( _text + _cursor, textToPaste, numSymbols * sizeof ( GXWChar ) );
+    textToPaste.ToSymbols ( _workingBuffer, _maxSymbols );
 
-    _cursor = _selection = static_cast<GXInt> ( _cursor + numSymbols );
+    memmove ( _text + _cursor + numSymbols, _text + _cursor, ( static_cast<GXInt> ( _textSymbols ) + 1 - _cursor ) * sizeof ( GXStringSymbol ) );
+    memcpy ( _text + _cursor, _workingBuffer, numSymbols * sizeof ( GXStringSymbol ) );
+
+    _cursor = _selection = _cursor + static_cast<GXInt> ( numSymbols );
     _textSymbols += numSymbols;
+
+    _isCacheValid = GX_FALSE;
 }
 
 GXBool GXUIEditBox::DeleteText ()
 {
-    if ( _cursor == _selection ) return GX_FALSE;
+    if ( _cursor == _selection )
+        return GX_FALSE;
 
     GXInt start = _cursor;
     GXInt end = _selection;
@@ -733,9 +784,10 @@ GXBool GXUIEditBox::DeleteText ()
         end = _cursor;
     }
 
-    memmove ( _text + start, _text + end, ( _textSymbols + 1 - end ) * sizeof ( GXWChar ) );
+    memmove ( _text + start, _text + end, ( _textSymbols + 1 - end ) * sizeof ( GXStringSymbol ) );
     _cursor = _selection = start;
     _textSymbols -= end - start;
+    _isCacheValid = GX_FALSE;
 
     return GX_TRUE;
 }

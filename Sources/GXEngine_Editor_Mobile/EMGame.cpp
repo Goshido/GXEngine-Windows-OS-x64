@@ -77,6 +77,7 @@ GXVoid EMGame::OnInit ()
     input.BindKeyCallback ( this, &EMGame::OnExit, VK_ESCAPE, eGXInputButtonState::Up );
     input.BindMouseButtonCallback ( this, &EMGame::OnMouseButton );
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXUIInput" )
     _uiInput = new GXUIInput ( nullptr, GX_FALSE );
     GXTouchSurface::GetInstance ().SetDefaultWidget ( _uiInput );
 
@@ -88,8 +89,10 @@ GXVoid EMGame::OnInit ()
 
     GXCollisionDetector::GetInstance ().EnableDebugData ();
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIOpenFile" )
     _openFile = new EMUIOpenFile ();
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopup" )
     _filePopup = new EMUIPopup ( nullptr );
     _filePopup->AddItem ( locale.GetString ( L"Main menu->File->New" ), nullptr, nullptr );
     _filePopup->AddItem ( locale.GetString ( L"Main menu->File->Open" ), nullptr, nullptr );
@@ -97,6 +100,7 @@ GXVoid EMGame::OnInit ()
     _filePopup->AddItem ( locale.GetString ( L"Main menu->File->Save" ), nullptr, nullptr );
     _filePopup->AddItem ( locale.GetString ( L"Main menu->File->Exit" ), this, &EMGame::OnExit );
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopup" )
     _createPopup = new EMUIPopup ( nullptr );
     _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Unit Actor" ), nullptr, nullptr );
     _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Box falling" ), this, nullptr );
@@ -105,21 +109,25 @@ GXVoid EMGame::OnInit ()
     _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Spot" ), nullptr, nullptr );
     _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Bulp" ), nullptr, nullptr );
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopup" )
     _toolsPopup = new EMUIPopup ( nullptr );
     _toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Select" ), nullptr, &EMGame::OnColorPicker );
     _toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Move" ), nullptr, nullptr );
     _toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Rotate" ), nullptr, nullptr );
     _toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Scale" ), nullptr, nullptr );
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopup" )
     _utilityPopup = new EMUIPopup ( nullptr );
     _utilityPopup->AddItem ( locale.GetString ( L"Main menu->Utility->Particle system" ), nullptr, nullptr );
     _utilityPopup->AddItem ( locale.GetString ( L"Main menu->Utility->Animation graph" ), nullptr, nullptr );
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopup" )
     _effectsPopup = new EMUIPopup ( nullptr );
     _effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->Motion blur" ), this, &EMGame::OnShowMotionBlurSettings );
     _effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->SSAO" ), this, &EMGame::OnShowSSAOSettings );
     _effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->HDR tone mapper" ), this, &EMGame::OnShowToneMapperSettings );
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIMenu" )
     _menu = new EMUIMenu ( nullptr );
     _menu->SetLocation ( 0.0f, h - _menu->GetHeight () );
     _menu->AddItem ( locale.GetString ( L"Main menu->File" ), _filePopup );
@@ -164,7 +172,7 @@ GXVoid EMGame::OnInit ()
     _colliderOne->GetRigidBody ().SetMass ( 1.0f );
     _colliderOne->GetRigidBody ().SetShape ( *colliderOneShape );
     //_colliderOne->GetRigidBody ().SetCanSleep ( GX_FALSE );
-    //_colliderOne->GetRigidBody ().EnableKinematic ();
+    _colliderOne->GetRigidBody ().EnableKinematic ();
     //_colliderOne->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, -1.0f, 1.0f ) );
     _colliderOne->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 10.0f, -5.0f ) );
     _colliderOne->SetMesh ( L"Meshes/System/Unit Cube.stm" );

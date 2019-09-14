@@ -17,23 +17,23 @@ enum eParserState : GXUByte
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXUIEditBoxFloatValidator::GXUIEditBoxFloatValidator ( const GXWChar* defaultValidText, GXUIEditBox& editBox, GXFloat minimumValue, GXFloat maximumValue ):
+GXUIEditBoxFloatValidator::GXUIEditBoxFloatValidator ( const GXString &defaultValidText, GXUIEditBox& editBox, GXFloat minimumValue, GXFloat maximumValue ):
     GXTextValidator ( defaultValidText ),
     _editBox ( editBox ),
     _minimumValue ( minimumValue ),
     _maximumValue ( maximumValue )
 {
-    Validate ( this->_editBox.GetText () );
+    Validate ( _editBox.GetText () );
 }
 
 GXUIEditBoxFloatValidator::~GXUIEditBoxFloatValidator ()
 {
-    GXSafeFree ( _oldValidText );
+    // NOTHING
 }
 
-GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
+GXBool GXUIEditBoxFloatValidator::Validate ( const GXString &text )
 {
-    if ( !text )
+    if ( text.IsNull () )
     {
         _editBox.SetText ( _oldValidText );
         return GX_FALSE;
@@ -45,16 +45,18 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
 
     while ( i < symbols )
     {
+        const GXStringSymbol symbol = text[ i ];
+
         switch ( state )
         {
             case eParserState::LeadSign:
             {
-                if ( text[ i ] == L'-' )
+                if ( symbol == '-' )
                 {
                     state = eParserState::IntegerPart;
                     ++i;
                 }
-                else if ( isdigit ( static_cast<int> ( text[ i ] ) ) )
+                else if ( isdigit ( static_cast<int> ( symbol.ToCodePoint () ) ) )
                 {
                     state = eParserState::IntegerPart;
                 }
@@ -67,11 +69,11 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
 
             case eParserState::IntegerPart:
             {
-                if ( isdigit ( static_cast<int> ( text[ i ] ) ) )
+                if ( isdigit ( static_cast<int> ( symbol.ToCodePoint () ) ) )
                 {
                     ++i;
                 }
-                else if ( text[ i ] == L'.' )
+                else if ( symbol == '.' )
                 {
                     state = eParserState::FractionalPart;
                     ++i;
@@ -85,11 +87,11 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
 
             case eParserState::FractionalPart:
             {
-                if ( isdigit ( static_cast<int> ( text[ i ] ) ) )
+                if ( isdigit ( static_cast<int> ( symbol.ToCodePoint () ) ) )
                 {
                     ++i;
                 }
-                else if ( text[ i ] == L'e' || text[ i ] == L'E' )
+                else if ( symbol == 'e' || symbol == 'E' )
                 {
                     state = eParserState::ExponentSign;
                     ++i;
@@ -103,7 +105,7 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
 
             case eParserState::ExponentSign:
             {
-                if ( text[ i ] == L'+' || text[ i ] == L'-' )
+                if ( symbol == '+' || symbol == '-' )
                 {
                     state = eParserState::ExponentValue;
                     ++i;
@@ -117,7 +119,7 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
 
             case eParserState::ExponentValue:
             {
-                if ( isdigit ( static_cast<int> ( text[ i ] ) ) )
+                if ( isdigit ( static_cast<int> ( symbol.ToCodePoint () ) ) )
                 {
                     ++i;
                 }
@@ -144,8 +146,6 @@ GXBool GXUIEditBoxFloatValidator::Validate ( const GXWChar* text )
         return GX_FALSE;
     }
 
-    GXSafeFree ( _oldValidText );
-    GXWcsclone ( &_oldValidText, text );
-
+    _oldValidText = text;
     return GX_TRUE;
 }

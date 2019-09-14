@@ -1,22 +1,22 @@
-// version 1.2
+// version 1.3
 
 #ifndef GX_TEXT_VALIDATOR
 #define GX_TEXT_VALIDATOR
 
 
-#include <GXCommon/GXTypes.h>
+#include <GXCommon/GXStrings.h>
 
 
 class GXTextValidator
 {
     protected:
-        GXWChar*    _oldValidText;
+        GXString    _oldValidText;
 
     public:
-        explicit GXTextValidator ( const GXWChar* defaultValidText );
+        explicit GXTextValidator ( const GXString &defaultValidText );
         virtual ~GXTextValidator ();
 
-        virtual GXBool Validate ( const GXWChar* text ) = 0;
+        virtual GXBool Validate ( const GXString &text ) = 0;
 
     private:
         GXTextValidator () = delete;

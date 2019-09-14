@@ -12,7 +12,7 @@
 class EMUISSAOSettings final : public EMUI
 {
     private:
-        EMUIDraggableArea*          _mainPanel;
+        EMUIDraggableArea           _mainPanel;
 
         EMUIStaticText*             _caption;
         EMUISeparator*              _topSeparator;
@@ -34,7 +34,7 @@ class EMUISSAOSettings final : public EMUI
         static EMUISSAOSettings& GetInstance ();
         ~EMUISSAOSettings () override;
 
-        GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () override;
 
         GXVoid Show ();
         GXVoid Hide ();

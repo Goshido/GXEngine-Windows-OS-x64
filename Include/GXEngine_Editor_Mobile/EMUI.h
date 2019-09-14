@@ -10,7 +10,7 @@
 #define EM_UI_HUD_CAMERA_FAR_Z      100.0f
 
 
-class EMUI
+class EMUI : public GXMemoryInspector
 {
     private:
         EMUI*           _next;
@@ -25,7 +25,7 @@ class EMUI
         explicit EMUI ( EMUI* parent );
         virtual ~EMUI ();
 
-        virtual GXWidget* GetWidget () const = 0;
+        virtual GXWidget* GetWidget () = 0;
 
         GXVoid ToForeground ();
 
