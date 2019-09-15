@@ -94,47 +94,47 @@ GXVoid EMGame::OnInit ()
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopup" )
     _filePopup = new EMUIPopup ( nullptr );
-    _filePopup->AddItem ( locale.GetString ( L"Main menu->File->New" ), nullptr, nullptr );
-    _filePopup->AddItem ( locale.GetString ( L"Main menu->File->Open" ), nullptr, nullptr );
-    _filePopup->AddItem ( locale.GetString ( L"Main menu->File->Close" ), nullptr, nullptr );
-    _filePopup->AddItem ( locale.GetString ( L"Main menu->File->Save" ), nullptr, nullptr );
-    _filePopup->AddItem ( locale.GetString ( L"Main menu->File->Exit" ), this, &EMGame::OnExit );
+    _filePopup->AddItem ( locale.GetString ( "Main menu->File->New" ), nullptr, nullptr );
+    _filePopup->AddItem ( locale.GetString ( "Main menu->File->Open" ), nullptr, nullptr );
+    _filePopup->AddItem ( locale.GetString ( "Main menu->File->Close" ), nullptr, nullptr );
+    _filePopup->AddItem ( locale.GetString ( "Main menu->File->Save" ), nullptr, nullptr );
+    _filePopup->AddItem ( locale.GetString ( "Main menu->File->Exit" ), this, &EMGame::OnExit );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopup" )
     _createPopup = new EMUIPopup ( nullptr );
-    _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Unit Actor" ), nullptr, nullptr );
-    _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Box falling" ), this, nullptr );
-    _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Skeletal mesh" ), nullptr, nullptr );
-    _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Directed light" ), nullptr, nullptr );
-    _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Spot" ), nullptr, nullptr );
-    _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Bulp" ), nullptr, nullptr );
+    _createPopup->AddItem ( locale.GetString ( "Main menu->Create->Unit Actor" ), nullptr, nullptr );
+    _createPopup->AddItem ( locale.GetString ( "Main menu->Create->Box falling" ), this, nullptr );
+    _createPopup->AddItem ( locale.GetString ( "Main menu->Create->Skeletal mesh" ), nullptr, nullptr );
+    _createPopup->AddItem ( locale.GetString ( "Main menu->Create->Directed light" ), nullptr, nullptr );
+    _createPopup->AddItem ( locale.GetString ( "Main menu->Create->Spot" ), nullptr, nullptr );
+    _createPopup->AddItem ( locale.GetString ( "Main menu->Create->Bulp" ), nullptr, nullptr );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopup" )
     _toolsPopup = new EMUIPopup ( nullptr );
-    _toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Select" ), nullptr, &EMGame::OnColorPicker );
-    _toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Move" ), nullptr, nullptr );
-    _toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Rotate" ), nullptr, nullptr );
-    _toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Scale" ), nullptr, nullptr );
+    _toolsPopup->AddItem ( locale.GetString ( "Main menu->Tools->Select" ), nullptr, &EMGame::OnColorPicker );
+    _toolsPopup->AddItem ( locale.GetString ( "Main menu->Tools->Move" ), nullptr, nullptr );
+    _toolsPopup->AddItem ( locale.GetString ( "Main menu->Tools->Rotate" ), nullptr, nullptr );
+    _toolsPopup->AddItem ( locale.GetString ( "Main menu->Tools->Scale" ), nullptr, nullptr );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopup" )
     _utilityPopup = new EMUIPopup ( nullptr );
-    _utilityPopup->AddItem ( locale.GetString ( L"Main menu->Utility->Particle system" ), nullptr, nullptr );
-    _utilityPopup->AddItem ( locale.GetString ( L"Main menu->Utility->Animation graph" ), nullptr, nullptr );
+    _utilityPopup->AddItem ( locale.GetString ( "Main menu->Utility->Particle system" ), nullptr, nullptr );
+    _utilityPopup->AddItem ( locale.GetString ( "Main menu->Utility->Animation graph" ), nullptr, nullptr );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopup" )
     _effectsPopup = new EMUIPopup ( nullptr );
-    _effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->Motion blur" ), this, &EMGame::OnShowMotionBlurSettings );
-    _effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->SSAO" ), this, &EMGame::OnShowSSAOSettings );
-    _effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->HDR tone mapper" ), this, &EMGame::OnShowToneMapperSettings );
+    _effectsPopup->AddItem ( locale.GetString ( "Main menu->Effects->Motion blur" ), this, &EMGame::OnShowMotionBlurSettings );
+    _effectsPopup->AddItem ( locale.GetString ( "Main menu->Effects->SSAO" ), this, &EMGame::OnShowSSAOSettings );
+    _effectsPopup->AddItem ( locale.GetString ( "Main menu->Effects->HDR tone mapper" ), this, &EMGame::OnShowToneMapperSettings );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIMenu" )
     _menu = new EMUIMenu ( nullptr );
     _menu->SetLocation ( 0.0f, h - _menu->GetHeight () );
-    _menu->AddItem ( locale.GetString ( L"Main menu->File" ), _filePopup );
-    _menu->AddItem ( locale.GetString ( L"Main menu->Create" ), _createPopup );
-    _menu->AddItem ( locale.GetString ( L"Main menu->Tools" ), _toolsPopup );
-    _menu->AddItem ( locale.GetString ( L"Main menu->Utility" ), _utilityPopup );
-    _menu->AddItem ( locale.GetString ( L"Main menu->Effects" ), _effectsPopup );
+    _menu->AddItem ( locale.GetString ( "Main menu->File" ), _filePopup );
+    _menu->AddItem ( locale.GetString ( "Main menu->Create" ), _createPopup );
+    _menu->AddItem ( locale.GetString ( "Main menu->Tools" ), _toolsPopup );
+    _menu->AddItem ( locale.GetString ( "Main menu->Utility" ), _utilityPopup );
+    _menu->AddItem ( locale.GetString ( "Main menu->Effects" ), _effectsPopup );
 
     GXFloat physicsInfoWidth = 10.0f * gx_ui_Scale;
     GXFloat physicsInfoHeight = 5.0f * gx_ui_Scale;
@@ -528,12 +528,12 @@ GXVoid EMGame::OnDestroy ()
     delete &( GXPhysicsEngine::GetInstance () );
 }
 
-GXVoid GXCALL EMGame::OnExit ( GXVoid* /*context*/ )
+GXVoid GXCALL EMGame::OnExit ( GXVoid* context )
 {
-    /*EMGame* game = static_cast<EMGame*> ( context );
-    game->_openFile->Browse ( &EMGame::OnOpenFile );*/
-    GXCore::GetInstance ().Exit ();
-    GXLogA ( "Завершение\n" );
+    EMGame* game = static_cast<EMGame*> ( context );
+    game->_openFile->Browse ( &EMGame::OnOpenFile );
+    /*GXCore::GetInstance ().Exit ();
+    GXLogA ( "Завершение\n" );*/
 }
 
 GXVoid GXCALL EMGame::OnColorPicker ( GXVoid* /*context*/ )

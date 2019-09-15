@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXLogger.h>
@@ -1085,6 +1085,31 @@ GXBool GXString::operator == ( GXWChar character ) const
     GXUPointer tmp;
 
     return GXWcscmp ( reinterpret_cast<const GXWChar*> ( _stringData->GetUTF16Data ( tmp ) ), string ) == 0;
+}
+
+GXBool GXString::operator != ( const GXString &other ) const
+{
+    return !( operator == ( other ) );
+}
+
+GXBool GXString::operator != ( const GXMBChar* string ) const
+{
+    return !( operator == ( string ) );
+}
+
+GXBool GXString::operator != ( GXMBChar character ) const
+{
+    return !( operator == ( character ) );
+}
+
+GXBool GXString::operator != ( const GXWChar* string ) const
+{
+    return !( operator == ( string ) );
+}
+
+GXBool GXString::operator != ( GXWChar character ) const
+{
+    return !( operator == ( character ) );
 }
 
 GXStringSymbol GXString::operator [] ( GXUPointer symbolIndex ) const

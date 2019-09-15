@@ -19,11 +19,6 @@ GXAVLTreeNode::~GXAVLTreeNode ()
 
 //----------------------------------------------------------------------------------------------
 
-GXUInt GXAVLTree::GetTotalNodes () const
-{
-    return _totalNodes;
-}
-
 GXAVLTree::GXAVLTree ( GXAVLTreeComparator comparator, GXBool doesAutoClean )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXAVLTree" )
     _root ( nullptr ),
@@ -39,30 +34,6 @@ GXAVLTree::~GXAVLTree ()
     if ( !_isAutoClean ) return;
 
     DeleteTree ( _root );
-}
-
-const GXAVLTreeNode* GXAVLTree::Find ( const GXAVLTreeNode &node ) const
-{
-    GXAVLTreeNode* p = _root;
-
-    while ( p )
-    {
-        switch ( _comparator ( node, *p ) )
-        {
-            case eGXCompareResult::Less:
-                p = p->_left;
-            break;
-
-            case eGXCompareResult::Equal:
-            return p;
-
-            case eGXCompareResult::Greater:
-                p = p->_right;
-            break;
-        }
-    }
-
-    return nullptr;
 }
 
 GXVoid GXAVLTree::Add ( GXAVLTreeNode &node )
@@ -117,6 +88,59 @@ GXVoid GXAVLTree::Add ( GXAVLTreeNode &node )
     node._height = oldNode->_height;
 
     delete oldNode;
+}
+
+GXAVLTreeNode* GXAVLTree::Find ( const GXAVLTreeNode &node )
+{
+    GXAVLTreeNode* p = _root;
+
+    while ( p )
+    {
+        switch ( _comparator ( node, *p ) )
+        {
+            case eGXCompareResult::Less:
+                p = p->_left;
+            break;
+
+            case eGXCompareResult::Equal:
+            return p;
+
+            case eGXCompareResult::Greater:
+                p = p->_right;
+            break;
+        }
+    }
+
+    return nullptr;
+}
+
+const GXAVLTreeNode* GXAVLTree::Find ( const GXAVLTreeNode &node ) const
+{
+    GXAVLTreeNode* p = _root;
+
+    while ( p )
+    {
+        switch ( _comparator ( node, *p ) )
+        {
+            case eGXCompareResult::Less:
+                p = p->_left;
+            break;
+
+            case eGXCompareResult::Equal:
+            return p;
+
+            case eGXCompareResult::Greater:
+                p = p->_right;
+            break;
+        }
+    }
+
+    return nullptr;
+}
+
+GXUInt GXAVLTree::GetTotalNodes () const
+{
+    return _totalNodes;
 }
 
 GXVoid GXAVLTree::DoPrefix ( const GXAVLTreeNode* currentRoot, GXAVLTreeIterator iterator, GXVoid* args ) const

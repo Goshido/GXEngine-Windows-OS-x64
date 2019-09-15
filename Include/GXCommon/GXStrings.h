@@ -1,4 +1,4 @@
-// version 1.11
+// version 1.12
 
 #ifndef GX_STRINGS
 #define GX_STRINGS
@@ -208,6 +208,12 @@ class GXString final : public GXMemoryInspector
         GXBool operator == ( GXMBChar character ) const;
         GXBool operator == ( const GXWChar* string ) const;
         GXBool operator == ( GXWChar character ) const;
+
+        GXBool operator != ( const GXString &other ) const;
+        GXBool operator != ( const GXMBChar* string ) const;
+        GXBool operator != ( GXMBChar character ) const;
+        GXBool operator != ( const GXWChar* string ) const;
+        GXBool operator != ( GXWChar character ) const;
 
         // Note this function will traverse string data from start to target index each time by design.
         // Use iterator stuff for more performance string analysis.

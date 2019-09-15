@@ -1,4 +1,4 @@
-// version 1.12
+// version 1.13
 
 #include <GXEngine/GXTexture2D.h>
 #include <GXEngine/GXMeshGeometry.h>
@@ -96,9 +96,9 @@ class GXTexture2DEntry final : public GXMemoryInspector
 
         // Method returns valid pointer if texture was found.
         // Method returns nullptr if texture was not found.
-        static GXTexture2DEntry* GXCALL Find ( const GXWChar* textureFile );
+        static GXTexture2DEntry* GXCALL Find ( const GXString &textureFile );
 
-        static GXUInt GXCALL GetTotalLoadedTextures ( const GXWChar** lastTexture );
+        static GXUInt GXCALL GetTotalLoadedTextures ( GXString &lastTexture );
 
     private:
         ~GXTexture2DEntry () override;
@@ -611,19 +611,19 @@ GXVoid GXTexture2DEntry::Release ()
     delete this;
 }
 
-GXTexture2DEntry* GXCALL GXTexture2DEntry::Find ( const GXWChar* textureFile )
+GXTexture2DEntry* GXCALL GXTexture2DEntry::Find ( const GXString &textureFile )
 {
     for ( GXTexture2DEntry* p = _top; p; p = p->_next )
     {
-        if ( GXWcscmp ( p->_fileName, textureFile ) != 0 ) continue;
-        
+        if ( p->_fileName != textureFile ) continue;
+
         return p;
     }
 
     return nullptr;
 }
 
-GXUInt GXCALL GXTexture2DEntry::GetTotalLoadedTextures ( const GXWChar** lastTexture )
+GXUInt GXCALL GXTexture2DEntry::GetTotalLoadedTextures ( GXString &lastTexture )
 {
     GXUInt total = 0u;
 
@@ -631,9 +631,9 @@ GXUInt GXCALL GXTexture2DEntry::GetTotalLoadedTextures ( const GXWChar** lastTex
         ++total;
 
     if ( total > 0u )
-        *lastTexture = _top->GetFileName ();
+        lastTexture = _top->GetFileName ();
     else
-        *lastTexture = nullptr;
+        lastTexture.Clear ();
 
     return total;
 }
@@ -860,7 +860,7 @@ GXUByte GXTexture2D::GetLevelOfDetailNumber () const
     return _texture2DEntry->GetLevelOfDetailNumber ();
 }
 
-GXVoid GXTexture2D::LoadImage ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection )
+GXVoid GXTexture2D::LoadImage ( const GXString &fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection )
 {
     if ( _texture2DEntry )
         _texture2DEntry->Release ();
@@ -964,7 +964,7 @@ GXVoid GXTexture2D::FreeResources ()
     _texture2DEntry = nullptr;
 }
 
-GXUInt GXCALL GXTexture2D::GetTotalLoadedTextures ( const GXWChar** lastTexture )
+GXUInt GXCALL GXTexture2D::GetTotalLoadedTextures ( GXString &lastTexture )
 {
     return GXTexture2DEntry::GetTotalLoadedTextures ( lastTexture );
 }

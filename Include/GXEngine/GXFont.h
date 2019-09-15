@@ -38,7 +38,7 @@ class GXFont final : public GXMemoryInspector
         GXTexture2D* GetAtlasTexture ( GXByte atlasID ) const;
         GXUInt GXCDECLCALL GetTextLength ( GXUInt bufferNumSymbols, const GXWChar* format, ... ) const;
 
-        static GXUInt GXCALL GetTotalLoadedFonts ( const GXWChar** lastFont, GXUShort &lastSize );
+        static GXUInt GXCALL GetTotalLoadedFonts ( GXString &lastFont, GXUShort &lastSize );
 
         static GXBool GXCALL InitFreeTypeLibrary ();
         static GXBool GXCALL DestroyFreeTypeLibrary ();

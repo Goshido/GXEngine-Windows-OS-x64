@@ -12,9 +12,9 @@
 #define PANEL_HEADER_HEIGHT             0.5f
 
 #define BTN_OK_LEFT_BOTTOM_X            2.0f
-#define BTN_OK_TEXT                     L"OpenFile->OK"
+#define BTN_OK_TEXT                     "OpenFile->OK"
 #define BTN_CANCEL_LEFT_BOTTOM_X        3.9f
-#define BTN_CANCEL_TEXT                 L"OpenFile->Cancel"
+#define BTN_CANCEL_TEXT                 "OpenFile->Cancel"
 #define BTN_BOTTOM_Y                    0.15f
 #define BTN_WIDTH                       1.7f
 #define BTN_HEIGHT                      0.55f
@@ -71,7 +71,6 @@ EMUIOpenFile::EMUIOpenFile ():
     _cancelButton->SetCaption ( locale.GetString ( BTN_CANCEL_TEXT ) );
     _cancelButton->SetOnLeftMouseButtonCallback ( this, &EMUIOpenFile::OnButton );
 
-    _filePathStaticText->SetText ( nullptr );
     _filePathStaticText->SetAlingment ( eGXUITextAlignment::Left );
     
     _fileListBox->SetOnItemSelectedCallback ( this, &EMUIOpenFile::OnItemSelected );
@@ -139,7 +138,7 @@ GXVoid EMUIOpenFile::UpdateDirectory ( GXString targetDirectory )
 
         if ( totalItems == 0u ) return;
 
-        items = static_cast<EMUIFileListBoxItem*> ( malloc ( totalItems * sizeof ( EMUIFileListBoxItem ) ) );
+        items = static_cast<EMUIFileListBoxItem*> ( Malloc ( totalItems * sizeof ( EMUIFileListBoxItem ) ) );
         GXBool isRootNotExcluded = GX_TRUE;
         GXBool isWorkingDirectoryNotExcluded = GX_TRUE;
 
@@ -153,14 +152,14 @@ GXVoid EMUIOpenFile::UpdateDirectory ( GXString targetDirectory )
                 continue;
             }
 
-            if ( isWorkingDirectoryNotExcluded && directory ==  "." )
+            if ( isWorkingDirectoryNotExcluded && directory == "." )
             {
                 isWorkingDirectoryNotExcluded = GX_FALSE;
                 continue;
             }
 
-            items[ itemIndex ].SetType ( eEMUIFileListBoxItemType::Folder );
-            items[ itemIndex ].SetName ( directory );
+            // Note placement new syntax.
+            ::new ( items + itemIndex ) EMUIFileListBoxItem ( eEMUIFileListBoxItemType::Folder, directory );
             ++itemIndex;
         }
     }
@@ -170,7 +169,7 @@ GXVoid EMUIOpenFile::UpdateDirectory ( GXString targetDirectory )
 
         if ( totalItems == 0u ) return;
 
-        items = static_cast<EMUIFileListBoxItem*> ( malloc ( totalItems * sizeof ( EMUIFileListBoxItem ) ) );
+        items = static_cast<EMUIFileListBoxItem*> ( Malloc ( totalItems * sizeof ( EMUIFileListBoxItem ) ) );
         GXBool isWorkingDirectoryNotExcluded = GX_TRUE;
 
         for ( GXUPointer i = 0u; i < directories; ++i )
@@ -183,21 +182,28 @@ GXVoid EMUIOpenFile::UpdateDirectory ( GXString targetDirectory )
                 continue;
             }
 
-            items[ itemIndex ].SetType ( eEMUIFileListBoxItemType::Folder );
-            items[ itemIndex ].SetName ( directory );
+            // Note placement new syntax.
+            ::new ( items + itemIndex ) EMUIFileListBoxItem ( eEMUIFileListBoxItemType::Folder, directory );
             ++itemIndex;
         }
     }
 
     for ( GXUPointer i = 0u; i < files; ++i )
     {
-        items[ itemIndex ].SetType ( eEMUIFileListBoxItemType::File );
-        items[ itemIndex ].SetName ( directoryInfo.GetFileName ( i ) );
+        // Note placement new syntax.
+        ::new ( items + itemIndex ) EMUIFileListBoxItem ( eEMUIFileListBoxItemType::File, directoryInfo.GetFileName ( i ) );
         ++itemIndex;
     }
 
     _fileListBox->AddItems ( items, static_cast<GXUInt> ( totalItems ) );
-    free ( items );
+
+    for ( GXUPointer i = 0u; i < itemIndex; ++i )
+    {
+        // Need to call destructor because placement new above.
+        items[ i ].~EMUIFileListBoxItem ();
+    }
+
+    Free ( items );
     _fileListBox->Redraw ();
 }
 
@@ -238,7 +244,7 @@ GXVoid GXCALL EMUIOpenFile::OnItemSelected ( GXVoid* context, GXUIListBox& /*lis
             }
             else
             {
-                uiOpenFile->_stringBuffer.Format ( "%s/%S", static_cast<const GXMBChar*> ( uiOpenFile->_relativeDirectory ), element->GetName () );
+                uiOpenFile->_stringBuffer.Format ( "%s/%s", static_cast<const GXMBChar*> ( uiOpenFile->_relativeDirectory ), static_cast<const GXMBChar*> ( element->GetName () ) );
                 uiOpenFile->_filePathStaticText->SetText ( uiOpenFile->_stringBuffer );
             }
         }

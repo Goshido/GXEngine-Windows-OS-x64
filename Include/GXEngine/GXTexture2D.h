@@ -1,4 +1,4 @@
-// version 1.12
+// version 1.13
 
 #ifndef GX_TEXTURE_2D
 #define GX_TEXTURE_2D
@@ -40,7 +40,7 @@ class GXTexture2D final : public GXMemoryInspector
         // - JPEG
         // - PNG
         // - HDR
-        GXVoid LoadImage ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection );
+        GXVoid LoadImage ( const GXString &fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection );
 
         // If object holds reference counting resource then method releases that resource and makes new
         // texture resource with specified pixel data. Width, height, internal format and generate mipmap intend
@@ -67,7 +67,7 @@ class GXTexture2D final : public GXMemoryInspector
         GXVoid InitResources ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap );
         GXVoid FreeResources ();
 
-        static GXUInt GXCALL GetTotalLoadedTextures ( const GXWChar** lastTexture );
+        static GXUInt GXCALL GetTotalLoadedTextures ( GXString &lastTexture );
 
     private:
         GXTexture2D ( const GXTexture2D &other ) = delete;

@@ -150,27 +150,27 @@ GXVoid GXGlyphRenderable::Render ()
 
 GXVoid GXGlyphRenderable::UpdateGeometry ( const GXVec2 &min, const GXVec2 &max )
 {
-    static GXFloat buffer[ 30u ];
+    GXFloat buffer[ 30u ];
 
     buffer[ 0u ] = 0.0f;                buffer[ 1u ] = 1.0f;                buffer[ 2u ] = 0.0f;
-    buffer[ 3u ] = min._data[ 0u ];      buffer[ 4u ] = max._data[ 1u ];
+    buffer[ 3u ] = min._data[ 0u ];     buffer[ 4u ] = max._data[ 1u ];
 
     buffer[ 5u ] = 1.0f;                buffer[ 6u ] = 0.0f;                buffer[ 7u ] = 0.0f;
-    buffer[ 8u ] = max._data[ 0u ];      buffer[ 9u ] = min._data[ 1u ];
+    buffer[ 8u ] = max._data[ 0u ];     buffer[ 9u ] = min._data[ 1u ];
 
     buffer[ 10u ] = 0.0f;               buffer[ 11u ] = 0.0f;               buffer[ 12u ] = 0.0f;
-    buffer[ 13u ] = min._data[ 0u ];     buffer[ 14u ] = min._data[ 1u ];
+    buffer[ 13u ] = min._data[ 0u ];    buffer[ 14u ] = min._data[ 1u ];
 
     buffer[ 15u ] = 0.0f;               buffer[ 16u ] = 1.0f;               buffer[ 17u ] = 0.0f;
-    buffer[ 18u ] = min._data[ 0u ];     buffer[ 19u ] = max._data[ 1u ];
+    buffer[ 18u ] = min._data[ 0u ];    buffer[ 19u ] = max._data[ 1u ];
 
     buffer[ 20u ] = 1.0f;               buffer[ 21u ] = 1.0f;               buffer[ 22u ] = 0.0f;
-    buffer[ 23u ] = max._data[ 0u ];     buffer[ 24u ] = max._data[ 1u ];
+    buffer[ 23u ] = max._data[ 0u ];    buffer[ 24u ] = max._data[ 1u ];
 
     buffer[ 25u ] = 1.0f;               buffer[ 26u ] = 0.0f;               buffer[ 27u ] = 0.0f;
-    buffer[ 28u ] = max._data[ 0u ];     buffer[ 29u ] = min._data[ 1u ];
+    buffer[ 28u ] = max._data[ 0u ];    buffer[ 29u ] = min._data[ 1u ];
 
-    _mesh.FillVertexBuffer ( buffer, 30u * sizeof ( GXFloat ), GL_DYNAMIC_DRAW );
+    _mesh.FillVertexBuffer ( buffer, sizeof ( buffer ), GL_DYNAMIC_DRAW );
 }
 
 GXGlyphRenderable::GXGlyphRenderable ()
@@ -342,7 +342,6 @@ GXVoid GXHudSurface::Resize ( GXUShort width, GXUShort height )
 
     GLint oldFBO;
     glGetIntegerv ( GL_FRAMEBUFFER_BINDING, &oldFBO );
-
     glGenFramebuffers ( 1, &_fbo );
     glBindFramebuffer ( GL_FRAMEBUFFER, _fbo );
 

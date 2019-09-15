@@ -60,7 +60,7 @@ class EMUIPopupRenderer final : public GXWidgetRenderer
         explicit EMUIPopupRenderer ( GXUIPopup* widget );
         ~EMUIPopupRenderer () override;
 
-        GXVoid AddItem ( GXString name );
+        GXVoid AddItem ( const GXString &name );
 
     protected:
         GXVoid OnRefresh () override;
@@ -97,7 +97,7 @@ EMUIPopupRenderer::~EMUIPopupRenderer ()
     }
 }
 
-GXVoid EMUIPopupRenderer::AddItem ( GXString name )
+GXVoid EMUIPopupRenderer::AddItem ( const GXString &name )
 {
     GXUByte stringData[ sizeof ( GXString ) ];
     GXString* string = reinterpret_cast<GXString*> ( stringData );
@@ -238,7 +238,7 @@ GXWidget* EMUIPopup::GetWidget ()
     return &_widget;
 }
 
-GXVoid EMUIPopup::AddItem ( GXString name, GXVoid* context, GXUIPopupActionHandler action )
+GXVoid EMUIPopup::AddItem ( const GXString &name, GXVoid* context, GXUIPopupActionHandler action )
 {
     EMUIPopupRenderer* renderer = static_cast<EMUIPopupRenderer*> ( _widget.GetRenderer () );
     renderer->AddItem ( name );

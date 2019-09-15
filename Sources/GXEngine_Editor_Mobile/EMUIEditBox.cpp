@@ -129,7 +129,7 @@ GXVoid EMUIEditBoxRenderer::OnRefresh ()
 
         switch ( editBoxWidget->GetAlignment () )
         {
-        case eGXUITextAlignment::Left:
+            case eGXUITextAlignment::Left:
                 pi._insertX = editBoxWidget->GetTextLeftOffset ();
             break;
 

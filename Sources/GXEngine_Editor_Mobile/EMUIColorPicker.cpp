@@ -10,7 +10,7 @@
 #include <GXCommon/GXLogger.h>
 
 
-#define SCREEN_QUAD_MESH                            L"Meshes/System/ScreenQuad.stm"
+#define SCREEN_QUAD_MESH                            "Meshes/System/ScreenQuad.stm"
 
 #define CAPTION_LABEL_COLOR_R                       115u
 #define CAPTION_LABEL_COLOR_G                       185u
@@ -79,8 +79,8 @@
 #define DEFAULT_CURRENT_COLOR_V                     73.0f
 #define DEFAULT_CURRENT_COLOR_A                     100.0f
 
-#define DEFAULT_FLOAT_VALIDATOR_TEXT                L"7"
-#define DEFAULT_INTEGER_VALIDATOR_TEXT              L"3"
+#define DEFAULT_FLOAT_VALIDATOR_TEXT                "7"
+#define DEFAULT_INTEGER_VALIDATOR_TEXT              "3"
 
 #define MINIMUM_HUE_VALUE                           0.0f
 #define MAXIMUM_HUE_VALUE                           360.0f
@@ -108,7 +108,7 @@
 #define PIXEL_PERFECT_LOCATION_OFFSET_X             0.1f
 #define PIXEL_PERFECT_LOCATION_OFFSET_Y             0.1f
 
-#define TEXTURE                                     L"Textures/System/Default_Diffuse.tga"
+#define TEXTURE                                     "Textures/System/Default_Diffuse.tga"
 
 #define DEFAULT_SAVED_COLOR_H                       0.0f
 #define DEFAULT_SAVED_COLOR_S                       0.0f
@@ -721,8 +721,6 @@ EMUIColorPicker& EMUIColorPicker::GetInstance ()
 
 EMUIColorPicker::~EMUIColorPicker ()
 {
-    free ( _buffer );
-
     delete _pick;
     delete _cancel;
     delete _bottomSeparator;
@@ -976,35 +974,35 @@ EMUIColorPicker::EMUIColorPicker ():
         input->SetOnLeftMouseButtonDownCallback ( &EMUIColorPicker::OnLeftMouseButton );
     }
 
-    _caption->SetText ( locale.GetString ( L"Color picker->Color picker" ) );
+    _caption->SetText ( locale.GetString ( "Color picker->Color picker" ) );
     _caption->SetTextColor ( static_cast<GXUByte> ( CAPTION_LABEL_COLOR_R ), static_cast<GXUByte> ( CAPTION_LABEL_COLOR_G ), static_cast<GXUByte> ( CAPTION_LABEL_COLOR_B ), static_cast<GXUByte> ( CAPTION_LABEL_COLOR_A ) );
     _caption->SetAlingment ( eGXUITextAlignment::Center );
 
-    _hLabel->SetText ( locale.GetString ( L"Color picker->H" ) );
+    _hLabel->SetText ( locale.GetString ( "Color picker->H" ) );
     _hLabel->SetTextColor ( static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_R ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_G ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_B ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_A ) );
     _hLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-    _rLabel->SetText ( locale.GetString ( L"Color picker->R" ) );
+    _rLabel->SetText ( locale.GetString ( "Color picker->R" ) );
     _rLabel->SetTextColor ( static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_R ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_G ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_B ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_A ) );
     _rLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-    _sLabel->SetText ( locale.GetString ( L"Color picker->S" ) );
+    _sLabel->SetText ( locale.GetString ( "Color picker->S" ) );
     _sLabel->SetTextColor ( static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_R ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_G ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_B ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_A ) );
     _sLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-    _gLabel->SetText ( locale.GetString ( L"Color picker->G" ) );
+    _gLabel->SetText ( locale.GetString ( "Color picker->G" ) );
     _gLabel->SetTextColor ( static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_R ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_G ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_B ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_A ) );
     _gLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-    _vLabel->SetText ( locale.GetString ( L"Color picker->V" ) );
+    _vLabel->SetText ( locale.GetString ( "Color picker->V" ) );
     _vLabel->SetTextColor ( static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_R ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_G ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_B ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_A  ) );
     _vLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-    _bLabel->SetText ( locale.GetString ( L"Color picker->B" ) );
+    _bLabel->SetText ( locale.GetString ( "Color picker->B" ) );
     _bLabel->SetTextColor ( static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_R ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_G ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_B ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_A ) );
     _bLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-    _transparencyLabel->SetText ( locale.GetString ( L"Color picker->Transparency" ) );
+    _transparencyLabel->SetText ( locale.GetString ( "Color picker->Transparency" ) );
     _transparencyLabel->SetTextColor ( static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_R ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_G ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_B ), static_cast<GXUByte> ( PROPERTY_LABEL_COLOR_A ) );
     _transparencyLabel->SetAlingment ( eGXUITextAlignment::Left );
 
@@ -1016,9 +1014,9 @@ EMUIColorPicker::EMUIColorPicker ():
     _b->SetAlignment ( eGXUITextAlignment::Center );
     _transparency->SetAlignment ( eGXUITextAlignment::Center );
 
-    _addColor->SetCaption ( L"+" );
-    _cancel->SetCaption ( locale.GetString ( L"Color picker->Cancel" ) );
-    _pick->SetCaption ( locale.GetString ( L"Color picker->Pick" ) );
+    _addColor->SetCaption ( "+" );
+    _cancel->SetCaption ( locale.GetString ( "Color picker->Cancel" ) );
+    _pick->SetCaption ( locale.GetString ( "Color picker->Pick" ) );
 
     _addColor->SetOnLeftMouseButtonCallback ( this, &EMUIColorPicker::OnButton );
     _cancel->SetOnLeftMouseButtonCallback ( this, &EMUIColorPicker::OnButton );
@@ -1058,13 +1056,13 @@ GXVoid EMUIColorPicker::UpdateCurrentColor ( GXFloat hue, GXFloat saturation, GX
     colorSelectorRenderer->SetColor ( newColorHSV );
     _hsvColorWidget->Refresh ();
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%.6g", hue );
+    _buffer.Format ( "%.6g", hue );
     _h->SetText ( _buffer );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%.6g", saturation );
+    _buffer.Format ( "%.6g", saturation );
     _s->SetText ( _buffer );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%.6g", value );
+    _buffer.Format ( "%.6g", value );
     _v->SetText ( _buffer );
 
     GXUByte newRed;
@@ -1075,45 +1073,45 @@ GXVoid EMUIColorPicker::UpdateCurrentColor ( GXFloat hue, GXFloat saturation, GX
     newColorRGB.From ( newColorHSV );
     newColorRGB.ConvertToUByte ( newRed, newGreen, newBlue, newAlpha );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%hhu", newRed );
+    _buffer.Format ( "%hhu", newRed );
     _r->SetText ( _buffer );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%hhu", newGreen );
+    _buffer.Format ( "%hhu", newGreen );
     _g->SetText ( _buffer );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%hhu", newBlue );
+    _buffer.Format ( "%hhu", newBlue );
     _b->SetText ( _buffer );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%hhu", newAlpha );
+    _buffer.Format ( "%hhu", newAlpha );
     _transparency->SetText ( _buffer );
 }
 
 GXVoid EMUIColorPicker::UpdateCurrentColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
 {
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%hhu", red );
-    this->_r->SetText ( _buffer );
+    _buffer.Format ( "%hhu", red );
+    _r->SetText ( _buffer );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%hhu", green );
-    this->_g->SetText ( _buffer );
+    _buffer.Format ( "%hhu", green );
+    _g->SetText ( _buffer );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%hhu", blue );
-    this->_b->SetText ( _buffer );
+    _buffer.Format ( "%hhu", blue );
+    _b->SetText ( _buffer );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%hhu", alpha );
+    _buffer.Format ( "%hhu", alpha );
     _transparency->SetText ( _buffer );
 
     GXColorRGB newColorRGB ( red, green, blue, alpha );
     GXColorHSV newColorHSV;
     newColorHSV.From ( newColorRGB );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%.6g", newColorHSV.GetHue () );
-    this->_h->SetText ( _buffer );
+    _buffer.Format ( "%.6g", newColorHSV.GetHue () );
+    _h->SetText ( _buffer );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%.6g", newColorHSV.GetSaturation () );
-    this->_s->SetText ( _buffer );
+    _buffer.Format ( "%.6g", newColorHSV.GetSaturation () );
+    _s->SetText ( _buffer );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%.6g", newColorHSV.GetValue () );
-    this->_v->SetText ( _buffer );
+    _buffer.Format ( "%.6g", newColorHSV.GetValue () );
+    _v->SetText ( _buffer );
 
     EMColorRenderer* currentColorRenderer = static_cast<EMColorRenderer*> ( _currentColor->GetRenderer () );
     currentColorRenderer->SetColor ( newColorHSV );
@@ -1142,26 +1140,26 @@ GXVoid EMUIColorPicker::UpdateCurrentColorWithCorrection ( GXUByte red, GXUByte 
     newColorRGB.From ( newColorHSV );
     newColorRGB.ConvertToUByte ( correctedRed, correctedGreen, correctedBlue, correctedAlpha );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%hhu", correctedRed );
-    this->_r->SetText ( _buffer );
+    _buffer.Format ( "%hhu", correctedRed );
+    _r->SetText ( _buffer );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%hhu", correctedGreen );
-    this->_g->SetText ( _buffer );
+    _buffer.Format ( "%hhu", correctedGreen );
+    _g->SetText ( _buffer );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%hhu", correctedBlue );
-    this->_b->SetText ( _buffer );
+    _buffer.Format ( "%hhu", correctedBlue );
+    _b->SetText ( _buffer );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%hhu", correctedAlpha );
+    _buffer.Format ( "%hhu", correctedAlpha );
     _transparency->SetText ( _buffer );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%.6g", newColorHSV.GetHue () );
-    this->_h->SetText ( _buffer );
+    _buffer.Format ( "%.6g", newColorHSV.GetHue () );
+    _h->SetText ( _buffer );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%.6g", newColorHSV.GetSaturation () );
-    this->_s->SetText ( _buffer );
+    _buffer.Format ( "%.6g", newColorHSV.GetSaturation () );
+    _s->SetText ( _buffer );
 
-    swprintf_s ( _buffer, MAX_BUFFER_SYMBOLS, L"%.6g", newColorHSV.GetValue () );
-    this->_v->SetText ( _buffer );
+    _buffer.Format ( "%.6g", newColorHSV.GetValue () );
+    _v->SetText ( _buffer );
 
     currentColorRenderer->SetColor ( newColorHSV );
     _currentColor->Refresh ();
@@ -1211,15 +1209,15 @@ GXVoid GXCALL EMUIColorPicker::OnButton ( GXVoid* handler, GXUIButton& button, G
         }
         else
         {
-            GXUByte red;
-            GXUByte green;
-            GXUByte blue;
-            GXUByte alpha;
-            swscanf_s ( colorPicker->_r->GetText (), L"%hhu", &red );
-            swscanf_s ( colorPicker->_g->GetText (), L"%hhu", &green );
-            swscanf_s ( colorPicker->_b->GetText (), L"%hhu", &blue );
-            swscanf_s ( colorPicker->_transparency->GetText (), L"%hhu", &alpha );
-            colorPicker->_onRGBUByteColor ( handler, red, green, blue, alpha );
+            GXUShort red;
+            GXUShort green;
+            GXUShort blue;
+            GXUShort alpha;
+            swscanf_s ( colorPicker->_r->GetText (), L"%hu", &red );
+            swscanf_s ( colorPicker->_g->GetText (), L"%hu", &green );
+            swscanf_s ( colorPicker->_b->GetText (), L"%hu", &blue );
+            swscanf_s ( colorPicker->_transparency->GetText (), L"%hu", &alpha );
+            colorPicker->_onRGBUByteColor ( handler, static_cast<GXUByte> ( red ), static_cast<GXUByte> ( green ), static_cast<GXUByte> ( blue ), static_cast<GXUByte> ( alpha ) );
         }
 
         colorPicker->_mainPanel.Hide ();
@@ -1434,14 +1432,14 @@ GXVoid GXCALL EMUIColorPicker::OnFinishEditing ( GXVoid* handler, GXUIEditBox& e
 
     if ( &editBox != colorPicker->_r->GetWidget () && &editBox != colorPicker->_g->GetWidget () && &editBox != colorPicker->_b->GetWidget () && &editBox == colorPicker->_transparency->GetWidget () ) return;
 
-    GXUByte red;
-    GXUByte green;
-    GXUByte blue;
-    GXUByte alpha;
-    swscanf_s ( colorPicker->_r->GetText (), L"%hhu", &red );
-    swscanf_s ( colorPicker->_g->GetText (), L"%hhu", &green );
-    swscanf_s ( colorPicker->_b->GetText (), L"%hhu", &blue );
-    swscanf_s ( colorPicker->_transparency->GetText (), L"%hhu", &alpha );
+    GXUShort red;
+    GXUShort green;
+    GXUShort blue;
+    GXUShort alpha;
+    swscanf_s ( colorPicker->_r->GetText (), L"%hu", &red );
+    swscanf_s ( colorPicker->_g->GetText (), L"%hu", &green );
+    swscanf_s ( colorPicker->_b->GetText (), L"%hu", &blue );
+    swscanf_s ( colorPicker->_transparency->GetText (), L"%hu", &alpha );
 
-    colorPicker->UpdateCurrentColor ( red, green, blue, alpha );
+    colorPicker->UpdateCurrentColor ( static_cast<GXUByte> ( red ), static_cast<GXUByte> ( green ), static_cast<GXUByte> ( blue ), static_cast<GXUByte> ( alpha ) );
 }

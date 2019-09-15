@@ -1,4 +1,4 @@
-// version 1.8
+// version 1.9
 
 #ifndef GX_MESH_GEOMETRY
 #define GX_MESH_GEOMETRY
@@ -7,6 +7,7 @@
 #include "GXOpenGL.h"
 #include "GXSkeleton.h"
 #include "GXSkinningMaterial.h"
+#include <GXCommon/GXStrings.h>
 
 
 enum class eGXMeshStreamIndex : GLuint
@@ -58,13 +59,13 @@ class GXMeshGeometry final : public GXMemoryInspector
         GXVoid UpdatePose ( const GXSkeleton &skeleton );
 
         // Unloads previous mesh if it exists.
-        GXBool LoadMesh ( const GXWChar* fileName );
+        GXBool LoadMesh ( const GXString &fileName );
 
         // Unloads previous skin if it exists.
-        GXBool LoadSkin ( const GXWChar* fileName );
+        GXBool LoadSkin ( const GXString &fileName );
 
-        static GXUInt GXCALL GetTotalLoadedMeshes ( const GXWChar** lastMesh );
-        static GXUInt GXCALL GetTotalLoadedSkins ( const GXWChar** lastSkin );
+        static GXUInt GXCALL GetTotalLoadedMeshes ( GXString &lastMesh );
+        static GXUInt GXCALL GetTotalLoadedSkins ( GXString &lastSkin );
 
     private:
         GXVoid UpdateGraphicResources ();

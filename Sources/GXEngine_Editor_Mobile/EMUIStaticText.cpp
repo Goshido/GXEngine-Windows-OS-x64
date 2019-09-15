@@ -144,12 +144,12 @@ GXWidget* EMUIStaticText::GetWidget ()
     return &_widget;
 }
 
-GXVoid EMUIStaticText::SetText ( const GXWChar* text )
+GXVoid EMUIStaticText::SetText ( const GXString &text )
 {
     _widget.SetText ( text );
 }
 
-const GXWChar* EMUIStaticText::GetText () const
+const GXString& EMUIStaticText::GetText () const
 {
     return _widget.GetText ();
 }

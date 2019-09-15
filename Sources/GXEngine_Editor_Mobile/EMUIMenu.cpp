@@ -4,12 +4,12 @@
 
 #define DEFAULT_BOTTOM_LEFT_X               0.1f
 #define DEFAULT_BOTTOM_LEFT_Y               0.1f
-#define DEFAULT_TEXTURE                     L"Textures/System/Default_Diffuse.tga"
+#define DEFAULT_TEXTURE                     "Textures/System/Default_Diffuse.tga"
 
 #define ITEM_HEIGHT                         0.5f
 #define ANY_WIDTH                           1.0f
 
-#define FONT                                L"Fonts/trebuc.ttf"
+#define FONT                                "Fonts/trebuc.ttf"
 #define FONT_SIZE                           0.33f
 #define TEXT_EXTEND                         0.5f
 

@@ -17,8 +17,8 @@ class EMUIStaticText final : public EMUI
 
         GXWidget* GetWidget () override;
 
-        GXVoid SetText ( const GXWChar* text );
-        const GXWChar* GetText () const;
+        GXVoid SetText ( const GXString &text );
+        const GXString& GetText () const;
 
         GXVoid SetTextColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
         const GXColorRGB& GetTextColor () const;

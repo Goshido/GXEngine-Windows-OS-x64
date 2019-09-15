@@ -1,4 +1,4 @@
-// version 1.4
+// version 1.5
 
 #include <GXEngine/GXUIStaticText.h>
 #include <GXEngine/GXUICommon.h>
@@ -15,76 +15,78 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXUIStaticText::GXUIStaticText ( GXWidget* parent ):
-    GXWidget ( parent ),
-    _text ( nullptr ),
-    _textColor ( static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_R ), static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_G ), static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_B ), static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_A ) ),
-    _alignment ( DEFAULT_UI_ALIGNMENT )
+GXUIStaticTextMessageHandlerNode::GXUIStaticTextMessageHandlerNode ()
 {
     // NOTHING
 }
 
+GXUIStaticTextMessageHandlerNode::GXUIStaticTextMessageHandlerNode ( eGXUIMessage message ):
+    GXUIWidgetMessageHandlerNode ( message )
+{
+    // NOTHING
+}
+
+GXUIStaticTextMessageHandlerNode::~GXUIStaticTextMessageHandlerNode ()
+{
+    // NOTHING
+}
+
+GXVoid GXUIStaticTextMessageHandlerNode::Init ( GXUIStaticText &staticText, eGXUIMessage message, GXUIStaticTextOnMessageHandler handler )
+{
+    _message = message;
+    _handler = handler;
+    _widget = &staticText;
+}
+
+GXVoid GXUIStaticTextMessageHandlerNode::HandleMassage ( const GXVoid* data )
+{
+    GXUIStaticText* staticText = static_cast<GXUIStaticText*> ( _widget );
+
+    // Note this is C++ syntax for invoke class method.
+    ( staticText->*_handler ) ( data );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+GXUIStaticText::GXUIStaticText ( GXWidget* parent ):
+    GXWidget ( parent ),
+    _textColor ( static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_R ), static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_G ), static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_B ), static_cast<GXUByte> ( DEFAULT_TEXT_COLOR_A ) ),
+    _alignment ( DEFAULT_UI_ALIGNMENT )
+{
+    InitMessageHandlers ();
+}
+
 GXUIStaticText::~GXUIStaticText ()
 {
-    GXSafeFree ( _text );
+    // NOTHING 
 }
 
 GXVoid GXUIStaticText::OnMessage ( eGXUIMessage message, const GXVoid* data )
 {
-    if ( message == eGXUIMessage::SetText )
+    GXUIStaticTextMessageHandlerNode probe ( message );
+    GXAVLTreeNode* findResult = _messageHandlerTree.Find ( probe );
+
+    if ( !findResult )
     {
-        GXSafeFree ( _text );
-        GXWcsclone ( &_text, static_cast<const GXWChar*> ( data ) );
-
-        if ( _renderer )
-            _renderer->OnUpdate ();
-
+        GXWidget::OnMessage ( message, data );
         return;
     }
 
-    if ( message == eGXUIMessage::ClearText )
-    {
-        GXSafeFree ( _text );
-
-        if ( _renderer )
-            _renderer->OnUpdate ();
-
-        return;
-    }
-
-    if ( message == eGXUIMessage::SetTextColor )
-    {
-        memcpy ( &_textColor, data, sizeof ( GXVec4 ) );
-
-        if ( _renderer )
-            _renderer->OnUpdate ();
-
-        return;
-    }
-
-    if ( message == eGXUIMessage::SetTextAlignment )
-    {
-        const eGXUITextAlignment* newAlignment = static_cast<const eGXUITextAlignment*> ( data );
-        _alignment = *newAlignment;
-
-        if ( _renderer )
-            _renderer->OnUpdate ();
-
-        return;
-    }
-
-    GXWidget::OnMessage ( message, data );
+    GXUIStaticTextMessageHandlerNode* targetHandler = static_cast<GXUIStaticTextMessageHandlerNode*> ( findResult );
+    targetHandler->HandleMassage ( data );
 }
 
-GXVoid GXUIStaticText::SetText ( const GXWChar* newText )
+GXVoid GXUIStaticText::SetText ( const GXString &text )
 {
-    if ( newText )
+    if ( text.IsNull () )
     {
-        GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::SetText, newText, static_cast<GXUInt> ( ( GXWcslen ( newText ) + 1u ) * sizeof ( GXWChar ) ) );
+        GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::ClearText, nullptr, 0u );
         return;
     }
 
-    GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::ClearText, nullptr, 0u );
+    GXUPointer size;
+    const GXUTF16* data = text.ToUTF16 ( size );
+    GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::SetText, data, static_cast<GXUInt> ( size ) );
 }
 
 GXVoid GXUIStaticText::SetTextColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
@@ -99,7 +101,7 @@ GXVoid GXUIStaticText::SetAlignment ( eGXUITextAlignment newAlignment )
     GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::SetTextAlignment, &newAlignment, sizeof ( eGXUITextAlignment ) );
 }
 
-const GXWChar* GXUIStaticText::GetText () const
+const GXString& GXUIStaticText::GetText () const
 {
     return _text;
 }
@@ -112,4 +114,56 @@ const GXColorRGB& GXUIStaticText::GetTextColor () const
 eGXUITextAlignment GXUIStaticText::GetAlignment () const
 {
     return _alignment;
+}
+
+GXVoid GXUIStaticText::InitMessageHandlers ()
+{
+    _messageHandlers[ 0u ].Init ( *this, eGXUIMessage::ClearText, &GXUIStaticText::OnClearText );
+    _messageHandlerTree.Add ( _messageHandlers[ 0u ] );
+
+    _messageHandlers[ 1u ].Init ( *this, eGXUIMessage::SetText, &GXUIStaticText::OnSetText );
+    _messageHandlerTree.Add ( _messageHandlers[ 1u ] );
+
+    _messageHandlers[ 2u ].Init ( *this, eGXUIMessage::SetTextAlignment, &GXUIStaticText::OnSetTextAlignment );
+    _messageHandlerTree.Add ( _messageHandlers[ 2u ] );
+
+    _messageHandlers[ 3u ].Init ( *this, eGXUIMessage::SetTextColor, &GXUIStaticText::OnSetTextColor );
+    _messageHandlerTree.Add ( _messageHandlers[ 3u ] );
+}
+
+GXVoid GXUIStaticText::OnClearText ( const GXVoid* /*data*/ )
+{
+    _text.Clear ();
+
+    if ( !_renderer ) return;
+
+    _renderer->OnUpdate ();
+}
+
+GXVoid GXUIStaticText::OnSetText ( const GXVoid* data )
+{
+    _text.FromUTF16 ( static_cast<const GXUTF16*> ( data ) );
+
+    if ( !_renderer ) return;
+
+    _renderer->OnUpdate ();
+}
+
+GXVoid GXUIStaticText::OnSetTextAlignment ( const GXVoid* data )
+{
+    const eGXUITextAlignment* newAlignment = static_cast<const eGXUITextAlignment*> ( data );
+    _alignment = *newAlignment;
+
+    if ( !_renderer ) return;
+
+    _renderer->OnUpdate ();
+}
+
+GXVoid GXUIStaticText::OnSetTextColor ( const GXVoid* data )
+{
+    memcpy ( &_textColor, data, sizeof ( GXVec4 ) );
+
+    if ( !_renderer ) return;
+
+    _renderer->OnUpdate ();
 }

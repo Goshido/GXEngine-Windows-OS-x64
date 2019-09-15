@@ -59,8 +59,8 @@
 #define MINIMUM_EXPOSURE                    0.001f
 #define MAXIMUM_EXPOSURE                    7.7f
 
-#define DEFAULT_FLOAT_VALIDATOR_STRING      L"3.0"
-#define DEFAULT_INTEGER_VALIDATOR_STRING    L"7"
+#define DEFAULT_FLOAT_VALIDATOR_STRING      "3.0"
+#define DEFAULT_INTEGER_VALIDATOR_STRING    "7"
 
 //---------------------------------------------------------------------------------------------------------------------
 

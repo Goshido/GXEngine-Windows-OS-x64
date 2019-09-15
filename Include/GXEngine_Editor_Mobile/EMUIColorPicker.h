@@ -2,11 +2,11 @@
 #define EM_UI_COLOR_PICKER
 
 
-#include <GXEngine_Editor_Mobile/EMUIDraggableArea.h>
-#include <GXEngine_Editor_Mobile/EMUIStaticText.h>
-#include <GXEngine_Editor_Mobile/EMUISeparator.h>
-#include <GXEngine_Editor_Mobile/EMUIButton.h>
-#include <GXEngine_Editor_Mobile/EMUIEditBox.h>
+#include "EMUIDraggableArea.h"
+#include "EMUIStaticText.h"
+#include "EMUISeparator.h"
+#include "EMUIButton.h"
+#include "EMUIEditBox.h"
 #include <GXEngine/GXUIInput.h>
 
 
@@ -26,7 +26,8 @@ class EMUIColorPicker final : public EMUI
         EMColorPickerOnHSVAColorUByteHandler    _onRGBUByteColor;
         GXVoid*                                 _context;
 
-        GXWChar*                                _buffer;
+        // Optimization stuff.
+        GXString                                _buffer;
 
         EMUIStaticText*                         _caption;
         EMUISeparator*                          _topSeparator;
@@ -73,10 +74,10 @@ class EMUIColorPicker final : public EMUI
         GXVoid UpdateCurrentColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
         GXVoid UpdateCurrentColorWithCorrection ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
 
-        static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton& button, GXFloat x, GXFloat y, eGXMouseButtonState state );
-        static GXVoid GXCALL OnLeftMouseButton ( GXVoid* handler, GXUIInput& input, GXFloat x, GXFloat y );
-        static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea& area, GXFloat width, GXFloat height );
-        static GXVoid GXCALL OnFinishEditing ( GXVoid* handler, GXUIEditBox& editBox );
+        static GXVoid GXCALL OnButton ( GXVoid* handler, GXUIButton &button, GXFloat x, GXFloat y, eGXMouseButtonState state );
+        static GXVoid GXCALL OnLeftMouseButton ( GXVoid* handler, GXUIInput &input, GXFloat x, GXFloat y );
+        static GXVoid GXCALL OnResize ( GXVoid* handler, GXUIDragableArea &area, GXFloat width, GXFloat height );
+        static GXVoid GXCALL OnFinishEditing ( GXVoid* handler, GXUIEditBox &editBox );
 
         EMUIColorPicker ( const EMUIColorPicker &other ) = delete;
         EMUIColorPicker& operator = ( const EMUIColorPicker &other ) = delete;

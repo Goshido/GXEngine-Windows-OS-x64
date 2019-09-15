@@ -1,8 +1,41 @@
-// version 1.6
+// version 1.7
 
 #include <GXEngine/GXUIInput.h>
 #include <GXEngine/GXUIMessage.h>
 
+
+GXUIInputMessageHandlerNode::GXUIInputMessageHandlerNode ()
+{
+    // NOTHING
+}
+
+GXUIInputMessageHandlerNode::GXUIInputMessageHandlerNode ( eGXUIMessage message ):
+    GXUIWidgetMessageHandlerNode ( message )
+{
+    // NOTHING
+}
+
+GXUIInputMessageHandlerNode::~GXUIInputMessageHandlerNode ()
+{
+    // NOTHING
+}
+
+GXVoid GXUIInputMessageHandlerNode::Init ( GXUIInput &input, eGXUIMessage message, GXUIInputOnMessageHandler handler )
+{
+    _message = message;
+    _handler = handler;
+    _widget = &input;
+}
+
+GXVoid GXUIInputMessageHandlerNode::HandleMassage ( const GXVoid* data )
+{
+    GXUIInput* input = static_cast<GXUIInput*> ( _widget );
+
+    // Note this is C++ syntax for invoke class method.
+    ( input->*_handler ) ( data );
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 
 GXUIInput::GXUIInput ( GXWidget* parent, GXBool isNeedRegister ):
     GXWidget ( parent, isNeedRegister ),
@@ -21,7 +54,7 @@ GXUIInput::GXUIInput ( GXWidget* parent, GXBool isNeedRegister ):
     _onKeyUp ( nullptr ),
     _handler ( nullptr )
 {
-    // NOTHING
+    InitMessageHandlers ();
 }
 
 GXUIInput::~GXUIInput ()
@@ -31,126 +64,17 @@ GXUIInput::~GXUIInput ()
 
 GXVoid GXUIInput::OnMessage ( eGXUIMessage message, const GXVoid* data )
 {
+    GXUIInputMessageHandlerNode probe ( message );
+    GXAVLTreeNode* findResult = _messageHandlerTree.Find ( probe );
 
-    if ( message == eGXUIMessage::LMBDown )
+    if ( !findResult )
     {
-        if ( !_onLMBDown ) return;
-
-        const GXVec2* v = static_cast<const GXVec2*> ( data );
-        _onLMBDown ( _handler, *this, v->GetX (), v->GetY () );
+        GXWidget::OnMessage ( message, data );
         return;
     }
 
-    if ( message == eGXUIMessage::LMBUp )
-    {
-        if ( !_onLMBUp ) return;
-
-        const GXVec2* v = static_cast<const GXVec2*> ( data );
-        _onLMBUp ( _handler, *this, v->GetX (), v->GetY () );
-
-        return;
-    }
-    
-    if ( message == eGXUIMessage::MMBDown )
-    {
-        if ( !_onMMBDown ) return;
-
-        const GXVec2* v = static_cast<const GXVec2*> ( data );
-        _onMMBDown ( _handler, *this, v->GetX (), v->GetY () );
-        return;
-    }
-
-    if ( message == eGXUIMessage::MMBUp )
-    {
-        if ( !_onMMBUp ) return;
-
-        const GXVec2* v = static_cast<const GXVec2*> ( data );
-        _onMMBUp ( _handler, *this, v->GetX (), v->GetY () );
-        return;
-    }
-
-    if ( message == eGXUIMessage::RMBDown )
-    {
-        if ( !_onRMBDown ) return;
-
-        const GXVec2* v = static_cast<const GXVec2*> ( data );
-        _onRMBDown ( _handler, *this, v->GetX (), v->GetY () );
-        return;
-    }
-
-    if ( message == eGXUIMessage::RMBUp )
-    {
-        if ( !_onRMBUp ) return;
-
-        const GXVec2* v = static_cast<const GXVec2*> ( data );
-        _onRMBUp ( _handler, *this, v->GetX (), v->GetY () );
-        return;
-    }
-
-    if ( message == eGXUIMessage::Scroll )
-    {
-        if ( !_onMouseScroll ) return;
-
-        const GXVec3* v = static_cast<const GXVec3*> ( data );
-        _onMouseScroll ( _handler, *this, v->GetX (), v->GetY (), v->GetZ () );
-        return;
-    }
-
-    if ( message == eGXUIMessage::MouseMove )
-    {
-        if ( !_onMouseMove ) return;
-
-        const GXVec2* v = static_cast<const GXVec2*> ( data );
-        _onMouseMove ( _handler, *this, v->GetX (), v->GetY () );
-        return;
-    }
-
-    if ( message == eGXUIMessage::MouseOver )
-    {
-        if ( !_onMouseOver ) return;
-
-        const GXVec2* v = static_cast<const GXVec2*> ( data );
-        _onMouseOver ( _handler, *this, v->GetX (), v->GetY () );
-        return;
-    }
-
-    if ( message == eGXUIMessage::MouseLeave )
-    {
-        if ( !_onMouseLeave ) return;
-
-        const GXVec2* v = static_cast<const GXVec2*> ( data );
-        _onMouseLeave ( _handler, *this, v->GetX (), v->GetY () );
-        return;
-    }
-
-    if ( message == eGXUIMessage::DoubleClick )
-    {
-        if ( !_onDoubleClick ) return;
-
-        const GXVec2* v = static_cast<const GXVec2*> ( data );
-        _onDoubleClick ( _handler, *this, v->GetX (), v->GetY () );
-        return;
-    }
-
-    if ( message == eGXUIMessage::KeyDown )
-    {
-        if ( !_onKeyDown ) return;
-
-        const GXInt* keyCode = static_cast<const GXInt*> ( data );
-        _onKeyDown ( _handler, *this, *keyCode );
-        return;
-    }
-
-    if ( message == eGXUIMessage::KeyUp )
-    {
-        if ( !_onKeyUp ) return;
-
-        const GXInt* keyCode = static_cast<const GXInt*> ( data );
-        _onKeyUp ( _handler, *this, *keyCode );
-        return;
-    }
-
-    GXWidget::OnMessage ( message, data );
+    GXUIInputMessageHandlerNode* targetHandler = static_cast<GXUIInputMessageHandlerNode*> ( findResult );
+    targetHandler->HandleMassage ( data );
 }
 
 GXVoid GXUIInput::SetOnLeftMouseButtonDownCallback ( GXUIInputOnMouseButtonHandler callback )
@@ -221,4 +145,150 @@ GXVoid GXUIInput::SetOnKeyUpCallback ( GXUIInputOnKeyHandler callback )
 GXVoid GXUIInput::SetHandler ( GXVoid* handler )
 {
     _handler = handler;
+}
+
+GXVoid GXUIInput::InitMessageHandlers ()
+{
+    _messageHandlers[ 0u ].Init ( *this, eGXUIMessage::LMBDown, &GXUIInput::OnLMBDown );
+    _messageHandlerTree.Add ( _messageHandlers[ 0u ] );
+
+    _messageHandlers[ 1u ].Init ( *this, eGXUIMessage::LMBUp, &GXUIInput::OnLMBUp );
+    _messageHandlerTree.Add ( _messageHandlers[ 1u ] );
+
+    _messageHandlers[ 2u ].Init ( *this, eGXUIMessage::MMBDown, &GXUIInput::OnMMBDown );
+    _messageHandlerTree.Add ( _messageHandlers[ 2u ] );
+
+    _messageHandlers[ 3u ].Init ( *this, eGXUIMessage::MMBUp, &GXUIInput::OnMMBUp );
+    _messageHandlerTree.Add ( _messageHandlers[ 3u ] );
+
+    _messageHandlers[ 4u ].Init ( *this, eGXUIMessage::RMBDown, &GXUIInput::OnRMBDown );
+    _messageHandlerTree.Add ( _messageHandlers[ 4u ] );
+
+    _messageHandlers[ 5u ].Init ( *this, eGXUIMessage::RMBUp, &GXUIInput::OnRMBUp );
+    _messageHandlerTree.Add ( _messageHandlers[ 5u ] );
+
+    _messageHandlers[ 6u ].Init ( *this, eGXUIMessage::Scroll, &GXUIInput::OnScroll );
+    _messageHandlerTree.Add ( _messageHandlers[ 6u ] );
+
+    _messageHandlers[ 7u ].Init ( *this, eGXUIMessage::MouseMove, &GXUIInput::OnMouseMove );
+    _messageHandlerTree.Add ( _messageHandlers[ 7u ] );
+
+    _messageHandlers[ 8u ].Init ( *this, eGXUIMessage::MouseOver, &GXUIInput::OnMouseOver );
+    _messageHandlerTree.Add ( _messageHandlers[ 8u ] );
+
+    _messageHandlers[ 9u ].Init ( *this, eGXUIMessage::MouseLeave, &GXUIInput::OnMouseLeave );
+    _messageHandlerTree.Add ( _messageHandlers[ 9u ] );
+
+    _messageHandlers[ 10u ].Init ( *this, eGXUIMessage::DoubleClick, &GXUIInput::OnDoubleClick );
+    _messageHandlerTree.Add ( _messageHandlers[ 10u ] );
+
+    _messageHandlers[ 11u ].Init ( *this, eGXUIMessage::KeyDown, &GXUIInput::OnKeyDown );
+    _messageHandlerTree.Add ( _messageHandlers[ 11u ] );
+
+    _messageHandlers[ 12u ].Init ( *this, eGXUIMessage::KeyUp, &GXUIInput::OnKeyUp );
+    _messageHandlerTree.Add ( _messageHandlers[ 12u ] );
+}
+
+GXVoid GXUIInput::OnLMBDown ( const GXVoid* data )
+{
+    if ( !_onLMBDown ) return;
+
+    const GXVec2* v = static_cast<const GXVec2*> ( data );
+    _onLMBDown ( _handler, *this, v->_data[ 0u ], v->_data[ 1u ] );
+}
+
+GXVoid GXUIInput::OnLMBUp ( const GXVoid* data )
+{
+    if ( !_onLMBUp ) return;
+
+    const GXVec2* v = static_cast<const GXVec2*> ( data );
+    _onLMBUp ( _handler, *this, v->_data[ 0u ], v->_data[ 1u ] );
+}
+
+GXVoid GXUIInput::OnMMBDown ( const GXVoid* data )
+{
+    if ( !_onMMBDown ) return;
+
+    const GXVec2* v = static_cast<const GXVec2*> ( data );
+    _onMMBDown ( _handler, *this, v->_data[ 0u ], v->_data[ 1u ] );
+}
+
+GXVoid GXUIInput::OnMMBUp ( const GXVoid* data )
+{
+    if ( !_onMMBUp ) return;
+
+    const GXVec2* v = static_cast<const GXVec2*> ( data );
+    _onMMBUp ( _handler, *this, v->_data[ 0u ], v->_data[ 0u ] );
+}
+
+GXVoid GXUIInput::OnRMBDown ( const GXVoid* data )
+{
+    if ( !_onRMBDown ) return;
+
+    const GXVec2* v = static_cast<const GXVec2*> ( data );
+    _onRMBDown ( _handler, *this, v->_data[ 0u ], v->_data[ 1u ] );
+}
+
+GXVoid GXUIInput::OnRMBUp ( const GXVoid* data )
+{
+    if ( !_onRMBUp ) return;
+
+    const GXVec2* v = static_cast<const GXVec2*> ( data );
+    _onRMBUp ( _handler, *this, v->_data[ 0u ], v->_data[ 1u ] );
+}
+
+GXVoid GXUIInput::OnScroll ( const GXVoid* data )
+{
+    if ( !_onMouseScroll ) return;
+
+    const GXVec3* v = static_cast<const GXVec3*> ( data );
+    _onMouseScroll ( _handler, *this, v->_data[ 0u ], v->_data[ 1u ], v->_data[ 2u ] );
+}
+
+GXVoid GXUIInput::OnMouseMove ( const GXVoid* data )
+{
+    if ( !_onMouseMove ) return;
+
+    const GXVec2* v = static_cast<const GXVec2*> ( data );
+    _onMouseMove ( _handler, *this, v->_data[ 0u ], v->_data[ 1u ] );
+}
+
+GXVoid GXUIInput::OnMouseOver ( const GXVoid* data )
+{
+    if ( !_onMouseOver ) return;
+
+    const GXVec2* v = static_cast<const GXVec2*> ( data );
+    _onMouseOver ( _handler, *this, v->_data[ 0u ], v->_data[ 1u ] );
+}
+
+GXVoid GXUIInput::OnMouseLeave ( const GXVoid* data )
+{
+    if ( !_onMouseLeave ) return;
+
+    const GXVec2* v = static_cast<const GXVec2*> ( data );
+    _onMouseLeave ( _handler, *this, v->_data[ 0u ], v->_data[ 1u ] );
+}
+
+GXVoid GXUIInput::OnDoubleClick ( const GXVoid* data )
+{
+    if ( !_onDoubleClick ) return;
+
+    const GXVec2* v = static_cast<const GXVec2*> ( data );
+    _onDoubleClick ( _handler, *this, v->_data[ 0u ], v->_data[ 1u ] );
+}
+
+GXVoid GXUIInput::OnKeyDown ( const GXVoid* data )
+{
+    if ( !_onKeyDown ) return;
+
+    const GXInt* keyCode = static_cast<const GXInt*> ( data );
+    _onKeyDown ( _handler, *this, *keyCode );
+}
+
+GXVoid GXUIInput::OnKeyUp ( const GXVoid* data )
+{
+    if ( !_onKeyUp ) return;
+
+    const GXInt* keyCode = static_cast<const GXInt*> ( data );
+    _onKeyUp ( _handler, *this, *keyCode );
 }

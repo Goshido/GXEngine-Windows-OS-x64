@@ -10,40 +10,64 @@
 
 class GXUIEditBox;
 typedef GXVoid ( GXCALL* GXUIEditBoxOnCommitHandler ) ( GXVoid* context, GXUIEditBox &editBox );
+typedef GXVoid ( GXUIEditBox::* GXUIEditBoxOnMessageHandler ) ( const GXVoid* data );
 
+class GXUIEditBoxMessageHandlerNode final : public GXUIWidgetMessageHandlerNode
+{
+    private:
+        GXUIEditBoxOnMessageHandler     _handler;
+
+    public:
+        GXUIEditBoxMessageHandlerNode ();
+
+        // Special probe constructor.
+        explicit GXUIEditBoxMessageHandlerNode ( eGXUIMessage message );
+        ~GXUIEditBoxMessageHandlerNode () override;
+
+        GXVoid HandleMassage ( const GXVoid* data ) override;
+
+        GXVoid Init ( GXUIEditBox &editBox, eGXUIMessage message, GXUIEditBoxOnMessageHandler handler );
+
+    private:
+        GXUIEditBoxMessageHandlerNode ( const GXUIEditBoxMessageHandlerNode &other ) = delete;
+        GXUIEditBoxMessageHandlerNode& operator = ( const GXUIEditBoxMessageHandlerNode &other ) = delete;
+};
+
+//---------------------------------------------------------------------------------------------------------------------
 
 class GXTextValidator;
 class GXUIEditBox final : public GXWidget
 {
     private:
-        GXStringSymbol*                 _text;
-        GXStringSymbol*                 _workingBuffer;
-        GXUInt                          _textSymbols;
-        GXUInt                          _maxSymbols;
+        GXStringSymbol*                     _text;
+        GXStringSymbol*                     _workingBuffer;
+        GXUInt                              _textSymbols;
+        GXUInt                              _maxSymbols;
 
-        GXFloat                         _textLeftOffset;
-        GXFloat                         _textRightOffset;
+        GXFloat                             _textLeftOffset;
+        GXFloat                             _textRightOffset;
 
-        GXInt                           _cursor;        // index before symbol
-        GXInt                           _selection;     // index before symbol
-        eGXUITextAlignment              _alignment;
+        GXInt                               _cursor;        // index before symbol
+        GXInt                               _selection;     // index before symbol
+        eGXUITextAlignment                  _alignment;
 
-        GXTextValidator*                _validator;
+        GXTextValidator*                    _validator;
 
-        GXUIEditBoxOnCommitHandler      _onFinishEditing;
-        GXVoid*                         _context;
+        GXUIEditBoxOnCommitHandler          _onFinishEditing;
+        GXVoid*                             _context;
 
-        HCURSOR                         _editCursor;
-        HCURSOR                         _arrowCursor;
+        HCURSOR                             _editCursor;
+        HCURSOR                             _arrowCursor;
 
-        GXBool                          _isCacheValid;
+        GXBool                              _isCacheValid;
 
         // Optimization stuff.
-        GXString                        _cache;
-        GXString                        _tmp;
+        GXString                            _cache;
+        GXString                            _tmp;
+        GXUIEditBoxMessageHandlerNode       _messageHandlers[ 12u ];
 
-        GXFont*                         _font;
-        const HCURSOR*                  _currentCursor;
+        GXFont*                             _font;
+        const HCURSOR*                      _currentCursor;
 
     public:
         explicit GXUIEditBox ( GXWidget* parent );
@@ -81,6 +105,8 @@ class GXUIEditBox final : public GXWidget
         GXInt GetSelectionPosition ( const GXVec2 &mousePosition );
         GXFloat GetSelectionOffset ( GXUInt symbolIndex );
 
+        GXVoid InitMessageHandlers ();
+
         GXVoid LockInput ();
         GXVoid ReleaseInput ();
 
@@ -92,6 +118,20 @@ class GXUIEditBox final : public GXWidget
         GXVoid CopyText ();
         GXVoid PasteText ( const GXString &textToPaste );
         GXBool DeleteText ();
+
+        // Message handlers
+        GXVoid OnAddSymbol ( const GXVoid* data );
+        GXVoid OnClearText ( const GXVoid* data );
+        GXVoid OnDoubleClick ( const GXVoid* data );
+        GXVoid OnEditBoxSetFont ( const GXVoid* data );
+        GXVoid OnEditBoxSetTextLeftOffset ( const GXVoid* data );
+        GXVoid OnEditBoxSetTextRightOffset ( const GXVoid* data );
+        GXVoid OnLMBDown ( const GXVoid* data );
+        GXVoid OnMouseLeave ( const GXVoid* data );
+        GXVoid OnMouseMove ( const GXVoid* data );
+        GXVoid OnMouseOver ( const GXVoid* data );
+        GXVoid OnSetText ( const GXVoid* data );
+        GXVoid OnSetTextAlighment ( const GXVoid* data );
 
         static GXVoid GXCALL OnEnd ( GXVoid* context );
         static GXVoid GXCALL OnHome ( GXVoid* context );

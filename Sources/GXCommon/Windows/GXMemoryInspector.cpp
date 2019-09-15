@@ -1,4 +1,4 @@
-// version 1.9
+// version 1.11
 
 #include <GXCommon/GXMemory.h>
 #include <GXCommon/GXLogger.h>
@@ -126,17 +126,17 @@ enum class eGXHeapAllocationType : GXUByte
 
 struct GXHeapChunk
 {
-    GXUPointer                  nextIndex;
-    GXUPointer                  previousIndex;
+    GXUPointer                  _nextIndex;
+    GXUPointer                  _previousIndex;
 
-    GXUPointer                  allocationSize;
-    eGXHeapAllocationType       allocationType;
+    GXUPointer                  _allocationSize;
+    eGXHeapAllocationType       _allocationType;
 
-    GXVoid*                     heapMemory;
-    GXUPointer                  heapMemoryMaxSize;
+    GXVoid*                     _heapMemory;
+    GXUPointer                  _heapMemoryMaxSize;
 
-    GXChar*                     initiatorClass;
-    GXUPointer                  initiatorClassMaxLength;
+    GXChar*                     _initiatorClass;
+    GXUPointer                  _initiatorClassMaxLength;
 
     GXVoid InitData ( eGXHeapAllocationType newAllocationType, GXUPointer newSize, const GXChar* newInitiatorClass );
     GXVoid Release ();
@@ -146,32 +146,32 @@ GXVoid GXHeapChunk::InitData ( eGXHeapAllocationType newAllocationType, GXUPoint
 {
     GXUPointer symbols = strlen ( newInitiatorClass ) + 1u;
 
-    if ( symbols <= initiatorClassMaxLength )
+    if ( symbols <= _initiatorClassMaxLength )
     {
-        memcpy ( initiatorClass, newInitiatorClass, symbols );
+        memcpy ( _initiatorClass, newInitiatorClass, symbols );
     }
     else
     {
-        GXSafeFree ( initiatorClass );
-        GXCstrClone ( &initiatorClass, newInitiatorClass );
-        initiatorClassMaxLength = symbols;
+        GXSafeFree ( _initiatorClass );
+        GXCstrClone ( &_initiatorClass, newInitiatorClass );
+        _initiatorClassMaxLength = symbols;
     }
 
-    if ( newSize > heapMemoryMaxSize )
+    if ( newSize > _heapMemoryMaxSize )
     {
-        GXSafeFree ( heapMemory );
-        heapMemory = malloc ( newSize );
-        heapMemoryMaxSize = newSize;
+        GXSafeFree ( _heapMemory );
+        _heapMemory = malloc ( newSize );
+        _heapMemoryMaxSize = newSize;
     }
 
-    allocationSize = newSize;
-    allocationType = newAllocationType;
+    _allocationSize = newSize;
+    _allocationType = newAllocationType;
 }
 
 GXVoid GXHeapChunk::Release ()
 {
-    free ( initiatorClass );
-    free ( heapMemory );
+    free ( _initiatorClass );
+    free ( _heapMemory );
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -179,16 +179,16 @@ GXVoid GXHeapChunk::Release ()
 class GXHeapManager final
 {
     private:
-        const GXChar*       bindedName;
+        const GXChar*       _bindedName;
 
-        GXHeapChunk*        chunks;
-        GXUPointer          chunkCount;
+        GXHeapChunk*        _chunks;
+        GXUPointer          _chunkCount;
 
-        GXUPointer          freeChunkIndex;
-        GXUPointer          uninitiatedChunkIndex;
-        GXUPointer          usedChunkIndex;
+        GXUPointer          _freeChunkIndex;
+        GXUPointer          _uninitiatedChunkIndex;
+        GXUPointer          _usedChunkIndex;
 
-        GXSmartLock         smartLock;
+        GXSmartLock         _smartLock;
 
     public:
         GXHeapManager ();
@@ -219,42 +219,42 @@ class GXHeapManager final
 static GXHeapManager gx_HeapManager;
 
 GXHeapManager::GXHeapManager ():
-    bindedName ( nullptr ),
-    chunks ( nullptr ),
-    chunkCount ( 0u ),
-    freeChunkIndex ( END_INDEX ),
-    uninitiatedChunkIndex ( END_INDEX ),
-    usedChunkIndex ( END_INDEX )
+    _bindedName ( nullptr ),
+    _chunks ( nullptr ),
+    _chunkCount ( 0u ),
+    _freeChunkIndex ( END_INDEX ),
+    _uninitiatedChunkIndex ( END_INDEX ),
+    _usedChunkIndex ( END_INDEX )
 {
     // NOTHING
 }
 
 GXHeapManager::~GXHeapManager ()
 {
-    GXUPointer chunkIndex = usedChunkIndex;
+    GXUPointer chunkIndex = _usedChunkIndex;
 
     while ( chunkIndex != END_INDEX )
     {
-        GXHeapChunk& chunk = chunks[ chunkIndex ];
+        GXHeapChunk& chunk = _chunks[ chunkIndex ];
         chunk.Release ();
-        chunkIndex = chunk.nextIndex;
+        chunkIndex = chunk._nextIndex;
     }
 
-    chunkIndex = freeChunkIndex;
+    chunkIndex = _freeChunkIndex;
 
     while ( chunkIndex != END_INDEX )
     {
-        GXHeapChunk& chunk = chunks[ chunkIndex ];
+        GXHeapChunk& chunk = _chunks[ chunkIndex ];
         chunk.Release ();
-        chunkIndex = chunk.nextIndex;
+        chunkIndex = chunk._nextIndex;
     }
 
-    GXSafeFree ( chunks );
+    GXSafeFree ( _chunks );
 }
 
 GXBool GXHeapManager::CheckMemoryLeaks ()
 {
-    if ( usedChunkIndex == END_INDEX )
+    if ( _usedChunkIndex == END_INDEX )
         return GX_TRUE;
 
     GXLogA ( "GXHeapManager::CheckMemoryLeaks::Error - Memory leaks were detected:\n" );
@@ -264,26 +264,26 @@ GXBool GXHeapManager::CheckMemoryLeaks ()
     GXUPointer leakedNewObjects = 0u;
     GXUPointer leakedNewSize = 0u;
 
-    for ( GXUPointer i = usedChunkIndex; i != END_INDEX; )
+    for ( GXUPointer i = _usedChunkIndex; i != END_INDEX; )
     {
-        GXHeapChunk& chunk = chunks[ i ];
+        GXHeapChunk& chunk = _chunks[ i ];
 
-        switch ( chunk.allocationType )
+        switch ( chunk._allocationType )
         {
             case eGXHeapAllocationType::Malloc:
                 ++leakedMallocObjects;
-                leakedMallocSize += chunk.allocationSize;
-                GXLogA ( "\tInitiator class: %s\n\tAllocation type: malloc\n\tAllocation size: %" PRIuPTR " byte(s)\n\n", chunk.initiatorClass, chunk.allocationSize );
+                leakedMallocSize += chunk._allocationSize;
+                GXLogA ( "\tInitiator class: %s\n\tAllocation type: malloc\n\tAllocation size: %" PRIuPTR " byte(s)\n\n", chunk._initiatorClass, chunk._allocationSize );
             break;
 
             case eGXHeapAllocationType::New:
                 ++leakedNewObjects;
-                leakedNewSize += chunk.allocationSize;
-                GXLogA ( "\tInitiator class: %s\n\tAllocation type: new\n\tAllocation size: %" PRIuPTR " byte(s)\n\n", chunk.initiatorClass, chunk.allocationSize );
+                leakedNewSize += chunk._allocationSize;
+                GXLogA ( "\tInitiator class: %s\n\tAllocation type: new\n\tAllocation size: %" PRIuPTR " byte(s)\n\n", chunk._initiatorClass, chunk._allocationSize );
             break;
         }
 
-        i = chunk.nextIndex;
+        i = chunk._nextIndex;
     }
 
     if ( leakedMallocObjects != 0u )
@@ -300,16 +300,16 @@ GXBool GXHeapManager::CheckMemoryLeaks ()
 GXVoid GXHeapManager::BindName ( const GXChar* name )
 {
     // Note release will be done in MakeNew method.
-    smartLock.AcquireExclusive ();
-    bindedName = name;
+    _smartLock.AcquireExclusive ();
+    _bindedName = name;
 }
 
 GXVoid* GXHeapManager::MakeNew ( GXUPointer size )
 {
-    GXVoid* memory = AddChunk ( eGXHeapAllocationType::New, size, bindedName );
+    GXVoid* memory = AddChunk ( eGXHeapAllocationType::New, size, _bindedName );
 
     // Note acquire will be done in BindName method.
-    smartLock.ReleaseExclusive ();
+    _smartLock.ReleaseExclusive ();
 
     return memory;
 }
@@ -321,9 +321,9 @@ GXVoid GXHeapManager::MakeDelete ( GXVoid* heapMemory )
 
 GXVoid* GXHeapManager::MakeMalloc ( GXUPointer size, const GXChar* initiatorClass )
 {
-    smartLock.AcquireExclusive ();
+    _smartLock.AcquireExclusive ();
     GXVoid* memory = AddChunk ( eGXHeapAllocationType::Malloc, size, initiatorClass );
-    smartLock.ReleaseExclusive ();
+    _smartLock.ReleaseExclusive ();
 
     return memory;
 }
@@ -333,24 +333,24 @@ GXVoid* GXHeapManager::MakeRealloc ( GXVoid* heapMemory, GXUPointer newSize, con
     if ( !heapMemory )
         return MakeMalloc ( newSize, initiatorClass );
 
-    smartLock.AcquireExclusive ();
+    _smartLock.AcquireExclusive ();
 
     GXUPointer targetIndex = FindChunkIndex ( heapMemory );
 
     if ( targetIndex == END_INDEX )
     {
-        smartLock.ReleaseExclusive ();
+        _smartLock.ReleaseExclusive ();
         GXLogA ( "GXHeapManager::MakeReallocMalloc::Error - Can't find chunk with heap address 0x%p!\n", heapMemory );
 
         return nullptr;
     }
 
-    GXHeapChunk& target = chunks[ targetIndex ];
-    target.heapMemoryMaxSize = newSize;
-    target.heapMemory = realloc ( heapMemory, newSize );
+    GXHeapChunk& target = _chunks[ targetIndex ];
+    target._heapMemoryMaxSize = newSize;
+    target._heapMemory = realloc ( heapMemory, newSize );
 
-    smartLock.ReleaseExclusive ();
-    return target.heapMemory;
+    _smartLock.ReleaseExclusive ();
+    return target._heapMemory;
 }
 
 GXVoid GXHeapManager::MakeFree ( GXVoid* heapMemory )
@@ -360,109 +360,109 @@ GXVoid GXHeapManager::MakeFree ( GXVoid* heapMemory )
 
 GXVoid* GXHeapManager::AddChunk ( eGXHeapAllocationType allocationType, GXUPointer size, const GXChar* initiatorClass )
 {
-    if ( freeChunkIndex == END_INDEX && uninitiatedChunkIndex == END_INDEX )
+    if ( _freeChunkIndex == END_INDEX && _uninitiatedChunkIndex == END_INDEX )
         GrowChunks ();
 
     GXHeapChunk* workingChunk = nullptr;
 
-    if ( freeChunkIndex != END_INDEX )
+    if ( _freeChunkIndex != END_INDEX )
     {
-        workingChunk = chunks + freeChunkIndex;
-        workingChunk->previousIndex = END_INDEX;
+        workingChunk = _chunks + _freeChunkIndex;
+        workingChunk->_previousIndex = END_INDEX;
 
-        GXUPointer nextFreeChunkIndex = workingChunk->nextIndex;
-        workingChunk->nextIndex = usedChunkIndex;
+        GXUPointer nextFreeChunkIndex = workingChunk->_nextIndex;
+        workingChunk->_nextIndex = _usedChunkIndex;
 
-        if ( usedChunkIndex != END_INDEX )
+        if ( _usedChunkIndex != END_INDEX )
         {
-            GXHeapChunk& firstUsedChunk = chunks[ usedChunkIndex ];
-            firstUsedChunk.previousIndex = freeChunkIndex;
+            GXHeapChunk& firstUsedChunk = _chunks[ _usedChunkIndex ];
+            firstUsedChunk._previousIndex = _freeChunkIndex;
         }
 
-        usedChunkIndex = freeChunkIndex;
-        freeChunkIndex = nextFreeChunkIndex;
+        _usedChunkIndex = _freeChunkIndex;
+        _freeChunkIndex = nextFreeChunkIndex;
     }
     else
     {
-        workingChunk = chunks + uninitiatedChunkIndex;
-        workingChunk->previousIndex = END_INDEX;
-        workingChunk->nextIndex = usedChunkIndex;
+        workingChunk = _chunks + _uninitiatedChunkIndex;
+        workingChunk->_previousIndex = END_INDEX;
+        workingChunk->_nextIndex = _usedChunkIndex;
 
-        if ( usedChunkIndex != END_INDEX )
+        if ( _usedChunkIndex != END_INDEX )
         {
-            GXHeapChunk& firstUsedChunk = chunks[ usedChunkIndex ];
-            firstUsedChunk.previousIndex = uninitiatedChunkIndex;
+            GXHeapChunk& firstUsedChunk = _chunks[ _usedChunkIndex ];
+            firstUsedChunk._previousIndex = _uninitiatedChunkIndex;
         }
 
-        usedChunkIndex = uninitiatedChunkIndex;
-        ++uninitiatedChunkIndex;
+        _usedChunkIndex = _uninitiatedChunkIndex;
+        ++_uninitiatedChunkIndex;
 
-        if ( uninitiatedChunkIndex >= chunkCount )
+        if ( _uninitiatedChunkIndex >= _chunkCount )
         {
-            uninitiatedChunkIndex = END_INDEX;
+            _uninitiatedChunkIndex = END_INDEX;
         }
     }
 
     workingChunk->InitData ( allocationType, size, initiatorClass );
-    return workingChunk->heapMemory;
+    return workingChunk->_heapMemory;
 }
 
 GXVoid GXHeapManager::RemoveChunk ( GXVoid* heapMemory )
 {
-    smartLock.AcquireExclusive ();
+    _smartLock.AcquireExclusive ();
 
     GXUPointer targetIndex = FindChunkIndex ( heapMemory );
 
     if ( targetIndex == END_INDEX )
     {
-        smartLock.ReleaseExclusive ();
+        _smartLock.ReleaseExclusive ();
         GXLogA ( "GXHeapManager::RemoveChunk::Error - Can't find chunk with heap address 0x%p!\n", heapMemory );
 
         return;
     }
 
-    GXHeapChunk& target = chunks[ targetIndex ];
+    GXHeapChunk& target = _chunks[ targetIndex ];
 
-    if ( target.nextIndex != END_INDEX )
+    if ( target._nextIndex != END_INDEX )
     {
-        GXHeapChunk& chunk = chunks[ target.nextIndex ];
-        chunk.previousIndex = target.previousIndex;
+        GXHeapChunk& chunk = _chunks[ target._nextIndex ];
+        chunk._previousIndex = target._previousIndex;
     }
 
-    if ( target.previousIndex != END_INDEX )
+    if ( target._previousIndex != END_INDEX )
     {
-        GXHeapChunk& chunk = chunks[ target.previousIndex ];
-        chunk.nextIndex = target.nextIndex;
+        GXHeapChunk& chunk = _chunks[ target._previousIndex ];
+        chunk._nextIndex = target._nextIndex;
     }
     else
     {
-        usedChunkIndex = target.nextIndex;
+        _usedChunkIndex = target._nextIndex;
     }
 
-    target.previousIndex = END_INDEX;
-    target.nextIndex = freeChunkIndex;
+    target._previousIndex = END_INDEX;
+    target._nextIndex = _freeChunkIndex;
 
-    if ( freeChunkIndex != END_INDEX )
+    if ( _freeChunkIndex != END_INDEX )
     {
-        GXHeapChunk& chunk = chunks[ freeChunkIndex ];
-        chunk.previousIndex = targetIndex;
+        GXHeapChunk& chunk = _chunks[ _freeChunkIndex ];
+        chunk._previousIndex = targetIndex;
     }
 
-    freeChunkIndex = targetIndex;
+    _freeChunkIndex = targetIndex;
 
-    smartLock.ReleaseExclusive ();
+    _smartLock.ReleaseExclusive ();
 }
 
 GXUPointer GXHeapManager::FindChunkIndex ( GXVoid* heapMemory )
 {
-    for ( GXUPointer i = usedChunkIndex; i != END_INDEX; )
+    for ( GXUPointer i = _usedChunkIndex; i != END_INDEX; )
     {
-        GXHeapChunk& chunk = chunks[ i ];
+        GXHeapChunk& chunk = _chunks[ i ];
 
-        if ( chunk.heapMemory == heapMemory )
+        if ( chunk._heapMemory == heapMemory )
             return i;
 
-        i = chunk.nextIndex;
+        i = chunk._nextIndex;
     }
 
     return END_INDEX;
@@ -470,23 +470,23 @@ GXUPointer GXHeapManager::FindChunkIndex ( GXVoid* heapMemory )
 
 GXVoid GXHeapManager::GrowChunks ()
 {
-    if ( chunkCount == 0u )
+    if ( _chunkCount == 0u )
     {
-        chunkCount = 1u;
-        chunks = static_cast<GXHeapChunk*> ( malloc ( sizeof ( GXHeapChunk ) ) );
-        memset ( chunks, 0, sizeof ( GXHeapChunk ) );
-        uninitiatedChunkIndex = 0u;
+        _chunkCount = 1u;
+        _chunks = static_cast<GXHeapChunk*> ( malloc ( sizeof ( GXHeapChunk ) ) );
+        memset ( _chunks, 0, sizeof ( GXHeapChunk ) );
+        _uninitiatedChunkIndex = 0u;
         return;
     }
 
-    GXHeapChunk* oldChunks = chunks;
-    GXUPointer newChunkCount = chunkCount * HEAP_CHUNK_GROW_FACTOR;
+    GXHeapChunk* oldChunks = _chunks;
+    GXUPointer newChunkCount = _chunkCount * HEAP_CHUNK_GROW_FACTOR;
 
-    chunks = static_cast<GXHeapChunk*> ( malloc ( newChunkCount * sizeof ( GXHeapChunk ) ) );
-    memcpy ( chunks, oldChunks, chunkCount * sizeof ( GXHeapChunk ) );
-    memset ( chunks + chunkCount, 0, ( newChunkCount - chunkCount ) * sizeof ( GXHeapChunk ) );
-    uninitiatedChunkIndex = chunkCount;
-    chunkCount = newChunkCount;
+    _chunks = static_cast<GXHeapChunk*> ( malloc ( newChunkCount * sizeof ( GXHeapChunk ) ) );
+    memcpy ( _chunks, oldChunks, _chunkCount * sizeof ( GXHeapChunk ) );
+    memset ( _chunks + _chunkCount, 0, ( newChunkCount - _chunkCount ) * sizeof ( GXHeapChunk ) );
+    _uninitiatedChunkIndex = _chunkCount;
+    _chunkCount = newChunkCount;
 
     free ( oldChunks );
 }

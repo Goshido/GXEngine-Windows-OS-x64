@@ -157,9 +157,9 @@ GXVoid GXCore::CheckMemoryLeak ()
 {
     GXBool haveHeapLeaks = !GXMemoryInspector::CheckMemoryLeaks ();
 
-    const GXWChar* lastFont = nullptr;
+    GXString lastFont;
     GXUShort lastFontSize = 0u;
-    GXUInt fonts = GXFont::GetTotalLoadedFonts ( &lastFont, lastFontSize );
+    GXUInt fonts = GXFont::GetTotalLoadedFonts ( lastFont, lastFontSize );
 
     const GXWChar* lastVS = nullptr;
     const GXWChar* lastGS = nullptr;
@@ -169,8 +169,8 @@ GXVoid GXCore::CheckMemoryLeak ()
     const GXWChar* lastSound = nullptr;
     GXUInt sounds = GXGetTotalSoundStorageObjects ( &lastSound );
 
-    const GXWChar* lastTexture2D = nullptr;
-    GXUInt texture2Ds = GXTexture2D::GetTotalLoadedTextures ( &lastTexture2D );
+    GXString lastTexture2D;
+    GXUInt texture2Ds = GXTexture2D::GetTotalLoadedTextures ( lastTexture2D );
 
     const GXWChar* lastTextureCubeMap = nullptr;
     GXUInt textureCubeMaps = GXTextureCubeMap::GetTotalLoadedTextures ( &lastTextureCubeMap );
@@ -180,11 +180,11 @@ GXVoid GXCore::CheckMemoryLeak ()
     GXFloat lastAnisotropy;
     GXUInt samplers = GXSampler::GetTotalSamplers ( lastWrapMode, lastResampling, lastAnisotropy );
 
-    const GXWChar* lastMesh = nullptr;
-    GXUInt meshes = GXMeshGeometry::GetTotalLoadedMeshes ( &lastMesh );
+    GXString lastMesh;
+    GXUInt meshes = GXMeshGeometry::GetTotalLoadedMeshes ( lastMesh );
 
-    const GXWChar* lastSkin = nullptr;
-    GXUInt skins = GXMeshGeometry::GetTotalLoadedSkins ( &lastSkin );
+    GXString lastSkin;
+    GXUInt skins = GXMeshGeometry::GetTotalLoadedSkins ( lastSkin );
 
     if ( ( fonts + shaders + sounds + texture2Ds + textureCubeMaps + samplers + meshes + skins ) < 1u )
     {
@@ -197,7 +197,7 @@ GXVoid GXCore::CheckMemoryLeak ()
     GXLogA ( "GXCore::CheckMemoryLeak::Warning - Обнаружена утечка памяти\n" );
 
     if ( fonts > 0u )
-        GXLogA ( "Шрифты - %u [%S] [размер %hu]\n", fonts, lastFont, lastFontSize );
+        GXLogA ( "Шрифты - %u [%s] [размер %hu]\n", fonts, static_cast<const GXMBChar*> ( lastFont ), lastFontSize );
 
     if ( shaders > 0u )
         GXLogA ( "Шейдерные программы - %u [%S] [%S] [%S]\n", shaders, lastVS, lastGS, lastFS );
@@ -206,7 +206,7 @@ GXVoid GXCore::CheckMemoryLeak ()
         GXLogA ( "Звуковые файлы - %u [%S]\n", sounds, lastSound );
 
     if ( texture2Ds > 0u )
-        GXLogA ( "Текстурные объекты (2D текстуры) - %u [%S]\n", texture2Ds, lastTexture2D );
+        GXLogA ( "Текстурные объекты (2D текстуры) - %u [%s]\n", texture2Ds, static_cast<const GXMBChar*> ( lastTexture2D ) );
 
     if ( textureCubeMaps > 0u )
         GXLogA ( "Текстурные объекты (Cube map текстуры) - %u [%S]\n", textureCubeMaps, lastTextureCubeMap );
@@ -257,10 +257,10 @@ GXVoid GXCore::CheckMemoryLeak ()
     }
 
     if ( meshes > 0u )
-        GXLogA ( "Меши - %u [%S]\n", meshes, lastMesh );
+        GXLogA ( "Меши - %u [%s]\n", meshes, static_cast<const GXMBChar*> ( lastMesh ) );
 
     if ( skins > 0u )
-        GXLogA ( "Скины - %u [%S]\n", skins, lastSkin );
+        GXLogA ( "Скины - %u [%s]\n", skins, static_cast<const GXMBChar*> ( lastSkin ) );
 
     system ( "pause" );
 }

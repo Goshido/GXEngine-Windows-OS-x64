@@ -479,7 +479,7 @@ GXUInt GXCDECLCALL GXFont::GetTextLength ( GXUInt bufferNumSymbols, const GXWCha
     return result;
 }
 
-GXUInt GXCALL GXFont::GetTotalLoadedFonts ( const GXWChar** lastFont, GXUShort &lastSize )
+GXUInt GXCALL GXFont::GetTotalLoadedFonts ( GXString &lastFont, GXUShort &lastSize )
 {
     GXUInt total = 0u;
 
@@ -488,12 +488,12 @@ GXUInt GXCALL GXFont::GetTotalLoadedFonts ( const GXWChar** lastFont, GXUShort &
 
     if ( total > 0u )
     {
-        *lastFont = gx_FontEntries->GetFileName ();
+        lastFont = gx_FontEntries->GetFileName ();
         lastSize = gx_FontEntries->GetSize ();
     }
     else
     {
-        *lastFont = nullptr;
+        lastFont.Clear ();
         lastSize = 0u;
     }
 

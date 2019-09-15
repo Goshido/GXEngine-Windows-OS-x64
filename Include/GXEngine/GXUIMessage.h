@@ -44,7 +44,7 @@ enum class eGXUIMessage : GXUInt
     ListBoxSetItemHeight                    = 31u,              // GXFloat                      new item height
     DoubleClick                             = 32u,              // GXVec2                       x, y - world mouse position
     EditBoxSetFont                          = 33u,              // GXUIEditBoxFontInfo          see GXUIEditBoxFontInfo
-    AddSumbol                               = 34u,              // GXWChar                      symbol
+    AddSymbol                               = 34u,              // GXWChar                      symbol
     EditBoxSetTextLeftOffset                = 35u,              // GXFloat                      text left offset
     EditBoxSetTextRightOffset               = 36u,              // GXFloat                      text right offset
     PopupAddItem                            = 37u,              // GXUIPopupItem                see GXUIPopupItem
