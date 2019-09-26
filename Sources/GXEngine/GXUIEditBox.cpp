@@ -157,15 +157,19 @@ GXFloat GXUIEditBox::GetTextRightOffset () const
 
 GXVoid GXUIEditBox::SetText ( const GXString &text )
 {
-    if ( text.IsNull () || text.IsEmpty () )
+    if ( text.IsNull () )
     {
         GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::ClearText, nullptr, 0u );
         return;
     }
 
-    GXUPointer size;
-    const GXUTF16* data = text.ToUTF16 ( size );
-    GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::SetText, data, static_cast<GXUInt> ( size ) );
+    // Kung-Fu: Task is to create pesistent GXString in raw memory.
+    // So will be used placement new. This prevents calling destructor for GXString object.
+    // The ownership will be transmitted manualy in OnSetText. The temp object will be destructed in OnSetText.
+
+    GXUByte memory[ sizeof ( GXString ) ];
+    const GXString* string = ::new ( memory ) GXString ( text );
+    GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::SetText, string, static_cast<GXUInt> ( sizeof ( GXString ) ) );
 }
 
 const GXString& GXUIEditBox::GetText ()
@@ -825,9 +829,16 @@ GXVoid GXUIEditBox::OnMouseOver ( const GXVoid* /*data*/ )
 
 GXVoid GXUIEditBox::OnSetText ( const GXVoid* data )
 {
-    _tmp.FromUTF16 ( static_cast<const GXUTF16*> ( data ) );
-    _textSymbols = static_cast<GXUInt> ( _tmp.GetSymbolCount () );
+    const GXString* newText = static_cast<const GXString*> ( data );
 
+    // Optimization: making unique string copy.
+    _tmp.FromUTF16 ( static_cast<const GXUTF16*> ( *newText ) );
+
+    // Clean up placement new stuff.
+    // see GXUIEditBox::SetText method.
+    newText->~GXString ();
+
+    _textSymbols = static_cast<GXUInt> ( _tmp.GetSymbolCount () );
     _isCacheValid = GX_FALSE;
 
     if ( _textSymbols <= _maxSymbols )

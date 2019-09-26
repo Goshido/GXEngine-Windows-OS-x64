@@ -50,8 +50,8 @@
 #define BOTTOM_SEPARATOR_HEIGHT             0.2f
 #define BOTTOM_SEPARATOR_BOTTOM_Y_OFFSET    0.64444f
 
-#define DEFAULT_INTEGER_VALIDATOR_STRING    L"4"
-#define DEFAULT_FLOAT_VALIDATOR_STRING      L"0.3"
+#define DEFAULT_INTEGER_VALIDATOR_STRING    "4"
+#define DEFAULT_FLOAT_VALIDATOR_STRING      "0.3"
 
 #define MINIMUM_CHECK_RADIUS                0.01f
 #define MAXIMUM_CHECK_RADIUS                77777.7f
@@ -226,19 +226,18 @@ EMUISSAOSettings::EMUISSAOSettings ():
 GXVoid EMUISSAOSettings::SyncSettings ()
 {
     EMRenderer& renderer = EMRenderer::GetInstance ();
-    GXWChar buffer[ MAX_BUFFER_SYMBOLS ];
 
-    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetSSAOCheckRadius () );
-    _checkRadius->SetText ( buffer );
+    _buffer.Format ( "%.6g", renderer.GetSSAOCheckRadius () );
+    _checkRadius->SetText ( _buffer );
 
-    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", renderer.GetSSAOSampleNumber () );
-    _samples->SetText ( buffer );
+    _buffer.Format ( "%hu", static_cast<GXUShort> ( renderer.GetSSAOSampleNumber () ) );
+    _samples->SetText ( _buffer );
 
-    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hu", renderer.GetSSAONoiseTextureResolution () );
-    _noiseTextureResolution->SetText ( buffer );
+    _buffer.Format ( "%hu", renderer.GetSSAONoiseTextureResolution () );
+    _noiseTextureResolution->SetText ( _buffer );
 
-    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetSSAOMaximumDistance () );
-    _maxDistance->SetText ( buffer );
+    _buffer.Format ( "%.6g", renderer.GetSSAOMaximumDistance () );
+    _maxDistance->SetText ( _buffer );
 }
 
 GXVoid GXCALL EMUISSAOSettings::OnButton ( GXVoid* handler, GXUIButton& button, GXFloat /*x*/, GXFloat /*y*/, eGXMouseButtonState state )
@@ -271,12 +270,12 @@ GXVoid GXCALL EMUISSAOSettings::OnButton ( GXVoid* handler, GXUIButton& button, 
 
     if ( stringW )
     {
-        GXUByte newSamples;
-        const GXInt result = swscanf_s ( stringW, L"%hhu", &newSamples );
+        GXUShort newSamples;
+        const GXInt result = swscanf_s ( stringW, L"%hu", &newSamples );
 
         if ( result != 0 )
         {
-            renderer.SetSSAOSampleNumber ( newSamples );
+            renderer.SetSSAOSampleNumber ( static_cast<GXUByte> ( newSamples ) );
         }
     }
 

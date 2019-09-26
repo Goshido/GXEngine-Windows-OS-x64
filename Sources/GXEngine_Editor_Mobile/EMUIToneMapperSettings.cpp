@@ -49,7 +49,7 @@
 #define BOTTOM_SEPARATOR_HEIGHT             0.2f
 #define BOTTOM_SEPARATOR_BOTTOM_Y_OFFSET    0.64444f
 
-#define DEFAULT_FLOAT_VALIDATOR_STRING      L"1.0"
+#define DEFAULT_FLOAT_VALIDATOR_STRING      "1.0"
 
 #define MINIMUM_GAMMA                       1.0f
 #define MAXIMUM_GAMMA                       2.4f
@@ -182,23 +182,23 @@ EMUIToneMapperSettings::EMUIToneMapperSettings ():
 
     const GXLocale& locale = GXLocale::GetInstance ();
 
-    _caption->SetText ( locale.GetString ( L"Tone mapper settings->HDR tone mapper settings" ) );
+    _caption->SetText ( locale.GetString ( "Tone mapper settings->HDR tone mapper settings" ) );
     _caption->SetTextColor ( CAPTION_LABEL_COLOR_R, CAPTION_LABEL_COLOR_G, CAPTION_LABEL_COLOR_B, CAPTION_LABEL_COLOR_A );
     _caption->SetAlingment ( eGXUITextAlignment::Center );
 
-    _gammaLabel->SetText ( locale.GetString ( L"Tone mapper settings->Gamma" ) );
+    _gammaLabel->SetText ( locale.GetString ( "Tone mapper settings->Gamma" ) );
     _gammaLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
     _gammaLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-    _sensitivityLabel->SetText ( locale.GetString ( L"Tone mapper settings->Sensitivity" ) );
+    _sensitivityLabel->SetText ( locale.GetString ( "Tone mapper settings->Sensitivity" ) );
     _sensitivityLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
     _sensitivityLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-    _eyeAdaptationSpeedLabel->SetText ( locale.GetString ( L"Tone mapper settings->Eye adaptation speed" ) );
+    _eyeAdaptationSpeedLabel->SetText ( locale.GetString ( "Tone mapper settings->Eye adaptation speed" ) );
     _eyeAdaptationSpeedLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
     _eyeAdaptationSpeedLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-    _whiteIntensityLabel->SetText ( locale.GetString ( L"Tone mapper settings->White intensity" ) );
+    _whiteIntensityLabel->SetText ( locale.GetString ( "Tone mapper settings->White intensity" ) );
     _whiteIntensityLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
     _whiteIntensityLabel->SetAlingment ( eGXUITextAlignment::Left );
 
@@ -207,8 +207,8 @@ EMUIToneMapperSettings::EMUIToneMapperSettings ():
     _eyeAdaptationSpeed->SetAlignment ( eGXUITextAlignment::Center );
     _whiteIntensity->SetAlignment ( eGXUITextAlignment::Center );
 
-    _cancel->SetCaption ( locale.GetString ( L"Motion blur settings->Cancel" ) );
-    _apply->SetCaption ( locale.GetString ( L"Motion blur settings->Apply" ) );
+    _cancel->SetCaption ( locale.GetString ( "Motion blur settings->Cancel" ) );
+    _apply->SetCaption ( locale.GetString ( "Motion blur settings->Apply" ) );
 
     _cancel->SetOnLeftMouseButtonCallback ( this, &EMUIToneMapperSettings::OnButton );
     _apply->SetOnLeftMouseButtonCallback ( this, &EMUIToneMapperSettings::OnButton );
@@ -225,19 +225,18 @@ EMUIToneMapperSettings::EMUIToneMapperSettings ():
 GXVoid EMUIToneMapperSettings::SyncSettings ()
 {
     EMRenderer& renderer = EMRenderer::GetInstance ();
-    GXWChar buffer[ MAX_BUFFER_SYMBOLS ];
 
-    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetToneMapperGamma () );
-    _gamma->SetText ( buffer );
+    _buffer.Format ( "%.6g", renderer.GetToneMapperGamma () );
+    _gamma->SetText ( _buffer );
 
-    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetToneMapperEyeSensitivity () );
-    _sensitivity->SetText ( buffer );
+    _buffer.Format ( "%.6g", renderer.GetToneMapperEyeSensitivity () );
+    _sensitivity->SetText ( _buffer );
 
-    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetToneMapperEyeAdaptationSpeed () );
-    _eyeAdaptationSpeed->SetText ( buffer );
+    _buffer.Format ( "%.6g", renderer.GetToneMapperEyeAdaptationSpeed () );
+    _eyeAdaptationSpeed->SetText ( _buffer );
 
-    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetToneMapperAbsoluteWhiteIntensity () );
-    _whiteIntensity->SetText ( buffer );
+    _buffer.Format ( "%.6g", renderer.GetToneMapperAbsoluteWhiteIntensity () );
+    _whiteIntensity->SetText ( _buffer );
 }
 
 GXVoid GXCALL EMUIToneMapperSettings::OnButton ( GXVoid* handler, GXUIButton& button, GXFloat /*x*/, GXFloat /*y*/, eGXMouseButtonState state )

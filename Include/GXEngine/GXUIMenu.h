@@ -5,6 +5,7 @@
 
 
 #include "GXUIPopup.h"
+#include <GXCommon/GXStrings.h>
 
 
 #define GX_UI_MENU_INVALID_INDEX 0xFFu
@@ -14,7 +15,7 @@
 class GXUIMenu;
 typedef GXVoid ( GXUIMenu::* GXUIMenuOnMessageHandler ) ( const GXVoid* data );
 
-class GXUIMenuMessageHandlerNode final: public GXUIWidgetMessageHandlerNode
+class GXUIMenuMessageHandlerNode final : public GXUIWidgetMessageHandlerNode
 {
     private:
         GXUIMenuOnMessageHandler     _handler;
@@ -45,6 +46,7 @@ class GXUIMenu final : public GXWidget
         GXUByte                         _highlightedItemIndex;
 
         GXUIMenuMessageHandlerNode      _messageHandlers[ 6u ];
+        const GXString                  _defaultText;
 
     public:
         explicit GXUIMenu ( GXWidget* parent );
@@ -52,12 +54,12 @@ class GXUIMenu final : public GXWidget
 
         GXVoid OnMessage ( eGXUIMessage message, const GXVoid* data ) override;
 
-        GXVoid AddItem ( const GXWChar* name, GXFloat itemWidth, GXUIPopup* popup );
+        GXVoid AddItem ( const GXString &name, GXFloat itemWidth, GXUIPopup* popup );
 
-        GXUByte GetTotalItems () const;
-        const GXWChar* GetItemName ( GXUByte itemIndex ) const;
-        GXFloat GetItemOffset ( GXUByte itemIndex ) const;
-        GXFloat GetItemWidth ( GXUByte itemIndex ) const;
+        GXUPointer GetTotalItems () const;
+        const GXString& GetItemName ( GXUPointer itemIndex ) const;
+        GXFloat GetItemOffset ( GXUPointer itemIndex ) const;
+        GXFloat GetItemWidth ( GXUPointer itemIndex ) const;
 
         GXUByte GetSelectedItemIndex () const;
         GXUByte GetHighlightedItemIndex () const;

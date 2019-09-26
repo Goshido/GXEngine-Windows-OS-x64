@@ -49,7 +49,7 @@ class EMUIMenuRenderer final : public GXWidgetRenderer
         explicit EMUIMenuRenderer ( GXUIMenu* widget );
         ~EMUIMenuRenderer () override;
 
-        GXFloat GetTextWidth ( const GXWChar* text ) const;
+        GXFloat GetTextWidth ( const GXString &text ) const;
 
     protected:
         GXVoid OnRefresh () override;
@@ -79,7 +79,7 @@ EMUIMenuRenderer::~EMUIMenuRenderer ()
     delete _surface;
 }
 
-GXFloat EMUIMenuRenderer::GetTextWidth ( const GXWChar* text ) const
+GXFloat EMUIMenuRenderer::GetTextWidth ( const GXString &text ) const
 {
     return static_cast<GXFloat> ( _font.GetTextLength ( 0u, text ) );
 }
@@ -91,7 +91,7 @@ GXVoid EMUIMenuRenderer::OnRefresh ()
     const GXFloat w = static_cast<const GXFloat> ( _surface->GetWidth () );
     const GXFloat h = static_cast<const GXFloat> ( _surface->GetHeight () );
 
-    const GXUByte totalItems = menu->GetTotalItems ();
+    const GXUPointer totalItems = menu->GetTotalItems ();
 
     const GXUByte selectedItemIndex = menu->GetSelectedItemIndex ();
     const GXUByte highlightedItemIndex = menu->GetHighlightedItemIndex ();
@@ -139,9 +139,9 @@ GXVoid EMUIMenuRenderer::OnRefresh ()
     pi._font = &_font;
     pi._insertY = ( h - _font.GetSize () ) * 0.7f;
 
-    for ( GXUByte i = 0u; i < totalItems; ++i )
+    for ( GXUPointer i = 0u; i < totalItems; ++i )
     {
-        const GXWChar* itemName = menu->GetItemName ( i );
+        const GXString& itemName = menu->GetItemName ( i );
         const GXFloat itemOffset = menu->GetItemOffset ( i );
         const GXFloat itemWidth = menu->GetItemWidth ( i );
         const GXFloat textWidth = static_cast<const GXFloat> ( _font.GetTextLength ( 0u, itemName ) );
@@ -203,7 +203,7 @@ GXWidget* EMUIMenu::GetWidget ()
     return &_widget;
 }
 
-GXVoid EMUIMenu::AddItem ( const GXWChar* name, EMUIPopup* popup )
+GXVoid EMUIMenu::AddItem ( const GXString &name, EMUIPopup* popup )
 {
     const EMUIMenuRenderer* renderer = static_cast<const EMUIMenuRenderer*> ( _widget.GetRenderer () );
     _widget.AddItem ( name, renderer->GetTextWidth ( name ) + TEXT_EXTEND * gx_ui_Scale, popup ? static_cast<GXUIPopup*> ( popup->GetWidget () ) : nullptr );

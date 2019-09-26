@@ -28,6 +28,9 @@ class EMUISSAOSettings final : public EMUI
         EMUIButton*                 _cancel;
         EMUIButton*                 _apply;
 
+        // Optimization stuff.
+        GXString                    _buffer;
+
         static EMUISSAOSettings*    _instance;
 
     public:

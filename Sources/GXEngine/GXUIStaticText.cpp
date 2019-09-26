@@ -84,9 +84,13 @@ GXVoid GXUIStaticText::SetText ( const GXString &text )
         return;
     }
 
-    GXUPointer size;
-    const GXUTF16* data = text.ToUTF16 ( size );
-    GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::SetText, data, static_cast<GXUInt> ( size ) );
+    // Kung-Fu: Task is to create pesistent GXString in raw memory.
+    // So will be used placement new. This prevents calling destructor for GXString object.
+    // The ownership will be transmitted manualy in OnSetText. The temp object will be destructed in OnSetText.
+
+    GXUByte memory[ sizeof ( GXString ) ];
+    const GXString* string = ::new ( memory ) GXString ( text );
+    GXTouchSurface::GetInstance ().SendMessage ( this, eGXUIMessage::SetText, string, static_cast<GXUInt> ( sizeof ( GXString ) ) );
 }
 
 GXVoid GXUIStaticText::SetTextColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
@@ -142,7 +146,12 @@ GXVoid GXUIStaticText::OnClearText ( const GXVoid* /*data*/ )
 
 GXVoid GXUIStaticText::OnSetText ( const GXVoid* data )
 {
-    _text.FromUTF16 ( static_cast<const GXUTF16*> ( data ) );
+    const GXString* newText = static_cast<const GXString*> ( data );
+    _text = *newText;
+
+    // Clean up placement new stuff.
+    // see GXUIStaticText::SetText method.
+    newText->~GXString ();
 
     if ( !_renderer ) return;
 

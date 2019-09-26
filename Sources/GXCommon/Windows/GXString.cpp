@@ -5,9 +5,10 @@
 #include <GXCommon/GXUIntAtomic.h>
 
 
-#define EXTRA_SPACE_SYMBOLS         32u
-#define CALCULATE_BUFFER_SIZE       0u
-#define LEADING_SURROGATE           0xD800u
+#define EXTRA_SPACE_SYMBOLS                     32u
+#define CALCULATE_BUFFER_SIZE                   0u
+#define LEADING_SURROGATE                       0xD800u
+#define SHORT_STRING_OPTIMIZATION_SYMBOLS       512u
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -427,7 +428,7 @@ GXString::GXString ( GXWChar character )
     _stringData = new GXStringData ( reinterpret_cast<const GXUTF16*> ( string ), GX_FALSE );
 }
 
-GXString::GXString ( GXUTF16* string )
+GXString::GXString ( const GXUTF16* string )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXString" )
 {
     if ( !string )
@@ -453,16 +454,22 @@ GXVoid GXString::Clear ()
 
 GXVoid GXCDECLCALL GXString::Format ( const GXMBChar* format, ... )
 {
+    // Short string optimization.
+    GXMBChar shortBuffer[ SHORT_STRING_OPTIMIZATION_SYMBOLS ];
+
     va_list ap;
     va_start ( ap, format );
 
-    GXUPointer neededSpace = static_cast<GXUPointer> ( vsnprintf ( nullptr, 0u, format, ap ) ) + 1u;
-    GXMBChar* string = static_cast<GXMBChar*> ( Malloc ( neededSpace ) );
+    const GXUPointer neededSpace = static_cast<GXUPointer> ( vsnprintf ( nullptr, 0u, format, ap ) ) + 1u;
+    GXMBChar* string = neededSpace > SHORT_STRING_OPTIMIZATION_SYMBOLS ? static_cast<GXMBChar*> ( Malloc ( neededSpace ) ) : shortBuffer;
     vsnprintf ( string, neededSpace, format, ap );
 
     va_end ( ap );
 
     FromSystemMultibyteString ( string );
+
+    if ( neededSpace <= SHORT_STRING_OPTIMIZATION_SYMBOLS ) return;
+
     Free ( string );
 }
 

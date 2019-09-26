@@ -10,7 +10,7 @@
 #include <GXCommon/GXFileSystem.h>
 
 
-typedef GXVoid ( GXCALL* EMUIOpenFileBrowseFileHandler ) ( GXString filePath );
+typedef GXVoid ( GXCALL* EMUIOpenFileBrowseFileHandler ) ( const GXString &filePath );
 
 class EMUIOpenFile final : public EMUI
 {

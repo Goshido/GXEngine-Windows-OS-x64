@@ -11,7 +11,7 @@
 #define BOTTOM_LEFT_X                       0.1f
 #define BOTTOM_LEFT_Y                       0.1f
 
-#define FONT                                L"Fonts/trebuc.ttf"
+#define FONT                                "Fonts/trebuc.ttf"
 #define FONT_SIZE                           0.33f
 #define TEXT_OFFSET_X                       0.2f
 
@@ -40,7 +40,7 @@
 #define HIGHTLIGHT_COLOR_B                  255u
 #define HIGHTLIGHT_COLOR_A                  38u
 
-#define DEFAULT_TEXTURE                     L"Textures/System/Default_Diffuse.tga"
+#define DEFAULT_TEXTURE                     "Textures/System/Default_Diffuse.tga"
 
 #define PIXEL_PERFECT_LOCATION_OFFSET_X     0.25f
 #define PIXEL_PERFECT_LOCATION_OFFSET_Y     0.25f

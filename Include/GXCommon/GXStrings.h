@@ -122,7 +122,7 @@ class GXString final : public GXMemoryInspector
         GXString ( GXMBChar character );
         GXString ( const GXWChar* string );
         GXString ( GXWChar character );
-        GXString ( GXUTF16* string );
+        GXString ( const GXUTF16* string );
         ~GXString () override;
 
         GXVoid Clear ();

@@ -167,19 +167,19 @@ EMUIMotionBlurSettings::EMUIMotionBlurSettings ():
 
     const GXLocale& locale = GXLocale::GetInstance ();
 
-    _caption->SetText ( locale.GetString ( L"Motion blur settings->Motion blur settings" ) );
+    _caption->SetText ( locale.GetString ( "Motion blur settings->Motion blur settings" ) );
     _caption->SetTextColor ( CAPTION_LABEL_COLOR_R, CAPTION_LABEL_COLOR_G, CAPTION_LABEL_COLOR_B, CAPTION_LABEL_COLOR_A );
     _caption->SetAlingment ( eGXUITextAlignment::Center );
 
-    _maxSamplesLabel->SetText ( locale.GetString ( L"Motion blur settings->Maximum samples" ) );
+    _maxSamplesLabel->SetText ( locale.GetString ( "Motion blur settings->Maximum samples" ) );
     _maxSamplesLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
     _maxSamplesLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-    _depthLimitLabel->SetText ( locale.GetString ( L"Motion blur settings->Depth Limit (meters)" ) );
+    _depthLimitLabel->SetText ( locale.GetString ( "Motion blur settings->Depth Limit (meters)" ) );
     _depthLimitLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
     _depthLimitLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-    _exposureLabel->SetText ( locale.GetString ( L"Motion blur settings->Exposure (seconds)" ) );
+    _exposureLabel->SetText ( locale.GetString ( "Motion blur settings->Exposure (seconds)" ) );
     _exposureLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
     _exposureLabel->SetAlingment ( eGXUITextAlignment::Left );
 
@@ -187,8 +187,8 @@ EMUIMotionBlurSettings::EMUIMotionBlurSettings ():
     _depthLimit->SetAlignment ( eGXUITextAlignment::Center );
     _exposure->SetAlignment ( eGXUITextAlignment::Center );
 
-    _cancel->SetCaption ( locale.GetString ( L"Motion blur settings->Cancel" ) );
-    _apply->SetCaption ( locale.GetString ( L"Motion blur settings->Apply" ) );
+    _cancel->SetCaption ( locale.GetString ( "Motion blur settings->Cancel" ) );
+    _apply->SetCaption ( locale.GetString ( "Motion blur settings->Apply" ) );
 
     _cancel->SetOnLeftMouseButtonCallback ( this, &EMUIMotionBlurSettings::OnButton );
     _apply->SetOnLeftMouseButtonCallback ( this, &EMUIMotionBlurSettings::OnButton );
@@ -205,16 +205,15 @@ EMUIMotionBlurSettings::EMUIMotionBlurSettings ():
 GXVoid EMUIMotionBlurSettings::SyncSettings ()
 {
     const EMRenderer& renderer = EMRenderer::GetInstance ();
-    GXWChar buffer[ MAX_BUFFER_SYMBOLS ];
 
-    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", renderer.GetMaximumMotionBlurSamples () );
-    _maxSamples->SetText ( buffer );
+    _buffer.Format ( "%hu", static_cast<GXShort> ( renderer.GetMaximumMotionBlurSamples () ) );
+    _maxSamples->SetText ( _buffer );
 
-    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetMotionBlurDepthLimit () );
-    _depthLimit->SetText ( buffer );
+    _buffer.Format ( "%.6g", renderer.GetMotionBlurDepthLimit () );
+    _depthLimit->SetText ( _buffer );
 
-    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetMotionBlurExposure () );
-    _exposure->SetText ( buffer );
+    _buffer.Format ( "%.6g", renderer.GetMotionBlurExposure () );
+    _exposure->SetText ( _buffer );
 }
 
 GXVoid GXCALL EMUIMotionBlurSettings::OnButton ( GXVoid* handler, GXUIButton& button, GXFloat /*x*/, GXFloat /*y*/, eGXMouseButtonState state )
@@ -234,12 +233,12 @@ GXVoid GXCALL EMUIMotionBlurSettings::OnButton ( GXVoid* handler, GXUIButton& bu
 
     if ( stringW )
     {
-        GXUByte newMaxSamples;
-        const GXInt result = swscanf_s ( stringW, L"%hhu", &newMaxSamples );
+        GXUShort newMaxSamples;
+        const GXInt result = swscanf_s ( stringW, L"%hu", &newMaxSamples );
 
         if ( result != 0 )
         {
-            renderer.SetMaximumMotionBlurSamples ( newMaxSamples );
+            renderer.SetMaximumMotionBlurSamples ( static_cast<GXUByte> ( newMaxSamples ) );
         }
     }
 

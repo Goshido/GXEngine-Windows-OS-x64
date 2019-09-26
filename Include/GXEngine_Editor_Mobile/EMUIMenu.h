@@ -18,7 +18,7 @@ class EMUIMenu final : public EMUI
 
         GXWidget* GetWidget () override;
 
-        GXVoid AddItem ( const GXWChar* name, EMUIPopup* popup );
+        GXVoid AddItem ( const GXString &name, EMUIPopup* popup );
         GXVoid SetLocation ( GXFloat leftBottomX, GXFloat leftBottomY );
         GXFloat GetHeight () const;
 

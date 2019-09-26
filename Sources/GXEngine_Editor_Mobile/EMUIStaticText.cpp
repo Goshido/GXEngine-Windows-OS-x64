@@ -4,7 +4,7 @@
 #include <GXEngine/GXFont.h>
 
 
-#define FONT                                L"Fonts/trebuc.ttf"
+#define FONT                                "Fonts/trebuc.ttf"
 #define FONT_SIZE                           0.33f
 
 #define PIXEL_PERFECT_LOCATION_OFFSET_X     0.25f
