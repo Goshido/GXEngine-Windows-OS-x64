@@ -9,16 +9,16 @@
 class EMUIStaticText final : public EMUI
 {
     private:
-        GXUIStaticText*     _widget;
+        GXUIStaticText      _widget;
 
     public:
         explicit EMUIStaticText ( EMUI* parent );
         ~EMUIStaticText () override;
 
-        GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () override;
 
-        GXVoid SetText ( const GXWChar* text );
-        const GXWChar* GetText () const;
+        GXVoid SetText ( const GXString &text );
+        const GXString& GetText () const;
 
         GXVoid SetTextColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
         const GXColorRGB& GetTextColor () const;

@@ -10,7 +10,37 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXWidget::GXWidget ( GXWidget* parent, GXBool isNeedRegister ):
+GXUIWidgetMessageHandlerNode::GXUIWidgetMessageHandlerNode ()
+{
+    // NOTHING
+}
+
+GXUIWidgetMessageHandlerNode::GXUIWidgetMessageHandlerNode ( eGXUIMessage message ):
+    _message ( message )
+{
+    // NOTHING
+}
+
+GXUIWidgetMessageHandlerNode::~GXUIWidgetMessageHandlerNode ()
+{
+    // NOTHING
+}
+
+eGXCompareResult GXCALL GXUIWidgetMessageHandlerNode::Compare ( const GXAVLTreeNode& a, const GXAVLTreeNode& b )
+{
+    const GXUIWidgetMessageHandlerNode& aNode = static_cast<const GXUIWidgetMessageHandlerNode&> ( a );
+    const GXUIWidgetMessageHandlerNode& bNode = static_cast<const GXUIWidgetMessageHandlerNode&> ( b );
+
+    if ( aNode._message < bNode._message )
+        return eGXCompareResult::Less;
+
+    return aNode._message > bNode._message ? eGXCompareResult::Greater : eGXCompareResult::Equal;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+GXWidget::GXWidget ( GXWidget* parent, GXBool isNeedRegister )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXWidget" )
     _isRegistered ( isNeedRegister ),
     _next ( nullptr ),
     _previous ( nullptr ),
@@ -18,7 +48,8 @@ GXWidget::GXWidget ( GXWidget* parent, GXBool isNeedRegister ):
     _childs ( nullptr ),
     _isVisible ( GX_TRUE ),
     _isDraggable ( GX_FALSE ),
-    _renderer ( nullptr )
+    _renderer ( nullptr ),
+    _messageHandlerTree ( &GXUIWidgetMessageHandlerNode::Compare, GX_FALSE )
 {
     GXAABB defaultBoundsLocal;
 
@@ -368,7 +399,7 @@ GXBool GXWidget::DoesChildExist ( GXWidget* child ) const
     return GX_FALSE;
 }
 
-//--------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 GXWidgetIterator::GXWidgetIterator ():
     widget ( nullptr )

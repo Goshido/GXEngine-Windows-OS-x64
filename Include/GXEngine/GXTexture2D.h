@@ -1,11 +1,11 @@
-// version 1.11
+// version 1.13
 
 #ifndef GX_TEXTURE_2D
 #define GX_TEXTURE_2D
 
 
 #include "GXOpenGL.h"
-#include <GXCommon/GXMemory.h>
+#include <GXCommon/GXStrings.h>
 
 
 // Class handles lazy loading reference counting texture 2D resource creation.
@@ -25,7 +25,7 @@ class GXTexture2D final : public GXMemoryInspector
         explicit GXTexture2D ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap );
 
         // Creates reference counting texture resource.
-        explicit GXTexture2D ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection );
+        explicit GXTexture2D ( const GXString &fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection );
 
         ~GXTexture2D () override;
 
@@ -40,7 +40,7 @@ class GXTexture2D final : public GXMemoryInspector
         // - JPEG
         // - PNG
         // - HDR
-        GXVoid LoadImage ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection );
+        GXVoid LoadImage ( const GXString &fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection );
 
         // If object holds reference counting resource then method releases that resource and makes new
         // texture resource with specified pixel data. Width, height, internal format and generate mipmap intend
@@ -67,7 +67,7 @@ class GXTexture2D final : public GXMemoryInspector
         GXVoid InitResources ( GXUShort width, GXUShort height, GLint internalFormat, GXBool isGenerateMipmap );
         GXVoid FreeResources ();
 
-        static GXUInt GXCALL GetTotalLoadedTextures ( const GXWChar** lastTexture );
+        static GXUInt GXCALL GetTotalLoadedTextures ( GXString &lastTexture );
 
     private:
         GXTexture2D ( const GXTexture2D &other ) = delete;

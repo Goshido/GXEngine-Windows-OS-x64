@@ -17,10 +17,10 @@ class GXUIEditBoxFloatValidator final : public GXTextValidator
         GXFloat         _maximumValue;
 
     public:
-        explicit GXUIEditBoxFloatValidator ( const GXWChar* defaultValidText, GXUIEditBox& editBox, GXFloat minimumValue, GXFloat maximumValue );
+        explicit GXUIEditBoxFloatValidator ( const GXString &defaultValidText, GXUIEditBox &editBox, GXFloat minimumValue, GXFloat maximumValue );
         ~GXUIEditBoxFloatValidator () override;
 
-        GXBool Validate ( const GXWChar* text ) override;
+        GXBool Validate ( const GXString &text ) override;
 
     private:
         GXUIEditBoxFloatValidator () = delete;

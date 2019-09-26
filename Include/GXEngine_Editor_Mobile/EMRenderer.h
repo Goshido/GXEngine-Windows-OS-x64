@@ -72,6 +72,9 @@ class EMRenderer final
         GXTexture2D                                     _omegaTexture;
         GXTexture2D                                     _yottaTexture;
 
+        EMGaussHorizontalBlurMaterial                   _gaussHorizontalBlurMaterial;
+        EMGaussVerticalBlurMaterial                     _gaussVerticalBlurMaterial;
+
         GLuint                                          _fbo;
 
         GXUByte                                         _objectMask[ 8u ];
@@ -83,8 +86,6 @@ class EMRenderer final
         EMVelocityTileMaxMaterial                       _velocityTileMaxMaterial;
         EMVelocityNeighborMaxMaterial                   _velocityNeighborMaxMaterial;
         EMMotionBlurMaterial                            _motionBlurMaterial;
-        EMGaussHorizontalBlurMaterial                   _gaussHorizontalBlurMaterial;
-        EMGaussVerticalBlurMaterial                     _gaussVerticalBlurMaterial;
         EMSSAOSharpMaterial                             _ssaoSharpMaterial;
         EMSSAOApplyMaterial                             _ssaoApplyMaterial;
         EMToneMapperMaterial                            _toneMapperMaterial;

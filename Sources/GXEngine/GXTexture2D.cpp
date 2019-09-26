@@ -1,4 +1,4 @@
-// version 1.11
+// version 1.13
 
 #include <GXEngine/GXTexture2D.h>
 #include <GXEngine/GXMeshGeometry.h>
@@ -74,10 +74,10 @@ class GXTexture2DEntry final : public GXMemoryInspector
         static GXTexture2DEntry*        _top;
 
     public:
-        explicit GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGenerateMipmap, GXBool isApplyGammaCorrection );
+        explicit GXTexture2DEntry ( const GXString &imageFileName, GXBool doesGenerateMipmap, GXBool isApplyGammaCorrection );
         explicit GXTexture2DEntry ( GXUShort width, GXUShort height, GLint internalFormat, GXBool doesGenerateMipmap );
 
-        const GXWChar* GetFileName () const;
+        const GXString& GetFileName () const;
         GXUShort GetWidth () const;
         GXUShort GetHeight () const;
         GLint GetInternalFormat () const;
@@ -96,9 +96,9 @@ class GXTexture2DEntry final : public GXMemoryInspector
 
         // Method returns valid pointer if texture was found.
         // Method returns nullptr if texture was not found.
-        static GXTexture2DEntry* GXCALL Find ( const GXWChar* textureFile );
+        static GXTexture2DEntry* GXCALL Find ( const GXString &textureFile );
 
-        static GXUInt GXCALL GetTotalLoadedTextures ( const GXWChar** lastTexture );
+        static GXUInt GXCALL GetTotalLoadedTextures ( GXString &lastTexture );
 
     private:
         ~GXTexture2DEntry () override;
@@ -112,7 +112,7 @@ class GXTexture2DEntry final : public GXMemoryInspector
 
 GXTexture2DEntry* GXTexture2DEntry::_top = nullptr;
 
-GXTexture2DEntry::GXTexture2DEntry ( const GXWChar* imageFileName, GXBool doesGenerateMipmap, GXBool isApplyGammaCorrection )
+GXTexture2DEntry::GXTexture2DEntry ( const GXString &imageFileName, GXBool doesGenerateMipmap, GXBool isApplyGammaCorrection )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTexture2DEntry" )
     _previous ( nullptr ),
     _next ( _top ),
@@ -491,7 +491,7 @@ GXTexture2DEntry::GXTexture2DEntry ( GXUShort width, GXUShort height, GLint inte
     InitResources ( width, height, internalFormat, doesGenerateMipmap );
 }
 
-const GXWChar* GXTexture2DEntry::GetFileName () const
+const GXString& GXTexture2DEntry::GetFileName () const
 {
     return _fileName;
 }
@@ -611,19 +611,19 @@ GXVoid GXTexture2DEntry::Release ()
     delete this;
 }
 
-GXTexture2DEntry* GXCALL GXTexture2DEntry::Find ( const GXWChar* textureFile )
+GXTexture2DEntry* GXCALL GXTexture2DEntry::Find ( const GXString &textureFile )
 {
     for ( GXTexture2DEntry* p = _top; p; p = p->_next )
     {
-        if ( GXWcscmp ( p->_fileName, textureFile ) != 0 ) continue;
-        
+        if ( p->_fileName != textureFile ) continue;
+
         return p;
     }
 
     return nullptr;
 }
 
-GXUInt GXCALL GXTexture2DEntry::GetTotalLoadedTextures ( const GXWChar** lastTexture )
+GXUInt GXCALL GXTexture2DEntry::GetTotalLoadedTextures ( GXString &lastTexture )
 {
     GXUInt total = 0u;
 
@@ -631,9 +631,9 @@ GXUInt GXCALL GXTexture2DEntry::GetTotalLoadedTextures ( const GXWChar** lastTex
         ++total;
 
     if ( total > 0u )
-        *lastTexture = _top->GetFileName ();
+        lastTexture = _top->GetFileName ();
     else
-        *lastTexture = nullptr;
+        lastTexture.Clear ();
 
     return total;
 }
@@ -825,7 +825,7 @@ GXTexture2D::GXTexture2D ( GXUShort width, GXUShort height, GLint internalFormat
     // NOTHING
 }
 
-GXTexture2D::GXTexture2D ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection )
+GXTexture2D::GXTexture2D ( const GXString &fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXTexture2D" )
     _textureUnit ( INVALID_TEXTURE_UNIT ),
     _texture2DEntry ( nullptr )
@@ -860,7 +860,7 @@ GXUByte GXTexture2D::GetLevelOfDetailNumber () const
     return _texture2DEntry->GetLevelOfDetailNumber ();
 }
 
-GXVoid GXTexture2D::LoadImage ( const GXWChar* fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection )
+GXVoid GXTexture2D::LoadImage ( const GXString &fileName, GXBool isGenerateMipmap, GXBool isApplyGammaCorrection )
 {
     if ( _texture2DEntry )
         _texture2DEntry->Release ();
@@ -879,7 +879,7 @@ GXVoid GXTexture2D::LoadImage ( const GXWChar* fileName, GXBool isGenerateMipmap
 
 GXVoid GXTexture2D::FillWholePixelData ( const GXVoid* data )
 {
-    if ( !_texture2DEntry->GetFileName () )
+    if ( _texture2DEntry->GetFileName ().IsNull () )
     {
         _texture2DEntry->FillWholePixelData ( data );
         return;
@@ -899,7 +899,7 @@ GXVoid GXTexture2D::FillWholePixelData ( const GXVoid* data )
 
 GXVoid GXTexture2D::FillRegionPixelData ( GXUShort left, GXUShort bottom, GXUShort regionWidth, GXUShort regionHeight, const GXVoid* data )
 {
-    if ( !_texture2DEntry->GetFileName () )
+    if ( _texture2DEntry->GetFileName ().IsNull () )
     {
         _texture2DEntry->FillRegionPixelData ( left, bottom, regionWidth, regionHeight, data );
         return;
@@ -964,7 +964,7 @@ GXVoid GXTexture2D::FreeResources ()
     _texture2DEntry = nullptr;
 }
 
-GXUInt GXCALL GXTexture2D::GetTotalLoadedTextures ( const GXWChar** lastTexture )
+GXUInt GXCALL GXTexture2D::GetTotalLoadedTextures ( GXString &lastTexture )
 {
     return GXTexture2DEntry::GetTotalLoadedTextures ( lastTexture );
 }

@@ -9,20 +9,20 @@
 class EMUIButton final : public EMUI
 {
     private:
-        GXUIButton*     _widget;
+        GXUIButton      _widget;
 
     public:
         explicit EMUIButton ( EMUI* parent );
         ~EMUIButton () override;
 
-        GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () override;
 
         GXVoid Enable ();
         GXVoid Disable ();
 
         GXVoid Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height );
 
-        GXVoid SetCaption ( const GXWChar* caption );
+        GXVoid SetCaption ( const GXString &caption );
 
         GXVoid Show ();
         GXVoid Hide ();

@@ -50,8 +50,8 @@
 #define BOTTOM_SEPARATOR_HEIGHT             0.2f
 #define BOTTOM_SEPARATOR_BOTTOM_Y_OFFSET    0.64444f
 
-#define DEFAULT_INTEGER_VALIDATOR_STRING    L"4"
-#define DEFAULT_FLOAT_VALIDATOR_STRING      L"0.3"
+#define DEFAULT_INTEGER_VALIDATOR_STRING    "4"
+#define DEFAULT_FLOAT_VALIDATOR_STRING      "0.3"
 
 #define MINIMUM_CHECK_RADIUS                0.01f
 #define MAXIMUM_CHECK_RADIUS                77777.7f
@@ -72,7 +72,10 @@ EMUISSAOSettings* EMUISSAOSettings::_instance = nullptr;
 EMUISSAOSettings& EMUISSAOSettings::GetInstance ()
 {
     if ( !_instance )
+    {
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISSAOSettings" )
         _instance = new EMUISSAOSettings ();
+    }
 
     return *_instance;
 }
@@ -101,63 +104,82 @@ EMUISSAOSettings::~EMUISSAOSettings ()
 
     delete _topSeparator;
     delete _caption;
-    delete _mainPanel;
 
     _instance = nullptr;
 }
 
-GXWidget* EMUISSAOSettings::GetWidget () const
+GXWidget* EMUISSAOSettings::GetWidget ()
 {
-    return _mainPanel->GetWidget ();
+    return _mainPanel.GetWidget ();
 }
 
 GXVoid EMUISSAOSettings::Show ()
 {
-    if ( !_mainPanel->GetWidget ()->IsVisible () || !_checkRadius->GetText () )
+    if ( !_mainPanel.GetWidget ()->IsVisible () || _checkRadius->GetText ().IsEmpty () || _checkRadius->GetText ().IsNull () )
         SyncSettings ();
 
-    _mainPanel->Show ();
+    _mainPanel.Show ();
 }
 
 GXVoid EMUISSAOSettings::Hide ()
 {
-    _mainPanel->Hide ();
+    _mainPanel.Hide ();
 }
 
 EMUISSAOSettings::EMUISSAOSettings ():
     EMUI ( nullptr ),
-    _mainPanel ( new EMUIDraggableArea ( nullptr ) )
+    _mainPanel ( nullptr )
 {
-    _caption = new EMUIStaticText ( _mainPanel );
-    _topSeparator = new EMUISeparator ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" );
+    _caption = new EMUIStaticText ( &_mainPanel );
 
-    _checkRadiusLabel = new EMUIStaticText ( _mainPanel );
-    _checkRadius = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISeparator" );
+    _topSeparator = new EMUISeparator ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" );
+    _checkRadiusLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" );
+    _checkRadius = new EMUIEditBox ( &_mainPanel );
     GXUIEditBox* editBox = static_cast<GXUIEditBox*> ( _checkRadius->GetWidget () );
     GXUIEditBoxFloatValidator* floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_CHECK_RADIUS, MAXIMUM_CHECK_RADIUS );
     _checkRadius->SetValidator ( *floatValidator );
 
-    _samplesLabel = new EMUIStaticText ( _mainPanel );
-    _samples = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" );
+    _samplesLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" );
+    _samples = new EMUIEditBox ( &_mainPanel );
     editBox = static_cast<GXUIEditBox*> ( _samples->GetWidget () );
     GXUIEditBoxIntegerValidator* integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_STRING, *editBox, MINIMUM_SAMPLES, MAXIMUM_SAMPLES );
     _samples->SetValidator ( *integerValidator );
 
-    _noiseTextureResolutionLabel = new EMUIStaticText ( _mainPanel );
-    _noiseTextureResolution = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" );
+    _noiseTextureResolutionLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" );
+    _noiseTextureResolution = new EMUIEditBox ( &_mainPanel );
     editBox = static_cast<GXUIEditBox*> ( _noiseTextureResolution->GetWidget () );
     integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_STRING, *editBox, MINIMUM_NOISE_TEXTURE_RESOLUTION, MAXIMUM_NOISE_TEXTURE_RESOLUTION );
     _noiseTextureResolution->SetValidator ( *integerValidator );
 
-    _maxDistanceLabel = new EMUIStaticText ( _mainPanel );
-    _maxDistance = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" );
+    _maxDistanceLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" );
+    _maxDistance = new EMUIEditBox ( &_mainPanel );
     editBox = static_cast<GXUIEditBox*> ( _maxDistance->GetWidget () );
     floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_DISTANCE, MAXIMUM_DISTANCE );
     _maxDistance->SetValidator ( *floatValidator );
 
-    _bottomSeparator = new EMUISeparator ( _mainPanel );
-    _cancel = new EMUIButton ( _mainPanel );
-    _apply = new EMUIButton ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISeparator" );
+    _bottomSeparator = new EMUISeparator ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIButton" )
+    _cancel = new EMUIButton ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIButton" )
+    _apply = new EMUIButton ( &_mainPanel );
 
     const GXLocale& locale = GXLocale::GetInstance ();
 
@@ -192,31 +214,30 @@ EMUISSAOSettings::EMUISSAOSettings ():
     _cancel->SetOnLeftMouseButtonCallback ( this, &EMUISSAOSettings::OnButton );
     _apply->SetOnLeftMouseButtonCallback ( this, &EMUISSAOSettings::OnButton );
 
-    _mainPanel->SetOnResizeCallback ( this, &EMUISSAOSettings::OnResize );
+    _mainPanel.SetOnResizeCallback ( this, &EMUISSAOSettings::OnResize );
 
     const GXFloat height = DEFAULT_MAIN_PANEL_HEIGHT * gx_ui_Scale;
-    _mainPanel->Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
-    _mainPanel->SetMinimumWidth ( MAIN_PANEL_MINIMUM_WIDTH * gx_ui_Scale );
-    _mainPanel->SetMinimumHeight ( MAIN_PANEL_MINIMUM_HEIGHT * gx_ui_Scale );
-    _mainPanel->Hide ();
+    _mainPanel.Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
+    _mainPanel.SetMinimumWidth ( MAIN_PANEL_MINIMUM_WIDTH * gx_ui_Scale );
+    _mainPanel.SetMinimumHeight ( MAIN_PANEL_MINIMUM_HEIGHT * gx_ui_Scale );
+    _mainPanel.Hide ();
 }
 
 GXVoid EMUISSAOSettings::SyncSettings ()
 {
     EMRenderer& renderer = EMRenderer::GetInstance ();
-    GXWChar buffer[ MAX_BUFFER_SYMBOLS ];
 
-    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetSSAOCheckRadius () );
-    _checkRadius->SetText ( buffer );
+    _buffer.Format ( "%.6g", renderer.GetSSAOCheckRadius () );
+    _checkRadius->SetText ( _buffer );
 
-    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", renderer.GetSSAOSampleNumber () );
-    _samples->SetText ( buffer );
+    _buffer.Format ( "%hu", static_cast<GXUShort> ( renderer.GetSSAOSampleNumber () ) );
+    _samples->SetText ( _buffer );
 
-    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hu", renderer.GetSSAONoiseTextureResolution () );
-    _noiseTextureResolution->SetText ( buffer );
+    _buffer.Format ( "%hu", renderer.GetSSAONoiseTextureResolution () );
+    _noiseTextureResolution->SetText ( _buffer );
 
-    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetSSAOMaximumDistance () );
-    _maxDistance->SetText ( buffer );
+    _buffer.Format ( "%.6g", renderer.GetSSAOMaximumDistance () );
+    _maxDistance->SetText ( _buffer );
 }
 
 GXVoid GXCALL EMUISSAOSettings::OnButton ( GXVoid* handler, GXUIButton& button, GXFloat /*x*/, GXFloat /*y*/, eGXMouseButtonState state )
@@ -249,12 +270,12 @@ GXVoid GXCALL EMUISSAOSettings::OnButton ( GXVoid* handler, GXUIButton& button, 
 
     if ( stringW )
     {
-        GXUByte newSamples;
-        const GXInt result = swscanf_s ( stringW, L"%hhu", &newSamples );
+        GXUShort newSamples;
+        const GXInt result = swscanf_s ( stringW, L"%hu", &newSamples );
 
         if ( result != 0 )
         {
-            renderer.SetSSAOSampleNumber ( newSamples );
+            renderer.SetSSAOSampleNumber ( static_cast<GXUByte> ( newSamples ) );
         }
     }
 

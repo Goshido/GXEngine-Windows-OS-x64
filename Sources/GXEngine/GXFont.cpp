@@ -1,4 +1,4 @@
-// version 1.16
+// version 1.17
 
 #include <GXEngine/GXFont.h>
 #include <GXEngineDLL/GXEngineAPI.h>
@@ -79,9 +79,9 @@ class GXFontEntry final : public GXMemoryInspector
         GXUByte*            _mappedFile;
 
     public:
-        explicit GXFontEntry ( const GXWChar* fontFileName, GXUShort fontSize );
+        explicit GXFontEntry ( const GXString &fontFileName, GXUShort fontSize );
 
-        const GXWChar* GetFileName () const;
+        const GXString& GetFileName () const;
         GXUShort GetSize () const;
 
         GXBool GetGlyph ( GXUInt symbol, GXGlyphInfo &info );
@@ -106,7 +106,7 @@ class GXFontEntry final : public GXMemoryInspector
         GXFontEntry& operator = ( const GXFontEntry &other ) = delete;
 };
 
-GXFontEntry::GXFontEntry ( const GXWChar* fontFileName, GXUShort fontSize )
+GXFontEntry::GXFontEntry ( const GXString &fontFileName, GXUShort fontSize )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXFontEntry" )
     _previous ( nullptr ),
     _next ( gx_FontEntries ),
@@ -148,7 +148,7 @@ GXFontEntry::GXFontEntry ( const GXWChar* fontFileName, GXUShort fontSize )
     _face = nullptr;
 }
 
-const GXWChar* GXFontEntry::GetFileName () const
+const GXString& GXFontEntry::GetFileName () const
 {
     return _fileName;
 }
@@ -419,7 +419,7 @@ GXVoid GXFontEntry::CreateAtlas ()
 
 //---------------------------------------------------------------------------------------------------------------------
 
-GXFont::GXFont ( const GXWChar* fileName, GXUShort size )
+GXFont::GXFont ( const GXString &fileName, GXUShort size )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_SINGLE ( "GXFont" )
 {
     for ( GXFontEntry* p = gx_FontEntries; p; p = p->_next )
@@ -479,7 +479,7 @@ GXUInt GXCDECLCALL GXFont::GetTextLength ( GXUInt bufferNumSymbols, const GXWCha
     return result;
 }
 
-GXUInt GXCALL GXFont::GetTotalLoadedFonts ( const GXWChar** lastFont, GXUShort &lastSize )
+GXUInt GXCALL GXFont::GetTotalLoadedFonts ( GXString &lastFont, GXUShort &lastSize )
 {
     GXUInt total = 0u;
 
@@ -488,12 +488,12 @@ GXUInt GXCALL GXFont::GetTotalLoadedFonts ( const GXWChar** lastFont, GXUShort &
 
     if ( total > 0u )
     {
-        *lastFont = gx_FontEntries->GetFileName ();
+        lastFont = gx_FontEntries->GetFileName ();
         lastSize = gx_FontEntries->GetSize ();
     }
     else
     {
-        *lastFont = nullptr;
+        lastFont.Clear ();
         lastSize = 0u;
     }
 

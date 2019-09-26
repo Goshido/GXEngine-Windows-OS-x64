@@ -1,4 +1,4 @@
-// version 1.10
+// version 1.11
 
 #ifndef GX_LOCALE
 #define GX_LOCALE
@@ -45,12 +45,12 @@ class GXLocale final : public GXMemoryInspector
         static GXLocale& GXCALL GetInstance ();
         ~GXLocale ();
 
-        GXVoid LoadLanguage ( GXString fileName, eGXLanguage language );
+        GXVoid LoadLanguage ( const GXString &fileName, eGXLanguage language );
 
         GXVoid SetLanguage ( eGXLanguage language );
         eGXLanguage GetLanguage () const;
 
-        GXString GetString ( GXString key ) const;
+        const GXString& GetString ( const GXString &key ) const;
 
     private:
         GXLocale ();

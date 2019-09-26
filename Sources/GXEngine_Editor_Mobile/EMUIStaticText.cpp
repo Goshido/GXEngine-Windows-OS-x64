@@ -4,7 +4,7 @@
 #include <GXEngine/GXFont.h>
 
 
-#define FONT                                L"Fonts/trebuc.ttf"
+#define FONT                                "Fonts/trebuc.ttf"
 #define FONT_SIZE                           0.33f
 
 #define PIXEL_PERFECT_LOCATION_OFFSET_X     0.25f
@@ -128,54 +128,53 @@ GXVoid EMUIStaticTextRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 EMUIStaticText::EMUIStaticText ( EMUI* parent ):
     EMUI ( parent ),
-    _widget ( new GXUIStaticText ( parent ? parent->GetWidget () : nullptr ) )
+    _widget ( parent ? parent->GetWidget () : nullptr )
 {
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticTextRenderer" )
-    _widget->SetRenderer ( new EMUIStaticTextRenderer ( _widget ) );
+    _widget.SetRenderer ( new EMUIStaticTextRenderer ( &_widget ) );
 }
 
 EMUIStaticText::~EMUIStaticText ()
 {
-    delete _widget->GetRenderer ();
-    delete _widget;
+    delete _widget.GetRenderer ();
 }
 
-GXWidget* EMUIStaticText::GetWidget () const
+GXWidget* EMUIStaticText::GetWidget ()
 {
-    return _widget;
+    return &_widget;
 }
 
-GXVoid EMUIStaticText::SetText ( const GXWChar* text )
+GXVoid EMUIStaticText::SetText ( const GXString &text )
 {
-    _widget->SetText ( text );
+    _widget.SetText ( text );
 }
 
-const GXWChar* EMUIStaticText::GetText () const
+const GXString& EMUIStaticText::GetText () const
 {
-    return _widget->GetText ();
+    return _widget.GetText ();
 }
 
 GXVoid EMUIStaticText::SetTextColor ( GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha )
 {
-    _widget->SetTextColor ( red, green, blue, alpha );
+    _widget.SetTextColor ( red, green, blue, alpha );
 }
 
 const GXColorRGB& EMUIStaticText::GetTextColor () const
 {
-    return _widget->GetTextColor ();
+    return _widget.GetTextColor ();
 }
 
 GXVoid EMUIStaticText::SetAlingment ( eGXUITextAlignment alignment )
 {
-    _widget->SetAlignment ( alignment );
+    _widget.SetAlignment ( alignment );
 }
 
 eGXUITextAlignment EMUIStaticText::GetAlignment () const
 {
-    return _widget->GetAlignment ();
+    return _widget.GetAlignment ();
 }
 
 GXVoid EMUIStaticText::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height )
 {
-    _widget->Resize ( bottomLeftX, bottomLeftY, width, height );
+    _widget.Resize ( bottomLeftX, bottomLeftY, width, height );
 }

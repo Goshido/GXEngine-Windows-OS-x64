@@ -59,8 +59,8 @@
 #define MINIMUM_EXPOSURE                    0.001f
 #define MAXIMUM_EXPOSURE                    7.7f
 
-#define DEFAULT_FLOAT_VALIDATOR_STRING      L"3.0"
-#define DEFAULT_INTEGER_VALIDATOR_STRING    L"7"
+#define DEFAULT_FLOAT_VALIDATOR_STRING      "3.0"
+#define DEFAULT_INTEGER_VALIDATOR_STRING    "7"
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -69,7 +69,10 @@ EMUIMotionBlurSettings* EMUIMotionBlurSettings::_instance = nullptr;
 EMUIMotionBlurSettings& EMUIMotionBlurSettings::GetInstance ()
 {
     if ( !_instance )
+    {
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIMotionBlurSettings" )
         _instance = new EMUIMotionBlurSettings ();
+    }
 
     return *_instance;
 }
@@ -94,73 +97,89 @@ EMUIMotionBlurSettings::~EMUIMotionBlurSettings ()
 
     delete _topSeparator;
     delete _caption;
-    delete _mainPanel;
 
     _instance = nullptr;
 }
 
-GXWidget* EMUIMotionBlurSettings::GetWidget () const
+GXWidget* EMUIMotionBlurSettings::GetWidget ()
 {
-    return _mainPanel->GetWidget ();
+    return _mainPanel.GetWidget ();
 }
 
 GXVoid EMUIMotionBlurSettings::Show ()
 {
-    if ( !_mainPanel->GetWidget ()->IsVisible () || !_maxSamples->GetText () )
+    if ( !_mainPanel.GetWidget ()->IsVisible () || _maxSamples->GetText ().IsEmpty () || _maxSamples->GetText ().IsNull () )
         SyncSettings ();
 
-    _mainPanel->Show ();
+    _mainPanel.Show ();
 }
 
 GXVoid EMUIMotionBlurSettings::Hide ()
 {
-    _mainPanel->Hide ();
+    _mainPanel.Hide ();
 }
 
 EMUIMotionBlurSettings::EMUIMotionBlurSettings ():
     EMUI ( nullptr ),
-    _mainPanel ( new EMUIDraggableArea ( nullptr ) )
+    _mainPanel ( nullptr )
 {
-    _caption = new EMUIStaticText ( _mainPanel );
-    _topSeparator = new EMUISeparator ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _caption = new EMUIStaticText ( &_mainPanel );
 
-    _maxSamplesLabel = new EMUIStaticText ( _mainPanel );
-    _maxSamples = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISeparator" )
+    _topSeparator = new EMUISeparator ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _maxSamplesLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" )
+    _maxSamples = new EMUIEditBox ( &_mainPanel );
     GXUIEditBox* editBox = static_cast<GXUIEditBox*> ( _maxSamples->GetWidget () );
     GXUIEditBoxIntegerValidator* integerValidator = new GXUIEditBoxIntegerValidator ( DEFAULT_INTEGER_VALIDATOR_STRING, *editBox, MINIMUM_SAMPLES, MAXIMUM_SAMPLES );
     _maxSamples->SetValidator ( *integerValidator );
 
-    _depthLimitLabel = new EMUIStaticText ( _mainPanel );
-    _depthLimit = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _depthLimitLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" )
+    _depthLimit = new EMUIEditBox ( &_mainPanel );
     editBox = static_cast<GXUIEditBox*> ( _depthLimit->GetWidget () );
     GXUIEditBoxFloatValidator* floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_DEPTH_LIMIT, MAXIMUM_DEPTH_LIMIT );
     _depthLimit->SetValidator ( *floatValidator );
 
-    _exposureLabel = new EMUIStaticText ( _mainPanel );
-    _exposure = new EMUIEditBox ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIStaticText" )
+    _exposureLabel = new EMUIStaticText ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIEditBox" )
+    _exposure = new EMUIEditBox ( &_mainPanel );
     editBox = static_cast<GXUIEditBox*> ( _exposure->GetWidget () );
     floatValidator = new GXUIEditBoxFloatValidator ( DEFAULT_FLOAT_VALIDATOR_STRING, *editBox, MINIMUM_EXPOSURE, MAXIMUM_EXPOSURE );
     _exposure->SetValidator ( *floatValidator );
 
-    _bottomSeparator = new EMUISeparator ( _mainPanel );
-    _cancel = new EMUIButton ( _mainPanel );
-    _apply = new EMUIButton ( _mainPanel );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISeparator" )
+    _bottomSeparator = new EMUISeparator ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIButton" )
+    _cancel = new EMUIButton ( &_mainPanel );
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIButton" )
+    _apply = new EMUIButton ( &_mainPanel );
 
     const GXLocale& locale = GXLocale::GetInstance ();
 
-    _caption->SetText ( locale.GetString ( L"Motion blur settings->Motion blur settings" ) );
+    _caption->SetText ( locale.GetString ( "Motion blur settings->Motion blur settings" ) );
     _caption->SetTextColor ( CAPTION_LABEL_COLOR_R, CAPTION_LABEL_COLOR_G, CAPTION_LABEL_COLOR_B, CAPTION_LABEL_COLOR_A );
     _caption->SetAlingment ( eGXUITextAlignment::Center );
 
-    _maxSamplesLabel->SetText ( locale.GetString ( L"Motion blur settings->Maximum samples" ) );
+    _maxSamplesLabel->SetText ( locale.GetString ( "Motion blur settings->Maximum samples" ) );
     _maxSamplesLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
     _maxSamplesLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-    _depthLimitLabel->SetText ( locale.GetString ( L"Motion blur settings->Depth Limit (meters)" ) );
+    _depthLimitLabel->SetText ( locale.GetString ( "Motion blur settings->Depth Limit (meters)" ) );
     _depthLimitLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
     _depthLimitLabel->SetAlingment ( eGXUITextAlignment::Left );
 
-    _exposureLabel->SetText ( locale.GetString ( L"Motion blur settings->Exposure (seconds)" ) );
+    _exposureLabel->SetText ( locale.GetString ( "Motion blur settings->Exposure (seconds)" ) );
     _exposureLabel->SetTextColor ( PROPERTY_LABEL_COLOR_R, PROPERTY_LABEL_COLOR_G, PROPERTY_LABEL_COLOR_B, PROPERTY_LABEL_COLOR_A );
     _exposureLabel->SetAlingment ( eGXUITextAlignment::Left );
 
@@ -168,34 +187,33 @@ EMUIMotionBlurSettings::EMUIMotionBlurSettings ():
     _depthLimit->SetAlignment ( eGXUITextAlignment::Center );
     _exposure->SetAlignment ( eGXUITextAlignment::Center );
 
-    _cancel->SetCaption ( locale.GetString ( L"Motion blur settings->Cancel" ) );
-    _apply->SetCaption ( locale.GetString ( L"Motion blur settings->Apply" ) );
+    _cancel->SetCaption ( locale.GetString ( "Motion blur settings->Cancel" ) );
+    _apply->SetCaption ( locale.GetString ( "Motion blur settings->Apply" ) );
 
     _cancel->SetOnLeftMouseButtonCallback ( this, &EMUIMotionBlurSettings::OnButton );
     _apply->SetOnLeftMouseButtonCallback ( this, &EMUIMotionBlurSettings::OnButton );
 
-    _mainPanel->SetOnResizeCallback ( this, &EMUIMotionBlurSettings::OnResize );
+    _mainPanel.SetOnResizeCallback ( this, &EMUIMotionBlurSettings::OnResize );
 
     const GXFloat height = DEFAULT_MAIN_PANEL_HEIGHT * gx_ui_Scale;
-    _mainPanel->Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
-    _mainPanel->SetMinimumWidth ( MAIN_PANEL_MINIMUM_WIDTH * gx_ui_Scale );
-    _mainPanel->SetMinimumHeight ( MAIN_PANEL_MINIMUM_HEIGHT * gx_ui_Scale );
-    _mainPanel->Hide ();
+    _mainPanel.Resize ( START_MAIN_PANEL_LEFT_X_OFFSET * gx_ui_Scale, static_cast<GXFloat> ( GXRenderer::GetInstance ().GetHeight () ) - height - START_MAIN_PANEL_TOP_Y_OFFSET * gx_ui_Scale, DEFAULT_MAIN_PANEL_WIDTH * gx_ui_Scale, height );
+    _mainPanel.SetMinimumWidth ( MAIN_PANEL_MINIMUM_WIDTH * gx_ui_Scale );
+    _mainPanel.SetMinimumHeight ( MAIN_PANEL_MINIMUM_HEIGHT * gx_ui_Scale );
+    _mainPanel.Hide ();
 }
 
 GXVoid EMUIMotionBlurSettings::SyncSettings ()
 {
     const EMRenderer& renderer = EMRenderer::GetInstance ();
-    GXWChar buffer[ MAX_BUFFER_SYMBOLS ];
 
-    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%hhu", renderer.GetMaximumMotionBlurSamples () );
-    _maxSamples->SetText ( buffer );
+    _buffer.Format ( "%hu", static_cast<GXShort> ( renderer.GetMaximumMotionBlurSamples () ) );
+    _maxSamples->SetText ( _buffer );
 
-    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetMotionBlurDepthLimit () );
-    _depthLimit->SetText ( buffer );
+    _buffer.Format ( "%.6g", renderer.GetMotionBlurDepthLimit () );
+    _depthLimit->SetText ( _buffer );
 
-    swprintf_s ( buffer, MAX_BUFFER_SYMBOLS, L"%.6g", renderer.GetMotionBlurExposure () );
-    _exposure->SetText ( buffer );
+    _buffer.Format ( "%.6g", renderer.GetMotionBlurExposure () );
+    _exposure->SetText ( _buffer );
 }
 
 GXVoid GXCALL EMUIMotionBlurSettings::OnButton ( GXVoid* handler, GXUIButton& button, GXFloat /*x*/, GXFloat /*y*/, eGXMouseButtonState state )
@@ -215,12 +233,12 @@ GXVoid GXCALL EMUIMotionBlurSettings::OnButton ( GXVoid* handler, GXUIButton& bu
 
     if ( stringW )
     {
-        GXUByte newMaxSamples;
-        const GXInt result = swscanf_s ( stringW, L"%hhu", &newMaxSamples );
+        GXUShort newMaxSamples;
+        const GXInt result = swscanf_s ( stringW, L"%hu", &newMaxSamples );
 
         if ( result != 0 )
         {
-            renderer.SetMaximumMotionBlurSamples ( newMaxSamples );
+            renderer.SetMaximumMotionBlurSamples ( static_cast<GXUByte> ( newMaxSamples ) );
         }
     }
 

@@ -10,8 +10,8 @@
 #define DEFAULT_LEFT_BOTTOM_X               0.1f
 #define DEFAULT_LEFT_BOTTOM_Y               0.1f
 
-#define DEFAULT_CAPTION                     L"Êíîïêà"
-#define DEFAULT_FONT                        L"Fonts/trebuc.ttf"
+#define DEFAULT_CAPTION                     "Êíîïêà"
+#define DEFAULT_FONT                        "Fonts/trebuc.ttf"
 #define DEFAULT_FONT_SIZE                   0.33f
 
 #define DISABLE_BACKGROUND_COLOR_R          29u
@@ -65,7 +65,7 @@
 #define PIXEL_PERFECT_LOCATION_OFFSET_X     0.25f
 #define PIXEL_PERFECT_LOCATION_OFFSET_Y     0.25f
 
-#define BACKGROUND_TEXTURE                  L"Textures/System/Default_Diffuse.tga"
+#define BACKGROUND_TEXTURE                  "Textures/System/Default_Diffuse.tga"
 
 //----------------------------------------------------------------------------------
 
@@ -84,7 +84,7 @@ class EMUIButtonRenderer final : public GXWidgetRenderer
         GXVoid OnRefresh () override;
         GXVoid OnDraw () override;
 
-        GXVoid SetCaption ( const GXWChar* caption );
+        GXVoid SetCaption ( const GXString &caption );
 
     protected:
         GXVoid OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height ) override;
@@ -196,15 +196,9 @@ GXVoid EMUIButtonRenderer::OnDraw ()
     glEnable ( GL_DEPTH_TEST );
 }
 
-GXVoid EMUIButtonRenderer::SetCaption ( const GXWChar* caption )
+GXVoid EMUIButtonRenderer::SetCaption ( const GXString &caption )
 {
-    if ( caption )
-    {
-        _caption = caption;
-        return;
-    }
-
-    _caption.Clear ();
+    _caption = caption;
 }
 
 GXVoid EMUIButtonRenderer::OnResized ( GXFloat x, GXFloat y, GXUShort width, GXUShort height )
@@ -236,58 +230,55 @@ GXVoid EMUIButtonRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 EMUIButton::EMUIButton ( EMUI* parent ):
     EMUI ( parent ),
-    _widget ( new GXUIButton ( parent ? parent->GetWidget () : nullptr ) )
+    _widget ( parent ? parent->GetWidget () : nullptr )
 {
-    _widget->Resize ( DEFAULT_LEFT_BOTTOM_X * gx_ui_Scale, DEFAULT_LEFT_BOTTOM_Y * gx_ui_Scale, DEFAULT_WIDTH * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
-
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIButtonRenderer" )
-    _widget->SetRenderer ( new EMUIButtonRenderer ( _widget ) );
+    _widget.SetRenderer ( new EMUIButtonRenderer ( &_widget ) );
 }
 
 EMUIButton::~EMUIButton ()
 {
-    delete _widget->GetRenderer ();
-    delete _widget;
+    delete _widget.GetRenderer ();
 }
 
-GXWidget* EMUIButton::GetWidget () const
+GXWidget* EMUIButton::GetWidget ()
 {
-    return _widget;
+    return &_widget;
 }
 
 GXVoid EMUIButton::Enable ()
 {
-    _widget->Enable ();
+    _widget.Enable ();
 }
 
 GXVoid EMUIButton::Disable ()
 {
-    _widget->Disable ();
+    _widget.Disable ();
 }
 
 GXVoid EMUIButton::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height )
 {
-    _widget->Resize ( bottomLeftX, bottomLeftY, width, height );
+    _widget.Resize ( bottomLeftX, bottomLeftY, width, height );
 }
 
-GXVoid EMUIButton::SetCaption ( const GXWChar* caption )
+GXVoid EMUIButton::SetCaption ( const GXString &caption )
 {
-    EMUIButtonRenderer* renderer = static_cast<EMUIButtonRenderer*> ( _widget->GetRenderer () );
+    EMUIButtonRenderer* renderer = static_cast<EMUIButtonRenderer*> ( _widget.GetRenderer () );
     renderer->SetCaption ( caption );
-    _widget->Redraw ();
+    _widget.Redraw ();
 }
 
 GXVoid EMUIButton::Show ()
 {
-    _widget->Show ();
+    _widget.Show ();
 }
 
 GXVoid EMUIButton::Hide ()
 {
-    _widget->Hide ();
+    _widget.Hide ();
 }
 
 GXVoid EMUIButton::SetOnLeftMouseButtonCallback ( GXVoid* context, GXUIButtonOnMouseButtonHandler callback )
 {
-    _widget->SetOnLeftMouseButtonCallback ( context, callback );
+    _widget.SetOnLeftMouseButtonCallback ( context, callback );
 }

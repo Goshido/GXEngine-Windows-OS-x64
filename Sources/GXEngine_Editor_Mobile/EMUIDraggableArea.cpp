@@ -4,7 +4,7 @@
 #include <GXEngine/GXUICommon.h>
 
 
-#define BACKGROUND_TEXTURE                  L"Textures/Editor Mobile/Default Diffuse.tex"
+#define BACKGROUND_TEXTURE                  "Textures/Editor Mobile/Default Diffuse.tex"
 
 #define BACKGROUND_COLOR_R                  48u
 #define BACKGROUND_COLOR_G                  48u
@@ -136,54 +136,53 @@ GXVoid EMUIDraggableAreaRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 EMUIDraggableArea::EMUIDraggableArea ( EMUI* parent ):
     EMUI ( parent ),
-    _widget ( new GXUIDragableArea ( parent ? parent->GetWidget () : nullptr ) )
+    _widget ( parent ? parent->GetWidget () : nullptr )
 {
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIDraggableAreaRenderer" )
-    _widget->SetRenderer ( new EMUIDraggableAreaRenderer ( _widget ) );
+    _widget.SetRenderer ( new EMUIDraggableAreaRenderer ( &_widget ) );
 }
 
 EMUIDraggableArea::~EMUIDraggableArea ()
 {
-    delete _widget->GetRenderer ();
-    delete _widget;
+    delete _widget.GetRenderer ();
 }
 
-GXWidget* EMUIDraggableArea::GetWidget () const
+GXWidget* EMUIDraggableArea::GetWidget ()
 {
-    return _widget;
+    return &_widget;
 }
 
 GXVoid EMUIDraggableArea::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height )
 {
-    _widget->Resize ( bottomLeftX, bottomLeftY, width, height );
+    _widget.Resize ( bottomLeftX, bottomLeftY, width, height );
 }
 
 GXVoid EMUIDraggableArea::Show ()
 {
-    _widget->Show ();
+    _widget.Show ();
 }
 
 GXVoid EMUIDraggableArea::Hide ()
 {
-    _widget->Hide ();
+    _widget.Hide ();
 }
 
 GXVoid EMUIDraggableArea::SetHeaderHeight ( GXFloat headerHeight )
 {
-    _widget->SetHeaderHeight ( headerHeight );
+    _widget.SetHeaderHeight ( headerHeight );
 }
 
 GXVoid EMUIDraggableArea::SetMinimumWidth ( GXFloat width )
 {
-    _widget->SetMinimumWidth ( width );
+    _widget.SetMinimumWidth ( width );
 }
 
 GXVoid EMUIDraggableArea::SetMinimumHeight ( GXFloat height )
 {
-    _widget->SetMinimumHeight ( height );
+    _widget.SetMinimumHeight ( height );
 }
 
 GXVoid EMUIDraggableArea::SetOnResizeCallback ( GXVoid* context, GXUIDraggableAreaOnResizeHandler callback )
 {
-    _widget->SetOnResizeCallback ( context, callback );
+    _widget.SetOnResizeCallback ( context, callback );
 }

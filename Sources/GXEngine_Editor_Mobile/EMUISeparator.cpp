@@ -106,26 +106,25 @@ GXVoid EMUISeparatorRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 EMUISeparator::EMUISeparator ( EMUI* parent ):
     EMUI ( parent ),
-    _widget ( new GXWidget ( parent ? parent->GetWidget () : nullptr ) )
+    _widget ( parent ? parent->GetWidget () : nullptr )
 {
-    _widget->Resize ( DEFAULT_BOTTOM_X * gx_ui_Scale, DEFAULT_BOTTOM_Y * gx_ui_Scale, DEFAULT_WIDHT * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
+    _widget.Resize ( DEFAULT_BOTTOM_X * gx_ui_Scale, DEFAULT_BOTTOM_Y * gx_ui_Scale, DEFAULT_WIDHT * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUISeparatorRenderer" )
-    _widget->SetRenderer ( new EMUISeparatorRenderer ( _widget ) );
+    _widget.SetRenderer ( new EMUISeparatorRenderer ( &_widget ) );
 }
 
 EMUISeparator::~EMUISeparator ()
 {
-    delete _widget->GetRenderer ();
-    delete _widget;
+    delete _widget.GetRenderer ();
 }
 
-GXWidget* EMUISeparator::GetWidget () const
+GXWidget* EMUISeparator::GetWidget ()
 {
-    return _widget;
+    return &_widget;
 }
 
 GXVoid EMUISeparator::Resize ( GXFloat bottomLeftX, GXFloat bottomLeftY, GXFloat width, GXFloat height )
 {
-    _widget->Resize ( bottomLeftX, bottomLeftY, width, height );
+    _widget.Resize ( bottomLeftX, bottomLeftY, width, height );
 }

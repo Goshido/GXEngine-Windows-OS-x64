@@ -6,11 +6,36 @@
 
 #include "GXUIMessage.h"
 #include <GXCommon/GXMath.h>
-#include <GXCommon/GXMemory.h>
+#include <GXCommon/GXAVLTree.h>
 
+
+class GXWidget;
+class GXUIWidgetMessageHandlerNode : public GXAVLTreeNode
+{
+    protected:
+        eGXUIMessage    _message;
+        GXWidget*       _widget;
+
+    public:
+        GXUIWidgetMessageHandlerNode ();
+
+        // Special probe constructor.
+        explicit GXUIWidgetMessageHandlerNode ( eGXUIMessage message );
+        ~GXUIWidgetMessageHandlerNode () override;
+
+        virtual GXVoid HandleMassage ( const GXVoid* data ) = 0;
+
+        static eGXCompareResult GXCALL Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
+
+    private:
+        GXUIWidgetMessageHandlerNode ( const GXUIWidgetMessageHandlerNode &other ) = delete;
+        GXUIWidgetMessageHandlerNode& operator = ( const GXUIWidgetMessageHandlerNode &other ) = delete;
+};
+
+//---------------------------------------------------------------------------------------------------------------------
 
 class GXWidgetRenderer;
-class GXWidget
+class GXWidget : public GXMemoryInspector
 {
     friend class GXTouchSurface;
     friend class GXWidgetIterator;
@@ -28,6 +53,8 @@ class GXWidget
         GXBool                  _isVisible;
         GXBool                  _isDraggable;
         GXWidgetRenderer*       _renderer;
+
+        GXAVLTree               _messageHandlerTree;
 
         GXAABB                  _boundsWorld;
         GXAABB                  _boundsLocal;
@@ -66,6 +93,8 @@ class GXWidget
         GXWidget ( const GXWidget &other ) = delete;
         GXWidget& operator = ( const GXWidget &other ) = delete;
 };
+
+//---------------------------------------------------------------------------------------------------------------------
 
 class GXWidgetIterator final
 {

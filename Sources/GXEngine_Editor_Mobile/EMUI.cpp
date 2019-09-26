@@ -6,7 +6,8 @@
 
 EMUI* EMUI::_uiElements = nullptr;
 
-EMUI::EMUI ( EMUI* parent ):
+EMUI::EMUI ( EMUI* parent )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "EMUI" )
     _next ( _uiElements ),
     _previous ( nullptr ),
     _parent ( parent )

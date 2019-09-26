@@ -1,4 +1,4 @@
-// version 1.10
+// version 1.12
 
 #ifndef GX_STRINGS
 #define GX_STRINGS
@@ -68,12 +68,49 @@ GXVoid GXCALL GXToSystemMbs ( GXMBChar** dest, const GXWChar* str );
 
 //---------------------------------------------------------------------------------------------------------------------
 
+class GXString;
+class GXStringSymbol final
+{
+    friend class GXString;
+
+    private:
+        GXUTF16     _lead;
+        GXUTF16     _trailing;
+
+    public:
+        GXStringSymbol ( const GXStringSymbol &other );
+        GXStringSymbol ( const GXChar symbol );
+        GXStringSymbol ( const GXWChar symbol );
+        ~GXStringSymbol ();
+
+        // Method returns Unicode code point.
+        GXUInt ToCodePoint () const;
+
+        GXStringSymbol& operator = ( const GXStringSymbol &other );
+        GXStringSymbol& operator = ( const GXChar symbol );
+        GXStringSymbol& operator = ( const GXWChar symbol );
+
+        GXBool operator == ( const GXStringSymbol &other ) const;
+        GXBool operator == ( GXChar symbol ) const;
+        GXBool operator == ( GXWChar symbol ) const;
+
+        GXBool operator != ( const GXStringSymbol &other ) const;
+        GXBool operator != ( GXChar symbol ) const;
+        GXBool operator != ( GXWChar symbol ) const;
+
+    private:
+        explicit GXStringSymbol ( GXUTF16 trivial );
+        explicit GXStringSymbol ( GXUTF16 lead, GXUTF16 trailing );
+};
+
+//---------------------------------------------------------------------------------------------------------------------
+
 // This is crosscompile, no thread safe but reentrant, lock free string. Note use GXString objects by value.
 // GXString object has size of GXUPointer bytes. GXString implements copy on write (COW) architecture.
 // Note static allocation is not supported for now. Use standart string literal instead.
 
 class GXStringData;
-class GXString final: public GXMemoryInspector
+class GXString final : public GXMemoryInspector
 {
     private:
         GXStringData*       _stringData;
@@ -85,6 +122,7 @@ class GXString final: public GXMemoryInspector
         GXString ( GXMBChar character );
         GXString ( const GXWChar* string );
         GXString ( GXWChar character );
+        GXString ( const GXUTF16* string );
         ~GXString () override;
 
         GXVoid Clear ();
@@ -112,6 +150,22 @@ class GXString final: public GXMemoryInspector
         GXVoid FromUTF8 ( const GXUTF8* string );
         const GXUTF8* ToUTF8 ();
         const GXUTF8* ToUTF8 ( GXUPointer &stringSize );
+
+        GXVoid FromUTF16 ( const GXUTF16* string );
+        const GXUTF16* ToUTF16 () const;
+        const GXUTF16* ToUTF16 ( GXUPointer &stringSize ) const;
+
+        GXVoid FromSymbols ( const GXStringSymbol* symbols );
+
+        // Method make string copy in heap memory via GXMemoryInspector::Malloc allocation.
+        // Caller MUST invoke GXMemoryInspector::Free manually.
+        // Note method will return nullptr if string is null.
+        GXStringSymbol* ToSymbols () const;
+
+        // "maxSymbolCount" is maximum "buffer" capacity in symbols.
+        // Note no any heap allocation will be done.
+        // Method returns GX_TRUE is success. Otherwise method returns GX_FALSE.
+        GXBool ToSymbols ( GXStringSymbol*& buffer, GXUPointer maxSymbolCount ) const;
 
         eGXCompareResult Compare ( const GXString other ) const;
         eGXCompareResult Compare ( const GXMBChar* string ) const;
@@ -155,7 +209,18 @@ class GXString final: public GXMemoryInspector
         GXBool operator == ( const GXWChar* string ) const;
         GXBool operator == ( GXWChar character ) const;
 
+        GXBool operator != ( const GXString &other ) const;
+        GXBool operator != ( const GXMBChar* string ) const;
+        GXBool operator != ( GXMBChar character ) const;
+        GXBool operator != ( const GXWChar* string ) const;
+        GXBool operator != ( GXWChar character ) const;
+
+        // Note this function will traverse string data from start to target index each time by design.
+        // Use iterator stuff for more performance string analysis.
+        GXStringSymbol operator [] ( GXUPointer symbolIndex ) const;
+
         operator const GXMBChar* () const;
+        operator const GXUTF16* () const;
         operator const GXWChar* () const;
 
     private:

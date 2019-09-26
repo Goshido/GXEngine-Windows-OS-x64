@@ -1,4 +1,4 @@
-// version 1.5
+// version 1.6
 
 #ifndef GX_UI_LIST_BOX
 #define GX_UI_LIST_BOX
@@ -12,7 +12,32 @@ typedef GXVoid ( GXCALL* GXUIListBoxItemDestructorHandler ) ( GXVoid* itemData )
 typedef GXVoid ( GXCALL* GXUIListBoxItemOnItemSelectHandler ) ( GXVoid* context, GXUIListBox& listBox, const GXVoid* item );
 typedef GXVoid ( GXCALL* GXUIListBoxItemOnItemDoubleClickHandler ) ( GXVoid* handler, GXUIListBox& listBox, const GXVoid* item );
 
-struct GXUIListBoxItem final
+typedef GXVoid ( GXUIListBox::* GXUIListBoxOnMessageHandler ) ( const GXVoid* data );
+
+class GXUIListBoxMessageHandlerNode final: public GXUIWidgetMessageHandlerNode
+{
+    private:
+        GXUIListBoxOnMessageHandler     _handler;
+
+    public:
+        GXUIListBoxMessageHandlerNode ();
+
+        // Special probe constructor.
+        explicit GXUIListBoxMessageHandlerNode ( eGXUIMessage message );
+        ~GXUIListBoxMessageHandlerNode () override;
+
+        GXVoid HandleMassage ( const GXVoid* data ) override;
+
+        GXVoid Init ( GXUIListBox &listBox, eGXUIMessage message, GXUIListBoxOnMessageHandler handler );
+
+    private:
+        GXUIListBoxMessageHandlerNode ( const GXUIListBoxMessageHandlerNode &other ) = delete;
+        GXUIListBoxMessageHandlerNode& operator = ( const GXUIListBoxMessageHandlerNode &other ) = delete;
+};
+
+//---------------------------------------------------------------------------------------------------------------------
+
+struct GXUIListBoxItem final : public GXMemoryInspector
 {
     GXUIListBoxItem*    _next;
     GXUIListBoxItem*    _prev;
@@ -21,7 +46,11 @@ struct GXUIListBoxItem final
     GXBool              _isHighlighted;
 
     GXVoid*             _data;
+
+    GXUIListBoxItem ();
 };
+
+//---------------------------------------------------------------------------------------------------------------------
 
 class GXUIListBox final : public GXWidget
 {
@@ -38,6 +67,8 @@ class GXUIListBox final : public GXWidget
 
         GXFloat                                     _viewportOffset;
         GXFloat                                     _viewportSize;
+
+        GXUIListBoxMessageHandlerNode               _messageHandlers[ 14u ];
 
     public:
         explicit GXUIListBox ( GXWidget* parent, GXUIListBoxItemDestructorHandler itemDestructor );
@@ -74,6 +105,24 @@ class GXUIListBox final : public GXWidget
         GXBool ResetHighlight ( const GXVec2 &mousePosition );    // Return true if need render update
         GXBool IsAbleToScroll () const;
         GXFloat GetTotalHeight () const;
+
+        GXVoid InitMessageHandlers ();
+
+        // Message handlers
+        GXVoid OnDoubleClick ( const GXVoid* data );
+        GXVoid OnLMBDown ( const GXVoid* data );
+        GXVoid OnListBoxAddItem ( const GXVoid* data );
+        GXVoid OnListBoxAddItems ( const GXVoid* data );
+        GXVoid OnListBoxRemoveAllItems ( const GXVoid* data );
+        GXVoid OnListBoxRemoveItem ( const GXVoid* data );
+        GXVoid OnListBoxSetItemHeight ( const GXVoid* data );
+        GXVoid OnListBoxSetViewportOffset ( const GXVoid* data );
+        GXVoid OnMouseLeave ( const GXVoid* data );
+        GXVoid OnMouseMove ( const GXVoid* data );
+        GXVoid OnMouseOver ( const GXVoid* data );
+        GXVoid OnRedraw ( const GXVoid* data );
+        GXVoid OnResize ( const GXVoid* data );
+        GXVoid OnScroll ( const GXVoid* data );
 
         GXUIListBox () = delete;
         GXUIListBox ( const GXUIListBox &other ) = delete;

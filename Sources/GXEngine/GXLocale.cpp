@@ -1,4 +1,4 @@
-// version 1.10
+// version 1.11
 
 #include <GXEngine/GXLocale.h>
 #include <GXCommon/GXFile.h>
@@ -55,7 +55,7 @@ class GXStringTree final : public GXAVLTree
         ~GXStringTree () override;
 
         GXVoid AddString ( const GXUTF8* key, const GXUTF8* value );
-        GXString GetString ( GXString key ) const;
+        const GXString& GetString ( const GXString &key ) const;
 
     private:
         static eGXCompareResult GXCALL Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
@@ -81,7 +81,7 @@ GXVoid GXStringTree::AddString ( const GXUTF8* key, const GXUTF8* string )
     Add ( *( new GXStringNode ( key, string ) ) );
 }
 
-GXString GXStringTree::GetString ( GXString key ) const
+const GXString& GXStringTree::GetString ( const GXString &key ) const
 {
     const GXStringNode* node = static_cast<const GXStringNode*> ( Find ( GXStringNode ( key ) ) );
 
@@ -206,7 +206,7 @@ GXLocale::~GXLocale ()
     _instance = nullptr;
 }
 
-GXVoid GXLocale::LoadLanguage ( GXString fileName, eGXLanguage language )
+GXVoid GXLocale::LoadLanguage ( const GXString &fileName, eGXLanguage language )
 {
     GXUByte* rawData;
     GXUPointer size;
@@ -278,7 +278,7 @@ eGXLanguage GXLocale::GetLanguage () const
     return _currentLanguage->_language;
 }
 
-GXString GXLocale::GetString ( GXString key ) const
+const GXString& GXLocale::GetString ( const GXString &key ) const
 {
     if ( _currentLanguage )
         return _currentLanguage->_stringTree.GetString ( key );

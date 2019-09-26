@@ -4,12 +4,12 @@
 
 #define DEFAULT_BOTTOM_LEFT_X               0.1f
 #define DEFAULT_BOTTOM_LEFT_Y               0.1f
-#define DEFAULT_TEXTURE                     L"Textures/System/Default_Diffuse.tga"
+#define DEFAULT_TEXTURE                     "Textures/System/Default_Diffuse.tga"
 
 #define ITEM_HEIGHT                         0.5f
 #define ANY_WIDTH                           1.0f
 
-#define FONT                                L"Fonts/trebuc.ttf"
+#define FONT                                "Fonts/trebuc.ttf"
 #define FONT_SIZE                           0.33f
 #define TEXT_EXTEND                         0.5f
 
@@ -49,7 +49,7 @@ class EMUIMenuRenderer final : public GXWidgetRenderer
         explicit EMUIMenuRenderer ( GXUIMenu* widget );
         ~EMUIMenuRenderer () override;
 
-        GXFloat GetTextWidth ( const GXWChar* text ) const;
+        GXFloat GetTextWidth ( const GXString &text ) const;
 
     protected:
         GXVoid OnRefresh () override;
@@ -79,7 +79,7 @@ EMUIMenuRenderer::~EMUIMenuRenderer ()
     delete _surface;
 }
 
-GXFloat EMUIMenuRenderer::GetTextWidth ( const GXWChar* text ) const
+GXFloat EMUIMenuRenderer::GetTextWidth ( const GXString &text ) const
 {
     return static_cast<GXFloat> ( _font.GetTextLength ( 0u, text ) );
 }
@@ -91,7 +91,7 @@ GXVoid EMUIMenuRenderer::OnRefresh ()
     const GXFloat w = static_cast<const GXFloat> ( _surface->GetWidth () );
     const GXFloat h = static_cast<const GXFloat> ( _surface->GetHeight () );
 
-    const GXUByte totalItems = menu->GetTotalItems ();
+    const GXUPointer totalItems = menu->GetTotalItems ();
 
     const GXUByte selectedItemIndex = menu->GetSelectedItemIndex ();
     const GXUByte highlightedItemIndex = menu->GetHighlightedItemIndex ();
@@ -139,9 +139,9 @@ GXVoid EMUIMenuRenderer::OnRefresh ()
     pi._font = &_font;
     pi._insertY = ( h - _font.GetSize () ) * 0.7f;
 
-    for ( GXUByte i = 0u; i < totalItems; ++i )
+    for ( GXUPointer i = 0u; i < totalItems; ++i )
     {
-        const GXWChar* itemName = menu->GetItemName ( i );
+        const GXString& itemName = menu->GetItemName ( i );
         const GXFloat itemOffset = menu->GetItemOffset ( i );
         const GXFloat itemWidth = menu->GetItemWidth ( i );
         const GXFloat textWidth = static_cast<const GXFloat> ( _font.GetTextLength ( 0u, itemName ) );
@@ -186,33 +186,32 @@ GXVoid EMUIMenuRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 EMUIMenu::EMUIMenu ( EMUI* parent ):
     EMUI ( parent ),
-    _widget ( new GXUIMenu ( parent ? parent->GetWidget () : nullptr ) )
+    _widget ( parent ? parent->GetWidget () : nullptr )
 {
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIMenuRenderer" )
-    _widget->SetRenderer ( new EMUIMenuRenderer ( _widget ) );
-    _widget->Resize ( DEFAULT_BOTTOM_LEFT_X * gx_ui_Scale, DEFAULT_BOTTOM_LEFT_Y * gx_ui_Scale, ANY_WIDTH, ITEM_HEIGHT * gx_ui_Scale );
+    _widget.SetRenderer ( new EMUIMenuRenderer ( &_widget ) );
+    _widget.Resize ( DEFAULT_BOTTOM_LEFT_X * gx_ui_Scale, DEFAULT_BOTTOM_LEFT_Y * gx_ui_Scale, ANY_WIDTH, ITEM_HEIGHT * gx_ui_Scale );
 }
 
 EMUIMenu::~EMUIMenu ()
 {
-    delete _widget->GetRenderer ();
-    delete _widget;
+    delete _widget.GetRenderer ();
 }
 
-GXWidget* EMUIMenu::GetWidget () const
+GXWidget* EMUIMenu::GetWidget ()
 {
-    return _widget;
+    return &_widget;
 }
 
-GXVoid EMUIMenu::AddItem ( const GXWChar* name, EMUIPopup* popup )
+GXVoid EMUIMenu::AddItem ( const GXString &name, EMUIPopup* popup )
 {
-    const EMUIMenuRenderer* renderer = static_cast<const EMUIMenuRenderer*> ( _widget->GetRenderer () );
-    _widget->AddItem ( name, renderer->GetTextWidth ( name ) + TEXT_EXTEND * gx_ui_Scale, popup ? static_cast<GXUIPopup*> ( popup->GetWidget () ) : nullptr );
+    const EMUIMenuRenderer* renderer = static_cast<const EMUIMenuRenderer*> ( _widget.GetRenderer () );
+    _widget.AddItem ( name, renderer->GetTextWidth ( name ) + TEXT_EXTEND * gx_ui_Scale, popup ? static_cast<GXUIPopup*> ( popup->GetWidget () ) : nullptr );
 }
 
 GXVoid EMUIMenu::SetLocation ( GXFloat leftBottomX, GXFloat leftBottomY )
 {
-    _widget->Resize ( leftBottomX, leftBottomY, ANY_WIDTH, ITEM_HEIGHT * gx_ui_Scale );
+    _widget.Resize ( leftBottomX, leftBottomY, ANY_WIDTH, ITEM_HEIGHT * gx_ui_Scale );
 }
 
 GXFloat EMUIMenu::GetHeight () const

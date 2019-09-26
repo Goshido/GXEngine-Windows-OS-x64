@@ -1,4 +1,4 @@
-// version 1.8
+// version 1.9
 
 #include <GXEngine/GXMeshGeometry.h>
 #include <GXCommon/GXFileSystem.h>
@@ -43,30 +43,30 @@ class GXMesh final : public GXMemoryInspector
 
         // Method return nullptr if mesh is procedure mesh.
         // Method returns valid zero terminated string if mesh is not procedure mesh.
-        const GXWChar* GetMeshFileName () const;
+        const GXString& GetMeshFileName () const;
 
         // Method automatically converts static mesh to procedure mesh if needed.
         GXVoid FillVBO ( const GXVoid* data, GLsizeiptr size, GLenum usage );
 
         // Method returns valid pointer if mesh was found.
         // Method returns nullptr if mesh was not found.
-        static GXMesh* GXCALL Find ( const GXWChar* fileName );
+        static GXMesh* GXCALL Find ( const GXString &fileName );
 
-        static GXUInt GXCALL GetTotalLoadedMeshes ( const GXWChar** lastMesh );
+        static GXUInt GXCALL GetTotalLoadedMeshes ( GXString &lastMesh );
 
     private:
         // Creates procedural mesh.
         GXMesh ();
 
         // Creates static mesh.
-        explicit GXMesh ( const GXWChar* fileName );
+        explicit GXMesh ( const GXString &fileName );
 
         ~GXMesh ();
 
-        GXBool LoadFromOBJ ( const GXWChar* fileName );
-        GXBool LoadFromSTM ( const GXWChar* fileName );
-        GXBool LoadFromSKM ( const GXWChar* fileName );
-        GXBool LoadFromMESH ( const GXWChar* fileName );
+        GXBool LoadFromOBJ ( const GXString &fileName );
+        GXBool LoadFromSTM ( const GXString &fileName );
+        GXBool LoadFromSKM ( const GXString &fileName );
+        GXBool LoadFromMESH ( const GXString &fileName );
 
         GXMesh ( const GXMesh &other ) = delete;
         GXMesh& operator = ( const GXMesh &other ) = delete;
@@ -88,7 +88,7 @@ GXVoid GXMesh::Release ()
     delete this;
 }
 
-const GXWChar* GXMesh::GetMeshFileName () const
+const GXString& GXMesh::GetMeshFileName () const
 {
     return _meshFile;
 }
@@ -116,11 +116,11 @@ GXVoid GXMesh::FillVBO ( const GXVoid* data, GLsizeiptr size, GLenum usage )
     glBindBuffer ( GL_ARRAY_BUFFER, 0u );
 }
 
-GXMesh* GXCALL GXMesh::Find ( const GXWChar* fileName )
+GXMesh* GXCALL GXMesh::Find ( const GXString &fileName )
 {
     for ( GXMesh* mesh = _top; mesh; mesh = mesh->_next )
     {
-        if ( GXWcscmp ( mesh->_meshFile, fileName ) != 0 ) continue;
+        if ( mesh->_meshFile != fileName ) continue;
 
         return mesh;
     }
@@ -128,7 +128,7 @@ GXMesh* GXCALL GXMesh::Find ( const GXWChar* fileName )
     return nullptr;
 }
 
-GXUInt GXCALL GXMesh::GetTotalLoadedMeshes ( const GXWChar** lastMesh )
+GXUInt GXCALL GXMesh::GetTotalLoadedMeshes ( GXString &lastMesh )
 {
     GXUInt total = 0u;
 
@@ -136,9 +136,9 @@ GXUInt GXCALL GXMesh::GetTotalLoadedMeshes ( const GXWChar** lastMesh )
         ++total;
 
     if ( total > 0u )
-        *lastMesh = _top->GetMeshFileName ();
+        lastMesh = _top->GetMeshFileName ();
     else
-        *lastMesh = nullptr;
+        lastMesh.Clear ();
 
     return total;
 }
@@ -155,7 +155,7 @@ GXMesh::GXMesh ()
     _meshVBO = 0u;
 }
 
-GXMesh::GXMesh ( const GXWChar* fileName )
+GXMesh::GXMesh ( const GXString &fileName )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXMesh" )
     _referenceCount ( 1u ),
     _previous ( nullptr ),
@@ -182,7 +182,7 @@ GXMesh::GXMesh ( const GXWChar* fileName )
 
     if ( result ) return;
 
-    GXLogA ( "GXMesh::GXMesh::Error - Не могу загрузить меш %S.", fileName );
+    GXLogA ( "GXMesh::GXMesh::Error - Не могу загрузить меш %s.", static_cast<const GXMBChar*> ( fileName ) );
 }
 
 GXMesh::~GXMesh ()
@@ -205,7 +205,7 @@ GXMesh::~GXMesh ()
     _next->_previous = _previous;
 }
 
-GXBool GXMesh::LoadFromOBJ ( const GXWChar* fileName )
+GXBool GXMesh::LoadFromOBJ ( const GXString &fileName )
 {
     const GXString path ( GXGetFileDirectoryPath ( fileName ) );
     const GXString baseFileName ( GXGetBaseFileName ( fileName ) );
@@ -305,7 +305,7 @@ GXBool GXMesh::LoadFromOBJ ( const GXWChar* fileName )
     return GX_TRUE;
 }
 
-GXBool GXMesh::LoadFromSTM ( const GXWChar* fileName )
+GXBool GXMesh::LoadFromSTM ( const GXString &fileName )
 {
     GXNativeStaticMeshInfo info;
     GXLoadNativeStaticMesh ( fileName, info );
@@ -326,7 +326,7 @@ GXBool GXMesh::LoadFromSTM ( const GXWChar* fileName )
     return GX_TRUE;
 }
 
-GXBool GXMesh::LoadFromSKM ( const GXWChar* fileName )
+GXBool GXMesh::LoadFromSKM ( const GXString &fileName )
 {
     GXSkeletalMeshData skeletalMeshData;
     GXLoadNativeSkeletalMesh ( skeletalMeshData, fileName );
@@ -365,7 +365,7 @@ GXBool GXMesh::LoadFromSKM ( const GXWChar* fileName )
     return GX_TRUE;
 }
 
-GXBool GXMesh::LoadFromMESH ( const GXWChar* fileName )
+GXBool GXMesh::LoadFromMESH ( const GXString &fileName )
 {
     GXMeshInfo meshInfo;
     GXLoadNativeMesh ( meshInfo, fileName );
@@ -396,10 +396,11 @@ class GXSkin final : public GXMemoryInspector
         GXUPointerAtomic    _referenceCount;
         GXSkin*             _previous;
 
+        GXString            _skinFile;
+
         static GXSkin*      _top;
         GXSkin*             _next;
 
-        GXWChar*            _skinFile;
 
     public:
         GLsizei             _totalVertices;
@@ -410,15 +411,15 @@ class GXSkin final : public GXMemoryInspector
         GXVoid Release ();
 
         // Method returns valid pointer or nullptr.
-        static GXSkin* GXCALL Find ( const GXWChar* fileName );
-        static GXUInt GXCALL GetTotalLoadedSkins ( const GXWChar** lastSkin );
+        static GXSkin* GXCALL Find ( const GXString &fileName );
+        static GXUInt GXCALL GetTotalLoadedSkins ( GXString &lastSkin );
 
     private:
-        explicit GXSkin ( const GXWChar* fileName );
+        explicit GXSkin ( const GXString &fileName );
         ~GXSkin ();
 
-        GXBool LoadFromSKM ( const GXWChar* fileName );
-        GXBool LoadFromSKIN ( const GXWChar* fileName );
+        GXBool LoadFromSKM ( const GXString &fileName );
+        GXBool LoadFromSKIN ( const GXString &fileName );
 
         GXSkin ( const GXSkin &other ) = delete;
         GXSkin& operator = ( const GXSkin &other ) = delete;
@@ -440,11 +441,11 @@ GXVoid GXSkin::Release ()
     delete this;
 }
 
-GXSkin* GXCALL GXSkin::Find ( const GXWChar* fileName )
+GXSkin* GXCALL GXSkin::Find ( const GXString &fileName )
 {
     for ( GXSkin* skin = _top; skin; skin = skin->_next )
     {
-        if ( GXWcscmp ( skin->_skinFile, fileName ) != 0 ) continue;
+        if ( skin->_skinFile != fileName ) continue;
 
         return skin;
     }
@@ -452,7 +453,7 @@ GXSkin* GXCALL GXSkin::Find ( const GXWChar* fileName )
     return nullptr;
 }
 
-GXUInt GXCALL GXSkin::GetTotalLoadedSkins ( const GXWChar** lastSkin )
+GXUInt GXCALL GXSkin::GetTotalLoadedSkins ( GXString &lastSkin )
 {
     GXUInt total = 0u;
 
@@ -460,25 +461,24 @@ GXUInt GXCALL GXSkin::GetTotalLoadedSkins ( const GXWChar** lastSkin )
         ++total;
 
     if ( total > 0u )
-        *lastSkin = _top->_skinFile;
+        lastSkin = _top->_skinFile;
     else
-        *lastSkin = nullptr;
+        lastSkin.Clear ();
 
     return total;
 }
 
-GXSkin::GXSkin ( const GXWChar* fileName )
+GXSkin::GXSkin ( const GXString &fileName )
     GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "GXSkin" )
     _referenceCount ( 1u ),
-    _previous ( nullptr )
+    _previous ( nullptr ),
+    _skinFile ( fileName )
 {
     if ( _top )
         _top->_previous = this;
 
     _next = _top;
     _top = this;
-
-    GXWcsclone ( &_skinFile, fileName );
 
     const GXString extension ( GXGetFileExtension ( fileName ) );
     GXBool result = GX_FALSE;
@@ -490,13 +490,11 @@ GXSkin::GXSkin ( const GXWChar* fileName )
 
     if ( result ) return;
 
-    GXLogA ( "GXMesh::GXMesh::Error - Не могу загрузить скин %S.", fileName );
+    GXLogA ( "GXMesh::GXMesh::Error - Не могу загрузить скин %s.", static_cast<const GXMBChar*> ( fileName ) );
 }
 
 GXSkin::~GXSkin ()
 {
-    free ( _skinFile );
-
     glBindBuffer ( GL_ARRAY_BUFFER, 0u );
     glDeleteBuffers ( 1, &_skinVBO );
 
@@ -505,11 +503,12 @@ GXSkin::~GXSkin ()
     else
         _previous->_next = _next;
 
-    if ( _next )
-        _next->_previous = _previous;
+    if ( !_next ) return;
+
+    _next->_previous = _previous;
 }
 
-GXBool GXSkin::LoadFromSKM ( const GXWChar* fileName )
+GXBool GXSkin::LoadFromSKM ( const GXString &fileName )
 {
     GXSkeletalMeshData skeletalMeshData;
     GXLoadNativeSkeletalMesh ( skeletalMeshData, fileName );
@@ -546,7 +545,7 @@ GXBool GXSkin::LoadFromSKM ( const GXWChar* fileName )
     return GX_TRUE;
 }
 
-GXBool GXSkin::LoadFromSKIN ( const GXWChar* fileName )
+GXBool GXSkin::LoadFromSKIN ( const GXString &fileName )
 {
     GXSkinInfo skinInfo;
     GXLoadNativeSkin ( skinInfo, fileName );
@@ -633,7 +632,7 @@ const GXAABB& GXMeshGeometry::GetBoundsLocal () const
 
 GXVoid GXMeshGeometry::SetTotalVertices ( GLsizei totalVertices )
 {
-    if ( !_mesh || !_mesh->GetMeshFileName () )
+    if ( !_mesh || !_mesh->GetMeshFileName ().IsNull () )
     {
         // Procedure generated mesh.
 
@@ -657,7 +656,7 @@ GXVoid GXMeshGeometry::SetTotalVertices ( GLsizei totalVertices )
 
 GXVoid GXMeshGeometry::FillVertexBuffer ( const GXVoid* data, GLsizeiptr size, GLenum usage )
 {
-    if ( !_mesh || !_mesh->GetMeshFileName () )
+    if ( !_mesh || _mesh->GetMeshFileName ().IsNull () )
     {
         // Procedure generated mesh.
 
@@ -684,7 +683,7 @@ GXVoid GXMeshGeometry::SetBufferStream ( eGXMeshStreamIndex streamIndex, GLint n
     if ( _meshVAO == 0u )
         glGenVertexArrays ( 1, &_meshVAO );
 
-    if ( !_mesh || !_mesh->GetMeshFileName () )
+    if ( !_mesh || _mesh->GetMeshFileName ().IsNull () )
     {
         // Procedure generated mesh.
 
@@ -754,7 +753,7 @@ GXVoid GXMeshGeometry::UpdatePose ( const GXSkeleton &skeleton )
     _skinningMaterial->Unbind ();
 }
 
-GXBool GXMeshGeometry::LoadMesh ( const GXWChar* fileName )
+GXBool GXMeshGeometry::LoadMesh ( const GXString &fileName )
 {
     if ( _mesh )
         _mesh->Release ();
@@ -776,7 +775,7 @@ GXBool GXMeshGeometry::LoadMesh ( const GXWChar* fileName )
     return GX_TRUE;
 }
 
-GXBool GXMeshGeometry::LoadSkin ( const GXWChar* fileName )
+GXBool GXMeshGeometry::LoadSkin ( const GXString &fileName )
 {
     if ( _skin )
         _skin->Release ();
@@ -798,19 +797,19 @@ GXBool GXMeshGeometry::LoadSkin ( const GXWChar* fileName )
     return GX_TRUE;
 }
 
-GXUInt GXCALL GXMeshGeometry::GetTotalLoadedMeshes ( const GXWChar** lastMesh )
+GXUInt GXCALL GXMeshGeometry::GetTotalLoadedMeshes ( GXString &lastMesh )
 {
     return GXMesh::GetTotalLoadedMeshes ( lastMesh );
 }
 
-GXUInt GXCALL GXMeshGeometry::GetTotalLoadedSkins ( const GXWChar** lastSkin )
+GXUInt GXCALL GXMeshGeometry::GetTotalLoadedSkins ( GXString &lastSkin )
 {
     return GXSkin::GetTotalLoadedSkins ( lastSkin );
 }
 
 GXVoid GXMeshGeometry::UpdateGraphicResources ()
 {
-    if ( !_mesh || !_mesh->GetMeshFileName () || !_skin || _mesh->_totalVertices != _skin->_totalVertices )
+    if ( !_mesh || _mesh->GetMeshFileName ().IsNull () || !_skin || _mesh->_totalVertices != _skin->_totalVertices )
     {
         if ( _mesh && _meshVAO == 0u )
         {

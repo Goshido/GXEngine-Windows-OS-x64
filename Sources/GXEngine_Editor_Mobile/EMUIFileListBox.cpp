@@ -9,7 +9,7 @@
 #define DEFAULT_LEFT_BOTTOM_X               0.1f
 #define DEFAULT_LEFT_BOTTOM_Y               0.1f
 
-#define FONT                                L"Fonts/trebuc.ttf"
+#define FONT                                "Fonts/trebuc.ttf"
 #define FONT_SIZE                           0.33f
 #define ITEM_HEIGHT                         0.85f
 #define ITEM_NAME_OFFSET_X                  0.9f
@@ -24,13 +24,13 @@
 #define BACKGROUND_COLOR_B                  48u
 #define BACKGROUND_COLOR_A                  255u
 
-#define RECTANGLE                           L"Textures/System/Default_Diffuse.tga"
+#define RECTANGLE                           "Textures/System/Default_Diffuse.tga"
 
-#define FOLDER_ICON                         L"Textures/Editor Mobile/gui_folder_icon.png"
+#define FOLDER_ICON                         "Textures/Editor Mobile/gui_folder_icon.png"
 #define FOLDER_ICON_ASPECT                  1.3f
 #define FOLDER_ICON_HEIGHT                  0.54f
 
-#define FILE_ICON                           L"Textures/Editor Mobile/gui_file_icon.png"
+#define FILE_ICON                           "Textures/Editor Mobile/gui_file_icon.png"
 #define FILE_ICON_ASPECT                    0.75f
 #define FILE_ICON_HEIGHT                    0.6f
 
@@ -51,15 +51,17 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-EMUIFileListBoxItem::EMUIFileListBoxItem ( eEMUIFileListBoxItemType type, const GXWChar* name ):
-    _type ( type )
+EMUIFileListBoxItem::EMUIFileListBoxItem ( eEMUIFileListBoxItemType type, const GXString &name )
+    GX_MEMORY_INSPECTOR_CONSTRUCTOR_NOT_LAST ( "EMUIFileListBoxItem" )
+    _type ( type ),
+    _name ( name )
 {
-    GXWcsclone ( &_name, name );
+    // NOTHING
 }
 
 EMUIFileListBoxItem::~EMUIFileListBoxItem ()
 {
-    GXSafeFree ( _name );
+    // NOTHING
 }
 
 eEMUIFileListBoxItemType EMUIFileListBoxItem::GetType () const
@@ -72,14 +74,14 @@ GXVoid EMUIFileListBoxItem::SetType ( eEMUIFileListBoxItemType type )
     _type = type;
 }
 
-const GXWChar* EMUIFileListBoxItem::GetName () const
+const GXString& EMUIFileListBoxItem::GetName () const
 {
     return _name;
 }
 
-GXVoid EMUIFileListBoxItem::SetName ( const GXWChar* name )
+GXVoid EMUIFileListBoxItem::SetName ( const GXString &name )
 {
-    _name = const_cast<GXWChar*> ( name );
+    _name = name;
 }
 
 //---------------------------------------------------------
@@ -280,82 +282,88 @@ GXVoid EMUIFileListBoxRenderer::OnMoved ( GXFloat x, GXFloat y )
 
 EMUIFileListBox::EMUIFileListBox ( EMUI* parent ):
     EMUI ( parent ),
-    _widget ( new GXUIListBox ( parent ? parent->GetWidget () : nullptr, &EMUIFileListBox::ItemDestructor ) )
+    _widget ( parent ? parent->GetWidget () : nullptr, &EMUIFileListBox::ItemDestructor )
 {
-    _widget->Resize ( DEFAULT_LEFT_BOTTOM_X * gx_ui_Scale, DEFAULT_LEFT_BOTTOM_Y * gx_ui_Scale, DEFAULT_WIDTH * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
-    _widget->SetItemHeight ( ITEM_HEIGHT * gx_ui_Scale );
+    _widget.Resize ( DEFAULT_LEFT_BOTTOM_X * gx_ui_Scale, DEFAULT_LEFT_BOTTOM_Y * gx_ui_Scale, DEFAULT_WIDTH * gx_ui_Scale, DEFAULT_HEIGHT * gx_ui_Scale );
+    _widget.SetItemHeight ( ITEM_HEIGHT * gx_ui_Scale );
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIFileListBoxRenderer" )
-    _widget->SetRenderer ( new EMUIFileListBoxRenderer ( _widget ) );
+    _widget.SetRenderer ( new EMUIFileListBoxRenderer ( &_widget ) );
 }
 
 EMUIFileListBox::~EMUIFileListBox ()
 {
-    delete _widget->GetRenderer ();
-    delete _widget;
+    delete _widget.GetRenderer ();
 }
 
-GXWidget* EMUIFileListBox::GetWidget () const
+GXWidget* EMUIFileListBox::GetWidget ()
 {
-    return _widget;
+    return &_widget;
 }
 
 GXVoid EMUIFileListBox::Resize ( GXFloat leftBottomX, GXFloat leftBottomY, GXFloat width, GXFloat height )
 {
-    _widget->Resize ( leftBottomX, leftBottomY, width, height );
+    _widget.Resize ( leftBottomX, leftBottomY, width, height );
 }
 
-GXVoid EMUIFileListBox::AddFolder ( const GXWChar* name )
+GXVoid EMUIFileListBox::AddFolder ( const GXString &name )
 {
-    _widget->AddItem ( new EMUIFileListBoxItem ( eEMUIFileListBoxItemType::Folder, name ) );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIFileListBoxItem" )
+    _widget.AddItem ( new EMUIFileListBoxItem ( eEMUIFileListBoxItemType::Folder, name ) );
 }
 
-GXVoid EMUIFileListBox::AddFile ( const GXWChar* name )
+GXVoid EMUIFileListBox::AddFile ( const GXString &name )
 {
-    _widget->AddItem ( new EMUIFileListBoxItem ( eEMUIFileListBoxItemType::File, name ) );
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIFileListBoxItem" )
+    _widget.AddItem ( new EMUIFileListBoxItem ( eEMUIFileListBoxItemType::File, name ) );
 }
 
 GXVoid EMUIFileListBox::Clear ()
 {
-    _widget->RemoveAllItems ();
+    _widget.RemoveAllItems ();
 }
 
 GXVoid EMUIFileListBox::AddItems ( const EMUIFileListBoxItem* itemArray, GXUInt items )
 {
     if ( items == 0u || !itemArray ) return;
 
-    EMUIFileListBoxItem** elements = reinterpret_cast<EMUIFileListBoxItem**> ( malloc ( items * sizeof ( EMUIFileListBoxItem* ) ) );
+    EMUIFileListBoxItem** elements = reinterpret_cast<EMUIFileListBoxItem**> ( Malloc ( items * sizeof ( EMUIFileListBoxItem* ) ) );
 
     for ( GXUInt i = 0u; i < items; ++i )
+    {
+        GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIFileListBoxItem" )
         elements[ i ] = new EMUIFileListBoxItem ( itemArray[ i ].GetType (), itemArray[ i ].GetName () );
+    }
     
-    _widget->AddItems ( reinterpret_cast<GXVoid**> ( elements ), items );
+    _widget.AddItems ( reinterpret_cast<GXVoid**> ( elements ), items );
 
-    free ( elements );
+    Free ( elements );
 }
 
 GXVoid EMUIFileListBox::Redraw ()
 {
-    _widget->Redraw ();
+    _widget.Redraw ();
 }
 
 const GXVoid* EMUIFileListBox::GetSelectedItem () const
 {
-    return _widget->GetSelectedItem ();
+    return _widget.GetSelectedItem ();
 }
 
 GXVoid EMUIFileListBox::SetOnItemSelectedCallback ( GXVoid* context, GXUIListBoxItemOnItemSelectHandler callback )
 {
-    _widget->SetOnItemSelectedCallback ( context, callback );
+    _widget.SetOnItemSelectedCallback ( context, callback );
 }
 
 GXVoid EMUIFileListBox::SetOnItemDoubleClickedCallbak ( GXVoid* context, GXUIListBoxItemOnItemDoubleClickHandler callback )
 {
-    _widget->SetOnItemDoubleClickedCallback ( context, callback );
+    _widget.SetOnItemDoubleClickedCallback ( context, callback );
 }
 
 GXVoid GXCALL EMUIFileListBox::ItemDestructor ( GXVoid* itemData )
 {
+    if ( !itemData ) return;
+
     EMUIFileListBoxItem* p = static_cast<EMUIFileListBoxItem*> ( itemData );
     delete p;
 }

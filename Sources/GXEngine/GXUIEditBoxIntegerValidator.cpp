@@ -1,27 +1,27 @@
-// version 1.4
+// version 1.5
 
 #include <GXEngine/GXUIEditBoxIntegerValidator.h>
 #include <GXCommon/GXStrings.h>
 #include <GXCommon/GXMemory.h>
 
 
-GXUIEditBoxIntegerValidator::GXUIEditBoxIntegerValidator ( const GXWChar* defaultValidText, GXUIEditBox& editBox, GXBigInt minimumValue, GXBigInt maximumValue ):
+GXUIEditBoxIntegerValidator::GXUIEditBoxIntegerValidator ( const GXString &defaultValidText, GXUIEditBox &editBox, GXBigInt minimumValue, GXBigInt maximumValue ):
     GXTextValidator ( defaultValidText ),
     _editBox ( editBox ),
     _minimumValue ( minimumValue ),
     _maximumValue ( maximumValue )
 {
-    Validate ( this->_editBox.GetText () );
+    Validate ( _editBox.GetText () );
 }
 
 GXUIEditBoxIntegerValidator::~GXUIEditBoxIntegerValidator ()
 {
-    GXSafeFree ( _oldValidText );
+    // NOTHING
 }
 
-GXBool GXUIEditBoxIntegerValidator::Validate ( const GXWChar* text )
+GXBool GXUIEditBoxIntegerValidator::Validate ( const GXString &text )
 {
-    if ( !text )
+    if ( text.IsNull () || text.IsEmpty () )
     {
         _editBox.SetText ( _oldValidText );
         return GX_FALSE;
@@ -29,22 +29,23 @@ GXBool GXUIEditBoxIntegerValidator::Validate ( const GXWChar* text )
 
     GXUPointer i = 0u;
 
-    if ( text[ i ] == L'-' )
+    if ( text[ i ] == '-' )
         ++i;
 
-    GXUPointer symbols = GXWcslen ( text );
+    const GXUPointer symbols = text.GetSymbolCount ();
 
     for ( ; i < symbols; ++i )
     {
-        if ( !isdigit ( static_cast<int> ( text[ i ] ) ) )
-        {
-            _editBox.SetText ( _oldValidText );
-            return GX_FALSE;
-        }
+        const GXStringSymbol symbol = text[ i ];
+
+        if ( isdigit ( static_cast<int> ( symbol.ToCodePoint () ) ) ) continue;
+
+        _editBox.SetText ( _oldValidText );
+        return GX_FALSE;
     }
 
     GXBigInt currentValue;
-    swscanf_s ( text, L"%lli", &currentValue );
+    sscanf_s ( static_cast<const GXChar*> ( text ), "%lli", &currentValue );
 
     if ( currentValue < _minimumValue || currentValue > _maximumValue )
     {
@@ -52,8 +53,6 @@ GXBool GXUIEditBoxIntegerValidator::Validate ( const GXWChar* text )
         return GX_FALSE;
     }
 
-    GXSafeFree ( _oldValidText );
-    GXWcsclone ( &_oldValidText, text );
-
+    _oldValidText = text;
     return GX_TRUE;
 }

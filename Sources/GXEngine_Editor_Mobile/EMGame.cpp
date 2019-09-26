@@ -8,7 +8,6 @@
 #include <GXEngine_Editor_Mobile/EMUIColorPicker.h>
 #include <GXEngine_Editor_Mobile/EMEnvironment.h>
 #include <GXEngine/GXRenderer.h>
-#include <GXEngine/GXLocale.h>
 #include <GXEngine/GXCore.h>
 #include <GXEngine/GXSplashScreen.h>
 #include <GXEngine/GXTextureCubeMap.h>
@@ -73,10 +72,13 @@ GXVoid EMGame::OnInit ()
     locale.LoadLanguage ( L"Locale/Editor Mobile/RU.lng", eGXLanguage::Russian );
     locale.SetLanguage ( eGXLanguage::Russian );
 
+    InitStrings ( locale );
+
     GXInput& input = GXInput::GetInstance ();
     input.BindKeyCallback ( this, &EMGame::OnExit, VK_ESCAPE, eGXInputButtonState::Up );
     input.BindMouseButtonCallback ( this, &EMGame::OnMouseButton );
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXUIInput" )
     _uiInput = new GXUIInput ( nullptr, GX_FALSE );
     GXTouchSurface::GetInstance ().SetDefaultWidget ( _uiInput );
 
@@ -88,45 +90,52 @@ GXVoid EMGame::OnInit ()
 
     GXCollisionDetector::GetInstance ().EnableDebugData ();
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIOpenFile" )
     _openFile = new EMUIOpenFile ();
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopup" )
     _filePopup = new EMUIPopup ( nullptr );
-    _filePopup->AddItem ( locale.GetString ( L"Main menu->File->New" ), nullptr, nullptr );
-    _filePopup->AddItem ( locale.GetString ( L"Main menu->File->Open" ), nullptr, nullptr );
-    _filePopup->AddItem ( locale.GetString ( L"Main menu->File->Close" ), nullptr, nullptr );
-    _filePopup->AddItem ( locale.GetString ( L"Main menu->File->Save" ), nullptr, nullptr );
-    _filePopup->AddItem ( locale.GetString ( L"Main menu->File->Exit" ), this, &EMGame::OnExit );
+    _filePopup->AddItem ( locale.GetString ( "Main menu->File->New" ), nullptr, nullptr );
+    _filePopup->AddItem ( locale.GetString ( "Main menu->File->Open" ), nullptr, nullptr );
+    _filePopup->AddItem ( locale.GetString ( "Main menu->File->Close" ), nullptr, nullptr );
+    _filePopup->AddItem ( locale.GetString ( "Main menu->File->Save" ), nullptr, nullptr );
+    _filePopup->AddItem ( locale.GetString ( "Main menu->File->Exit" ), this, &EMGame::OnExit );
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopup" )
     _createPopup = new EMUIPopup ( nullptr );
-    _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Unit Actor" ), nullptr, nullptr );
-    _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Box falling" ), this, nullptr );
-    _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Skeletal mesh" ), nullptr, nullptr );
-    _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Directed light" ), nullptr, nullptr );
-    _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Spot" ), nullptr, nullptr );
-    _createPopup->AddItem ( locale.GetString ( L"Main menu->Create->Bulp" ), nullptr, nullptr );
+    _createPopup->AddItem ( locale.GetString ( "Main menu->Create->Unit Actor" ), nullptr, nullptr );
+    _createPopup->AddItem ( locale.GetString ( "Main menu->Create->Box falling" ), this, nullptr );
+    _createPopup->AddItem ( locale.GetString ( "Main menu->Create->Skeletal mesh" ), nullptr, nullptr );
+    _createPopup->AddItem ( locale.GetString ( "Main menu->Create->Directed light" ), nullptr, nullptr );
+    _createPopup->AddItem ( locale.GetString ( "Main menu->Create->Spot" ), nullptr, nullptr );
+    _createPopup->AddItem ( locale.GetString ( "Main menu->Create->Bulp" ), nullptr, nullptr );
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopup" )
     _toolsPopup = new EMUIPopup ( nullptr );
-    _toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Select" ), nullptr, &EMGame::OnColorPicker );
-    _toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Move" ), nullptr, nullptr );
-    _toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Rotate" ), nullptr, nullptr );
-    _toolsPopup->AddItem ( locale.GetString ( L"Main menu->Tools->Scale" ), nullptr, nullptr );
+    _toolsPopup->AddItem ( locale.GetString ( "Main menu->Tools->Select" ), nullptr, &EMGame::OnColorPicker );
+    _toolsPopup->AddItem ( locale.GetString ( "Main menu->Tools->Move" ), nullptr, nullptr );
+    _toolsPopup->AddItem ( locale.GetString ( "Main menu->Tools->Rotate" ), nullptr, nullptr );
+    _toolsPopup->AddItem ( locale.GetString ( "Main menu->Tools->Scale" ), nullptr, nullptr );
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopup" )
     _utilityPopup = new EMUIPopup ( nullptr );
-    _utilityPopup->AddItem ( locale.GetString ( L"Main menu->Utility->Particle system" ), nullptr, nullptr );
-    _utilityPopup->AddItem ( locale.GetString ( L"Main menu->Utility->Animation graph" ), nullptr, nullptr );
+    _utilityPopup->AddItem ( locale.GetString ( "Main menu->Utility->Particle system" ), nullptr, nullptr );
+    _utilityPopup->AddItem ( locale.GetString ( "Main menu->Utility->Animation graph" ), nullptr, nullptr );
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIPopup" )
     _effectsPopup = new EMUIPopup ( nullptr );
-    _effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->Motion blur" ), this, &EMGame::OnShowMotionBlurSettings );
-    _effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->SSAO" ), this, &EMGame::OnShowSSAOSettings );
-    _effectsPopup->AddItem ( locale.GetString ( L"Main menu->Effects->HDR tone mapper" ), this, &EMGame::OnShowToneMapperSettings );
+    _effectsPopup->AddItem ( locale.GetString ( "Main menu->Effects->Motion blur" ), this, &EMGame::OnShowMotionBlurSettings );
+    _effectsPopup->AddItem ( locale.GetString ( "Main menu->Effects->SSAO" ), this, &EMGame::OnShowSSAOSettings );
+    _effectsPopup->AddItem ( locale.GetString ( "Main menu->Effects->HDR tone mapper" ), this, &EMGame::OnShowToneMapperSettings );
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "EMUIMenu" )
     _menu = new EMUIMenu ( nullptr );
     _menu->SetLocation ( 0.0f, h - _menu->GetHeight () );
-    _menu->AddItem ( locale.GetString ( L"Main menu->File" ), _filePopup );
-    _menu->AddItem ( locale.GetString ( L"Main menu->Create" ), _createPopup );
-    _menu->AddItem ( locale.GetString ( L"Main menu->Tools" ), _toolsPopup );
-    _menu->AddItem ( locale.GetString ( L"Main menu->Utility" ), _utilityPopup );
-    _menu->AddItem ( locale.GetString ( L"Main menu->Effects" ), _effectsPopup );
+    _menu->AddItem ( locale.GetString ( "Main menu->File" ), _filePopup );
+    _menu->AddItem ( locale.GetString ( "Main menu->Create" ), _createPopup );
+    _menu->AddItem ( locale.GetString ( "Main menu->Tools" ), _toolsPopup );
+    _menu->AddItem ( locale.GetString ( "Main menu->Utility" ), _utilityPopup );
+    _menu->AddItem ( locale.GetString ( "Main menu->Effects" ), _effectsPopup );
 
     GXFloat physicsInfoWidth = 10.0f * gx_ui_Scale;
     GXFloat physicsInfoHeight = 5.0f * gx_ui_Scale;
@@ -164,7 +173,7 @@ GXVoid EMGame::OnInit ()
     _colliderOne->GetRigidBody ().SetMass ( 1.0f );
     _colliderOne->GetRigidBody ().SetShape ( *colliderOneShape );
     //_colliderOne->GetRigidBody ().SetCanSleep ( GX_FALSE );
-    //_colliderOne->GetRigidBody ().EnableKinematic ();
+    _colliderOne->GetRigidBody ().EnableKinematic ();
     //_colliderOne->GetRigidBody ().SetLinearVelocity ( GXVec3 ( 0.0, -1.0f, 1.0f ) );
     _colliderOne->GetRigidBody ().SetAngularVelocity ( GXVec3 ( 0.0f, 10.0f, -5.0f ) );
     _colliderOne->SetMesh ( L"Meshes/System/Unit Cube.stm" );
@@ -222,7 +231,7 @@ GXVoid EMGame::OnInit ()
     kinematicPlaneMaterial.SetIndexOfRefractionScale ( 0.292f );
     GXTexture2D* texture = kinematicPlaneMaterial.GetAlbedoTexture ();
     texture->FreeResources ();
-    texture->LoadImage ( L"Textures/System/GXEngine Logo 4k.png", GX_TRUE, GX_TRUE );
+    texture->LoadImage ( "Textures/System/GXEngine Logo 4k.png", GX_TRUE, GX_TRUE );
     _kinematicPlane->EnablePhysicsDebug ();
 
     transform.SetLocation ( 6.0f, 0.0f, 0.0f );
@@ -397,37 +406,47 @@ GXVoid EMGame::OnFrame ( GXFloat deltaTime )
     pi._insertY = 0.5f * gx_ui_Scale;
     pi._overlayType = eGXImageOverlayType::AlphaTransparencyPreserveAlpha;
 
-    _physicsInfo->AddText ( pi, 64, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Contacts: %i" ), collisionData.GetTotalContacts () );
+    _buffer.Format ( _contactFormat, collisionData.GetTotalContacts () );
+    _physicsInfo->AddText ( pi, 0u, _buffer );
 
     GXFloat offset = static_cast<GXFloat> ( _physicsInfoFont->GetSize () );
     pi._insertY += offset;
-    _physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Allocated support points: %i" ), collisionDetector.GetAllocatedSupportPoints () );
+    _buffer.Format ( _allocatedSupportPointFormat, collisionDetector.GetAllocatedSupportPoints () );
+    _physicsInfo->AddText ( pi, 0u, _buffer );
 
     pi._insertY += offset;
-    _physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Allocated edges: %i" ), collisionDetector.GetAllocatedEdges () );
+    _buffer.Format ( _allocatedEdgeFormat, collisionDetector.GetAllocatedEdges () );
+    _physicsInfo->AddText ( pi, 0u, _buffer );
 
     pi._insertY += offset;
-    _physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Allocated faces: %i" ), collisionDetector.GetAllocatedFaces () );
+    _buffer.Format ( _allocatedFaceFormat, collisionDetector.GetAllocatedFaces () );
+    _physicsInfo->AddText ( pi, 0u, _buffer );
 
     if ( collisionData.GetTotalContacts () > 0 )
     {
         pi._insertY += offset;
-        _physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Penetration depth: %f" ), contact->GetPenetration () );
+        _buffer.Format ( _penetrationDepthFormat, contact->GetPenetration () );
+        _physicsInfo->AddText ( pi, 0u, _buffer );
 
         pi._insertY += offset;
-        _physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->GJK iterations: %i" ), contact->GetGJKIterations () );
+        _buffer.Format ( _gjkIterationFormat, contact->GetGJKIterations () );
+        _physicsInfo->AddText ( pi, 0u, _buffer );
 
         pi._insertY += offset;
-        _physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->EPA iterations: %i" ), contact->GetEPAIterations () );
+        _buffer.Format ( _epaIterationFormat, contact->GetEPAIterations () );
+        _physicsInfo->AddText ( pi, 0u, _buffer );
 
         pi._insertY += offset;
-        _physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Used support points: %i" ), contact->GetSupportPoints () );
+        _buffer.Format ( _usedSupportPointFormat, contact->GetSupportPoints () );
+        _physicsInfo->AddText ( pi, 0u, _buffer );
 
         pi._insertY += offset;
-        _physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Used edges: %i" ), contact->GetEdges () );
+        _buffer.Format ( _usedEdgeFormat, contact->GetEdges () );
+        _physicsInfo->AddText ( pi, 0u, _buffer );
 
         pi._insertY += offset;
-        _physicsInfo->AddText ( pi, 128u, GXLocale::GetInstance ().GetString ( L"EMGame->Physics info->Used faces: %i" ), contact->GetFaces () );
+        _buffer.Format ( _usedFaceFormat, contact->GetFaces () );
+        _physicsInfo->AddText ( pi, 0u, _buffer );
     }
 
     _physicsInfo->Render ();
@@ -520,12 +539,26 @@ GXVoid EMGame::OnDestroy ()
     delete &( GXPhysicsEngine::GetInstance () );
 }
 
-GXVoid GXCALL EMGame::OnExit ( GXVoid* /*context*/ )
+GXVoid EMGame::InitStrings ( const GXLocale &locale )
 {
-    /*EMGame* game = static_cast<EMGame*> ( context );
-    game->_openFile->Browse ( &EMGame::OnOpenFile );*/
-    GXCore::GetInstance ().Exit ();
-    GXLogA ( "Завершение\n" );
+    _allocatedEdgeFormat = locale.GetString ( "EMGame->Physics info->Allocated edges: %i" );
+    _allocatedFaceFormat = locale.GetString ( "EMGame->Physics info->Allocated faces: %i" );
+    _allocatedSupportPointFormat = locale.GetString ( "EMGame->Physics info->Allocated support points: %i" );
+    _contactFormat = locale.GetString ( "EMGame->Physics info->Contacts: %i" );
+    _epaIterationFormat = locale.GetString ( "EMGame->Physics info->EPA iterations: %i" );
+    _gjkIterationFormat = locale.GetString ( "EMGame->Physics info->GJK iterations: %i" );
+    _penetrationDepthFormat = locale.GetString ( "EMGame->Physics info->Penetration depth: %f" );
+    _usedEdgeFormat = locale.GetString ( "EMGame->Physics info->Used edges: %i" );
+    _usedFaceFormat = locale.GetString ( "EMGame->Physics info->Used faces: %i" );
+    _usedSupportPointFormat = locale.GetString ( "EMGame->Physics info->Used support points: %i" );
+}
+
+GXVoid GXCALL EMGame::OnExit ( GXVoid* context )
+{
+    EMGame* game = static_cast<EMGame*> ( context );
+    game->_openFile->Browse ( &EMGame::OnOpenFile );
+    /*GXCore::GetInstance ().Exit ();
+    GXLogA ( "Завершение\n" );*/
 }
 
 GXVoid GXCALL EMGame::OnColorPicker ( GXVoid* /*context*/ )
@@ -619,7 +652,7 @@ GXVoid GXCALL EMGame::OnViewerTransformChanged ( GXVoid* context )
     EMEnvironment::GetInstance ().OnViewerLocationChanged ();
 }
 
-GXVoid GXCALL EMGame::OnOpenFile ( GXString filePath )
+GXVoid GXCALL EMGame::OnOpenFile ( const GXString &filePath )
 {
     GXLogA ( "EMOnOpenFile::Info - Файл %s\n", static_cast<const GXMBChar*> ( filePath ) );
 }

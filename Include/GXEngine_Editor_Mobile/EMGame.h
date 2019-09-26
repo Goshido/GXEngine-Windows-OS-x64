@@ -14,11 +14,12 @@
 #include "EMPhysicsDrivenActor.h"
 #include "EMFluttershy.h"
 #include "EMLightProbe.h"
+#include <GXEngine/GXCameraOrthographic.h>
 #include <GXEngine/GXGame.h>
+#include <GXEngine/GXLocale.h>
+#include <GXEngine/GXMeshGeometry.h>
 #include <GXEngine/GXTextureCubeMap.h>
 #include <GXEngine/GXUnlitColorMaterial.h>
-#include <GXEngine/GXMeshGeometry.h>
-#include <GXEngine/GXCameraOrthographic.h>
 #include <GXPhysics/GXGravity.h>
 
 
@@ -67,6 +68,20 @@ class EMGame final : public GXGame
         GXFont*                     _physicsInfoFont;
         GXTexture2D                 _physicsInfoBackgroundTexture;
 
+        // Optimization
+        GXString                    _buffer;
+
+        GXString                    _allocatedEdgeFormat;
+        GXString                    _allocatedFaceFormat;
+        GXString                    _allocatedSupportPointFormat;
+        GXString                    _contactFormat;
+        GXString                    _epaIterationFormat;
+        GXString                    _gjkIterationFormat;
+        GXString                    _penetrationDepthFormat;
+        GXString                    _usedEdgeFormat;
+        GXString                    _usedFaceFormat;
+        GXString                    _usedSupportPointFormat;
+
         static GXBool               _isContact;
         static GXMat4               _contactNormalTransform;
 
@@ -80,6 +95,8 @@ class EMGame final : public GXGame
         GXVoid OnDestroy () override;
 
     private:
+        GXVoid InitStrings ( const GXLocale &locale );
+
         static GXVoid GXCALL OnExit ( GXVoid* context );
         static GXVoid GXCALL OnColorPicker ( GXVoid* context );
         static GXVoid GXCALL OnPickRGBUByte ( GXVoid* context, GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
@@ -89,7 +106,7 @@ class EMGame final : public GXGame
         static GXVoid GXCALL OnMouseButton ( GXVoid* handler, GXInputMouseFlags mouseflags );
         static GXVoid GXCALL OnObject ( GXVoid* context, GXVoid* object );
         static GXVoid GXCALL OnViewerTransformChanged ( GXVoid* context );
-        static GXVoid GXCALL OnOpenFile ( GXString filePath );
+        static GXVoid GXCALL OnOpenFile ( const GXString &filePath );
 
         EMGame ( const EMGame &other ) = delete;
         EMGame& operator = ( const EMGame &other ) = delete;

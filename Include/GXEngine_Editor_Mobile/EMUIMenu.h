@@ -10,15 +10,15 @@
 class EMUIMenu final : public EMUI
 {
     private:
-        GXUIMenu*       _widget;
+        GXUIMenu    _widget;
 
     public:
         explicit EMUIMenu ( EMUI* parent );
         ~EMUIMenu () override;
 
-        GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () override;
 
-        GXVoid AddItem ( const GXWChar* name, EMUIPopup* popup );
+        GXVoid AddItem ( const GXString &name, EMUIPopup* popup );
         GXVoid SetLocation ( GXFloat leftBottomX, GXFloat leftBottomY );
         GXFloat GetHeight () const;
 

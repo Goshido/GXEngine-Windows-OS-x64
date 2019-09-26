@@ -12,21 +12,21 @@ enum class eEMUIFileListBoxItemType : GXUByte
     File
 };
 
-class EMUIFileListBoxItem final
+class EMUIFileListBoxItem final : public GXMemoryInspector
 {
     private:
         eEMUIFileListBoxItemType    _type;
-        GXWChar*                    _name;
+        GXString                    _name;
 
     public:
-        explicit EMUIFileListBoxItem ( eEMUIFileListBoxItemType type, const GXWChar* name );
+        explicit EMUIFileListBoxItem ( eEMUIFileListBoxItemType type, const GXString &name );
         ~EMUIFileListBoxItem ();
 
         eEMUIFileListBoxItemType GetType () const;
         GXVoid SetType ( eEMUIFileListBoxItemType type );
 
-        const GXWChar* GetName () const;
-        GXVoid SetName ( const GXWChar* name );
+        const GXString& GetName () const;
+        GXVoid SetName ( const GXString &name );
 
     private:
         EMUIFileListBoxItem () = delete;
@@ -34,20 +34,22 @@ class EMUIFileListBoxItem final
         EMUIFileListBoxItem& operator = ( const EMUIFileListBoxItem &other ) = delete;
 };
 
+//---------------------------------------------------------------------------------------------------------------------
+
 class EMUIFileListBox final : public EMUI
 {
     private:
-        GXUIListBox*    _widget;
+        GXUIListBox     _widget;
 
     public:
         explicit EMUIFileListBox ( EMUI* parent );
         ~EMUIFileListBox () override;
 
-        GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () override;
 
         GXVoid Resize ( GXFloat leftBottomX, GXFloat leftBottomY, GXFloat width, GXFloat height );
-        GXVoid AddFolder ( const GXWChar* name );
-        GXVoid AddFile ( const GXWChar* name );
+        GXVoid AddFolder ( const GXString &name );
+        GXVoid AddFile ( const GXString &name );
         GXVoid AddItems ( const EMUIFileListBoxItem* itemArray, GXUInt items );
         GXVoid Clear ();
         GXVoid Redraw ();

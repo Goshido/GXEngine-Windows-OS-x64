@@ -12,7 +12,7 @@
 class EMUISSAOSettings final : public EMUI
 {
     private:
-        EMUIDraggableArea*          _mainPanel;
+        EMUIDraggableArea           _mainPanel;
 
         EMUIStaticText*             _caption;
         EMUISeparator*              _topSeparator;
@@ -28,13 +28,16 @@ class EMUISSAOSettings final : public EMUI
         EMUIButton*                 _cancel;
         EMUIButton*                 _apply;
 
+        // Optimization stuff.
+        GXString                    _buffer;
+
         static EMUISSAOSettings*    _instance;
 
     public:
         static EMUISSAOSettings& GetInstance ();
         ~EMUISSAOSettings () override;
 
-        GXWidget* GetWidget () const override;
+        GXWidget* GetWidget () override;
 
         GXVoid Show ();
         GXVoid Hide ();

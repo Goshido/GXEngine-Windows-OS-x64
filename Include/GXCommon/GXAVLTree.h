@@ -14,7 +14,6 @@ enum class eGXAVLTreeSide: GXUByte
     Unknown
 };
 
-
 class GXAVLTreeNode : public GXMemoryInspector
 {
     public:
@@ -45,15 +44,15 @@ class GXAVLTree : public GXMemoryInspector
         GXBool                  _isAutoClean;
 
     public:
-        GXUInt GetTotalNodes () const;
-
-    protected:
         explicit GXAVLTree ( GXAVLTreeComparator comparator, GXBool doesAutoClean );
         virtual ~GXAVLTree ();
 
-        const GXAVLTreeNode* Find ( const GXAVLTreeNode &node ) const;
         GXVoid Add ( GXAVLTreeNode &node );
-        
+        GXAVLTreeNode* Find ( const GXAVLTreeNode &node );
+        const GXAVLTreeNode* Find ( const GXAVLTreeNode &node ) const;
+        GXUInt GetTotalNodes () const;
+
+    protected:
         GXVoid DoPrefix ( const GXAVLTreeNode* currentRoot, GXAVLTreeIterator iterator, GXVoid* args ) const;
         GXVoid DoInfix ( const GXAVLTreeNode* currentRoot, GXAVLTreeIterator iterator, GXVoid* args ) const;
         GXVoid DoPostfix ( const GXAVLTreeNode* currentRoot, GXAVLTreeIterator iterator, GXVoid* args ) const;

@@ -4,13 +4,13 @@
 #include <GXCommon/GXMemory.h>
 
 
-EMMesh::EMMesh ( const GXWChar* meshFileName ):
+EMMesh::EMMesh ( const GXString &meshFileName ):
     _meshFileName ( meshFileName )
 {
     InitGraphicResources ();
 }
 
-EMMesh::EMMesh ( const GXWChar* meshFileName, const GXWChar* skinFileName ):
+EMMesh::EMMesh ( const GXString &meshFileName, const GXString &skinFileName ):
     _meshFileName ( meshFileName ),
     _skinFileName ( skinFileName )
 {
