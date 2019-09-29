@@ -14,7 +14,7 @@ Please see [Main documentation page](./Documentation/main.md).
 
 Project is using _Trello™_ as main project management tool. Please see [GXEngine™ board](https://trello.com/b/57Pn2ZGq/gxengine%E2%84%A2).
 
-## Quick Start Instructions
+## Quick start instructions
 
 Requirements:
 
