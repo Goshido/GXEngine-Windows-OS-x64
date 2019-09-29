@@ -17,6 +17,6 @@ Requirements:
 * Visual Studio 2019
 * C++ toolchain v10.0.18362 without Spectre checks
 
-To begin, clone this repository onto your local drive.
-First of all it is needed to build `Projects/GXEngine/GXEngine.sln` solution with `x64` configuration.
+To begin, clone this repository onto your local drive.<br/>
+First of all it is needed to build `Projects/GXEngine/GXEngine.sln` solution with `x64` configuration.<br/>
 Next it is needed to build `Projects/GXEngine Editor Mobile/GXEngine Editor Mobile.sln` solution with `x64` configuration.

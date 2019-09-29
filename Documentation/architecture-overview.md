@@ -105,9 +105,9 @@ Current _GXEngine_ implementation has predefined slots for two languges: `Englis
 * `.skm`
 * `.mesh`
 
-`.obj` must have triangle mesh format, _normal_ data and _UV_ data. Material sections are ignored.
-`.stm` is proprietary (but deprecated) format for static meshes.
-`.skm` is proprietary (but deprecated) format for skeletal meshes.
+`.obj` must have triangle mesh format, _normal_ data and _UV_ data. Material sections are ignored.<br/>
+`.stm` is proprietary (but deprecated) format for static meshes.<br/>
+`.skm` is proprietary (but deprecated) format for skeletal meshes.<br/>
 `.mesh` is proprietary (recommended) format for skeletal meshes. _GXEngine_ repo contains source code for building native plugin for _3ds Studio Max 2018_. This plugin allows user to export meshes to _GXEngine_ format.
 
 `Shaders` directory contains source shader code and precompiled shader code. Current implementation supports shaders for OpenGL 3.3 core profile (GLSL).
@@ -118,20 +118,20 @@ Current _GXEngine_ implementation has predefined slots for two languges: `Englis
 
 `Sounds` directory contains sound resources. Supported formats are:
 
-* ogg
+* `.ogg`
 
 `Textures` directory contains texture resources. Supported formats are:
 
-* .hdr
-* .jpg
-* .png
-* .tga
-* .tex
+* `.hdr`
+* `.jpg`
+* `.png`
+* `.tga`
+* `.tex`
 
-`.hdr` is HDR 4 channel 16 bit image format.
-`.jpg` is `JPG|JPEG` format.
-`.png` is `PNG` format
-`.tga` is `TARGA` format
-`.tex` is GXEngine proprietary uncompressed image format
+`.hdr` is HDR 4 channel 16 bit image format.<br/>
+`.jpg` is `JPG|JPEG` format.<br/>
+`.png` is `PNG` format.<br/>
+`.tga` is `TARGA` format.<br/>
+`.tex` is _GXEngine_ proprietary uncompressed image format.
 
-_GXEngine_ supports [equirectangular|https://en.wikipedia.org/wiki/Equirectangular_projection] textures for _cube map_ initialization.
+_GXEngine_ supports [equirectangular](https://en.wikipedia.org/wiki/Equirectangular_projection) textures for _cube map_ initialization.
