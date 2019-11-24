@@ -70,7 +70,7 @@ GXVoid EMGame::OnInit ()
     GXLocale& locale = GXLocale::GetInstance ();
     locale.LoadLanguage ( L"Locale/Editor Mobile/EN.lng", eGXLanguage::English );
     locale.LoadLanguage ( L"Locale/Editor Mobile/RU.lng", eGXLanguage::Russian );
-    locale.SetLanguage ( eGXLanguage::Russian );
+    locale.SetLanguage ( eGXLanguage::English );
 
     InitStrings ( locale );
 

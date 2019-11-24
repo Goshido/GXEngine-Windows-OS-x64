@@ -21,6 +21,7 @@ Requirements:
 * _Windows Vista_+
 * _Visual Studio 2019_
 * C++ platform toolset v142
+* _OpenAL_
 * _Windows SDK_ v10.0.18362 without _Spectre_ mitigation
 
 To begin, clone this repository onto your local drive.  
