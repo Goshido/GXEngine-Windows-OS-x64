@@ -59,7 +59,7 @@ There are predefined directories with project resources:
 * _Sounds_
 * _Textures_
 
-`Animations` directory contains skeletal mesh animations. Animation file has proprietary format. _GXEngine_ repo contains source code for building native plugin for _3ds Studio Max 2018_. This plugin allows user to export animations to GXEngine format from _3ds Studio Max 2018_. _GXEngine_ animation system supports up to `4` bones per vertex, up to `80` bones per mesh with maximum bone name up to `64` bytes. Bone name has `UTF-8` encoding. Note that _GXEngine_ animation system does not support bone scaling by design.
+`Animations` directory contains skeletal mesh animations. Animation file has proprietary format. _GXEngine_ repo contains source code for building native plugin for _3ds Studio Max 2018_. This plugin allows user to export animations to _GXEngine_ format from _3ds Studio Max 2018_. _GXEngine_ animation system supports up to `4` bones per vertex, up to `80` bones per mesh with maximum bone name up to `64` bytes. Bone name has `UTF-8` encoding. Note that _GXEngine_ animation system does not support bone scaling by design.
 
 `Config` directory contains configuration files for _GXEngine_ deploy.
 
@@ -113,7 +113,7 @@ Current _GXEngine_ implementation has two predefined language slots: `English` a
 
 `Skeletons` directory contains skeleton information for skeletal meshes. _GXEngine_ repo contains source code for building native plugin for _3ds Studio Max 2018_. This plugin allows user to export skeleton to _GXEngine_ format from _3ds Studio Max 2018_. _GXEngine_ animation system supports up to `4` bones per vertex, up to `80` bones per mesh with maximum bone name up to `64` bytes. Bone name has `UTF-8` encoding. Note that _GXEngine_ animation system does not support bone scaling by design.
 
-`Skins` directory contains skin information for skeletal meshes. _GXEngine_ repo contains source code for building native plugin for _3ds Studio Max 2018_. This plugin allows user to export skin data to GXEngine format from _3ds Studio Max 2018_. _GXEngine_ animation system supports up to `4` bones per vertex, up to `80` bones per mesh with maximum bone name up to `64` bytes. Bone name has `UTF-8` encoding. Note that _GXEngine_ animation system does not support bone scaling by design.
+`Skins` directory contains skin information for skeletal meshes. _GXEngine_ repo contains source code for building native plugin for _3ds Studio Max 2018_. This plugin allows user to export skin data to _GXEngine_ format from _3ds Studio Max 2018_. _GXEngine_ animation system supports up to `4` bones per vertex, up to `80` bones per mesh with maximum bone name up to `64` bytes. Bone name has `UTF-8` encoding. Note that _GXEngine_ animation system does not support bone scaling by design.
 
 `Sounds` directory contains sound resources. Supported formats are:
 
