@@ -555,6 +555,12 @@
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFileSystem.cpp">
       <Filter>Source Files\GXCommon\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\GXAbstractDesktopInput.cpp">
+      <Filter>Source Files\GXEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXEngine\Windows\GXDesktopInput.cpp">
+      <Filter>Source Files\GXEngine\Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\GXCommon\GXBKEStructs.h">
@@ -1117,6 +1123,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\GXCommon\Windows\GXDirectoryInfo.h">
       <Filter>Header Files\GXCommon\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\GXDesktopInput.h">
+      <Filter>Header Files\GXEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\GXEngine\Windows\GXDesktopInput.h">
+      <Filter>Header Files\GXEngine\Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

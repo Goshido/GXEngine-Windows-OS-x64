@@ -213,6 +213,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXUIntAtomic.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXUPointerAtomic.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXWriteFileStream.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\GXAbstractDesktopInput.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimationSolver.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimationSolverMovement.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXAnimationSolverPlayer.cpp" />
@@ -268,6 +269,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXEngine\GXUnlitTexture2DMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\GXWidget.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine\Windows\GXCrashReport.cpp" />
+    <ClCompile Include="..\..\Sources\GXEngine\Windows\GXDesktopInput.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMActor.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMBRDFIntegratorMaterial.cpp" />
     <ClCompile Include="..\..\Sources\GXEngine_Editor_Mobile\EMCheckerGeneratorMaterial.cpp" />
@@ -404,6 +406,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXCameraPerspective.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXCore.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXCrashReport.h" />
+    <ClInclude Include="..\..\Include\GXEngine\GXDesktopInput.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXDrawable.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXEngineSettings.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXEquirectangularToCubeMapMaterial.h" />
@@ -457,6 +460,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClInclude Include="..\..\Include\GXEngine\GXVersion.h" />
     <ClInclude Include="..\..\Include\GXEngine\GXWidget.h" />
     <ClInclude Include="..\..\Include\GXEngine\Windows\GXCrashReport.h" />
+    <ClInclude Include="..\..\Include\GXEngine\Windows\GXDesktopInput.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMActor.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMBRDFIntegratorMaterial.h" />
     <ClInclude Include="..\..\Include\GXEngine_Editor_Mobile\EMCheckerGeneratorMaterial.h" />

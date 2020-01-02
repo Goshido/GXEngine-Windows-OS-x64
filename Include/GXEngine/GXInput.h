@@ -177,7 +177,7 @@ class GXInput final
 
         GXVoid BindRightTriggerCallback ( GXVoid* context, GXInputTriggerHandler callback );
         GXVoid UnbindRightTriggerCallback ();
-        
+
         GXVoid BindLeftStickCallback ( GXVoid* context, GXInputStickHandler callback );
         GXVoid UnbindLeftStickCallback ();
 
