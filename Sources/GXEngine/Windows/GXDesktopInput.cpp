@@ -1,10 +1,12 @@
 // version 1.0
 
 #include <GXEngine/Windows/GXDesktopInput.h>
+#include <GXEngine/GXRenderer.h>
 
 GX_DISABLE_COMMON_WARNINGS
 
 #include <new>
+#include <Windowsx.h>
 
 GX_RESTORE_WARNING_STATE
 
@@ -49,6 +51,8 @@ GX_RESTORE_WARNING_STATE
 #define VK_KEY_Y                        0x59u
 #define VK_KEY_Z                        0x5Au
 
+#define NO_VALUE                        INT_MAX
+
 //---------------------------------------------------------------------------------------------------------------------
 
 GXKeyNode::GXKeyNode ( WPARAM virtualCode ):
@@ -77,6 +81,66 @@ eGXCompareResult GXKeyNode::Compare ( const GXAVLTreeNode &a, const GXAVLTreeNod
 
 //---------------------------------------------------------------------------------------------------------------------
 
+GXInputKeyAction::GXInputKeyAction ( const GXInputKeyAction &other ):
+    _bind ( other._bind ),
+    _next ( other._next )
+{
+    // NOTHING
+}
+
+GXInputKeyAction& GXInputKeyAction::operator = ( const GXInputKeyAction &other )
+{
+    _bind = other._bind;
+    _next = other._next;
+
+    return *this;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+GXInputMouseButtonAction::GXInputMouseButtonAction ( const GXInputMouseButtonAction &other ):
+    _bind ( other._bind ),
+    _next ( other._next )
+{
+    // NOTHING
+}
+
+GXInputMouseButtonAction& GXInputMouseButtonAction::operator = ( const GXInputMouseButtonAction &other )
+{
+    _bind = other._bind;
+    _next = other._next;
+
+    return *this;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+GXOSMessageNode::GXOSMessageNode ( UINT osType ):
+    _osType ( osType )
+{
+    // NOTHING
+}
+
+GXOSMessageNode::GXOSMessageNode ( UINT osType, GXDesktopInputHandler handler ):
+    _osType ( osType ),
+    _handler ( handler )
+{
+    // NOTHING
+}
+
+eGXCompareResult GXOSMessageNode::Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b )
+{
+    const GXOSMessageNode& aValue = static_cast<const GXOSMessageNode&> ( a );
+    const GXOSMessageNode& bValue = static_cast<const GXOSMessageNode&> ( b );
+
+    if ( aValue._osType < bValue._osType )
+        return eGXCompareResult::Less;
+
+    return aValue._osType > bValue._osType ? eGXCompareResult::Greater : eGXCompareResult::Equal;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 GXDesktopInput* GXDesktopInput::_instance = nullptr;
 
 GXDesktopInput& GXCALL GXDesktopInput::GetInstance ()
@@ -95,14 +159,40 @@ GXDesktopInput::~GXDesktopInput ()
     _instance = nullptr;
 }
 
-GXVoid GXDesktopInput::BindKeyboardKey ( GXVoid* /*context*/, GXKeyHandler /*handler*/, eGXKeyboardKey /*key*/, eGXButtonState /*state*/ )
+GXVoid GXDesktopInput::BindKeyboardKey ( GXVoid* context, GXKeyHandler handler, eGXKeyboardKey key, eGXButtonState state )
 {
-    // TODO
+    _smartLock.AcquireExclusive ();
+
+    switch ( state )
+    {
+        case eGXButtonState::Down:
+            _keyDownBinds[ static_cast<GXUPointer> ( static_cast<GXUShort> ( key ) ) ].Init ( context, handler );
+        break;
+
+        case eGXButtonState::Up:
+            _keyUpBinds[ static_cast<GXUPointer> ( static_cast<GXUShort> ( key ) ) ].Init ( context, handler );
+        break;
+    }
+
+    _smartLock.ReleaseExclusive ();
 }
 
-GXVoid GXDesktopInput::UnbindKeyboardKey ( eGXKeyboardKey /*key*/, eGXButtonState /*state*/ )
+GXVoid GXDesktopInput::UnbindKeyboardKey ( eGXKeyboardKey key, eGXButtonState state )
 {
-    // TODO
+    _smartLock.AcquireExclusive ();
+
+    switch ( state )
+    {
+        case eGXButtonState::Down:
+            _keyDownBinds[ static_cast<GXUPointer> ( static_cast<GXUShort> ( key ) ) ].Reset ();
+        break;
+
+        case eGXButtonState::Up:
+            _keyUpBinds[ static_cast<GXUPointer> ( static_cast<GXUShort> ( key ) ) ].Reset ();
+        break;
+    }
+
+    _smartLock.ReleaseExclusive ();
 }
 
 GXVoid GXDesktopInput::LockKeyboard ( GXVoid* /*context*/, GXSymbolHandler /*handler*/ )
@@ -115,40 +205,184 @@ GXVoid GXDesktopInput::UnlockKeyboard ()
     // TODO
 }
 
-GXVoid GXDesktopInput::BindMouseMove ( GXVoid* /*context*/, GXMouseMoveHandler /*handler*/ )
+GXVoid GXDesktopInput::BindMouseMove ( GXVoid* context, GXMouseMoveHandler handler )
 {
-    // TODO
+    _smartLock.AcquireExclusive ();
+
+    _mouseMoveContext = context;
+    _mouseMoveHandler = handler;
+
+    _smartLock.ReleaseExclusive ();
 }
 
 GXVoid GXDesktopInput::UnbindMouseMove ()
 {
-    // TODO
+    _smartLock.AcquireExclusive ();
+
+    _mouseMoveContext = nullptr;
+    _mouseMoveHandler = nullptr;
+    _isMouseMoveEvent = GX_FALSE;
+
+    _smartLock.ReleaseExclusive ();
 }
 
-GXVoid GXDesktopInput::BindMouseButton ( GXVoid* /*context*/, GXKeyHandler /*handler*/, eGXMouseButton /*button*/, eGXButtonState /*state*/ )
+GXVoid GXDesktopInput::BindMouseButton ( GXVoid* context, GXMouseButtonHandler handler, eGXMouseButton button, eGXButtonState state )
 {
-    // TODO
+    _smartLock.AcquireExclusive ();
+
+    switch ( state )
+    {
+        case eGXButtonState::Down:
+            _mouseButtonDownBinds[ static_cast<GXUPointer> ( button ) ].Init ( context, handler );
+        break;
+
+        case eGXButtonState::Up:
+            _mouseButtonUpBinds[ static_cast<GXUPointer> ( button ) ].Init ( context, handler );
+        break;
+    }
+
+    _smartLock.ReleaseExclusive ();
 }
 
-GXVoid GXDesktopInput::UnbindMouseButton ( eGXMouseButton /*button*/, eGXButtonState /*state*/ )
+GXVoid GXDesktopInput::UnbindMouseButton ( eGXMouseButton button, eGXButtonState state )
 {
-    // TODO
+    _smartLock.AcquireExclusive ();
+
+    switch ( state )
+    {
+        case eGXButtonState::Down:
+            _mouseButtonDownBinds[ static_cast<GXUPointer> ( button ) ].Reset ();
+        break;
+
+        case eGXButtonState::Up:
+            _mouseButtonUpBinds[ static_cast<GXUPointer> ( button ) ].Reset ();
+        break;
+    }
+
+    _smartLock.ReleaseExclusive ();
 }
 
-GXVoid GXDesktopInput::BindMouseScroll ( GXVoid* /*context*/, GXMouseScrollHandler /*handler*/ )
+GXVoid GXDesktopInput::BindMouseScroll ( GXVoid* context, GXMouseScrollHandler handler )
 {
-    // TODO
+    _smartLock.AcquireExclusive ();
+
+    _mouseScrollContext = context;
+    _mouseScrollHandler = handler;
+
+    _smartLock.ReleaseExclusive ();
 }
 
-GXVoid GXDesktopInput::UnbindMouseScroll ( GXVoid* /*context*/, GXMouseScrollHandler /*handler*/ )
+GXVoid GXDesktopInput::UnbindMouseScroll ()
 {
-    // TODO
+    _smartLock.AcquireExclusive ();
+
+    _mouseScrollContext = nullptr;
+    _mouseScrollHandler = nullptr;
+    _isMouseScrollEvent = GX_FALSE;
+    _mouseScrollTicks = 0;
+
+    _smartLock.ReleaseExclusive ();
+}
+
+GXVoid* GXDesktopInput::ProcessOSMessage ( GXVoid* message )
+{
+    // Based on https://gamedev.stackexchange.com/questions/1859/handling-keyboard-and-mouse-input-win-api/1868#1868
+
+    const MSG& osMessage = *static_cast<const MSG*> ( message );
+    const GXOSMessageNode* findResult = static_cast<const GXOSMessageNode*> ( _messageTypeMapper.Find ( GXOSMessageNode ( osMessage.message ) ) );
+
+    if ( !findResult )
+        return reinterpret_cast<GXVoid*> ( DefWindowProc ( osMessage.hwnd, osMessage.message, osMessage.wParam, osMessage.lParam ) );
+
+    GXDesktopInputHandler handler = findResult->_handler;
+
+    _smartLock.AcquireShared ();
+
+    // Note this is C++ syntax for invoke class method.
+    GXVoid* result = reinterpret_cast<GXVoid*> ( ( this->*handler ) ( osMessage ) );
+
+    _smartLock.ReleaseShared ();
+
+    return result;
 }
 
 GXDesktopInput::GXDesktopInput ():
-    _keyboardMapper ( &GXKeyNode::Compare, GX_FALSE )
+    _keyboardMapper ( &GXKeyNode::Compare, GX_FALSE ),
+    _messageTypeMapper ( &GXOSMessageNode::Compare, GX_FALSE ),
+    _readyKeyActions ( nullptr ),
+    _readyMouseActions ( nullptr ),
+    _commitedMouseX ( NO_VALUE ),
+    _commitedMouseY ( NO_VALUE ),
+    _mouseScrollTicks ( 0 ),
+    _lastMouseX ( NO_VALUE ),
+    _lastMouseY ( NO_VALUE ),
+    _mouseMoveHandler ( nullptr ),
+    _mouseMoveContext ( nullptr ),
+    _isMouseMoveEvent ( GX_FALSE ),
+    _mouseScrollHandler ( nullptr ),
+    _mouseScrollContext ( nullptr ),
+    _isMouseScrollEvent ( GX_FALSE )
 {
+    InitBinds ();
+    InitActionPool ();
     InitKeyMappers ();
+    InitOSMessageMapper ();
+}
+
+GXVoid GXDesktopInput::AddAction ( const GXKeyBind &bind )
+{
+    // Note actions will be placed in reverse order.
+    // It is assumed that order does not matter.
+
+    GXInputKeyAction* newAction = _freeKeyActions;
+
+    newAction->_bind = bind;
+    newAction->_next = _readyKeyActions;
+    _readyKeyActions = newAction;
+
+    _freeKeyActions = _freeKeyActions->_next;
+}
+
+GXVoid GXDesktopInput::AddAction ( const GXMouseButtonBind &bind )
+{
+    // Note actions will be placed in reverse order.
+    // It is assumed that order does not matter.
+
+    GXInputMouseButtonAction* newAction = _freeMouseButtonActions;
+
+    newAction->_bind = bind;
+    newAction->_next = _readyMouseActions;
+    _readyMouseActions = newAction;
+
+    _freeMouseButtonActions = _freeMouseButtonActions->_next;
+}
+
+GXVoid GXDesktopInput::InitActionPool ()
+{
+    constexpr const GXUPointer lastKey = sizeof ( _keyActionPool ) / sizeof ( *_keyActionPool ) - 1u;
+
+    for ( GXUPointer i = 0u; i < lastKey; ++i )
+        _keyActionPool[ i ]._next = _keyActionPool + ( i + 1u );
+
+    _keyActionPool[ lastKey ]._next = nullptr;
+    _freeKeyActions = _keyActionPool;
+
+    constexpr const GXUPointer lastMouseButton = sizeof ( _mouseButtonActionPool ) / sizeof ( *_mouseButtonActionPool ) - 1u;
+
+    for ( GXUPointer i = 0u; i < lastMouseButton; ++i )
+        _mouseButtonActionPool[ i ]._next = _mouseButtonActionPool + ( i + 1u );
+
+    _mouseButtonActionPool[ lastMouseButton ]._next = nullptr;
+    _freeMouseButtonActions = _mouseButtonActionPool;
+}
+
+GXVoid GXDesktopInput::InitBinds ()
+{
+    memset ( &_keyDownBinds, 0, sizeof ( _keyDownBinds ) );
+    memset ( &_keyUpBinds, 0, sizeof ( _keyUpBinds ) );
+
+    memset ( &_mouseButtonDownBinds, 0, sizeof ( _mouseButtonDownBinds ) );
+    memset ( &_mouseButtonUpBinds, 0, sizeof ( _mouseButtonUpBinds ) );
 }
 
 GXVoid GXDesktopInput::InitKeyMappers ()
@@ -455,4 +689,135 @@ GXVoid GXDesktopInput::InitKeyMappers ()
 
     ::new ( _keyMap + 100u ) GXKeyNode ( VK_RSHIFT, eGXKeyboardKey::RightShift );
     _keyboardMapper.Add ( _keyMap[ 100u ] );
+}
+
+GXVoid GXDesktopInput::InitOSMessageMapper ()
+{
+    ::new ( _osMessageMap ) GXOSMessageNode ( WM_LBUTTONDOWN, &GXDesktopInput::HandleMouseLeftButtonDown );
+    _messageTypeMapper.Add ( _osMessageMap[ 0u ] );
+
+    ::new ( _osMessageMap + 1u ) GXOSMessageNode ( WM_LBUTTONUP, &GXDesktopInput::HandleMouseLeftButtonUp );
+    _messageTypeMapper.Add ( _osMessageMap[ 1u ] );
+
+    ::new ( _osMessageMap + 2u ) GXOSMessageNode ( WM_MBUTTONDOWN, &GXDesktopInput::HandleMouseMiddleButtonDown );
+    _messageTypeMapper.Add ( _osMessageMap[ 2u ] );
+
+    ::new ( _osMessageMap + 3u ) GXOSMessageNode ( WM_MBUTTONUP, &GXDesktopInput::HandleMouseMiddleButtonUp );
+    _messageTypeMapper.Add ( _osMessageMap[ 3u ] );
+
+    ::new ( _osMessageMap + 4u ) GXOSMessageNode ( WM_RBUTTONDOWN, &GXDesktopInput::HandleMouseRightButtonDown );
+    _messageTypeMapper.Add ( _osMessageMap[ 4u ] );
+
+    ::new ( _osMessageMap + 5u ) GXOSMessageNode ( WM_RBUTTONUP, &GXDesktopInput::HandleMouseRightButtonUp );
+    _messageTypeMapper.Add ( _osMessageMap[ 5u ] );
+
+    ::new ( _osMessageMap + 6u ) GXOSMessageNode ( WM_MOUSEWHEEL, &GXDesktopInput::HandleMouseScroll );
+    _messageTypeMapper.Add ( _osMessageMap[ 6u ] );
+
+    ::new ( _osMessageMap + 7u ) GXOSMessageNode ( WM_MOUSEMOVE, &GXDesktopInput::HandleMouseMove );
+    _messageTypeMapper.Add ( _osMessageMap[ 7u ] );
+
+    ::new ( _osMessageMap + 8u ) GXOSMessageNode ( WM_KEYDOWN, &GXDesktopInput::HandleKeyDown );
+    _messageTypeMapper.Add ( _osMessageMap[ 8u ] );
+
+    ::new ( _osMessageMap + 9u ) GXOSMessageNode ( WM_SYSKEYDOWN, &GXDesktopInput::HandleKeyDown );
+    _messageTypeMapper.Add ( _osMessageMap[ 9u ] );
+
+    ::new ( _osMessageMap + 10u ) GXOSMessageNode ( WM_KEYUP, &GXDesktopInput::HandleKeyUp );
+    _messageTypeMapper.Add ( _osMessageMap[ 10u ] );
+
+    ::new ( _osMessageMap + 11u ) GXOSMessageNode ( WM_SYSKEYUP, &GXDesktopInput::HandleKeyUp );
+    _messageTypeMapper.Add ( _osMessageMap[ 11u ] );
+}
+
+LRESULT GXDesktopInput::HandleMouseButtonInternal ( GXMouseButtonBind const* const& allBinds, eGXMouseButton button, const MSG &message )
+{
+    const GXMouseButtonBind& bind = allBinds[ static_cast<GXUPointer> ( button ) ];
+
+    if ( !bind._handler )
+        return 0;
+
+    _lastMouseX = static_cast<const GXInt> ( LOWORD ( message.lParam ) );
+    _lastMouseY = GXRenderer::GetInstance ().GetHeight () - static_cast<const GXInt> ( HIWORD ( message.lParam ) );
+    AddAction ( bind );
+
+    return 0;
+}
+
+LRESULT GXDesktopInput::HandleKeyDown ( const MSG& /*message*/ )
+{
+
+#pragma message ( "TODO >>> GXDesktopInput::HandleKeyDown - Implement me!" )
+
+    // TODO
+    return 0;
+}
+
+LRESULT GXDesktopInput::HandleKeyUp ( const MSG &/*message*/ )
+{
+
+#pragma message ( "TODO >>> GXDesktopInput::HandleKeyUp - Implement me!" )
+
+    // TODO
+    return 0;
+}
+
+LRESULT GXDesktopInput::HandleMouseLeftButtonDown ( const MSG &message )
+{
+    return HandleMouseButtonInternal ( _mouseButtonDownBinds, eGXMouseButton::LeftButton, message );
+}
+
+LRESULT GXDesktopInput::HandleMouseLeftButtonUp ( const MSG &message )
+{
+    return HandleMouseButtonInternal ( _mouseButtonUpBinds, eGXMouseButton::LeftButton, message );
+}
+
+LRESULT GXDesktopInput::HandleMouseMiddleButtonDown ( const MSG &message )
+{
+    return HandleMouseButtonInternal ( _mouseButtonDownBinds, eGXMouseButton::MiddleButton, message );
+}
+
+LRESULT GXDesktopInput::HandleMouseMiddleButtonUp ( const MSG &message )
+{
+    return HandleMouseButtonInternal ( _mouseButtonUpBinds, eGXMouseButton::MiddleButton, message );
+}
+
+LRESULT GXDesktopInput::HandleMouseRightButtonDown ( const MSG &message )
+{
+    return HandleMouseButtonInternal ( _mouseButtonDownBinds, eGXMouseButton::RightButton, message );
+}
+
+LRESULT GXDesktopInput::HandleMouseRightButtonUp ( const MSG &message )
+{
+    return HandleMouseButtonInternal ( _mouseButtonUpBinds, eGXMouseButton::RightButton, message );
+}
+
+LRESULT GXDesktopInput::HandleMouseMove ( const MSG &message )
+{
+    if ( !_mouseMoveHandler )
+        return 0;
+
+    _isMouseMoveEvent = GX_TRUE;
+    _lastMouseX = static_cast<const GXInt> ( LOWORD ( message.lParam ) );
+    _lastMouseY = GXRenderer::GetInstance ().GetHeight () - static_cast<const GXInt> ( HIWORD ( message.lParam ) );
+
+    return 0;
+}
+
+LRESULT GXDesktopInput::HandleMouseScroll ( const MSG &message )
+{
+    if ( !_mouseScrollHandler )
+        return 0;
+
+    POINT posRaw;
+    posRaw.x = GET_X_LPARAM ( message.lParam );
+    posRaw.y = GET_Y_LPARAM ( message.lParam );
+    ScreenToClient ( message.hwnd, &posRaw );
+
+    _isMouseScrollEvent = GX_TRUE;
+    _lastMouseX = static_cast<const GXInt> ( posRaw.x );
+    _lastMouseY = GXRenderer::GetInstance ().GetHeight () - static_cast<const GXInt> ( posRaw.y );
+    _mouseScrollTicks += static_cast<const GXInt> ( GET_WHEEL_DELTA_WPARAM ( message.wParam ) / WHEEL_DELTA );
+
+    return 0;
 }

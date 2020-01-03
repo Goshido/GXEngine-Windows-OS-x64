@@ -30,15 +30,109 @@ class GXKeyNode final : public GXAVLTreeNode
 
 //---------------------------------------------------------------------------------------------------------------------
 
+class GXInputKeyAction final
+{
+    public:
+        GXKeyBind               _bind;
+        GXInputKeyAction*       _next;
+
+    public:
+        GXInputKeyAction () = default;
+        GXInputKeyAction ( const GXInputKeyAction &other );
+        ~GXInputKeyAction () = default;
+
+        GXInputKeyAction& operator = ( const GXInputKeyAction &other );
+};
+
+//---------------------------------------------------------------------------------------------------------------------
+
+class GXInputMouseButtonAction final
+{
+    public:
+        GXMouseButtonBind               _bind;
+        GXInputMouseButtonAction*       _next;
+
+    public:
+        GXInputMouseButtonAction () = default;
+        GXInputMouseButtonAction ( const GXInputMouseButtonAction &other );
+        ~GXInputMouseButtonAction () = default;
+
+        GXInputMouseButtonAction& operator = ( const GXInputMouseButtonAction &other );
+};
+
+//---------------------------------------------------------------------------------------------------------------------
+
+// WM_MOUSEMOVE, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_RBUTTONDOWN,
+// WM_RBUTTONUP, WM_MBUTTONDOWN, WM_MBUTTONUP, WM_MOUSEWHEEL,
+// WM_KEYDOWN, WM_SYSKEYDOWN, WM_KEYUP, WM_SYSKEYUP
+constexpr const GXUPointer GX_DESKTOP_INPUT_TOTAL_OS_MESSAGE_TYPES = 12u;
+
+class GXDesktopInput;
+typedef LRESULT ( GXDesktopInput::* GXDesktopInputHandler ) ( const MSG &message );
+
+class GXOSMessageNode final : public GXAVLTreeNode
+{
+    public:
+        UINT                        _osType;
+        GXDesktopInputHandler       _handler;
+
+    public:
+        GXOSMessageNode () = default;
+        explicit GXOSMessageNode ( UINT osType );
+        explicit GXOSMessageNode ( UINT osType, GXDesktopInputHandler handler );
+        ~GXOSMessageNode () = default;
+
+        static eGXCompareResult Compare ( const GXAVLTreeNode &a, const GXAVLTreeNode &b );
+
+    private:
+        GXOSMessageNode ( const GXOSMessageNode &other ) = delete;
+        GXOSMessageNode& operator = ( const GXOSMessageNode &other ) = delete;
+};
+
+//---------------------------------------------------------------------------------------------------------------------
+
 class GXDesktopInput final : public GXAbstractDesktopInput
 {
     private:
-        GXAVLTree                   _keyboardMapper;
+        // Optimization stuff.
+        GXAVLTree                       _keyboardMapper;
+        GXAVLTree                       _messageTypeMapper;
 
-        GXSmartLock                 _smartLock;
-        GXKeyNode                   _keyMap[ GX_DESKTOP_INPUT_TOTAL_KEYBOARD_KEYS ];
+        GXInputKeyAction*               _readyKeyActions;
+        GXInputMouseButtonAction*       _readyMouseActions;
 
-        static GXDesktopInput*      _instance;
+        GXInt                           _commitedMouseX;
+        GXInt                           _commitedMouseY;
+        GXInt                           _mouseScrollTicks;
+        GXInt                           _lastMouseX;
+        GXInt                           _lastMouseY;
+
+        GXMouseMoveHandler              _mouseMoveHandler;
+        GXVoid*                         _mouseMoveContext;
+        GXBool                          _isMouseMoveEvent;
+
+        GXMouseScrollHandler            _mouseScrollHandler;
+        GXVoid*                         _mouseScrollContext;
+        GXBool                          _isMouseScrollEvent;
+
+        GXSmartLock                     _smartLock;
+
+        GXKeyBind                       _keyDownBinds[ GX_DESKTOP_INPUT_TOTAL_KEYBOARD_KEYS ];
+        GXKeyBind                       _keyUpBinds[ GX_DESKTOP_INPUT_TOTAL_KEYBOARD_KEYS ];
+
+        GXMouseButtonBind               _mouseButtonDownBinds[ GX_DESKTOP_INPUT_TOTAL_MOUSE_BUTTONS ];
+        GXMouseButtonBind               _mouseButtonUpBinds[ GX_DESKTOP_INPUT_TOTAL_MOUSE_BUTTONS ];
+
+        // Optimization stuff.
+        GXKeyNode                       _keyMap[ GX_DESKTOP_INPUT_TOTAL_KEYBOARD_KEYS ];
+        GXOSMessageNode                 _osMessageMap[ GX_DESKTOP_INPUT_TOTAL_OS_MESSAGE_TYPES ];
+        GXInputKeyAction                _keyActionPool[ GX_DESKTOP_INPUT_TOTAL_BUTTON_STATES * GX_DESKTOP_INPUT_TOTAL_KEYBOARD_KEYS ];
+        GXInputKeyAction*               _freeKeyActions;
+
+        GXInputMouseButtonAction        _mouseButtonActionPool[ GX_DESKTOP_INPUT_TOTAL_BUTTON_STATES * GX_DESKTOP_INPUT_TOTAL_MOUSE_BUTTONS ];
+        GXInputMouseButtonAction*       _freeMouseButtonActions;
+
+        static GXDesktopInput*          _instance;
 
     public:
         static GXDesktopInput& GXCALL GetInstance ();
@@ -54,16 +148,42 @@ class GXDesktopInput final : public GXAbstractDesktopInput
         GXVoid BindMouseMove ( GXVoid* context, GXMouseMoveHandler handler ) override;
         GXVoid UnbindMouseMove () override;
 
-        GXVoid BindMouseButton ( GXVoid* context, GXKeyHandler handler, eGXMouseButton button, eGXButtonState state ) override;
+        GXVoid BindMouseButton ( GXVoid* context, GXMouseButtonHandler handler, eGXMouseButton button, eGXButtonState state ) override;
         GXVoid UnbindMouseButton ( eGXMouseButton button, eGXButtonState state ) override;
 
         GXVoid BindMouseScroll ( GXVoid* context, GXMouseScrollHandler handler ) override;
-        GXVoid UnbindMouseScroll ( GXVoid* context, GXMouseScrollHandler handler ) override;
+        GXVoid UnbindMouseScroll () override;
+
+        GXVoid* ProcessOSMessage ( GXVoid* message ) override;
 
     private:
         GXDesktopInput ();
 
+        // Note "_smartLock" must be locked.
+        GXVoid AddAction ( const GXKeyBind &bind );
+        GXVoid AddAction ( const GXMouseButtonBind &bind );
+
+        GXVoid InitActionPool ();
+        GXVoid InitBinds ();
         GXVoid InitKeyMappers ();
+        GXVoid InitOSMessageMapper ();
+
+        LRESULT HandleMouseButtonInternal ( GXMouseButtonBind const* const& allBinds, eGXMouseButton button, const MSG &message );
+
+        // Handlers:
+        // Keyboard:
+        LRESULT HandleKeyDown ( const MSG &message );
+        LRESULT HandleKeyUp ( const MSG &message );
+
+        // Mouse:
+        LRESULT HandleMouseLeftButtonDown ( const MSG &message );
+        LRESULT HandleMouseLeftButtonUp ( const MSG &message );
+        LRESULT HandleMouseMiddleButtonDown ( const MSG &message );
+        LRESULT HandleMouseMiddleButtonUp ( const MSG &message );
+        LRESULT HandleMouseRightButtonDown ( const MSG &message );
+        LRESULT HandleMouseRightButtonUp ( const MSG &message );
+        LRESULT HandleMouseMove ( const MSG &message );
+        LRESULT HandleMouseScroll ( const MSG &message );
 
         GXDesktopInput ( const GXDesktopInput &other ) = delete;
         GXDesktopInput& operator = ( const GXDesktopInput &other ) = delete;

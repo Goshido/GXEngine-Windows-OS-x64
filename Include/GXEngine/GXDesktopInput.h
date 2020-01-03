@@ -134,14 +134,57 @@ constexpr const GXUPointer GX_DESKTOP_INPUT_TOTAL_MOUSE_BUTTONS = static_cast<GX
 constexpr const GXUPointer GX_DESKTOP_INPUT_TOTAL_BUTTON_STATES = static_cast<GXUPointer> ( static_cast<GXUShort> ( eGXButtonState::Up ) ) + 1u;
 
 typedef GXVoid ( GXCALL* GXKeyHandler ) ( GXVoid* context );
+typedef GXVoid ( GXCALL* GXMouseButtonHandler ) ( GXVoid* context, GXInt x, GXInt y );
 typedef GXVoid ( GXCALL* GXSymbolHandler ) ( GXVoid* context, GXStringSymbol symbol );
 
 // Note that there is no universal GUI axis convention (see Windows vs macOS).
 // So GXEngine treats (0, 0) point at left bottom corner.
-typedef GXVoid ( GXCALL* GXMouseMoveHandler ) ( GXVoid* context, GXInt x, GXInt y );
+typedef GXVoid ( GXCALL* GXMouseMoveHandler ) ( GXVoid* context, GXInt x, GXInt y, GXInt deltaX, GXInt deltaY );
 
 // Note tick value is platform specific for now. Sorry for that.
-typedef GXVoid ( GXCALL* GXMouseScrollHandler ) ( GXVoid* context, GXInt ticks );
+typedef GXVoid ( GXCALL* GXMouseScrollHandler ) ( GXVoid* context, GXInt ticks, GXInt x, GXInt y );
+
+//---------------------------------------------------------------------------------------------------------------------
+
+class GXKeyBind final
+{
+    public:
+        GXVoid*         _context;
+        GXKeyHandler    _handler;
+
+    public:
+        GXKeyBind () = default;
+        GXKeyBind ( const GXKeyBind &other );
+
+        ~GXKeyBind () = default;
+
+        GXVoid Init ( GXVoid* context, GXKeyHandler handler );
+        GXVoid Reset ();
+
+        GXKeyBind& operator = ( const GXKeyBind &other );
+};
+
+//---------------------------------------------------------------------------------------------------------------------
+
+class GXMouseButtonBind final
+{
+    public:
+        GXVoid*                 _context;
+        GXMouseButtonHandler    _handler;
+
+    public:
+        GXMouseButtonBind () = default;
+        GXMouseButtonBind ( const GXMouseButtonBind &other );
+
+        ~GXMouseButtonBind () = default;
+
+        GXVoid Init ( GXVoid* context, GXMouseButtonHandler handler );
+        GXVoid Reset ();
+
+        GXMouseButtonBind& operator = ( const GXMouseButtonBind &other );
+};
+
+//---------------------------------------------------------------------------------------------------------------------
 
 // It's is base class for desktop input backends
 class GXAbstractDesktopInput : public GXMemoryInspector
@@ -157,11 +200,14 @@ class GXAbstractDesktopInput : public GXMemoryInspector
         virtual GXVoid BindMouseMove ( GXVoid* context, GXMouseMoveHandler handler ) = 0;
         virtual GXVoid UnbindMouseMove () = 0;
 
-        virtual GXVoid BindMouseButton ( GXVoid* context, GXKeyHandler handler, eGXMouseButton button, eGXButtonState state ) = 0;
+        virtual GXVoid BindMouseButton ( GXVoid* context, GXMouseButtonHandler handler, eGXMouseButton button, eGXButtonState state ) = 0;
         virtual GXVoid UnbindMouseButton ( eGXMouseButton button, eGXButtonState state ) = 0;
 
         virtual GXVoid BindMouseScroll ( GXVoid* context, GXMouseScrollHandler handler ) = 0;
-        virtual GXVoid UnbindMouseScroll ( GXVoid* context, GXMouseScrollHandler handler ) = 0;
+        virtual GXVoid UnbindMouseScroll () = 0;
+
+        // This method wraps all OS specific.
+        virtual GXVoid* ProcessOSMessage ( GXVoid* message ) = 0;
 
     protected:
         GXAbstractDesktopInput ();
