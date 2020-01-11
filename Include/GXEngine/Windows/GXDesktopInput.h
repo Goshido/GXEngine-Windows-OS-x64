@@ -5,8 +5,9 @@
 
 
 #include <GXEngine/GXDesktopInput.h>
-#include <GXCommon/GXSmartLock.h>
 #include <GXCommon/GXAVLTree.h>
+#include <GXCommon/GXSmartLock.h>
+#include <GXCommon/GXThread.h>
 
 
 class GXKeyNode final : public GXAVLTreeNode
@@ -115,10 +116,18 @@ class GXDesktopInput final : public GXAbstractDesktopInput
         GXVoid*                         _mouseScrollContext;
         GXBool                          _isMouseScrollEvent;
 
+        GXBool                          _isLoop;
+        GXThread*                       _thread;
+
         GXSmartLock                     _smartLock;
 
         GXKeyBind                       _keyDownBinds[ GX_DESKTOP_INPUT_TOTAL_KEYBOARD_KEYS ];
         GXKeyBind                       _keyUpBinds[ GX_DESKTOP_INPUT_TOTAL_KEYBOARD_KEYS ];
+
+        // Note Windows OS spams key down events if user holds key.
+        // It is not very useful for key bind cases, but it is useful for typing cases.
+        // So this field will filter excessive key down events for key down handlers.
+        eGXButtonState                  _keyDownFilters[ GX_DESKTOP_INPUT_TOTAL_KEYBOARD_KEYS ];
 
         GXMouseButtonBind               _mouseButtonDownBinds[ GX_DESKTOP_INPUT_TOTAL_MOUSE_BUTTONS ];
         GXMouseButtonBind               _mouseButtonUpBinds[ GX_DESKTOP_INPUT_TOTAL_MOUSE_BUTTONS ];
@@ -137,6 +146,9 @@ class GXDesktopInput final : public GXAbstractDesktopInput
     public:
         static GXDesktopInput& GXCALL GetInstance ();
         ~GXDesktopInput () override;
+
+        GXVoid Start () override;
+        GXVoid Shutdown () override;
 
         GXVoid BindKeyboardKey ( GXVoid* context, GXKeyHandler handler, eGXKeyboardKey key, eGXButtonState state ) override;
         GXVoid UnbindKeyboardKey ( eGXKeyboardKey key, eGXButtonState state ) override;
@@ -163,10 +175,19 @@ class GXDesktopInput final : public GXAbstractDesktopInput
         GXVoid AddAction ( const GXKeyBind &bind );
         GXVoid AddAction ( const GXMouseButtonBind &bind );
 
+        GXVoid ExecuteKeyEvents ();
+        GXVoid ExecuteMouseButtonEvents ();
+        GXVoid ExecuteMouseMoveEvents ();
+        GXVoid ExecuteMouseScrollEvents ();
+
         GXVoid InitActionPool ();
         GXVoid InitBinds ();
         GXVoid InitKeyMappers ();
         GXVoid InitOSMessageMapper ();
+
+        // "ignoreIfEqual" prevents spamming. Method will check "_keyDownFilters" field
+        // to make decision to invoke key handler or not.
+        LRESULT HandleKeyInternal ( GXKeyBind const* const& allBinds, const MSG &message, eGXButtonState ignoreIfEqual );
 
         LRESULT HandleMouseButtonInternal ( GXMouseButtonBind const* const& allBinds, eGXMouseButton button, const MSG &message );
 
@@ -184,6 +205,10 @@ class GXDesktopInput final : public GXAbstractDesktopInput
         LRESULT HandleMouseRightButtonUp ( const MSG &message );
         LRESULT HandleMouseMove ( const MSG &message );
         LRESULT HandleMouseScroll ( const MSG &message );
+
+        WPARAM ResolveNativeKeyVirtualCode ( const MSG &message ) const;
+
+        static GXUPointer GXTHREADCALL ThreadFunction ( GXVoid* argument, GXThread &thread );
 
         GXDesktopInput ( const GXDesktopInput &other ) = delete;
         GXDesktopInput& operator = ( const GXDesktopInput &other ) = delete;

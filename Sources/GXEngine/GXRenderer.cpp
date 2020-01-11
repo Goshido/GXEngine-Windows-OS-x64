@@ -1,6 +1,7 @@
-// version 1.17
+// version 1.18
 
 #include <GXEngine/GXRenderer.h>
+#include <GXEngine/GXDesktopInput.h>
 #include <GXEngine/GXEngineSettings.h>
 #include <GXEngine/GXInput.h>
 #include <GXEngine/GXOpenGL.h>
@@ -373,6 +374,8 @@ GXRenderer::GXRenderer ()
 
     _isSettingsChanged = GX_FALSE;
     _loopFlag = GX_TRUE;
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXThread" )
     _thread = new GXThread ( &RenderLoop, nullptr );
 
     SetWindowName ( DEFAULT_WINDOW_NAME );
@@ -380,7 +383,10 @@ GXRenderer::GXRenderer ()
 
 GXUPointer GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* /*args*/, GXThread &threadObject )
 {
-    if ( !MakeWindow () ) return 0u;
+    if ( !MakeWindow () )
+        return 0u;
+
+    GXDesktopInput& desktopInput = GXDesktopInput::GetInstance ();
 
     while ( _loopFlag )
     {
@@ -393,6 +399,8 @@ GXUPointer GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* /*args*/, GXThread &thr
         {
             TranslateMessage ( &msg );
             DispatchMessage ( &msg );
+
+            desktopInput.ProcessOSMessage ( &msg );
         }
 
         if ( _isSettingsChanged )
@@ -409,8 +417,8 @@ GXUPointer GXTHREADCALL GXRenderer::RenderLoop ( GXVoid* /*args*/, GXThread &thr
                 SwapBuffers ( _hDC );
             }
         }
-        
-        threadObject.Switch();
+
+        threadObject.Switch ();
     }
 
     Destroy ();

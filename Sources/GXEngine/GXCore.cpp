@@ -1,6 +1,7 @@
-// version 1.18
+// version 1.19
 
 #include <GXEngine/GXCore.h>
+#include <GXEngine/GXDesktopInput.h>
 #include <GXEngine/GXEngineSettings.h>
 #include <GXEngine/GXFont.h>
 #include <GXEngine/GXInput.h>
@@ -40,22 +41,26 @@ GXCore& GXCALL GXCore::GetInstance ()
 
 GXCore::~GXCore ()
 {
-    delete &( GXLocale::GetInstance () );
-    delete &( GXTouchSurface::GetInstance () );
-    delete &( GXNetServer::GetInstance () );
-    delete &( GXNetClient::GetInstance () );
-    delete &( GXInput::GetInstance () );
+    delete &GXLocale::GetInstance ();
+    delete &GXTouchSurface::GetInstance ();
+    delete &GXNetServer::GetInstance ();
+    delete &GXNetClient::GetInstance ();
+
+#pragma message ( "TODO >>> GXCore::~GXCore - GXInput is legacy. Remove it!" )
+    delete &GXInput::GetInstance ();
+
+    delete &GXDesktopInput::GetInstance ();
 
     GXDestroyPhysX ();
 
-    delete &( GXRenderer::GetInstance () );
-    delete &( GXSoundMixer::GetInstance () );
+    delete &GXRenderer::GetInstance ();
+    delete &GXSoundMixer::GetInstance ();
 
     GXSoundDestroy ();
 
     GXFont::DestroyFreeTypeLibrary ();
 
-    delete &( GXSplashScreen::GetInstance () );
+    delete &GXSplashScreen::GetInstance ();
 
     CheckMemoryLeak ();
 
@@ -70,13 +75,20 @@ GXVoid GXCore::Start ( GXGame &game )
     GXRenderer& renderer = GXRenderer::GetInstance ();
     renderer.Start ( game );
 
+#pragma message ( "TODO >>> GXCore::Start - GXInput is legacy. Remove it!" )
     GXInput& input = GXInput::GetInstance ();
     input.Start ();
+
+    GXDesktopInput& desktopInput = GXDesktopInput::GetInstance ();
+    desktopInput.Start ();
 
     while ( _loopFlag )
         Sleep ( INPUT_SLEEP );
 
+#pragma message ( "TODO >>> GXCore::Start - GXInput is legacy. Remove it!" )
     input.Shutdown ();
+
+    desktopInput.Shutdown ();
     renderer.Shutdown ();
     soundMixer.Shutdown ();
 
@@ -115,7 +127,11 @@ GXCore::GXCore ()
     gx_EngineSettings._dof = config.bDoF;
     gx_EngineSettings._motionBlur = config.bMotionBlur;
 
+#pragma message ( "TODO >>> GXCore::GXCore - GXInput is legacy. Remove it!" )
     GXInput::GetInstance ();
+
+    GXDesktopInput::GetInstance ();
+
 
     if ( !GXGetPhysXInstance () )
     {

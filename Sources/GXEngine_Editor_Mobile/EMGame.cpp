@@ -7,13 +7,14 @@
 #include <GXEngine_Editor_Mobile/EMUIFPSCounter.h>
 #include <GXEngine_Editor_Mobile/EMUIColorPicker.h>
 #include <GXEngine_Editor_Mobile/EMEnvironment.h>
-#include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXCore.h>
+#include <GXEngine/GXDesktopInput.h>
+#include <GXEngine/GXRenderer.h>
 #include <GXEngine/GXSplashScreen.h>
 #include <GXEngine/GXTextureCubeMap.h>
+#include <GXPhysics/GXBoxShape.h>
 #include <GXPhysics/GXPhysicsEngine.h>
 #include <GXPhysics/GXSphereShape.h>
-#include <GXPhysics/GXBoxShape.h>
 
 
 #define EM_WINDOW_NAME                  L"GXEditor Mobile"
@@ -77,6 +78,8 @@ GXVoid EMGame::OnInit ()
     GXInput& input = GXInput::GetInstance ();
     input.BindKeyCallback ( this, &EMGame::OnExit, VK_ESCAPE, eGXInputButtonState::Up );
     input.BindMouseButtonCallback ( this, &EMGame::OnMouseButton );
+
+    BindDesktopInput ();
 
     GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXUIInput" )
     _uiInput = new GXUIInput ( nullptr, GX_FALSE );
@@ -485,6 +488,8 @@ GXVoid EMGame::OnDestroy ()
     input.UnbindMouseButtonCallback ();
     input.UnbindKeyCallback ( VK_ESCAPE, eGXInputButtonState::Up );
 
+    UnbindDesktopInput ();
+
     GXTouchSurface::GetInstance ().SetDefaultWidget ( nullptr );
     GXSafeDelete ( _uiInput );
 
@@ -551,6 +556,58 @@ GXVoid EMGame::InitStrings ( const GXLocale &locale )
     _usedEdgeFormat = locale.GetString ( "EMGame->Physics info->Used edges: %i" );
     _usedFaceFormat = locale.GetString ( "EMGame->Physics info->Used faces: %i" );
     _usedSupportPointFormat = locale.GetString ( "EMGame->Physics info->Used support points: %i" );
+}
+
+GXVoid EMGame::BindDesktopInput ()
+{
+    GXDesktopInput& input = GXDesktopInput::GetInstance ();
+
+    input.BindKeyboardKey ( nullptr, &EMGame::OnLShiftDown, eGXKeyboardKey::LeftShift, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnLShiftUp, eGXKeyboardKey::LeftShift, eGXButtonState::Up );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnRShiftDown, eGXKeyboardKey::RightShift, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnRShiftUp, eGXKeyboardKey::RightShift, eGXButtonState::Up );
+
+    input.BindKeyboardKey ( nullptr, &EMGame::OnLCtrlDown, eGXKeyboardKey::LeftCtrl, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnLCtrlUp, eGXKeyboardKey::LeftCtrl, eGXButtonState::Up );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnRCtrlDown, eGXKeyboardKey::RightCtrl, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnRCtrlUp, eGXKeyboardKey::RightCtrl, eGXButtonState::Up );
+
+    input.BindKeyboardKey ( nullptr, &EMGame::OnLAltDown, eGXKeyboardKey::LeftAlt, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnLAltUp, eGXKeyboardKey::LeftAlt, eGXButtonState::Up );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnRAltDown, eGXKeyboardKey::RightAlt, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnRAltUp, eGXKeyboardKey::RightAlt, eGXButtonState::Up );
+
+    input.BindKeyboardKey ( nullptr, &EMGame::OnTabDown, eGXKeyboardKey::Tab, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnTabUp, eGXKeyboardKey::Tab, eGXButtonState::Up );
+
+    input.BindKeyboardKey ( nullptr, &EMGame::OnCapsLockDown, eGXKeyboardKey::CapsLock, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnCapsLockUp, eGXKeyboardKey::CapsLock, eGXButtonState::Up );
+}
+
+GXVoid EMGame::UnbindDesktopInput ()
+{
+    GXDesktopInput& input = GXDesktopInput::GetInstance ();
+
+    input.UnbindKeyboardKey ( eGXKeyboardKey::LeftShift, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::LeftShift, eGXButtonState::Up );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::RightShift, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::RightShift, eGXButtonState::Up );
+
+    input.UnbindKeyboardKey ( eGXKeyboardKey::LeftCtrl, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::LeftCtrl, eGXButtonState::Up );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::RightCtrl, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::RightCtrl, eGXButtonState::Up );
+
+    input.UnbindKeyboardKey ( eGXKeyboardKey::LeftAlt, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::LeftAlt, eGXButtonState::Up );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::RightAlt, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::RightAlt, eGXButtonState::Up );
+
+    input.UnbindKeyboardKey ( eGXKeyboardKey::Tab, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::Tab, eGXButtonState::Up );
+
+    input.UnbindKeyboardKey ( eGXKeyboardKey::CapsLock, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::CapsLock, eGXButtonState::Up );
 }
 
 GXVoid GXCALL EMGame::OnExit ( GXVoid* context )
@@ -655,4 +712,84 @@ GXVoid GXCALL EMGame::OnViewerTransformChanged ( GXVoid* context )
 GXVoid GXCALL EMGame::OnOpenFile ( const GXString &filePath )
 {
     GXLogA ( "EMOnOpenFile::Info - Τΰιλ %s\n", static_cast<const GXMBChar*> ( filePath ) );
+}
+
+GXVoid GXCALL EMGame::OnLShiftDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMOnOpenFile::OnLShiftDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnLShiftUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMOnOpenFile::OnLShiftUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnRShiftDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMOnOpenFile::OnRShiftDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnRShiftUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMOnOpenFile::OnRShiftUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnLCtrlDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMOnOpenFile::OnLCtrlDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnLCtrlUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMOnOpenFile::OnLCtrlUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnRCtrlDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMOnOpenFile::OnRCtrlDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnRCtrlUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMOnOpenFile::OnRCtrlUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnLAltDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMOnOpenFile::OnLAltDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnLAltUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMOnOpenFile::OnLAltUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnRAltDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMOnOpenFile::OnRAltDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnRAltUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMOnOpenFile::OnRAltUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnTabDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMOnOpenFile::OnTabDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnTabUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMOnOpenFile::OnTabUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnCapsLockDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMOnOpenFile::OnCapsLockDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnCapsLockUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMOnOpenFile::OnCapsLockUp\n" );
 }

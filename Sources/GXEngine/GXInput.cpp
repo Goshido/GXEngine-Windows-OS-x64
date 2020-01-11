@@ -491,6 +491,8 @@ GXInput::GXInput ()
     InitXInputLibrary ();
 
     _loopFlag = GX_TRUE;
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXThread" )
     _thread = new GXThread ( &InputLoop, nullptr );
 }
 

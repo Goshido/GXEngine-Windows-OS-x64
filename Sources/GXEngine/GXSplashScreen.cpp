@@ -74,6 +74,7 @@ GXSplashScreen::GXSplashScreen ()
     _state ( eGXSplashScreenState::Hidden ),
     _intend ( eGXSplashScreenState::Hidden )
 {
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXThread" )
     _thread = new GXThread ( &GXSplashScreen::MessageLoop, this );
     _thread->Start ();
 }

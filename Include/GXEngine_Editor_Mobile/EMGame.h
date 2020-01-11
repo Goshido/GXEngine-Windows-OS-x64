@@ -97,6 +97,9 @@ class EMGame final : public GXGame
     private:
         GXVoid InitStrings ( const GXLocale &locale );
 
+        GXVoid BindDesktopInput ();
+        GXVoid UnbindDesktopInput ();
+
         static GXVoid GXCALL OnExit ( GXVoid* context );
         static GXVoid GXCALL OnColorPicker ( GXVoid* context );
         static GXVoid GXCALL OnPickRGBUByte ( GXVoid* context, GXUByte red, GXUByte green, GXUByte blue, GXUByte alpha );
@@ -107,6 +110,27 @@ class EMGame final : public GXGame
         static GXVoid GXCALL OnObject ( GXVoid* context, GXVoid* object );
         static GXVoid GXCALL OnViewerTransformChanged ( GXVoid* context );
         static GXVoid GXCALL OnOpenFile ( const GXString &filePath );
+
+        static GXVoid GXCALL OnLShiftDown ( GXVoid* context );
+        static GXVoid GXCALL OnLShiftUp ( GXVoid* context );
+        static GXVoid GXCALL OnRShiftDown ( GXVoid* context );
+        static GXVoid GXCALL OnRShiftUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnLCtrlDown ( GXVoid* context );
+        static GXVoid GXCALL OnLCtrlUp ( GXVoid* context );
+        static GXVoid GXCALL OnRCtrlDown ( GXVoid* context );
+        static GXVoid GXCALL OnRCtrlUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnLAltDown ( GXVoid* context );
+        static GXVoid GXCALL OnLAltUp ( GXVoid* context );
+        static GXVoid GXCALL OnRAltDown ( GXVoid* context );
+        static GXVoid GXCALL OnRAltUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnTabDown ( GXVoid* context );
+        static GXVoid GXCALL OnTabUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnCapsLockDown ( GXVoid* context );
+        static GXVoid GXCALL OnCapsLockUp ( GXVoid* context );
 
         EMGame ( const EMGame &other ) = delete;
         EMGame& operator = ( const EMGame &other ) = delete;

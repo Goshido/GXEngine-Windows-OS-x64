@@ -1,4 +1,4 @@
-// version 1.17
+// version 1.18
 
 #ifndef GX_RENDERER
 #define GX_RENDERER
@@ -31,7 +31,7 @@ class GXRendererResolutions final
 };
 
 class GXRenderer final
-{    
+{
     private:
         static GXGame*          _game;
 

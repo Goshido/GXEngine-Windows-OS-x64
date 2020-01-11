@@ -99,7 +99,9 @@ GXPhysicsEngine::GXPhysicsEngine ()
     _time ( 0.0f ),
     _loopFlag ( GX_TRUE )
 {
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXThread" )
     _thread = new GXThread ( &GXPhysicsEngine::Simulate, this );
+
     SetSleepTimeout ( DEFAULT_SLEEP_TIMEOUT );
     SetMaximumLocationChangeSquaredDeviation ( DEFAULT_MAXIMUM_LOCATION_CHANGE_SQUARED_DEVIATION );
     SetMaximumRotationChangeSquaredDeviation ( DEFAULT_MAXIMUM_ROTATION_CHANGE_SQUARED_DEVIATION );

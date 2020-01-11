@@ -1,4 +1,4 @@
-// version 1.18
+// version 1.19
 
 #ifndef GX_CORE
 #define GX_CORE

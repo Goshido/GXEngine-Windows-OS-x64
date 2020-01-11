@@ -7,6 +7,7 @@
 #include <GXCommon/GXThread.h>
 
 
+// Note this is GXMemoryInspector class. Please use GX_BIND_MEMORY_INSPECTOR_CLASS_NAME with new.
 class GXThread final : public GXAbstractThread
 {
     private:

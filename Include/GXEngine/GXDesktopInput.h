@@ -190,6 +190,9 @@ class GXMouseButtonBind final
 class GXAbstractDesktopInput : public GXMemoryInspector
 {
     public:
+        virtual GXVoid Start () = 0;
+        virtual GXVoid Shutdown () = 0;
+
         virtual GXVoid BindKeyboardKey ( GXVoid* context, GXKeyHandler handler, eGXKeyboardKey key, eGXButtonState state ) = 0;
         virtual GXVoid UnbindKeyboardKey ( eGXKeyboardKey key, eGXButtonState state ) = 0;
 

@@ -4,7 +4,7 @@
 #define GX_THREAD
 
 
-#include "GXTypes.h"
+#include "GXMemory.h"
 
 
 class GXThread;
@@ -17,7 +17,8 @@ enum class eGXThreadState : GXUByte
     Started
 };
 
-class GXAbstractThread
+// Note this is GXMemoryInspector class. Please use GX_BIND_MEMORY_INSPECTOR_CLASS_NAME with new.
+class GXAbstractThread : public GXMemoryInspector
 {
     protected:
         GXThreadFunction    _procedure;

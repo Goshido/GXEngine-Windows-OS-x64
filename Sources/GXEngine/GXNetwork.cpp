@@ -245,6 +245,7 @@ GXBool GXNetServer::CreateTCP ( GXUShort port )
         return GX_FALSE;
     }
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXThread" )
     _threadTCP = new GXThread ( &GXNetServer::ListenTCP, nullptr );
     _threadTCP->Start ();
 
@@ -292,6 +293,7 @@ GXBool GXNetServer::CreateUDP ( GXUShort port )
         return GX_FALSE;
     }
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXThread" )
     _threadUDP = new GXThread ( &GXNetServer::ServeClientUDP, nullptr );
     _threadUDP->Start ();
 
@@ -478,6 +480,7 @@ GXUPointer GXTHREADCALL GXNetServer::ListenTCP ( GXVoid* /*arg*/, GXThread& /*th
             info->_id = static_cast<GXUInt> ( id );
             info->_socket = client_socket;
 
+            GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXThread" )
             GXThread* newClientThread = new GXThread ( &GXNetServer::ServeClientTCP, info );
             _clientsTCP[ id ].Init ( client_socket, newClientThread );
             newClientThread->Start ();
@@ -688,6 +691,7 @@ GXBool GXNetClient::ConnectTCP ( const GXChar* url, GXUShort port )
         return GX_FALSE;
     }
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXThread" )
     _threadTCP = new GXThread ( &GXNetClient::ReceiveTCP, nullptr );
     _threadTCP->Start ();
     
@@ -756,6 +760,7 @@ GXBool GXNetClient::DeployUDP ( const GXChar* url, GXUShort port )
         return GX_FALSE;
     }
 
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXThread" )
     _threadUDP = new GXThread ( &GXNetClient::ReceiveUDP, nullptr );
     _threadUDP->Start ();
     

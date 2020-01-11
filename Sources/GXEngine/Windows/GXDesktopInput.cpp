@@ -2,6 +2,7 @@
 
 #include <GXEngine/Windows/GXDesktopInput.h>
 #include <GXEngine/GXRenderer.h>
+#include <GXCommon/GXLogger.h>
 
 GX_DISABLE_COMMON_WARNINGS
 
@@ -52,6 +53,9 @@ GX_RESTORE_WARNING_STATE
 #define VK_KEY_Z                        0x5Au
 
 #define NO_VALUE                        INT_MAX
+
+// ~125 ticks per second
+#define THREAD_TICK_TIMEOUT             8u
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -156,7 +160,29 @@ GXDesktopInput& GXCALL GXDesktopInput::GetInstance ()
 
 GXDesktopInput::~GXDesktopInput ()
 {
+    Shutdown ();
     _instance = nullptr;
+}
+
+GXVoid GXDesktopInput::Start ()
+{
+    if ( _thread ) return;
+
+    _isLoop = GX_TRUE;
+
+    GX_BIND_MEMORY_INSPECTOR_CLASS_NAME ( "GXThread" )
+    _thread = new GXThread ( &GXDesktopInput::ThreadFunction, this );
+    _thread->Start ();
+}
+
+GXVoid GXDesktopInput::Shutdown ()
+{
+    if ( !_thread ) return;
+
+    _isLoop = GX_FALSE;
+    _thread->Join ();
+
+    GXSafeDelete ( _thread );
 }
 
 GXVoid GXDesktopInput::BindKeyboardKey ( GXVoid* context, GXKeyHandler handler, eGXKeyboardKey key, eGXButtonState state )
@@ -197,11 +223,17 @@ GXVoid GXDesktopInput::UnbindKeyboardKey ( eGXKeyboardKey key, eGXButtonState st
 
 GXVoid GXDesktopInput::LockKeyboard ( GXVoid* /*context*/, GXSymbolHandler /*handler*/ )
 {
+
+#pragma message ( "TODO >>> GXDesktopInput::LockKeyboard - Implement me!" )
+
     // TODO
 }
 
 GXVoid GXDesktopInput::UnlockKeyboard ()
 {
+
+#pragma message ( "TODO >>> GXDesktopInput::UnlockKeyboard - Implement me!" )
+
     // TODO
 }
 
@@ -286,20 +318,20 @@ GXVoid GXDesktopInput::UnbindMouseScroll ()
 
 GXVoid* GXDesktopInput::ProcessOSMessage ( GXVoid* message )
 {
-    // Based on https://gamedev.stackexchange.com/questions/1859/handling-keyboard-and-mouse-input-win-api/1868#1868
-
     const MSG& osMessage = *static_cast<const MSG*> ( message );
     const GXOSMessageNode* findResult = static_cast<const GXOSMessageNode*> ( _messageTypeMapper.Find ( GXOSMessageNode ( osMessage.message ) ) );
 
     if ( !findResult )
-        return reinterpret_cast<GXVoid*> ( DefWindowProc ( osMessage.hwnd, osMessage.message, osMessage.wParam, osMessage.lParam ) );
+#pragma message ( "TODO >>> GXDesktopInput::ProcessOSMessage - Restore DefWindowProc." )
+        //return reinterpret_cast<GXVoid*> ( static_cast<GXUPointer> ( DefWindowProc ( osMessage.hwnd, osMessage.message, osMessage.wParam, osMessage.lParam ) ) );
+        return nullptr;
 
     GXDesktopInputHandler handler = findResult->_handler;
 
     _smartLock.AcquireShared ();
 
     // Note this is C++ syntax for invoke class method.
-    GXVoid* result = reinterpret_cast<GXVoid*> ( ( this->*handler ) ( osMessage ) );
+    GXVoid* result = reinterpret_cast<GXVoid*> ( static_cast<GXUPointer> ( ( this->*handler ) ( osMessage ) ) );
 
     _smartLock.ReleaseShared ();
 
@@ -321,7 +353,9 @@ GXDesktopInput::GXDesktopInput ():
     _isMouseMoveEvent ( GX_FALSE ),
     _mouseScrollHandler ( nullptr ),
     _mouseScrollContext ( nullptr ),
-    _isMouseScrollEvent ( GX_FALSE )
+    _isMouseScrollEvent ( GX_FALSE ),
+    _isLoop ( GX_FALSE ),
+    _thread ( nullptr )
 {
     InitBinds ();
     InitActionPool ();
@@ -335,12 +369,11 @@ GXVoid GXDesktopInput::AddAction ( const GXKeyBind &bind )
     // It is assumed that order does not matter.
 
     GXInputKeyAction* newAction = _freeKeyActions;
+    _freeKeyActions = _freeKeyActions->_next;
 
     newAction->_bind = bind;
     newAction->_next = _readyKeyActions;
     _readyKeyActions = newAction;
-
-    _freeKeyActions = _freeKeyActions->_next;
 }
 
 GXVoid GXDesktopInput::AddAction ( const GXMouseButtonBind &bind )
@@ -349,12 +382,78 @@ GXVoid GXDesktopInput::AddAction ( const GXMouseButtonBind &bind )
     // It is assumed that order does not matter.
 
     GXInputMouseButtonAction* newAction = _freeMouseButtonActions;
+    _freeMouseButtonActions = _freeMouseButtonActions->_next;
 
     newAction->_bind = bind;
     newAction->_next = _readyMouseActions;
     _readyMouseActions = newAction;
+}
 
-    _freeMouseButtonActions = _freeMouseButtonActions->_next;
+GXVoid GXDesktopInput::ExecuteKeyEvents ()
+{
+    if ( !_readyKeyActions ) return;
+
+    GXInputKeyAction* tail = nullptr;
+
+    while ( _readyKeyActions )
+    {
+        tail = _readyKeyActions;
+
+        const GXKeyBind& bind = _readyKeyActions->_bind;
+        bind._handler ( bind._context );
+
+        _readyKeyActions = _readyKeyActions->_next;
+    }
+
+    // Returning key actions to event pool.
+    tail->_next = _freeKeyActions;
+    _freeKeyActions = tail;
+}
+
+GXVoid GXDesktopInput::ExecuteMouseButtonEvents ()
+{
+    if ( !_readyMouseActions ) return;
+
+    GXInputMouseButtonAction* tail = nullptr;
+
+    while ( _readyMouseActions )
+    {
+        tail = _readyMouseActions;
+
+        const GXMouseButtonBind& bind = _readyMouseActions->_bind;
+        bind._handler ( bind._context, _lastMouseX, _lastMouseY );
+
+        _readyMouseActions = _readyMouseActions->_next;
+    }
+
+    // Returning mouse button actions to event pool.
+    tail->_next = _freeMouseButtonActions;
+    _freeMouseButtonActions = tail;
+}
+
+GXVoid GXDesktopInput::ExecuteMouseMoveEvents ()
+{
+    if ( !_isMouseMoveEvent ) return;
+
+    _isMouseMoveEvent = GX_FALSE;
+
+    if ( _mouseMoveHandler )
+        _mouseMoveHandler ( _mouseMoveContext, _lastMouseX, _lastMouseY, _lastMouseX - _commitedMouseX, _lastMouseY - _commitedMouseY );
+
+    _commitedMouseX = _lastMouseX;
+    _commitedMouseY = _lastMouseY;
+}
+
+GXVoid GXDesktopInput::ExecuteMouseScrollEvents ()
+{
+    if ( !_isMouseScrollEvent ) return;
+
+    _isMouseScrollEvent = GX_FALSE;
+
+    if ( _mouseScrollHandler && _mouseScrollTicks != 0 )
+        _mouseScrollHandler ( _mouseScrollContext, _mouseScrollTicks, _lastMouseX, _lastMouseY );
+
+    _mouseScrollTicks = 0;
 }
 
 GXVoid GXDesktopInput::InitActionPool ()
@@ -378,11 +477,13 @@ GXVoid GXDesktopInput::InitActionPool ()
 
 GXVoid GXDesktopInput::InitBinds ()
 {
-    memset ( &_keyDownBinds, 0, sizeof ( _keyDownBinds ) );
-    memset ( &_keyUpBinds, 0, sizeof ( _keyUpBinds ) );
+    memset ( _keyDownBinds, 0, sizeof ( _keyDownBinds ) );
+    memset ( _keyUpBinds, 0, sizeof ( _keyUpBinds ) );
 
-    memset ( &_mouseButtonDownBinds, 0, sizeof ( _mouseButtonDownBinds ) );
-    memset ( &_mouseButtonUpBinds, 0, sizeof ( _mouseButtonUpBinds ) );
+    memset ( _keyDownFilters, static_cast<GXInt> ( static_cast<GXUByte> ( eGXButtonState::Up ) ), sizeof ( _keyDownFilters ) );
+
+    memset ( _mouseButtonDownBinds, 0, sizeof ( _mouseButtonDownBinds ) );
+    memset ( _mouseButtonUpBinds, 0, sizeof ( _mouseButtonUpBinds ) );
 }
 
 GXVoid GXDesktopInput::InitKeyMappers ()
@@ -730,6 +831,32 @@ GXVoid GXDesktopInput::InitOSMessageMapper ()
     _messageTypeMapper.Add ( _osMessageMap[ 11u ] );
 }
 
+LRESULT GXDesktopInput::HandleKeyInternal ( GXKeyBind const* const& allBinds, const MSG &message, eGXButtonState ignoreIfEqual )
+{
+    const WPARAM virtualCode = ResolveNativeKeyVirtualCode ( message );
+    const GXKeyNode* findResult = static_cast<const GXKeyNode*> ( _keyboardMapper.Find ( GXKeyNode ( virtualCode ) ) );
+
+    if ( !findResult )
+    {
+        GXLogA ( "GXDesktopInput::HandleKeyInternal::Warning - Can't resolve virtual key code %zu.\n", static_cast<GXUPointer> ( virtualCode ) );
+        return 0;
+    }
+
+    const GXUPointer targetIndex = static_cast<GXUPointer> ( findResult->_key );
+    eGXButtonState& targetState = _keyDownFilters[ targetIndex ];
+
+    if ( targetState == ignoreIfEqual )
+        return 0;
+
+    targetState = ignoreIfEqual;
+    const GXKeyBind& bind = allBinds[ targetIndex ];
+
+    if ( bind._handler )
+        AddAction ( bind );
+
+    return 0;
+}
+
 LRESULT GXDesktopInput::HandleMouseButtonInternal ( GXMouseButtonBind const* const& allBinds, eGXMouseButton button, const MSG &message )
 {
     const GXMouseButtonBind& bind = allBinds[ static_cast<GXUPointer> ( button ) ];
@@ -744,22 +871,14 @@ LRESULT GXDesktopInput::HandleMouseButtonInternal ( GXMouseButtonBind const* con
     return 0;
 }
 
-LRESULT GXDesktopInput::HandleKeyDown ( const MSG& /*message*/ )
+LRESULT GXDesktopInput::HandleKeyDown ( const MSG &message )
 {
-
-#pragma message ( "TODO >>> GXDesktopInput::HandleKeyDown - Implement me!" )
-
-    // TODO
-    return 0;
+    return HandleKeyInternal ( _keyDownBinds, message, eGXButtonState::Down );
 }
 
-LRESULT GXDesktopInput::HandleKeyUp ( const MSG &/*message*/ )
+LRESULT GXDesktopInput::HandleKeyUp ( const MSG &message )
 {
-
-#pragma message ( "TODO >>> GXDesktopInput::HandleKeyUp - Implement me!" )
-
-    // TODO
-    return 0;
+    return HandleKeyInternal ( _keyUpBinds, message, eGXButtonState::Up );
 }
 
 LRESULT GXDesktopInput::HandleMouseLeftButtonDown ( const MSG &message )
@@ -794,13 +913,13 @@ LRESULT GXDesktopInput::HandleMouseRightButtonUp ( const MSG &message )
 
 LRESULT GXDesktopInput::HandleMouseMove ( const MSG &message )
 {
+    _lastMouseX = static_cast<const GXInt> ( LOWORD ( message.lParam ) );
+    _lastMouseY = GXRenderer::GetInstance ().GetHeight () - static_cast<const GXInt> ( HIWORD ( message.lParam ) );
+
     if ( !_mouseMoveHandler )
         return 0;
 
     _isMouseMoveEvent = GX_TRUE;
-    _lastMouseX = static_cast<const GXInt> ( LOWORD ( message.lParam ) );
-    _lastMouseY = GXRenderer::GetInstance ().GetHeight () - static_cast<const GXInt> ( HIWORD ( message.lParam ) );
-
     return 0;
 }
 
@@ -820,4 +939,96 @@ LRESULT GXDesktopInput::HandleMouseScroll ( const MSG &message )
     _mouseScrollTicks += static_cast<const GXInt> ( GET_WHEEL_DELTA_WPARAM ( message.wParam ) / WHEEL_DELTA );
 
     return 0;
+}
+
+WPARAM GXDesktopInput::ResolveNativeKeyVirtualCode ( const MSG &message ) const
+{
+    // Implementation is based on some ideas https://gamedev.stackexchange.com/questions/1859/handling-keyboard-and-mouse-input-win-api/1868#1868
+
+    // Tricky part is to detect left|right ALT|CTRL|SHIFT buttons.
+    // Left and right shift buttons have different scancodes, but they can not be detected via extended flag in "message.lParam".
+    // CTRL and ALT buttons could be resolved via extended flag in "message.lParam".
+    // And finaly ALT|CTRL|SHIFT buttons have unique value in "message.wParam".
+
+    const WPARAM virtualCode = message.wParam;
+
+    // See https://gamedev.stackexchange.com/questions/1859/handling-keyboard-and-mouse-input-win-api/1868#1868
+    // And see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode
+    constexpr const WPARAM altTrait = 18u;
+    constexpr const WPARAM ctrlTrait = 17u;
+    constexpr const WPARAM shiftTrait = 16u;
+
+    if ( virtualCode != altTrait && virtualCode != ctrlTrait && virtualCode != shiftTrait )
+    {
+        // Great! This is not a modifier keyboard button. So simple return virtual code value in "message.wParam".
+        return virtualCode;
+    }
+
+    // Checking SHIFT buttons firts.
+
+    if ( virtualCode == shiftTrait )
+    {
+        // Unfortunatelly right|left shift can not be detected via extended state.
+        // But they can be detected via scancode info.
+
+        // 16-23 bits.
+        // See https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-keydown
+        // See https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-keyup
+        constexpr const LPARAM scancodeMask = 0xFF0000;
+
+        // Note that these values were revealed after local experimentation.
+        // Please make sure that this strategy is correct for any Windows OS.
+        constexpr const LPARAM leftShiftScancode = 0x2A0000;
+        constexpr const LPARAM rightShiftScancode = 0x360000;
+
+        constexpr const WPARAM wftShiftFailed = 0u;
+
+        switch ( message.lParam & scancodeMask )
+        {
+            case leftShiftScancode:
+            return static_cast<WPARAM> ( VK_LSHIFT );
+
+            case rightShiftScancode:
+            return static_cast<WPARAM> ( VK_RSHIFT );
+
+            default:
+                GXLogA ( "GXDesktopInput::ResolveNativeKeyVirtualCode::Error - Shift detection was failed!" );
+            return wftShiftFailed;
+        }
+    }
+
+    // Next checking CTRL buttons.
+
+    // Just a little bit about an extended state, e.g. a right hand ALT or CTRL.
+    // See https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-keydown
+    // See https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-syskeydown
+    constexpr const LPARAM extendedMask = 1 << 24;
+    const GXBool isExtended = ( message.lParam & extendedMask ) != 0;
+
+    if ( virtualCode == ctrlTrait )
+        return static_cast<WPARAM> ( isExtended ? VK_RCONTROL : VK_LCONTROL );
+
+    // Duh, this is some of ALT buttons, obviously.
+    return static_cast<WPARAM> ( isExtended ? VK_RMENU : VK_LMENU );
+}
+
+GXUPointer GXTHREADCALL GXDesktopInput::ThreadFunction ( GXVoid* argument, GXThread &thread )
+{
+    GXDesktopInput& input = *static_cast<GXDesktopInput*> ( argument );
+
+    while ( input._isLoop )
+    {
+        input._smartLock.AcquireExclusive ();
+
+        input.ExecuteMouseMoveEvents ();
+        input.ExecuteMouseScrollEvents ();
+        input.ExecuteMouseButtonEvents ();
+        input.ExecuteKeyEvents ();
+
+        input._smartLock.ReleaseExclusive ();
+
+        thread.Sleep ( THREAD_TICK_TIMEOUT );
+    }
+
+    return 0u;
 }
