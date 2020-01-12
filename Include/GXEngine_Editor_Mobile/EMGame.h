@@ -132,6 +132,60 @@ class EMGame final : public GXGame
         static GXVoid GXCALL OnCapsLockDown ( GXVoid* context );
         static GXVoid GXCALL OnCapsLockUp ( GXVoid* context );
 
+        static GXVoid GXCALL OnNumpad0Down ( GXVoid* context );
+        static GXVoid GXCALL OnNumpad0Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnNumpad1Down ( GXVoid* context );
+        static GXVoid GXCALL OnNumpad1Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnNumpad2Down ( GXVoid* context );
+        static GXVoid GXCALL OnNumpad2Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnNumpad3Down ( GXVoid* context );
+        static GXVoid GXCALL OnNumpad3Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnNumpad4Down ( GXVoid* context );
+        static GXVoid GXCALL OnNumpad4Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnNumpad5Down ( GXVoid* context );
+        static GXVoid GXCALL OnNumpad5Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnNumpad6Down ( GXVoid* context );
+        static GXVoid GXCALL OnNumpad6Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnNumpad7Down ( GXVoid* context );
+        static GXVoid GXCALL OnNumpad7Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnNumpad8Down ( GXVoid* context );
+        static GXVoid GXCALL OnNumpad8Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnNumpad9Down ( GXVoid* context );
+        static GXVoid GXCALL OnNumpad9Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnNumpadDotDown ( GXVoid* context );
+        static GXVoid GXCALL OnNumpadDotUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnNumpadEnterDown ( GXVoid* context );
+        static GXVoid GXCALL OnNumpadEnterUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnNumpadPlusDown ( GXVoid* context );
+        static GXVoid GXCALL OnNumpadPlusUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnNumpadMinusDown ( GXVoid* context );
+        static GXVoid GXCALL OnNumpadMinusUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnNumpadMultiplyDown ( GXVoid* context );
+        static GXVoid GXCALL OnNumpadMultiplyUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnNumpadDivideDown ( GXVoid* context );
+        static GXVoid GXCALL OnNumpadDivideUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnNumLockDown ( GXVoid* context );
+        static GXVoid GXCALL OnNumLockUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnContextMenuDown ( GXVoid* context );
+        static GXVoid GXCALL OnContextMenuUp ( GXVoid* context );
+
         EMGame ( const EMGame &other ) = delete;
         EMGame& operator = ( const EMGame &other ) = delete;
 };

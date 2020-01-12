@@ -480,15 +480,13 @@ GXVoid GXDesktopInput::InitBinds ()
     memset ( _keyDownBinds, 0, sizeof ( _keyDownBinds ) );
     memset ( _keyUpBinds, 0, sizeof ( _keyUpBinds ) );
 
-    memset ( _keyDownFilters, static_cast<GXInt> ( static_cast<GXUByte> ( eGXButtonState::Up ) ), sizeof ( _keyDownFilters ) );
-
     memset ( _mouseButtonDownBinds, 0, sizeof ( _mouseButtonDownBinds ) );
     memset ( _mouseButtonUpBinds, 0, sizeof ( _mouseButtonUpBinds ) );
 }
 
 GXVoid GXDesktopInput::InitKeyMappers ()
 {
-    ::new ( _keyMap ) GXKeyNode ( VK_KEY_0, eGXKeyboardKey::Zero );
+    ::new ( _keyMap ) GXKeyNode ( VK_ESCAPE, eGXKeyboardKey::Esc );
     _keyboardMapper.Add ( _keyMap[ 0u ] );
 
     ::new ( _keyMap + 1u ) GXKeyNode ( VK_KEY_1, eGXKeyboardKey::Zero );
@@ -790,6 +788,9 @@ GXVoid GXDesktopInput::InitKeyMappers ()
 
     ::new ( _keyMap + 100u ) GXKeyNode ( VK_RSHIFT, eGXKeyboardKey::RightShift );
     _keyboardMapper.Add ( _keyMap[ 100u ] );
+
+    ::new ( _keyMap + 101u ) GXKeyNode ( VK_APPS, eGXKeyboardKey::ContextMenu );
+    _keyboardMapper.Add ( _keyMap[ 101u ] );
 }
 
 GXVoid GXDesktopInput::InitOSMessageMapper ()
@@ -833,6 +834,18 @@ GXVoid GXDesktopInput::InitOSMessageMapper ()
 
 LRESULT GXDesktopInput::HandleKeyInternal ( GXKeyBind const* const& allBinds, const MSG &message, eGXButtonState ignoreIfEqual )
 {
+    // Note Windows OS spams key down events if user holds key.
+    // It is not very useful for key bind cases, but it is useful for typing cases.
+    // Fortunately Windows OS provides previous key state. This is very nice for antispam strategy.
+    // It is 30 bit in "message.lParam". Note that cheking logic is working transparent for key up event too.
+    // See https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-keydown
+    // See https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-syskeydown
+    constexpr const LPARAM previousStateMask = 1 << 30;
+    const eGXButtonState previousState = ( message.lParam & previousStateMask ) ? eGXButtonState::Down : eGXButtonState::Up;
+
+    if ( ignoreIfEqual == previousState )
+        return 0;
+
     const WPARAM virtualCode = ResolveNativeKeyVirtualCode ( message );
     const GXKeyNode* findResult = static_cast<const GXKeyNode*> ( _keyboardMapper.Find ( GXKeyNode ( virtualCode ) ) );
 
@@ -842,14 +855,7 @@ LRESULT GXDesktopInput::HandleKeyInternal ( GXKeyBind const* const& allBinds, co
         return 0;
     }
 
-    const GXUPointer targetIndex = static_cast<GXUPointer> ( findResult->_key );
-    eGXButtonState& targetState = _keyDownFilters[ targetIndex ];
-
-    if ( targetState == ignoreIfEqual )
-        return 0;
-
-    targetState = ignoreIfEqual;
-    const GXKeyBind& bind = allBinds[ targetIndex ];
+    const GXKeyBind& bind = allBinds[ static_cast<GXUPointer> ( findResult->_key ) ];
 
     if ( bind._handler )
         AddAction ( bind );
@@ -945,7 +951,7 @@ WPARAM GXDesktopInput::ResolveNativeKeyVirtualCode ( const MSG &message ) const
 {
     // Implementation is based on some ideas https://gamedev.stackexchange.com/questions/1859/handling-keyboard-and-mouse-input-win-api/1868#1868
 
-    // Tricky part is to detect left|right ALT|CTRL|SHIFT buttons.
+    // Tricky part is to detect left|right ALT|CTRL|SHIFT buttons and ENTER|Numpad ENTER buttons.
     // Left and right shift buttons have different scancodes, but they can not be detected via extended flag in "message.lParam".
     // CTRL and ALT buttons could be resolved via extended flag in "message.lParam".
     // And finaly ALT|CTRL|SHIFT buttons have unique value in "message.wParam".
@@ -958,9 +964,9 @@ WPARAM GXDesktopInput::ResolveNativeKeyVirtualCode ( const MSG &message ) const
     constexpr const WPARAM ctrlTrait = 17u;
     constexpr const WPARAM shiftTrait = 16u;
 
-    if ( virtualCode != altTrait && virtualCode != ctrlTrait && virtualCode != shiftTrait )
+    if ( virtualCode != altTrait && virtualCode != ctrlTrait && virtualCode != shiftTrait && virtualCode != VK_RETURN )
     {
-        // Great! This is not a modifier keyboard button. So simple return virtual code value in "message.wParam".
+        // Great! This is not a modifier keyboard button or ENTER|Numpad ENTER button. So simple return virtual code value in "message.wParam".
         return virtualCode;
     }
 
@@ -968,7 +974,7 @@ WPARAM GXDesktopInput::ResolveNativeKeyVirtualCode ( const MSG &message ) const
 
     if ( virtualCode == shiftTrait )
     {
-        // Unfortunatelly right|left shift can not be detected via extended state.
+        // Unfortunatelly right|left SHIFT can not be detected via extended state.
         // But they can be detected via scancode info.
 
         // 16-23 bits.
@@ -1007,6 +1013,12 @@ WPARAM GXDesktopInput::ResolveNativeKeyVirtualCode ( const MSG &message ) const
 
     if ( virtualCode == ctrlTrait )
         return static_cast<WPARAM> ( isExtended ? VK_RCONTROL : VK_LCONTROL );
+
+    // Next checking ENTER|Numpad ENTER buttons.
+    // Actually extended enter is numpad ENTER.
+
+    if ( virtualCode == VK_RETURN )
+        return static_cast<WPARAM> ( isExtended ? VK_SEPARATOR : VK_RETURN );
 
     // Duh, this is some of ALT buttons, obviously.
     return static_cast<WPARAM> ( isExtended ? VK_RMENU : VK_LMENU );
