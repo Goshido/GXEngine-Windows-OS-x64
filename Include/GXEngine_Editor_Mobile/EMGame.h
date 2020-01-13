@@ -186,6 +186,79 @@ class EMGame final : public GXGame
         static GXVoid GXCALL OnContextMenuDown ( GXVoid* context );
         static GXVoid GXCALL OnContextMenuUp ( GXVoid* context );
 
+        static GXVoid GXCALL OnF1Down ( GXVoid* context );
+        static GXVoid GXCALL OnF1Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnF2Down ( GXVoid* context );
+        static GXVoid GXCALL OnF2Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnF3Down ( GXVoid* context );
+        static GXVoid GXCALL OnF3Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnF4Down ( GXVoid* context );
+        static GXVoid GXCALL OnF4Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnF5Down ( GXVoid* context );
+        static GXVoid GXCALL OnF5Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnF6Down ( GXVoid* context );
+        static GXVoid GXCALL OnF6Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnF7Down ( GXVoid* context );
+        static GXVoid GXCALL OnF7Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnF8Down ( GXVoid* context );
+        static GXVoid GXCALL OnF8Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnF9Down ( GXVoid* context );
+        static GXVoid GXCALL OnF9Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnF10Down ( GXVoid* context );
+        static GXVoid GXCALL OnF10Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnF11Down ( GXVoid* context );
+        static GXVoid GXCALL OnF11Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnF12Down ( GXVoid* context );
+        static GXVoid GXCALL OnF12Up ( GXVoid* context );
+
+        static GXVoid GXCALL OnZeroDown ( GXVoid* context );
+        static GXVoid GXCALL OnZeroUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnOneDown ( GXVoid* context );
+        static GXVoid GXCALL OnOneUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnTwoDown ( GXVoid* context );
+        static GXVoid GXCALL OnTwoUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnThreeDown ( GXVoid* context );
+        static GXVoid GXCALL OnThreeUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnFourDown ( GXVoid* context );
+        static GXVoid GXCALL OnFourUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnFiveDown ( GXVoid* context );
+        static GXVoid GXCALL OnFiveUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnSixDown ( GXVoid* context );
+        static GXVoid GXCALL OnSixUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnSevenDown ( GXVoid* context );
+        static GXVoid GXCALL OnSevenUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnEightDown ( GXVoid* context );
+        static GXVoid GXCALL OnEightUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnNineDown ( GXVoid* context );
+        static GXVoid GXCALL OnNineUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnMinusDown ( GXVoid* context );
+        static GXVoid GXCALL OnMinusUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnEqualDown ( GXVoid* context );
+        static GXVoid GXCALL OnEqualUp ( GXVoid* context );
+
+
         EMGame ( const EMGame &other ) = delete;
         EMGame& operator = ( const EMGame &other ) = delete;
 };

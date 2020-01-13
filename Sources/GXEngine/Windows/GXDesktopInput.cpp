@@ -489,7 +489,7 @@ GXVoid GXDesktopInput::InitKeyMappers ()
     ::new ( _keyMap ) GXKeyNode ( VK_ESCAPE, eGXKeyboardKey::Esc );
     _keyboardMapper.Add ( _keyMap[ 0u ] );
 
-    ::new ( _keyMap + 1u ) GXKeyNode ( VK_KEY_1, eGXKeyboardKey::Zero );
+    ::new ( _keyMap + 1u ) GXKeyNode ( VK_KEY_0, eGXKeyboardKey::Zero );
     _keyboardMapper.Add ( _keyMap[ 1u ] );
 
     ::new ( _keyMap + 2u ) GXKeyNode ( VK_KEY_1, eGXKeyboardKey::One );
