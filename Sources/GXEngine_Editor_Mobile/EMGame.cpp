@@ -708,6 +708,42 @@ GXVoid EMGame::BindDesktopInput ()
 
     input.BindKeyboardKey ( nullptr, &EMGame::OnEqualDown, eGXKeyboardKey::Equal, eGXButtonState::Down );
     input.BindKeyboardKey ( nullptr, &EMGame::OnEqualUp, eGXKeyboardKey::Equal, eGXButtonState::Up );
+
+    input.BindKeyboardKey ( nullptr, &EMGame::OnLeftDown, eGXKeyboardKey::Left, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnLeftUp, eGXKeyboardKey::Left, eGXButtonState::Up );
+
+    input.BindKeyboardKey ( nullptr, &EMGame::OnRightDown, eGXKeyboardKey::Right, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnRightUp, eGXKeyboardKey::Right, eGXButtonState::Up );
+
+    input.BindKeyboardKey ( nullptr, &EMGame::OnUpDown, eGXKeyboardKey::Up, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnUpUp, eGXKeyboardKey::Up, eGXButtonState::Up );
+
+    input.BindKeyboardKey ( nullptr, &EMGame::OnDownDown, eGXKeyboardKey::Down, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnDownUp, eGXKeyboardKey::Down, eGXButtonState::Up );
+
+    input.BindKeyboardKey ( nullptr, &EMGame::OnDelDown, eGXKeyboardKey::Delete, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnDelUp, eGXKeyboardKey::Delete, eGXButtonState::Up );
+
+    input.BindKeyboardKey ( nullptr, &EMGame::OnInsDown, eGXKeyboardKey::Insert, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnInsUp, eGXKeyboardKey::Insert, eGXButtonState::Up );
+
+    input.BindKeyboardKey ( nullptr, &EMGame::OnHomeDown, eGXKeyboardKey::Home, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnHomeUp, eGXKeyboardKey::Home, eGXButtonState::Up );
+
+    input.BindKeyboardKey ( nullptr, &EMGame::OnEndDown, eGXKeyboardKey::End, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnEndUp, eGXKeyboardKey::End, eGXButtonState::Up );
+
+    input.BindKeyboardKey ( nullptr, &EMGame::OnPageUpDown, eGXKeyboardKey::PageUp, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnPageUpUp, eGXKeyboardKey::PageUp, eGXButtonState::Up );
+
+    input.BindKeyboardKey ( nullptr, &EMGame::OnPageDownDown, eGXKeyboardKey::PageDown, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnPageDownUp, eGXKeyboardKey::PageDown, eGXButtonState::Up );
+
+    input.BindKeyboardKey ( nullptr, &EMGame::OnScrollLockDown, eGXKeyboardKey::ScrollLock, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnScrollLockUp, eGXKeyboardKey::ScrollLock, eGXButtonState::Up );
+
+    input.BindKeyboardKey ( nullptr, &EMGame::OnPauseDown, eGXKeyboardKey::Pause, eGXButtonState::Down );
+    input.BindKeyboardKey ( nullptr, &EMGame::OnPauseUp, eGXKeyboardKey::Pause, eGXButtonState::Up );
 }
 
 GXVoid EMGame::UnbindDesktopInput ()
@@ -860,6 +896,42 @@ GXVoid EMGame::UnbindDesktopInput ()
 
     input.UnbindKeyboardKey ( eGXKeyboardKey::Equal, eGXButtonState::Down );
     input.UnbindKeyboardKey ( eGXKeyboardKey::Equal, eGXButtonState::Up );
+
+    input.UnbindKeyboardKey ( eGXKeyboardKey::Left, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::Left, eGXButtonState::Up );
+
+    input.UnbindKeyboardKey ( eGXKeyboardKey::Right, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::Right, eGXButtonState::Up );
+
+    input.UnbindKeyboardKey ( eGXKeyboardKey::Up, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::Up, eGXButtonState::Up );
+
+    input.UnbindKeyboardKey ( eGXKeyboardKey::Down, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::Down, eGXButtonState::Up );
+
+    input.UnbindKeyboardKey ( eGXKeyboardKey::Delete, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::Delete, eGXButtonState::Up );
+
+    input.UnbindKeyboardKey ( eGXKeyboardKey::Insert, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::Insert, eGXButtonState::Up );
+
+    input.UnbindKeyboardKey ( eGXKeyboardKey::Home, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::Home, eGXButtonState::Up );
+
+    input.UnbindKeyboardKey ( eGXKeyboardKey::End, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::End, eGXButtonState::Up );
+
+    input.UnbindKeyboardKey ( eGXKeyboardKey::PageUp, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::PageUp, eGXButtonState::Up );
+
+    input.UnbindKeyboardKey ( eGXKeyboardKey::PageDown, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::PageDown, eGXButtonState::Up );
+
+    input.UnbindKeyboardKey ( eGXKeyboardKey::ScrollLock, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::ScrollLock, eGXButtonState::Up );
+
+    input.UnbindKeyboardKey ( eGXKeyboardKey::Pause, eGXButtonState::Down );
+    input.UnbindKeyboardKey ( eGXKeyboardKey::Pause, eGXButtonState::Up );
 }
 
 GXVoid GXCALL EMGame::OnExit ( GXVoid* context )
@@ -1464,4 +1536,124 @@ GXVoid GXCALL EMGame::OnEqualDown ( GXVoid* /*context*/ )
 GXVoid GXCALL EMGame::OnEqualUp ( GXVoid* /*context*/ )
 {
     GXLogA ( "EMGame::OnEqualUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnLeftDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnLeftDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnLeftUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnLeftUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnRightDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnRightDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnRightUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnRightUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnUpDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnUpDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnUpUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnUpUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnDownDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnDownDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnDownUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnDownUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnDelDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnDelDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnDelUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnDelUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnInsDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnInsDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnInsUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnInsUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnHomeDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnHomeDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnHomeUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnHomeUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnEndDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnEndDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnEndUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnEndUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnPageUpDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnPageUpDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnPageUpUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnPageUpUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnPageDownDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnPageDownDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnPageDownUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnPageDownUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnScrollLockDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnScrollLockDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnScrollLockUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnScrollLockUp\n" );
+}
+
+GXVoid GXCALL EMGame::OnPauseDown ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnPauseDown\n" );
+}
+
+GXVoid GXCALL EMGame::OnPauseUp ( GXVoid* /*context*/ )
+{
+    GXLogA ( "EMGame::OnPauseUp\n" );
 }

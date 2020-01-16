@@ -7,6 +7,9 @@
 #include <GXCommon/GXStrings.h>
 
 
+// Note that PRINT SCREEN button as well as left|right WIN buttons are not detected by design.
+// WIN button has big impact to user interaction with Windows OS.
+// PRINT SCREEN button has some difficulties with down|up events on Windows OS. So it is decided not to intercept this events at all.
 enum class eGXKeyboardKey : GXUShort
 {
     Q = 0u,
@@ -81,7 +84,6 @@ enum class eGXKeyboardKey : GXUShort
     F10,
     F11,
     F12,
-    PrintScreen,
     ScrollLock,
     Pause,
     Insert,

@@ -258,6 +258,41 @@ class EMGame final : public GXGame
         static GXVoid GXCALL OnEqualDown ( GXVoid* context );
         static GXVoid GXCALL OnEqualUp ( GXVoid* context );
 
+        static GXVoid GXCALL OnLeftDown ( GXVoid* context );
+        static GXVoid GXCALL OnLeftUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnRightDown ( GXVoid* context );
+        static GXVoid GXCALL OnRightUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnUpDown ( GXVoid* context );
+        static GXVoid GXCALL OnUpUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnDownDown ( GXVoid* context );
+        static GXVoid GXCALL OnDownUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnDelDown ( GXVoid* context );
+        static GXVoid GXCALL OnDelUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnInsDown ( GXVoid* context );
+        static GXVoid GXCALL OnInsUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnHomeDown ( GXVoid* context );
+        static GXVoid GXCALL OnHomeUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnEndDown ( GXVoid* context );
+        static GXVoid GXCALL OnEndUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnPageUpDown ( GXVoid* context );
+        static GXVoid GXCALL OnPageUpUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnPageDownDown ( GXVoid* context );
+        static GXVoid GXCALL OnPageDownUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnScrollLockDown ( GXVoid* context );
+        static GXVoid GXCALL OnScrollLockUp ( GXVoid* context );
+
+        static GXVoid GXCALL OnPauseDown ( GXVoid* context );
+        static GXVoid GXCALL OnPauseUp ( GXVoid* context );
 
         EMGame ( const EMGame &other ) = delete;
         EMGame& operator = ( const EMGame &other ) = delete;

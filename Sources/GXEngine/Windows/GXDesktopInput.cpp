@@ -57,6 +57,8 @@ GX_RESTORE_WARNING_STATE
 // ~125 ticks per second
 #define THREAD_TICK_TIMEOUT             8u
 
+#define SKIP_KEY_VIRTUAL_CODE           0u
+
 //---------------------------------------------------------------------------------------------------------------------
 
 GXKeyNode::GXKeyNode ( WPARAM virtualCode ):
@@ -762,7 +764,7 @@ GXVoid GXDesktopInput::InitKeyMappers ()
     ::new ( _keyMap + 91u ) GXKeyNode ( VK_NUMLOCK, eGXKeyboardKey::NumLock );
     _keyboardMapper.Add ( _keyMap[ 91u ] );
 
-    ::new ( _keyMap + 92u ) GXKeyNode ( VK_SNAPSHOT, eGXKeyboardKey::PrintScreen );
+    ::new ( _keyMap + 92u ) GXKeyNode ( VK_APPS, eGXKeyboardKey::ContextMenu );
     _keyboardMapper.Add ( _keyMap[ 92u ] );
 
     ::new ( _keyMap + 93u ) GXKeyNode ( VK_SCROLL, eGXKeyboardKey::ScrollLock );
@@ -788,9 +790,6 @@ GXVoid GXDesktopInput::InitKeyMappers ()
 
     ::new ( _keyMap + 100u ) GXKeyNode ( VK_RSHIFT, eGXKeyboardKey::RightShift );
     _keyboardMapper.Add ( _keyMap[ 100u ] );
-
-    ::new ( _keyMap + 101u ) GXKeyNode ( VK_APPS, eGXKeyboardKey::ContextMenu );
-    _keyboardMapper.Add ( _keyMap[ 101u ] );
 }
 
 GXVoid GXDesktopInput::InitOSMessageMapper ()
@@ -847,6 +846,10 @@ LRESULT GXDesktopInput::HandleKeyInternal ( GXKeyBind const* const& allBinds, co
         return 0;
 
     const WPARAM virtualCode = ResolveNativeKeyVirtualCode ( message );
+
+    if ( virtualCode == SKIP_KEY_VIRTUAL_CODE )
+        return 0;
+
     const GXKeyNode* findResult = static_cast<const GXKeyNode*> ( _keyboardMapper.Find ( GXKeyNode ( virtualCode ) ) );
 
     if ( !findResult )
@@ -951,12 +954,19 @@ WPARAM GXDesktopInput::ResolveNativeKeyVirtualCode ( const MSG &message ) const
 {
     // Implementation is based on some ideas https://gamedev.stackexchange.com/questions/1859/handling-keyboard-and-mouse-input-win-api/1868#1868
 
-    // Tricky part is to detect left|right ALT|CTRL|SHIFT buttons and ENTER|Numpad ENTER buttons.
+    // Tricky part is to detect left|right ALT|CTRL|SHIFT buttons, ENTER|Numpad ENTER buttons.
+    // Also GXEngine has to ignore PRINT SCREEN events.
     // Left and right shift buttons have different scancodes, but they can not be detected via extended flag in "message.lParam".
     // CTRL and ALT buttons could be resolved via extended flag in "message.lParam".
     // And finaly ALT|CTRL|SHIFT buttons have unique value in "message.wParam".
 
     const WPARAM virtualCode = message.wParam;
+
+    if ( virtualCode == VK_SNAPSHOT )
+    {
+        // Alright. This is PRINT SCREEN button. Ignore it!
+        return SKIP_KEY_VIRTUAL_CODE;
+    }
 
     // See https://gamedev.stackexchange.com/questions/1859/handling-keyboard-and-mouse-input-win-api/1868#1868
     // And see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode
@@ -987,8 +997,6 @@ WPARAM GXDesktopInput::ResolveNativeKeyVirtualCode ( const MSG &message ) const
         constexpr const LPARAM leftShiftScancode = 0x2A0000;
         constexpr const LPARAM rightShiftScancode = 0x360000;
 
-        constexpr const WPARAM wftShiftFailed = 0u;
-
         switch ( message.lParam & scancodeMask )
         {
             case leftShiftScancode:
@@ -999,7 +1007,7 @@ WPARAM GXDesktopInput::ResolveNativeKeyVirtualCode ( const MSG &message ) const
 
             default:
                 GXLogA ( "GXDesktopInput::ResolveNativeKeyVirtualCode::Error - Shift detection was failed!" );
-            return wftShiftFailed;
+            return SKIP_KEY_VIRTUAL_CODE;
         }
     }
 
