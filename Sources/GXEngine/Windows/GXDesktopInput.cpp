@@ -680,7 +680,7 @@ GXVoid GXDesktopInput::InitKeyMappers ()
     ::new ( _keyMap + 63u ) GXKeyNode ( VK_OEM_6, eGXKeyboardKey::ClosingSquareBracket );
     _keyboardMapper.Add ( _keyMap[ 63u ] );
 
-    ::new ( _keyMap + 64u ) GXKeyNode ( VK_OEM_5, eGXKeyboardKey::BackSlash );
+    ::new ( _keyMap + 64u ) GXKeyNode ( VK_OEM_5, eGXKeyboardKey::Backslash );
     _keyboardMapper.Add ( _keyMap[ 64u ] );
 
     ::new ( _keyMap + 65u ) GXKeyNode ( VK_OEM_1, eGXKeyboardKey::Semicolon );
@@ -1020,7 +1020,23 @@ WPARAM GXDesktopInput::ResolveNativeKeyVirtualCode ( const MSG &message ) const
     const GXBool isExtended = ( message.lParam & extendedMask ) != 0;
 
     if ( virtualCode == ctrlTrait )
-        return static_cast<WPARAM> ( isExtended ? VK_RCONTROL : VK_LCONTROL );
+    {
+        // Note for some reason right ALT button sends virtual code as "ctrlTrait" in Russian keyboard layout.
+        // And the next message has virtual code as "altTrait". So it need to check ALT button first.
+        // This behaviour was reproduced on Windows 10 Pro x64 (18363 build) in 01/26/2020.
+        // Please make sure that this logic is correct for all keyboard layouts and Windows platforms.
+
+        // Testing the next message.
+
+        MSG nextMessage;
+
+        if ( !PeekMessage ( &nextMessage, nullptr, 0, 0, PM_NOREMOVE ) || nextMessage.wParam != altTrait )
+            return static_cast<WPARAM> ( isExtended ? VK_RCONTROL : VK_LCONTROL );
+
+        // Grab the next message from queue. And this is right ALT by the way.
+        PeekMessage ( &nextMessage, nullptr, 0, 0, PM_REMOVE );
+        return static_cast<WPARAM> ( VK_RMENU );
+    }
 
     // Next checking ENTER|Numpad ENTER buttons.
     // Actually extended enter is numpad ENTER.

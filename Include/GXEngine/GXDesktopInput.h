@@ -63,7 +63,7 @@ enum class eGXKeyboardKey : GXUShort
     RightCtrl,
     RightShift,
     Enter,
-    BackSlash,
+    Backslash,
     ContextMenu,
     OpeningSquareBracket,
     ClosingSquareBracket,
