@@ -562,6 +562,18 @@ GXVoid EMGame::BindDesktopInput ()
 {
     GXDesktopInput& input = GXDesktopInput::GetInstance ();
 
+    input.BindMouseMove ( nullptr, &EMGame::OnMouseMove );
+    input.BindMouseScroll ( nullptr, &EMGame::OnMouseScroll );
+
+    input.BindMouseButton ( nullptr, &EMGame::GXMouseLeftButtonDown, eGXMouseButton::LeftButton, eGXButtonState::Down );
+    input.BindMouseButton ( nullptr, &EMGame::GXMouseLeftButtonUp, eGXMouseButton::LeftButton, eGXButtonState::Up );
+
+    input.BindMouseButton ( nullptr, &EMGame::GXMouseMiddleButtonDown, eGXMouseButton::MiddleButton, eGXButtonState::Down );
+    input.BindMouseButton ( nullptr, &EMGame::GXMouseMiddleButtonUp, eGXMouseButton::MiddleButton, eGXButtonState::Up );
+
+    input.BindMouseButton ( nullptr, &EMGame::GXMouseRightButtonDown, eGXMouseButton::RightButton, eGXButtonState::Down );
+    input.BindMouseButton ( nullptr, &EMGame::GXMouseRightButtonUp, eGXMouseButton::RightButton, eGXButtonState::Up );
+
     input.BindKeyboardKey ( nullptr, &EMGame::OnLShiftDown, eGXKeyboardKey::LeftShift, eGXButtonState::Down );
     input.BindKeyboardKey ( nullptr, &EMGame::OnLShiftUp, eGXKeyboardKey::LeftShift, eGXButtonState::Up );
     input.BindKeyboardKey ( nullptr, &EMGame::OnRShiftDown, eGXKeyboardKey::RightShift, eGXButtonState::Down );
@@ -866,6 +878,18 @@ GXVoid EMGame::BindDesktopInput ()
 GXVoid EMGame::UnbindDesktopInput ()
 {
     GXDesktopInput& input = GXDesktopInput::GetInstance ();
+
+    input.UnbindMouseMove ();
+    input.UnbindMouseScroll ();
+
+    input.UnbindMouseButton ( eGXMouseButton::LeftButton, eGXButtonState::Down );
+    input.UnbindMouseButton ( eGXMouseButton::LeftButton, eGXButtonState::Up );
+
+    input.UnbindMouseButton ( eGXMouseButton::MiddleButton, eGXButtonState::Down );
+    input.UnbindMouseButton ( eGXMouseButton::MiddleButton, eGXButtonState::Up );
+
+    input.UnbindMouseButton ( eGXMouseButton::RightButton, eGXButtonState::Down );
+    input.UnbindMouseButton ( eGXMouseButton::RightButton, eGXButtonState::Up );
 
     input.UnbindKeyboardKey ( eGXKeyboardKey::LeftShift, eGXButtonState::Down );
     input.UnbindKeyboardKey ( eGXKeyboardKey::LeftShift, eGXButtonState::Up );
@@ -1270,6 +1294,46 @@ GXVoid GXCALL EMGame::OnViewerTransformChanged ( GXVoid* context )
 GXVoid GXCALL EMGame::OnOpenFile ( const GXString &filePath )
 {
     GXLogA ( "EMOnOpenFile::Info - Τΰιλ %s\n", static_cast<const GXMBChar*> ( filePath ) );
+}
+
+GXVoid GXCALL EMGame::OnMouseMove ( GXVoid* /*context*/, GXInt x, GXInt y, GXInt deltaX, GXInt deltaY )
+{
+    GXLogA ( "EMGame::OnMouseMove - x: %i, y: %i, deltaX: %i, deltaY: %i\n", x, y, deltaX, deltaY );
+}
+
+GXVoid GXCALL EMGame::OnMouseScroll ( GXVoid* /*context*/, GXInt ticks, GXInt x, GXInt y )
+{
+    GXLogA ( "EMGame::OnMouseScroll - ticks: %i, x: %i, y: %i\n", ticks, x, y );
+}
+
+GXVoid GXCALL EMGame::GXMouseLeftButtonDown ( GXVoid* /*context*/, GXInt x, GXInt y )
+{
+    GXLogA ( "EMGame::GXMouseLeftButtonDown - x: %i, y: %i\n", x, y );
+}
+
+GXVoid GXCALL EMGame::GXMouseLeftButtonUp ( GXVoid* /*context*/, GXInt x, GXInt y )
+{
+    GXLogA ( "EMGame::GXMouseLeftButtonUp - x: %i, y: %i\n", x, y );
+}
+
+GXVoid GXCALL EMGame::GXMouseMiddleButtonDown ( GXVoid* /*context*/, GXInt x, GXInt y )
+{
+    GXLogA ( "EMGame::GXMouseMiddleButtonDown - x: %i, y: %i\n", x, y );
+}
+
+GXVoid GXCALL EMGame::GXMouseMiddleButtonUp ( GXVoid* /*context*/, GXInt x, GXInt y )
+{
+    GXLogA ( "EMGame::GXMouseMiddleButtonUp - x: %i, y: %i\n", x, y );
+}
+
+GXVoid GXCALL EMGame::GXMouseRightButtonDown ( GXVoid* /*context*/, GXInt x, GXInt y )
+{
+    GXLogA ( "EMGame::GXMouseRightButtonDown - x: %i, y: %i\n", x, y );
+}
+
+GXVoid GXCALL EMGame::GXMouseRightButtonUp ( GXVoid* /*context*/, GXInt x, GXInt y )
+{
+    GXLogA ( "EMGame::GXMouseRightButtonUp - x: %i, y: %i\n", x, y );
 }
 
 GXVoid GXCALL EMGame::OnLShiftDown ( GXVoid* /*context*/ )

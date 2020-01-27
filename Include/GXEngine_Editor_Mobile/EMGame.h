@@ -111,6 +111,18 @@ class EMGame final : public GXGame
         static GXVoid GXCALL OnViewerTransformChanged ( GXVoid* context );
         static GXVoid GXCALL OnOpenFile ( const GXString &filePath );
 
+        static GXVoid GXCALL OnMouseMove ( GXVoid* context, GXInt x, GXInt y, GXInt deltaX, GXInt deltaY);
+        static GXVoid GXCALL OnMouseScroll ( GXVoid* context, GXInt ticks, GXInt x, GXInt y );
+
+        static GXVoid GXCALL GXMouseLeftButtonDown ( GXVoid* context, GXInt x, GXInt y );
+        static GXVoid GXCALL GXMouseLeftButtonUp ( GXVoid* context, GXInt x, GXInt y );
+
+        static GXVoid GXCALL GXMouseMiddleButtonDown ( GXVoid* context, GXInt x, GXInt y );
+        static GXVoid GXCALL GXMouseMiddleButtonUp ( GXVoid* context, GXInt x, GXInt y );
+
+        static GXVoid GXCALL GXMouseRightButtonDown ( GXVoid* context, GXInt x, GXInt y );
+        static GXVoid GXCALL GXMouseRightButtonUp ( GXVoid* context, GXInt x, GXInt y );
+
         static GXVoid GXCALL OnLShiftDown ( GXVoid* context );
         static GXVoid GXCALL OnLShiftUp ( GXVoid* context );
         static GXVoid GXCALL OnRShiftDown ( GXVoid* context );

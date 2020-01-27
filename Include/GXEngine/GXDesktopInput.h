@@ -144,7 +144,8 @@ typedef GXVoid ( GXCALL* GXSymbolHandler ) ( GXVoid* context, GXStringSymbol sym
 // So GXEngine treats (0, 0) point at left bottom corner.
 typedef GXVoid ( GXCALL* GXMouseMoveHandler ) ( GXVoid* context, GXInt x, GXInt y, GXInt deltaX, GXInt deltaY );
 
-// Note tick value is platform specific for now. Sorry for that.
+// Note negative "ticks" means on backward scroll rotation and positive "ticks" means forward scroll rotation.
+// Also note than tick value is platform specific for now. Sorry for that.
 typedef GXVoid ( GXCALL* GXMouseScrollHandler ) ( GXVoid* context, GXInt ticks, GXInt x, GXInt y );
 
 //---------------------------------------------------------------------------------------------------------------------
