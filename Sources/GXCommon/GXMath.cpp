@@ -2687,7 +2687,7 @@ GXVoid GXPlane::FromLineToPoint ( const GXVec3 &lineStart, const GXVec3 &lineEnd
 
     _a = normal._data[ 0u ];
     _b = normal._data[ 1u ];
-    _c = normal._data[ 3u ];
+    _c = normal._data[ 2u ];
     _d = -_a * lineStart._data[ 0u ] - _b * lineStart._data[ 1u ] - _c * lineStart._data[ 2u ];
 
     if ( ClassifyVertex ( point ) != eGXPlaneClassifyVertex::Behind ) return;
