@@ -61,6 +61,9 @@
     <Filter Include="Source Files\GXEngine\Windows">
       <UniqueIdentifier>{920f0e6c-9d42-481a-bc5e-6343c85ca4c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GXCommon\OpenGL">
+      <UniqueIdentifier>{7ef7117d-ad34-4bc0-85ec-d6cd26759268}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\GXCommon\GXAVLTree.cpp">
@@ -560,6 +563,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\GXEngine\Windows\GXDesktopInput.cpp">
       <Filter>Source Files\GXEngine\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\GXCommon\OpenGL\GXMathBackend.cpp">
+      <Filter>Source Files\GXCommon\OpenGL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,13 +1,14 @@
 ﻿// version 1.56
 
 #include <GXCommon/GXMath.h>
-#include <GXCommon/GXLogger.h>
+#include <GXCommon/GXWarning.h>
 
 GX_DISABLE_COMMON_WARNINGS
 
-#include <stdlib.h>
+#include <cassert>
 #include <cwchar>
 #include <cstring>
+#include <stdlib.h>
 #include <time.h>
 
 GX_RESTORE_WARNING_STATE
@@ -371,7 +372,7 @@ GXVoid GXCALL GXVec3::MakeOrthonormalBasis ( GXVec3 &baseX, GXVec3 &adjustedY, G
 
     if ( adjustedZ.SquaredLength () == 0.0f )
     {
-        GXLogA ( "GXMakeOrthonormalBasis::Error - Can't make this!\n" );
+        assert ( !"GXVec3::MakeOrthonormalBasis - Unexpected value." );
         return;
     }
 
@@ -812,7 +813,7 @@ GXVoid GXColorRGB::From ( const GXColorHSV &color )
         break;
 
         default:
-            GXLogA ( "GXConvertHSVAToRGBA::Error (branch two) - Что-то пошло не так!\n" );
+            assert ( !"GXColorRGB::From - Something wrong!" );
         break;
     }
 }
@@ -915,7 +916,7 @@ GXVoid GXColorHSV::From ( const GXColorRGB &color )
     }
     else
     {
-        GXLogA ( "GXColorHSV::From - Unhanled hue!\n" );
+        assert ( !"GXColorHSV::From - Something wrong!" );
     }
 
     if ( maxValue == 0.0f )
@@ -987,7 +988,7 @@ GXBool GXPreciseComplex::Power ( GXUInt power )
 
     if ( _r == 0.0 && _i == 0.0 )
     {
-        GXLogA ( "GXPreciseComplex::Power - ( 0.0 + 0.0i ) ^ 0 is undefined!" );
+        assert ( !"GXPreciseComplex::Power - ( 0.0 + 0.0i ) ^ 0 is undefined!" );
         return GX_FALSE;
     }
 
@@ -1111,7 +1112,7 @@ GXVoid GXQuat::Normalize ()
 
     if ( fabsf ( squaredLength ) < FLOAT_EPSILON )
     {
-        GXLogA ( "GXQuat::Normalize - Error\n" );
+        assert ( !"GXQuat::Normalize - Error." );
         return;
     }
 
@@ -1124,7 +1125,7 @@ GXVoid GXQuat::Inverse ( const GXQuat &q )
 
     if ( fabsf ( squaredLength ) <= FLOAT_EPSILON )
     {
-        GXLogA ( "GXQuat::Inverse - Error\n" );
+        assert ( !"GXQuat::Inverse - Error." );
         Identity ();
         return;
     }
@@ -2045,40 +2046,6 @@ GXVoid GXMat4::Identity ()
     _m[ 0u ][ 0u ] = _m[ 1u ][ 1u ] = _m[ 2u ][ 2u ] = _m[ 3u ][ 3u ] = 1.0f;
 }
 
-GXVoid GXMat4::Perspective ( GXFloat fieldOfViewYRadiands, GXFloat aspectRatio, GXFloat zNear, GXFloat zFar )
-{
-    GXFloat halfFovy = fieldOfViewYRadiands * 0.5f;
-    GXFloat ctan = cosf ( halfFovy ) / sinf ( halfFovy );
-    GXFloat invRange = 1.0f / ( zFar - zNear );
-
-    _m[ 0u ][ 0u ] = ctan / aspectRatio;
-    _m[ 1u ][ 1u ] = ctan;
-    _m[ 2u ][ 2u ] = ( zFar + zNear ) * invRange;
-    _m[ 2u ][ 3u ] = 1.0f;
-    _m[ 3u ][ 2u ] = -2.0f * zFar * zNear * invRange;
-
-    _m[ 0u ][ 1u ] = _m[ 0u ][ 2u ] = _m[ 0u ][ 3u ] = 0.0f;
-    _m[ 1u ][ 0u ] = _m[ 1u ][ 2u ] = _m[ 1u ][ 3u ] = 0.0f;
-    _m[ 2u ][ 0u ] = _m[ 2u ][ 1u ] = 0.0f;
-    _m[ 3u ][ 0u ] = _m[ 3u ][ 1u ] = _m[ 3u ][ 3u ] = 0.0f;
-}
-
-GXVoid GXMat4::Ortho ( GXFloat width, GXFloat height, GXFloat zNear, GXFloat zFar )
-{
-    GXFloat invRange = 1.0f / ( zFar - zNear );
-
-    _m[ 0u ][ 0u ] = 2.0f / width;
-    _m[ 1u ][ 1u ] = 2.0f / height;
-    _m[ 2u ][ 2u ] = 2.0f * invRange;
-    _m[ 3u ][ 2u ] = -invRange * ( zFar + zNear );
-
-    _m[ 0u ][ 1u ] = _m[ 0u ][ 2u ] = _m[ 0u ][ 3u ] = 0.0f;
-    _m[ 1u ][ 0u ] = _m[ 1u ][ 2u ] = _m[ 1u ][ 3u ] = 0.0f;
-    _m[ 2u ][ 0u ] = _m[ 2u ][ 1u ] = _m[ 2u ][ 3u ] = 0.0f;
-    _m[ 3u ][ 0u ] = _m[ 3u ][ 1u ] = 0.0f;
-    _m[ 3u ][ 3u ] = 1.0f;
-}
-
 GXVoid GXMat4::Translation ( GXFloat x, GXFloat y, GXFloat z )
 {
     _m[ 0u ][ 1u ] = _m[ 0u ][ 2u ] = _m[ 0u ][ 3u ] = 0.0f;
@@ -2403,33 +2370,6 @@ GXVoid GXMat4::MultiplyAsPoint ( GXVec3 &out, const GXVec3 &v ) const
     out._data[ 0u ] = v._data[ 0u ] * _m[ 0u ][ 0u ] + v._data[ 1u ] * _m[ 1u ][ 0u ] + v._data[ 2u ] * _m[ 2u ][ 0u ] + _m[ 3u ][ 0u ];
     out._data[ 1u ] = v._data[ 0u ] * _m[ 0u ][ 1u ] + v._data[ 1u ] * _m[ 1u ][ 1u ] + v._data[ 2u ] * _m[ 2u ][ 1u ] + _m[ 3u ][ 1u ];
     out._data[ 2u ] = v._data[ 0u ] * _m[ 0u ][ 2u ] + v._data[ 1u ] * _m[ 1u ][ 2u ] + v._data[ 2u ] * _m[ 2u ][ 2u ] + _m[ 3u ][ 2u ];
-}
-
-GXVoid GXMat4::GetPerspectiveParams ( GXFloat &fieldOfViewYRadiands, GXFloat &aspectRatio, GXFloat &zNear, GXFloat &zFar )
-{
-    fieldOfViewYRadiands = 2.0f * atanf ( 1.0f / _m[ 1u ][ 1u ] );
-    aspectRatio = _m[ 1u ][ 1u ] / _m[ 0u ][ 0u ];
-
-    zNear = -_m[ 3u ][ 2u ] / ( _m[ 2u ][ 2u ] + 1.0f );
-    zFar = ( zNear * _m[ 3u ][ 2u ] ) / ( _m[ 3u ][ 2u ] + 2.0f * zNear );
-}
-
-GXVoid GXMat4::GetOrthoParams ( GXFloat &width, GXFloat &height, GXFloat &zNear, GXFloat &zFar )
-{
-    width = 2.0f / _m[ 0u ][ 0u ];
-    height = 2.0f / _m[ 1u ][ 1u ];
-
-    GXFloat factor = 1.0f / _m[ 2u ][ 2u ];
-
-    zNear = -( 1.0f + _m[ 3u ][ 2u ] ) * factor;
-    zFar = ( 2.0f + zNear * _m[ 2u ][ 2u ] ) * factor;
-}
-
-GXVoid GXMat4::GetRayPerspective ( GXVec3 &rayView, const GXVec2 &mouseCVV ) const
-{
-    rayView._data[ 0u ] = mouseCVV.GetX () / _m[ 0u ][ 0u ];
-    rayView._data[ 1u ] = mouseCVV.GetY () / _m[ 1u ][ 1u ];
-    rayView._data[ 2u ] = 1.0f;
 }
 
 GXMat4& GXMat4::operator = ( const GXMat4 &matrix )

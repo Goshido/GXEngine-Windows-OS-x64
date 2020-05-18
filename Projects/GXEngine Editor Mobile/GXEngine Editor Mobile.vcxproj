@@ -200,6 +200,7 @@ del "$(OutDir)$(TargetName).iobj"</Command>
     <ClCompile Include="..\..\Sources\GXCommon\GXOBJLoader.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXStrings.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\GXAbstractThread.cpp" />
+    <ClCompile Include="..\..\Sources\GXCommon\OpenGL\GXMathBackend.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXDirectoryInfo.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFile.cpp" />
     <ClCompile Include="..\..\Sources\GXCommon\Windows\GXFileSystem.cpp" />
