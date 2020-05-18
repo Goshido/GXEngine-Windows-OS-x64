@@ -4,7 +4,7 @@
 
 GX_DISABLE_COMMON_WARNINGS
 
-#include <assert.h>
+#include <cassert>
 
 GX_RESTORE_WARNING_STATE
 
